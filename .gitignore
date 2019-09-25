@@ -1,6 +1,6 @@
 .idea/
 env/
-media/
+/media/
 *.pyc
 /staticfiles/
 migrations/
