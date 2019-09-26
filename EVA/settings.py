@@ -123,6 +123,10 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 STATIC_URL = '/staticfiles/' if IS_DEPLOYED else '/static/'
 
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'EVA/static'),
+)
+
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
