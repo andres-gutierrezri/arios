@@ -3,7 +3,7 @@
 import os
 import dj_database_url
 
-IS_DEPLOYED = bool(os.environ.get('is_deployed', 'False'))
+IS_DEPLOYED = bool(os.environ.get('is_deployed', ''))
 
 if IS_DEPLOYED:
     DATABASE_DICT = dj_database_url.config(default=os.environ.get('DATABASE_URL', ''))
