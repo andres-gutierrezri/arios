@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <title>EVA - {% block titulo %}{% endblock %}</title>
+        <meta name="description" content="Page Titile">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no, minimal-ui">
+        <!-- Call App Mode on ios devices -->
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <!-- Remove Tap Highlight on Windows Phone IE -->
+        <meta name="msapplication-tap-highlight" content="no">
+        <!-- base css -->
+        <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/vendors.bundle.css' %}">
+        <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/app.bundle.css' %}">
+        <!-- Place favicon.ico in the root directory -->
+        <link rel="apple-touch-icon" sizes="180x180" href="{% static 'EVA/Plantilla/img/favicon/apple-touch-icon.png' %}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{% static 'EVA/Plantilla/img/favicon/favicon-32x32.png' %}">
+        <link rel="mask-icon" href="{% static 'EVA/Plantilla/img/favicon/safari-pinned-tab.svg' %}" color="#5bbad5">
+        <!--<link rel="stylesheet" media="screen, print" href="css/your_styles.css">-->
+        {% block styles %}
+        {% endblock %}
+    </head>
+   <body class="mod-bg-1 ">
+
+        {% include 'EVA/_common/load_settings.html' %}
+
+        <!-- BEGIN Page Wrapper -->
+        <div class="page-wrapper">
+            <div class="page-inner">
+                {% include 'EVA/_common/sidebar.html' %}
+
+                <div class="page-content-wrapper">
+                     {% include 'EVA/_common/header.html' %}
+
+                    <!-- BEGIN Page Content -->
+                    <!-- the #js-page-content id is needed for some plugins to initialize -->
+                    <main id="js-page-content" role="main" class="page-content">
+                        {% block main %}
+
+
+                        {% endblock %}
+                    </main>
+
+                    <!-- this overlay is activated only when mobile menu is triggered -->
+                    <div class="page-content-overlay" data-action="toggle" data-class="mobile-nav-on"></div>
+                    <!-- END Page Content -->
+
+                    {% include 'EVA/_common/footer.html' %}
+                    {% include 'EVA/_common/shortcuts.html' %}
+                    {% include 'EVA/_common/color_profile.html' %}
+                </div>
+            </div>
+        </div>
+        <!-- END Page Wrapper -->
+
+        {% include 'EVA/_common/quick_menu.html' %}
+        {# {% include 'EVA/_common/messenger.html' %} #}
+        {# {% include 'EVA/_common/page_settings.html' %} #}
+
+        <script src="{% static 'EVA/Plantilla/js/vendors.bundle.js' %}"></script>
+        <script src="{% static 'EVA/Plantilla/js/app.bundle.js' %}"></script>
+       {% block scripts %}
+       {% endblock %}
+    </body>
+</html>
