@@ -24,7 +24,8 @@ class Pais(BaseDivipol):
 
 
 class Departamento(BaseDivipol):
-    pass
+    pais = models.ForeignKey(Pais, on_delete=models.CASCADE, verbose_name='País', null=True
+                                     , blank=False)
 
     class Meta:
         verbose_name = 'Departamento'
@@ -32,7 +33,8 @@ class Departamento(BaseDivipol):
 
 
 class Municipio(BaseDivipol):
-    pass
+    departamento = models.ForeignKey(Departamento, on_delete=models.CASCADE, verbose_name='Departamento', null=True
+                                     , blank=False)
 
     class Meta:
         verbose_name = 'Municipio'
@@ -40,7 +42,8 @@ class Municipio(BaseDivipol):
 
 
 class CentroPoblado(BaseDivipol):
-    pass
+    municipio = models.ForeignKey(Municipio, on_delete=models.CASCADE, verbose_name='Municipio', null=True
+                                     , blank=False)
 
     class Meta:
         verbose_name = 'Centro Poblado'
@@ -50,9 +53,9 @@ class CentroPoblado(BaseDivipol):
 class Empresa(models.Model):
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     nit = models.TextField(max_length=20, verbose_name='NIT', null=False, blank=False, unique=True)
-    logo = models.ImageField(upload_to='logos-empresas', verbose_name='Logo', null=False, blank=False)
+    logo = models.ImageField(upload_to='logos-empresas', verbose_name='Logo', null=True, blank=True)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
-    subempresa = models.BooleanField(verbose_name='Subempresa', null=False, blank=False)
+    subempresa = models.BooleanField(verbose_name='Subempresa', null=True, blank=True)
     empresa_ppal = models.ForeignKey('self', on_delete=models.DO_NOTHING, verbose_name='Empresa Ppal', null=True
                                      , blank=False)
 
@@ -149,9 +152,9 @@ class Persona(models.Model):
     genero = models.TextField(max_length=300, verbose_name='Género', null=False, blank=False)
     tipo_identificacion = models.ForeignKey(TipoIdentificacion, on_delete=models.DO_NOTHING,
                                             verbose_name='Tipo de identificación', null=True, blank=False)
-    usuario = models.OneToOneField(User, on_delete=models.DO_NOTHING, verbose_name="Usuario", null=False,
+    usuario = models.OneToOneField(User, on_delete=models.DO_NOTHING, verbose_name="Usuario", null=True,
                                 blank=False, related_name='UserAccess')
-    usuario_crea = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario Crea", null=False,
+    usuario_crea = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario Crea", null=True,
                                      blank=False, related_name='UserCrea')
     usuario_actualiza = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario Actualiza", null=True,
                                          blank=False, related_name='UserModifica')
