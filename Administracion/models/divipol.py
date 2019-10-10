@@ -19,8 +19,8 @@ class Pais(BaseDivipol):
     pass
 
     class Meta:
-        verbose_name = 'Pais'
-        verbose_name_plural = 'Paises'
+        verbose_name = 'País'
+        verbose_name_plural = 'Países'
 
 
 class Departamento(BaseDivipol):
