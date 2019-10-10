@@ -30,6 +30,10 @@ class Proceso(models.Model):
     def __str__(self):
         return self.nombre
 
+    class Meta:
+        verbose_name = 'Proceso'
+        verbose_name_plural = 'Procesos'
+
 
 class TipoIdentificacion(models.Model):
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
@@ -38,6 +42,10 @@ class TipoIdentificacion(models.Model):
 
     def __str__(self):
         return self.nombre
+
+    class Meta:
+        verbose_name = 'Tipo Identificación'
+        verbose_name_plural = 'Tipos Identificaciones'
 
 
 class TipoContrato(models.Model):
