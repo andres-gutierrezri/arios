@@ -64,23 +64,23 @@ class TipoContrato(models.Model):
 
 class Persona(models.Model):
     identificacion = models.CharField(max_length=20, verbose_name='Identificación', null=False, blank=False,
-                                          unique=True)
+                                      unique=True)
     fecha_expedicion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Expedición', null=False,
-                                          blank=False)
+                                            blank=False)
     fecha_nacimiento = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Nacimiento', null=True,
-                                          blank=False)
+                                            blank=False)
     telefono = models.TextField(max_length=15, verbose_name='Teléfono', null=False, blank=False)
     fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False,
                                           blank=False)
     fecha_modificacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Modificación', null=False,
-                                          blank=False)
+                                              blank=False)
     genero = models.TextField(max_length=1, verbose_name='Género', null=False, blank=False)
     tipo_identificacion = models.ForeignKey(TipoIdentificacion, on_delete=models.DO_NOTHING,
-                                          verbose_name='Tipo de identificación', null=True, blank=False)
+                                            verbose_name='Tipo de identificación', null=True, blank=False)
     usuario = models.OneToOneField(User, on_delete=models.DO_NOTHING, verbose_name="Usuario", null=True,
-                                          blank=False, related_name='UserAccess')
+                                   blank=False, related_name='UserAccess')
     usuario_crea = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario Crea", null=False,
-                                          blank=False, related_name='UserCrea')
+                                     blank=False, related_name='UserCrea')
     usuario_actualiza = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario Actualiza",
                                           null=False, blank=False, related_name='UserModifica')
 
