@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 class BaseDivipol(models.Model):
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
-    codigoLetras = models.TextField(max_length=300, verbose_name='Código', null=False, blank=False)
+    codigo_letras = models.TextField(max_length=300, verbose_name='Código', null=False, blank=False)
 
     def __str__(self):
         return self.nombre
@@ -24,8 +24,7 @@ class Pais(BaseDivipol):
 
 
 class Departamento(BaseDivipol):
-    pais = models.ForeignKey(Pais, on_delete=models.CASCADE, verbose_name='País', null=True
-                                     , blank=False)
+    pais = models.ForeignKey(Pais, on_delete=models.CASCADE, verbose_name='País', null=True, blank=False)
 
     class Meta:
         verbose_name = 'Departamento'
@@ -42,8 +41,7 @@ class Municipio(BaseDivipol):
 
 
 class CentroPoblado(BaseDivipol):
-    municipio = models.ForeignKey(Municipio, on_delete=models.CASCADE, verbose_name='Municipio', null=True
-                                     , blank=False)
+    municipio = models.ForeignKey(Municipio, on_delete=models.CASCADE, verbose_name='Municipio', null=True, blank=False)
 
     class Meta:
         verbose_name = 'Centro Poblado'
