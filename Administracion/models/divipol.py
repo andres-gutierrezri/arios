@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 class BaseDivipol(models.Model):
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
-    codigo_letras = models.TextField(max_length=300, verbose_name='Código', null=False, blank=False)
+    codigo_letras = models.TextField(max_length=4, verbose_name='Código', null=True, blank=False)
 
     def __str__(self):
         return self.nombre
