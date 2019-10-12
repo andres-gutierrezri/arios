@@ -1,0 +1,78 @@
+{% extends 'EVA/_common/base.html' %}
+{% load static %}
+<title>{% block titulo %}Tercero{% endblock %}</title>
+{% block main %}
+    <div class="content-wrapper">
+        <div class="container-fluid">
+            <a class="btn btn-secondary" href="{% url 'Administracion:Tercero-crear' %}">Agregar Tercero</a>
+            <br>
+            <br>
+            <div class="card mb-3">
+                <div class="card-header">
+                    <i class="fa fa-table"></i>Terceros</div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Identificación</th>
+                                    <th>Tipo de identificación</th>
+                                    <th>Estado</th>
+                                    <th>Empresa</th>
+                                    <th>Fecha de creación</th>
+                                    <th>Fecha de modificación</th>
+                                    <th>Terceros</th>
+                                    <th>Tipo tercero</th>
+                                    <th>Centro poblado</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for tercero in terceros %}
+                                    <tr>
+                                        <td>{{ tercero.nombre }}</td>
+                                        <td>{{ tercero.identificacion}}</td>
+                                        <td>{{ tercero.tipo_identificacion}}</td>
+
+                                        <td>
+                                            <input type="checkbox" disabled {% if tercero.estado %}checked{% endif %}>
+                                        </td>
+                                        <td>{{ tercero.empresa }}</td>
+                                        <td>{{ tercero.fecha_creacion }}</td>
+                                        <td>{{ tercero.fecha_modificacion }}</td>
+                                        <td>{{ tercero.terceros }}</td>
+                                        <td>{{ tercero.tipo_tercero }}</td>
+                                        <td>{{ tercero.centro_poblado }}</td>
+{#                                        <td>#}
+{#                                            <input type="checkbox" disabled {% if cargo.estado %}checked{% endif %}>#}
+{#                                        </td>#}
+{#                                        <td>{{ cargo.empresa }}</td>#}
+{#                                        <td>#}
+{#                                            {%if 'Inventario.change_cargo' in perms %}#}
+{#                                            <a href="{% url 'inventario:cargo-editar' cargo.id %}" class="btn btn-info">Editar</a>#}
+{#                                            {% endif %}#}
+{#                                            {%if 'Inventario.delete_cargo' in perms %}#}
+{#                                            <button class="btn btn-danger" id="eliminar_{{ cargo.id }}" type="button" onclick="fConfirmarEliminar({{ cargo.id }})">Eliminar</button>#}
+{#                                            {% endif %}#}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer small text-muted">Actualizado: {{ fecha }}</div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+{#    <!-- Page level plugin JavaScript-->#}
+{#    <script src="{% static 'Inventario/vendor/datatables/jquery.dataTables.js' %}"></script>#}
+{#    <script src="{% static 'Inventario/vendor/datatables/dataTables.bootstrap4.js' %}"></script>#}
+{#    <!-- Custom scripts for this page-->#}
+{#    <script src="{% static 'Inventario/js/sb-admin-datatables.min.js' %}"></script>#}
+{#    <script src="{% static 'Inventario/General/confirmarEliminar.js' %}"></script>#}
+{#    <script src="{% static 'Inventario/General/busquedaSinTildesDataTable.js' %}"></script>#}
+{% endblock %}
