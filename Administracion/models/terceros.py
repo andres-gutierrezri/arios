@@ -31,7 +31,7 @@ class Tercero(models.Model):
                                             verbose_name='Tipo de identificación', null=True, blank=False)
     centro_poblado = models.ForeignKey(CentroPoblado, on_delete=models.DO_NOTHING,
                                        verbose_name='Centro poblado', null=True, blank=False)
-    tipo_tercero = models.ForeignKey(TipoTercero, on_delete=models.DO_NOTHING, verbose_name='Tipo tercero', null=True,
+    tipo_tercero = models.ForeignKey(TipoTercero, on_delete=models.DO_NOTHING, verbose_name='Tipo Tercero', null=True,
                                      blank=False)
 
     def __str__(self):
