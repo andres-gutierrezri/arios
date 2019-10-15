@@ -1,0 +1,20 @@
+<div class="modal fade"  tabindex="-1" id="confirmarEliminar" role="dialog">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-center">ELIMINAR</h5>
+                <button type="button" class="close close_eliminar" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+               <a>¿Está seguro de eliminar?</a>
+            </div>
+            <div class="modal-footer">
+                <input id="rutaBorrado" type="hidden" name="rutaBorrado" value="{{ objeto }}">
+                <button type="button" class="btn btn-primary confirmarEliminarSi" data-dismiss="modal">Si</button>
+                <button type="button" class="btn btn-secondary close_eliminar confirmarEliminarNo" data-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
