@@ -15,7 +15,7 @@
                             </button>
                         </div>
                     {% endif %}
-                    <form action="{% url 'Administracion:Tercero-crear' %}" id="tercero" method="post">
+                    <form action="{% url 'Administracion:tercero-crear' %}" id="tercero" method="post">
                         {% csrf_token %}
                         <div class="form-group">
                             <div class="form-row">
@@ -93,7 +93,7 @@
                                 <button id="agregar" class="btn btn-primary btn-block">Agregar</button>
                             </div>
                             <div style="padding-left: 15px">
-                                <a href="{% url 'Administracion:Tercero' %}" class="btn btn-danger btn-block">Cancelar</a>
+                                <a href="{% url 'Administracion:tercero' %}" class="btn btn-danger btn-block">Cancelar</a>
                             </div>
                         </div>
                     </form>
