@@ -43,12 +43,6 @@ class TerceroCrearView(View):
                           tipo_tercero_id=tipo_tercero, centro_poblado_id=centro_poblado, fecha_creacion=fecha_creacion)
         tercero.save()
 
-        # if error:
-        #     error = 'Ya existe un tercero con ese nombre'
-        #     tipo_identificacion = TipoIdentificacion.objects.all()
-        #     return render(request, 'Tercero/crear.html', {'tipo_identificacion': tipo_identificacion,
-        #                                                   'tercero': tercero})
-
         return redirect(reverse('Administracion:tercero'))
 
 
