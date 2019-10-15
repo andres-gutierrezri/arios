@@ -4,7 +4,7 @@
 {% block main %}
     <div class="content-wrapper">
         <div class="container-fluid">
-            <a class="btn btn-secondary" href="{% url 'Administracion:Tercero-crear' %}">Agregar Tercero</a>
+            <a class="btn btn-secondary" href="{% url 'Administracion:tercero-crear' %}">Agregar Tercero</a>
             <br>
             <br>
             <div class="card mb-3">
@@ -25,6 +25,7 @@
                                     <th>Terceros</th>
                                     <th>Tipo tercero</th>
                                     <th>Centro poblado</th>
+                                    <th>Acción</th>
 
                                 </tr>
                             </thead>
@@ -44,17 +45,13 @@
                                         <td>{{ tercero.terceros }}</td>
                                         <td>{{ tercero.tipo_tercero }}</td>
                                         <td>{{ tercero.centro_poblado }}</td>
-{#                                        <td>#}
-{#                                            <input type="checkbox" disabled {% if cargo.estado %}checked{% endif %}>#}
-{#                                        </td>#}
-{#                                        <td>{{ cargo.empresa }}</td>#}
-{#                                        <td>#}
-{#                                            {%if 'Inventario.change_cargo' in perms %}#}
-{#                                            <a href="{% url 'inventario:cargo-editar' cargo.id %}" class="btn btn-info">Editar</a>#}
-{#                                            {% endif %}#}
-{#                                            {%if 'Inventario.delete_cargo' in perms %}#}
-{#                                            <button class="btn btn-danger" id="eliminar_{{ cargo.id }}" type="button" onclick="fConfirmarEliminar({{ cargo.id }})">Eliminar</button>#}
-{#                                            {% endif %}#}
+                                      <td>
+
+                                            <a href="{% url 'Administracion:tercero-editar' tercero.id %}" class="btn btn-info">Editar</a>
+
+
+                                            <button class="btn btn-danger" id="eliminar_{{ tercero.id }}" type="button" onclick="fConfirmarEliminar({{ tercero.id }})">Eliminar</button>
+
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -66,13 +63,8 @@
             </div>
         </div>
     </div>
+    {% include '_elements/_modal_confirmar_eliminar.html' with objeto='administracion/tercero' %}
 {% endblock %}
 {% block scripts %}
-{#    <!-- Page level plugin JavaScript-->#}
-{#    <script src="{% static 'Inventario/vendor/datatables/jquery.dataTables.js' %}"></script>#}
-{#    <script src="{% static 'Inventario/vendor/datatables/dataTables.bootstrap4.js' %}"></script>#}
-{#    <!-- Custom scripts for this page-->#}
-{#    <script src="{% static 'Inventario/js/sb-admin-datatables.min.js' %}"></script>#}
-{#    <script src="{% static 'Inventario/General/confirmarEliminar.js' %}"></script>#}
-{#    <script src="{% static 'Inventario/General/busquedaSinTildesDataTable.js' %}"></script>#}
+<script src="{% static 'EVA/Plantilla/General/confirmarEliminar.js' %}"></script>
 {% endblock %}
