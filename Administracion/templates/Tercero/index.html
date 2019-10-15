@@ -1,10 +1,11 @@
-{% extends 'EVA/_common/base.html' %}
+{#{% extends 'EVA/_common/base.html' %}#}
+{% extends 'administracion/base_administracion.html' %}
 {% load static %}
 <title>{% block titulo %}Tercero{% endblock %}</title>
 {% block main %}
     <div class="content-wrapper">
         <div class="container-fluid">
-            <a class="btn btn-secondary" href="{% url 'Administracion:tercero-crear' %}">Agregar Tercero</a>
+            <a class="btn btn-primary" href="{% url 'Administracion:tercero-crear' %}">Agregar Tercero</a>
             <br>
             <br>
             <div class="card mb-3">
@@ -22,7 +23,6 @@
                                     <th>Empresa</th>
                                     <th>Fecha de creación</th>
                                     <th>Fecha de modificación</th>
-                                    <th>Terceros</th>
                                     <th>Tipo tercero</th>
                                     <th>Centro poblado</th>
                                     <th>Acción</th>
@@ -42,7 +42,6 @@
                                         <td>{{ tercero.empresa }}</td>
                                         <td>{{ tercero.fecha_creacion }}</td>
                                         <td>{{ tercero.fecha_modificacion }}</td>
-                                        <td>{{ tercero.terceros }}</td>
                                         <td>{{ tercero.tipo_tercero }}</td>
                                         <td>{{ tercero.centro_poblado }}</td>
                                       <td>

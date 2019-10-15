@@ -1,4 +1,5 @@
-{% extends 'EVA/_common/base.html' %}
+{#{% extends 'EVA/_common/base.html' %}#}
+{% extends 'administracion/base_administracion.html' %}
 {% load static %}
 <title>{% block titulo %}Crear Tercero{% endblock %}</title>
 {% block main %}
@@ -57,11 +58,7 @@
                                     <label for="fecha_modificacion">Fecha de modificación</label>
                                     <input class="form-control" id="fecha_modificacion" autocomplete="off" name="fecha_modificacion" placeholder="Seleccione una fecha" value="{{ tercero.fecha_modificacion | date:'Y-m-d' }}" required>
                                 </div>
-                                <div class="col-md-6">
-                                    <br>
-                                    <label for="terceros">Terceros</label>
-                                    <input class="form-control" id="terceros" type="text" name="terceros" placeholder="Ingrese el nombre del tercero" required maxlength="100" value="{{ tercero.terceros }}">
-                                </div>
+
                                 <div class="col-md-6">
                                  <br>
                                     <label for="tipo_terceros_select">Tipo Terceros</label>
