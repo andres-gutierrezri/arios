@@ -35,11 +35,10 @@ class TerceroCrearView(View):
         empresa = request.POST.get('empresa_id', '')
         fecha_creacion = request.POST.get('fecha_creacion', '')
         fecha_modificacion = request.POST.get('fecha_modificacion', '')
-        terceros = request.POST.get('terceros', '')
         tipo_tercero = request.POST.get('tipo_tercero_id', '')
         centro_poblado = request.POST.get('centro_poblado_id', '')
         tercero = Tercero(nombre=nombre, identificacion=identificacion, tipo_identificacion_id=tipo_identificacion,
-                          estado=True, empresa_id=empresa, fecha_modificacion=fecha_modificacion, terceros=terceros,
+                          estado=True, empresa_id=empresa, fecha_modificacion=fecha_modificacion,
                           tipo_tercero_id=tipo_tercero, centro_poblado_id=centro_poblado, fecha_creacion=fecha_creacion)
         tercero.save()
 
@@ -60,7 +59,7 @@ class TerceroEditarView(View):
 
     def post(self, request, id):
         update_fields = ['nombre', 'identificacion', 'tipo_identificacion_id', 'estado', 'empresa_id', 'fecha_creacion',
-                         'fecha_modificacion', 'terceros', 'tipo_tercero_id', 'centro_poblado_id']
+                         'fecha_modificacion', 'tipo_tercero_id', 'centro_poblado_id']
         tercero = Tercero(id=id)
         tercero.nombre = request.POST.get('nombre', '')
         tercero.identificacion = request.POST.get('identificacion', '')
@@ -69,7 +68,6 @@ class TerceroEditarView(View):
         tercero.empresa_id = request.POST.get('empresa_id', '')
         tercero.fecha_creacion = request.POST.get('fecha_creacion', '')
         tercero.fecha_modificacion = request.POST.get('fecha_modificacion', '')
-        tercero.terceros = request.POST.get('terceros', '')
         tercero.tipo_tercero_id = request.POST.get('tipo_tercero_id', '')
         tercero.centro_poblado_id = request.POST.get('centro_poblado_id', '')
         tercero.save(update_fields=update_fields)
