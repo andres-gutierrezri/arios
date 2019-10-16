@@ -8,7 +8,7 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
-from Administracion.models import Tercero, TipoIdentificacion, TipoTercero, CentroPoblado, Empresa
+from Administracion.models import Tercero, TipoIdentificacion, TipoTercero, CentroPoblado, Empresa, Departamento
 
 
 def tercero_view(request):
@@ -17,15 +17,20 @@ def tercero_view(request):
     return render(request, 'Tercero/index.html', {'terceros': terceros, 'fecha': fecha})
 
 
+def principal_view(request):
+    return render(request, 'Tercero/principal.html')
+
+
 class TerceroCrearView(View):
     def get(self, request):
         tipo_identificacion = TipoIdentificacion.objects.all()
         tipo_terceros = TipoTercero.objects.all()
-        centros_poblados=CentroPoblado.objects.all()
+        departamentos = Departamento.objects.all().order_by('nombre')
         empresas = Empresa.objects.all()
         return render(request, 'Tercero/crear.html', {'tipo_identificacion': tipo_identificacion,
                                                       'tipo_terceros': tipo_terceros,
-                                                      'centros_poblados': centros_poblados, 'empresas': empresas})
+                                                      'departamentos': departamentos,
+                                                      'empresas': empresas})
 
     def post(self, request):
 
@@ -33,16 +38,17 @@ class TerceroCrearView(View):
         identificacion = request.POST.get('identificacion', '')
         tipo_identificacion = request.POST.get('tipo_identificacion_id', '')
         empresa = request.POST.get('empresa_id', '')
-        fecha_creacion = request.POST.get('fecha_creacion', '')
-        fecha_modificacion = request.POST.get('fecha_modificacion', '')
+        # fecha_creacion = request.POST.get('fecha_creacion', '')
+        # fecha_modificacion = request.POST.get('fecha_modificacion', '')
         tipo_tercero = request.POST.get('tipo_tercero_id', '')
         centro_poblado = request.POST.get('centro_poblado_id', '')
         tercero = Tercero(nombre=nombre, identificacion=identificacion, tipo_identificacion_id=tipo_identificacion,
-                          estado=True, empresa_id=empresa, fecha_modificacion=fecha_modificacion,
-                          tipo_tercero_id=tipo_tercero, centro_poblado_id=centro_poblado, fecha_creacion=fecha_creacion)
+                          estado=True, empresa_id=empresa,
+                          tipo_tercero_id=tipo_tercero, centro_poblado_id=centro_poblado)
+        fecha = datetime.today()
         tercero.save()
 
-        return redirect(reverse('Administracion:tercero'))
+        return redirect(reverse('Administracion:terceros'))
 
 
 class TerceroEditarView(View):
@@ -58,7 +64,7 @@ class TerceroEditarView(View):
                                                        'centro_poblados': centro_poblados})
 
     def post(self, request, id):
-        update_fields = ['nombre', 'identificacion', 'tipo_identificacion_id', 'estado', 'empresa_id', 'fecha_creacion',
+        update_fields = ['nombre', 'identificacion', 'tipo_identificacion_id', 'estado', 'empresa_id',
                          'fecha_modificacion', 'tipo_tercero_id', 'centro_poblado_id']
         tercero = Tercero(id=id)
         tercero.nombre = request.POST.get('nombre', '')
@@ -66,13 +72,13 @@ class TerceroEditarView(View):
         tercero.tipo_identificacion_id = request.POST.get('tipo_identificacion_id', '')
         tercero.estado = request.POST.get('estado', 'False') == 'True'
         tercero.empresa_id = request.POST.get('empresa_id', '')
-        tercero.fecha_creacion = request.POST.get('fecha_creacion', '')
-        tercero.fecha_modificacion = request.POST.get('fecha_modificacion', '')
+        # tercero.fecha_creacion = request.POST.get('fecha_creacion', '')
+        tercero.fecha_modificacion = datetime.today()
         tercero.tipo_tercero_id = request.POST.get('tipo_tercero_id', '')
         tercero.centro_poblado_id = request.POST.get('centro_poblado_id', '')
         tercero.save(update_fields=update_fields)
 
-        return redirect(reverse('Administracion:tercero'))
+        return redirect(reverse('Administracion:terceros'))
 
 
 @method_decorator(csrf_exempt, name='dispatch')
