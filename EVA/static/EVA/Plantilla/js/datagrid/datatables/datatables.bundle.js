@@ -29988,7 +29988,7 @@ return $.fn.dataTable;
  * @description A collection of API methods, events and buttons for DataTables
  *   that provides selection options of the items in a DataTable
  * @version     1.3.0
- * @file        dataTables.select.js
+ * @file        dataTables.select
  * @author      SpryMedia Ltd (www.sprymedia.co.uk)
  * @contact     datatables.net/forums
  * @copyright   Copyright 2015-2018 SpryMedia Ltd.
