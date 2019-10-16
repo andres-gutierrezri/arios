@@ -14,11 +14,11 @@ from Administracion.models import Tercero, TipoIdentificacion, TipoTercero, Cent
 def tercero_view(request):
     terceros = Tercero.objects.all()
     fecha = datetime.now()
-    return render(request, 'Tercero/index.html', {'terceros': terceros, 'fecha': fecha})
+    return render(request, 'Administracion/Tercero/index.html', {'terceros': terceros, 'fecha': fecha})
 
 
 def principal_view(request):
-    return render(request, 'Tercero/principal.html')
+    return render(request, 'Administracion/Tercero/principal.html')
 
 
 class TerceroCrearView(View):
@@ -27,7 +27,7 @@ class TerceroCrearView(View):
         tipo_terceros = TipoTercero.objects.all()
         departamentos = Departamento.objects.all().order_by('nombre')
         empresas = Empresa.objects.all()
-        return render(request, 'Tercero/crear.html', {'tipo_identificacion': tipo_identificacion,
+        return render(request, 'Administracion/Tercero/crear.html', {'tipo_identificacion': tipo_identificacion,
                                                       'tipo_terceros': tipo_terceros,
                                                       'departamentos': departamentos,
                                                       'empresas': empresas})
@@ -57,11 +57,11 @@ class TerceroEditarView(View):
         empresas = Empresa.objects.filter(estado=True).order_by('nombre')
         tipo_identificaciones = TipoIdentificacion.objects.filter(estado=True).order_by('nombre')
         tipo_terceros = TipoTercero.objects.filter(estado=True).order_by('nombre')
-        centro_poblados = CentroPoblado.objects.all().order_by('nombre')
-        return render(request, 'Tercero/editar.html', {'tercero': tercero, 'empresas': empresas,
+        departamentos = Departamento.objects.all().order_by('nombre')
+        return render(request, 'Administracion/Tercero/editar.html', {'tercero': tercero, 'empresas': empresas,
                                                        'tipo_identificaciones': tipo_identificaciones,
                                                        'tipo_terceros': tipo_terceros,
-                                                       'centro_poblados': centro_poblados})
+                                                       'departamentos': departamentos})
 
     def post(self, request, id):
         update_fields = ['nombre', 'identificacion', 'tipo_identificacion_id', 'estado', 'empresa_id',
