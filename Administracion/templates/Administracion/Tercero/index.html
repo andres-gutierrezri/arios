@@ -8,7 +8,7 @@
 {% block main %}
     <div class="subheader">
         <h1 class="subheader-title">
-            <i class='fas fa fa-user'></i> Módulo <span class='fw-300'>Terceros</span>
+            <i class='fas fa-handshake'></i> Módulo <span class='fw-300'>Terceros</span>
             <small>
 
             </small>
@@ -39,9 +39,7 @@
                                     <th>Fecha de creación</th>
                                     <th>Fecha de modificación</th>
                                     <th>Tipo tercero</th>
-                                    <th>Departamento</th>
-                                    <th>Municipio</th>
-                                    <th>Centro poblado</th>
+                                    <th>Ciudad</th>
                                     <th>Acción</th>
 
                                 </tr>
@@ -60,15 +58,13 @@
                                             {% endif %}
                                         </td>
                                         <td>{{ tercero.empresa }}</td>
-                                        <td>{{ tercero.fecha_creacion }}</td>
-                                        <td>{{ tercero.fecha_modificacion }}</td>
+                                        <td>{{ tercero.fecha_creacion|date:'Y-m-d H:m' }}</td>
+                                        <td>{{ tercero.fecha_modificacion|date:'Y-m-d H:m' }}</td>
                                         <td>{{ tercero.tipo_tercero }}</td>
-                                        <td>{{ tercero.centro_poblado.municipio.departamento }}</td>
-                                        <td>{{ tercero.centro_poblado.municipio }}</td>
                                         <td>{{ tercero.centro_poblado }}</td>
                                       <td>
                                             <a class="fas fa-2x fa-edit"  href="{% url 'Administracion:terceros-editar' tercero.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
-                                            <a class="fas fa-2x fa-trash-alt" title="Eliminar" id="eliminar_{{ tercero.id }}" type="button" onclick="fConfirmarEliminar({{ tercero.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+                                            <a class="fas fa-2x fa-trash-alt" title="Eliminar" id="eliminar_{{ tercero.id }}"  onclick="fConfirmarEliminar({{ tercero.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
 
                                       </td>
                                     </tr>
