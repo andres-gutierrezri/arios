@@ -4,11 +4,28 @@
 {% block styles %}
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/datagrid/datatables/datatables.bundle.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-solid.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/sweetalert2/sweetalert2.bundle.css'%}">
+     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/toastr/toastr.css' %}">
+     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/theme-demo.css' %}">
+
+
 {% endblock styles %}
 {% block main %}
+
+    <div class="messages">
+        {% if messages %}
+            {% for message in messages %}
+                <p class="alert alert.{{ message.tags }}"></p>
+                <input style="display: none" id="mensaje" value="{{ message }}">
+            {% endfor %}
+        {% endif %}
+
+    </div>
+
     <div class="subheader">
         <h1 class="subheader-title">
-            <i class='fas fa-handshake'></i> Módulo <span class='fw-300'>Terceros</span>
+            <i class='far fa-handshake'></i> Módulo <span class='fw-300'>Terceros</span>
             <small>
 
             </small>
@@ -20,7 +37,7 @@
 
     <div class="content-wrapper">
         <div class="container-fluid">
-            <a class="fas fa-3x fa-user-plus"  href="{% url 'Administracion:terceros-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar Terceros"></a>
+            <a class="far fa-3x fa-user-plus"  href="{% url 'Administracion:terceros-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar Terceros"></a>
             <br>
             <br>
             <div class="card mb-3">
@@ -63,8 +80,8 @@
                                         <td>{{ tercero.tipo_tercero }}</td>
                                         <td>{{ tercero.centro_poblado }}</td>
                                       <td>
-                                            <a class="fas fa-2x fa-edit"  href="{% url 'Administracion:terceros-editar' tercero.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
-                                            <a class="fas fa-2x fa-trash-alt" title="Eliminar" id="eliminar_{{ tercero.id }}"  onclick="fConfirmarEliminar({{ tercero.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+                                            <a class="far fa-2x fa-edit"  href="{% url 'Administracion:terceros-editar' tercero.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                            <a class="far fa-2x fa-trash-alt" id="eliminar_{{ tercero.id }}" onclick="fConfirmarEliminar({{ tercero.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
 
                                       </td>
                                     </tr>
@@ -81,19 +98,22 @@
 {% endblock %}
 {% block scripts %}
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
     <script src="{% static 'Administracion/js/confirmarEliminar.js' %}"></script>
+    <script src="{% static 'Administracion/js/select_divipol.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/vendors.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/app.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/notifications/toastr/toastr.js' %}"></script>
 
-     <script src="{% static 'Administracion/js/select_divipol.js' %}"></script>
 
-
- <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
         <!-- datatbles buttons bundle contains:
 	+ "jszip.js",
 	+ "pdfmake.js",
 	+ "vfs_fonts.js"
 	NOTE: 	The file size is pretty big, but you can always use the
 			build.json file to deselect any components you do not need under "export" -->
-        <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.export.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.export.js' %}"></script>
         <script>
             $(document).ready(function()
             {
@@ -172,24 +192,15 @@
             });
 
         </script>
-    <script>
 
-    $("#js-sweetalert2-example-7").on("click", function()
-                {
-                    Swal.fire(
-                    {
-                        title: "Are you sure?",
-                        text: "You won't be able to revert this!",
-                        type: "warning",
-                        showCancelButton: true,
-                        confirmButtonText: "Yes, delete it!"
-                    }).then(function(result)
-                    {
-                        if (result.value)
-                        {
-                            Swal.fire("Deleted!", "Your file has been deleted.", "success");
-                        }
-                    });
-                });
-    </script>
+        <script>
+        $(document).ready(function(){
+            var mensaje = $('#mensaje').val();
+            if (mensaje){
+                toastr['info'](mensaje);
+            }
+        });
+        </script>
+
+
     {% endblock %}
