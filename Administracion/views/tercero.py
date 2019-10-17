@@ -48,7 +48,7 @@ class TerceroCrearView(View):
                           tipo_tercero_id=tipo_tercero, centro_poblado_id=centro_poblado)
         # fecha = datetime.today()
         tercero.save()
-        messages.success(request, 'Tercero fue creado')
+        messages.success(request, 'Se ha creado un Tercero')
 
         return redirect(reverse('Administracion:terceros'))
 
