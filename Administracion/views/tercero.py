@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib import messages
 
 from Administracion.models import Tercero, TipoIdentificacion, TipoTercero, CentroPoblado, Empresa, Departamento
 
@@ -45,8 +46,9 @@ class TerceroCrearView(View):
         tercero = Tercero(nombre=nombre, identificacion=identificacion, tipo_identificacion_id=tipo_identificacion,
                           estado=True, empresa_id=empresa,
                           tipo_tercero_id=tipo_tercero, centro_poblado_id=centro_poblado)
-        fecha = datetime.today()
+        # fecha = datetime.today()
         tercero.save()
+        messages.success(request, 'Tercero fue creado')
 
         return redirect(reverse('Administracion:terceros'))
 
@@ -86,8 +88,8 @@ class TerceroEliminarView(View):
     def post(self, request, id):
         try:
             Tercero.objects.filter(id=id).delete()
-
             return JsonResponse({"Mensaje": "OK"})
+
         except IntegrityError:
             return JsonResponse({"Mensaje": "No se puede eliminar"})
 
