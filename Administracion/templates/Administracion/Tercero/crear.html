@@ -7,13 +7,25 @@
 	<!-- page related CSS below -->
 	<link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/toastr/toastr.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
 {% endblock %}
 {% block main %}
-    <div class="content-wrapper">
-        <div class="container-fluid">
-            <div class="card card-register mx-auto mt-5">
-                <div class="card-header">Agregar Tercero</div>
-                <div class="card-body">
+
+     <div class="subheader">
+        <h1 class="subheader-title">
+            <i class='far fa-handshake'></i> Terceros: <span class='fw-300'>Agregar</span>
+            <small>
+
+            </small>
+        </h1>
+        <div class="subheader-block">
+
+        </div>
+    </div>
+
+
+            <div class="panel-group">
+                <div class="panel-body">
                     {% if error %}
                         <div class="alert alert-danger alert-dismissible fade show">
                             <strong>{{ error }}</strong>
@@ -108,8 +120,7 @@
                     </form>
                 </div>
             </div>
-        </div>
-    </div>
+
 {% endblock %}
 {% block scripts %}
 

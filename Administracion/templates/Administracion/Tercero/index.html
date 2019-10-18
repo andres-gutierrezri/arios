@@ -3,7 +3,6 @@
 <title>{% block titulo %}Tercero{% endblock %}</title>
 {% block styles %}
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/datagrid/datatables/datatables.bundle.css' %}">
-    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-solid.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/sweetalert2/sweetalert2.bundle.css'%}">
      <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/toastr/toastr.css' %}">
@@ -34,66 +33,63 @@
 
         </div>
     </div>
-
-    <div class="content-wrapper">
-        <div class="container-fluid">
-            <a class="far fa-3x fa-user-plus"  href="{% url 'Administracion:terceros-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar Terceros"></a>
-            <br>
-            <br>
-            <div class="card mb-3">
-                <div class="card-header">
-                    <i class="fa fa-table"></i>Terceros</div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                            <thead>
-                                <tr>
-                                    <th>Nombre</th>
-                                    <th>Identificación</th>
-                                    <th>Tipo de identificación</th>
-                                    <th>Estado</th>
-                                    <th>Empresa</th>
-                                    <th>Fecha de creación</th>
-                                    <th>Fecha de modificación</th>
-                                    <th>Tipo tercero</th>
-                                    <th>Ciudad</th>
-                                    <th>Acción</th>
-
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for tercero in terceros %}
-                                    <tr>
-                                        <td>{{ tercero.nombre }}</td>
-                                        <td>{{ tercero.identificacion}}</td>
-                                        <td>{{ tercero.tipo_identificacion}}</td>
-
-                                        <td>{% if tercero.estado == True %}
-                                            <span class="badge badge-primary">Activo</span>
-                                            {% else %}
-                                            <span class="badge badge-secondary">Inactivo</span>
-                                            {% endif %}
-                                        </td>
-                                        <td>{{ tercero.empresa }}</td>
-                                        <td>{{ tercero.fecha_creacion|date:'Y-m-d H:m' }}</td>
-                                        <td>{{ tercero.fecha_modificacion|date:'Y-m-d H:m' }}</td>
-                                        <td>{{ tercero.tipo_tercero }}</td>
-                                        <td>{{ tercero.centro_poblado }}</td>
-                                      <td>
-                                            <a class="far fa-2x fa-edit"  href="{% url 'Administracion:terceros-editar' tercero.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
-                                            <a class="far fa-2x fa-trash-alt" id="eliminar_{{ tercero.id }}" onclick="fConfirmarEliminar({{ tercero.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
-
-                                      </td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="card-footer small text-muted">Actualizado: {{ fecha }}</div>
-            </div>
-        </div>
+    <div>
+        <a class="far fa-2x far fa-plus-circle"  href="{% url 'Administracion:terceros-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar tercero">Agregar</a>
     </div>
+        <br>
+        <br>
+
+        <div class="panel-group">
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered w-100" id="dataTable">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Identificación</th>
+                                <th>Tipo de identificación</th>
+                                <th>Estado</th>
+                                <th>Empresa</th>
+                                <th>Fecha de creación</th>
+                                <th>Fecha de modificación</th>
+                                <th>Tipo tercero</th>
+                                <th>Ciudad</th>
+                                <th>Acción</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for tercero in terceros %}
+                                <tr>
+                                    <td>{{ tercero.nombre }}</td>
+                                    <td>{{ tercero.identificacion}}</td>
+                                    <td>{{ tercero.tipo_identificacion}}</td>
+
+                                    <td>{% if tercero.estado == True %}
+                                        <span class="badge badge-primary">Activo</span>
+                                        {% else %}
+                                        <span class="badge badge-secondary">Inactivo</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ tercero.empresa }}</td>
+                                    <td>{{ tercero.fecha_creacion|date:'Y-m-d H:m' }}</td>
+                                    <td>{{ tercero.fecha_modificacion|date:'Y-m-d H:m' }}</td>
+                                    <td>{{ tercero.tipo_tercero }}</td>
+                                    <td>{{ tercero.centro_poblado }}</td>
+                                  <td>
+                                        <a class="far fa-2x fa-edit"  href="{% url 'Administracion:terceros-editar' tercero.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                        <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ tercero.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ tercero.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+
+                                  </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer small text-muted">Actualizado: {{ fecha }}</div>
+        </div>
+
     {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='administracion/terceros' %}
 {% endblock %}
 {% block scripts %}
@@ -159,31 +155,32 @@
                         {
                             extend: 'pdfHtml5',
                             text: 'PDF',
-                            titleAttr: 'Generate PDF',
+                            titleAttr: 'Generar PDF',
                             className: 'btn-outline-danger btn-sm mr-1'
                         },
                         {
                             extend: 'excelHtml5',
                             text: 'Excel',
-                            titleAttr: 'Generate Excel',
+                            titleAttr: 'Generar Excel',
                             className: 'btn-outline-success btn-sm mr-1'
                         },
                         {
                             extend: 'csvHtml5',
                             text: 'CSV',
-                            titleAttr: 'Generate CSV',
+                            titleAttr: 'Generar CSV',
                             className: 'btn-outline-primary btn-sm mr-1'
+
                         },
                         {
                             extend: 'copyHtml5',
-                            text: 'Copy',
-                            titleAttr: 'Copy to clipboard',
+                            text: 'Copiar',
+                            titleAttr: 'Copiar',
                             className: 'btn-outline-primary btn-sm mr-1'
                         },
                         {
                             extend: 'print',
-                            text: 'Print',
-                            titleAttr: 'Print Table',
+                            text: 'Imprimir',
+                            titleAttr: 'Imprimir Tabla',
                             className: 'btn-outline-primary btn-sm'
                         }
                     ]

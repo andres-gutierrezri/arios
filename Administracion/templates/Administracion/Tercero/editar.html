@@ -6,13 +6,24 @@
 	<link rel="stylesheet" media="screen, print" href="{%static 'EVA/Plantilla/css/fa-brands.css' %}">
 	<!-- page related CSS below -->
 	<link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
 {% endblock %}
 {% block main %}
-    <div class="content-wrapper">
-        <div class="container-fluid">
-            <div class="card card-register mx-auto mt-5">
-                <div class="card-header">Editar Tercero</div>
-                <div class="card-body">
+
+     <div class="subheader">
+        <h1 class="subheader-title">
+            <i class='far fa-handshake'></i> Terceros: <span class='fw-300'>Editar</span>
+            <small>
+
+            </small>
+        </h1>
+        <div class="subheader-block">
+
+        </div>
+    </div>
+
+            <div class="panel-group">
+                <div class="panel-body">
 
                     <form action="{% url 'Administracion:terceros-editar' tercero.id %}" id="tercero-form" method="post" >
                         {% csrf_token %}
@@ -57,7 +68,7 @@
                             <div class="form-row">
 
                                 <div class="col-md-6">
-                                    <br>
+
                                     <label for="cargo_select">Tipo Terceros</label>
                                     <select class="select2 form-control w-100 select2-selection--single" id="tipo_select" name="tipo_tercero_id" required>
                                         <option value="" >Seleccione un Tipo de Tercero</option>
@@ -67,7 +78,7 @@
                                     </select>
                                 </div>
                                  <div class="col-md-6">
-                                    <br>
+
                                     <label for="centro_select">Departamento</label>
                                     <select class="select2 form-control w-100 select2-selection--single" id="departamento_select" name="centro_poblado_id" required>
                                         <option value="" >Seleccione un Departamento</option>
@@ -76,37 +87,35 @@
                                         {% endfor %}
                                     </select>
                                 </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-row">
                                 <div class="col-md-6">
                                     <br>
                                     <label for="centro_select">Municipio</label>
                                     <select class="select2 form-control w-100 select2-selection--single" id="municipio_select" name="centro_poblado_id" required>
-{#
                                     </select>
                                 </div>
                                 <div class="col-md-6">
                                     <br>
                                     <label for="centro_select">Centro Poblado</label>
                                     <select class="select2 form-control w-100 select2-selection--single" id="centro_poblado_select" name="centro_poblado_id" required>
-{#
                                     </select>
                                 </div>
+                            </div>
+                        </div>
+                         <div class="form-group">
+                            <div class="form-row">
                                 <div class="col-md-6">
                                     <div class="custom-control custom-switch">
-                                        <br>
-                                        <br>
                                         <div class="custom-control custom-checkbox">
                                         <input type="checkbox" class="custom-control-input" id="defaultChecked" name="estado" checked="" value="True" {% if tercero.estado %}checked{% endif %}>
                                         <label class="custom-control-label" for="defaultChecked">Estado</label>
 							            </div>
-{#                                        <input class="custom-control-input" id="estado" name="estado" type="checkbox" value="True" {% if tercero.estado %}checked{% endif %}>#}
-{#                                        <label class="form-check-label" for="estado">Estado</label>#}
                                     </div>
                                 </div>
-
                             </div>
                         </div>
-
-
                         <div class="form-row">
                             <div >
                                 <button id="guardar" class="btn btn-primary btn-block">Guardar</button>
@@ -118,8 +127,7 @@
                     </form>
                 </div>
             </div>
-        </div>
-    </div>
+
 {% endblock %}
 {% block scripts %}
 
