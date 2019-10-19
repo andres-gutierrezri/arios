@@ -11,12 +11,12 @@ function fConfirmarEliminar(idElemento) {
 
 function fSweetAlert() {
     Swal.fire({
-                        title: 'Quiere eliminar este campo?',
+                        title: '¿Está seguro de eliminar este Tercero?',
                         text: "Esta acción no se podrá revertir",
                         type: 'warning',
                         showCancelButton: true,
                         //confirmButtonColor: '#d33',
-                        confirmButtonText: 'Sí, eliminarlo!',
+                        confirmButtonText: '¡Sí, eliminarlo!',
                         cancelButtonText: 'Cancelar'
                     }).then(result => {
                         if (result.value) {
@@ -27,26 +27,16 @@ function fSweetAlert() {
                                     context: document.body,
                                     success: function (data) {
                                         if(data.Mensaje === "OK") {
-                                            Swal.fire({
-                                                title: "Eliminado!",
-                                                text: "El campo ha sido eliminado.",
-                                                //type: "error",
-                                                confirmButtonText: "OK",
-                                        preConfirm: function () {
-                                            return new Promise(function (resolve) {
-                                                resolve();
-                    });
-                }
-                }).then(function () {
-                    location.reload();
-                });
+                                            toastr['success']("El Tercero ha sido eliminado.");
+                                            setTimeout(function(){
+                                                location.reload();
+                                            },2500);
+
                     }
                     else{
                         Swal.fire("Error!", "Error");
                     }
 
-
-                                         //Swal.fire("Eliminado!", "El campo ha sido eliminado.");
                                     },
                                     failure: function (errMsg) {
                                         location.reload();
@@ -57,6 +47,8 @@ function fSweetAlert() {
                     });
 
                 }
+
+
 
 
 
