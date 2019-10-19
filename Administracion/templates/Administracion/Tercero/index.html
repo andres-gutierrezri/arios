@@ -5,11 +5,10 @@
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/datagrid/datatables/datatables.bundle.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/sweetalert2/sweetalert2.bundle.css'%}">
-     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/toastr/toastr.css' %}">
-     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/theme-demo.css' %}">
-
-
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/toastr/toastr.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/theme-demo.css' %}">
 {% endblock styles %}
+
 {% block main %}
 
     <div class="messages">
@@ -19,7 +18,6 @@
                 <input style="display: none" id="mensaje" value="{{ message }}">
             {% endfor %}
         {% endif %}
-
     </div>
 
     <div class="subheader">
@@ -34,11 +32,11 @@
         </div>
     </div>
     <div>
-        <a class="far fa-2x far fa-plus-circle"  href="{% url 'Administracion:terceros-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar tercero">Agregar</a>
+        <a   href="{% url 'Administracion:terceros-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar tercero"><i class="far fa-2x far fa-plus-circle"></i><label style="font-size: 18px">Agregar</label></a>
+
     </div>
         <br>
         <br>
-
         <div class="panel-group">
             <div class="panel-body">
                 <div class="table-responsive">
@@ -100,8 +98,6 @@
     <script src="{% static 'EVA/Plantilla/js/vendors.bundle.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/app.bundle.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/notifications/toastr/toastr.js' %}"></script>
-
-
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
         <!-- datatbles buttons bundle contains:
 	+ "jszip.js",
@@ -155,32 +151,27 @@
                         {
                             extend: 'pdfHtml5',
                             text: 'PDF',
-                            titleAttr: 'Generar PDF',
                             className: 'btn-outline-danger btn-sm mr-1'
                         },
                         {
                             extend: 'excelHtml5',
                             text: 'Excel',
-                            titleAttr: 'Generar Excel',
                             className: 'btn-outline-success btn-sm mr-1'
                         },
                         {
                             extend: 'csvHtml5',
                             text: 'CSV',
-                            titleAttr: 'Generar CSV',
                             className: 'btn-outline-primary btn-sm mr-1'
 
                         },
                         {
                             extend: 'copyHtml5',
                             text: 'Copiar',
-                            titleAttr: 'Copiar',
                             className: 'btn-outline-primary btn-sm mr-1'
                         },
                         {
                             extend: 'print',
                             text: 'Imprimir',
-                            titleAttr: 'Imprimir Tabla',
                             className: 'btn-outline-primary btn-sm'
                         }
                     ]
@@ -194,7 +185,7 @@
         $(document).ready(function(){
             var mensaje = $('#mensaje').val();
             if (mensaje){
-                toastr['success'](mensaje);            }
+                toastr['success']('Se ha creado a '+mensaje);            }
         });
         </script>
 

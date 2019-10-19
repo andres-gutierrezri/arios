@@ -93,6 +93,7 @@
                                  <br>
                                     <label for="centro_poblado_select">Municipio</label>
                                     <select class="select2 form-control w-100 select2-selection--single" id="municipio_select" name="centro_poblado_id" required>
+                                        <option value="" >Seleccione un Municipio</option>
                                     </select>
                                 </div>
 
@@ -100,6 +101,7 @@
                                  <br>
                                     <label for="centro_poblado_select">Centro Poblado</label>
                                     <select class="select2 form-control w-100 select2-selection--single" id="centro_poblado_select" name="centro_poblado_id" required>
+                                        <option value="" >Seleccione un Centro Poblado</option>
 
                                     </select>
                                 </div>
@@ -124,7 +126,7 @@
 {% endblock %}
 {% block scripts %}
 
-<link href="{% static 'EVA/Plantilla/css/jquery-ui.min.css' %}" rel="stylesheet" type="text/css">
+
     <script src="{% static 'EVA/Plantilla/js/jquery-ui.min.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
     <script src="{% static 'Administracion/js/select_divipol.js' %}"></script>
@@ -245,9 +247,6 @@
 	}
 
 
-
     </script>
-
-
 
 {% endblock %}

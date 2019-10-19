@@ -79,11 +79,11 @@
                                 </div>
                                  <div class="col-md-6">
 
-                                    <label for="centro_select">Departamento</label>
-                                    <select class="select2 form-control w-100 select2-selection--single" id="departamento_select" name="centro_poblado_id" required>
+                                    <label for="departamento_select">Departamento</label>
+                                    <select class="select2 form-control w-100 select2-selection--single" id="departamento_select" name="departamento_id" required>
                                         <option value="" >Seleccione un Departamento</option>
                                         {% for departamento in departamentos %}
-                                            <option value="{{ departamento.id }}" >{{ departamento.nombre }}</option>
+                                            <option value="{{ departamento.id }}" {% if departamento.id == tercero.centro_poblado.municipio.departamento.id %} selected {% endif %} >{{ departamento.nombre }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
@@ -92,14 +92,20 @@
                             <div class="form-row">
                                 <div class="col-md-6">
                                     <br>
-                                    <label for="centro_select">Municipio</label>
-                                    <select class="select2 form-control w-100 select2-selection--single" id="municipio_select" name="centro_poblado_id" required>
+                                    <label for="municipio_select">Municipio</label>
+                                    <select class="select2 form-control w-100 select2-selection--single" id="municipio_select" name="municipio_id" required>
+                                         {% for municipio in municipios %}
+                                            <option value="{{ municipio.id }}" {% if municipio.id == tercero.centro_poblado.municipio.id %} selected {% endif %} >{{ municipio.nombre }}</option>
+                                        {% endfor %}
                                     </select>
                                 </div>
                                 <div class="col-md-6">
                                     <br>
-                                    <label for="centro_select">Centro Poblado</label>
+                                    <label for="centro_poblado_select">Centro Poblado</label>
                                     <select class="select2 form-control w-100 select2-selection--single" id="centro_poblado_select" name="centro_poblado_id" required>
+                                         {% for c_poblado in c_poblados %}
+                                            <option value="{{ c_poblado.id }}" {% if c_poblado.id == tercero.centro_poblado.id %} selected {% endif %} >{{ c_poblado.nombre }}</option>
+                                        {% endfor %}
                                     </select>
                                 </div>
                             </div>
@@ -131,28 +137,28 @@
 {% endblock %}
 {% block scripts %}
 
-      <!-- Custom styles for Widgets of calendar-->
-    <link href="{% static 'EVA/Plantilla/css/jquery-ui.min.css' %}" rel="stylesheet" type="text/css">
-    <script src="{% static 'EVA/Plantilla/js/jquery-ui.min.js' %}"></script>
-    <script type="text/javascript">
-        $(function(){
-            $("#fecha_creacion").datepicker({
-                changeMonth:true,
-                changeYear:true,
-                dateFormat: 'yy-mm-dd'
-            });
-        })
-    </script>
-
-     <script type="text/javascript">
-        $(function(){
-            $("#fecha_modificacion").datepicker({
-                changeMonth:true,
-                changeYear:true,
-                dateFormat: 'yy-mm-dd'
-            });
-        })
-    </script>
+{#      <!-- Custom styles for Widgets of calendar-->#}
+{#    <link href="{% static 'EVA/Plantilla/css/jquery-ui.min.css' %}" rel="stylesheet" type="text/css">#}
+{#    <script src="{% static 'EVA/Plantilla/js/jquery-ui.min.js' %}"></script>#}
+{#    <script type="text/javascript">#}
+{#        $(function(){#}
+{#            $("#fecha_creacion").datepicker({#}
+{#                changeMonth:true,#}
+{#                changeYear:true,#}
+{#                dateFormat: 'yy-mm-dd'#}
+{#            });#}
+{#        })#}
+{#    </script>#}
+{##}
+{#     <script type="text/javascript">#}
+{#        $(function(){#}
+{#            $("#fecha_modificacion").datepicker({#}
+{#                changeMonth:true,#}
+{#                changeYear:true,#}
+{#                dateFormat: 'yy-mm-dd'#}
+{#            });#}
+{#        })#}
+{#    </script>#}
 
     <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
 	<script>
