@@ -27,15 +27,12 @@ function fSweetAlert() {
                                     context: document.body,
                                     success: function (data) {
                                         if(data.Mensaje === "OK") {
-                                            toastr['success']("El Tercero ha sido eliminado.");
-                                            setTimeout(function(){
-                                                location.reload();
-                                            },2500);
 
-                    }
-                    else{
-                        Swal.fire("Error!", "Error");
-                    }
+                                            location.reload();
+                                        }
+                                        else {
+                                            Swal.fire("Error!", "Error");
+                                        }
 
                                     },
                                     failure: function (errMsg) {
