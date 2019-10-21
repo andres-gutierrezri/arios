@@ -110,6 +110,7 @@
         <script>
             $(document).ready(function()
             {
+                 let columnasExportar = [0, 1, 2, 4, 5, 6, 7, 8];
 
                 // initialize datatable
                 $('#dataTable').dataTable(
@@ -152,7 +153,18 @@
                         {
                             extend: 'pdfHtml5',
                             text: 'PDF',
-                            className: 'btn-outline-danger btn-sm mr-1'
+                            className: 'btn-outline-danger btn-sm mr-1',
+                             exportOptions: {
+                            columns: columnasExportar,
+                            format: {
+                                body: function ( data, row, column, node ) {
+                                    return column === 1 ?
+                                        data.replace( /[,]/g, '.' ) :
+                                        data;
+                                }
+                            }
+                          },
+
                         },
                         {
                             extend: 'excelHtml5',
