@@ -38,16 +38,32 @@ class TerceroCrearView(View):
 
         nombre = request.POST.get('nombre', '')
         identificacion = request.POST.get('identificacion', '')
-        tipo_identificacion = request.POST.get('tipo_identificacion_id', '')
-        empresa = request.POST.get('empresa_id', '')
-        tipo_tercero = request.POST.get('tipo_tercero_id', '')
-        centro_poblado = request.POST.get('centro_poblado_id', '')
+        tipo_identificacion = int(request.POST.get('tipo_identificacion_id', '0'))
+        empresa = int(request.POST.get('empresa_id', '0'))
+        tipo_tercero = int(request.POST.get('tipo_tercero_id', '0'))
+        centro_poblado = int(request.POST.get('centro_poblado_id', '0'))
         tercero = Tercero(nombre=nombre, identificacion=identificacion, tipo_identificacion_id=tipo_identificacion,
                           estado=True, empresa_id=empresa,
                           tipo_tercero_id=tipo_tercero, centro_poblado_id=centro_poblado)
 
+        if Tercero.objects.filter(identificacion=identificacion):
+            messages.warning(request, 'Ya existe un tercero con identificación {0}'.format(identificacion))
+            tipo_identificacion = TipoIdentificacion.objects.all()
+            tipo_terceros = TipoTercero.objects.all()
+            departamentos = Departamento.objects.all().order_by('nombre')
+            empresas = Empresa.objects.all()
+            municipios = Municipio.objects.all().order_by('nombre')
+            c_poblados = CentroPoblado.objects.all().order_by('nombre')
+            return render(request, 'Administracion/Tercero/crear.html', {'tercero': tercero,
+                                                                         'tipo_identificacion': tipo_identificacion,
+                                                                          'tipo_terceros': tipo_terceros,
+                                                                          'departamentos': departamentos,
+                                                                          'empresas': empresas,
+                                                                         'municipios': municipios,
+                                                                         'c_poblados': c_poblados})
+
         tercero.save()
-        messages.success(request, nombre)
+        messages.success(request, 'Se ha agregado el tercero {0}'.format(nombre))
 
         return redirect(reverse('Administracion:terceros'))
 
@@ -89,9 +105,14 @@ class TerceroEditarView(View):
 class TerceroEliminarView(View):
     def post(self, request, id):
         try:
-            Tercero.objects.filter(id=id).delete()
+            tercero = Tercero.objects.get(id=id)
+            tercero.delete()
+            messages.success(request, 'Se ha eliminado el tercero {0}'.format(tercero.nombre))
             return JsonResponse({"Mensaje": "OK"})
 
         except IntegrityError:
             return JsonResponse({"Mensaje": "No se puede eliminar"})
+
+
+
 
