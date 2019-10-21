@@ -11,82 +11,83 @@
 
 {% block main %}
 
-    <div class="messages">
-        {% if messages %}
-            {% for message in messages %}
-                <p class="alert alert.{{ message.tags }}"></p>
-                <input style="display: none" id="mensaje" value="{{ message }}">
-            {% endfor %}
-        {% endif %}
-    </div>
+    <div class="panel-container show">
+            <div class="header">
+                 <h1 class="header-title">
+                    <i class='far fa-handshake'></i> Terceros <span class='fw-300'></span>
+                     <br>
+                     <br>
+                 </h1>
 
-    <div class="subheader">
-        <h1 class="subheader-title">
-            <i class='far fa-handshake'></i> Terceros <span class='fw-300'></span>
-            <small>
+            </div>
+            <div class="row">
+                <div class="col-xl-12">
+                    <div id="panel-1" class="panel">
+                        <div class="panel-hdr">
 
-            </small>
-        </h1>
-        <div class="subheader-block">
+                            <small>
+                                 <a href="{% url 'Administracion:terceros-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar tercero"><i class="far fa-2x far fa-plus-circle" style="margin-right: 8px"></i><label style="font-size: 18px" >Agregar</label></a>
+                            </small>
+                        </div>
+                        <div class="panel-container show">
+                            <div class="panel-content">
 
-        </div>
-    </div>
-    <div>
-        <a   href="{% url 'Administracion:terceros-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar tercero"><i class="far fa-2x far fa-plus-circle"></i><label style="font-size: 18px">Agregar</label></a>
+                                    <div class="panel-group">
+                                        <div class="panel-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered w-100" id="dataTable">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Nombre</th>
+                                                            <th>Identificación</th>
+                                                            <th>Tipo de identificación</th>
+                                                            <th>Estado</th>
+                                                            <th>Empresa</th>
+                                                            <th>Fecha de creación</th>
+                                                            <th>Fecha de modificación</th>
+                                                            <th>Tipo tercero</th>
+                                                            <th>Ciudad</th>
+                                                            <th>Acción</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for tercero in terceros %}
+                                                            <tr>
+                                                                <td>{{ tercero.nombre }}</td>
+                                                                <td>{{ tercero.identificacion}}</td>
+                                                                <td>{{ tercero.tipo_identificacion}}</td>
 
-    </div>
-        <br>
-        <br>
-        <div class="panel-group">
-            <div class="panel-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered w-100" id="dataTable">
-                        <thead>
-                            <tr>
-                                <th>Nombre</th>
-                                <th>Identificación</th>
-                                <th>Tipo de identificación</th>
-                                <th>Estado</th>
-                                <th>Empresa</th>
-                                <th>Fecha de creación</th>
-                                <th>Fecha de modificación</th>
-                                <th>Tipo tercero</th>
-                                <th>Ciudad</th>
-                                <th>Acción</th>
+                                                                <td>{% if tercero.estado == True %}
+                                                                    <span class="badge badge-primary">Activo</span>
+                                                                    {% else %}
+                                                                    <span class="badge badge-secondary">Inactivo</span>
+                                                                    {% endif %}
+                                                                </td>
+                                                                <td>{{ tercero.empresa }}</td>
+                                                                <td>{{ tercero.fecha_creacion|date:'Y-m-d H:i' }}</td>
+                                                                <td>{{ tercero.fecha_modificacion|date:'Y-m-d H:i' }}</td>
+                                                                <td>{{ tercero.tipo_tercero }}</td>
+                                                                <td>{{ tercero.centro_poblado }}</td>
+                                                              <td>
+                                                                    <a class="far fa-2x fa-edit"  href="{% url 'Administracion:terceros-editar' tercero.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                                    <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ tercero.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ tercero.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
 
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for tercero in terceros %}
-                                <tr>
-                                    <td>{{ tercero.nombre }}</td>
-                                    <td>{{ tercero.identificacion}}</td>
-                                    <td>{{ tercero.tipo_identificacion}}</td>
-
-                                    <td>{% if tercero.estado == True %}
-                                        <span class="badge badge-primary">Activo</span>
-                                        {% else %}
-                                        <span class="badge badge-secondary">Inactivo</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ tercero.empresa }}</td>
-                                    <td>{{ tercero.fecha_creacion|date:'Y-m-d H:m' }}</td>
-                                    <td>{{ tercero.fecha_modificacion|date:'Y-m-d H:m' }}</td>
-                                    <td>{{ tercero.tipo_tercero }}</td>
-                                    <td>{{ tercero.centro_poblado }}</td>
-                                  <td>
-                                        <a class="far fa-2x fa-edit"  href="{% url 'Administracion:terceros-editar' tercero.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
-                                        <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ tercero.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ tercero.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
-
-                                  </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                                                              </td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer small text-muted">Actualizado: {{ fecha }}</div>
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="card-footer small text-muted">Actualizado: {{ fecha }}</div>
-        </div>
+    </div>
+
 
     {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='administracion/terceros' %}
 {% endblock %}
@@ -100,11 +101,11 @@
     <script src="{% static 'EVA/Plantilla/js/notifications/toastr/toastr.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
         <!-- datatbles buttons bundle contains:
-	+ "jszip.js",
-	+ "pdfmake.js",
-	+ "vfs_fonts.js"
-	NOTE: 	The file size is pretty big, but you can always use the
-			build.json file to deselect any components you do not need under "export" -->
+    + "jszip.js",
+    + "pdfmake.js",
+    + "vfs_fonts.js"
+    NOTE: 	The file size is pretty big, but you can always use the
+            build.json file to deselect any components you do not need under "export" -->
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.export.js' %}"></script>
         <script>
             $(document).ready(function()
@@ -117,36 +118,36 @@
                     lengthChange: false,
                     dom:
                         /*	--- Layout Structure
-                        	--- Options
-                        	l	-	length changing input control
-                        	f	-	filtering input
-                        	t	-	The table!
-                        	i	-	Table information summary
-                        	p	-	pagination control
-                        	r	-	processing display element
-                        	B	-	buttons
-                        	R	-	ColReorder
-                        	S	-	Select
+                            --- Options
+                            l	-	length changing input control
+                            f	-	filtering input
+                            t	-	The table!
+                            i	-	Table information summary
+                            p	-	pagination control
+                            r	-	processing display element
+                            B	-	buttons
+                            R	-	ColReorder
+                            S	-	Select
 
-                        	--- Markup
-                        	< and >				- div element
-                        	<"class" and >		- div with a class
-                        	<"#id" and >		- div with an ID
-                        	<"#id.class" and >	- div with an ID and a class
+                            --- Markup
+                            < and >				- div element
+                            <"class" and >		- div with a class
+                            <"#id" and >		- div with an ID
+                            <"#id.class" and >	- div with an ID and a class
 
-                        	--- Further reading
-                        	https://datatables.net/reference/option/dom
-                        	--------------------------------------
+                            --- Further reading
+                            https://datatables.net/reference/option/dom
+                            --------------------------------------
                          */
                         "<'row mb-3'<'col-sm-12 col-md-6 d-flex align-items-center justify-content-start'f><'col-sm-12 col-md-6 d-flex align-items-center justify-content-end'lB>>" +
                         "<'row'<'col-sm-12'tr>>" +
                         "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
                     buttons: [
                         /*{
-                        	extend:    'colvis',
-                        	text:      'Column Visibility',
-                        	titleAttr: 'Col visibility',
-                        	className: 'mr-sm-3'
+                            extend:    'colvis',
+                            text:      'Column Visibility',
+                            titleAttr: 'Col visibility',
+                            className: 'mr-sm-3'
                         },*/
                         {
                             extend: 'pdfHtml5',
@@ -181,13 +182,6 @@
 
         </script>
 
-        <script>
-        $(document).ready(function(){
-            var mensaje = $('#mensaje').val();
-            if (mensaje){
-                toastr['success']('Se ha creado a '+mensaje);            }
-        });
-        </script>
 
 
     {% endblock %}
