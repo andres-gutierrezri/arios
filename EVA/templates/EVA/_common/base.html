@@ -107,6 +107,14 @@
                     <!-- BEGIN Page Content -->
                     <!-- the #js-page-content id is needed for some plugins to initialize -->
                     <main id="js-page-content" role="main" class="page-content">
+                         <div class="messages">
+                            {% if messages %}
+                                {% for message in messages %}
+{#                                    <p class="alert alert.{{ message.tags }}"></p>#}
+                                    <input class = "alert.{{ message.tags }}" style="display: none" id="mensaje" value="{{ message }}">
+                                {% endfor %}
+                            {% endif %}
+                          </div>
                         {% block main %}
 
 
@@ -131,6 +139,8 @@
 
         <script src="{% static 'EVA/Plantilla/js/vendors.bundle.js' %}"></script>
         <script src="{% static 'EVA/Plantilla/js/app.bundle.js' %}"></script>
+        <script src="{% static 'EVA/Plantilla/js/custom/notificacion_toast.js' %}"></script>
+
        {% block scripts %}
        {% endblock %}
     </body>
