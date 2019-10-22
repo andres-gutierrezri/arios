@@ -12,4 +12,4 @@
                 else if (mensaje.hasClass('alert.debug'))
                     toastr['info'](mensaje.val());
             }
-        });
+ });

@@ -101,7 +101,6 @@ class TerceroEditarView(View):
         return redirect(reverse('Administracion:terceros'))
 
 
-@method_decorator(csrf_exempt, name='dispatch')
 class TerceroEliminarView(View):
     def post(self, request, id):
         try:
