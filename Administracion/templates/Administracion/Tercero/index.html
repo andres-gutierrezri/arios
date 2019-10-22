@@ -110,14 +110,16 @@
         <script>
             $(document).ready(function()
             {
-                 let columnasExportar = [0, 1, 2, 4, 5, 6, 7, 8];
+                 let columnasExportar = [0, 1, 2,3, 4, 5, 6, 7, 8];
 
                 // initialize datatable
                 $('#dataTable').dataTable(
                 {
+
                     responsive: true,
                     lengthChange: false,
                     dom:
+
                         /*	--- Layout Structure
                             --- Options
                             l	-	length changing input control
@@ -156,41 +158,72 @@
                             className: 'btn-outline-danger btn-sm mr-1',
                              exportOptions: {
                             columns: columnasExportar,
-                            format: {
-                                body: function ( data, row, column, node ) {
-                                    return column === 1 ?
-                                        data.replace( /[,]/g, '.' ) :
-                                        data;
-                                }
-                            }
+
                           },
 
                         },
                         {
                             extend: 'excelHtml5',
                             text: 'Excel',
-                            className: 'btn-outline-success btn-sm mr-1'
+                            className: 'btn-outline-success btn-sm mr-1',
+                            exportOptions: {
+                            columns: columnasExportar,
+
+                          },
                         },
                         {
                             extend: 'csvHtml5',
                             text: 'CSV',
-                            className: 'btn-outline-primary btn-sm mr-1'
+                            className: 'btn-outline-primary btn-sm mr-1',
+                            exportOptions: {
+                            columns: columnasExportar,
+
+                          },
 
                         },
                         {
                             extend: 'copyHtml5',
                             text: 'Copiar',
-                            className: 'btn-outline-primary btn-sm mr-1'
+                            className: 'btn-outline-primary btn-sm mr-1',
+                            exportOptions: {
+                            columns: columnasExportar,
+                          },
+
+
+
                         },
                         {
                             extend: 'print',
                             text: 'Imprimir',
-                            className: 'btn-outline-primary btn-sm'
+                            className: 'btn-outline-primary btn-sm',
+                            exportOptions: {
+                            columns: columnasExportar,
+                          },
+
                         }
-                    ]
+
+                    ],
+                     language: {
+                        buttons: {
+                            copyTitle: 'Copiado al portapapeles',
+                            copyKeys: 'Appuyez sur <i>ctrl</i> ou <i>\u2318</i> + <i>C</i> pour copier les données du tableau à votre presse-papiers. <br><br>Pour annuler, cliquez sur ce message ou appuyez sur Echap.',
+                            copySuccess: {
+                                _: '%d líneas copiadas',
+                                1: '1 ligne copiée',
+
+                            },
+
+                        },
+                        info: 'Mostrando _START_ a _END_ de _TOTAL_ entradas',
+
+                     }
                 });
+                $("#dataTable_filter").find("input").attr("placeholder", "Buscar");
+
+
 
             });
+
 
         </script>
 
