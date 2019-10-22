@@ -100,6 +100,7 @@
     <script src="{% static 'EVA/Plantilla/js/app.bundle.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/notifications/toastr/toastr.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
         <!-- datatbles buttons bundle contains:
     + "jszip.js",
     + "pdfmake.js",
@@ -158,7 +159,6 @@
                             className: 'btn-outline-danger btn-sm mr-1',
                              exportOptions: {
                             columns: columnasExportar,
-
                           },
 
                         },
@@ -188,9 +188,6 @@
                             exportOptions: {
                             columns: columnasExportar,
                           },
-
-
-
                         },
                         {
                             extend: 'print',
@@ -199,9 +196,7 @@
                             exportOptions: {
                             columns: columnasExportar,
                           },
-
                         }
-
                     ],
                      language: {
                         buttons: {
@@ -211,21 +206,14 @@
                                 1: '1 línea copiada',
 
                             },
-
                         },
-                        info: 'Mostrando _START_ a _END_ de _TOTAL_ entradas',
+                        info: 'Mostrando terceros del _START_ al _END_ de un total de  _TOTAL_ terceros',
 
                      }
                 });
                 $("#dataTable_filter").find("input").attr("placeholder", "Buscar");
 
-
-
             });
-
-
         </script>
-
-
 
     {% endblock %}
