@@ -3,97 +3,92 @@
 <title>{% block titulo %}Tercero{% endblock %}</title>
 {% block styles %}
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/datagrid/datatables/datatables.bundle.css' %}">
-    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-solid.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/sweetalert2/sweetalert2.bundle.css'%}">
-     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/toastr/toastr.css' %}">
-     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/theme-demo.css' %}">
-
-
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/toastr/toastr.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/theme-demo.css' %}">
 {% endblock styles %}
+
 {% block main %}
 
-    <div class="messages">
-        {% if messages %}
-            {% for message in messages %}
-                <p class="alert alert.{{ message.tags }}"></p>
-                <input style="display: none" id="mensaje" value="{{ message }}">
-            {% endfor %}
-        {% endif %}
+    <div class="panel-container show">
+            <div class="header">
+                 <h1 class="header-title">
+                    <i class='far fa-handshake'></i> Terceros <span class='fw-300'></span>
+                     <br>
+                     <br>
+                 </h1>
 
-    </div>
+            </div>
+            <div class="row">
+                <div class="col-xl-12">
+                    <div id="panel-1" class="panel">
+                        <div class="panel-hdr">
 
-    <div class="subheader">
-        <h1 class="subheader-title">
-            <i class='far fa-handshake'></i> Terceros <span class='fw-300'></span>
-            <small>
+                            <small>
+                                 <a href="{% url 'Administracion:terceros-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar tercero"><i class="far fa-2x far fa-plus-circle" style="margin-right: 8px"></i><label style="font-size: 18px" >Agregar</label></a>
+                            </small>
+                        </div>
+                        <div class="panel-container show">
+                            <div class="panel-content">
 
-            </small>
-        </h1>
-        <div class="subheader-block">
+                                    <div class="panel-group">
+                                        <div class="panel-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered w-100" id="dataTable">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Nombre</th>
+                                                            <th>Identificación</th>
+                                                            <th>Tipo de identificación</th>
+                                                            <th>Estado</th>
+                                                            <th>Empresa</th>
+                                                            <th>Fecha de creación</th>
+                                                            <th>Fecha de modificación</th>
+                                                            <th>Tipo tercero</th>
+                                                            <th>Ciudad</th>
+                                                            <th>Acción</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for tercero in terceros %}
+                                                            <tr>
+                                                                <td>{{ tercero.nombre }}</td>
+                                                                <td>{{ tercero.identificacion}}</td>
+                                                                <td>{{ tercero.tipo_identificacion}}</td>
 
-        </div>
-    </div>
+                                                                <td>{% if tercero.estado == True %}
+                                                                    <span class="badge badge-primary">Activo</span>
+                                                                    {% else %}
+                                                                    <span class="badge badge-secondary">Inactivo</span>
+                                                                    {% endif %}
+                                                                </td>
+                                                                <td>{{ tercero.empresa }}</td>
+                                                                <td>{{ tercero.fecha_creacion|date:'Y-m-d H:i' }}</td>
+                                                                <td>{{ tercero.fecha_modificacion|date:'Y-m-d H:i' }}</td>
+                                                                <td>{{ tercero.tipo_tercero }}</td>
+                                                                <td>{{ tercero.centro_poblado }}</td>
+                                                              <td>
+                                                                    <a class="far fa-2x fa-edit"  href="{% url 'Administracion:terceros-editar' tercero.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                                    <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ tercero.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ tercero.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
 
-    <div class="content-wrapper">
-        <div class="container-fluid">
-            <a class="far fa-3x fa-user-plus"  href="{% url 'Administracion:terceros-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar Terceros"></a>
-            <br>
-            <br>
-            <div class="card mb-3">
-                <div class="card-header">
-                    <i class="fa fa-table"></i>Terceros</div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                            <thead>
-                                <tr>
-                                    <th>Nombre</th>
-                                    <th>Identificación</th>
-                                    <th>Tipo de identificación</th>
-                                    <th>Estado</th>
-                                    <th>Empresa</th>
-                                    <th>Fecha de creación</th>
-                                    <th>Fecha de modificación</th>
-                                    <th>Tipo tercero</th>
-                                    <th>Ciudad</th>
-                                    <th>Acción</th>
-
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for tercero in terceros %}
-                                    <tr>
-                                        <td>{{ tercero.nombre }}</td>
-                                        <td>{{ tercero.identificacion}}</td>
-                                        <td>{{ tercero.tipo_identificacion}}</td>
-
-                                        <td>{% if tercero.estado == True %}
-                                            <span class="badge badge-primary">Activo</span>
-                                            {% else %}
-                                            <span class="badge badge-secondary">Inactivo</span>
-                                            {% endif %}
-                                        </td>
-                                        <td>{{ tercero.empresa }}</td>
-                                        <td>{{ tercero.fecha_creacion|date:'Y-m-d H:m' }}</td>
-                                        <td>{{ tercero.fecha_modificacion|date:'Y-m-d H:m' }}</td>
-                                        <td>{{ tercero.tipo_tercero }}</td>
-                                        <td>{{ tercero.centro_poblado }}</td>
-                                      <td>
-                                            <a class="far fa-2x fa-edit"  href="{% url 'Administracion:terceros-editar' tercero.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
-                                            <a class="far fa-2x fa-trash-alt" id="eliminar_{{ tercero.id }}" onclick="fConfirmarEliminar({{ tercero.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
-
-                                      </td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                                                              </td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer small text-muted">Actualizado: {{ fecha }}</div>
+                                    </div>
+                                </div>
+                        </div>
                     </div>
                 </div>
-                <div class="card-footer small text-muted">Actualizado: {{ fecha }}</div>
             </div>
-        </div>
     </div>
+
+
     {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='administracion/terceros' %}
 {% endblock %}
 {% block scripts %}
@@ -104,102 +99,133 @@
     <script src="{% static 'EVA/Plantilla/js/vendors.bundle.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/app.bundle.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/notifications/toastr/toastr.js' %}"></script>
-
-
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
         <!-- datatbles buttons bundle contains:
-	+ "jszip.js",
-	+ "pdfmake.js",
-	+ "vfs_fonts.js"
-	NOTE: 	The file size is pretty big, but you can always use the
-			build.json file to deselect any components you do not need under "export" -->
+    + "jszip.js",
+    + "pdfmake.js",
+    + "vfs_fonts.js"
+    NOTE: 	The file size is pretty big, but you can always use the
+            build.json file to deselect any components you do not need under "export" -->
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.export.js' %}"></script>
         <script>
             $(document).ready(function()
             {
+                 let columnasExportar = [0, 1, 2,3, 4, 5, 6, 7, 8];
 
                 // initialize datatable
                 $('#dataTable').dataTable(
                 {
+
                     responsive: true,
                     lengthChange: false,
                     dom:
+
                         /*	--- Layout Structure
-                        	--- Options
-                        	l	-	length changing input control
-                        	f	-	filtering input
-                        	t	-	The table!
-                        	i	-	Table information summary
-                        	p	-	pagination control
-                        	r	-	processing display element
-                        	B	-	buttons
-                        	R	-	ColReorder
-                        	S	-	Select
+                            --- Options
+                            l	-	length changing input control
+                            f	-	filtering input
+                            t	-	The table!
+                            i	-	Table information summary
+                            p	-	pagination control
+                            r	-	processing display element
+                            B	-	buttons
+                            R	-	ColReorder
+                            S	-	Select
 
-                        	--- Markup
-                        	< and >				- div element
-                        	<"class" and >		- div with a class
-                        	<"#id" and >		- div with an ID
-                        	<"#id.class" and >	- div with an ID and a class
+                            --- Markup
+                            < and >				- div element
+                            <"class" and >		- div with a class
+                            <"#id" and >		- div with an ID
+                            <"#id.class" and >	- div with an ID and a class
 
-                        	--- Further reading
-                        	https://datatables.net/reference/option/dom
-                        	--------------------------------------
+                            --- Further reading
+                            https://datatables.net/reference/option/dom
+                            --------------------------------------
                          */
                         "<'row mb-3'<'col-sm-12 col-md-6 d-flex align-items-center justify-content-start'f><'col-sm-12 col-md-6 d-flex align-items-center justify-content-end'lB>>" +
                         "<'row'<'col-sm-12'tr>>" +
                         "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
                     buttons: [
                         /*{
-                        	extend:    'colvis',
-                        	text:      'Column Visibility',
-                        	titleAttr: 'Col visibility',
-                        	className: 'mr-sm-3'
+                            extend:    'colvis',
+                            text:      'Column Visibility',
+                            titleAttr: 'Col visibility',
+                            className: 'mr-sm-3'
                         },*/
                         {
                             extend: 'pdfHtml5',
                             text: 'PDF',
-                            titleAttr: 'Generate PDF',
-                            className: 'btn-outline-danger btn-sm mr-1'
+                            className: 'btn-outline-danger btn-sm mr-1',
+                             exportOptions: {
+                            columns: columnasExportar,
+
+                          },
+
                         },
                         {
                             extend: 'excelHtml5',
                             text: 'Excel',
-                            titleAttr: 'Generate Excel',
-                            className: 'btn-outline-success btn-sm mr-1'
+                            className: 'btn-outline-success btn-sm mr-1',
+                            exportOptions: {
+                            columns: columnasExportar,
+
+                          },
                         },
                         {
                             extend: 'csvHtml5',
                             text: 'CSV',
-                            titleAttr: 'Generate CSV',
-                            className: 'btn-outline-primary btn-sm mr-1'
+                            className: 'btn-outline-primary btn-sm mr-1',
+                            exportOptions: {
+                            columns: columnasExportar,
+
+                          },
+
                         },
                         {
                             extend: 'copyHtml5',
-                            text: 'Copy',
-                            titleAttr: 'Copy to clipboard',
-                            className: 'btn-outline-primary btn-sm mr-1'
+                            text: 'Copiar',
+                            className: 'btn-outline-primary btn-sm mr-1',
+                            exportOptions: {
+                            columns: columnasExportar,
+                          },
+
+
+
                         },
                         {
                             extend: 'print',
-                            text: 'Print',
-                            titleAttr: 'Print Table',
-                            className: 'btn-outline-primary btn-sm'
+                            text: 'Imprimir',
+                            className: 'btn-outline-primary btn-sm',
+                            exportOptions: {
+                            columns: columnasExportar,
+                          },
+
                         }
-                    ]
+
+                    ],
+                     language: {
+                        buttons: {
+                            copyTitle: 'Copiado al portapapeles',
+                            copySuccess: {
+                                _: '%d líneas copiadas',
+                                1: '1 línea copiada',
+
+                            },
+
+                        },
+                        info: 'Mostrando _START_ a _END_ de _TOTAL_ entradas',
+
+                     }
                 });
+                $("#dataTable_filter").find("input").attr("placeholder", "Buscar");
+
+
 
             });
 
+
         </script>
 
-        <script>
-        $(document).ready(function(){
-            var mensaje = $('#mensaje').val();
-            if (mensaje){
-                toastr['success'](mensaje);            }
-        });
-        </script>
 
 
     {% endblock %}

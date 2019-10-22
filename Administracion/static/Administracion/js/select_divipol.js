@@ -38,7 +38,7 @@ $(document).ready(function() {
 
     municipio.change(function () {
         $.ajax({
-            url: URLDomain + "administracion/municipios/" + this.value + "/centro-poblado/json",
+            url: URLDomain + "administracion/municipios/" + this.value + "/centros-poblados/json",
             type: 'GET',
             context: document.body,
             success: function (data) {
