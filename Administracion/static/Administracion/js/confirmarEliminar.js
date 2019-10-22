@@ -21,22 +21,22 @@ function fSweetAlert() {
 
         if (result.value) {
             $.ajax({
-                    url: URLDomain + rutaBorrado + "/" + idBorrar + "/delete",
-                    type: 'POST',
-                    context: document.body,
-                    success: function (data) {
-                        if(data.Mensaje === "OK") {
+                url: URLDomain + rutaBorrado + "/" + idBorrar + "/delete",
+                type: 'POST',
+                context: document.body,
+                success: function (data) {
+                    if(data.Mensaje === "OK") {
 
-                            location.reload();
-                        }
-                        else {
-                            Swal.fire("Error!", "Error");
-                        }
-                    },
-                    failure: function (errMsg) {
                         location.reload();
+                    }
+                    else {
                         Swal.fire("Error!", "Error");
                     }
+                },
+                failure: function (errMsg) {
+                    location.reload();
+                    Swal.fire("Error!", "Error");
+                }
             });
         }
     });
