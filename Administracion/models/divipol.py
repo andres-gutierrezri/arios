@@ -1,10 +1,10 @@
 from django.db import models
-from django.contrib.auth.models import User
+from EVA.General.modeljson import ModelDjangoJSON
 
 # Create your models here.
 
 
-class BaseDivipol(models.Model):
+class BaseDivipol(models.Model, ModelDjangoJSON):
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     codigo_letras = models.TextField(max_length=4, verbose_name='Código', null=True, blank=False)
 
