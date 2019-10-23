@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import json
+
 from django.db import IntegrityError
 from django.http import JsonResponse
 from django.views import View
-from django.db.models import F
-from EVA.General.modeljson import ModelDjangoJSON
 
 from Administracion.models import Municipio, CentroPoblado
 
