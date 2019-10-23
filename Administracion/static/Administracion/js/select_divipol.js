@@ -14,7 +14,6 @@ $(document).ready(function() {
             type: 'GET',
             context: document.body,
             success: function (data) {
-                data = JSON.parse(data);
                 if (data.length > 0) {
                     municipio.empty();
                     municipio.append('<option value="">Seleccione un Municipio</option>');
@@ -42,10 +41,9 @@ $(document).ready(function() {
             type: 'GET',
             context: document.body,
             success: function (data) {
-                data = JSON.parse(data);
                 if (data.length > 0) {
                     centro_poblado.empty();
-                    centro_poblado.append('<option value="">Seleccione Centro Poblado</option>');
+                    centro_poblado.append('<option value="">Seleccione un Centro Poblado</option>');
                     for (var i = 0; i < data.length; i++) {
                         centro_poblado.append('<option value="' + data[i].id + '">' + data[i].nombre + '</option>');
                     }
