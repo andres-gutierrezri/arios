@@ -21,6 +21,6 @@ from EVA.views import index_view
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', index_view),
-    path('administracion/', include('Administracion.urls')),
-    path('proyectos/', include('Proyectos.urls')),
+    path('administracion/', include('Administracion.urls', namespace='administracion')),
+    path('proyectos/', include('Proyectos.urls', namespace='proyectos')),
 ]
