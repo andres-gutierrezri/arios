@@ -128,6 +128,7 @@ STATIC_URL = '/staticfiles/' if IS_DEPLOYED else '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'EVA/static'),
     os.path.join(BASE_DIR, 'Administracion', 'static', 'Administracion'),
+    os.path.join(BASE_DIR, 'Proyectos', 'static', 'Proyectos'),
 
 )
 
