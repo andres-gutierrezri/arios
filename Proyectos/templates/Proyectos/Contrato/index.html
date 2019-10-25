@@ -1,0 +1,223 @@
+{% extends 'Proyectos/_common/base_proyectos.html' %}
+{% load static %}
+<title>{% block titulo %}Contrato{% endblock %}</title>
+{% block styles %}
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/datagrid/datatables/datatables.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/sweetalert2/sweetalert2.bundle.css'%}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/toastr/toastr.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/theme-demo.css' %}">
+{% endblock styles %}
+
+{% block main %}
+
+    <div class="panel-container show">
+            <div class="header">
+                 <h1 class="header-title">
+                    <i class='far fa-file-alt'></i> Contratos <span class='fw-300'></span>
+                     <br>
+                     <br>
+                 </h1>
+            </div>
+            <div class="row">
+                <div class="col-xl-12">
+                    <div id="panel-1" class="panel">
+                        <div class="panel-hdr">
+
+                            <small>
+                                 <a href="{% url 'Proyectos:contratos-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar contrato"><i class="far fa-2x far fa-plus-circle" style="margin-right: 8px"></i><label style="font-size: 18px" >Agregar</label></a>
+                            </small>
+                        </div>
+                        <div class="panel-container show">
+                            <div class="panel-content">
+
+                                    <div class="panel-group">
+                                        <div class="panel-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered w-100" id="dataTable">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Número de contrato</th>
+                                                            <th>Cliente</th>
+                                                            <th>Año</th>
+                                                            <th>Nombre del supervisor</th>
+                                                            <th>Teléfono del supervisor</th>
+                                                            <th>Correo del supervisor</th>
+                                                            <th>Nombre del residente</th>
+                                                            <th>Fecha de inicio</th>
+                                                            <th>Fecha de terminación</th>
+                                                            <th>Valor</th>
+                                                            <th>Periocidad de informes</th>
+                                                            <th>Tiempo</th>
+                                                            <th>Tipo de contrato</th>
+                                                            <th>Empresa</th>
+                                                            <th>Acción</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for contrato in contratos %}
+                                                            <tr>
+                                                                <td>{{ contrato.numero_contrato }}</td>
+                                                                <td>{{ contrato.cliente}}</td>
+                                                                <td>{{ contrato.anho}}</td>
+                                                                <td>{{ contrato.supervisor_nombre }}</td>
+                                                                <td>{{ contrato.supervisor_telefono }}</td>
+                                                                <td>{{ contrato.supervisor_correo }}</td>
+                                                                <td>{{ contrato.residente }}</td>
+                                                                <td>{{ contrato.fecha_inicio|date:'Y-m-d H:i' }}</td>
+                                                                <td>{{ contrato.fecha_terminacion|date:'Y-m-d H:i' }}</td>
+                                                                <td>{{ contrato.valor }}</td>
+                                                                <td>{{ contrato.valor }}</td>
+                                                                <td>{{ contrato.periocidad_informes }}</td>
+                                                                <td>{{ contrato.tiempo }}</td>
+                                                                <td>{{ contrato.tipo_contrato }}</td>
+                                                                <td>{{ contrato.empresa }}</td>
+                                                              <td>
+                                                                    <a class="far fa-2x fa-edit"  href="{% url 'Administracion:terceros-editar' tercero.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                                    <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ tercero.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ tercero.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+
+                                                              </td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer small text-muted">Actualizado: {{ fecha }}</div>
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+
+    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='administracion/terceros' %}
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
+    <script src="{% static 'Administracion/js/confirmarEliminar.js' %}"></script>
+    <script src="{% static 'Administracion/js/select_divipol.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/vendors.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/app.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/notifications/toastr/toastr.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
+        <!-- datatbles buttons bundle contains:
+    + "jszip.js",
+    + "pdfmake.js",
+    + "vfs_fonts.js"
+    NOTE: 	The file size is pretty big, but you can always use the
+            build.json file to deselect any components you do not need under "export" -->
+    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.export.js' %}"></script>
+        <script>
+            $(document).ready(function()
+            {
+                 let columnasExportar = [0, 1, 2,3, 4, 5, 6, 7, 8];
+
+                // initialize datatable
+                $('#dataTable').dataTable(
+                {
+
+                    responsive: true,
+                    lengthChange: false,
+                    dom:
+
+                        /*	--- Layout Structure
+                            --- Options
+                            l	-	length changing input control
+                            f	-	filtering input
+                            t	-	The table!
+                            i	-	Table information summary
+                            p	-	pagination control
+                            r	-	processing display element
+                            B	-	buttons
+                            R	-	ColReorder
+                            S	-	Select
+
+                            --- Markup
+                            < and >				- div element
+                            <"class" and >		- div with a class
+                            <"#id" and >		- div with an ID
+                            <"#id.class" and >	- div with an ID and a class
+
+                            --- Further reading
+                            https://datatables.net/reference/option/dom
+                            --------------------------------------
+                         */
+                        "<'row mb-3'<'col-sm-12 col-md-6 d-flex align-items-center justify-content-start'f><'col-sm-12 col-md-6 d-flex align-items-center justify-content-end'lB>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+                    buttons: [
+                        /*{
+                            extend:    'colvis',
+                            text:      'Column Visibility',
+                            titleAttr: 'Col visibility',
+                            className: 'mr-sm-3'
+                        },*/
+                        {
+                            extend: 'pdfHtml5',
+                            text: 'PDF',
+                            className: 'btn-outline-danger btn-sm mr-1',
+                             exportOptions: {
+                            columns: columnasExportar,
+                          },
+
+                        },
+                        {
+                            extend: 'excelHtml5',
+                            text: 'Excel',
+                            className: 'btn-outline-success btn-sm mr-1',
+                            exportOptions: {
+                            columns: columnasExportar,
+
+                          },
+                        },
+                        {
+                            extend: 'csvHtml5',
+                            text: 'CSV',
+                            className: 'btn-outline-primary btn-sm mr-1',
+                            exportOptions: {
+                            columns: columnasExportar,
+
+                          },
+
+                        },
+                        {
+                            extend: 'copyHtml5',
+                            text: 'Copiar',
+                            className: 'btn-outline-primary btn-sm mr-1',
+                            exportOptions: {
+                            columns: columnasExportar,
+                          },
+                        },
+                        {
+                            extend: 'print',
+                            text: 'Imprimir',
+                            className: 'btn-outline-primary btn-sm',
+                            exportOptions: {
+                            columns: columnasExportar,
+                          },
+                        }
+                    ],
+                     language: {
+                        buttons: {
+                            copyTitle: 'Copiado al portapapeles',
+                            copySuccess: {
+                                _: '%d líneas copiadas',
+                                1: '1 línea copiada',
+
+                            },
+                        },
+                        info: 'Mostrando contratos del _START_ al _END_ de un total de  _TOTAL_ contratos',
+
+                     }
+                });
+                $("#dataTable_filter").find("input").attr("placeholder", "Buscar");
+
+            });
+        </script>
+
+    {% endblock %}
