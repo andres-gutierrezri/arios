@@ -1,7 +1,10 @@
 from datetime import datetime
+
+from django.db import IntegrityError
 from django.shortcuts import render, redirect, reverse
 from django.views import View
 from django.contrib import messages
+from django.http import JsonResponse
 
 
 from Proyectos.models.contratos import Contrato
@@ -20,15 +23,17 @@ class ContratoCrearView(View):
     def get(self, request):
         tipo_contratos = TipoContrato.objects.all()
         empresas = Empresa.objects.all()
-        terceros = Tercero.objects.filter(tipo_tercero_id=1)
+        terceros = Tercero.objects.all()
+        rango_anho = range(2000, 2051)
         return render(request, 'Proyectos/Contrato/crear.html', {'tipo_contratos': tipo_contratos,
-                                                                 'empresas': empresas, 'terceros': terceros})
+                                                                 'empresas': empresas, 'terceros': terceros,
+                                                                 'rango_anho': rango_anho})
 
     def post(self, request):
 
         numero_contrato = request.POST.get('numero_contrato', '')
-        cliente = int(request.POST.get('cliente_id', '0'))
-        anho = request.POST.get('anho', '')
+        cliente = int((request.POST.get('cliente_id', '0')))
+        anho = int(request.POST.get('rango_anho', '0'))
         supervisor_nombre = request.POST.get('supervisor_nombre', '')
         supervisor_telefono = request.POST.get('supervisor_telefono', '')
         supervisor_correo = request.POST.get('supervisor_correo', '')
@@ -38,17 +43,79 @@ class ContratoCrearView(View):
         valor = request.POST.get('valor', '')
         periocidad_informes = request.POST.get('periocidad_informes', '')
         tiempo = request.POST.get('tiempo', '')
-        tipo_contrato = int(request.POST.get('tipo_contrato_id', '0'))
-        empresa = int(request.POST.get('empresa_id', '0'))
+        tipo_contrato = int((request.POST.get('tipo_contrato_id', '0')))
+        empresa = int((request.POST.get('empresa_id', '0')))
 
-        contrato = Contrato(numero_contrato=numero_contrato, cliente=cliente, anho=anho,
+        contrato = Contrato(numero_contrato=numero_contrato, cliente_id=cliente, anho=anho,
                             supervisor_nombre=supervisor_nombre, supervisor_telefono=supervisor_telefono,
                             supervisor_correo=supervisor_correo, residente=residente, fecha_inicio=fecha_inicio,
                             fecha_terminacion=fecha_terminacion, valor=valor, periocidad_informes=periocidad_informes,
                             tiempo=tiempo, tipo_contrato_id=tipo_contrato, empresa_id=empresa)
 
+        if Contrato.objects.filter(numero_contrato=numero_contrato):
+            messages.warning(request, 'Ya existe un contrato con número {0}'.format(numero_contrato))
+            tipo_contratos = TipoContrato.objects.all()
+            empresas = Empresa.objects.all()
+            terceros = Tercero.objects.all()
+            rango_anho = range(2000, 2051)
+            return render(request, 'Proyectos/Contrato/crear.html', {'contrato': contrato,
+                                                                         'tipo_contratos': tipo_contratos,
+                                                                         'empresas': empresas,
+                                                                         'terceros': terceros,
+                                                                         'rango_anho': rango_anho})
+
         contrato.save()
         messages.success(request, 'Se ha agregado el contrato número {0}'.format(numero_contrato))
 
+        return redirect(reverse('proyectos:contratos'))
+
+
+class ContratoEditarView(View):
+    def get(self, request, id):
+        contrato = Contrato.objects.get(id=id)
+        tipo_contratos = TipoContrato.objects.all().order_by('nombre')
+        empresas = Empresa.objects.all().order_by('nombre')
+        terceros = Tercero.objects.all().order_by('nombre')
+        rango_anho = range(2000, 2051)
+
+        return render(request, 'Proyectos/Contrato/editar.html', {'contrato': contrato,
+                                                                         'tipo_contratos': tipo_contratos,
+                                                                         'empresas': empresas,
+                                                                         'terceros': terceros,
+                                                                         'rango_anho': rango_anho})
+
+    def post(self, request, id):
+        update_fields = ['numero_contrato', 'cliente_id', 'anho', 'supervisor_nombre', 'supervisor_correo',
+                         'supervisor_telefono', 'residente', 'fecha_inicio', 'fecha_terminacion', 'valor',
+                         'periocidad_informes', 'tiempo', 'tipo_contrato_id', 'empresa_id']
+
+        contrato = Contrato(id=id)
+        contrato.numero_contrato = request.POST.get('numero_contrato', '')
+        contrato.cliente_id = request.POST.get('cliente_id', '')
+        contrato.anho = request.POST.get('rango_anho', '')
+        contrato.supervisor_nombre = request.POST.get('supervisor_nombre', '')
+        contrato.supervisor_correo = request.POST.get('supervisor_correo', '')
+        contrato.supervisor_telefono = request.POST.get('supervisor_telefono', '')
+        contrato.residente = request.POST.get('residente', '')
+        contrato.fecha_inicio = request.POST.get('fecha_inicio', '')
+        contrato.fecha_terminacion = request.POST.get('fecha_terminacion', '')
+        contrato.valor = request.POST.get('valor', '')
+        contrato.periocidad_informes = request.POST.get('periocidad_informes', '')
+        contrato.tiempo = request.POST.get('tiempo', '')
+        contrato.tipo_contrato_id = request.POST.get('tipo_contrato_id', '')
+        contrato.empresa_id = request.POST.get('empresa_id', '')
+        contrato.save(update_fields=update_fields)
+
         return redirect(reverse('Proyectos:contratos'))
 
+
+class ContratoEliminarView(View):
+    def post(self, request, id):
+        try:
+            contrato = Contrato.objects.get(id=id)
+            contrato.delete()
+            messages.success(request, 'Se ha eliminado el contrato {0}'.format(contrato.numero_contrato))
+            return JsonResponse({"Mensaje": "OK"})
+
+        except IntegrityError:
+            return JsonResponse({"Mensaje": "No se puede eliminar"})
