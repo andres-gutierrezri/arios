@@ -23,4 +23,6 @@ urlpatterns = [
     path('index/', proyectos.index, name='index'),
     path('contratos/', contratos.ContratoView.as_view(), name='contratos'),
     path('contratos/add', contratos.ContratoCrearView.as_view(), name='contratos-crear'),
+    path('contratos/<int:id>/', contratos.ContratoEditarView.as_view(), name='contratos-editar'),
+    path('contratos/<int:id>/delete', contratos.ContratoEliminarView.as_view(), name='contratos-eliminar'),
 ]
