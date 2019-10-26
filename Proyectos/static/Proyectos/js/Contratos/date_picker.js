@@ -9,12 +9,14 @@
 			$('#fecha_inicio').datepicker({
 				todayHighlight: true,
 				orientation: "bottom left",
-				templates: controls
+				templates: controls,
+				autoclose: true
 			});
 			$('#fecha_terminacion').datepicker({
 				todayHighlight: true,
 				orientation: "bottom left",
-				templates: controls
+				templates: controls,
+				autoclose: true
 			});
 		};
 
