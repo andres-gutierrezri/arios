@@ -105,6 +105,7 @@ class ContratoEditarView(View):
         contrato.tipo_contrato_id = request.POST.get('tipo_contrato_id', '')
         contrato.empresa_id = request.POST.get('empresa_id', '')
         contrato.save(update_fields=update_fields)
+        messages.success(request, 'Se ha actualizado el contrato número {0}'.format(contrato.numero_contrato))
 
         return redirect(reverse('Proyectos:contratos'))
 
