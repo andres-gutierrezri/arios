@@ -64,6 +64,20 @@ class ContratoCrearView(View):
                                                                          'terceros': terceros,
                                                                          'rango_anho': rango_anho})
 
+        fecha_1 = datetime.strptime(contrato.fecha_inicio, "%Y-%m-%d")
+        fecha_2 = datetime.strptime(contrato.fecha_terminacion, "%Y-%m-%d")
+
+        if fecha_1 > fecha_2:
+            messages.warning(request, 'La fecha de inicio debe ser menor a la fecha de terminación')
+            tipo_contratos = TipoContrato.objects.all()
+            empresas = Empresa.objects.all()
+            terceros = Tercero.objects.all()
+            rango_anho = range(2000, 2051)
+            return render(request, 'Proyectos/Contrato/crear.html', {'contrato': contrato,
+                                                                     'tipo_contratos': tipo_contratos,
+                                                                     'empresas': empresas,
+                                                                     'terceros': terceros,
+                                                                     'rango_anho': rango_anho})
         contrato.save()
         messages.success(request, 'Se ha agregado el contrato número {0}'.format(numero_contrato))
 
@@ -91,19 +105,44 @@ class ContratoEditarView(View):
 
         contrato = Contrato(id=id)
         contrato.numero_contrato = request.POST.get('numero_contrato', '')
-        contrato.cliente_id = request.POST.get('cliente_id', '')
-        contrato.anho = request.POST.get('rango_anho', '')
+        contrato.cliente_id = int(request.POST.get('cliente_id', ''))
+        contrato.anho = int(request.POST.get('rango_anho', ''))
         contrato.supervisor_nombre = request.POST.get('supervisor_nombre', '')
         contrato.supervisor_correo = request.POST.get('supervisor_correo', '')
         contrato.supervisor_telefono = request.POST.get('supervisor_telefono', '')
         contrato.residente = request.POST.get('residente', '')
-        contrato.fecha_inicio = request.POST.get('fecha_inicio', '')
-        contrato.fecha_terminacion = request.POST.get('fecha_terminacion', '')
+        contrato.fecha_inicio = datetime.strptime(request.POST.get('fecha_inicio', ''), "%Y-%m-%d")
+        contrato.fecha_terminacion = datetime.strptime(request.POST.get('fecha_terminacion', ''), "%Y-%m-%d")
         contrato.valor = request.POST.get('valor', '')
         contrato.periocidad_informes = request.POST.get('periocidad_informes', '')
         contrato.tiempo = request.POST.get('tiempo', '')
-        contrato.tipo_contrato_id = request.POST.get('tipo_contrato_id', '')
-        contrato.empresa_id = request.POST.get('empresa_id', '')
+        contrato.tipo_contrato_id = int(request.POST.get('tipo_contrato_id', ''))
+        contrato.empresa_id = int(request.POST.get('empresa_id', ''))
+
+        if Contrato.objects.filter(numero_contrato=contrato.numero_contrato).exclude(id=id):
+            messages.warning(request, 'Ya existe un contrato con número {0}'.format(contrato.numero_contrato))
+            tipo_contratos = TipoContrato.objects.all()
+            empresas = Empresa.objects.all()
+            terceros = Tercero.objects.all()
+            rango_anho = range(2000, 2051)
+            return render(request, 'Proyectos/Contrato/editar.html', {'contrato': contrato,
+                                                                         'tipo_contratos': tipo_contratos,
+                                                                         'empresas': empresas,
+                                                                         'terceros': terceros,
+                                                                         'rango_anho': rango_anho})
+
+        if contrato.fecha_inicio > contrato.fecha_terminacion:
+            messages.warning(request, 'La fecha de inicio debe ser menor a la fecha de terminación')
+            tipo_contratos = TipoContrato.objects.all()
+            empresas = Empresa.objects.all()
+            terceros = Tercero.objects.all()
+            rango_anho = range(2000, 2051)
+            return render(request, 'Proyectos/Contrato/editar.html', {'contrato': contrato,
+                                                                     'tipo_contratos': tipo_contratos,
+                                                                     'empresas': empresas,
+                                                                     'terceros': terceros,
+                                                                     'rango_anho': rango_anho})
+
         contrato.save(update_fields=update_fields)
         messages.success(request, 'Se ha actualizado el contrato número {0}'.format(contrato.numero_contrato))
 
