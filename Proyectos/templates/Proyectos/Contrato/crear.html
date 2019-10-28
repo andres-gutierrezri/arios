@@ -42,7 +42,7 @@
                                         <div class="form-row">
                                              <div class="col-md-6">
                                                 <label for="cliente_select">Cliente</label>
-                                                <select class="select2 form-control w-100 select2-selection--single" id="cliente_select" name="cliente_id" required>
+                                                <select class="select2 form-control w-100 select2-selection--single" id="cliente_select" name="cliente_id" required oninvalid="this.setCustomValidity('Por favor seleccione una opción de la lista')" oninput="this.setCustomValidity('')">
                                                     <option value="" >Seleccione un Cliente</option>
                                                     {% for tercero in terceros %}
                                                         {% if tercero.tipo_tercero.nombre.lower == 'cliente' %}
@@ -53,12 +53,12 @@
                                               </div>
                                             <div class="col-md-6">
                                                 <label for="contrato_numero">Número de contrato</label>
-                                                <input class="form-control" id="contrato_numero" type="text" name="numero_contrato" placeholder="Ingrese el número del contrato" required maxlength="20" value="{{ contrato.numero_contrato }}">
+                                                <input class="form-control" id="contrato_numero" type="text" name="numero_contrato" oninvalid="this.setCustomValidity('Por favor ingrese un número de contrato')" oninput="setCustomValidity('')" placeholder="Ingrese el número del contrato" required maxlength="20" value="{{ contrato.numero_contrato }}">
                                             </div>
                                             <div class="col-md-6">
                                                 <br>
                                                 <label for="rango_anho_select">Año</label>
-                                                <select class="select2 form-control w-100 select2-selection--single" type="number" id="rango_anho_select" name="rango_anho" required>
+                                                <select class="select2 form-control w-100 select2-selection--single" type="number" id="rango_anho_select" name="rango_anho" required oninvalid="this.setCustomValidity('Por favor seleccione una opción de la lista')" oninput="setCustomValidity('')">
                                                     <option value="" >Seleccione un año</option>
                                                     {% for anho in rango_anho %}
                                                         <option value="{{ anho }}" {% if anho == contrato.anho %}selected{% endif %}>{{ anho }}</option>
@@ -68,52 +68,52 @@
                                             <div class="col-md-6">
                                                  <br>
                                                 <label for="contrato_supervisor_nombre">Nombre del supervisor</label>
-                                                <input class="form-control" id="contrato_supervisor_nombre" type="text" name="supervisor_nombre" placeholder="Ingrese el nombre del supervisor" required maxlength="100" value="{{ contrato.supervisor_nombre }}">
+                                                <input class="form-control" id="contrato_supervisor_nombre" type="text" oninvalid="this.setCustomValidity('Por favor digite el nombre del supervisor')" oninput="setCustomValidity('')" name="supervisor_nombre" placeholder="Ingrese el nombre del supervisor" required maxlength="100" value="{{ contrato.supervisor_nombre }}">
                                             </div>
                                             <div class="col-md-6">
                                                 <br>
                                                 <label for="contrato_telefono_supervisor">Teléfono del supervisor</label>
-                                                <input class="form-control" id="contrato_telefono_supervisor" type="text" name="supervisor_telefono" placeholder="Ingrese el número telefónico del supervisor" required maxlength="20" value="{{ contrato.supervisor_telefono }}">
+                                                <input class="form-control" id="contrato_telefono_supervisor" type="text" oninvalid="this.setCustomValidity('Por favor digite el número telefónico')" oninput="setCustomValidity('')" name="supervisor_telefono" placeholder="Ingrese el número telefónico del supervisor" required maxlength="20" value="{{ contrato.supervisor_telefono }}">
                                             </div>
                                             <div class="col-md-6">
                                                 <br>
                                                 <label for="contrato_correo_supervisor">Correo electrónico del supervisor</label>
-                                                <input class="form-control" id="contrato_correo_supervisor" type="email" name="supervisor_correo" placeholder="Ingrese el correo electrónico del supervisor" maxlength="100" value="{{ contrato.supervisor_correo }}">
+                                                <input class="form-control" id="contrato_correo_supervisor" type="email" name="supervisor_correo" oninvalid="this.setCustomValidity('Por favor digite el correo electrónico')" oninput="setCustomValidity('')" placeholder="Ingrese el correo electrónico del supervisor" maxlength="100" value="{{ contrato.supervisor_correo }}">
                                             </div>
                                             <div class="col-md-6">
                                                  <br>
                                                 <label for="contrato_residente">Nombre del residente</label>
-                                                <input class="form-control" id="contrato_residente" type="text" name="residente" placeholder="Ingrese el nombre del residente" required maxlength="100" value="{{ contrato.residente }}">
+                                                <input class="form-control" id="contrato_residente" type="text" oninvalid="this.setCustomValidity('Por favor digite el nombre')" oninput="setCustomValidity('')" name="residente" placeholder="Ingrese el nombre del residente" required maxlength="100" value="{{ contrato.residente }}">
                                             </div>
                                              <div class="col-md-6">
                                                  <br>
                                                 <label for="fecha_inicio">Fecha de inicio</label>
-                                                <input class="form-control" id="fecha_inicio" name="fecha_inicio" placeholder="Seleccione una fecha"  autocomplete="off" value="{{ contrato.fecha_inicio }}" required>
+                                                <input class="form-control" id="fecha_inicio" name="fecha_inicio" oninvalid="this.setCustomValidity('Por favor seleccione una fecha')" oninput="setCustomValidity('')" placeholder="Seleccione una fecha"  autocomplete="off" value="{{ contrato.fecha_inicio }}" required>
                                             </div>
                                              <div class="col-md-6">
                                                  <br>
                                                 <label for="fecha_terminacion">Fecha de terminación</label>
-                                                <input class="form-control" id="fecha_terminacion" name="fecha_terminacion" placeholder="Seleccione una fecha"  autocomplete="off" value="{{ contrato.fecha_terminacion  }}" required>
+                                                <input class="form-control" id="fecha_terminacion" name="fecha_terminacion" oninvalid="this.setCustomValidity('Por favor seleccione una fecha')" oninput="setCustomValidity('')" placeholder="Seleccione una fecha"  autocomplete="off" value="{{ contrato.fecha_terminacion  }}" required>
                                             </div>
                                             <div class="col-md-6">
                                                 <br>
                                                 <label for="contrato_valor">Valor</label>
-                                                <input class="form-control" id="contrato_valor" type="text" name="valor" placeholder="Ingrese el valor del contrato" required maxlength="20" value="{{ contrato.valor }}">
+                                                <input class="form-control" id="contrato_valor" oninvalid="this.setCustomValidity('Por favor digite  un valor válido')" oninput="setCustomValidity('')" type="number" min="0" max="999999999999" name="valor" placeholder="Ingrese el valor del contrato" required  value="{{ contrato.valor }}">
                                             </div>
                                             <div class="col-md-6">
                                                 <br>
                                                 <label for="contrato_periocidad_informes">Periocidad de informes</label>
-                                                <input class="form-control" id="contrato_periocidad_informes" type="text" name="periocidad_informes" placeholder="Ingrese la periocidad de los informes" required maxlength="20" value="{{ contrato.periocidad_informes }}">
+                                                <input class="form-control" id="contrato_periocidad_informes" type="number" min="0" max="100" oninvalid="this.setCustomValidity('Por favor digite  un valor válido')" oninput="setCustomValidity('')" name="periocidad_informes" placeholder="Ingrese la periocidad de los informes" required  value="{{ contrato.periocidad_informes }}">
                                             </div>
                                             <div class="col-md-6">
                                                 <br>
                                                 <label for="contrato_tiempo">Tiempo</label>
-                                                <input class="form-control" id="contrato_tiempo" type="text" name="tiempo" placeholder="Ingrese el tiempo" required maxlength="20" value="{{ contrato.tiempo }}">
+                                                <input class="form-control" id="contrato_tiempo" type="number" name="tiempo" oninvalid="this.setCustomValidity('Por favor digite  un valor válido')" oninput="setCustomValidity('')" min="0" max="100" placeholder="Ingrese el tiempo" required  value="{{ contrato.tiempo }}">
                                             </div>
                                             <div class="col-md-6">
                                                 <br>
                                                 <label for="tipo_contrato_select">Tipo de contrato</label>
-                                                <select class="select2 form-control w-100 select2-selection--single" id="tipo_contrato_select" name="tipo_contrato_id" required>
+                                                <select class="select2 form-control w-100 select2-selection--single" oninvalid="this.setCustomValidity('Por favor seleccione una opción de la lista')" oninput="setCustomValidity('')" id="tipo_contrato_select" name="tipo_contrato_id" required>
                                                     <option value="" >Seleccione un Tipo de Contrato</option>
                                                     {% for tipo_contrato in tipo_contratos %}
                                                         <option value="{{ tipo_contrato.id }}" {% if tipo_contrato.id == contrato.tipo_contrato_id %} selected {% endif %}>{{ tipo_contrato.nombre }}</option>
@@ -123,7 +123,7 @@
                                             <div class="col-md-6">
                                                 <br>
                                                 <label for="empresa_select">Empresa</label>
-                                                <select class="select2 form-control w-100 select2-selection--single" id="empresa_select" name="empresa_id" required>
+                                                <select class="select2 form-control w-100 select2-selection--single" oninvalid="this.setCustomValidity('Por favor seleccione una opción de la lista')" oninput="setCustomValidity('')" id="empresa_select" name="empresa_id"  required>
                                                     <option value="" >Seleccione una Empresa</option>
                                                     {% for empresa in empresas %}
                                                         <option value="{{ empresa.id }}" {% if empresa.id == contrato.empresa_id %} selected {% endif %}>{{ empresa.nombre }}</option>
@@ -261,25 +261,5 @@
 			});
 		});
 	</script>
-
-      <script src="{% static 'Administracion/js/select_divipol.js' %}"></script>
-
-    <script type="text/javascript">
-	$('#defaultIndeterminate').prop('indeterminate', true)
-
-	var toggleCheckbox = function(){
-		$('#js-checkbox-toggle').toggleText('Change to CIRCLE', 'Change back to default');
-		$('.frame-wrap .custom-checkbox').toggleClass('custom-checkbox-circle');
-	}
-
-	var toggleRadio = function (){
-		$('#js-radio-toggle').toggleText('Change to ROUNDED', 'Change back to default');
-		$('.frame-wrap .custom-radio').toggleClass('custom-radio-rounded');
-	}
-
-
-    </script>
-
-
 
 {% endblock %}
