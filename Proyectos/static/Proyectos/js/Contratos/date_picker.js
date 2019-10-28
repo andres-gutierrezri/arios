@@ -10,12 +10,15 @@
 				todayHighlight: true,
 				orientation: "bottom left",
 				templates: controls,
+				format: 'yyyy-mm-dd',
 				autoclose: true
 			});
+
 			$('#fecha_terminacion').datepicker({
 				todayHighlight: true,
 				orientation: "bottom left",
 				templates: controls,
+				format: 'yyyy-mm-dd',
 				autoclose: true
 			});
 		};
