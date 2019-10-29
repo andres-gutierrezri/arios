@@ -68,7 +68,7 @@ class ContratoCrearView(View):
         fecha_2 = datetime.strptime(contrato.fecha_terminacion, "%Y-%m-%d")
 
         if fecha_1 > fecha_2:
-            messages.warning(request, 'La fecha de inicio debe ser menor a la fecha de terminación')
+            messages.warning(request, 'La fecha de inicio debe ser menor o igual a la fecha de terminación')
             tipo_contratos = TipoContrato.objects.all()
             empresas = Empresa.objects.all()
             terceros = Tercero.objects.all()
@@ -132,7 +132,7 @@ class ContratoEditarView(View):
                                                                          'rango_anho': rango_anho})
 
         if contrato.fecha_inicio > contrato.fecha_terminacion:
-            messages.warning(request, 'La fecha de inicio debe ser menor a la fecha de terminación')
+            messages.warning(request, 'La fecha de inicio debe ser menor o igual a la fecha de terminación')
             tipo_contratos = TipoContrato.objects.all()
             empresas = Empresa.objects.all()
             terceros = Tercero.objects.all()
