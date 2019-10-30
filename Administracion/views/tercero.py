@@ -90,12 +90,29 @@ class TerceroEditarView(View):
         tercero = Tercero(id=id)
         tercero.nombre = request.POST.get('nombre', '')
         tercero.identificacion = request.POST.get('identificacion', '')
-        tercero.tipo_identificacion_id = request.POST.get('tipo_identificacion_id', '')
+        tercero.tipo_identificacion_id = int(request.POST.get('tipo_identificacion_id', '0'))
         tercero.estado = request.POST.get('estado', 'False') == 'True'
-        tercero.empresa_id = request.POST.get('empresa_id', '')
+        tercero.empresa_id = int(request.POST.get('empresa_id', '0'))
         tercero.fecha_modificacion = datetime.now()
-        tercero.tipo_tercero_id = request.POST.get('tipo_tercero_id', '')
-        tercero.centro_poblado_id = request.POST.get('centro_poblado_id', '')
+        tercero.tipo_tercero_id = int(request.POST.get('tipo_tercero_id', '0'))
+        tercero.centro_poblado_id = int(request.POST.get('centro_poblado_id', '0'))
+
+        if Tercero.objects.filter(identificacion=tercero.identificacion).exclude(id=id):
+            messages.warning(request, 'Ya existe un tercero con identificación {0}'.format(tercero.identificacion))
+            tipo_identificacion = TipoIdentificacion.objects.all()
+            tipo_terceros = TipoTercero.objects.all()
+            departamentos = Departamento.objects.all().order_by('nombre')
+            empresas = Empresa.objects.all()
+            municipios = Municipio.objects.all().order_by('nombre')
+            c_poblados = CentroPoblado.objects.all().order_by('nombre')
+            return render(request, 'Administracion/Tercero/editar.html', {'tercero': tercero,
+                                                                         'tipo_identificacion': tipo_identificacion,
+                                                                         'tipo_terceros': tipo_terceros,
+                                                                         'departamentos': departamentos,
+                                                                         'empresas': empresas,
+                                                                         'municipios': municipios,
+                                                                         'c_poblados': c_poblados})
+
         tercero.save(update_fields=update_fields)
         messages.success(request, 'Se ha actualizado el tercero {0}'.format(tercero.nombre))
 
