@@ -11,10 +11,11 @@ class Contrato(models.Model):
     anho = models.IntegerField(verbose_name='Año', null=False, blank=False)
     supervisor_nombre = models.CharField(max_length=100, verbose_name='Nombre del supervisor', null=False, blank=False)
     supervisor_telefono = models.TextField(max_length=15, verbose_name='Teléfono', null=False, blank=False)
-    supervisor_correo = models.EmailField(max_length=100, verbose_name='Correo del supervisor', null=False, blank=False, error_messages={'invalid':"Ingrese una dirección de correo válida"})
+    supervisor_correo = models.EmailField(max_length=100, verbose_name='Correo del supervisor', null=False, blank=False,
+                                          error_messages={'invalid':"Ingrese una dirección de correo válida"})
     residente = models.CharField(max_length=100, verbose_name='Residente', null=False, blank=False)
-    fecha_inicio = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de inicio', null=False, blank=False)
-    fecha_terminacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de terminación', null=True, blank=False)
+    fecha_inicio = models.DateTimeField(verbose_name='Fecha de inicio', null=False, blank=False)
+    fecha_terminacion = models.DateTimeField(verbose_name='Fecha de terminación', null=True, blank=False)
     valor = models.BigIntegerField(verbose_name="Valor", null=True, blank=False)
     periocidad_informes = models.IntegerField(verbose_name='Periocidad de informes', null=False,
                                               blank=False)
