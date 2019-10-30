@@ -9,6 +9,7 @@
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/toastr/toastr.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/bootstrap-datepicker/bootstrap-datepicker.css' %}">
+    <link rel="stylesheet"  href="{% static 'Proyectos/css/Contratos/background.css' %}">
 {% endblock %}
 
 {% block main %}
@@ -56,7 +57,7 @@
                                               </div>
                                             <div class="col-md-6">
                                                 <label for="contrato_numero">Número de contrato</label>
-                                                <input class="form-control" id="contrato_numero" type="text" name="numero_contrato" placeholder="Ingrese el número de contrato"   required maxlength="20" value="{{ contrato.numero_contrato }}">
+                                                <input class="form-control" id="contrato_numero" type="text"   name="numero_contrato" placeholder="Ingrese el número de contrato"   required maxlength="20" value="{{ contrato.numero_contrato }}">
                                                 <div class="invalid-feedback">
                                                   Por favor digite el número de contrato.
                                                 </div>
@@ -77,7 +78,7 @@
                                             <div class="col-md-6">
                                                  <br>
                                                 <label for="contrato_supervisor_nombre">Nombre del supervisor</label>
-                                                <input class="form-control" id="contrato_supervisor_nombre" type="text"  name="supervisor_nombre" placeholder="Ingrese el nombre del supervisor" required maxlength="100" value="{{ contrato.supervisor_nombre }}">
+                                                <input class="form-control" id="contrato_supervisor_nombre" type="text"   name="supervisor_nombre" placeholder="Ingrese el nombre del supervisor" required maxlength="100" value="{{ contrato.supervisor_nombre }}">
                                                 <div class="invalid-feedback">
                                                   Por favor digite el nombre del supervisor.
                                                 </div>
@@ -85,7 +86,7 @@
                                             <div class="col-md-6">
                                                 <br>
                                                 <label for="contrato_telefono_supervisor">Teléfono del supervisor</label>
-                                                <input class="form-control" id="contrato_telefono_supervisor" type="text" name="supervisor_telefono" placeholder="Ingrese el número telefónico del supervisor" required maxlength="20" value="{{ contrato.supervisor_telefono }}">
+                                                <input class="form-control sinx" id="contrato_telefono_supervisor" type="text"  name="supervisor_telefono" placeholder="Ingrese el número telefónico del supervisor" required maxlength="20" value="{{ contrato.supervisor_telefono }}">
                                                 <div class="invalid-feedback">
                                                   Por favor digite el teléfono del supervisor.
                                                 </div>
@@ -93,7 +94,7 @@
                                             <div class="col-md-6">
                                                 <br>
                                                 <label for="contrato_correo_supervisor">Correo electrónico del supervisor</label>
-                                                <input class="form-control" id="contrato_correo_supervisor" type="email" name="supervisor_correo" placeholder="Ingrese el correo electrónico del supervisor" maxlength="100" value="{{ contrato.supervisor_correo }}">
+                                                <input class="form-control" id="contrato_correo_supervisor"  type="email" name="supervisor_correo" placeholder="Ingrese el correo electrónico del supervisor" maxlength="100" value="{{ contrato.supervisor_correo }}" required>
                                                 <div class="invalid-feedback">
                                                   Por favor digite el correo electrónico del supervisor.
                                                 </div>
@@ -101,7 +102,7 @@
                                             <div class="col-md-6">
                                                  <br>
                                                 <label for="contrato_residente">Nombre del residente</label>
-                                                <input class="form-control" id="contrato_residente" type="text" name="residente"  placeholder="Ingrese el nombre del residente" required maxlength="100" value="{{ contrato.residente }}">
+                                                <input class="form-control " id="contrato_residente" type="text" name="residente"  placeholder="Ingrese el nombre del residente" required maxlength="100" value="{{ contrato.residente }}">
                                                 <div class="invalid-feedback">
                                                   Por favor digite el nombre del residente.
                                                 </div>
@@ -133,7 +134,7 @@
                                             <div class="col-md-6">
                                                 <br>
                                                 <label for="contrato_periocidad_informes">Periodicidad de informes</label>
-                                                <input class="form-control" id="contrato_periocidad_informes" type="number" min="0" max="1000"   onInput="checkLength(3,this)" name="periocidad_informes" placeholder="Ingrese la periodicidad de los informes"  value="{{ contrato.periocidad_informes }}">
+                                                <input class="form-control" id="contrato_periocidad_informes" type="number" min="0" max="1000"  onInput="checkLength(3,this)" name="periocidad_informes" required placeholder="Ingrese la periodicidad de los informes"  value="{{ contrato.periocidad_informes }}">
                                                 <div class="invalid-feedback">
                                                   Por favor digite un valor.
                                                 </div>
