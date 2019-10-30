@@ -9,6 +9,7 @@
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/toastr/toastr.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/bootstrap-datepicker/bootstrap-datepicker.css' %}">
+    <link rel="stylesheet"  href="{% static 'Proyectos/css/Contratos/background.css' %}">
 {% endblock %}
 
 {% block main %}
@@ -93,7 +94,7 @@
                                             <div class="col-md-6">
                                                 <br>
                                                 <label for="contrato_correo_supervisor">Correo electrónico del supervisor</label>
-                                                <input class="form-control" id="contrato_correo_supervisor" type="email" name="supervisor_correo" placeholder="Ingrese el correo electrónico del supervisor" required maxlength="100" value="{{ contrato.supervisor_correo }}">
+                                                <input class="form-control" id="contrato_correo_supervisor" type="email"  name="supervisor_correo" placeholder="Ingrese el correo electrónico del supervisor" required maxlength="100" value="{{ contrato.supervisor_correo }}">
                                                 <div class="invalid-feedback">
                                                   Por favor digite el correo electrónico.
                                                 </div>
@@ -101,7 +102,7 @@
                                             <div class="col-md-6">
                                                  <br>
                                                 <label for="contrato_residente">Nombre del residente</label>
-                                                <input class="form-control" id="contrato_residente" type="text"  name="residente" placeholder="Ingrese el nombre del residente" required maxlength="100" value="{{ contrato.residente }}">
+                                                <input class="form-control" id="contrato_residente" type="text"  name="residente"  placeholder="Ingrese el nombre del residente" required maxlength="100" value="{{ contrato.residente }}">
                                                 <div class="invalid-feedback">
                                                   Por favor digite el nombre del residente.
                                                 </div>
@@ -125,7 +126,7 @@
                                             <div class="col-md-6">
                                                 <br>
                                                 <label for="contrato_valor">Valor</label>
-                                                <input class="form-control" id="contrato_valor"  onInput="checkLength(11,this)" type="number" min="0" max="9999999999" name="valor" placeholder="Ingrese el valor del contrato" required  value="{{ contrato.valor }}">
+                                                <input class="form-control" id="contrato_valor"  onInput="checkLength(11,this)"  type="number" min="0" max="99999999999" name="valor" placeholder="Ingrese el valor del contrato" required  value="{{ contrato.valor }}">
                                                 <div class="invalid-feedback">
                                                   Por favor digite un valor.
                                                 </div>
@@ -133,7 +134,7 @@
                                             <div class="col-md-6">
                                                 <br>
                                                 <label for="contrato_periocidad_informes">Periodicidad de informes</label>
-                                                <input class="form-control" id="contrato_periocidad_informes" type="number" min="0" max="1000"  onInput="checkLength(3,this)" name="periocidad_informes" placeholder="Ingrese la periocidad de los informes" required  value="{{ contrato.periocidad_informes }}">
+                                                <input class="form-control" id="contrato_periocidad_informes" type="number"  min="0" max="1000"  onInput="checkLength(3,this)" name="periocidad_informes" placeholder="Ingrese la periocidad de los informes" required  value="{{ contrato.periocidad_informes }}">
                                                 <div class="invalid-feedback">
                                                   Por favor digite un valor.
                                                 </div>
