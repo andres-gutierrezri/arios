@@ -96,10 +96,9 @@ class TerceroEditarView(View):
         tercero.fecha_modificacion = datetime.now()
         tercero.tipo_tercero_id = int(request.POST.get('tipo_tercero_id', '0'))
         tercero.centro_poblado_id = int(request.POST.get('centro_poblado_id', '0'))
-        print(tercero.estado)
 
         if Tercero.objects.filter(identificacion=tercero.identificacion).exclude(id=id):
-            print('entra')
+
             messages.warning(request, 'Ya existe un tercero con identificación {0}'.format(tercero.identificacion))
             tercero = Tercero.objects.get(id=id)
             empresas = Empresa.objects.filter(estado=True).order_by('nombre')
