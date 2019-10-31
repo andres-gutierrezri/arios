@@ -90,33 +90,45 @@ class TerceroEditarView(View):
         tercero = Tercero(id=id)
         tercero.nombre = request.POST.get('nombre', '')
         tercero.identificacion = request.POST.get('identificacion', '')
-        tercero.tipo_identificacion_id = int(request.POST.get('tipo_identificacion_id', '0'))
+        tercero.tipo_identificacion_id = int(request.POST.get('tipo_identificacion_id', ''))
         tercero.estado = request.POST.get('estado', 'False') == 'True'
         tercero.empresa_id = int(request.POST.get('empresa_id', '0'))
         tercero.fecha_modificacion = datetime.now()
         tercero.tipo_tercero_id = int(request.POST.get('tipo_tercero_id', '0'))
         tercero.centro_poblado_id = int(request.POST.get('centro_poblado_id', '0'))
+        print(tercero.estado)
 
         if Tercero.objects.filter(identificacion=tercero.identificacion).exclude(id=id):
+            print('entra')
             messages.warning(request, 'Ya existe un tercero con identificación {0}'.format(tercero.identificacion))
-            tipo_identificacion = TipoIdentificacion.objects.all()
-            tipo_terceros = TipoTercero.objects.all()
+            tercero = Tercero.objects.get(id=id)
+            empresas = Empresa.objects.filter(estado=True).order_by('nombre')
+            tipo_identificaciones = TipoIdentificacion.objects.filter(estado=True).order_by('nombre')
+            tipo_terceros = TipoTercero.objects.filter(estado=True).order_by('nombre')
             departamentos = Departamento.objects.all().order_by('nombre')
-            empresas = Empresa.objects.all()
             municipios = Municipio.objects.all().order_by('nombre')
             c_poblados = CentroPoblado.objects.all().order_by('nombre')
-            return render(request, 'Administracion/Tercero/editar.html', {'tercero': tercero,
-                                                                         'tipo_identificacion': tipo_identificacion,
-                                                                         'tipo_terceros': tipo_terceros,
-                                                                         'departamentos': departamentos,
-                                                                         'empresas': empresas,
-                                                                         'municipios': municipios,
-                                                                         'c_poblados': c_poblados})
+            return render(request, 'Administracion/Tercero/editar.html', {'tercero': tercero, 'empresas': empresas,
+                                                                          'tipo_identificaciones': tipo_identificaciones,
+                                                                          'tipo_terceros': tipo_terceros,
+                                                                          'departamentos': departamentos,
+                                                                          'municipios': municipios,
+                                                                          'c_poblados': c_poblados})
 
-        tercero.save(update_fields=update_fields)
-        messages.success(request, 'Se ha actualizado el tercero {0}'.format(tercero.nombre))
+        elif Tercero.objects.filter(nombre=tercero.nombre, identificacion=tercero.identificacion,
+                                    tipo_identificacion_id=tercero.tipo_identificacion_id, estado=tercero.estado,
+                                    empresa_id=tercero.empresa_id, tipo_tercero_id=tercero.tipo_tercero_id,
+                                    centro_poblado_id=tercero.centro_poblado_id):
 
-        return redirect(reverse('Administracion:terceros'))
+            messages.success(request, 'No se hicieron cambios en el tercero {0}'.format(tercero.nombre))
+            return redirect(reverse('Administracion:terceros'))
+
+        else:
+
+            tercero.save(update_fields=update_fields)
+            messages.success(request, 'Se ha actualizado el tercero {0}'.format(tercero.nombre) + ' con identificación {0}'.format(tercero.identificacion))
+
+            return redirect(reverse('Administracion:terceros'))
 
 
 class TerceroEliminarView(View):
