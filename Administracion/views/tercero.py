@@ -29,10 +29,11 @@ class TerceroCrearView(View):
         tipo_terceros = TipoTercero.objects.all()
         departamentos = Departamento.objects.all().order_by('nombre')
         empresas = Empresa.objects.all()
-        return render(request, 'Administracion/Tercero/crear.html', {'tipo_identificacion': tipo_identificacion,
+        opcion = 'crear'
+        return render(request, 'Administracion/Tercero/crear-editar.html', {'tipo_identificacion': tipo_identificacion,
                                                       'tipo_terceros': tipo_terceros,
                                                       'departamentos': departamentos,
-                                                      'empresas': empresas})
+                                                      'empresas': empresas, 'opcion': opcion})
 
     def post(self, request):
 
@@ -54,7 +55,7 @@ class TerceroCrearView(View):
             empresas = Empresa.objects.all()
             municipios = Municipio.objects.all().order_by('nombre')
             c_poblados = CentroPoblado.objects.all().order_by('nombre')
-            return render(request, 'Administracion/Tercero/crear.html', {'tercero': tercero,
+            return render(request, 'Administracion/Tercero/crear-editar.html', {'tercero': tercero,
                                                                          'tipo_identificacion': tipo_identificacion,
                                                                           'tipo_terceros': tipo_terceros,
                                                                           'departamentos': departamentos,
@@ -77,11 +78,13 @@ class TerceroEditarView(View):
         departamentos = Departamento.objects.all().order_by('nombre')
         municipios = Municipio.objects.all().order_by('nombre')
         c_poblados = CentroPoblado.objects.all().order_by('nombre')
-        return render(request, 'Administracion/Tercero/editar.html', {'tercero': tercero, 'empresas': empresas,
+        opcion = 'editar'
+        return render(request, 'Administracion/Tercero/crear-editar.html', {'tercero': tercero, 'empresas': empresas,
                                                        'tipo_identificaciones': tipo_identificaciones,
                                                        'tipo_terceros': tipo_terceros,
                                                        'departamentos': departamentos,
-                                                       'municipios': municipios, 'c_poblados': c_poblados})
+                                                       'municipios': municipios, 'c_poblados': c_poblados,
+                                                                      'opcion': opcion})
 
     def post(self, request, id):
         update_fields = ['nombre', 'identificacion', 'tipo_identificacion_id', 'estado', 'empresa_id',
@@ -107,7 +110,7 @@ class TerceroEditarView(View):
             departamentos = Departamento.objects.all().order_by('nombre')
             municipios = Municipio.objects.all().order_by('nombre')
             c_poblados = CentroPoblado.objects.all().order_by('nombre')
-            return render(request, 'Administracion/Tercero/editar.html', {'tercero': tercero, 'empresas': empresas,
+            return render(request, 'Administracion/Tercero/crear-editar.html', {'tercero': tercero, 'empresas': empresas,
                                                                           'tipo_identificaciones': tipo_identificaciones,
                                                                           'tipo_terceros': tipo_terceros,
                                                                           'departamentos': departamentos,
