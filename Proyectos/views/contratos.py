@@ -41,7 +41,7 @@ class ContratoCrearView(View):
         fecha_inicio = request.POST.get('fecha_inicio', '')
         fecha_terminacion = request.POST.get('fecha_terminacion', '')
         valor = request.POST.get('valor', '')
-        periocidad_informes = request.POST.get('periocidad_informes', '')
+        periodicidad_informes = request.POST.get('periodicidad_informes', '')
         tiempo = request.POST.get('tiempo', '')
         tipo_contrato = int((request.POST.get('tipo_contrato_id', '0')))
         empresa = int((request.POST.get('empresa_id', '0')))
@@ -49,7 +49,7 @@ class ContratoCrearView(View):
         contrato = Contrato(numero_contrato=numero_contrato, cliente_id=cliente, anho=anho,
                             supervisor_nombre=supervisor_nombre, supervisor_telefono=supervisor_telefono,
                             supervisor_correo=supervisor_correo, residente=residente, fecha_inicio=fecha_inicio,
-                            fecha_terminacion=fecha_terminacion, valor=valor, periocidad_informes=periocidad_informes,
+                            fecha_terminacion=fecha_terminacion, valor=valor, periodicidad_informes=periodicidad_informes,
                             tiempo=tiempo, tipo_contrato_id=tipo_contrato, empresa_id=empresa)
 
         if Contrato.objects.filter(numero_contrato=numero_contrato):
@@ -101,7 +101,7 @@ class ContratoEditarView(View):
     def post(self, request, id):
         update_fields = ['numero_contrato', 'cliente_id', 'anho', 'supervisor_nombre', 'supervisor_correo',
                          'supervisor_telefono', 'residente', 'fecha_inicio', 'fecha_terminacion', 'valor',
-                         'periocidad_informes', 'tiempo', 'tipo_contrato_id', 'empresa_id']
+                         'periodicidad_informes', 'tiempo', 'tipo_contrato_id', 'empresa_id']
 
         contrato = Contrato(id=id)
         contrato.numero_contrato = request.POST.get('numero_contrato', '')
@@ -114,7 +114,7 @@ class ContratoEditarView(View):
         contrato.fecha_inicio = datetime.strptime(request.POST.get('fecha_inicio', ''), "%Y-%m-%d")
         contrato.fecha_terminacion = datetime.strptime(request.POST.get('fecha_terminacion', ''), "%Y-%m-%d")
         contrato.valor = request.POST.get('valor', '')
-        contrato.periocidad_informes = request.POST.get('periocidad_informes', '')
+        contrato.periodicidad_informes = request.POST.get('periodicidad_informes', '')
         contrato.tiempo = request.POST.get('tiempo', '')
         contrato.tipo_contrato_id = int(request.POST.get('tipo_contrato_id', ''))
         contrato.empresa_id = int(request.POST.get('empresa_id', ''))
@@ -144,7 +144,7 @@ class ContratoEditarView(View):
                                    fecha_inicio__range=(contrato.fecha_inicio, contrato.fecha_inicio),
                                    fecha_terminacion__range=(contrato.fecha_terminacion, contrato.fecha_terminacion),
                                    valor=contrato.valor,
-                                   periocidad_informes=contrato.periocidad_informes, tiempo=contrato.tiempo,
+                                   periodicidad_informes=contrato.periodicidad_informes, tiempo=contrato.tiempo,
                                    tipo_contrato_id=contrato.tipo_contrato_id,
                                    empresa_id=contrato.empresa_id):
             messages.success(request, 'No se hicieron cambios en el contrato número {0}'.format(contrato.numero_contrato))
