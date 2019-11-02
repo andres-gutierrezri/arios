@@ -1,6 +1,5 @@
 from django.db import models
-from Administracion.models.models import TipoContrato, Empresa
-from Administracion.models import Tercero
+from Administracion.models import Tercero, TipoContrato, Empresa
 
 # Create your models here.
 
@@ -17,7 +16,7 @@ class Contrato(models.Model):
     fecha_inicio = models.DateTimeField(verbose_name='Fecha de inicio', null=False, blank=False)
     fecha_terminacion = models.DateTimeField(verbose_name='Fecha de terminación', null=True, blank=False)
     valor = models.BigIntegerField(verbose_name="Valor", null=True, blank=False)
-    periocidad_informes = models.IntegerField(verbose_name='Periocidad de informes', null=False,
+    periodicidad_informes = models.IntegerField(verbose_name='Periodicidad de informes', null=False,
                                               blank=False)
     tiempo = models.IntegerField(verbose_name='Tiempo', null=False, blank=False)
     tipo_contrato = models.ForeignKey(TipoContrato, on_delete=models.DO_NOTHING, verbose_name='Tipo de contrato',
