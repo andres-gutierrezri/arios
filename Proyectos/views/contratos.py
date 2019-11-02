@@ -25,9 +25,10 @@ class ContratoCrearView(View):
         empresas = Empresa.objects.all()
         terceros = Tercero.objects.all()
         rango_anho = range(2000, 2051)
-        return render(request, 'Proyectos/Contrato/crear.html', {'tipo_contratos': tipo_contratos,
+        opcion = 'crear'
+        return render(request, 'Proyectos/Contrato/crear-editar.html', {'tipo_contratos': tipo_contratos,
                                                                  'empresas': empresas, 'terceros': terceros,
-                                                                 'rango_anho': rango_anho})
+                                                                 'rango_anho': rango_anho, 'opcion': opcion})
 
     def post(self, request):
 
@@ -58,7 +59,7 @@ class ContratoCrearView(View):
             empresas = Empresa.objects.all()
             terceros = Tercero.objects.all()
             rango_anho = range(2000, 2051)
-            return render(request, 'Proyectos/Contrato/crear.html', {'contrato': contrato,
+            return render(request, 'Proyectos/Contrato/crear-editar.html', {'contrato': contrato,
                                                                          'tipo_contratos': tipo_contratos,
                                                                          'empresas': empresas,
                                                                          'terceros': terceros,
@@ -73,7 +74,7 @@ class ContratoCrearView(View):
             empresas = Empresa.objects.all()
             terceros = Tercero.objects.all()
             rango_anho = range(2000, 2051)
-            return render(request, 'Proyectos/Contrato/crear.html', {'contrato': contrato,
+            return render(request, 'Proyectos/Contrato/crear-editar.html', {'contrato': contrato,
                                                                      'tipo_contratos': tipo_contratos,
                                                                      'empresas': empresas,
                                                                      'terceros': terceros,
@@ -91,12 +92,13 @@ class ContratoEditarView(View):
         empresas = Empresa.objects.all().order_by('nombre')
         terceros = Tercero.objects.all().order_by('nombre')
         rango_anho = range(2000, 2051)
+        opcion = 'editar'
 
-        return render(request, 'Proyectos/Contrato/editar.html', {'contrato': contrato,
+        return render(request, 'Proyectos/Contrato/crear-editar.html', {'contrato': contrato,
                                                                          'tipo_contratos': tipo_contratos,
                                                                          'empresas': empresas,
                                                                          'terceros': terceros,
-                                                                         'rango_anho': rango_anho})
+                                                                         'rango_anho': rango_anho, 'opcion': opcion})
 
     def post(self, request, id):
         update_fields = ['numero_contrato', 'cliente_id', 'anho', 'supervisor_nombre', 'supervisor_correo',
@@ -122,7 +124,7 @@ class ContratoEditarView(View):
         if Contrato.objects.filter(numero_contrato=contrato.numero_contrato).exclude(id=id):
             messages.warning(request, 'Ya existe un contrato con número {0}'.format(contrato.numero_contrato))
             rango_anho = range(2000, 2051)
-            return render(request, 'Proyectos/Contrato/editar.html', {'contrato': contrato,
+            return render(request, 'Proyectos/Contrato/crear-editar.html', {'contrato': contrato,
                                                                          'tipo_contratos': TipoContrato.objects.all(),
                                                                          'empresas': Empresa.objects.all(),
                                                                          'terceros': Tercero.objects.all(),
@@ -131,7 +133,7 @@ class ContratoEditarView(View):
         elif contrato.fecha_inicio > contrato.fecha_terminacion:
             messages.warning(request, 'La fecha de inicio debe ser menor o igual a la fecha de terminación')
             rango_anho = range(2000, 2051)
-            return render(request, 'Proyectos/Contrato/editar.html', {'contrato': contrato,
+            return render(request, 'Proyectos/Contrato/crear-editar.html', {'contrato': contrato,
                                                                       'tipo_contratos': TipoContrato.objects.all(),
                                                                       'empresas': Empresa.objects.all(),
                                                                       'terceros': Tercero.objects.all(),
