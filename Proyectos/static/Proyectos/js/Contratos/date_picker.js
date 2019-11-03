@@ -1,29 +1,31 @@
-		let controls = {
-			leftArrow: '<i class="fal fa-angle-left" style="font-size: 1.25rem"></i>',
-			rightArrow: '<i class="fal fa-angle-right" style="font-size: 1.25rem"></i>'
-		};
+'use strict';
 
-		let runDatePicker = function () {
+let controls = {
+	leftArrow: '<i class="fal fa-angle-left" style="font-size: 1.25rem"></i>',
+	rightArrow: '<i class="fal fa-angle-right" style="font-size: 1.25rem"></i>'
+};
 
-			// minimum setup
-			$('#fecha_inicio').datepicker({
-				todayHighlight: true,
-				orientation: "bottom left",
-				templates: controls,
-				format: 'yyyy-mm-dd',
-				autoclose: true
-			});
+let runDatePicker = function () {
 
-			$('#fecha_terminacion').datepicker({
-				todayHighlight: true,
-				orientation: "bottom left",
-				templates: controls,
-				format: 'yyyy-mm-dd',
-				autoclose: true
-			});
-		};
+	// minimum setup
+	$('#fecha_inicio').datepicker({
+		todayHighlight: true,
+		orientation: "bottom left",
+		templates: controls,
+		format: 'yyyy-mm-dd',
+		autoclose: true
+	});
 
-		$(document).ready(function () {
-			runDatePicker();
-		});
+	$('#fecha_terminacion').datepicker({
+		todayHighlight: true,
+		orientation: "bottom left",
+		templates: controls,
+		format: 'yyyy-mm-dd',
+		autoclose: true
+	});
+};
+
+$(document).ready(function () {
+	runDatePicker();
+});
 
