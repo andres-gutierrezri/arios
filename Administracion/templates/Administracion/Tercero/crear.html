@@ -51,7 +51,7 @@
                                              <div class="col-md-6">
                                              <br>
                                                 <label for="tipo_identificacion_select">Tipo de Identificación</label>
-                                                <select class="select2 form-control w-100 select2-selection--single" id="tipo_identificacion_select" name="tipo_identificacion_id" required>
+                                                <select class="select2 form-control" id="tipo_identificacion_select" name="tipo_identificacion_id" required>
                                                     <option value="" >Seleccione un Tipo de Identificación</option>
                                                     {% for tipo_id in tipo_identificacion %}
                                                         <option value="{{ tipo_id.id }}" {% if tipo_id.id == tercero.tipo_identificacion_id %} selected {% endif %}>{{ tipo_id.nombre }}</option>
@@ -61,7 +61,7 @@
                                             <div class="col-md-6">
                                              <br>
                                                 <label for="empresa_select">Empresa</label>
-                                                <select class="select2 form-control w-100 select2-selection--single" id="empresa_select" name="empresa_id" required>
+                                                <select class="select2 form-control" id="empresa_select" name="empresa_id" required>
                                                     <option value="" >Seleccione una empresa</option>
                                                     {% for tipo_id in empresas %}
                                                         <option value="{{ tipo_id.id }}" {% if tipo_id.id == tercero.empresa_id %} selected {% endif %}>{{ tipo_id.nombre }}</option>
@@ -72,7 +72,7 @@
                                             <div class="col-md-6">
                                              <br>
                                                 <label for="tipo_terceros_select">Tipo Terceros</label>
-                                                <select class="select2 form-control w-100 select2-selection--single" id="tipo_terceros_select" name="tipo_tercero_id" required>
+                                                <select class="select2 form-control" id="tipo_terceros_select" name="tipo_tercero_id" required>
                                                     <option value="" >Seleccione un Tipo de Tercero</option>
                                                     {% for tipo_id in tipo_terceros %}
                                                         <option value="{{ tipo_id.id }}" {% if tipo_id.id == tercero.tipo_tercero_id %} selected {% endif %}>{{ tipo_id.nombre }}</option>
@@ -83,7 +83,7 @@
                                             <div class="col-md-6">
                                              <br>
                                                 <label for="centro_poblado_select">Departamento</label>
-                                                <select class="select2 form-control w-100 select2-selection--single" id="departamento_select" name="centro_poblado_id" required>
+                                                <select class="select2 form-control" id="departamento_select" name="centro_poblado_id" required>
                                                     <option value="" >Seleccione un Departamento</option>
                                                    {% for departamento in departamentos %}
                                                         <option value="{{ departamento.id }}" {% if departamento.id == tercero.centro_poblado.municipio.departamento.id %} selected {% endif %} >{{ departamento.nombre }}</option>
@@ -94,7 +94,7 @@
                                             <div class="col-md-6">
                                              <br>
                                                 <label for="centro_poblado_select">Municipio</label>
-                                                <select class="select2 form-control w-100 select2-selection--single" id="municipio_select" name="centro_poblado_id" required>
+                                                <select class="select2 form-control" id="municipio_select" name="centro_poblado_id" required>
                                                     <option value="" >Seleccione un Municipio</option>
                                                     {% for municipio in municipios %}
                                                         <option value="{{ municipio.id }}" {% if municipio.id == tercero.centro_poblado.municipio.id %} selected {% endif %} >{{ municipio.nombre }}</option>
@@ -105,7 +105,7 @@
                                             <div class="col-md-6">
                                              <br>
                                                 <label for="centro_poblado_select">Centro Poblado</label>
-                                                <select class="select2 form-control w-100 select2-selection--single" id="centro_poblado_select" name="centro_poblado_id" required>
+                                                <select class="select2 form-control" id="centro_poblado_select" name="centro_poblado_id" required>
                                                     <option value="" >Seleccione un Centro Poblado</option>
                                                      {% for c_poblado in c_poblados %}
                                                         <option value="{{ c_poblado.id }}" {% if c_poblado.id == tercero.centro_poblado.id %} selected {% endif %} >{{ c_poblado.nombre }}</option>
@@ -147,99 +147,7 @@
 <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
     <script>
 		$(document).ready(function () {
-			$(function() {
-				$('.select2').select2();
-
-				$(".select2-placeholder-multiple").select2({
-					placeholder: "Select State"
-				});
-				$(".js-hide-search").select2({
-					minimumResultsForSearch: 1 / 0
-				});
-				$(".js-max-length").select2({
-					maximumSelectionLength: 2,
-					placeholder: "Select maximum 2 items"
-				});
-				$(".select2-placeholder").select2({
-					placeholder:"Select a state",
-					allowClear: true
-				});
-
-				$(".js-select2-icons").select2({
-					minimumResultsForSearch: 1 / 0,
-					templateResult: icon,
-					templateSelection: icon,
-					escapeMarkup: function (elm) {
-						return elm
-					}
-				});
-				function icon(elm) {
-					elm.element;
-					return elm.id ? "<i class='" + $(elm.element).data("icon") + " mr-2'></i>" + elm.text : elm.text
-				}
-
-				$(".js-data-example-ajax").select2({
-				  ajax: {
-				    url: "https://api.github.com/search/repositories",
-				    dataType: 'json',
-				    delay: 250,
-				    data: function (params) {
-				      return {
-				        q: params.term, // search term
-				        page: params.page
-				      };
-				    },
-				    processResults: function (data, params) {
-				      // parse the results into the format expected by Select2
-				      // since we are using custom formatting functions we do not need to
-				      // alter the remote JSON data, except to indicate that infinite
-				      // scrolling can be used
-				      params.page = params.page || 1;
-
-				      return {
-				        results: data.items,
-				        pagination: {
-				          more: (params.page * 30) < data.total_count
-				        }
-				      };
-				    },
-				    cache: true
-				  },
-				  placeholder: 'Search for a repository',
-				  escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
-				  minimumInputLength: 1,
-				  templateResult: formatRepo,
-				  templateSelection: formatRepoSelection
-				});
-
-				function formatRepo (repo) {
-				  if (repo.loading) {
-				    return repo.text;
-				  }
-
-				  var markup = "<div class='select2-result-repository clearfix d-flex'>" +
-				    "<div class='select2-result-repository__avatar mr-2'><img src='" + repo.owner.avatar_url + "' class='width-2 height-2 mt-1 rounded' /></div>" +
-				    "<div class='select2-result-repository__meta'>" +
-				      "<div class='select2-result-repository__title fs-lg fw-500'>" + repo.full_name + "</div>";
-
-				  if (repo.description) {
-				    markup += "<div class='select2-result-repository__description fs-xs opacity-80 mb-1'>" + repo.description + "</div>";
-				  }
-
-				  markup += "<div class='select2-result-repository__statistics d-flex fs-sm'>" +
-				    "<div class='select2-result-repository__forks mr-2'><i class='fal fa-lightbulb'></i> " + repo.forks_count + " Forks</div>" +
-				    "<div class='select2-result-repository__stargazers mr-2'><i class='fal fa-star'></i> " + repo.stargazers_count + " Stars</div>" +
-				    "<div class='select2-result-repository__watchers mr-2'><i class='fal fa-eye'></i> " + repo.watchers_count + " Watchers</div>" +
-				  "</div>" +
-				  "</div></div>";
-
-				  return markup;
-				}
-
-				function formatRepoSelection (repo) {
-				  return repo.full_name || repo.text;
-				}
-			});
+		    $('.select2').select2();
 		});
 	</script>
 
