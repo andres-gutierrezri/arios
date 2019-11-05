@@ -125,7 +125,7 @@
                                             <div class="col-md-6">
                                                 <br>
                                                 <label for="contrato_valor">Valor</label>
-                                                <input class="form-control" id="contrato_valor"  onInput="checkLength(11,this)"  type="number" min="0" max="99999999999" name="valor" placeholder="Ingrese el valor del contrato" required  value="{{ contrato.valor }}">
+                                                <input class="form-control" id="contrato_valor"  onInput="validarLongitud(11,this)"  type="number" min="0" max="99999999999" name="valor" placeholder="Ingrese el valor del contrato" required  value="{{ contrato.valor }}">
                                                 <div class="invalid-tooltip">
                                                   Por favor digite un valor.
                                                 </div>
@@ -133,7 +133,7 @@
                                             <div class="col-md-6">
                                                 <br>
                                                 <label for="contrato_periodicidad_informes">Periodicidad de informes</label>
-                                                <input class="form-control" id="contrato_periodicidad_informes" type="number"  min="0" max="1000"  onInput="checkLength(3,this)" name="periodicidad_informes" placeholder="Ingrese la periodicidad de los informes" required  value="{{ contrato.periodicidad_informes }}">
+                                                <input class="form-control" id="contrato_periodicidad_informes" type="number"  min="0" max="1000"  onInput="validarLongitud(3,this)" name="periodicidad_informes" placeholder="Ingrese la periodicidad de los informes" required  value="{{ contrato.periodicidad_informes }}">
                                                 <div class="invalid-tooltip">
                                                   Por favor digite un valor.
                                                 </div>
@@ -141,7 +141,7 @@
                                             <div class="col-md-6">
                                                 <br>
                                                 <label for="contrato_tiempo">Tiempo</label>
-                                                <input class="form-control" id="contrato_tiempo" type="number" name="tiempo"  onInput="checkLength(3,this)" min="0" max="1000" placeholder="Ingrese el tiempo" required  value="{{ contrato.tiempo }}">
+                                                <input class="form-control" id="contrato_tiempo" type="number" name="tiempo"  onInput="validarLongitud(3,this)" min="0" max="1000" placeholder="Ingrese el tiempo" required  value="{{ contrato.tiempo }}">
                                                 <div class="invalid-tooltip">
                                                   Por favor digite un valor.
                                                 </div>
@@ -200,7 +200,6 @@
 <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
 <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js' %}"></script>
 <script src="{% static 'Proyectos/js/Contratos/date_picker.js' %}"></script>
-<script src="{% static 'Proyectos/js/Contratos/longitud_caracter.js' %}"></script>
 <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
     <script>
 		$(document).ready(function () {

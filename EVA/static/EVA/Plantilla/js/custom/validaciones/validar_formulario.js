@@ -16,3 +16,15 @@
         });
     }, false);
 })();
+
+function validarLongitud(longitud, elemento){
+  let fieldLength = elemento.value.length;
+  if(fieldLength <= longitud) {
+    return true;
+  }
+  else {
+    let str = elemento.value;
+    str = str.substring(0, str.length - 1);
+    elemento.value = str;
+  }
+}
