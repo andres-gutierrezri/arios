@@ -1,0 +1,14 @@
+.invalid-tooltip {
+  line-height: 0.9;
+  background-color: #fd395e;
+}
+
+.was-validated .form-control:invalid, .form-control.is-invalid {
+    border-color:#ccc;
+    background-image: none;
+}
+
+.was-validated .form-control:valid, .form-control.is-valid {
+    border-color:#ccc;
+    background-image: none;
+}

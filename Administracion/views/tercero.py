@@ -31,9 +31,10 @@ class TerceroCrearView(View):
         empresas = Empresa.objects.all()
         opcion = 'crear'
         return render(request, 'Administracion/Tercero/crear-editar.html', {'tipo_identificacion': tipo_identificacion,
-                                                      'tipo_terceros': tipo_terceros,
-                                                      'departamentos': departamentos,
-                                                      'empresas': empresas, 'opcion': opcion})
+                                                                            'tipo_terceros': tipo_terceros,
+                                                                            'departamentos': departamentos,
+                                                                            'empresas': empresas,
+                                                                            'opcion': opcion})
 
     def post(self, request):
 
@@ -55,13 +56,14 @@ class TerceroCrearView(View):
             empresas = Empresa.objects.all()
             municipios = Municipio.objects.all().order_by('nombre')
             c_poblados = CentroPoblado.objects.all().order_by('nombre')
-            return render(request, 'Administracion/Tercero/crear-editar.html', {'tercero': tercero,
-                                                                         'tipo_identificacion': tipo_identificacion,
-                                                                          'tipo_terceros': tipo_terceros,
-                                                                          'departamentos': departamentos,
-                                                                          'empresas': empresas,
-                                                                         'municipios': municipios,
-                                                                         'c_poblados': c_poblados})
+            return render(request, 'Administracion/Tercero/crear-editar.html',
+                          {'tercero': tercero,
+                           'tipo_identificacion': tipo_identificacion,
+                           'tipo_terceros': tipo_terceros,
+                           'departamentos': departamentos,
+                           'empresas': empresas,
+                           'municipios': municipios,
+                           'c_poblados': c_poblados})
 
         tercero.save()
         messages.success(request, 'Se ha agregado el tercero {0}'.format(nombre))
@@ -76,15 +78,18 @@ class TerceroEditarView(View):
         tipo_identificaciones = TipoIdentificacion.objects.filter(estado=True).order_by('nombre')
         tipo_terceros = TipoTercero.objects.filter(estado=True).order_by('nombre')
         departamentos = Departamento.objects.all().order_by('nombre')
-        municipios = Municipio.objects.all().order_by('nombre')
-        c_poblados = CentroPoblado.objects.all().order_by('nombre')
+        municipios = Municipio.objects.filter(departamento_id=tercero.centro_poblado.municipio.departamento_id)\
+            .order_by('nombre')
+        c_poblados = CentroPoblado.objects.filter(municipio_id=tercero.centro_poblado.municipio_id).order_by('nombre')
         opcion = 'editar'
-        return render(request, 'Administracion/Tercero/crear-editar.html', {'tercero': tercero, 'empresas': empresas,
-                                                       'tipo_identificaciones': tipo_identificaciones,
-                                                       'tipo_terceros': tipo_terceros,
-                                                       'departamentos': departamentos,
-                                                       'municipios': municipios, 'c_poblados': c_poblados,
-                                                                      'opcion': opcion})
+        return render(request, 'Administracion/Tercero/crear-editar.html',
+                      {'tercero': tercero, 'empresas': empresas,
+                       'tipo_identificaciones': tipo_identificaciones,
+                       'tipo_terceros': tipo_terceros,
+                       'departamentos': departamentos,
+                       'municipios': municipios,
+                       'c_poblados': c_poblados,
+                       'opcion': opcion})
 
     def post(self, request, id):
         update_fields = ['nombre', 'identificacion', 'tipo_identificacion_id', 'estado', 'empresa_id',
@@ -108,14 +113,17 @@ class TerceroEditarView(View):
             tipo_identificaciones = TipoIdentificacion.objects.filter(estado=True).order_by('nombre')
             tipo_terceros = TipoTercero.objects.filter(estado=True).order_by('nombre')
             departamentos = Departamento.objects.all().order_by('nombre')
-            municipios = Municipio.objects.all().order_by('nombre')
-            c_poblados = CentroPoblado.objects.all().order_by('nombre')
-            return render(request, 'Administracion/Tercero/crear-editar.html', {'tercero': tercero, 'empresas': empresas,
-                                                                          'tipo_identificaciones': tipo_identificaciones,
-                                                                          'tipo_terceros': tipo_terceros,
-                                                                          'departamentos': departamentos,
-                                                                          'municipios': municipios,
-                                                                          'c_poblados': c_poblados})
+            municipios = Municipio.objects.filter(departamento_id=tercero.centro_poblado.municipio.departamento_id)\
+                .order_by('nombre')
+            c_poblados = CentroPoblado.objects.filter(municipio_id=tercero.centro_poblado.municipio_id)\
+                .order_by('nombre')
+            return render(request, 'Administracion/Tercero/crear-editar.html.html',
+                          {'tercero': tercero, 'empresas': empresas,
+                           'tipo_identificaciones': tipo_identificaciones,
+                           'tipo_terceros': tipo_terceros,
+                           'departamentos': departamentos,
+                           'municipios': municipios,
+                           'c_poblados': c_poblados})
 
         elif Tercero.objects.filter(nombre=tercero.nombre, identificacion=tercero.identificacion,
                                     tipo_identificacion_id=tercero.tipo_identificacion_id, estado=tercero.estado,
@@ -128,7 +136,8 @@ class TerceroEditarView(View):
         else:
 
             tercero.save(update_fields=update_fields)
-            messages.success(request, 'Se ha actualizado el tercero {0}'.format(tercero.nombre) + ' con identificación {0}'.format(tercero.identificacion))
+            messages.success(request, 'Se ha actualizado el tercero {0}'.format(tercero.nombre)
+                             + ' con identificación {0}'.format(tercero.identificacion))
 
             return redirect(reverse('Administracion:terceros'))
 
