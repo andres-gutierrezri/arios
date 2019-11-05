@@ -8,7 +8,6 @@
 	<link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/bootstrap-datepicker/bootstrap-datepicker.css' %}">
-    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/validaciones/background.css' %}">
 
 {% endblock %}
 
@@ -51,14 +50,14 @@
                                                         {% endif %}
                                                     {% endfor %}
                                                 </select>
-                                             <div class="invalid-feedback">
+                                             <div class="invalid-tooltip">
                                                   Por favor seleccione un cliente.
                                                 </div>
                                               </div>
                                             <div class="col-md-6">
                                                 <label for="contrato_numero">Número de contrato</label>
                                                 <input class="form-control" id="contrato_numero" type="text" name="numero_contrato"  placeholder="Ingrese el número del contrato" required maxlength="20" value="{{ contrato.numero_contrato }}">
-                                                <div class="invalid-feedback">
+                                                <div class="invalid-tooltip">
                                                   Por favor digite el número de contrato.
                                                 </div>
                                             </div>
@@ -71,7 +70,7 @@
                                                         <option value="{{ anho }}" {% if anho == contrato.anho %}selected{% endif %}>{{ anho }}</option>
                                                     {% endfor %}
                                                 </select>
-                                            <div class="invalid-feedback">
+                                            <div class="invalid-tooltip">
                                                   Por favor seleccione un año.
                                                 </div>
                                             </div>
@@ -79,7 +78,7 @@
                                                  <br>
                                                 <label for="contrato_supervisor_nombre">Nombre del supervisor</label>
                                                 <input class="form-control" id="contrato_supervisor_nombre" type="text"  name="supervisor_nombre" placeholder="Ingrese el nombre del supervisor" required maxlength="100" value="{{ contrato.supervisor_nombre }}">
-                                                <div class="invalid-feedback">
+                                                <div class="invalid-tooltip">
                                                   Por favor digite el nombre del supervisor.
                                                 </div>
                                             </div>
@@ -87,7 +86,7 @@
                                                 <br>
                                                 <label for="contrato_telefono_supervisor">Teléfono del supervisor</label>
                                                 <input class="form-control" id="contrato_telefono_supervisor" type="text"  name="supervisor_telefono" placeholder="Ingrese el número telefónico del supervisor" required maxlength="20" value="{{ contrato.supervisor_telefono }}">
-                                                <div class="invalid-feedback">
+                                                <div class="invalid-tooltip">
                                                   Por favor digite el número telefónico.
                                                 </div>
                                             </div>
@@ -95,7 +94,7 @@
                                                 <br>
                                                 <label for="contrato_correo_supervisor">Correo electrónico del supervisor</label>
                                                 <input class="form-control" id="contrato_correo_supervisor" type="email"  name="supervisor_correo" placeholder="Ingrese el correo electrónico del supervisor" required maxlength="100" value="{{ contrato.supervisor_correo }}">
-                                                <div class="invalid-feedback">
+                                                <div class="invalid-tooltip">
                                                   Por favor digite el correo electrónico.
                                                 </div>
                                             </div>
@@ -103,7 +102,7 @@
                                                  <br>
                                                 <label for="contrato_residente">Nombre del residente</label>
                                                 <input class="form-control" id="contrato_residente" type="text"  name="residente"  placeholder="Ingrese el nombre del residente" required maxlength="100" value="{{ contrato.residente }}">
-                                                <div class="invalid-feedback">
+                                                <div class="invalid-tooltip">
                                                   Por favor digite el nombre del residente.
                                                 </div>
                                             </div>
@@ -111,7 +110,7 @@
                                                  <br>
                                                 <label for="fecha_inicio">Fecha de inicio</label>
                                                 <input class="form-control" id="fecha_inicio" name="fecha_inicio"  placeholder="Seleccione una fecha"  autocomplete="off" value="{{ contrato.fecha_inicio }}" required>
-                                                 <div class="invalid-feedback">
+                                                 <div class="invalid-tooltip">
                                                   Por favor seleccione una fecha.
                                                 </div>
                                             </div>
@@ -119,7 +118,7 @@
                                                  <br>
                                                 <label for="fecha_terminacion">Fecha de terminación</label>
                                                 <input class="form-control" id="fecha_terminacion" name="fecha_terminacion"  placeholder="Seleccione una fecha"  autocomplete="off" value="{{ contrato.fecha_terminacion  }}" required>
-                                                 <div class="invalid-feedback">
+                                                 <div class="invalid-tooltip">
                                                   Por favor seleccione una fecha.
                                                 </div>
                                             </div>
@@ -127,7 +126,7 @@
                                                 <br>
                                                 <label for="contrato_valor">Valor</label>
                                                 <input class="form-control" id="contrato_valor"  onInput="checkLength(11,this)"  type="number" min="0" max="99999999999" name="valor" placeholder="Ingrese el valor del contrato" required  value="{{ contrato.valor }}">
-                                                <div class="invalid-feedback">
+                                                <div class="invalid-tooltip">
                                                   Por favor digite un valor.
                                                 </div>
                                             </div>
@@ -135,7 +134,7 @@
                                                 <br>
                                                 <label for="contrato_periodicidad_informes">Periodicidad de informes</label>
                                                 <input class="form-control" id="contrato_periodicidad_informes" type="number"  min="0" max="1000"  onInput="checkLength(3,this)" name="periodicidad_informes" placeholder="Ingrese la periodicidad de los informes" required  value="{{ contrato.periodicidad_informes }}">
-                                                <div class="invalid-feedback">
+                                                <div class="invalid-tooltip">
                                                   Por favor digite un valor.
                                                 </div>
                                             </div>
@@ -143,7 +142,7 @@
                                                 <br>
                                                 <label for="contrato_tiempo">Tiempo</label>
                                                 <input class="form-control" id="contrato_tiempo" type="number" name="tiempo"  onInput="checkLength(3,this)" min="0" max="1000" placeholder="Ingrese el tiempo" required  value="{{ contrato.tiempo }}">
-                                                <div class="invalid-feedback">
+                                                <div class="invalid-tooltip">
                                                   Por favor digite un valor.
                                                 </div>
                                             </div>
@@ -156,7 +155,7 @@
                                                         <option value="{{ tipo_contrato.id }}" {% if tipo_contrato.id == contrato.tipo_contrato_id %} selected {% endif %}>{{ tipo_contrato.nombre }}</option>
                                                     {% endfor %}
                                                 </select>
-                                            <div class="invalid-feedback">
+                                            <div class="invalid-tooltip">
                                                   Por favor seleccione un tipo de contrato.
                                                 </div>
                                             </div>
@@ -169,7 +168,7 @@
                                                         <option value="{{ empresa.id }}" {% if empresa.id == contrato.empresa_id %} selected {% endif %}>{{ empresa.nombre }}</option>
                                                     {% endfor %}
                                                 </select>
-                                                <div class="invalid-feedback">
+                                                <div class="invalid-tooltip">
                                                   Por favor seleccione una empresa.
                                                 </div>
                                             </div>
