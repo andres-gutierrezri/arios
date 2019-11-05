@@ -37,8 +37,8 @@ class ContratoCrearView(View):
         supervisor_telefono = request.POST.get('supervisor_telefono', '')
         supervisor_correo = request.POST.get('supervisor_correo', '')
         residente = request.POST.get('residente', '')
-        fecha_inicio = request.POST.get('fecha_inicio', '')
-        fecha_terminacion = request.POST.get('fecha_terminacion', '')
+        fecha_inicio = datetime.strptime(request.POST.get('fecha_inicio', ''), "%Y-%m-%d")
+        fecha_terminacion = datetime.strptime(request.POST.get('fecha_terminacion', ''), "%Y-%m-%d")
         valor = request.POST.get('valor', '')
         periodicidad_informes = request.POST.get('periodicidad_informes', '')
         tiempo = request.POST.get('tiempo', '')
@@ -58,6 +58,7 @@ class ContratoCrearView(View):
             empresas = Empresa.objects.all()
             terceros = Tercero.objects.all()
             rango_anho = range(2000, 2051)
+            opcion = 'crear'
             return render(request, 'Proyectos/Contrato/crear-editar.html', {'contrato': contrato,
                                                                             'tipo_contratos': tipo_contratos,
                                                                             'empresas': empresas,
@@ -65,10 +66,7 @@ class ContratoCrearView(View):
                                                                             'rango_anho': rango_anho,
                                                                             'opcion': opcion})
 
-        fecha_1 = datetime.strptime(contrato.fecha_inicio, "%Y-%m-%d")
-        fecha_2 = datetime.strptime(contrato.fecha_terminacion, "%Y-%m-%d")
-
-        if fecha_1 > fecha_2:
+        if contrato.fecha_inicio > contrato.fecha_terminacion:
             messages.warning(request, 'La fecha de inicio debe ser menor o igual a la fecha de terminación')
             tipo_contratos = TipoContrato.objects.all()
             empresas = Empresa.objects.all()
