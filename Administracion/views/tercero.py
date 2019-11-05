@@ -75,8 +75,9 @@ class TerceroEditarView(View):
         tipo_identificaciones = TipoIdentificacion.objects.filter(estado=True).order_by('nombre')
         tipo_terceros = TipoTercero.objects.filter(estado=True).order_by('nombre')
         departamentos = Departamento.objects.all().order_by('nombre')
-        municipios = Municipio.objects.all().order_by('nombre')
-        c_poblados = CentroPoblado.objects.all().order_by('nombre')
+        municipios = Municipio.objects.filter(departamento_id=tercero.centro_poblado.municipio.departamento_id)\
+            .order_by('nombre')
+        c_poblados = CentroPoblado.objects.filter(municipio_id=tercero.centro_poblado.municipio_id).order_by('nombre')
         return render(request, 'Administracion/Tercero/editar.html', {'tercero': tercero, 'empresas': empresas,
                                                        'tipo_identificaciones': tipo_identificaciones,
                                                        'tipo_terceros': tipo_terceros,
@@ -105,8 +106,10 @@ class TerceroEditarView(View):
             tipo_identificaciones = TipoIdentificacion.objects.filter(estado=True).order_by('nombre')
             tipo_terceros = TipoTercero.objects.filter(estado=True).order_by('nombre')
             departamentos = Departamento.objects.all().order_by('nombre')
-            municipios = Municipio.objects.all().order_by('nombre')
-            c_poblados = CentroPoblado.objects.all().order_by('nombre')
+            municipios = Municipio.objects.filter(departamento_id=tercero.centro_poblado.municipio.departamento_id)\
+                .order_by('nombre')
+            c_poblados = CentroPoblado.objects.filter(municipio_id=tercero.centro_poblado.municipio_id)\
+                .order_by('nombre')
             return render(request, 'Administracion/Tercero/editar.html', {'tercero': tercero, 'empresas': empresas,
                                                                           'tipo_identificaciones': tipo_identificaciones,
                                                                           'tipo_terceros': tipo_terceros,
