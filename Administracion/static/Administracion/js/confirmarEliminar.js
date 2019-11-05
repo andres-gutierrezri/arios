@@ -1,11 +1,10 @@
-var URLDomain = document.location.origin+"/";
-var idBorrar = 0;
-var urlFinal;
-var rutaBorrado = $('#rutaBorrado').val();
+let URLDomain = document.location.origin+"/";
+let idBorrar = 0;
+let urlFinal;
+let rutaBorrado = $('#rutaBorrado').val();
 
 function fConfirmarEliminar(idElemento) {
-
-     fSweetAlert();
+    fSweetAlert();
     idBorrar = idElemento;
 }
 
@@ -26,16 +25,14 @@ function fSweetAlert() {
                 context: document.body,
                 success: function (data) {
                     if(data.Mensaje === "OK") {
-
                         location.reload();
                     }
                     else {
-                        Swal.fire("Error!", "Error");
+                        location.reload();
                     }
                 },
                 failure: function (errMsg) {
                     location.reload();
-                    Swal.fire("Error!", "Error");
                 }
             });
         }
