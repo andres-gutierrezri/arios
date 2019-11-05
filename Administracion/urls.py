@@ -20,7 +20,7 @@ from Administracion.views import tercero, views
 app_name = 'Administracion'
 
 urlpatterns = [
-    path('principal/', tercero.principal_view, name='principal'),
+    path('index/', tercero.principal_view, name='index'),
     path('terceros/', tercero.tercero_view, name='terceros'),
     path('terceros/add', tercero.TerceroCrearView.as_view(), name='terceros-crear'),
     path('terceros/<int:id>/', tercero.TerceroEditarView.as_view(), name='terceros-editar'),

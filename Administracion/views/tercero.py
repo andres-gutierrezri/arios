@@ -97,6 +97,7 @@ class TerceroEditarView(View):
         tercero.tipo_tercero_id = request.POST.get('tipo_tercero_id', '')
         tercero.centro_poblado_id = request.POST.get('centro_poblado_id', '')
         tercero.save(update_fields=update_fields)
+        messages.success(request, 'Se ha actualizado el tercero {0}'.format(tercero.nombre))
 
         return redirect(reverse('Administracion:terceros'))
 
