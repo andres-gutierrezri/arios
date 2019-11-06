@@ -1,0 +1,210 @@
+{% extends 'Proyectos/_common/base_proyectos.html' %}
+{% load static %}
+<title>{% block titulo %}{% if opcion == 'editar' %} Editar Contrato {% else %} Crear Contrato {% endif %}{% endblock %}</title>
+{% block styles %}
+<!-- DEMO related CSS below -->
+	<link rel="stylesheet" media="screen, print" href="{%static 'EVA/Plantilla/css/fa-brands.css' %}">
+	<!-- page related CSS below -->
+	<link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/bootstrap-datepicker/bootstrap-datepicker.css' %}">
+{% endblock styles%}
+
+{% block main %}
+    <div class="panel-container show">
+        <div class="header">
+             <h1 class="header-title">
+                <i class='far fa-file-alt'></i> Contratos: <span class='fw-300'>{% if opcion == 'editar' %} Editar {% else %} Crear {% endif %}</span>
+                 <br>
+                 <br>
+             </h1>
+        </div>
+        <div class="row">
+            <div class="col-xl-12">
+                <div id="panel-1" class="panel">
+                    <div class="panel-container show">
+                        <div class="panel-content">
+                            <div class="panel-group">
+                                <div class="panel-body">
+                                    {% if error %}
+                                        <div class="alert alert-danger alert-dismissible fade show">
+                                            <strong>{{ error }}</strong>
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                    {% endif %}
+                                    {% if opcion == 'editar' %}
+                                    <form action="{% url 'Proyectos:contratos-editar' contrato.id %}" id="tercero" method="post" class="needs-validation" novalidate>
+                                    {% else %}
+                                    <form action="{% url 'Proyectos:contratos-crear' %}" id="tercero" method="post" class="needs-validation" novalidate>
+                                    {% endif %}
+                                        {% csrf_token %}
+                                        <div class="form-group">
+                                            <div class="form-row">
+                                                 <div class="col-md-6">
+                                                    <label for="cliente_select">Cliente</label>
+                                                    <select class="select2 form-control" id="cliente_select" name="cliente_id" required >
+                                                        <option value="" >Seleccione un Tipo de Cliente</option>
+                                                        {% for tercero in terceros %}
+                                                            {% if tercero.tipo_tercero.nombre.lower == 'cliente' %}
+                                                            <option value="{{ tercero.id }}" {% if tercero.id == contrato.cliente.id %} selected {% endif %}>{{ tercero.nombre }}</option>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </select>
+                                                     <div class="invalid-tooltip">
+                                                      Por favor seleccione un cliente.
+                                                    </div>
+                                                  </div>
+                                                <div class="col-md-6">
+                                                    <label for="contrato_numero">Número de contrato</label>
+                                                    <input class="form-control" id="contrato_numero" type="text"   name="numero_contrato" placeholder="Ingrese el número de contrato"   required maxlength="20" value="{{ contrato.numero_contrato }}">
+                                                    <div class="invalid-tooltip">
+                                                      Por favor digite el número de contrato.
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <br>
+                                                    <label for="rango_anho_select">Año</label>
+                                                    <select class="select2 form-control" type="number" id="rango_anho_select" name="rango_anho" required >
+                                                        <option value="" >Seleccione un año</option>
+                                                        {% for anho in rango_anho %}
+                                                            <option value="{{ anho }}" {% if anho == contrato.anho %}selected{% endif %}>{{ anho }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <div class="invalid-tooltip">
+                                                      Por favor seleccione un año.
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                     <br>
+                                                    <label for="contrato_supervisor_nombre">Nombre del supervisor</label>
+                                                    <input class="form-control" id="contrato_supervisor_nombre" type="text"   name="supervisor_nombre" placeholder="Ingrese el nombre del supervisor" required maxlength="100" value="{{ contrato.supervisor_nombre }}">
+                                                    <div class="invalid-tooltip">
+                                                      Por favor digite el nombre del supervisor.
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <br>
+                                                    <label for="contrato_telefono_supervisor">Teléfono del supervisor</label>
+                                                    <input class="form-control sinx" id="contrato_telefono_supervisor" type="text"  name="supervisor_telefono" placeholder="Ingrese el número telefónico del supervisor" required maxlength="20" value="{{ contrato.supervisor_telefono }}">
+                                                    <div class="invalid-tooltip">
+                                                      Por favor digite el teléfono del supervisor.
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <br>
+                                                    <label for="contrato_correo_supervisor">Correo electrónico del supervisor</label>
+                                                    <input class="form-control" id="contrato_correo_supervisor"  type="email" name="supervisor_correo" placeholder="Ingrese el correo electrónico del supervisor" maxlength="100" value="{{ contrato.supervisor_correo }}" required>
+                                                    <div class="invalid-tooltip">
+                                                      Por favor digite el correo electrónico del supervisor.
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                     <br>
+                                                    <label for="contrato_residente">Nombre del residente</label>
+                                                    <input class="form-control " id="contrato_residente" type="text" name="residente"  placeholder="Ingrese el nombre del residente" required maxlength="100" value="{{ contrato.residente }}">
+                                                    <div class="invalid-tooltip">
+                                                      Por favor digite el nombre del residente.
+                                                    </div>
+                                                </div>
+                                                 <div class="col-md-6">
+                                                     <br>
+                                                    <label for="fecha_inicio">Fecha de inicio</label>
+                                                    <input class="form-control" id="fecha_inicio" name="fecha_inicio"  placeholder="Seleccione una fecha"  autocomplete="off" value="{{ contrato.fecha_inicio | date:'Y-m-d' }}" required>
+                                                     <div class="invalid-tooltip">
+                                                      Por favor seleccione una fecha.
+                                                    </div>
+                                                </div>
+                                                 <div class="col-md-6">
+                                                     <br>
+                                                    <label for="fecha_terminacion">Fecha de terminación</label>
+                                                    <input class="form-control" id="fecha_terminacion" name="fecha_terminacion"  placeholder="Seleccione una fecha"  autocomplete="off" value="{{ contrato.fecha_terminacion | date:'Y-m-d' }}" required>
+                                                     <div class="invalid-tooltip">
+                                                      Por favor seleccione una fecha.
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <br>
+                                                    <label for="contrato_valor">Valor</label>
+                                                    <input class="form-control" id="contrato_valor" type="number" name="valor"  onInput="validarLongitud(11,this)" placeholder="Ingrese el valor del contrato" required min="0" max="99999999999" value="{{ contrato.valor }}">
+                                                    <div class="invalid-tooltip">
+                                                      Por favor digite un valor.
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <br>
+                                                    <label for="contrato_periodicidad_informes">Periodicidad de informes</label>
+                                                    <input class="form-control" id="contrato_periodicidad_informes" type="number" min="0" max="1000"  onInput="validarLongitud(3,this)" name="periodicidad_informes" required placeholder="Ingrese la periodicidad de los informes"  value="{{ contrato.periodicidad_informes }}">
+                                                    <div class="invalid-tooltip">
+                                                      Por favor digite un valor.
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <br>
+                                                    <label for="contrato_tiempo">Tiempo</label>
+                                                    <input class="form-control" id="contrato_tiempo" type="number" min="0" max="1000" name="tiempo"  onInput="validarLongitud(3,this)" placeholder="Ingrese el tiempo" required  value="{{ contrato.tiempo }}">
+                                                    <div class="invalid-tooltip">
+                                                      Por favor digite un valor.
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <br>
+                                                    <label for="tipo_contrato_select">Tipo de contrato</label>
+                                                    <select class="select2 form-control" id="tipo_contrato_select" name="tipo_contrato_id" required >
+                                                        <option value="" >Seleccione un Tipo de Contrato</option>
+                                                        {% for tipo_contrato in tipo_contratos %}
+                                                            <option value="{{ tipo_contrato.id }}" {% if tipo_contrato.id == contrato.tipo_contrato_id %} selected {% endif %}>{{ tipo_contrato.nombre }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <div class="invalid-tooltip">
+                                                      Por favor seleccione un contrato.
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <br>
+                                                    <label for="empresa_select">Empresa</label>
+                                                    <select class="select2 form-control" id="empresa_select" name="empresa_id" required >
+                                                        <option value="" >Seleccione una Empresa</option>
+                                                        {% for empresa in empresas %}
+                                                            <option value="{{ empresa.id }}" {% if empresa.id == contrato.empresa_id %} selected {% endif %}>{{ empresa.nombre }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <div class="invalid-tooltip">
+                                                      Por favor seleccione una empresa.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div>
+                                                <button id="agregar" class="btn btn-primary btn-block">{% if opcion == 'editar' %} Actualizar {% else %} Agregar {% endif %}</button>
+                                            </div>
+                                            <div style="padding-left: 15px">
+                                                <a href="{% url 'Proyectos:contratos' %}" class="btn btn-danger btn-block">Cancelar</a>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock main %}
+
+{% block scripts %}
+    <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js' %}"></script>
+    <script src="{% static 'Proyectos/js/Contratos/date_picker.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
+    <script>
+		$(document).ready(function () {
+		    $('.select2').select2();
+		});
+	</script>
+
+{% endblock scripts %}
