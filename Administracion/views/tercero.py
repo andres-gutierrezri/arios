@@ -1,4 +1,6 @@
 from datetime import datetime
+
+from django.db.models import F
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -21,16 +23,19 @@ def principal_view(request):
 
 class TerceroCrearView(View):
     def get(self, request):
-        tipo_identificacion = TipoIdentificacion.objects.all()
+        # tipo_identificacion = TipoIdentificacion.objects.all()
+        tipos_identificacion = TipoIdentificacion.objects \
+            .filter(estado=True).values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
         tipo_terceros = TipoTercero.objects.all()
         departamentos = Departamento.objects.all().order_by('nombre')
         empresas = Empresa.objects.all()
         opcion = 'crear'
-        return render(request, 'Administracion/Tercero/crear-editar.html', {'tipo_identificacion': tipo_identificacion,
-                                                                            'tipo_terceros': tipo_terceros,
-                                                                            'departamentos': departamentos,
-                                                                            'empresas': empresas,
-                                                                            'opcion': opcion})
+        return render(request, 'Administracion/Tercero/crear-editar.html',
+                      {'tipos_identificacion': tipos_identificacion,
+                       'tipo_terceros': tipo_terceros,
+                       'departamentos': departamentos,
+                       'empresas': empresas,
+                       'opcion': opcion})
 
     def post(self, request):
 
@@ -72,7 +77,8 @@ class TerceroEditarView(View):
     def get(self, request, id):
         tercero = Tercero.objects.get(id=id)
         empresas = Empresa.objects.filter(estado=True).order_by('nombre')
-        tipo_identificaciones = TipoIdentificacion.objects.filter(estado=True).order_by('nombre')
+        tipos_identificacion = TipoIdentificacion.objects \
+            .filter(estado=True).values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
         tipo_terceros = TipoTercero.objects.filter(estado=True).order_by('nombre')
         departamentos = Departamento.objects.all().order_by('nombre')
         municipios = Municipio.objects.filter(departamento_id=tercero.centro_poblado.municipio.departamento_id)\
@@ -81,7 +87,7 @@ class TerceroEditarView(View):
         opcion = 'editar'
         return render(request, 'Administracion/Tercero/crear-editar.html',
                       {'tercero': tercero, 'empresas': empresas,
-                       'tipo_identificaciones': tipo_identificaciones,
+                       'tipos_identificacion': tipos_identificacion,
                        'tipo_terceros': tipo_terceros,
                        'departamentos': departamentos,
                        'municipios': municipios,
