@@ -1,5 +1,6 @@
 {% extends 'Administracion/_common/base_administracion.html' %}
 {% load static %}
+{% load eva_tags %}
 <title>{% block titulo %}{% if opcion == 'editar' %}Editar Tercero{% else %} Crear Tercero {% endif %}{% endblock %}</title>
 {% block styles %}
 <!-- DEMO related CSS below -->
@@ -34,11 +35,7 @@
                                         <div class="form-group">
                                             <div class="form-row">
                                                 <div class="col-md-6">
-                                                    <label for="empleado_name">Nombre</label>
-                                                    <input class="form-control" id="tercero_name" type="text" name="nombre" placeholder="Ingrese el nombre" required maxlength="100" value="{{ tercero.nombre }}">
-                                                    <div class="invalid-tooltip">
-                                                      Por favor digite el nombre.
-                                                    </div>
+                                                    {% input_text_tag 'nombre' 'Nombre' placeholder="Ingrese el nombre" required="" maxlength="100" value=tercero.nombre mensaje_validacion='Por favor digite el nombre.'  %}
                                                 </div>
                                                 <div class="col-md-6">
                                                     <label for="empleado_last_name">Identificación</label>
@@ -51,33 +48,9 @@
                                         </div>
                                         <div class="form-group">
                                             <div class="form-row">
-                                                {% if opcion == 'crear' %}
-                                                 <div class="col-md-6">
-                                                    <label for="tipo_identificacion_select">Tipo de Identificación</label>
-                                                    <select class="select2 form-control w-100 select2-selection--single" id="tipo_identificacion_select" name="tipo_identificacion_id" required>
-                                                        <option value="" >Seleccione un Tipo de Identificación</option>
-                                                        {% for tipo_id in tipo_identificacion %}
-                                                            <option value="{{ tipo_id.id }}" {% if tipo_id.id == tercero.tipo_identificacion_id %} selected {% endif %}>{{ tipo_id.nombre }}</option>
-                                                        {% endfor %}
-                                                    </select>
-                                                    <div class="invalid-tooltip">
-                                                      Por favor seleccione un tipo de identificación.
-                                                    </div>
-                                                </div>
-                                                {% else %}
                                                 <div class="col-md-6">
-                                                    <label for="tipo_identificacion_select">Tipo de Identificación</label>
-                                                    <select class="select2 form-control" id="tipo_identificacion_select" name="tipo_identificacion_id" required>
-                                                        <option value="" >Seleccione un Tipo de Identificación</option>
-                                                        {% for tipo_id in tipo_identificaciones %}
-                                                            <option value="{{ tipo_id.id }}" {% if tipo_id.id == tercero.tipo_identificacion_id %} selected {% endif %}>{{ tipo_id.nombre }}</option>
-                                                        {% endfor %}
-                                                    </select>
-                                                    <div class="invalid-tooltip">
-                                                      Por favor seleccione un tipo de identificación.
-                                                    </div>
+                                                {% select_tag tipos_identificacion 'tipo_identificacion_id' 'Seleccione un Tipo de Identificación' texto_label="Tipo de Identificación" value=tercero.tipo_identificacion_id required="" mensaje_validacion='Por favor seleccione un tipo de identificación.' %}
                                                 </div>
-                                                {% endif %}
                                                 <div class="col-md-6">
                                                     <label for="empresa_select">Empresa</label>
                                                     <select class="select2 form-control" id="empresa_select" name="empresa_id" required>
