@@ -1,0 +1,11 @@
+{% if texto_label %}
+    <label for="{{ nombre }}_id">{{ texto_label}}</label>
+{% endif %}
+{% if tipo != 'textarea' %}
+    <input type="{{ tipo }}" id="{{ nombre }}_id" name="{{ nombre }}" value="{{ valor }}" {{ propiedades }}>
+{% else %}
+    <textarea id="{{ nombre }}_id" name="{{ nombre }}" {{ propiedades }}>{{ valor }}</textarea>
+{% endif %}
+{% if mensaje_validacion %}
+     <div class="invalid-tooltip">{{ mensaje_validacion }}</div>
+{% endif %}

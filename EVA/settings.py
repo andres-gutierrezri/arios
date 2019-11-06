@@ -68,6 +68,9 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'libraries': {
+                'eva_tags': 'EVA.templatetags.etiquetas_generales',
+            }
         },
     },
 ]
