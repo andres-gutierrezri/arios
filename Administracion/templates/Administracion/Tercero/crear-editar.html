@@ -38,11 +38,7 @@
                                                     {% input_text_tag 'nombre' 'Nombre' placeholder="Ingrese el nombre" required="" maxlength="100" value=tercero.nombre mensaje_validacion='Por favor digite el nombre.'  %}
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <label for="empleado_last_name">Identificación</label>
-                                                    <input class="form-control" id="tercero_identificacion" type="text" name="identificacion" placeholder="Ingrese el número de identificación" required maxlength="15" value="{{ tercero.identificacion }}">
-                                                    <div class="invalid-tooltip">
-                                                      Por favor digite la identificación.
-                                                    </div>
+                                                    {% input_text_tag 'identificacion' 'Identificación' placeholder='Ingrese el número de identificación' required='' maxlength='15' value=tercero.identificacion mensaje_validacion='Por favor digite la identificación'  %}
                                                 </div>
                                             </div>
                                         </div>
@@ -52,72 +48,30 @@
                                                 {% select_tag tipos_identificacion 'tipo_identificacion_id' 'Seleccione un Tipo de Identificación' texto_label="Tipo de Identificación" value=tercero.tipo_identificacion_id required="" mensaje_validacion='Por favor seleccione un tipo de identificación.' %}
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <label for="empresa_select">Empresa</label>
-                                                    <select class="select2 form-control" id="empresa_select" name="empresa_id" required>
-                                                        <option value="" >Seleccione una Empresa</option>
-                                                        {% for empresa in empresas %}
-                                                            <option value="{{ empresa.id }}" {% if empresa.id == tercero.empresa_id %} selected {% endif %}>{{ empresa.nombre }}</option>
-                                                        {% endfor %}
-                                                    </select>
-                                                    <div class="invalid-tooltip">
-                                                      Por favor seleccione una empresa.
-                                                    </div>
+                                                {% select_tag empresas 'empresa_id' 'Seleccione una Empresa' texto_label="Empresa" value=tercero.empresa_id required="" mensaje_validacion='Por favor seleccione una empresa.' %}
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <div class="form-row">
                                                 <div class="col-md-6">
-                                                    <label for="cargo_select">Tipo Terceros</label>
-                                                    <select class="select2 form-control" id="tipo_select" name="tipo_tercero_id" required>
-                                                        <option value="" >Seleccione un Tipo de Tercero</option>
-                                                        {% for tipo in tipo_terceros %}
-                                                            <option value="{{ tipo.id }}" {% if tipo.id == tercero.tipo_tercero_id %} selected {% endif %}>{{ tipo.nombre }}</option>
-                                                        {% endfor %}
-                                                    </select>
-                                                    <div class="invalid-tooltip">
-                                                      Por favor seleccione un tipo de tercero.
-                                                    </div>
+                                                {% select_tag tipo_terceros 'tipo_tercero_id' 'Seleccione un Tipo de Tercero' texto_label='Tipo de tercero' value=tercero.tipo_tercero_id required='' mensaje_validacion='Por favor seleccione un tipo de tercero.' %}
+
                                                 </div>
                                                  <div class="col-md-6">
-                                                    <label for="departamento_select">Departamento</label>
-                                                    <select class="select2 form-control" id="departamento_select" name="departamento_id" required>
-                                                        <option value="" >Seleccione un Departamento</option>
-                                                        {% for departamento in departamentos %}
-                                                            <option value="{{ departamento.id }}" {% if departamento.id == tercero.centro_poblado.municipio.departamento.id %} selected {% endif %} >{{ departamento.nombre }}</option>
-                                                        {% endfor %}
-                                                    </select>
-                                                    <div class="invalid-tooltip">
-                                                      Por favor seleccione un departamento.
-                                                    </div>
-                                                </div>
+                                                 {% select_tag departamentos 'departamento_id' 'Seleccione un Departamento' texto_label="Departamento" value=tercero.centro_poblado.municipio.departamento.id required="" mensaje_validacion='Por favor seleccione un departamento.' %}
+
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <div class="form-row">
                                                 <div class="col-md-6">
                                                     <br>
-                                                    <label for="municipio_select">Municipio</label>
-                                                    <select class="select2 form-control" id="municipio_select" name="municipio_id" required>
-                                                         {% for municipio in municipios %}
-                                                            <option value="{{ municipio.id }}" {% if municipio.id == tercero.centro_poblado.municipio.id %} selected {% endif %} >{{ municipio.nombre }}</option>
-                                                        {% endfor %}
-                                                    </select>
-                                                    <div class="invalid-tooltip">
-                                                      Por favor seleccione un municipio.
-                                                    </div>
+                                                {% select_tag municipios 'municipio_id' 'Seleccione un Municipio' texto_label="Municipio" value=tercero.centro_poblado.municipio.id required="" mensaje_validacion='Por favor seleccione un municipio.' %}
                                                 </div>
                                                 <div class="col-md-6">
                                                     <br>
-                                                    <label for="centro_poblado_select">Centro Poblado</label>
-                                                    <select class="select2 form-control" id="centro_poblado_select" name="centro_poblado_id" required>
-                                                         {% for c_poblado in c_poblados %}
-                                                            <option value="{{ c_poblado.id }}" {% if c_poblado.id == tercero.centro_poblado.id %} selected {% endif %} >{{ c_poblado.nombre }}</option>
-                                                        {% endfor %}
-                                                    </select>
-                                                    <div class="invalid-tooltip">
-                                                      Por favor seleccione un centro poblado.
-                                                    </div>
+                                                {% select_tag centros_poblados 'centro_poblado_id' 'Seleccione un Centro Poblado' texto_label="Centro Poblado" value=tercero.centro_poblado.id required="" mensaje_validacion='Por favor seleccione un centro poblado.' %}
                                                 </div>
                                             </div>
                                         </div>
