@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from django.db.models import F
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
