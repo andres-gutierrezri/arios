@@ -24,8 +24,7 @@ class Empresa(models.Model):
 class Proceso(models.Model):
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     objeto = models.CharField(max_length=100, verbose_name='Objeto', null=False, blank=False)
-    empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa', null=True
-                                     , blank=False)
+    empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa', null=True, blank=False)
 
     def __str__(self):
         return self.nombre
