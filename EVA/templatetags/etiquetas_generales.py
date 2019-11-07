@@ -28,6 +28,18 @@ def input_text_tag(nombre, texto_label, **kwargs):
 
 
 @register.inclusion_tag('EVA/_general_tags/_input_general_tag.html')
+def input_date_tag(nombre, texto_label, **kwargs):
+
+    kwargs.pop('texto_label', None)
+    kwargs.pop('type', None)
+
+    kwargs['texto_label'] = texto_label
+    kwargs['type'] = u'date'
+
+    return arma_input_general_tag(nombre, **kwargs)
+
+
+@register.inclusion_tag('EVA/_general_tags/_input_general_tag.html')
 def input_number_tag(nombre, texto_label, **kwargs):
 
     kwargs.pop('texto_label', None)
@@ -113,6 +125,9 @@ def model_autoinput_tag(modelo, nombre_campo, incluir_label, **kwargs):
 def arma_input_general_tag(nombre, **kwargs):
     valor = kwargs.pop('value', '')
     tipo = kwargs.pop('type', u'text')
+    is_fecha = tipo == 'date'
+    if is_fecha:
+        tipo = 'text'
 
     if 'class' not in kwargs:
         kwargs['class'] = 'form-control'
@@ -121,7 +136,7 @@ def arma_input_general_tag(nombre, **kwargs):
     mensaje_validacion = kwargs.pop('mensaje_validacion', None)
 
     return {'nombre': nombre, 'texto_label': texto_label, 'tipo': tipo, 'valor': valor,
-            'propiedades': propiedades_to_str(kwargs), 'mensaje_validacion': mensaje_validacion}
+            'propiedades': propiedades_to_str(kwargs), 'mensaje_validacion': mensaje_validacion, 'is_fecha': is_fecha}
 
 
 def get_min_decimal_string(decimal_places):
