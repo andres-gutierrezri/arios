@@ -1,8 +1,8 @@
 var URLDomain = document.location.origin+"/";
 
-var departamento = $("#departamento_select");
-var municipio = $("#municipio_select");
-var centro_poblado = $("#centro_poblado_select");
+var departamento = $("#departamento_id_select_id");
+var municipio = $("#municipio_id_select_id");
+var centro_poblado = $("#centro_poblado_id_select_id");
 
 var selector = $("#medidor_select");
 
