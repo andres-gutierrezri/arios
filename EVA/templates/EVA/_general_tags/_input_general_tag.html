@@ -2,7 +2,7 @@
     <label for="{{ nombre }}_id">{{ texto_label}}</label>
 {% endif %}
 {% if tipo != 'textarea' %}
-    <input type="{{ tipo }}" id="{{ nombre }}_id" name="{{ nombre }}" value="{{ valor }}" {{ propiedades }}>
+    <input type="{{ tipo }}" id="{{ nombre }}_id" name="{{ nombre }}"  {% if is_fecha  %} value="{{ valor|date:'Y-m-d' }}" {% else %} value="{{ valor }}" {% endif %} {{ propiedades }}>
 {% else %}
     <textarea id="{{ nombre }}_id" name="{{ nombre }}" {{ propiedades }}>{{ valor }}</textarea>
 {% endif %}
