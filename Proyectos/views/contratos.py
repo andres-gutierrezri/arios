@@ -4,10 +4,10 @@ from django.shortcuts import render, redirect, reverse
 from django.views import View
 from django.contrib import messages
 from django.http import JsonResponse
+from django.db.models import F
 
 from Proyectos.models.contratos import Contrato
-from Administracion.models.models import Empresa, TipoContrato
-from Administracion.models import Tercero
+from Administracion.models import Tercero, Empresa, TipoContrato, TipoTercero
 
 
 class ContratoView(View):
@@ -19,10 +19,15 @@ class ContratoView(View):
 
 class ContratoCrearView(View):
     def get(self, request):
-        tipo_contratos = TipoContrato.objects.all()
-        empresas = Empresa.objects.all()
-        terceros = Tercero.objects.all()
-        rango_anho = range(2000, 2051)
+        tipo_contratos = TipoContrato.objects \
+            .filter(estado=True).values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
+        empresas = Empresa.objects \
+            .filter(estado=True).values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
+        terceros = Tercero.objects.filter(tipo_tercero_id=TipoTercero.CLIENTE)\
+            .values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
+        #rango_anho = range(2000, 2051)
+        rango_anho = [{'campo_valor': anho, 'campo_texto': str(anho)}for anho in range(2000, 2051)]
+
         opcion = 'crear'
         return render(request, 'Proyectos/Contrato/crear-editar.html', {'tipo_contratos': tipo_contratos,
                                                                         'empresas': empresas, 'terceros': terceros,
