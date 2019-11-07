@@ -20,15 +20,15 @@ class ContratoView(View):
 class ContratoCrearView(View):
     def get(self, request):
         tipo_contratos = TipoContrato.objects \
-            .filter(estado=True).values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
-        empresas = Empresa.objects \
-            .filter(estado=True).values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
+            .filter(laboral=False)\
+            .values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
+        empresas = Empresa.objects.filter(estado=True).values(campo_valor=F('id'), campo_texto=F('nombre'))\
+            .order_by('nombre')
         terceros = Tercero.objects.filter(tipo_tercero_id=TipoTercero.CLIENTE)\
             .values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
-        #rango_anho = range(2000, 2051)
         rango_anho = [{'campo_valor': anho, 'campo_texto': str(anho)}for anho in range(2000, 2051)]
-
         opcion = 'crear'
+
         return render(request, 'Proyectos/Contrato/crear-editar.html', {'tipo_contratos': tipo_contratos,
                                                                         'empresas': empresas, 'terceros': terceros,
                                                                         'rango_anho': rango_anho, 'opcion': opcion})
@@ -59,10 +59,13 @@ class ContratoCrearView(View):
 
         if Contrato.objects.filter(numero_contrato=numero_contrato):
             messages.warning(request, 'Ya existe un contrato con número {0}'.format(numero_contrato))
-            tipo_contratos = TipoContrato.objects.all()
-            empresas = Empresa.objects.all()
-            terceros = Tercero.objects.all()
-            rango_anho = range(2000, 2051)
+            tipo_contratos = TipoContrato.objects \
+                .filter(estado=True).values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
+            empresas = Empresa.objects \
+                .filter(estado=True).values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
+            terceros = Tercero.objects.filter(tipo_tercero_id=TipoTercero.CLIENTE) \
+                .values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
+            rango_anho = [{'campo_valor': anho, 'campo_texto': str(anho)} for anho in range(2000, 2051)]
             opcion = 'crear'
             return render(request, 'Proyectos/Contrato/crear-editar.html', {'contrato': contrato,
                                                                             'tipo_contratos': tipo_contratos,
@@ -73,10 +76,13 @@ class ContratoCrearView(View):
 
         if contrato.fecha_inicio > contrato.fecha_terminacion:
             messages.warning(request, 'La fecha de inicio debe ser menor o igual a la fecha de terminación')
-            tipo_contratos = TipoContrato.objects.all()
-            empresas = Empresa.objects.all()
-            terceros = Tercero.objects.all()
-            rango_anho = range(2000, 2051)
+            tipo_contratos = TipoContrato.objects \
+                .filter(estado=True).values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
+            empresas = Empresa.objects \
+                .filter(estado=True).values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
+            terceros = Tercero.objects.filter(tipo_tercero_id=TipoTercero.CLIENTE) \
+                .values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
+            rango_anho = [{'campo_valor': anho, 'campo_texto': str(anho)} for anho in range(2000, 2051)]
             opcion = 'crear'
             return render(request, 'Proyectos/Contrato/crear-editar.html', {'contrato': contrato,
                                                                             'tipo_contratos': tipo_contratos,
@@ -91,10 +97,13 @@ class ContratoCrearView(View):
 class ContratoEditarView(View):
     def get(self, request, id):
         contrato = Contrato.objects.get(id=id)
-        tipo_contratos = TipoContrato.objects.all().order_by('nombre')
-        empresas = Empresa.objects.all().order_by('nombre')
-        terceros = Tercero.objects.all().order_by('nombre')
-        rango_anho = range(2000, 2051)
+        tipo_contratos = TipoContrato.objects \
+            .filter(estado=True).values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
+        empresas = Empresa.objects \
+            .filter(estado=True).values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
+        terceros = Tercero.objects.filter(tipo_tercero_id=TipoTercero.CLIENTE) \
+            .values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
+        rango_anho = [{'campo_valor': anho, 'campo_texto': str(anho)} for anho in range(2000, 2051)]
         opcion = 'editar'
         return render(request, 'Proyectos/Contrato/crear-editar.html', {'contrato': contrato,
                                                                         'tipo_contratos': tipo_contratos,
@@ -125,24 +134,36 @@ class ContratoEditarView(View):
 
         if Contrato.objects.filter(numero_contrato=contrato.numero_contrato).exclude(id=id):
             messages.warning(request, 'Ya existe un contrato con número {0}'.format(contrato.numero_contrato))
-            rango_anho = range(2000, 2051)
+            tipo_contratos = TipoContrato.objects \
+                .filter(estado=True).values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
+            empresas = Empresa.objects \
+                .filter(estado=True).values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
+            terceros = Tercero.objects.filter(tipo_tercero_id=TipoTercero.CLIENTE) \
+                .values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
+            rango_anho = [{'campo_valor': anho, 'campo_texto': str(anho)} for anho in range(2000, 2051)]
             opcion = 'editar'
             return render(request, 'Proyectos/Contrato/crear-editar.html',
                           {'contrato': contrato,
-                           'tipo_contratos': TipoContrato.objects.all(),
-                           'empresas': Empresa.objects.all(),
-                           'terceros': Tercero.objects.all(),
+                           'tipo_contratos': tipo_contratos,
+                           'empresas': empresas,
+                           'terceros': terceros,
                            'rango_anho': rango_anho, 'opcion': opcion})
 
         elif contrato.fecha_inicio > contrato.fecha_terminacion:
             messages.warning(request, 'La fecha de inicio debe ser menor o igual a la fecha de terminación')
-            rango_anho = range(2000, 2051)
+            tipo_contratos = TipoContrato.objects \
+                .filter(estado=True).values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
+            empresas = Empresa.objects \
+                .filter(estado=True).values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
+            terceros = Tercero.objects.filter(tipo_tercero_id=TipoTercero.CLIENTE) \
+                .values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
+            rango_anho = [{'campo_valor': anho, 'campo_texto': str(anho)} for anho in range(2000, 2051)]
             opcion = 'editar'
             return render(request, 'Proyectos/Contrato/crear-editar.html',
                           {'contrato': contrato,
-                           'tipo_contratos': TipoContrato.objects.all(),
-                           'empresas': Empresa.objects.all(),
-                           'terceros': Tercero.objects.all(),
+                           'tipo_contratos': tipo_contratos,
+                           'empresas': empresas,
+                           'terceros': terceros,
                            'rango_anho': rango_anho, 'opcion': opcion})
 
         elif Contrato.objects.filter(numero_contrato=contrato.numero_contrato, cliente=contrato.cliente_id,
