@@ -45,49 +45,41 @@
                                         <div class="form-group">
                                             <div class="form-row">
                                                 <div class="col-md-6">
-                                                {% select_tag tipos_identificacion 'tipo_identificacion_id' 'Seleccione un Tipo de Identificación' texto_label="Tipo de Identificación" value=tercero.tipo_identificacion_id required="" mensaje_validacion='Por favor seleccione un tipo de identificación.' %}
+                                                {% select_tag tipos_identificacion 'tipo_identificacion_id' 'Seleccione un tipo de identificación' texto_label="Tipo de Identificación" value=tercero.tipo_identificacion_id required="" mensaje_validacion='Por favor seleccione un tipo de identificación.' %}
                                                 </div>
                                                 <div class="col-md-6">
-                                                {% select_tag empresas 'empresa_id' 'Seleccione una Empresa' texto_label="Empresa" value=tercero.empresa_id required="" mensaje_validacion='Por favor seleccione una empresa.' %}
+                                                {% select_tag empresas 'empresa_id' 'Seleccione una empresa' texto_label="Empresa" value=tercero.empresa_id required="" mensaje_validacion='Por favor seleccione una empresa.' %}
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <div class="form-row">
                                                 <div class="col-md-6">
-                                                {% select_tag tipo_terceros 'tipo_tercero_id' 'Seleccione un Tipo de Tercero' texto_label='Tipo de tercero' value=tercero.tipo_tercero_id required='' mensaje_validacion='Por favor seleccione un tipo de tercero.' %}
-
+                                                {% select_tag tipo_terceros 'tipo_tercero_id' 'Seleccione un tipo de tercero' texto_label='Tipo de tercero' value=tercero.tipo_tercero_id required='' mensaje_validacion='Por favor seleccione un tipo de tercero.' %}
                                                 </div>
                                                  <div class="col-md-6">
-                                                 {% select_tag departamentos 'departamento_id' 'Seleccione un Departamento' texto_label="Departamento" value=tercero.centro_poblado.municipio.departamento.id required="" mensaje_validacion='Por favor seleccione un departamento.' %}
-
+                                                 {% select_tag departamentos 'departamento_id' 'Seleccione un departamento' texto_label="Departamento" value=tercero.centro_poblado.municipio.departamento.id required="" mensaje_validacion='Por favor seleccione un departamento.' %}
+                                                 </div>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <div class="form-row">
                                                 <div class="col-md-6">
-                                                    <br>
-                                                {% select_tag municipios 'municipio_id' 'Seleccione un Municipio' texto_label="Municipio" value=tercero.centro_poblado.municipio.id required="" mensaje_validacion='Por favor seleccione un municipio.' %}
+                                                {% select_tag municipios 'municipio_id' 'Seleccione un municipio' texto_label="Municipio" value=tercero.centro_poblado.municipio.id required="" mensaje_validacion='Por favor seleccione un municipio.' %}
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <br>
-                                                {% select_tag centros_poblados 'centro_poblado_id' 'Seleccione un Centro Poblado' texto_label="Centro Poblado" value=tercero.centro_poblado.id required="" mensaje_validacion='Por favor seleccione un centro poblado.' %}
+                                                {% select_tag centros_poblados 'centro_poblado_id' 'Seleccione un centro poblado' texto_label="Centro Poblado" value=tercero.centro_poblado.id required="" mensaje_validacion='Por favor seleccione un centro poblado.' %}
                                                 </div>
                                             </div>
                                         </div>
                                         {% if opcion == 'editar' %}
-                                         <div class="form-group">
-                                            <div class="form-row">
-                                                <div class="col-md-6">
-                                                    <div class="custom-control custom-switch">
-                                                        <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input form-control" id="defaultChecked" name="estado"  value="True" {% if tercero.estado %}checked{% endif %}>
-                                                        <label class="custom-control-label" for="defaultChecked">Estado</label>
-                                                        </div>
+                                             <div class="form-group">
+                                                <div class="form-row">
+                                                    <div class="col-md-6">
+                                                        {% input_checkbox_tag 'estado' 'Estado' value=tercero.estado  %}
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
                                         {% endif %}
                                             <div class="form-row">
                                                 <div >
