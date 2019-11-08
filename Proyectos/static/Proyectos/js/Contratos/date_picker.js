@@ -8,7 +8,7 @@ let controls = {
 let runDatePicker = function () {
 
 	// minimum setup
-	$('#fecha_inicio').datepicker({
+	$('#fecha_inicio_id').datepicker({
 		todayHighlight: true,
 		orientation: "bottom left",
 		templates: controls,
@@ -16,7 +16,7 @@ let runDatePicker = function () {
 		autoclose: true
 	});
 
-	$('#fecha_terminacion').datepicker({
+	$('#fecha_terminacion_id').datepicker({
 		todayHighlight: true,
 		orientation: "bottom left",
 		templates: controls,

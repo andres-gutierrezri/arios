@@ -15,6 +15,9 @@ class TipoTercero(models.Model):
         verbose_name = 'Tipo Tercero'
         verbose_name_plural = 'Tipos de Terceros'
 
+    # Tipos Fijos
+    CLIENTE = 1
+    PROVEEDOR = 2
 
 class Tercero(models.Model):
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)

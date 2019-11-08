@@ -1,10 +1,12 @@
-var URLDomain = document.location.origin+"/";
+'use strict';
 
-var departamento = $("#departamento_select");
-var municipio = $("#municipio_select");
-var centro_poblado = $("#centro_poblado_select");
+let URLDomain = document.location.origin+"/";
 
-var selector = $("#medidor_select");
+let departamento = $("#departamento_id_select_id");
+let municipio = $("#municipio_id_select_id");
+let centro_poblado = $("#centro_poblado_id_select_id");
+
+let selector = $("#medidor_select");
 
 $(document).ready(function() {
 
@@ -31,10 +33,6 @@ $(document).ready(function() {
             }
         });
     });
-});
-
-$(document).ready(function() {
-
     municipio.change(function () {
         $.ajax({
             url: URLDomain + "administracion/municipios/" + this.value + "/centros-poblados/json",
@@ -51,7 +49,6 @@ $(document).ready(function() {
                     centro_poblado.empty();
                     centro_poblado.append('<option value="">Seleccione Centro Poblado</option>');
                 }
-
             },
             failure: function (errMsg) {
                 alert('Se presentó un error al realizar la consulta');
@@ -60,3 +57,4 @@ $(document).ready(function() {
         });
     });
 });
+

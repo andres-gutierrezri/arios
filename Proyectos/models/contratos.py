@@ -30,3 +30,5 @@ class Contrato(models.Model):
         verbose_name = 'Contrato'
         verbose_name_plural = 'Contratos'
 
+
+
