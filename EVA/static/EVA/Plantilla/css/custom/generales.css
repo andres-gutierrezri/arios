@@ -12,3 +12,20 @@
     border-color:#ccc;
     background-image: none;
 }
+
+div.custom-switch>div.custom-checkbox .custom-control-input:valid ~ .custom-control-label, .custom-control-input.is-valid ~ .custom-control-label{
+color: #666666 !important;
+}
+
+input[type=checkbox]:checked + label:before{
+    background-color: #7a59ad !important;
+    border-color: #ccc !important;
+    color: #666666!important;
+
+}
+input[type=checkbox] ~ label:before {
+    background-color: gray() !important;
+    border-color: #ccc !important;
+    color: #666666!important;
+}
+
