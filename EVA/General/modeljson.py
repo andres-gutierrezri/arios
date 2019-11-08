@@ -35,3 +35,18 @@ class ModelDjangoJSON:
             los campos nombrados serán incluidos en el diccionario.
         """
         return model_to_dict(self, fields=campos, exclude=excluir)
+
+    def comparar(self, otro, campos=None, excluir=None) -> bool:
+        """
+        Compara dos instancias de modelos para ver si tienen los mismos valores en sus campos.
+        :param otro: La instancia con la que se quiere realizar la comparación.
+        :param campos: Es una lista opcional con nombres de campos. Si es proporcionada,
+            solo los campos nombrados serán incluidos en la comparación.
+        :param excluir: Es una lista opcional con nombres de campos. Si es proporcionada,
+            los campos nombrados serán excluidos de la comparación.
+        :return: True si son iguales de lo contrario False.
+        """
+        if isinstance(otro, type(self)):
+            return self.to_dict(campos, excluir) == otro.to_dict(campos, excluir)
+
+        return False
