@@ -6,7 +6,7 @@ from django.forms import model_to_dict
 from EVA.General.jsonencoders import AriosJSONEncoder
 
 
-class ModelDjangoJSON:
+class ModelDjangoExtensiones:
     def __init__(self):
         pass
 
