@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 # # Create your models here.
+from django.db.models import QuerySet, F
 
 
 class Empresa(models.Model):
@@ -47,7 +48,26 @@ class TipoIdentificacion(models.Model):
         verbose_name_plural = 'Tipos de Identificaciones'
 
 
+class TipoContratoManager(models.Manager):
+    def tipos_laborares(self, estado: bool = None, xa_select: bool = False) -> QuerySet:
+        return self.__get_x_tipo(True, estado, xa_select)
+
+    def tipos_comerciales(self, estado: bool = None, xa_select: bool = False) -> QuerySet:
+        return self.__get_x_tipo(False, estado, xa_select)
+
+    def __get_x_tipo(self, laboral: bool, estado: bool = None, xa_select: bool = False) -> QuerySet:
+        filtro = {'laboral': laboral}
+        if estado:
+            filtro['estado'] = estado
+        if xa_select:
+            return super().get_queryset().filter(**filtro).values(campo_valor=F('id'), campo_texto=F('nombre'))\
+                .order_by('nombre')
+        else:
+            return super().get_queryset().filter(**filtro)
+
+
 class TipoContrato(models.Model):
+    objects = TipoContratoManager()
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     descripcion = models.TextField(max_length=300, verbose_name='Descripción', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)

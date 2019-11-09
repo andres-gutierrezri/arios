@@ -148,6 +148,10 @@ def arma_input_general_tag(nombre, **kwargs):
     if 'class' not in kwargs:
         kwargs['class'] = 'form-control'
 
+    invalido = kwargs.pop('invalido', False)
+    if invalido:
+        kwargs['class'] = 'form-control is-invalid'
+
     texto_label = kwargs.pop('texto_label', None)
     mensaje_validacion = kwargs.pop('mensaje_validacion', None)
 

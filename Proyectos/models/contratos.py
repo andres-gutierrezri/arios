@@ -2,9 +2,11 @@ from django.db import models
 from Administracion.models import Tercero, TipoContrato, Empresa
 
 # Create your models here.
+from EVA.General.conversiones import string_to_date
+from EVA.General.modeljson import ModelDjangoExtensiones
 
 
-class Contrato(models.Model):
+class Contrato(models.Model, ModelDjangoExtensiones):
     numero_contrato = models.CharField(max_length=20, verbose_name='Número de contrato', null=False, blank=False)
     cliente = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, verbose_name='Cliente', null=True, blank=False)
     anho = models.IntegerField(verbose_name='Año', null=False, blank=False)
@@ -30,5 +32,27 @@ class Contrato(models.Model):
         verbose_name = 'Contrato'
         verbose_name_plural = 'Contratos'
 
+    @staticmethod
+    def from_dictionary(datos: dict) -> 'Contrato':
+        """
+        Crea una instancia de Contrato con los datos pasados en el diccionario.
+        :param datos: Diccionario con los datos para crear el contrato.
+        :return: Instacia de Contrato con la información especificada en el diccionario.
+        """
+        contrato = Contrato()
+        contrato.numero_contrato = datos.get('numero_contrato', '')
+        contrato.cliente_id = datos.get('cliente_id', '')
+        contrato.anho = datos.get('rango_anho', '')
+        contrato.supervisor_nombre = datos.get('supervisor_nombre', '')
+        contrato.supervisor_correo = datos.get('supervisor_correo', '')
+        contrato.supervisor_telefono = datos.get('supervisor_telefono', '')
+        contrato.residente = datos.get('residente', '')
+        contrato.fecha_inicio = string_to_date(datos.get('fecha_inicio', ''))
+        contrato.fecha_terminacion = string_to_date(datos.get('fecha_terminacion', ''))
+        contrato.valor = datos.get('valor', '')
+        contrato.periodicidad_informes = datos.get('periodicidad_informes', '')
+        contrato.tiempo = datos.get('tiempo', '')
+        contrato.tipo_contrato_id = datos.get('tipo_contrato_id', '')
+        contrato.empresa_id = datos.get('empresa_id', '')
 
-
+        return contrato

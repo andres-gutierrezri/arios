@@ -1,10 +1,10 @@
 from django.db import models
-from EVA.General.modeljson import ModelDjangoJSON
+from EVA.General.modeljson import ModelDjangoExtensiones
 
 # Create your models here.
 
 
-class BaseDivipol(models.Model, ModelDjangoJSON):
+class BaseDivipol(models.Model, ModelDjangoExtensiones):
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     codigo_letras = models.TextField(max_length=4, verbose_name='Código', null=True, blank=False)
 
