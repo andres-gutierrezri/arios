@@ -34,8 +34,7 @@ class ContratoCrearView(View):
             contrato.full_clean()
         except ValidationError as errores:
             datos = datos_xa_render(self.opcion, contrato)
-            datos['contrato'] = contrato
-            datos['errores'] = errores
+            datos['errores'] = errores.message_dict
             return render(request, 'Proyectos/Contrato/crear-editar.html', datos)
 
         if Contrato.objects.filter(numero_contrato=contrato.numero_contrato).exists():
@@ -72,7 +71,7 @@ class ContratoEditarView(View):
             contrato.full_clean(validate_unique=False)
         except ValidationError as errores:
             datos = datos_xa_render(self.opcion, contrato)
-            datos['errores'] = errores
+            datos['errores'] = errores.message_dict
             return render(request, 'Proyectos/Contrato/crear-editar.html', datos)
 
         if Contrato.objects.filter(numero_contrato=contrato.numero_contrato).exclude(id=id).exists():
