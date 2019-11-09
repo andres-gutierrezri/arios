@@ -115,8 +115,7 @@ def datos_xa_render(opcion: str, contrato: Contrato = None) -> dict:
     :return: Un diccionario con los datos.
     """
 
-    tipo_contratos = TipoContrato.objects.tipos_comerciales(True)\
-        .values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
+    tipo_contratos = TipoContrato.objects.tipos_comerciales(True, True)
     empresas = Empresa.objects.filter(estado=True).values(campo_valor=F('id'), campo_texto=F('nombre')) \
         .order_by('nombre')
     terceros = Tercero.objects.filter(tipo_tercero_id=TipoTercero.CLIENTE) \

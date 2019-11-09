@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 # # Create your models here.
-from django.db.models import QuerySet
+from django.db.models import QuerySet, F
 
 
 class Empresa(models.Model):
@@ -49,17 +49,21 @@ class TipoIdentificacion(models.Model):
 
 
 class TipoContratoManager(models.Manager):
-    def tipos_laborares(self, estado: bool = None) -> QuerySet:
-        return self.__get_x_tipo(True, estado)
+    def tipos_laborares(self, estado: bool = None, xa_select: bool = False) -> QuerySet:
+        return self.__get_x_tipo(True, estado, xa_select)
 
-    def tipos_comerciales(self, estado: bool = None) -> QuerySet:
-        return self.__get_x_tipo(False, estado)
+    def tipos_comerciales(self, estado: bool = None, xa_select: bool = False) -> QuerySet:
+        return self.__get_x_tipo(False, estado, xa_select)
 
-    def __get_x_tipo(self, laboral: bool, estado: bool = None) -> QuerySet:
+    def __get_x_tipo(self, laboral: bool, estado: bool = None, xa_select: bool = False) -> QuerySet:
         filtro = {'laboral': laboral}
         if estado:
             filtro['estado'] = estado
-        return super().get_queryset().filter(**filtro)
+        if xa_select:
+            return super().get_queryset().filter(**filtro).values(campo_valor=F('id'), campo_texto=F('nombre'))\
+                .order_by('nombre')
+        else:
+            return super().get_queryset().filter(**filtro)
 
 
 class TipoContrato(models.Model):
