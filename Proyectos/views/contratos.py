@@ -40,11 +40,6 @@ class ContratoCrearView(View):
 
         if Contrato.objects.filter(numero_contrato=contrato.numero_contrato).exists():
             messages.warning(request, 'Ya existe un contrato con número {0}'.format(contrato.numero_contrato))
-            datos = datos_xa_render(self.opcion, contrato)
-            return render(request, 'Proyectos/Contrato/crear-editar.html', datos)
-
-        if Contrato.objects.filter(numero_contrato=contrato.numero_contrato):
-            messages.warning(request, 'Ya existe un contrato con número {0}'.format(contrato.numero_contrato))
             return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.opcion, contrato))
 
         if contrato.fecha_inicio > contrato.fecha_terminacion:
@@ -77,7 +72,6 @@ class ContratoEditarView(View):
             contrato.full_clean(validate_unique=False)
         except ValidationError as errores:
             datos = datos_xa_render(self.opcion, contrato)
-            datos['contrato'] = contrato
             datos['errores'] = errores
             return render(request, 'Proyectos/Contrato/crear-editar.html', datos)
 
