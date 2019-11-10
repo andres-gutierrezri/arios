@@ -34,15 +34,17 @@ class TerceroCrearView(View):
         tercero = Tercero.from_dictionary(request.POST)
         tercero.estado = True
         try:
-            tercero.full_clean(validate_unique=False)
+            tercero.full_clean()
         except ValidationError as errores:
             datos = datos_xa_render(self.opcion, tercero)
             datos['errores'] = errores.message_dict
+            if 'identificacion' in errores.message_dict:
+                for mensaje in errores.message_dict['identificacion']:
+                    if mensaje.startswith('Ya existe'):
+                        messages.warning(request,
+                                         'Ya existe un tercero con identificación {0}'.format(tercero.identificacion))
+                        break
             return render(request, 'Administracion/Tercero/crear-editar.html', datos)
-
-        if Tercero.objects.filter(identificacion=tercero.identificacion).exists():
-            messages.warning(request, 'Ya existe un tercero con identificación {0}'.format(tercero.identificacion))
-            return render(request, 'Administracion/Tercero/crear-editar.html', datos_xa_render(self.opcion, tercero))
 
         tercero.save()
         messages.success(request, 'Se ha agregado el tercero {0}'.format(tercero.nombre))
