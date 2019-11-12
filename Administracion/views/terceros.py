@@ -1,4 +1,6 @@
 from datetime import datetime
+
+from django.db import IntegrityError
 from django.db.models import F
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
@@ -99,7 +101,7 @@ class TerceroEliminarView(View):
             messages.success(request, 'Se ha eliminado el tercero {0}'.format(tercero.nombre))
             return JsonResponse({"Mensaje": "OK"})
 
-        except:
+        except IntegrityError:
             tercero = Tercero.objects.get(id=id)
             messages.warning(request, 'No se puede eliminar el tercero {0}'.format(tercero.nombre) +
                              ' porque ya se encuentra asociado a otros módulos')
