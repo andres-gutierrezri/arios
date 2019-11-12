@@ -117,8 +117,7 @@ def datos_xa_render(opcion: str, contrato: Contrato = None) -> dict:
     tipo_contratos = TipoContrato.objects.tipos_comerciales(True, True)
     empresas = Empresa.objects.filter(estado=True).values(campo_valor=F('id'), campo_texto=F('nombre')) \
         .order_by('nombre')
-    terceros = Tercero.objects.filter(tipo_tercero_id=TipoTercero.CLIENTE) \
-        .values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
+    terceros = Tercero.objects.clientes_xa_select()
     rango_anho = [{'campo_valor': anho, 'campo_texto': str(anho)} for anho in range(2000, 2051)]
 
     datos = {'tipo_contratos': tipo_contratos,
