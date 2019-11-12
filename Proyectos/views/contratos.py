@@ -9,7 +9,7 @@ from django.http import JsonResponse
 from django.db.models import F
 
 from Proyectos.models.contratos import Contrato
-from Administracion.models import Tercero, Empresa, TipoContrato, TipoTercero
+from Administracion.models import Tercero, Empresa, TipoContrato
 
 
 class ContratoView(View):
@@ -20,12 +20,10 @@ class ContratoView(View):
 
 
 class ContratoCrearView(View):
-    def __init__(self):
-        self.opcion = 'crear'
-        super().__init__()
+    OPCION = 'crear'
 
     def get(self, request):
-        return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.opcion))
+        return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.OPCION))
 
     def post(self, request):
 
@@ -33,17 +31,17 @@ class ContratoCrearView(View):
         try:
             contrato.full_clean()
         except ValidationError as errores:
-            datos = datos_xa_render(self.opcion, contrato)
+            datos = datos_xa_render(self.OPCION, contrato)
             datos['errores'] = errores.message_dict
             return render(request, 'Proyectos/Contrato/crear-editar.html', datos)
 
         if Contrato.objects.filter(numero_contrato=contrato.numero_contrato).exists():
             messages.warning(request, 'Ya existe un contrato con número {0}'.format(contrato.numero_contrato))
-            return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.opcion, contrato))
+            return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.OPCION, contrato))
 
         if contrato.fecha_inicio > contrato.fecha_terminacion:
             messages.warning(request, 'La fecha de inicio debe ser menor o igual a la fecha de terminación')
-            return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.opcion, contrato))
+            return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.OPCION, contrato))
 
         contrato.save()
         messages.success(request, 'Se ha agregado el contrato número {0}'.format(contrato.numero_contrato))
@@ -51,13 +49,11 @@ class ContratoCrearView(View):
 
 
 class ContratoEditarView(View):
-    def __init__(self):
-        self.opcion = 'editar'
-        super().__init__()
+    OPCION = 'editar'
 
     def get(self, request, id):
         contrato = Contrato.objects.get(id=id)
-        return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.opcion, contrato))
+        return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.OPCION, contrato))
 
     def post(self, request, id):
         update_fields = ['numero_contrato', 'cliente_id', 'anho', 'supervisor_nombre', 'supervisor_correo',
@@ -70,17 +66,17 @@ class ContratoEditarView(View):
         try:
             contrato.full_clean(validate_unique=False)
         except ValidationError as errores:
-            datos = datos_xa_render(self.opcion, contrato)
+            datos = datos_xa_render(self.OPCION, contrato)
             datos['errores'] = errores.message_dict
             return render(request, 'Proyectos/Contrato/crear-editar.html', datos)
 
         if Contrato.objects.filter(numero_contrato=contrato.numero_contrato).exclude(id=id).exists():
             messages.warning(request, 'Ya existe un contrato con número {0}'.format(contrato.numero_contrato))
-            return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.opcion, contrato))
+            return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.OPCION, contrato))
 
         if contrato.fecha_inicio > contrato.fecha_terminacion:
             messages.warning(request, 'La fecha de inicio debe ser menor o igual a la fecha de terminación')
-            return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.opcion, contrato))
+            return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.OPCION, contrato))
 
         contrato_db = Contrato.objects.get(id=id)
         if contrato_db.comparar(contrato):

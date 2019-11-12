@@ -24,12 +24,10 @@ def principal_view(request):
 
 
 class TerceroCrearView(View):
-    def __init__(self):
-        self.opcion = 'crear'
-        super().__init__()
+    OPCION = 'crear'
 
     def get(self, request):
-        return render(request, 'Administracion/Tercero/crear-editar.html', datos_xa_render(self.opcion))
+        return render(request, 'Administracion/Tercero/crear-editar.html', datos_xa_render(self.OPCION))
 
     def post(self, request):
         tercero = Tercero.from_dictionary(request.POST)
@@ -37,7 +35,7 @@ class TerceroCrearView(View):
         try:
             tercero.full_clean()
         except ValidationError as errores:
-            datos = datos_xa_render(self.opcion, tercero)
+            datos = datos_xa_render(self.OPCION, tercero)
             datos['errores'] = errores.message_dict
             if 'identificacion' in errores.message_dict:
                 for mensaje in errores.message_dict['identificacion']:
@@ -53,13 +51,11 @@ class TerceroCrearView(View):
 
 
 class TerceroEditarView(View):
-    def __init__(self):
-        self.opcion = 'editar'
-        super().__init__()
+    OPCION = 'editar'
 
     def get(self, request, id):
         tercero = Tercero.objects.get(id=id)
-        return render(request, 'Administracion/Tercero/crear-editar.html', datos_xa_render(self.opcion, tercero))
+        return render(request, 'Administracion/Tercero/crear-editar.html', datos_xa_render(self.OPCION, tercero))
 
     def post(self, request, id):
         update_fields = ['nombre', 'identificacion', 'tipo_identificacion_id', 'estado', 'empresa_id',
@@ -71,13 +67,13 @@ class TerceroEditarView(View):
         try:
             tercero.full_clean(validate_unique=False)
         except ValidationError as errores:
-            datos = datos_xa_render(self.opcion, tercero)
+            datos = datos_xa_render(self.OPCION, tercero)
             datos['errores'] = errores.message_dict
             return render(request, 'Administracion/Tercero/crear-editar.html', datos)
 
         if Tercero.objects.filter(identificacion=tercero.identificacion).exclude(id=id).exists():
             messages.warning(request, 'Ya existe un tercero con identificación {0}'.format(tercero.identificacion))
-            return render(request, 'Administracion/Tercero/crear-editar.html', datos_xa_render(self.opcion, tercero))
+            return render(request, 'Administracion/Tercero/crear-editar.html', datos_xa_render(self.OPCION, tercero))
 
         tercero_db = Tercero.objects.get(id=id)
         if tercero_db.comparar(tercero):
