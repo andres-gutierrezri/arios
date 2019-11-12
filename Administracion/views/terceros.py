@@ -119,20 +119,17 @@ def datos_xa_render(opcion: str, tercero: Tercero = None) -> dict:
     """
     empresas = Empresa.objects \
         .filter(estado=True).values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
-    tipos_identificacion = TipoIdentificacion.objects \
-        .filter(estado=True).values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
-    tipo_terceros = TipoTercero.objects \
-        .filter(estado=True).values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
-    departamentos = Departamento.objects.all().values(campo_valor=F('id'), campo_texto=F('nombre')) \
-        .order_by('nombre')
+    tipos_identificacion = TipoIdentificacion.objects.get_xa_select_activos()
+    tipo_terceros = TipoTercero.objects.get_xa_select_activos()
+    departamentos = Departamento.objects.get_xa_select_activos()
 
     datos = {'empresas': empresas, 'tipos_identificacion': tipos_identificacion, 'tipo_terceros': tipo_terceros,
              'departamentos': departamentos, 'opcion': opcion}
     if tercero:
-        municipios = Municipio.objects.filter(departamento_id=tercero.centro_poblado.municipio.departamento_id) \
-            .values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
-        centros_poblados = CentroPoblado.objects.filter(municipio_id=tercero.centro_poblado.municipio_id) \
-            .values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
+        municipios = Municipio.objects.get_xa_select_activos()\
+            .filter(departamento_id=tercero.centro_poblado.municipio.departamento_id)
+        centros_poblados = CentroPoblado.objects.get_xa_select_activos()\
+            .filter(municipio_id=tercero.centro_poblado.municipio_id)
 
         datos['municipios'] = municipios
         datos['centros_poblados'] = centros_poblados
