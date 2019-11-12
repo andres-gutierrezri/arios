@@ -1,9 +1,16 @@
+from datetime import datetime
 from django.db import models
+from django.db.models import QuerySet
+
+from EVA.General.modelmanagers import ManagerGeneral
 from .models import Empresa, TipoIdentificacion, Persona
 from .divipol import CentroPoblado
+from EVA.General.modeljson import ModelDjangoExtensiones
 
 
 class TipoTercero(models.Model):
+    objects = ManagerGeneral()
+
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     descripcion = models.TextField(max_length=300, verbose_name='Descripción', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
@@ -15,8 +22,29 @@ class TipoTercero(models.Model):
         verbose_name = 'Tipo Tercero'
         verbose_name_plural = 'Tipos de Terceros'
 
+    # Tipos Fijos
+    CLIENTE = 1
+    PROVEEDOR = 2
 
-class Tercero(models.Model):
+
+class TerceroManger(ManagerGeneral):
+
+    def clientes(self, estado: bool = None, xa_select: bool = False) -> QuerySet:
+        return self.get_x_estado(estado, xa_select).filter(tipo_tercero_id=TipoTercero.CLIENTE)
+
+    def clientes_xa_select(self):
+        self.clientes(True, True)
+
+    def proveedores(self, estado: bool = None, xa_select: bool = False) -> QuerySet:
+        return self.get_x_estado(estado, xa_select).filter(tipo_tercero_id=TipoTercero.PROVEEDOR)
+
+    def proveedores_xa_select(self):
+        self.proveedores(True, True)
+
+
+class Tercero(models.Model, ModelDjangoExtensiones):
+    objects = TerceroManger()
+
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     identificacion = models.CharField(max_length=20, verbose_name='Identificación', null=False, blank=False,
                                       unique=True)
@@ -39,6 +67,25 @@ class Tercero(models.Model):
     class Meta:
         verbose_name = 'Tercero'
         verbose_name_plural = 'Terceros'
+
+    @staticmethod
+    def from_dictionary(datos: dict) -> 'Tercero':
+        """
+        Crea una instancia de Tercero con los datos pasados en el diccionario.
+        :param datos: Diccionario con los datos para crear el tercero.
+        :return: Instacia de tercero con la información especificada en el diccionario.
+        """
+        tercero = Tercero()
+        tercero.nombre = datos.get('nombre', '')
+        tercero.identificacion = datos.get('identificacion', '')
+        tercero.tipo_identificacion_id = datos.get('tipo_identificacion_id', '')
+        tercero.estado = datos.get('estado', 'False') == 'True'
+        tercero.empresa_id = datos.get('empresa_id', '')
+        tercero.fecha_modificacion = datetime.now()
+        tercero.tipo_tercero_id = datos.get('tipo_tercero_id', '')
+        tercero.centro_poblado_id = datos.get('centro_poblado_id', '')
+
+        return tercero
 
 
 class UsuarioTercero(Persona):

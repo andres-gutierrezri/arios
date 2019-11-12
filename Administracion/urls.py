@@ -15,16 +15,16 @@ Including another URLconf
 """
 
 from django.urls import path
-from Administracion.views import tercero, views
+from Administracion.views import terceros, views
 
 app_name = 'Administracion'
 
 urlpatterns = [
-    path('principal/', tercero.principal_view, name='principal'),
-    path('terceros/', tercero.tercero_view, name='terceros'),
-    path('terceros/add', tercero.TerceroCrearView.as_view(), name='terceros-crear'),
-    path('terceros/<int:id>/', tercero.TerceroEditarView.as_view(), name='terceros-editar'),
-    path('terceros/<int:id>/delete', tercero.TerceroEliminarView.as_view(), name='terceros-eliminar'),
+    path('index/', terceros.principal_view, name='index'),
+    path('terceros/', terceros.tercero_view, name='terceros'),
+    path('terceros/add', terceros.TerceroCrearView.as_view(), name='terceros-crear'),
+    path('terceros/<int:id>/', terceros.TerceroEditarView.as_view(), name='terceros-editar'),
+    path('terceros/<int:id>/delete', terceros.TerceroEliminarView.as_view(), name='terceros-eliminar'),
     path('departamentos/<int:id>/municipios/json', views.CargarMunicipiosSelectJsonView.as_view(),
         name='municipios-json'),
     path('municipios/<int:id>/centros-poblados/json', views.CargarCentroPobladoSelectJsonView.as_view(),

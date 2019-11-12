@@ -1,6 +1,6 @@
-{% extends 'Administracion/_common/base_administracion.html' %}
+{% extends 'Proyectos/_common/base_proyectos.html' %}
 {% load static %}
-<title>{% block titulo %}Tercero{% endblock %}</title>
+<title>{% block titulo %}Contrato{% endblock %}</title>
 {% block styles %}
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/datagrid/datatables/datatables.bundle.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
@@ -13,11 +13,10 @@
     <div class="panel-container show">
             <div class="header">
                  <h1 class="header-title">
-                    <i class='far fa-handshake'></i> Terceros <span class='fw-300'></span>
+                    <i class='far fa-file-alt'></i> Contratos <span class='fw-300'></span>
                      <br>
                      <br>
                  </h1>
-
             </div>
             <div class="row">
                 <div class="col-xl-12">
@@ -25,7 +24,7 @@
                         <div class="panel-hdr">
 
                             <small>
-                                 <a class="far fa-2x far fa-plus-circle" style="margin-right: 8px" href="{% url 'Administracion:terceros-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar tercero"><label style="font-size: 18px" >Agregar</label></a>
+                                 <a class="far fa-2x far fa-plus-circle" style="margin-right: 8px" href="{% url 'Proyectos:contratos-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar contrato"><label style="font-size: 18px" >Agregar</label></a>
                             </small>
                         </div>
                         <div class="panel-container show">
@@ -37,40 +36,43 @@
                                                 <table class="table table-bordered w-100" id="dataTable">
                                                     <thead>
                                                         <tr>
-                                                            <th>Nombre</th>
-                                                            <th>Identificación</th>
-                                                            <th>Tipo de identificación</th>
-                                                            <th>Estado</th>
+                                                            <th>Cliente</th>
+                                                            <th>Número de contrato</th>
+                                                            <th>Año</th>
+                                                            <th>Nombre del supervisor</th>
+                                                            <th>Teléfono del supervisor</th>
+                                                            <th>Correo del supervisor</th>
+                                                            <th>Nombre del residente</th>
+                                                            <th>Fecha de inicio</th>
+                                                            <th>Fecha de terminación</th>
+                                                            <th>Valor</th>
+                                                            <th>Periodicidad de informes</th>
+                                                            <th>Tiempo</th>
+                                                            <th>Tipo de contrato</th>
                                                             <th>Empresa</th>
-                                                            <th>Fecha de creación</th>
-                                                            <th>Fecha de modificación</th>
-                                                            <th>Tipo tercero</th>
-                                                            <th>Ciudad</th>
                                                             <th>Acción</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        {% for tercero in terceros %}
+                                                        {% for contrato in contratos %}
                                                             <tr>
-                                                                <td>{{ tercero.nombre }}</td>
-                                                                <td>{{ tercero.identificacion}}</td>
-                                                                <td>{{ tercero.tipo_identificacion}}</td>
-
-                                                                <td>{% if tercero.estado == True %}
-                                                                    <span class="badge badge-primary">Activo</span>
-                                                                    {% else %}
-                                                                    <span class="badge badge-secondary">Inactivo</span>
-                                                                    {% endif %}
-                                                                </td>
-                                                                <td>{{ tercero.empresa }}</td>
-                                                                <td>{{ tercero.fecha_creacion|date:'Y-m-d H:i' }}</td>
-                                                                <td>{{ tercero.fecha_modificacion|date:'Y-m-d H:i' }}</td>
-                                                                <td>{{ tercero.tipo_tercero }}</td>
-                                                                <td>{{ tercero.centro_poblado }}</td>
+                                                                <td>{{ contrato.cliente}}</td>
+                                                                <td>{{ contrato.numero_contrato }}</td>
+                                                                <td>{{ contrato.anho}}</td>
+                                                                <td>{{ contrato.supervisor_nombre }}</td>
+                                                                <td>{{ contrato.supervisor_telefono }}</td>
+                                                                <td>{{ contrato.supervisor_correo }}</td>
+                                                                <td>{{ contrato.residente }}</td>
+                                                                <td>{{ contrato.fecha_inicio|date:'Y-m-d' }}</td>
+                                                                <td>{{ contrato.fecha_terminacion|date:'Y-m-d' }}</td>
+                                                                <td>{{ contrato.valor }}</td>
+                                                                <td>{{ contrato.periodicidad_informes }}</td>
+                                                                <td>{{ contrato.tiempo }}</td>
+                                                                <td>{{ contrato.tipo_contrato }}</td>
+                                                                <td>{{ contrato.empresa }}</td>
                                                               <td>
-                                                                    <a class="far fa-2x fa-edit"  href="{% url 'Administracion:terceros-editar' tercero.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
-                                                                    <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ tercero.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ tercero.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
-
+                                                                    <a class="far fa-2x fa-edit"   href="{% url 'Proyectos:contratos-editar' contrato.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                                    <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ contrato.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminarContrato({{ contrato.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
                                                               </td>
                                                             </tr>
                                                         {% endfor %}
@@ -88,13 +90,12 @@
     </div>
 
 
-    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='administracion/terceros' %}
+    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='proyectos/contratos' %}
 {% endblock %}
 {% block scripts %}
-    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
-    <script src="{% static 'Administracion/js/confirmarEliminar.js' %}"></script>
-    <script src="{% static 'Administracion/js/select_divipol.js' %}"></script>
+    <script src="{% static 'Proyectos/js/Contratos/confirmarEliminarContrato.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
         <!-- datatbles buttons bundle contains:
     + "jszip.js",
@@ -106,7 +107,7 @@
         <script>
             $(document).ready(function()
             {
-                 let columnasExportar = [0, 1, 2,3, 4, 5, 6, 7, 8];
+                 let columnasExportar = [0, 1,3, 4, 6, 9, 12, 13];
 
                 // initialize datatable
                 $('#dataTable').dataTable(
@@ -162,7 +163,7 @@
                             text: 'Excel',
                             className: 'btn-outline-success btn-sm mr-1',
                             exportOptions: {
-                            columns: columnasExportar,
+                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
 
                           },
                         },
@@ -181,7 +182,7 @@
                             text: 'Copiar',
                             className: 'btn-outline-primary btn-sm mr-1',
                             exportOptions: {
-                            columns: columnasExportar,
+                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
                           },
                         },
                         {
@@ -189,7 +190,7 @@
                             text: 'Imprimir',
                             className: 'btn-outline-primary btn-sm',
                             exportOptions: {
-                            columns: columnasExportar,
+                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
                           },
                         }
                     ],
@@ -202,7 +203,7 @@
 
                             },
                         },
-                        info: 'Mostrando terceros del _START_ al _END_ de un total de  _TOTAL_ terceros',
+                        info: 'Mostrando contratos del _START_ al _END_ de un total de  _TOTAL_ contratos',
 
                      }
                 });

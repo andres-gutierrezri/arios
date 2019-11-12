@@ -2,6 +2,9 @@ from django.db import models
 from django.contrib.auth.models import User
 
 # # Create your models here.
+from django.db.models import QuerySet
+
+from EVA.General.modelmanagers import ManagerGeneral
 
 
 class Empresa(models.Model):
@@ -24,8 +27,7 @@ class Empresa(models.Model):
 class Proceso(models.Model):
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     objeto = models.CharField(max_length=100, verbose_name='Objeto', null=False, blank=False)
-    empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa', null=True
-                                     , blank=False)
+    empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa', null=True, blank=False)
 
     def __str__(self):
         return self.nombre
@@ -36,6 +38,8 @@ class Proceso(models.Model):
 
 
 class TipoIdentificacion(models.Model):
+    objects = ManagerGeneral()
+    
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     sigla = models.TextField(max_length=5, verbose_name='Sigla', null=False, blank=False, unique=True)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
@@ -48,7 +52,16 @@ class TipoIdentificacion(models.Model):
         verbose_name_plural = 'Tipos de Identificaciones'
 
 
+class TipoContratoManager(ManagerGeneral):
+    def tipos_laborares(self, estado: bool = None, xa_select: bool = False) -> QuerySet:
+        return self.get_x_estado(estado, xa_select).filter(laboral=True)
+
+    def tipos_comerciales(self, estado: bool = None, xa_select: bool = False) -> QuerySet:
+        return self.get_x_estado(estado, xa_select).filter(laboral=False)
+
+
 class TipoContrato(models.Model):
+    objects = TipoContratoManager()
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     descripcion = models.TextField(max_length=300, verbose_name='Descripción', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)

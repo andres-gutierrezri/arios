@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Administracion.apps.AdministracionConfig',
+    'Proyectos.apps.ProyectosConfig',
 ]
 
 MIDDLEWARE = [
@@ -67,6 +68,9 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'libraries': {
+                'eva_tags': 'EVA.templatetags.etiquetas_generales',
+            }
         },
     },
 ]
@@ -127,6 +131,7 @@ STATIC_URL = '/staticfiles/' if IS_DEPLOYED else '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'EVA/static'),
     os.path.join(BASE_DIR, 'Administracion', 'static', 'Administracion'),
+    os.path.join(BASE_DIR, 'Proyectos', 'static', 'Proyectos'),
 
 )
 

@@ -1,0 +1,24 @@
+{% if tipo == 'checkbox' %}
+    <div class="custom-control custom-switch">
+        <div class="custom-control custom-checkbox">
+{% else %}
+    {% if texto_label %}
+        <label for="{{ nombre }}_id">{{ texto_label}}</label>
+    {% endif %}
+{% endif %}
+
+{% if tipo == 'textarea' %}
+    <textarea id="{{ nombre }}_id" name="{{ nombre }}" {{ propiedades }}>{{ valor }}</textarea>
+{% elif tipo == 'checkbox' %}
+     <input type="{{ tipo }}"  {% if valor %}checked {% endif %}   value="True" id="{{ nombre }}_id" name="{{ nombre }}" {{ propiedades }}>
+{% else %}
+    <input type="{{ tipo }}" id="{{ nombre }}_id" name="{{ nombre }}"  {% if is_fecha  %} value="{{ valor|date:'Y-m-d' }}" {% else %} value="{{ valor }}" {% endif %} {{ propiedades }}>
+{% endif %}
+{% if mensaje_validacion %}
+     <div class="invalid-tooltip">{{ mensaje_validacion }}</div>
+{% endif %}
+{% if tipo == 'checkbox' %}
+            <label for="{{ nombre }}_id" class="custom-control-label">{{ texto_label}}</label>
+        </div>
+    </div>
+{% endif %}

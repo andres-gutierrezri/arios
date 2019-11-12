@@ -1,16 +1,17 @@
-let URLDomain = document.location.origin+"/";
-let idBorrar = 0;
-let urlFinal;
-let rutaBorrado = $('#rutaBorrado').val();
+var URLDomain = document.location.origin+"/";
+var idBorrar = 0;
+var urlFinal;
+var rutaBorrado = $('#rutaBorrado').val();
 
-function fConfirmarEliminar(idElemento) {
-    fSweetAlert();
+function fConfirmarEliminarContrato(idElemento) {
+
+     fSweetAlert();
     idBorrar = idElemento;
 }
 
 function fSweetAlert() {
     Swal.fire({
-        title: '¿Está seguro de eliminar este Tercero?',
+        title: '¿Está seguro de eliminar este Contrato?',
         text: "Esta acción no se podrá revertir",
         type: 'warning',
         showCancelButton: true,
@@ -25,14 +26,16 @@ function fSweetAlert() {
                 context: document.body,
                 success: function (data) {
                     if(data.Mensaje === "OK") {
+
                         location.reload();
                     }
                     else {
-                        location.reload();
+                        Swal.fire("Error!", "Error");
                     }
                 },
                 failure: function (errMsg) {
                     location.reload();
+                    Swal.fire("Error!", "Error");
                 }
             });
         }
