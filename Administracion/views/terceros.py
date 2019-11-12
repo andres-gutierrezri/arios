@@ -26,9 +26,8 @@ class TerceroCrearView(View):
         self.opcion = 'crear'
         super().__init__()
 
-
     def get(self, request):
-       return render(request, 'Administracion/Tercero/crear-editar.html', datos_xa_render(self.opcion))
+        return render(request, 'Administracion/Tercero/crear-editar.html', datos_xa_render(self.opcion))
 
     def post(self, request):
         tercero = Tercero.from_dictionary(request.POST)
