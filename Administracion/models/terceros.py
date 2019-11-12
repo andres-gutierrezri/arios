@@ -1,12 +1,16 @@
 from datetime import datetime
 from django.db import models
+from django.db.models import QuerySet
 
+from EVA.General.modelmanagers import ManagerGeneral
 from .models import Empresa, TipoIdentificacion, Persona
 from .divipol import CentroPoblado
 from EVA.General.modeljson import ModelDjangoExtensiones
 
 
 class TipoTercero(models.Model):
+    objects = ManagerGeneral()
+
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     descripcion = models.TextField(max_length=300, verbose_name='Descripción', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
@@ -23,7 +27,24 @@ class TipoTercero(models.Model):
     PROVEEDOR = 2
 
 
+class TerceroManger(ManagerGeneral):
+
+    def clientes(self, estado: bool = None, xa_select: bool = False) -> QuerySet:
+        return self.get_x_estado(estado, xa_select).filter(tipo_tercero_id=TipoTercero.CLIENTE)
+
+    def clientes_xa_select(self):
+        self.clientes(True, True)
+
+    def proveedores(self, estado: bool = None, xa_select: bool = False) -> QuerySet:
+        return self.get_x_estado(estado, xa_select).filter(tipo_tercero_id=TipoTercero.PROVEEDOR)
+
+    def proveedores_xa_select(self):
+        self.proveedores(True, True)
+
+
 class Tercero(models.Model, ModelDjangoExtensiones):
+    objects = TerceroManger()
+
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     identificacion = models.CharField(max_length=20, verbose_name='Identificación', null=False, blank=False,
                                       unique=True)
