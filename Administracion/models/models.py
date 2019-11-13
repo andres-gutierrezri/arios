@@ -24,6 +24,20 @@ class Empresa(models.Model):
         verbose_name_plural = 'Empresas'
 
 
+class Cargo(models.Model):
+    nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
+    estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
+    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, verbose_name='Empresa',
+                                null=True, blank=False)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name = 'Cargo'
+        verbose_name_plural = 'Cargos'
+
+
 class Proceso(models.Model):
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     objeto = models.CharField(max_length=100, verbose_name='Objeto', null=False, blank=False)
@@ -35,6 +49,21 @@ class Proceso(models.Model):
     class Meta:
         verbose_name = 'Proceso'
         verbose_name_plural = 'Procesos'
+
+
+class Rango(models.Model):
+    nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
+    estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
+    descripcion = models.TextField(max_length=300, verbose_name='Descripción', null=False, blank=False)
+    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, verbose_name='Empresa',
+                                null=True, blank=False)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name = 'Rango'
+        verbose_name_plural = 'Rangos'
 
 
 class TipoIdentificacion(models.Model):
@@ -91,11 +120,12 @@ class Persona(models.Model):
     tipo_identificacion = models.ForeignKey(TipoIdentificacion, on_delete=models.DO_NOTHING,
                                             verbose_name='Tipo de identificación', null=True, blank=False)
     usuario = models.OneToOneField(User, on_delete=models.DO_NOTHING, verbose_name="Usuario", null=True,
-                                   blank=False, related_name='UserAccess')
+                                   blank=False, related_name='%(app_label)s_%(class)s_usuario')
     usuario_crea = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario Crea", null=False,
-                                     blank=False, related_name='UserCrea')
+                                     blank=False, related_name='%(app_label)s_%(class)s_usuario_crea')
     usuario_actualiza = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario Actualiza",
-                                          null=False, blank=False, related_name='UserModifica')
+                                          null=False, blank=False,
+                                          related_name='%(app_label)s_%(class)s_usuario_actualiza')
 
     def __str__(self):
         return self.usuario.first_name
