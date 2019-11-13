@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'Administracion.apps.AdministracionConfig',
     'Proyectos.apps.ProyectosConfig',
+    'TalentoHumano.apps.TalentohumanoConfig',
 ]
 
 MIDDLEWARE = [
@@ -132,6 +133,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'EVA/static'),
     os.path.join(BASE_DIR, 'Administracion', 'static', 'Administracion'),
     os.path.join(BASE_DIR, 'Proyectos', 'static', 'Proyectos'),
+os.path.join(BASE_DIR, 'TalentoHumano', 'static', 'TalentoHumano'),
 
 )
 
