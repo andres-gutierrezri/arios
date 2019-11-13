@@ -23,4 +23,5 @@ urlpatterns = [
     path('', index_view),
     path('administracion/', include('Administracion.urls', namespace='administracion')),
     path('proyectos/', include('Proyectos.urls', namespace='proyectos')),
+    path('talento-humano/', include('TalentoHumano.urls', namespace='talento-humano')),
 ]
