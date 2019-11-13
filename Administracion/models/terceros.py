@@ -33,13 +33,13 @@ class TerceroManger(ManagerGeneral):
         return self.get_x_estado(estado, xa_select).filter(tipo_tercero_id=TipoTercero.CLIENTE)
 
     def clientes_xa_select(self):
-        self.clientes(True, True)
+        return self.clientes(True, True)
 
     def proveedores(self, estado: bool = None, xa_select: bool = False) -> QuerySet:
         return self.get_x_estado(estado, xa_select).filter(tipo_tercero_id=TipoTercero.PROVEEDOR)
 
     def proveedores_xa_select(self):
-        self.proveedores(True, True)
+        return self.proveedores(True, True)
 
 
 class Tercero(models.Model, ModelDjangoExtensiones):
