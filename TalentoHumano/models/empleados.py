@@ -13,9 +13,9 @@ class Empleado (Persona):
     arl = models.CharField(max_length=50, verbose_name='ARL', null=False, blank=False)
     pensiones_cesantias = models.CharField(max_length=100, verbose_name='Pensiones y cesantías', null=False,
                                            blank=False)
-    fecha_ingreso = models.DateTimeField(verbose_name='Fecha de ingreso', null=False, blank=False)
-    fecha_examen = models.DateTimeField(verbose_name='Fecha de examen', null=False, blank=False)
-    fecha_dotacion = models.DateTimeField(verbose_name='Fecha dotación', null=False, blank=False)
+    fecha_ingreso = models.DateField(verbose_name='Fecha de ingreso', null=False, blank=False)
+    fecha_examen = models.DateField(verbose_name='Fecha de examen', null=False, blank=False)
+    fecha_dotacion = models.DateField(verbose_name='Fecha dotación', null=False, blank=False)
     salario = models.IntegerField(verbose_name="Salario", null=True, blank=False)
     jefe_inmediato = models.CharField(max_length=100, verbose_name='Jefe inmediato', null=False, blank=False)
     contrato = models.ForeignKey(Contrato, on_delete=models.DO_NOTHING, verbose_name='Contrato', null=True, blank=False)
