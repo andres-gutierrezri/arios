@@ -12,22 +12,18 @@ from TalentoHumano.models import EntidadesCAFE, TipoEntidadesCAFE
 
 class EntidadCAFEIndexView(View):
 
-    def get(sellf, request):
-        entidades_cafe = EntidadesCAFE.objects.all()
+    def get(self, request, id_entidad):
+        id_entidad = int(id_entidad)
+
+        entidades_cafe = EntidadesCAFE.objects.all() if id_entidad == 0 else \
+            EntidadesCAFE.objects.filter(tipo_entidad_id=id_entidad)
+
         tipos_entidades = TipoEntidadesCAFE.objects.get_xa_select_activos()
         fecha = datetime.now()
         return render(request, 'TalentoHumano/Entidades_CAFE/index.html', {'entidades_cafe': entidades_cafe,
                                                                            'fecha': fecha,
-                                                                           'tipos_entidades': tipos_entidades})
-
-    def post(self, request):
-        tipo_entidades = TipoEntidadesCAFE.objects.get_xa_select_activos()
-
-        if tipo_entidades.objects.filter(nombre=TipoEntidadesCAFE.AFP):
-            entidades_cafe = EntidadesCAFE.objects.get(tipo_entidad=TipoEntidadesCAFE.AFP)
-            return render(request, 'TalentoHumano/Entidades_CAFE/crear-editar.html',
-                          datos_xa_render(entidades_cafe))
-
+                                                                           'tipos_entidades': tipos_entidades,
+                                                                           'id_entidad': id_entidad})
 
 
 class EntidadCAFECrearView(View):
@@ -54,7 +50,7 @@ class EntidadCAFECrearView(View):
         entidad_cafe.save()
         messages.success(request, 'Se ha agregado la  {0}'.format(entidad_cafe.tipo_entidad) + ' ' +
                          '{0}'.format(entidad_cafe.nombre))
-        return redirect(reverse('TalentoHumano:entidades-index'))
+        return redirect(reverse('TalentoHumano:entidades-index', args=[0]))
 
 
 class EntidadCAFEEditarView(View):
@@ -89,7 +85,7 @@ class EntidadCAFEEditarView(View):
         if entidad_cafe_db.comparar(entidad_cafe):
             messages.success(request, 'No se hicieron cambios en la  {0}'.format(entidad_cafe.tipo_entidad) + ' ' +
                              '{0}'.format(entidad_cafe.nombre))
-            return redirect(reverse('TalentoHumano:entidades-index'))
+            return redirect(reverse('TalentoHumano:entidades-index', args=[0]))
 
         else:
 
@@ -97,7 +93,7 @@ class EntidadCAFEEditarView(View):
             messages.success(request, 'Se ha actualizado la  {0}'.format(entidad_cafe.tipo_entidad) + ' ' +
                              '{0}'.format(entidad_cafe.nombre))
 
-            return redirect(reverse('TalentoHumano:entidades-index'))
+            return redirect(reverse('TalentoHumano:entidades-index', args=[0]))
 
 
 class EntidadCAFEEliminarView(View):
