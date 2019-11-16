@@ -20,7 +20,7 @@ class TipoEntidadesCAFE(models.Model):
     ARL = 1
     EPS = 2
     CAJA_COMPENSACION = 3
-    FONDO_PENSIONES = 4
+    AFP = 4
 
 
 class EntidadesManger(ManagerGeneral):
@@ -44,7 +44,7 @@ class EntidadesManger(ManagerGeneral):
         return self.arl(True, True)
 
     def fondo_pensiones(self, estado: bool = None, xa_select: bool = False) -> QuerySet:
-        return self.get_x_estado(estado, xa_select).filter(tipo_entidad_id=TipoEntidadesCAFE.FONDO_PENSIONES)
+        return self.get_x_estado(estado, xa_select).filter(tipo_entidad_id=TipoEntidadesCAFE.AFP)
 
     def fondo_pensiones_xa_select(self):
         return self.arl(True, True)
