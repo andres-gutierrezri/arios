@@ -17,6 +17,7 @@ class TipoEntidadesCAFE(models.Model):
         verbose_name_plural = 'Tipos de entidades'
 
     # Tipos Fijos
+    TODAS = 0
     ARL = 1
     EPS = 2
     CAJA_COMPENSACION = 3
