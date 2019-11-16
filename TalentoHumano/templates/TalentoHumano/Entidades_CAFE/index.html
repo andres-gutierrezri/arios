@@ -23,10 +23,15 @@
             <div class="row">
                 <div class="col-xl-12">
                     <div id="panel-1" class="panel">
-                        <div class="panel-hdr">
+                        <div class="panel-panel-default">
+                            <div class="panel-body">
                             <small>
                                  <a class="far fa-2x far fa-plus-circle" style="margin-right: 8px" href="{% url 'TalentoHumano:entidades-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar contrato"><label style="font-size: 18px" >Agregar</label></a>
                             </small>
+                            <div class="col-md-2" >
+                                {% select_tag tipos_entidades 'tipo_entidad_id' 'Seleccione una opción' texto_label="Entidades" value=entidad_cafe.tipo_entidad_id   %}
+                            </div>
+                            </div>
                         </div>
                         <div class="panel-container show">
                             <div class="panel-content">
@@ -34,9 +39,7 @@
                                         <div class="panel-body">
                                             <div class="form-group">
                                                 <div class="form-row">
-                                                    <div class="col-md-2">
-                                                        {% select_tag tipos_entidades 'tipo_entidad_id' 'Seleccione una entidad' texto_label="Entidades" value=entidad_cafe.tipo_entidad_id   %}
-                                                    </div>
+
                                                  </div>
                                              </div>
                                             <div class="table-responsive">
@@ -60,7 +63,7 @@
                                                                 <td>{{ entidad_cafe.nombre_contacto}}</td>
                                                                 <td>{{ entidad_cafe.telefono_contacto }}</td>
                                                                 <td>{{ entidad_cafe.correo}}</td>
-                                                                <td><a>{{ entidad_cafe.direccion_web }}</a></td>
+                                                                <td><a href="http://{{ entidad_cafe.direccion_web }}" target="_blank">{{ entidad_cafe.direccion_web }}</a></td>
                                                               <td>
                                                                     <a class="far fa-2x fa-edit"   href="{% url 'TalentoHumano:entidades-editar' entidad_cafe.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
                                                                     <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ entidad_cafe.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminarEntidad({{ entidad_cafe.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
@@ -81,11 +84,11 @@
     </div>
 
 
-    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='talento-humano/entidades-cafe' %}
+    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='talento-humano/entidades' %}
 {% endblock %}
 {% block scripts %}
     <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
-    <script src="{% static 'Proyectos/js/Contratos/confirmarEliminarContrato.js' %}"></script>
+    <script src="{% static 'TalentoHumano/js/confirmarEliminarEntidad.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
