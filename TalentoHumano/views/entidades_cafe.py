@@ -1,7 +1,5 @@
 from datetime import datetime
-
 from django.db import IntegrityError
-from django.db.models import F
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -12,13 +10,24 @@ from django.core.exceptions import ValidationError
 from TalentoHumano.models import EntidadesCAFE, TipoEntidadesCAFE
 
 
-def index(request):
-    entidades_cafe = EntidadesCAFE.objects.all()
-    tipos_entidades = TipoEntidadesCAFE.objects.get_xa_select_activos()
-    fecha = datetime.now()
-    return render(request, 'TalentoHumano/Entidades_CAFE/index.html', {'entidades_cafe': entidades_cafe,
-                                                                       'fecha': fecha,
-                                                                       'tipos_entidades': tipos_entidades})
+class EntidadCAFEIndexView(View):
+
+    def get(sellf, request):
+        entidades_cafe = EntidadesCAFE.objects.all()
+        tipos_entidades = TipoEntidadesCAFE.objects.get_xa_select_activos()
+        fecha = datetime.now()
+        return render(request, 'TalentoHumano/Entidades_CAFE/index.html', {'entidades_cafe': entidades_cafe,
+                                                                           'fecha': fecha,
+                                                                           'tipos_entidades': tipos_entidades})
+
+    def post(self, request):
+        tipo_entidades = TipoEntidadesCAFE.objects.get_xa_select_activos()
+
+        if tipo_entidades.objects.filter(nombre=TipoEntidadesCAFE.AFP):
+            entidades_cafe = EntidadesCAFE.objects.get(tipo_entidad=TipoEntidadesCAFE.AFP)
+            return render(request, 'TalentoHumano/Entidades_CAFE/crear-editar.html',
+                          datos_xa_render(entidades_cafe))
+
 
 
 class EntidadCAFECrearView(View):
@@ -37,12 +46,14 @@ class EntidadCAFECrearView(View):
             return render(request, 'TalentoHumano/Entidades_CAFE/crear-editar.html', datos)
 
         if EntidadesCAFE.objects.filter(nombre__iexact=entidad_cafe.nombre).exists():
-            messages.warning(request, 'Ya existe una entidad con nombre {0}'.format(entidad_cafe.nombre))
+            messages.warning(request, 'Ya existe una  {0}'.format(entidad_cafe.tipo_entidad) + ' con nombre {0}'
+                             .format(entidad_cafe.nombre))
             return render(request, 'TalentoHumano/Entidades_CAFE/crear-editar.html',
                           datos_xa_render(self.OPCION, entidad_cafe))
 
         entidad_cafe.save()
-        messages.success(request, 'Se ha agregado la entidad {0}'.format(entidad_cafe.nombre))
+        messages.success(request, 'Se ha agregado la  {0}'.format(entidad_cafe.tipo_entidad) + ' ' +
+                         '{0}'.format(entidad_cafe.nombre))
         return redirect(reverse('TalentoHumano:entidades-index'))
 
 
@@ -68,37 +79,41 @@ class EntidadCAFEEditarView(View):
             datos['errores'] = errores.message_dict
             return render(request, 'TalentoHumano/Entidades_CAFE/crear-editar.html', datos)
 
-        if EntidadesCAFE.objects.filter(nombre=entidad_cafe.nombre).lower.exclude(id=id).exists():
-            messages.warning(request, 'Ya existe una entidad con nombre {0}'.format(entidad_cafe.nombre))
+        if EntidadesCAFE.objects.filter(nombre__iexact=entidad_cafe.nombre).exclude(id=id).exists():
+            messages.warning(request, 'Ya existe una  {0}'.format(entidad_cafe.tipo_entidad) + ' con nombre {0}'
+                             .format(entidad_cafe.nombre))
             return render(request, 'TalentoHumano/Entidades_CAFE/crear-editar.html', datos_xa_render(self.OPCION,
                                                                                                      entidad_cafe))
 
         entidad_cafe_db = EntidadesCAFE.objects.get(id=id)
         if entidad_cafe_db.comparar(entidad_cafe):
-            messages.success(request, 'No se hicieron cambios en la entidad {0}'.format(entidad_cafe.nombre))
+            messages.success(request, 'No se hicieron cambios en la  {0}'.format(entidad_cafe.tipo_entidad) + ' ' +
+                             '{0}'.format(entidad_cafe.nombre))
             return redirect(reverse('TalentoHumano:entidades-index'))
 
         else:
 
             entidad_cafe.save(update_fields=update_fields)
-            messages.success(request, 'Se ha actualizado la entidad {0}'.format(entidad_cafe.nombre))
+            messages.success(request, 'Se ha actualizado la  {0}'.format(entidad_cafe.tipo_entidad) + ' ' +
+                             '{0}'.format(entidad_cafe.nombre))
 
             return redirect(reverse('TalentoHumano:entidades-index'))
 
-#
-# class TerceroEliminarView(View):
-#     def post(self, request, id):
-#         try:
-#             tercero = Tercero.objects.get(id=id)
-#             tercero.delete()
-#             messages.success(request, 'Se ha eliminado el tercero {0}'.format(tercero.nombre))
-#             return JsonResponse({"Mensaje": "OK"})
-#
-#         except IntegrityError:
-#             tercero = Tercero.objects.get(id=id)
-#             messages.warning(request, 'No se puede eliminar el tercero {0}'.format(tercero.nombre) +
-#                              ' porque ya se encuentra asociado a otros módulos')
-#             return JsonResponse({"Mensaje": "No se puede eliminar"})
+
+class EntidadCAFEEliminarView(View):
+    def post(self, request, id):
+        try:
+            entidad_cafe = EntidadesCAFE.objects.get(id=id)
+            entidad_cafe.delete()
+            messages.success(request, 'Se ha eliminado la  {0}'.format(entidad_cafe.tipo_entidad) + ' ' +
+                             '{0}'.format(entidad_cafe.nombre))
+            return JsonResponse({"Mensaje": "OK"})
+
+        except IntegrityError:
+            entidad_cafe = EntidadesCAFE.objects.get(id=id)
+            messages.warning(request, 'No se puede eliminar la  {0}'.format(entidad_cafe.tipo_entidad) + ' ' +
+                             '{0}'.format(entidad_cafe.nombre) + ' porque ya se encuentra asociada a otro módulo')
+            return JsonResponse({"Mensaje": "No se puede eliminar"})
 
 # region Métodos de ayuda
 
