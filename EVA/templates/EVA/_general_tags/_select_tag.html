@@ -2,7 +2,9 @@
     <label for="{{ nombre }}_select_id">{{ texto_label }}</label>
 {% endif %}
 <select class="select2 form-control" id="{{ nombre }}_select_id" name="{{ nombre }}" {{ propiedades }}>
-    <option value="">{{ texto_seleccion }}</option>
+    {% if texto_seleccion %}
+        <option value="">{{ texto_seleccion }}</option>
+    {% endif %}
     {% for item in lista %}
         <option value="{{ item.campo_valor }}" {% if item.campo_valor == valor %} selected {% endif %}>{{ item.campo_texto }}</option>
     {% endfor %}
