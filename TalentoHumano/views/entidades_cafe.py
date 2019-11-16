@@ -14,7 +14,7 @@ from TalentoHumano.models import EntidadesCAFE, TipoEntidadesCAFE
 
 def index(request):
     entidades_cafe = EntidadesCAFE.objects.all()
-    tipos_entidades = TipoEntidadesCAFE.objects.all()
+    tipos_entidades = TipoEntidadesCAFE.objects.get_xa_select_activos()
     fecha = datetime.now()
     return render(request, 'TalentoHumano/Entidades_CAFE/index.html', {'entidades_cafe': entidades_cafe,
                                                                        'fecha': fecha,
@@ -36,7 +36,7 @@ class EntidadCAFECrearView(View):
             datos['errores'] = errores.message_dict
             return render(request, 'TalentoHumano/Entidades_CAFE/crear-editar.html', datos)
 
-        if EntidadesCAFE.objects.filter(nombre=entidad_cafe.nombre).exists():
+        if EntidadesCAFE.objects.filter(nombre__iexact=entidad_cafe.nombre).exists():
             messages.warning(request, 'Ya existe una entidad con nombre {0}'.format(entidad_cafe.nombre))
             return render(request, 'TalentoHumano/Entidades_CAFE/crear-editar.html',
                           datos_xa_render(self.OPCION, entidad_cafe))
@@ -116,7 +116,7 @@ def datos_xa_render(opcion: str, entidad: EntidadesCAFE = None) -> dict:
     datos = {'tipos_entidades': tipos_entidades, 'opcion': opcion}
 
     if entidad:
-        datos['entidad'] = entidad
+        datos['entidad_cafe'] = entidad
 
     return datos
 # endregion
