@@ -75,7 +75,7 @@
                                                     <button id="guardar" class="btn btn-primary btn-block">{% if opcion == 'editar' %} Actualizar {% else %} Agregar {% endif %}</button>
                                                 </div>
                                                 <div style="padding-left: 15px">
-                                                    <a href="{% url 'TalentoHumano:entidades-index' %}" class="btn btn-danger btn-block">Cancelar</a>
+                                                    <a href="{% url 'TalentoHumano:entidades-index' 0 %}" class="btn btn-danger btn-block">Cancelar</a>
                                                 </div>
                                             </div>
                                     </form>
