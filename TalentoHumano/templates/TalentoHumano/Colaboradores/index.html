@@ -1,0 +1,242 @@
+{% extends 'TalentoHumano/_common/base_talento_humano.html' %}
+{% load static %}
+{% load eva_tags %}
+<title>{% block titulo %}Perfil de colaboradores{% endblock %}</title>
+{% block styles %}
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/datagrid/datatables/datatables.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-brands.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-solid.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/sweetalert2/sweetalert2.bundle.css'%}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/theme-demo.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
+{% endblock styles %}
+
+{% block main %}
+
+    <div class="panel-container show">
+            <div class="header">
+                 <h1 class="header-title">
+                    <i class='far fa-user'></i> Perfil de colaboradores <span class='fw-300'></span>
+                     <br>
+                     <br>
+                 </h1>
+            </div>
+            <div class="row">
+                <div class="col-xl-12">
+                    <div id="panel-1" class="panel">
+                        <div class="panel-hdr">
+                                <br>
+                            <div class="col-md-10">
+                                <small>
+                                     <a class="far fa-3x far fa-plus-circle"  href="{% url 'TalentoHumano:colaboradores-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar colaborador"></a>
+                                </small>
+                                </div>
+                        </div>
+                        <main id="js-page-content" role="main" class="page-content">
+
+                        <div class="row">
+                            <div class="col-xl-12">
+                                <div class="border-faded bg-faded p-3 mb-g d-flex">
+                                    <input type="text" id="js-filter-contacts" name="filter-contacts" class="form-control shadow-inset-2 form-control-lg" placeholder="Filtrar contactos">
+                                    <div class="btn-group btn-group-lg btn-group-toggle hidden-lg-down ml-3" data-toggle="buttons">
+                                        <label class="btn btn-default active">
+                                            <input type="radio" name="contactview" id="grid" checked="" value="grid"><i class="fas fa-table"></i>
+                                        </label>
+                                        <label class="btn btn-default">
+                                            <input type="radio" name="contactview" id="table" value="table"><i class="fas fa-th-list"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% for colaborador in colaboradores %}
+                        <div class="row" id="js-contacts">
+                            <div class="col-xl-4">
+                                <div id="c_1" class="card border shadow-0 mb-g shadow-sm-hover" data-filter-tags="oliver kopyov">
+                                    <div class="card-body border-faded border-top-0 border-left-0 border-right-0 rounded-top">
+                                        <div class="d-flex flex-row align-items-center">
+                                            <span class="status status-success mr-3">
+                                                <span class="rounded-circle profile-image d-block " style="background-image:url('img/demo/avatars/avatar-b.png'); background-size: cover;"></span>
+                                            </span>
+                                            <div class="info-card-text flex-1">
+                                                <a href="javascript:void(0);" class="fs-xl text-truncate text-truncate-lg text-info" data-toggle="dropdown" aria-expanded="false">
+                                                    {{ colaborador.persona.nombre }}
+                                                    <i class="fal fa-angle-down d-inline-block ml-1 fs-md"></i>
+                                                </a>
+                                                <div class="dropdown-menu">
+                                                    <a class="dropdown-item" href="#">{{ colaborador.correo }}</a>
+                                                    <a class="dropdown-item" href="#">Create Appointment</a>
+                                                    <a class="dropdown-item" href="#">Block User</a>
+                                                </div>
+                                                <span class="text-truncate text-truncate-xl">{{ colaborador.cargo }}</span>
+                                            </div>
+                                            <button class="js-expand-btn btn btn-sm btn-default d-none" data-toggle="collapse" data-target="#c_1 > .card-body + .card-body" aria-expanded="false">
+                                                <span class="collapsed-hidden">+</span>
+                                                <span class="collapsed-reveal">-</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body p-0 collapse show">
+                                        <div class="p-3">
+                                            <a href="tel:+13174562564" class="mt-1 d-block fs-sm fw-400 text-dark">
+                                                <i class="fas fa-mobile-alt text-muted mr-2"></i>{{ colaborador.persona.telefono }}</a>
+                                            <a href="mailto:oliver.kopyov@smartadminwebapp.com" class="mt-1 d-block fs-sm fw-400 text-dark">
+                                                <i class="fas fa-mouse-pointer text-muted mr-2"></i> {{colaborador.correo}}</a>
+                                            <address class="fs-sm fw-400 mt-4 text-muted">
+                                                <i class="fas fa-map-pin mr-2"></i> {{ colaborador.direccion }}</address>
+                                            <div class="d-flex flex-row">
+                                                <a href="javascript:void(0);" class="mr-2 fs-xxl" style="color:#3b5998">
+                                                    <i class="fab fa-facebook-square"></i>
+                                                </a>
+                                                <a href="javascript:void(0);" class="mr-2 fs-xxl" style="color:#38A1F3">
+                                                    <i class="fab fa-twitter-square"></i>
+                                                </a>
+                                                <a href="javascript:void(0);" class="mr-2 fs-xxl" style="color:#0077B5">
+                                                    <i class="fab fa-linkedin"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                         {% endfor %}
+                    </main>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+
+    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='talento-humano/entidades' %}
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
+    <script src="{% static 'TalentoHumano/js/confirmarEliminarEntidad.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
+    <script src="{% static 'TalentoHumano/js/filtro_entidad.js' %}"></script>
+        <!-- datatbles buttons bundle contains:
+    + "jszip.js",
+    + "pdfmake.js",
+    + "vfs_fonts.js"
+    NOTE: 	The file size is pretty big, but you can always use the
+            build.json file to deselect any components you do not need under "export" -->
+    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.export.js' %}"></script>
+        <script>
+            $(document).ready(function()
+            {
+                 let columnasExportar = [0, 1,2,3,4,5];
+
+                // initialize datatable
+                $('#dataTable').dataTable(
+                {
+
+                    responsive: true,
+                    lengthChange: false,
+                    dom:
+
+                        /*	--- Layout Structure
+                            --- Options
+                            l	-	length changing input control
+                            f	-	filtering input
+                            t	-	The table!
+                            i	-	Table information summary
+                            p	-	pagination control
+                            r	-	processing display element
+                            B	-	buttons
+                            R	-	ColReorder
+                            S	-	Select
+
+                            --- Markup
+                            < and >				- div element
+                            <"class" and >		- div with a class
+                            <"#id" and >		- div with an ID
+                            <"#id.class" and >	- div with an ID and a class
+
+                            --- Further reading
+                            https://datatables.net/reference/option/dom
+                            --------------------------------------
+                         */
+                        "<'row mb-3'<'col-sm-12 col-md-6 d-flex align-items-center justify-content-start'f><'col-sm-12 col-md-6 d-flex align-items-center justify-content-end'lB>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+                    buttons: [
+                        /*{
+                            extend:    'colvis',
+                            text:      'Column Visibility',
+                            titleAttr: 'Col visibility',
+                            className: 'mr-sm-3'
+                        },*/
+                        {
+                            extend: 'pdfHtml5',
+                            text: 'PDF',
+                            className: 'btn-outline-danger btn-sm mr-1',
+                             exportOptions: {
+                            columns: columnasExportar,
+                          },
+
+                        },
+                        {
+                            extend: 'excelHtml5',
+                            text: 'Excel',
+                            className: 'btn-outline-success btn-sm mr-1',
+                            exportOptions: {
+                            columns: columnasExportar,
+
+                          },
+                        },
+                        {
+                            extend: 'csvHtml5',
+                            text: 'CSV',
+                            className: 'btn-outline-primary btn-sm mr-1',
+                            exportOptions: {
+                            columns: columnasExportar,
+
+                          },
+
+                        },
+                        {
+                            extend: 'copyHtml5',
+                            text: 'Copiar',
+                            className: 'btn-outline-primary btn-sm mr-1',
+                            exportOptions: {
+                            columns: columnasExportar,
+                          },
+                        },
+                        {
+                            extend: 'print',
+                            text: 'Imprimir',
+                            className: 'btn-outline-primary btn-sm',
+                            exportOptions: {
+                            columns: columnasExportar,
+                          },
+                        }
+                    ],
+                     language: {
+                        buttons: {
+                            copyTitle: 'Copiado al portapapeles',
+                            copySuccess: {
+                                _: '%d líneas copiadas',
+                                1: '1 línea copiada',
+
+                            },
+                        },
+                        info: 'Mostrando entidades del _START_ al _END_ de un total de  _TOTAL_ entidades',
+
+                     }
+                });
+                $("#dataTable_filter").find("input").attr("placeholder", "Buscar");
+
+            });
+        </script>
+
+        <script>
+		$(document).ready(function () {
+		    $('.select2').select2();
+		});
+	</script>
+
+    {% endblock %}
