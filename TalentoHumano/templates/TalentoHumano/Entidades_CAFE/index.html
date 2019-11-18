@@ -23,16 +23,16 @@
             <div class="row">
                 <div class="col-xl-12">
                     <div id="panel-1" class="panel">
-                        <div class="panel-panel-default">
-                            <div class="panel-header">
+                        <div class="panel-hdr">
                                 <br>
+                            <div class="col-md-10">
                                 <small>
-                                     <a class="far fa-3x far fa-plus-circle" style="padding-left: 20px" href="{% url 'TalentoHumano:entidades-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar Entidad CAFE"><label style="font-size: 18px" ></label></a>
+                                     <a class="far fa-3x far fa-plus-circle"  href="{% url 'TalentoHumano:entidades-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar Entidad CAFE"></a>
                                 </small>
+                                </div>
                                 <div class="col-md-2" style="float: right" >
                                     {% select_tag tipos_entidades 'tipo_entidad_id' '' value=id_entidad  %}
                                 </div>
-                            </div>
                         </div>
                         <div class="panel-container show">
                             <div class="panel-content">
@@ -40,7 +40,6 @@
                                         <div class="panel-body">
                                             <div class="form-group">
                                                 <div class="form-row">
-
                                                  </div>
                                              </div>
                                             <div class="table-responsive">
@@ -104,7 +103,7 @@
         <script>
             $(document).ready(function()
             {
-                 let columnasExportar = [0, 1,3, 4, 6, 9, 12, 13];
+                 let columnasExportar = [0, 1,2,3,4,5];
 
                 // initialize datatable
                 $('#dataTable').dataTable(
@@ -160,7 +159,7 @@
                             text: 'Excel',
                             className: 'btn-outline-success btn-sm mr-1',
                             exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+                            columns: columnasExportar,
 
                           },
                         },
@@ -179,7 +178,7 @@
                             text: 'Copiar',
                             className: 'btn-outline-primary btn-sm mr-1',
                             exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+                            columns: columnasExportar,
                           },
                         },
                         {
@@ -187,7 +186,7 @@
                             text: 'Imprimir',
                             className: 'btn-outline-primary btn-sm',
                             exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+                            columns: columnasExportar,
                           },
                         }
                     ],
