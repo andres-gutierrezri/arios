@@ -128,7 +128,7 @@ class Persona(models.Model):
                                           related_name='%(app_label)s_%(class)s_usuario_actualiza')
 
     def __str__(self):
-        return self.usuario.first_name
+        return '{0} {1} {2}'.format(self.usuario.first_name, self.usuario.last_name, self.identificacion)
 
     class Meta:
         abstract = True
