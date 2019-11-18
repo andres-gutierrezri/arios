@@ -1,0 +1,70 @@
+from django.db import models
+
+from Administracion.models import Persona, Cargo, Proceso, TipoContrato, CentroPoblado, Rango
+from EVA.General.conversiones import string_to_date
+from EVA.General.modeljson import ModelDjangoExtensiones
+from Proyectos.models import Contrato
+from TalentoHumano.models import EntidadesCAFE
+
+
+class Colaboradores (Persona, ModelDjangoExtensiones):
+    direccion = models.CharField(max_length=100, verbose_name='Dirección', null=False, blank=False)
+    talla_camisa = models.CharField(max_length=3, verbose_name="Talla de camisa", null=True, blank=False)
+    talla_pantalon = models.IntegerField(verbose_name="Talla de pantalón", null=True, blank=False)
+    talla_zapatos = models.IntegerField(verbose_name="Talla de zapatos", null=True, blank=False)
+    entidad_cafe = models.ForeignKey(EntidadesCAFE, on_delete=models.DO_NOTHING, verbose_name='Entidad CAFE',
+                                     null=False, blank=False)
+    fecha_ingreso = models.DateField(verbose_name='Fecha de ingreso', null=False, blank=False)
+    fecha_examen = models.DateField(verbose_name='Fecha de examen', null=False, blank=False)
+    fecha_dotacion = models.DateField(verbose_name='Fecha de dotación', null=False, blank=False)
+    salario = models.IntegerField(verbose_name="Salario", null=True, blank=False)
+    jefe_inmediato = models.ForeignKey('self', on_delete=models.DO_NOTHING, verbose_name='Jefe inmediato', null=False,
+                                       blank=False)
+    contrato = models.ForeignKey(Contrato, on_delete=models.DO_NOTHING, verbose_name='Contrato', null=False,
+                                 blank=False)
+    cargo = models.ForeignKey(Cargo, on_delete=models.DO_NOTHING, verbose_name='Cargo', null=False, blank=False)
+    proceso = models.ForeignKey(Proceso, on_delete=models.DO_NOTHING, verbose_name='Proceso', null=False, blank=False)
+    tipo_contrato = models.ForeignKey(TipoContrato, on_delete=models.DO_NOTHING, verbose_name='Tipo de contrato',
+                                      null=False, blank=False)
+    lugar_nacimiento = models.ForeignKey(CentroPoblado, on_delete=models.DO_NOTHING, verbose_name='Lugar de nacimiento',
+                                         null=False, blank=False)
+    rango = models.ForeignKey(Rango, on_delete=models.DO_NOTHING, verbose_name='Rango', null=False, blank=False)
+    correo = models.EmailField(max_length=100, verbose_name='Correo del colaborador', null=False, blank=False,
+                               error_messages={'invalid': "Ingrese una dirección de correo válida"})
+    estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
+
+    def __str__(self):
+        return '{0} {1}'.format(self.usuario.first_name, self.usuario.last_name)
+
+    class Meta:
+        verbose_name = 'Colaborador'
+        verbose_name_plural = 'Colaboradores'
+
+    @staticmethod
+    def from_dictionary(datos: dict) -> 'Colaboradores':
+        """
+        Crea una instancia de Colaboradores con los datos pasados en el diccionario.
+        :param datos: Diccionario con los datos para crear Colaboradores.
+        :return: Instacia de entidad colaboradores con la información especificada en el diccionario.
+        """
+        colaborador = Colaboradores()
+        colaborador.direccion = datos.get('direccion', '')
+        colaborador.talla_camisa = datos.get('talla_camisa', '')
+        colaborador.talla_zapatos = datos.get('talla_zapatos', '')
+        colaborador.talla_pantalon = datos.get('talla_pantalon', '')
+        colaborador.entidad_cafe_id = datos.get('entidad_cafe_id', '')
+        colaborador.fecha_ingreso = string_to_date(datos.get('fecha_ingreso', ''))
+        colaborador.fecha_examen = string_to_date(datos.get('fecha_examen', ''))
+        colaborador.fecha_dotacion = string_to_date(datos.get('fecha_dotacion', ''))
+        colaborador.salario = datos.get('salario', '')
+        colaborador.jefe_inmediato_id = datos.get('jefe_inmediato_id', '')
+        colaborador.contrato_id = datos.get('contrato_id', '')
+        colaborador.cargo_id = datos.get('cargo_id', '')
+        colaborador.proceso_id = datos.get('proceso_id', '')
+        colaborador.tipo_contrato_id = datos.get('tipo_contrato_id', '')
+        colaborador.lugar_nacimiento_id = datos.get('lugar_nacimiento_id', '')
+        colaborador.rango_id = datos.get('rango_id', '')
+        colaborador.correo = datos.get('correo', '')
+        colaborador.identificacion = datos.get('identificacion', '')
+
+        return colaborador
