@@ -1,1 +1,1 @@
-from .empleados import Empleado
+from .entidades_cafe import EntidadesCAFE, TipoEntidadesCAFE

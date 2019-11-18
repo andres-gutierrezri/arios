@@ -133,7 +133,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'EVA/static'),
     os.path.join(BASE_DIR, 'Administracion', 'static', 'Administracion'),
     os.path.join(BASE_DIR, 'Proyectos', 'static', 'Proyectos'),
-os.path.join(BASE_DIR, 'TalentoHumano', 'static', 'TalentoHumano'),
+    os.path.join(BASE_DIR, 'TalentoHumano', 'static', 'TalentoHumano'),
 
 )
 
