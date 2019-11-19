@@ -27,7 +27,7 @@ class Colaboradores (Persona, ModelDjangoExtensiones):
     fecha_examen = models.DateField(verbose_name='Fecha de examen', null=False, blank=False)
     fecha_dotacion = models.DateField(verbose_name='Fecha de dotación', null=False, blank=False)
     salario = models.IntegerField(verbose_name="Salario", null=True, blank=False)
-    jefe_inmediato = models.ForeignKey('self', on_delete=models.DO_NOTHING, verbose_name='Jefe inmediato', null=False,
+    jefe_inmediato = models.ForeignKey('self', on_delete=models.DO_NOTHING, verbose_name='Jefe inmediato', null=True,
                                        blank=False)
     contrato = models.ForeignKey(Contrato, on_delete=models.DO_NOTHING, verbose_name='Contrato', null=False,
                                  blank=False)
@@ -38,8 +38,6 @@ class Colaboradores (Persona, ModelDjangoExtensiones):
     lugar_nacimiento = models.ForeignKey(CentroPoblado, on_delete=models.DO_NOTHING, verbose_name='Lugar de nacimiento',
                                          null=False, blank=False)
     rango = models.ForeignKey(Rango, on_delete=models.DO_NOTHING, verbose_name='Rango', null=False, blank=False)
-    correo = models.EmailField(max_length=100, verbose_name='Correo del colaborador', null=False, blank=False,
-                               error_messages={'invalid': "Ingrese una dirección de correo válida"})
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
 
     def __str__(self):
@@ -76,7 +74,11 @@ class Colaboradores (Persona, ModelDjangoExtensiones):
         colaborador.tipo_contrato_id = datos.get('tipo_contrato_id', '')
         colaborador.lugar_nacimiento_id = datos.get('centro_poblado_id', '')
         colaborador.rango_id = datos.get('rango_id', '')
-        colaborador.correo = datos.get('correo', '')
+        colaborador.usuario.email = datos.get('correo', '')
+        colaborador.fecha_nacimiento = string_to_date(datos.get('fecha_nacimiento', ''))
+        colaborador.usuario.first_name = datos.get('nombre', '')
+        colaborador.usuario.last_name = datos.get('apellido', '')
         colaborador.identificacion = datos.get('identificacion', '')
+        colaborador.tipo_identificacion_id = datos.get('tipo_identificacion_id', '')
 
         return colaborador
