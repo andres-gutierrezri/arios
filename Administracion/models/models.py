@@ -25,6 +25,7 @@ class Empresa(models.Model):
 
 
 class Cargo(models.Model):
+    objects = ManagerGeneral()
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, verbose_name='Empresa',
@@ -39,6 +40,7 @@ class Cargo(models.Model):
 
 
 class Proceso(models.Model):
+    objects = ManagerGeneral()
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     objeto = models.CharField(max_length=100, verbose_name='Objeto', null=False, blank=False)
     empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa', null=True, blank=False)
@@ -52,6 +54,7 @@ class Proceso(models.Model):
 
 
 class Rango(models.Model):
+    objects = ManagerGeneral()
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
     descripcion = models.TextField(max_length=300, verbose_name='Descripción', null=False, blank=False)
@@ -105,6 +108,7 @@ class TipoContrato(models.Model):
 
 
 class Persona(models.Model):
+    objects = ManagerGeneral()
     identificacion = models.CharField(max_length=20, verbose_name='Identificación', null=False, blank=False,
                                       unique=True)
     fecha_expedicion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Expedición', null=False,
