@@ -5,15 +5,24 @@ from EVA.General.conversiones import string_to_date
 from EVA.General.modeljson import ModelDjangoExtensiones
 from Proyectos.models import Contrato
 from TalentoHumano.models import EntidadesCAFE
+from TalentoHumano.models.entidades_cafe import EntidadesManger
 
 
 class Colaboradores (Persona, ModelDjangoExtensiones):
+    objects = EntidadesManger()
     direccion = models.CharField(max_length=100, verbose_name='Dirección', null=False, blank=False)
     talla_camisa = models.CharField(max_length=3, verbose_name="Talla de camisa", null=True, blank=False)
     talla_pantalon = models.IntegerField(verbose_name="Talla de pantalón", null=True, blank=False)
     talla_zapatos = models.IntegerField(verbose_name="Talla de zapatos", null=True, blank=False)
-    entidad_cafe = models.ForeignKey(EntidadesCAFE, on_delete=models.DO_NOTHING, verbose_name='Entidad CAFE',
-                                     null=False, blank=False)
+    eps = models.ForeignKey(EntidadesCAFE, on_delete=models.DO_NOTHING, verbose_name='EPS', null=False, blank=False,
+                            related_name='%(app_label)s_%(class)s_eps')
+    arl = models.ForeignKey(EntidadesCAFE, on_delete=models.DO_NOTHING, verbose_name='ARL', null=False, blank=False,
+                            related_name='%(app_label)s_%(class)s_arl')
+    afp = models.ForeignKey(EntidadesCAFE, on_delete=models.DO_NOTHING, verbose_name='AFP', null=False, blank=False,
+                            related_name='%(app_label)s_%(class)s_afp')
+    caja_compensacion = models.ForeignKey(EntidadesCAFE, on_delete=models.DO_NOTHING,
+                                          verbose_name='Caja de compensación', null=False, blank=False,
+                                          related_name='%(app_label)s_%(class)s_caja_compensacion')
     fecha_ingreso = models.DateField(verbose_name='Fecha de ingreso', null=False, blank=False)
     fecha_examen = models.DateField(verbose_name='Fecha de examen', null=False, blank=False)
     fecha_dotacion = models.DateField(verbose_name='Fecha de dotación', null=False, blank=False)
@@ -52,7 +61,10 @@ class Colaboradores (Persona, ModelDjangoExtensiones):
         colaborador.talla_camisa = datos.get('talla_camisa', '')
         colaborador.talla_zapatos = datos.get('talla_zapatos', '')
         colaborador.talla_pantalon = datos.get('talla_pantalon', '')
-        colaborador.entidad_cafe_id = datos.get('entidad_cafe_id', '')
+        colaborador.eps_id = datos.get('eps_id', '')
+        colaborador.arl_id = datos.get('arl_id', '')
+        colaborador.afp_id = datos.get('afp_id', '')
+        colaborador.caja_compensacion_id = datos.get('caja_compensacion_id', '')
         colaborador.fecha_ingreso = string_to_date(datos.get('fecha_ingreso', ''))
         colaborador.fecha_examen = string_to_date(datos.get('fecha_examen', ''))
         colaborador.fecha_dotacion = string_to_date(datos.get('fecha_dotacion', ''))
@@ -62,7 +74,7 @@ class Colaboradores (Persona, ModelDjangoExtensiones):
         colaborador.cargo_id = datos.get('cargo_id', '')
         colaborador.proceso_id = datos.get('proceso_id', '')
         colaborador.tipo_contrato_id = datos.get('tipo_contrato_id', '')
-        colaborador.lugar_nacimiento_id = datos.get('lugar_nacimiento_id', '')
+        colaborador.lugar_nacimiento_id = datos.get('centro_poblado_id', '')
         colaborador.rango_id = datos.get('rango_id', '')
         colaborador.correo = datos.get('correo', '')
         colaborador.identificacion = datos.get('identificacion', '')
