@@ -8,7 +8,7 @@ from EVA.General.modelmanagers import ManagerGeneral
 
 
 class Contrato(models.Model, ModelDjangoExtensiones):
-    objects = ManagerGeneral()
+    objects = ManagerGeneral(campo_texto='numero_contrato')
     numero_contrato = models.CharField(max_length=20, verbose_name='Número de contrato', null=False, blank=False)
     cliente = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, verbose_name='Cliente', null=True, blank=False)
     anho = models.IntegerField(verbose_name='Año', null=False, blank=False)
