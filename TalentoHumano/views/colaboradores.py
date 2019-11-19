@@ -6,7 +6,8 @@ from django.contrib import messages
 from django.shortcuts import render, redirect, reverse
 from django.db.models import F
 
-from Administracion.models import Cargo, Proceso, TipoContrato, CentroPoblado, Rango, Municipio, Departamento
+from Administracion.models import Cargo, Proceso, TipoContrato, CentroPoblado, Rango, Municipio, Departamento, \
+    TipoIdentificacion
 from Proyectos.models import Contrato
 from TalentoHumano.models import Colaboradores, EntidadesCAFE, TipoEntidadesCAFE
 
@@ -21,6 +22,7 @@ class ColaboradoresIndexView(View):
         fecha = datetime.now()
         return render(request, 'TalentoHumano/Colaboradores/index.html', {'fecha': fecha,
                                                                           'colaboradores': colaboradores})
+
 
 class ColaboradoresCrearView(View):
     OPCION = 'crear'
@@ -61,18 +63,14 @@ def datos_xa_render(opcion: str, colaborador: Colaboradores = None) -> dict:
     :return: Un diccionario con los datos.
     """
 
-    eps = EntidadesCAFE.objects.filter(tipo_entidad=TipoEntidadesCAFE.EPS)\
-        .values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
-    arl = EntidadesCAFE.objects.filter(tipo_entidad=TipoEntidadesCAFE.ARL) \
-        .values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
-    afp = EntidadesCAFE.objects.filter(tipo_entidad=TipoEntidadesCAFE.AFP) \
-        .values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
-    caja_compensacion = EntidadesCAFE.objects.filter(tipo_entidad=TipoEntidadesCAFE.CAJA_COMPENSACION) \
-        .values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
+    eps = EntidadesCAFE.objects.eps_xa_select()
+    arl = EntidadesCAFE.objects.arl_xa_select()
+    afp = EntidadesCAFE.objects.afp_xa_select()
+    caja_compensacion = EntidadesCAFE.objects.caja_compensacion_xa_select()
     jefe_inmediato = Colaboradores.objects \
         .filter(estado=True).values(campo_valor=F('id'), campo_texto=F('identificacion')).order_by('identificacion')
     contrato = Contrato.objects \
-        .filter(tipo_contrato__laboral=True).values(campo_valor=F('id'), campo_texto=F('numero_contrato'))\
+        .filter(tipo_contrato__laboral=False).values(campo_valor=F('id'), campo_texto=F('numero_contrato'))\
         .order_by('numero_contrato')
     cargo = Cargo.objects.get_xa_select_activos()
     proceso = Proceso.objects.get_xa_select_activos()
@@ -85,12 +83,13 @@ def datos_xa_render(opcion: str, colaborador: Colaboradores = None) -> dict:
                       range(6, 45)]
     talla_zapatos = [{'campo_valor': talla_zapatos, 'campo_texto': str(talla_zapatos)} for talla_zapatos in
                      range(20, 47)]
+    tipo_identificacion = TipoIdentificacion.objects.get_xa_select_activos()
 
     datos = {'arl': arl, 'eps': eps, 'afp': afp, 'caja_compensacion': caja_compensacion,
              'jefe_inmediato': jefe_inmediato, 'contrato': contrato, 'cargo': cargo, 'proceso': proceso,
              'tipo_contrato': tipo_contratos, 'rango': rango, 'departamentos': departamentos,
              'talla_camisa': talla_camisa, 'talla_zapatos': talla_zapatos, 'talla_pantalon': talla_pantalon,
-             'opcion': opcion}
+             'tipo_identificacion': tipo_identificacion, 'opcion': opcion}
 
     if colaborador:
         municipios = Municipio.objects.get_xa_select_activos() \
