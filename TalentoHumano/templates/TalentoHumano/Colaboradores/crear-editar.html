@@ -1,0 +1,177 @@
+{% extends 'TalentoHumano/_common/base_talento_humano.html' %}
+{% load static %}
+{% load eva_tags %}
+<title>{% block titulo %}{% if opcion == 'editar' %}Editar Colaboradores{% else %} Crear Colaboradores {% endif %}{% endblock %}</title>
+{% block styles %}
+<!-- DEMO related CSS below -->
+	<link rel="stylesheet" media="screen, print" href="{%static 'EVA/Plantilla/css/fa-brands.css' %}">
+	<!-- page related CSS below -->
+	<link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/bootstrap-datepicker/bootstrap-datepicker.css' %}">
+{% endblock styles%}
+
+{% block main %}
+    <div class="panel-container show">
+        <div class="header">
+             <h1 class="header-title">
+                <i class='far fa-user'></i> Colaboradores: <span class='fw-300'>{% if opcion == 'editar' %} Editar {% else%} Crear {% endif %}</span>
+                 <br>
+                 <br>
+             </h1>
+        </div>
+        <div class="row">
+            <div class="col-xl-12">
+                <div id="panel-1" class="panel">
+                    <div class="panel-container show">
+                        <div class="panel-content">
+                            <div class="panel-group">
+                                <div class="panel-body">
+                                     {% if opcion == 'editar' %}
+                                    <form action="{% url 'TalentoHumano:entidades-editar' entidad_cafe.id %}" id="colaboradores-form" method="post" class="needs-validation" novalidate>
+                                     {% else %}
+                                    <form action="{% url 'TalentoHumano:colaboradores-crear' %}" id="colaboradores-form" method="post" class="needs-validation" novalidate>
+                                     {% endif %}
+                                        {% csrf_token %}
+                                        {{ entid }}
+                                        <div class="form-group">
+                                            <div class="form-row">
+                                                <div class="col-md-6">
+                                                    {% input_text_tag 'direccion' 'Dirección' placeholder="Ingrese la dirección" required="" maxlength="100" value=colaborador.direccion mensaje_validacion='Por favor digite la dirección.' invalido=errores.direccion %}
+                                                </div>
+                                                <div class="col-md-6">
+                                                    {% select_tag talla_camisa 'talla_camisa' 'Seleccione una talla' texto_label="Talla camisa" value=colaborador.talla_camisa required="" mensaje_validacion='Por favor seleccione una talla.' invalido=errores.talla_camisa %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="form-row">
+                                                <div class="col-md-6">
+                                                {% select_tag talla_zapatos 'talla_zapatos' 'Seleccione una talla' texto_label="Talla zapatos" value=colaborador.talla_zapatos required="" mensaje_validacion='Por favor seleccione una talla.' invalido=errores.talla_zapatos %}
+                                                </div>
+                                                <div class="col-md-6">
+                                                {% select_tag talla_pantalon 'talla_pantalon' 'Seleccione una talla' texto_label="Talla pantalón" value=colaborador.talla_pantalon required="" mensaje_validacion='Por favor seleccione una talla.' invalido=errores.talla_pantalon %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="form-row">
+                                                <div class="col-md-6">
+                                                {% select_tag eps 'eps_id' 'Seleccione una EPS' texto_label="EPS" value=colaborador.eps required="" mensaje_validacion='Por favor seleccione una EPS.' invalido=errores.eps %}
+                                                </div>
+                                                 <div class="col-md-6">
+                                                 {% select_tag arl 'arl_id' 'Seleccione una ARL' texto_label="ARL" value=colaborador.arl required="" mensaje_validacion='Por favor seleccione una ARL.' invalido=errores.arl %}
+                                                 </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="form-row">
+                                                <div class="col-md-6">
+                                                {% select_tag afp 'afp_id' 'Seleccione una AFP' texto_label="AFP" value=colaborador.afp required="" mensaje_validacion='Por favor seleccione una AFP.' invalido=errores.afp %}
+                                                </div>
+                                                <div class="col-md-6">
+                                                {% select_tag caja_compensacion 'caja_compensacion_id' 'Seleccione una caja de compensación' texto_label="Caja de compensación" value=colaborador.caja_compensacion required="" mensaje_validacion='Por favor seleccione una caja de compensación.' invalido=errores.caja_compensacion %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="form-row">
+                                                <div class="col-md-6">
+                                                {% input_date_tag 'fecha_ingreso' 'Fecha de ingreso' placeholder="Seleccione una fecha" required="" autocomplete="off" value=colaborador.fecha_ingreso  mensaje_validacion='Por favor seleccione una fecha.' invalido=errores.fecha_ingreso %}
+                                                </div>
+                                                <div class="col-md-6">
+                                                {% input_date_tag 'fecha_examen' 'Fecha de examen' placeholder="Seleccione una fecha" required="" autocomplete="off" value=colaborador.fecha_examen  mensaje_validacion='Por favor seleccione una fecha.' invalido=errores.fecha_examen %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="form-row">
+                                                <div class="col-md-6">
+                                                {% input_date_tag 'fecha_dotacion' 'Fecha de entrega de dotación' placeholder="Seleccione una fecha" required="" autocomplete="off" value=colaborador.fecha_dotacion  mensaje_validacion='Por favor seleccione una fecha.' invalido=errores.fecha_dotacion %}
+                                                </div>
+                                                <div class="col-md-6">
+                                                {% input_number_tag 'salario' 'Salario' placeholder="Ingrese el salario" required="" min='0' max="99999999" onInput="validarLongitud(8,this)" value=colaborador.salario mensaje_validacion='Por favor digite el salario.' invalido=errores.salario %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="form-row">
+                                                <div class="col-md-6">
+                                                {% select_tag jefe_inmediato 'jefe_inmediato_id' 'Seleccione el jefe inmediato' texto_label="Jefe inmediato" value=colaborador.jefe_inmediato required="" mensaje_validacion='Por favor seleccione un jefe inmediato.' invalido=errores.jefe_inmediato %}
+                                                </div>
+                                                <div class="col-md-6">
+                                                {% select_tag contrato 'contrato_id' 'Seleccione un contrato' texto_label="Contrato" value=colaborador.contrato required="" mensaje_validacion='Por favor seleccione un contrato' invalido=errores.contrato %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                         <div class="form-group">
+                                            <div class="form-row">
+                                                <div class="col-md-6">
+                                                {% select_tag tipo_contrato 'tipo_contrato_id' 'Seleccione un tipo de contrato' texto_label="Tipo de contrato" value=colaborador.tipo_contrato required="" mensaje_validacion='Por favor seleccione un tipo de contrato.' invalido=errores.tipo_contrato %}
+                                                </div>
+                                                <div class="col-md-6">
+                                                {% select_tag cargo 'cargo_id' 'Seleccione un cargo' texto_label="Cargo" value=colaborador.cargo required="" mensaje_validacion='Por favor seleccione un cargo' invalido=errores.cargo %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                         <div class="form-group">
+                                            <div class="form-row">
+                                                <div class="col-md-6">
+                                                {% select_tag proceso 'proceso_id' 'Seleccione un proceso' texto_label="Proceso" value=colaborador.proceso required="" mensaje_validacion='Por favor seleccione un proceso' invalido=errores.proceso %}
+                                                </div>
+                                                <div class="col-md-6">
+                                                {% select_tag departamentos 'departamento_id' 'Seleccione un departamento' texto_label="Departamento" value=colaborador.departamento required="" mensaje_validacion='Por favor seleccione un departamento' %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="form-row">
+                                                <div class="col-md-6">
+                                                {% select_tag municipios 'municipio_id' 'Seleccione un municipio' texto_label="Municipio" value=colaborador.municipio required="" mensaje_validacion='Por favor seleccione un municipio'  %}
+                                                </div>
+                                                <div class="col-md-6">
+                                                {% select_tag lugar_nacimiento 'centro_poblado_id' 'Seleccione lugar de nacimiento' texto_label="Lugar de nacimiento" value=colaborador.lugar_nacimiento required="" mensaje_validacion='Por favor seleccione un lugar de nacimiento' invalido=errores.lugar_nacimiento %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="form-row">
+                                                <div class="col-md-6">
+                                                {% select_tag rango 'rango_id' 'Seleccione un rango' texto_label="Rango" value=colaborador.rango required="" mensaje_validacion='Por favor seleccione un rango' invalido=errores.rango %}
+                                                </div>
+                                                <div class="col-md-6">
+                                                {% input_email_tag 'correo' 'Correo del colaborador' placeholder="Ingrese el correo electrónico del colaborador" required="" maxlength="100" value=colaborador.correo mensaje_validacion='Por favor digite el correo electrónico del colaborador.' invalido=errores.correo %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                            <div class="form-row">
+                                                <div >
+                                                    <button id="guardar" class="btn btn-primary btn-block">{% if opcion == 'editar' %} Actualizar {% else %} Agregar {% endif %}</button>
+                                                </div>
+                                                <div style="padding-left: 15px">
+                                                    <a href="{% url 'TalentoHumano:colaboradores-index'  %}" class="btn btn-danger btn-block">Cancelar</a>
+                                                </div>
+                                            </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock main %}
+
+{% block scripts %}
+    <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
+    <script src="{% static 'Administracion/js/select_divipol.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js' %}"></script>
+    <script src="{% static 'TalentoHumano/js/date_picker.js' %}"></script>
+	<script>
+		$(document).ready(function () {
+		    $('.select2').select2();
+		});
+	</script>
+{% endblock scripts%}
