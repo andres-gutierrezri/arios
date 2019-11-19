@@ -31,6 +31,13 @@ let runDatePicker = function () {
 		format: 'yyyy-mm-dd',
 		autoclose: true
 	});
+	$('#fecha_nacimiento_id').datepicker({
+		todayHighlight: true,
+		orientation: "bottom left",
+		templates: controls,
+		format: 'yyyy-mm-dd',
+		autoclose: true
+	});
 };
 
 $(document).ready(function () {
