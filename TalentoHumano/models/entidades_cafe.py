@@ -42,13 +42,13 @@ class EntidadesManger(ManagerGeneral):
         return self.get_x_estado(estado, xa_select).filter(tipo_entidad_id=TipoEntidadesCAFE.CAJA_COMPENSACION)
 
     def caja_compensacion_xa_select(self):
-        return self.arl(True, True)
+        return self.caja_compensacion(True, True)
 
-    def fondo_pensiones(self, estado: bool = None, xa_select: bool = False) -> QuerySet:
+    def afp(self, estado: bool = None, xa_select: bool = False) -> QuerySet:
         return self.get_x_estado(estado, xa_select).filter(tipo_entidad_id=TipoEntidadesCAFE.AFP)
 
-    def fondo_pensiones_xa_select(self):
-        return self.arl(True, True)
+    def afp_xa_select(self):
+        return self.afp(True, True)
 
 
 class EntidadesCAFE(models.Model, ModelDjangoExtensiones):
