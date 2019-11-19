@@ -4,9 +4,11 @@ from Administracion.models import Tercero, TipoContrato, Empresa
 # Create your models here.
 from EVA.General.conversiones import string_to_date
 from EVA.General.modeljson import ModelDjangoExtensiones
+from EVA.General.modelmanagers import ManagerGeneral
 
 
 class Contrato(models.Model, ModelDjangoExtensiones):
+    objects = ManagerGeneral()
     numero_contrato = models.CharField(max_length=20, verbose_name='Número de contrato', null=False, blank=False)
     cliente = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, verbose_name='Cliente', null=True, blank=False)
     anho = models.IntegerField(verbose_name='Año', null=False, blank=False)
