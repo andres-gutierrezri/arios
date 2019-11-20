@@ -3,13 +3,13 @@ from django.db import models
 from Administracion.models import Persona, Cargo, Proceso, TipoContrato, CentroPoblado, Rango
 from EVA.General.conversiones import string_to_date
 from EVA.General.modeljson import ModelDjangoExtensiones
+from EVA.General.modelmanagers import ManagerGeneral
 from Proyectos.models import Contrato
 from TalentoHumano.models import EntidadesCAFE
-from TalentoHumano.models.entidades_cafe import EntidadesManger
 
 
 class Colaboradores (Persona, ModelDjangoExtensiones):
-    objects = EntidadesManger()
+    objects = ManagerGeneral(campo_texto='jefe_inmediato')
     direccion = models.CharField(max_length=100, verbose_name='Dirección', null=False, blank=False)
     talla_camisa = models.CharField(max_length=3, verbose_name="Talla de camisa", null=True, blank=False)
     talla_pantalon = models.IntegerField(verbose_name="Talla de pantalón", null=True, blank=False)
@@ -80,5 +80,7 @@ class Colaboradores (Persona, ModelDjangoExtensiones):
         colaborador.usuario.last_name = datos.get('apellido', '')
         colaborador.identificacion = datos.get('identificacion', '')
         colaborador.tipo_identificacion_id = datos.get('tipo_identificacion_id', '')
-
+        colaborador.fecha_expedicion = string_to_date(datos.get('fecha_expedicion', ''))
+        colaborador.genero = datos.get('genero', '')
+        colaborador.telefono = datos.get('telefono', '')
         return colaborador
