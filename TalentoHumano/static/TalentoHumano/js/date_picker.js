@@ -38,6 +38,13 @@ let runDatePicker = function () {
 		format: 'yyyy-mm-dd',
 		autoclose: true
 	});
+	$('#fecha_expedicion_id').datepicker({
+		todayHighlight: true,
+		orientation: "bottom left",
+		templates: controls,
+		format: 'yyyy-mm-dd',
+		autoclose: true
+	});
 };
 
 $(document).ready(function () {
