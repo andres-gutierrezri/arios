@@ -108,14 +108,14 @@ class TipoContrato(models.Model):
 
 
 class Persona(models.Model):
-    objects = ManagerGeneral()
+
     identificacion = models.CharField(max_length=20, verbose_name='Identificación', null=False, blank=False,
                                       unique=True)
     fecha_expedicion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Expedición', null=False,
                                             blank=False)
     fecha_nacimiento = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Nacimiento', null=True,
                                             blank=False)
-    telefono = models.TextField(max_length=15, verbose_name='Teléfono', null=False, blank=False)
+    telefono = models.CharField(max_length=20, verbose_name='Teléfono', null=False, blank=False)
     fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False,
                                           blank=False)
     fecha_modificacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Modificación', null=False,
@@ -125,10 +125,10 @@ class Persona(models.Model):
                                             verbose_name='Tipo de identificación', null=True, blank=False)
     usuario = models.OneToOneField(User, on_delete=models.DO_NOTHING, verbose_name="Usuario", null=True,
                                    blank=False, related_name='%(app_label)s_%(class)s_usuario')
-    usuario_crea = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario Crea", null=False,
-                                     blank=False, related_name='%(app_label)s_%(class)s_usuario_crea')
+    usuario_crea = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario Crea", null=True,
+                                     blank=True, related_name='%(app_label)s_%(class)s_usuario_crea')
     usuario_actualiza = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario Actualiza",
-                                          null=False, blank=False,
+                                          null=True, blank=True,
                                           related_name='%(app_label)s_%(class)s_usuario_actualiza')
 
     def __str__(self):
