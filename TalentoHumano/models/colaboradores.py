@@ -1,4 +1,7 @@
+from django.contrib.auth.models import User
 from django.db import models
+import random
+
 
 from Administracion.models import Persona, Cargo, Proceso, TipoContrato, CentroPoblado, Rango
 from EVA.General.conversiones import string_to_date
@@ -27,8 +30,7 @@ class Colaboradores (Persona, ModelDjangoExtensiones):
     fecha_examen = models.DateField(verbose_name='Fecha de examen', null=False, blank=False)
     fecha_dotacion = models.DateField(verbose_name='Fecha de dotación', null=False, blank=False)
     salario = models.IntegerField(verbose_name="Salario", null=True, blank=False)
-    jefe_inmediato = models.ForeignKey('self', on_delete=models.DO_NOTHING, verbose_name='Jefe inmediato', null=True,
-                                       blank=False)
+    jefe_inmediato = models.ForeignKey('self', on_delete=models.DO_NOTHING, verbose_name='Jefe inmediato', null=True)
     contrato = models.ForeignKey(Contrato, on_delete=models.DO_NOTHING, verbose_name='Contrato', null=False,
                                  blank=False)
     cargo = models.ForeignKey(Cargo, on_delete=models.DO_NOTHING, verbose_name='Cargo', null=False, blank=False)
@@ -54,7 +56,11 @@ class Colaboradores (Persona, ModelDjangoExtensiones):
         :param datos: Diccionario con los datos para crear Colaboradores.
         :return: Instacia de entidad colaboradores con la información especificada en el diccionario.
         """
+
+        usuario_creado = Colaboradores.crear_usuario(datos.get('nombre', ''), datos.get('apellido', ''),
+                                                     datos.get('correo', ''))
         colaborador = Colaboradores()
+        colaborador.usuario= usuario_creado
         colaborador.direccion = datos.get('direccion', '')
         colaborador.talla_camisa = datos.get('talla_camisa', '')
         colaborador.talla_zapatos = datos.get('talla_zapatos', '')
@@ -67,20 +73,43 @@ class Colaboradores (Persona, ModelDjangoExtensiones):
         colaborador.fecha_examen = string_to_date(datos.get('fecha_examen', ''))
         colaborador.fecha_dotacion = string_to_date(datos.get('fecha_dotacion', ''))
         colaborador.salario = datos.get('salario', '')
-        colaborador.jefe_inmediato_id = datos.get('jefe_inmediato_id', '')
+        colaborador.jefe_inmediato_id = datos.get('jefe_inmediato_id', None)
+        if colaborador.jefe_inmediato_id == '':
+            colaborador.jefe_inmediato_id = None
+
         colaborador.contrato_id = datos.get('contrato_id', '')
         colaborador.cargo_id = datos.get('cargo_id', '')
         colaborador.proceso_id = datos.get('proceso_id', '')
         colaborador.tipo_contrato_id = datos.get('tipo_contrato_id', '')
         colaborador.lugar_nacimiento_id = datos.get('centro_poblado_id', '')
         colaborador.rango_id = datos.get('rango_id', '')
-        colaborador.usuario.email = datos.get('correo', '')
         colaborador.fecha_nacimiento = string_to_date(datos.get('fecha_nacimiento', ''))
-        colaborador.usuario.first_name = datos.get('nombre', '')
-        colaborador.usuario.last_name = datos.get('apellido', '')
         colaborador.identificacion = datos.get('identificacion', '')
         colaborador.tipo_identificacion_id = datos.get('tipo_identificacion_id', '')
         colaborador.fecha_expedicion = string_to_date(datos.get('fecha_expedicion', ''))
         colaborador.genero = datos.get('genero', '')
         colaborador.telefono = datos.get('telefono', '')
+        colaborador.estado = datos.get('estado', 'False') == 'True'
         return colaborador
+
+    @staticmethod
+    def crear_usuario(nombre: str, apellido: str, correo: str) -> User:
+
+        usuario = User()
+        usuario.first_name = nombre
+        usuario.last_name = apellido
+        usuario.email = correo
+        nombre_1 = nombre.lower().split()
+        apellido_1 = apellido.lower().split()
+        usuario.username = nombre_1[0] + '.' + apellido_1[0]
+        usuario_n = usuario.username
+        while True:
+
+            if User.objects.filter(username=usuario_n).exists():
+                num = range(1, 99)
+                r_num = random.choice(num)
+                usuario_n = usuario.username + str(r_num)
+
+            else:
+                usuario.username = usuario_n
+                return usuario
