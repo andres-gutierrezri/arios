@@ -13,7 +13,6 @@
 {% endblock styles %}
 
 {% block main %}
-
     <div class="panel-container show">
             <div class="header">
                  <h1 class="header-title">
@@ -34,7 +33,6 @@
                                 </div>
                         </div>
                         <main id="js-page-content" role="main" class="page-content">
-
                         <div class="row">
                             <div class="col-xl-12">
                                 <div class="border-faded bg-faded p-3 mb-g d-flex">
@@ -50,8 +48,8 @@
                                 </div>
                             </div>
                         </div>
-                        {% for colaborador in colaboradores %}
                         <div class="row" id="js-contacts">
+                            {% for colaborador in colaboradores %}
                             <div class="col-xl-4">
                                 <div id="c_1" class="card border shadow-0 mb-g shadow-sm-hover" data-filter-tags="oliver kopyov">
                                     <div class="card-body border-faded border-top-0 border-left-0 border-right-0 rounded-top">
@@ -100,17 +98,16 @@
                                     </div>
                                 </div>
                             </div>
+                            {% endfor %}
                         </div>
-                         {% endfor %}
                     </main>
                     </div>
                 </div>
             </div>
     </div>
-
-
     {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='talento-humano/entidades' %}
-{% endblock %}
+{% endblock main%}
+
 {% block scripts %}
     <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
     <script src="{% static 'TalentoHumano/js/confirmarEliminarEntidad.js' %}"></script>
