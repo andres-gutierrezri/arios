@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.shortcuts import render
 from django.views import View
@@ -31,25 +32,28 @@ class ColaboradoresCrearView(View):
         return render(request, 'TalentoHumano/Colaboradores/crear-editar.html', datos_xa_render(self.OPCION))
 
     def post(self, request):
-        colaboradores = Colaboradores.from_dictionary(request.POST)
+        colaborador = Colaboradores.from_dictionary(request.POST)
         try:
-            colaboradores.full_clean()
+            colaborador.full_clean(exclude=['usuario', 'jefe_inmediato'])
         except ValidationError as errores:
-            datos = datos_xa_render(self.OPCION, colaboradores)
+            datos = datos_xa_render(self.OPCION, colaborador)
             datos['errores'] = errores.message_dict
             return render(request, 'TalentoHumano/Colaboradores/crear-editar.html', datos)
 
-        if Colaboradores.objects.filter(identificacion=colaboradores.identificacion).exists():
+        if Colaboradores.objects.filter(identificacion=colaborador.identificacion).exists():
             messages.warning(request, 'Ya existe un colaborador con identificación {0}'
-                             .format(colaboradores.identificacion))
+                             .format(colaborador.identificacion))
             return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
-                          datos_xa_render(self.OPCION, colaboradores))
+                          datos_xa_render(self.OPCION, colaborador))
 
-        colaboradores.save()
-        messages.success(request, 'Se ha agregado el colaborador  {0}'.format(colaboradores.usuario.first_name) + ' ' +
-                         '{0}'.format(colaboradores.usuario.last_name))
+        nombre = colaborador.usuario.first_name
+        apellido = colaborador.usuario.last_name
+        colaborador.usuario.save()
+        colaborador.save()
+
+        messages.success(request, 'Se ha agregado el colaborador  {0}'.format(nombre) + ' ' +
+                         '{0}'.format(apellido))
         return redirect(reverse('TalentoHumano:colaboradores-index'))
-
 
 
 # region Métodos de ayuda
