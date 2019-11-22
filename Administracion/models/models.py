@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # # Create your models here.
 from django.db.models import QuerySet
@@ -132,9 +134,10 @@ class Persona(models.Model):
                                           related_name='%(app_label)s_%(class)s_usuario_actualiza')
 
     def __str__(self):
-        return '{0} {1} {2}'.format(self.usuario.first_name, self.usuario.last_name, self.identificacion)
+        return '{0} {1}'.format(self.usuario.first_name, self.usuario.last_name)
 
     class Meta:
         abstract = True
+
 
 
