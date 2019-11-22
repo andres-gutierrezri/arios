@@ -30,7 +30,8 @@ class Colaboradores (Persona, ModelDjangoExtensiones):
     fecha_examen = models.DateField(verbose_name='Fecha de examen', null=False, blank=False)
     fecha_dotacion = models.DateField(verbose_name='Fecha de dotación', null=False, blank=False)
     salario = models.IntegerField(verbose_name="Salario", null=True, blank=False)
-    jefe_inmediato = models.ForeignKey('self', on_delete=models.DO_NOTHING, verbose_name='Jefe inmediato', null=True)
+    jefe_inmediato = models.ForeignKey('self', on_delete=models.DO_NOTHING, verbose_name='Jefe inmediato', null=True,
+                                       blank=True)
     contrato = models.ForeignKey(Contrato, on_delete=models.DO_NOTHING, verbose_name='Contrato', null=False,
                                  blank=False)
     cargo = models.ForeignKey(Cargo, on_delete=models.DO_NOTHING, verbose_name='Cargo', null=False, blank=False)
@@ -43,7 +44,7 @@ class Colaboradores (Persona, ModelDjangoExtensiones):
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
 
     def __str__(self):
-        return '{0} {1}'.format(self.usuario.first_name, self.usuario.last_name)
+        return self.usuario.first_name
 
     class Meta:
         verbose_name = 'Colaborador'
@@ -60,7 +61,7 @@ class Colaboradores (Persona, ModelDjangoExtensiones):
         usuario_creado = Colaboradores.crear_usuario(datos.get('nombre', ''), datos.get('apellido', ''),
                                                      datos.get('correo', ''))
         colaborador = Colaboradores()
-        colaborador.usuario= usuario_creado
+        colaborador.usuario = usuario_creado
         colaborador.direccion = datos.get('direccion', '')
         colaborador.talla_camisa = datos.get('talla_camisa', '')
         colaborador.talla_zapatos = datos.get('talla_zapatos', '')
@@ -76,7 +77,6 @@ class Colaboradores (Persona, ModelDjangoExtensiones):
         colaborador.jefe_inmediato_id = datos.get('jefe_inmediato_id', None)
         if colaborador.jefe_inmediato_id == '':
             colaborador.jefe_inmediato_id = None
-
         colaborador.contrato_id = datos.get('contrato_id', '')
         colaborador.cargo_id = datos.get('cargo_id', '')
         colaborador.proceso_id = datos.get('proceso_id', '')
@@ -103,6 +103,7 @@ class Colaboradores (Persona, ModelDjangoExtensiones):
         apellido_1 = apellido.lower().split()
         usuario.username = nombre_1[0] + '.' + apellido_1[0]
         usuario_n = usuario.username
+
         while True:
 
             if User.objects.filter(username=usuario_n).exists():
@@ -110,6 +111,8 @@ class Colaboradores (Persona, ModelDjangoExtensiones):
                 r_num = random.choice(num)
                 usuario_n = usuario.username + str(r_num)
 
+
             else:
                 usuario.username = usuario_n
+
                 return usuario
