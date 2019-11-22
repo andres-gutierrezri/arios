@@ -1,16 +1,13 @@
-from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from django.shortcuts import render
 from django.views import View
 from datetime import datetime
 from django.contrib import messages
 from django.shortcuts import render, redirect, reverse
-from django.db.models import F
 
 from Administracion.models import Cargo, Proceso, TipoContrato, CentroPoblado, Rango, Municipio, Departamento, \
     TipoIdentificacion
 from Proyectos.models import Contrato
-from TalentoHumano.models import Colaboradores, EntidadesCAFE, TipoEntidadesCAFE
+from TalentoHumano.models import Colaboradores, EntidadesCAFE
 
 
 # Create your views here.
@@ -19,8 +16,12 @@ from TalentoHumano.models import Colaboradores, EntidadesCAFE, TipoEntidadesCAFE
 class ColaboradoresIndexView(View):
 
     def get(self, request):
+
         colaboradores = Colaboradores.objects.all()
+        # for colaborador in colaboradores:
+        #     print(colaborador.usuario.first_name)
         fecha = datetime.now()
+        print(colaboradores)
         return render(request, 'TalentoHumano/Colaboradores/index.html', {'fecha': fecha,
                                                                           'colaboradores': colaboradores})
 
@@ -34,7 +35,8 @@ class ColaboradoresCrearView(View):
     def post(self, request):
         colaborador = Colaboradores.from_dictionary(request.POST)
         try:
-            colaborador.full_clean(exclude=['usuario', 'jefe_inmediato'])
+            # Se excluye el usuario debido a que el id no es asginado sino hasta después de ser guardado en la BD.
+            colaborador.full_clean(exclude=['usuario'])
         except ValidationError as errores:
             datos = datos_xa_render(self.OPCION, colaborador)
             datos['errores'] = errores.message_dict
@@ -50,6 +52,7 @@ class ColaboradoresCrearView(View):
         apellido = colaborador.usuario.last_name
         colaborador.usuario.save()
         colaborador.save()
+        print(nombre)
 
         messages.success(request, 'Se ha agregado el colaborador  {0}'.format(nombre) + ' ' +
                          '{0}'.format(apellido))
