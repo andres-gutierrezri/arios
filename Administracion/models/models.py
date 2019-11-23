@@ -134,10 +134,22 @@ class Persona(models.Model):
                                           related_name='%(app_label)s_%(class)s_usuario_actualiza')
 
     def __str__(self):
-        return '{0} {1}'.format(self.usuario.first_name, self.usuario.last_name)
+        return '{0} - {1}'.format(self.identificacion, self.nombre_completo)
 
     class Meta:
         abstract = True
+
+    @property
+    def nombres(self):
+        return self.usuario.first_name if self.usuario else 'Sin nombres'
+
+    @property
+    def apellidos(self):
+        return self.usuario.last_name if self.usuario else 'Sin apellidos'
+
+    @property
+    def nombre_completo(self):
+        return '{0} {1}'.format(self.usuario.first_name, self.usuario.last_name) if self.usuario else 'Sin nombre'
 
 
 
