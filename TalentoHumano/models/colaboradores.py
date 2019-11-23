@@ -11,7 +11,7 @@ from Proyectos.models import Contrato
 from TalentoHumano.models import EntidadesCAFE
 
 
-class Colaboradores (Persona, ModelDjangoExtensiones):
+class Colaborador(Persona, ModelDjangoExtensiones):
     objects = ManagerGeneral(campo_texto='jefe_inmediato')
     direccion = models.CharField(max_length=100, verbose_name='Dirección', null=False, blank=False)
     talla_camisa = models.CharField(max_length=3, verbose_name="Talla de camisa", null=True, blank=False)
@@ -43,24 +43,23 @@ class Colaboradores (Persona, ModelDjangoExtensiones):
     rango = models.ForeignKey(Rango, on_delete=models.DO_NOTHING, verbose_name='Rango', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
 
-    def __str__(self):
-        return self.usuario.first_name
+
 
     class Meta:
         verbose_name = 'Colaborador'
         verbose_name_plural = 'Colaboradores'
 
     @staticmethod
-    def from_dictionary(datos: dict) -> 'Colaboradores':
+    def from_dictionary(datos: dict) -> 'Colaborador':
         """
         Crea una instancia de Colaboradores con los datos pasados en el diccionario.
         :param datos: Diccionario con los datos para crear Colaboradores.
         :return: Instacia de entidad colaboradores con la información especificada en el diccionario.
         """
 
-        usuario_creado = Colaboradores.crear_usuario(datos.get('nombre', ''), datos.get('apellido', ''),
-                                                     datos.get('correo', ''))
-        colaborador = Colaboradores()
+        usuario_creado = Colaborador.crear_usuario(datos.get('nombre', ''), datos.get('apellido', ''),
+                                                    datos.get('correo', ''))
+        colaborador = Colaborador()
         colaborador.usuario = usuario_creado
         colaborador.direccion = datos.get('direccion', '')
         colaborador.talla_camisa = datos.get('talla_camisa', '')
