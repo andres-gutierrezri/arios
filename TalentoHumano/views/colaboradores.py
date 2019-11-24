@@ -16,10 +16,8 @@ from TalentoHumano.models import Colaborador, EntidadesCAFE
 class ColaboradoresIndexView(View):
 
     def get(self, request):
-
         colaboradores = Colaborador.objects.all()
         fecha = datetime.now()
-        print(colaboradores)
         return render(request, 'TalentoHumano/Colaboradores/index.html', {'fecha': fecha,
                                                                           'colaboradores': colaboradores})
 
@@ -33,26 +31,79 @@ class ColaboradoresCrearView(View):
     def post(self, request):
         colaborador = Colaborador.from_dictionary(request.POST)
         try:
-            # Se excluye el usuario debido a que el id no es asginado sino hasta después de ser guardado en la BD.
+            # Se excluye el usuario debido a que el id no es asignado  después de ser guardado en la BD.
             colaborador.full_clean(exclude=['usuario'])
+        except ValidationError as errores:
+            datos = datos_xa_render(self.OPCION, colaborador)
+            datos['errores'] = errores.message_dict
+            if 'identificacion' in errores.message_dict:
+                for mensaje in errores.message_dict['identificacion']:
+                    if mensaje.startswith('Ya existe'):
+                        messages.warning(request, 'Ya existe un colaborador con identificación {0}'
+                                         .format(colaborador.identificacion))
+                        break
+            return render(request, 'TalentoHumano/Colaboradores/crear-editar.html', datos)
+
+        colaborador.usuario.save()
+        # Se realiza esto ya que el campo usuario_id del modelo no es asignado automáticamente despues de guardar el
+        # ususario en la BD.
+        colaborador.usuario_id = colaborador.usuario.id
+        colaborador.save()
+        messages.success(request, 'Se ha agregado el colaborador  {0}'.format(colaborador.nombre_completo))
+        return redirect(reverse('TalentoHumano:colaboradores-index'))
+
+
+class ColaboradorEditarView(View):
+    OPCION = 'editar'
+
+    def get(self, request, id):
+        colaborador = Colaborador.objects.get(id=id)
+
+        return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
+                      datos_xa_render(self.OPCION, colaborador))
+
+    def post(self, request, id):
+        update_fields = ['direccion', 'talla_camisa', 'talla_zapatos', 'talla_pantalon', 'eps_id',
+                         'arl_id', 'afp_id', 'caja_compensacion_id', 'fecha_ingreso', 'fecha_examen', 'fecha_dotacion',
+                         'salario', 'jefe_inmediato_id', 'contrato_id', 'cargo_id', 'proceso_id', 'tipo_contrato_id',
+                         'lugar_nacimiento_id', 'rango_id', 'fecha_nacimiento', 'identificacion',
+                         'tipo_identificacion_id', 'fecha_expedicion', 'genero', 'telefono', 'estado']
+
+        colaborador = Colaborador.from_dictionary(request.POST)
+        colaborador.id = int(id)
+
+        try:
+            colaborador.full_clean(validate_unique=False, exclude=['usuario'])
         except ValidationError as errores:
             datos = datos_xa_render(self.OPCION, colaborador)
             datos['errores'] = errores.message_dict
             return render(request, 'TalentoHumano/Colaboradores/crear-editar.html', datos)
 
-        if Colaborador.objects.filter(identificacion=colaborador.identificacion).exists():
+        if Colaborador.objects.filter(identificacion=colaborador.identificacion).exclude(id=id).exists():
             messages.warning(request, 'Ya existe un colaborador con identificación {0}'
                              .format(colaborador.identificacion))
             return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
                           datos_xa_render(self.OPCION, colaborador))
 
-        colaborador.usuario.save()
-        # Se realiza esto ya que el campo usuario_id del modelo no es asignado automáticamente despues de guardar el ususario en la BD.
-        colaborador.usuario_id = colaborador.usuario.id
-        colaborador.save()
+        colaborador_db = Colaborador.objects.get(id=id)
+        if colaborador_db.comparar(colaborador):
+            messages.success(request, 'No se hicieron cambios en el colaborador {0}'
+                             .format(colaborador.nombre_completo))
+            return redirect(reverse('TalentoHumano:colaboradores-index'))
 
-        messages.success(request, 'Se ha agregado el colaborador  {0}'.format(colaborador.nombre_completo))
-        return redirect(reverse('TalentoHumano:colaboradores-index'))
+        else:
+
+            colaborador.usuario.save()
+            # Se realiza esto ya que el campo usuario_id del modelo no es asignado automáticamente despues de guardar el
+            # ususario en la BD.
+            colaborador.usuario_id = colaborador.usuario.id
+
+            colaborador.save(update_fields=update_fields)
+            messages.success(request, 'Se ha actualizado el colaborador {0}'.format(colaborador.nombre_completo)
+                             + ' con identificación {0}'.format(colaborador.identificacion))
+
+            return redirect(reverse('TalentoHumano:colaboradores-index'))
+
 
 
 # region Métodos de ayuda
@@ -71,12 +122,12 @@ def datos_xa_render(opcion: str, colaborador: Colaborador = None) -> dict:
     afp = EntidadesCAFE.objects.afp_xa_select()
     caja_compensacion = EntidadesCAFE.objects.caja_compensacion_xa_select()
     jefe_inmediato = Colaborador.objects.get_xa_select()
-    contrato = Contrato.objects.get_xa_select()
-    cargo = Cargo.objects.get_xa_select()
-    proceso = Proceso.objects.get_xa_select()
+    contrato = Contrato.objects.get_xa_select_activos()
+    cargo = Cargo.objects.get_xa_select_activos()
+    proceso = Proceso.objects.get_xa_select_activos()
     tipo_contratos = TipoContrato.objects.tipos_laborares(True, True)
     departamentos = Departamento.objects.get_xa_select_activos()
-    rango = Rango.objects.get_xa_select()
+    rango = Rango.objects.get_xa_select_activos()
     talla_camisa = [{'campo_valor': talla_camisa, 'campo_texto': str(talla_camisa)} for talla_camisa in
                     ['S', 'M', 'L', 'XL']]
     talla_pantalon = [{'campo_valor': talla_pantalon, 'campo_texto': str(talla_pantalon)} for talla_pantalon in
