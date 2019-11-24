@@ -43,8 +43,6 @@ class Colaborador(Persona, ModelDjangoExtensiones):
     rango = models.ForeignKey(Rango, on_delete=models.DO_NOTHING, verbose_name='Rango', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
 
-
-
     class Meta:
         verbose_name = 'Colaborador'
         verbose_name_plural = 'Colaboradores'
@@ -58,7 +56,7 @@ class Colaborador(Persona, ModelDjangoExtensiones):
         """
 
         usuario_creado = Colaborador.crear_usuario(datos.get('nombre', ''), datos.get('apellido', ''),
-                                                    datos.get('correo', ''))
+                                                   datos.get('correo', ''))
         colaborador = Colaborador()
         colaborador.usuario = usuario_creado
         colaborador.direccion = datos.get('direccion', '')
@@ -109,7 +107,6 @@ class Colaborador(Persona, ModelDjangoExtensiones):
                 num = range(1, 99)
                 r_num = random.choice(num)
                 usuario_n = usuario.username + str(r_num)
-
 
             else:
                 usuario.username = usuario_n
