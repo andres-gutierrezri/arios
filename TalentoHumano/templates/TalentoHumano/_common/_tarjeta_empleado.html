@@ -1,6 +1,6 @@
 {% load static %}
 <div class="col-xl-4">
-    <div id="{{ id_tarjeta }}" class="card border shadow-0 mb-g shadow-sm-hover" data-filter-tags="{{ nombre | lower }}">
+    <div id="c_{{ id_tarjeta }}" class="card border shadow-0 mb-g shadow-sm-hover" data-filter-tags="{{ nombre | lower }}">
         <div class="card-body border-faded border-top-0 border-left-0 border-right-0 rounded-top">
             <div class="d-flex flex-row align-items-center">
                 <span class="status status-success mr-3">
@@ -12,13 +12,13 @@
                         <i class="fal fa-angle-down d-inline-block ml-1 fs-md"></i>
                     </a>
                     <div class="dropdown-menu">
-                        <a class="dropdown-item" href="#">Enviar Correo</a>
+                        <a class="dropdown-item" href="{% url 'TalentoHumano:colaboradores-editar' id_tarjeta %}">Editar</a>
                         <a class="dropdown-item" href="#">Crear Cita</a>
                         <a class="dropdown-item" href="#">Bloquear</a>
                     </div>
                     <span class="text-truncate text-truncate-xl">{{ cargo }}</span>
                 </div>
-                <button class="js-expand-btn btn btn-sm btn-default d-none" data-toggle="collapse" data-target="#{{ id_tarjeta }} > .card-body + .card-body" aria-expanded="false">
+                <button class="js-expand-btn btn btn-sm btn-default d-none" data-toggle="collapse" data-target="#c_{{ id_tarjeta }} > .card-body + .card-body" aria-expanded="false">
                     <span class="collapsed-hidden">+</span>
                     <span class="collapsed-reveal">-</span>
                 </button>
@@ -27,9 +27,9 @@
         <div class="card-body p-0 collapse show">
             <div class="p-3">
                 <a href="tel:+13174562564" class="mt-1 d-block fs-sm fw-400 text-dark">
-                    <i class="fas fa-mobile-alt text-muted mr-2"></i> +1 313-779-8134</a>
+                    <i class="fas fa-mobile-alt text-muted mr-2"></i> {{ telefono }}</a>
                 <a href="mailto:oliver.kopyov@smartadminwebapp.com" class="mt-1 d-block fs-sm fw-400 text-dark">
-                    <i class="fas fa-mouse-pointer text-muted mr-2"></i> {{ correo }}</a>
+                    <i class="fas fa-envelope text-muted mr-2"></i> {{ correo }}</a>
                 <address class="fs-sm fw-400 mt-4 text-muted">
                     <i class="fas fa-map-pin mr-2"></i> {{ ubicacion }}</address>
             </div>
