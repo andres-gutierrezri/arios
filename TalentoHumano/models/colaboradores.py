@@ -42,6 +42,7 @@ class Colaborador(Persona, ModelDjangoExtensiones):
                                          null=False, blank=False)
     rango = models.ForeignKey(Rango, on_delete=models.DO_NOTHING, verbose_name='Rango', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
+    foto_perfil = models.ImageField(upload_to='foto_perfil', blank=True)
 
     class Meta:
         verbose_name = 'Colaborador'
@@ -71,7 +72,7 @@ class Colaborador(Persona, ModelDjangoExtensiones):
         colaborador.fecha_examen = string_to_date(datos.get('fecha_examen', ''))
         colaborador.fecha_dotacion = string_to_date(datos.get('fecha_dotacion', ''))
         colaborador.salario = datos.get('salario', '')
-        colaborador.jefe_inmediato_id = datos.get('jefe_inmediato_id', None)
+        colaborador.jefe_inmediato_id = datos.get('jefe_inmediato_id', '')
         if colaborador.jefe_inmediato_id == '':
             colaborador.jefe_inmediato_id = None
         colaborador.contrato_id = datos.get('contrato_id', '')
@@ -87,6 +88,8 @@ class Colaborador(Persona, ModelDjangoExtensiones):
         colaborador.genero = datos.get('genero', '')
         colaborador.telefono = datos.get('telefono', '')
         colaborador.estado = datos.get('estado', 'False') == 'True'
+        colaborador.foto_perfil = datos.get('foto_perfil', '')
+
         return colaborador
 
     @staticmethod
