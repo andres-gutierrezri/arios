@@ -28,7 +28,7 @@ class Colaborador(Persona, ModelDjangoExtensiones):
                                           related_name='%(app_label)s_%(class)s_caja_compensacion')
     fecha_ingreso = models.DateField(verbose_name='Fecha de ingreso', null=False, blank=False)
     fecha_examen = models.DateField(verbose_name='Fecha de examen', null=False, blank=False)
-    fecha_dotacion = models.DateField(verbose_name='Fecha de dotación', null=False, blank=False)
+    fecha_dotacion = models.DateField(verbose_name='Fecha de dotación', null=True, blank=False)
     salario = models.IntegerField(verbose_name="Salario", null=True, blank=False)
     jefe_inmediato = models.ForeignKey('self', on_delete=models.DO_NOTHING, verbose_name='Jefe inmediato', null=True,
                                        blank=True)
@@ -55,11 +55,7 @@ class Colaborador(Persona, ModelDjangoExtensiones):
         :param datos: Diccionario con los datos para crear Colaboradores.
         :return: Instacia de entidad colaboradores con la información especificada en el diccionario.
         """
-
-        usuario_creado = Colaborador.crear_usuario(datos.get('nombre', ''), datos.get('apellido', ''),
-                                                   datos.get('correo', ''))
         colaborador = Colaborador()
-        colaborador.usuario = usuario_creado
         colaborador.direccion = datos.get('direccion', '')
         colaborador.talla_camisa = datos.get('talla_camisa', '')
         colaborador.talla_zapatos = datos.get('talla_zapatos', '')
@@ -89,7 +85,12 @@ class Colaborador(Persona, ModelDjangoExtensiones):
         colaborador.telefono = datos.get('telefono', '')
         colaborador.estado = datos.get('estado', 'False') == 'True'
         colaborador.foto_perfil = datos.get('foto_perfil', '')
+        colaborador.usuario_id = datos.get('usuario_id', None)
 
+        if not colaborador.usuario_id:
+            usuario_creado = Colaborador.crear_usuario(datos.get('nombre', ''), datos.get('apellido', ''),
+                                                       datos.get('correo', ''))
+            colaborador.usuario = usuario_creado
         return colaborador
 
     @staticmethod
