@@ -26,7 +26,7 @@ class ColaboradoresPerfilView(View):
 
     def get(self, request, id):
         colaborador = Colaborador.objects.get(id=id)
-        colaboradores = Colaborador.objects.all()
+        colaboradores = Colaborador.objects.all()[:9]
 
         return render(request, 'TalentoHumano/Colaboradores/perfil.html', {'colaborador': colaborador,
                                                                            'colaboradores': colaboradores})
@@ -54,15 +54,21 @@ class ColaboradoresCrearView(View):
                         break
             return render(request, 'TalentoHumano/Colaboradores/crear-editar.html', datos)
 
-        if colaborador.fecha_dotacion < colaborador.fecha_ingreso:
+        if colaborador.fecha_dotacion <= colaborador.fecha_ingreso:
             messages.warning(request, 'La fecha de ingreso debe ser menor o igual a la fecha de entrega de dotación')
             return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
                           datos_xa_render(self.OPCION, colaborador))
 
-        if colaborador.fecha_ingreso < colaborador.fecha_examen:
+        if colaborador.fecha_ingreso <= colaborador.fecha_examen:
             messages.warning(request, 'La fecha de examen debe ser menor o igual a la fecha de ingreso')
             return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
                           datos_xa_render(self.OPCION, colaborador))
+
+        # if Colaborador.objects.filter(usu
+        #
+        #     messages.warning(request, 'El correo elctrónico ya está asociado a otro usuario')
+        #     return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
+        #                   datos_xa_render(self.OPCION, colaborador))
 
         else:
 
@@ -95,7 +101,7 @@ class ColaboradorEditarView(View):
         colaborador.id = int(id)
 
         try:
-            colaborador.full_clean(validate_unique=False, exclude=['usuario'])
+            colaborador.full_clean(validate_unique=False)
         except ValidationError as errores:
             datos = datos_xa_render(self.OPCION, colaborador)
             datos['errores'] = errores.message_dict
@@ -107,8 +113,6 @@ class ColaboradorEditarView(View):
             return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
                           datos_xa_render(self.OPCION, colaborador))
 
-        colaborador.usuario.save()
-        colaborador.usuario_id = colaborador.usuario.id
         colaborador_db = Colaborador.objects.get(id=id)
 
         if colaborador_db.comparar(colaborador):
@@ -126,11 +130,6 @@ class ColaboradorEditarView(View):
                           datos_xa_render(self.OPCION, colaborador))
 
         else:
-
-            colaborador.usuario.save()
-            # Se realiza esto ya que el campo usuario_id del modelo no es asignado automáticamente despues de guardar el
-            # ususario en la BD.
-            colaborador.usuario_id = colaborador.usuario.id
 
             colaborador.save(update_fields=update_fields)
             messages.success(request, 'Se ha actualizado el colaborador {0}'.format(colaborador.nombre_completo)
@@ -184,7 +183,7 @@ def datos_xa_render(opcion: str = None, colaborador: Colaborador = None) -> dict
                       range(6, 45)]
     talla_zapatos = [{'campo_valor': talla_zapatos, 'campo_texto': str(talla_zapatos)} for talla_zapatos in
                      range(20, 47)]
-    genero = [{'campo_valor': genero, 'campo_texto': str(genero)} for genero in ['Masculino', 'Femenino']]
+    genero = [{'campo_valor': genero, 'campo_texto': str(genero)} for genero in ['Masculino', 'Femenino', 'Otro']]
     tipo_identificacion = TipoIdentificacion.objects.get_xa_select_activos()
 
     datos = {'arl': arl, 'eps': eps, 'afp': afp, 'caja_compensacion': caja_compensacion,
