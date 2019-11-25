@@ -57,7 +57,7 @@
                                     </div>
                                     <div class="row" id="js-contacts">
                                         {% for colaborador in colaboradores %}
-                                            {% include 'TalentoHumano/_common/_tarjeta_empleado.html' with crear='TalentoHumano:colaboradores-crear'  id_tarjeta=colaborador.id  nombre=colaborador.nombre_completo  cargo=colaborador.cargo  correo=colaborador.usuario.email direccion=colaborador.direccion telefono=colaborador.telefono%}
+                                            {% include 'TalentoHumano/_common/_tarjeta_empleado.html' with   id_tarjeta=colaborador.id  nombre=colaborador.nombre_completo  cargo=colaborador.cargo  correo=colaborador.usuario.email direccion=colaborador.direccion telefono=colaborador.telefono%}
                                         {% endfor %}
                                     </div>
                                 </div>
