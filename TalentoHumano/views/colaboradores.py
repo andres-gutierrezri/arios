@@ -3,6 +3,8 @@ from django.views import View
 from datetime import datetime
 from django.contrib import messages
 from django.shortcuts import render, redirect, reverse
+from django.db import IntegrityError
+from django.http import JsonResponse
 
 from Administracion.models import Cargo, Proceso, TipoContrato, CentroPoblado, Rango, Municipio, Departamento, \
     TipoIdentificacion
@@ -17,9 +19,17 @@ class ColaboradoresIndexView(View):
 
     def get(self, request):
         colaboradores = Colaborador.objects.all()
-        fecha = datetime.now()
-        return render(request, 'TalentoHumano/Colaboradores/index.html', {'fecha': fecha,
-                                                                          'colaboradores': colaboradores})
+        return render(request, 'TalentoHumano/Colaboradores/index.html', {'colaboradores': colaboradores})
+
+
+class ColaboradoresPerfilView(View):
+
+    def get(self, request, id):
+        colaborador = Colaborador.objects.get(id=id)
+        colaboradores = Colaborador.objects.all()
+
+        return render(request, 'TalentoHumano/Colaboradores/perfil.html', {'colaborador': colaborador,
+                                                                           'colaboradores': colaboradores})
 
 
 class ColaboradoresCrearView(View):
@@ -44,13 +54,25 @@ class ColaboradoresCrearView(View):
                         break
             return render(request, 'TalentoHumano/Colaboradores/crear-editar.html', datos)
 
-        colaborador.usuario.save()
-        # Se realiza esto ya que el campo usuario_id del modelo no es asignado automáticamente despues de guardar el
-        # ususario en la BD.
-        colaborador.usuario_id = colaborador.usuario.id
-        colaborador.save()
-        messages.success(request, 'Se ha agregado el colaborador  {0}'.format(colaborador.nombre_completo))
-        return redirect(reverse('TalentoHumano:colaboradores-index'))
+        if colaborador.fecha_dotacion < colaborador.fecha_ingreso:
+            messages.warning(request, 'La fecha de ingreso debe ser menor o igual a la fecha de entrega de dotación')
+            return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
+                          datos_xa_render(self.OPCION, colaborador))
+
+        if colaborador.fecha_ingreso < colaborador.fecha_examen:
+            messages.warning(request, 'La fecha de examen debe ser menor o igual a la fecha de ingreso')
+            return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
+                          datos_xa_render(self.OPCION, colaborador))
+
+        else:
+
+            colaborador.usuario.save()
+            # Se realiza esto ya que el campo usuario_id del modelo no es asignado automáticamente despues de guardar el
+            # ususario en la BD.
+            colaborador.usuario_id = colaborador.usuario.id
+            colaborador.save()
+            messages.success(request, 'Se ha agregado el colaborador  {0}'.format(colaborador.nombre_completo))
+            return redirect(reverse('TalentoHumano:colaboradores-index'))
 
 
 class ColaboradorEditarView(View):
@@ -85,11 +107,23 @@ class ColaboradorEditarView(View):
             return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
                           datos_xa_render(self.OPCION, colaborador))
 
+        colaborador.usuario.save()
+        colaborador.usuario_id = colaborador.usuario.id
         colaborador_db = Colaborador.objects.get(id=id)
+
         if colaborador_db.comparar(colaborador):
             messages.success(request, 'No se hicieron cambios en el colaborador {0}'
                              .format(colaborador.nombre_completo))
             return redirect(reverse('TalentoHumano:colaboradores-index'))
+        if colaborador.fecha_dotacion < colaborador.fecha_ingreso:
+            messages.warning(request, 'La fecha de ingreso debe ser menor o igual a la fecha de entrega de dotación')
+            return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
+                          datos_xa_render(self.OPCION, colaborador))
+
+        if colaborador.fecha_ingreso < colaborador.fecha_examen:
+            messages.warning(request, 'La fecha de examen debe ser menor o igual a la fecha de ingreso')
+            return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
+                          datos_xa_render(self.OPCION, colaborador))
 
         else:
 
@@ -105,11 +139,27 @@ class ColaboradorEditarView(View):
             return redirect(reverse('TalentoHumano:colaboradores-index'))
 
 
+class ColaboradorEliminarView(View):
+    def post(self, request, id):
+        try:
+            colaborador = Colaborador.objects.get(id=id)
+            colaborador.delete()
+            messages.success(request, 'Se ha eliminado el colaborador  {0}'.format(colaborador.nombre_completo) + ' '
+                             + ' con indentificación {0}'.format(colaborador.identificacion))
+            return JsonResponse({"Mensaje": "OK"})
+
+        except IntegrityError:
+            colaborador = Colaborador.objects.get(id=id)
+            messages.warning(request, 'No se puede eliminar el colaborador  {0}'.format(colaborador.nombre_completo) +
+                             ' ' + ' con identificación {0}'.format(colaborador.identificacion) +
+                             ' porque ya se encuentra asociada a otro módulo')
+            return JsonResponse({"Mensaje": "No se puede eliminar"})
+
 
 # region Métodos de ayuda
 
 
-def datos_xa_render(opcion: str, colaborador: Colaborador = None) -> dict:
+def datos_xa_render(opcion: str = None, colaborador: Colaborador = None) -> dict:
     """
     Datos necesarios para la creación de los html de Colaboradores.
     :param opcion: valor de la acción a realizar 'crear' o 'editar'
