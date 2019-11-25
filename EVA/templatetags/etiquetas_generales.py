@@ -62,14 +62,15 @@ def input_email_tag(nombre, texto_label, **kwargs):
 
     return arma_input_general_tag(nombre, **kwargs)
 
+
 @register.inclusion_tag('EVA/_general_tags/_input_general_tag.html')
-def input_image_tag(nombre, texto_label, **kwargs):
+def input_file_tag(nombre, texto_label, **kwargs):
 
     kwargs.pop('texto_label', None)
     kwargs.pop('type', None)
 
     kwargs['texto_label'] = texto_label
-    kwargs['type'] = u'image'
+    kwargs['type'] = u'file'
 
     return arma_input_general_tag(nombre, **kwargs)
 
