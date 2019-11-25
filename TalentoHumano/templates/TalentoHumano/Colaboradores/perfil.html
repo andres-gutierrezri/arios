@@ -24,15 +24,13 @@
             <div class="col-xl-12">
                 <div id="panel-1" class="panel">
                     <div class="panel-hdr">
-                                <br>
-                            <div class="col-md-10">
-                                <small>
-                                     <a class="far fa-3x far fa-home"  href="{% url 'TalentoHumano:colaboradores-index' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ir al índice de colaboradores"></a>
-                                </small>
-                                </div>
-
+                        <br>
+                        <div class="col-md-10">
+                            <small>
+                                <a class="far fa-3x far fa-home"  href="{% url 'TalentoHumano:colaboradores-index' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ir al índice de colaboradores"></a>
+                            </small>
                         </div>
-
+                    </div>
                     <div class="panel-container show">
                         <div class="panel-content">
                             <div class="panel-group">
@@ -41,625 +39,591 @@
                                         <div class="form-row">
                                         </div>
                                     </div>
-
-
-                                     <main id="js-page-content" role="main" class="page-content">
-
-
-                        <div class="row">
-                            <div class="col-lg-6 col-xl-3 order-lg-1 order-xl-1">
-                                <!-- profile summary -->
-                                <div class="card mb-g rounded-top">
-                                    <div class="row no-gutters row-grid">
-                                        <div class="col-12">
-                                            <div class="d-flex flex-column align-items-center justify-content-center p-4">
-                                                <img src="{% static 'EVA/Plantilla/img/thumbs/pic-1.png' %}" class="rounded-circle profile-image d-block" alt="">
-                                                <h5 class="mb-0 fw-700 text-center mt-3">
-                                                    {{ colaborador.nombre_completo }}
-                                                    <small class="text-muted mb-0">{{ colaborador.cargo }}</small>
-                                                </h5>
-                                                <div class="mt-4 text-center demo">
-                                                    <a href="tel: {{ telefono }}" class="fs-xl">
-                                                         <i class="fas fa-mobile-alt text-muted mr-2"></i></a>
-                                                    <a href="mailto: {{ correo }}" class="fs-xl" >
-                                                        <i class="fas fa-envelope text-muted mr-2"></i></a>
-                                                    <a href="javascript:void(0);" class="fs-xl" style="color:#00AFF0">
-                                                        <i class="fab fa-skype"></i>
-                                                    </a>
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="text-center py-3">
-                                                <h5 class="mb-0 fw-700">
-                                                    {{ colaborador.contrato }}
-                                                    <small class="text-muted mb-0">Contrato</small>
-                                                </h5>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="text-center py-3">
-                                                <h5 class="mb-0 fw-700">
-                                                    {{ colaborador.jefe_inmediato }}
-                                                    <small class="text-muted mb-0">Jefe inmediato</small>
-                                                </h5>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="p-3 text-center">
-                                                <a href="http://{{ colaborador.arl.direccion_web }}" target="_blank" class="btn-link font-weight-bold">ARL: {{ colaborador.arl }}</a> <span class="text-primary d-inline-block mx-3">&#9679;</span>
-                                                <a href="http://{{ colaborador.eps.direccion_web }}" target="_blank" class="btn-link font-weight-bold">EPS: {{ colaborador.eps }}</a> <span class="text-primary d-inline-block mx-3">&#9679;</span>
-                                                <a href="http://{{ colaborador.afp.direccion_web }}" target="_blank" class="btn-link font-weight-bold">AFP: {{ colaborador.afp }}</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- photos -->
-                                <div class="card mb-g">
-                                    <div class="row row-grid no-gutters">
-                                        <div class="col-12">
-                                            <div class="p-3">
-                                                <h2 class="mb-0 fs-xl">
-                                                    Photos
-                                                </h2>
-                                            </div>
-                                        </div>
-                                        <div class="col-4">
-                                            <a href="javascript:void(0);" class="text-center px-3 py-4 d-flex position-relative height-10 border">
-                                                <span class="position-absolute pos-top pos-left pos-right pos-bottom" style="background-image: url('img/demo/gallery/thumb/1.jpg');background-size: cover;"></span>
-                                            </a>
-                                        </div>
-                                        <div class="col-4">
-                                            <a href="javascript:void(0);" class="text-center px-3 py-4 d-flex position-relative height-10 border">
-                                                <span class="position-absolute pos-top pos-left pos-right pos-bottom" style="background-image: url('img/demo/gallery/thumb/2.jpg');background-size: cover;"></span>
-                                            </a>
-                                        </div>
-                                        <div class="col-4">
-                                            <a href="javascript:void(0);" class="text-center px-3 py-4 d-flex position-relative height-10 border">
-                                                <span class="position-absolute pos-top pos-left pos-right pos-bottom" style="background-image: url('img/demo/gallery/thumb/3.jpg');background-size: cover;"></span>
-                                            </a>
-                                        </div>
-                                        <div class="col-4">
-                                            <a href="javascript:void(0);" class="text-center px-3 py-4 d-flex position-relative height-10 border">
-                                                <span class="position-absolute pos-top pos-left pos-right pos-bottom" style="background-image: url('img/demo/gallery/thumb/4.jpg');background-size: cover;"></span>
-                                            </a>
-                                        </div>
-                                        <div class="col-4">
-                                            <a href="javascript:void(0);" class="text-center px-3 py-4 d-flex position-relative height-10 border">
-                                                <span class="position-absolute pos-top pos-left pos-right pos-bottom" style="background-image: url('img/demo/gallery/thumb/5.jpg');background-size: cover;"></span>
-                                            </a>
-                                        </div>
-                                        <div class="col-4">
-                                            <a href="javascript:void(0);" class="text-center px-3 py-4 d-flex position-relative height-10 border">
-                                                <span class="position-absolute pos-top pos-left pos-right pos-bottom" style="background-image: url('img/demo/gallery/thumb/6.jpg');background-size: cover;"></span>
-                                            </a>
-                                        </div>
-                                        <div class="col-4">
-                                            <a href="javascript:void(0);" class="text-center px-3 py-4 d-flex position-relative height-10 border">
-                                                <span class="position-absolute pos-top pos-left pos-right pos-bottom" style="background-image: url('img/demo/gallery/thumb/7.jpg');background-size: cover;"></span>
-                                            </a>
-                                        </div>
-                                        <div class="col-4">
-                                            <a href="javascript:void(0);" class="text-center px-3 py-4 d-flex position-relative height-10 border">
-                                                <span class="position-absolute pos-top pos-left pos-right pos-bottom" style="background-image: url('img/demo/gallery/thumb/8.jpg');background-size: cover;"></span>
-                                            </a>
-                                        </div>
-                                        <div class="col-4">
-                                            <a href="javascript:void(0);" class="text-center px-3 py-4 d-flex position-relative height-10 border">
-                                                <span class="position-absolute pos-top pos-left pos-right pos-bottom" style="background-image: url('img/demo/gallery/thumb/9.jpg');background-size: cover;"></span>
-                                            </a>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="p-3 text-center">
-                                                <a href="javascript:void(0);" class="btn-link font-weight-bold">View all</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- contacts -->
-                                <div class="card mb-g">
-                                    <div class="row row-grid no-gutters">
-                                        <div class="col-12">
-                                            <div class="p-3">
-                                                <h2 class="mb-0 fs-xl">
-                                                    Colaboradores
-                                                </h2>
-                                            </div>
-                                        </div>
-                                        {% for colaborador in colaboradores %}
-                                        <div class="col-4">
-                                            <a href="{% url 'TalentoHumano:colaboradores-perfil' colaborador.id %}" class="text-center p-3 d-flex flex-column hover-highlight">
-                                                <span class="profile-image rounded-circle d-block m-auto" style="background-image:url({% static 'EVA/Plantilla/img/thumbs/pic-1.png' %}); background-size: cover;"></span>
-                                                <span class="d-block text-truncate text-muted fs-xs mt-1">{{ colaborador.nombre_completo }}</span>
-                                            </a>
-                                        </div>
-                                        {% endfor %}
-
-                                        <div class="col-12">
-                                            <div class="p-3 text-center">
-                                                <a href="{% url 'TalentoHumano:colaboradores-index' %}" class="btn-link font-weight-bold">Ver todos</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-12 col-xl-6 order-lg-3 order-xl-2">
-                                <div class="card border mb-g">
-                                    <div class="card-body pl-4 pt-4 pr-4 pb-0">
-                                        <div class="d-flex flex-column">
-                                            <div class="border-0 flex-1 position-relative shadow-top">
-                                                <div class="pt-2 pb-1 pr-0 pl-0 rounded-0 position-relative" tabindex="-1">
-                                                    <span class="profile-image rounded-circle d-block position-absolute" style="background-image:url('img/demo/avatars/avatar-admin.png'); background-size: cover;"></span>
-                                                    <div class="pl-5 ml-5">
-                                                        <textarea class="form-control border-0 p-0 fs-xl" rows="4" placeholder="What's on your mind Codex?..."></textarea>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="height-8 d-flex flex-row align-items-center flex-wrap flex-shrink-0">
-                                                <a href="javascript:void(0);" class="btn btn-icon fs-xl width-1 mr-1" data-toggle="tooltip" data-original-title="More options" data-placement="top">
-                                                    <i class="fal fa-ellipsis-v-alt color-fusion-300"></i>
-                                                </a>
-                                                <a href="javascript:void(0);" class="btn btn-icon fs-xl mr-1" data-toggle="tooltip" data-original-title="Attach files" data-placement="top">
-                                                    <i class="fal fa-paperclip color-fusion-300"></i>
-                                                </a>
-                                                <a href="javascript:void(0);" class="btn btn-icon fs-xl mr-1" data-toggle="tooltip" data-original-title="Insert photo" data-placement="top">
-                                                    <i class="fal fa-camera color-fusion-300"></i>
-                                                </a>
-                                                <button class="btn btn-info shadow-0 ml-auto">Post</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- post comment -->
-                                <div class="card mb-g">
-                                    <div class="card-body pb-0 px-4">
-                                        <div class="d-flex flex-row pb-3 pt-2  border-top-0 border-left-0 border-right-0">
-                                            <div class="d-inline-block align-middle status status-success mr-3">
-                                                <span class="profile-image rounded-circle d-block" style="background-image:url('img/demo/avatars/avatar-e.png'); background-size: cover;"></span>
-                                            </div>
-                                            <h5 class="mb-0 flex-1 text-dark fw-500">
-                                                Dr. John Cook PhD
-                                                <small class="m-0 l-h-n">
-                                                    Human Resources & Psychiatry Division
-                                                </small>
-                                            </h5>
-                                            <span class="text-muted fs-xs opacity-70">
-                                                3 hours
-                                            </span>
-                                        </div>
-                                        <div class="pb-3 pt-2 border-top-0 border-left-0 border-right-0 text-muted">
-                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                                        </div>
-                                        <div class="d-flex align-items-center demo-h-spacing py-3">
-                                            <a href="javascript:void(0);" class="d-inline-flex align-items-center text-dark">
-                                                <i class="fas fa-heart fs-xs mr-1 text-danger"></i> <span>2 Likes</span>
-                                            </a>
-                                            <a href="javascript:void(0);" class="d-inline-flex align-items-center text-dark">
-                                                <i class="fal fa-comment fs-xs mr-1"></i> <span>2 Comments</span>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="card-body py-0 px-4 border-faded border-right-0 border-bottom-0 border-left-0">
-                                        <div class="d-flex flex-column align-items-center">
-                                            <!-- comment -->
-                                            <div class="d-flex flex-row w-100 py-4">
-                                                <div class="d-inline-block align-middle status status-sm status-success mr-3">
-                                                    <span class="profile-image profile-image-md rounded-circle d-block mt-1" style="background-image:url('img/demo/avatars/avatar-c.png'); background-size: cover;"></span>
-                                                </div>
-                                                <div class="mb-0 flex-1 text-dark">
-                                                    <div class="d-flex">
-                                                        <a href="javascript:void(0);" class="text-dark fw-500">
-                                                            Test name
-                                                        </a><span class="text-muted fs-xs opacity-70 ml-auto">
-                                                            15 minutes
-                                                        </span>
-                                                    </div>
-                                                    <p class="mb-0">
-                                                        Excellent work, looking forward to it.
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <hr class="m-0 w-100">
-                                            <!-- comment end -->
-                                            <!-- comment -->
-                                            <div class="d-flex flex-row w-100 py-4">
-                                                <div class="d-inline-block align-middle status status-sm status-success mr-3">
-                                                    <span class="profile-image profile-image-md rounded-circle d-block mt-1" style="background-image:url('img/demo/avatars/avatar-admin.png'); background-size: cover;"></span>
-                                                </div>
-                                                <div class="mb-0 flex-1 text-dark">
-                                                    <div class="d-flex">
-                                                        <a href="javascript:void(0);" class="text-dark fw-500">
-                                                            Dr. Codex Lantern
-                                                        </a><span class="text-muted fs-xs opacity-70 ml-auto">
-                                                            3 minutes
-                                                        </span>
-                                                    </div>
-                                                    <p class="mb-0">
-                                                        Congrats mate!
-                                                    </p>
-                                                    <div class="pl-0 d-flex flex-row w-100 pb-0 pt-4">
-                                                        <div class="d-inline-block align-middle status status-sm status-success mr-3">
-                                                            <span class="profile-image profile-image-md rounded-circle d-block mt-1" style="background-image:url('img/demo/avatars/avatar-e.png'); background-size: cover;"></span>
-                                                        </div>
-                                                        <div class="mb-0 flex-1 text-dark">
-                                                            <div class="d-flex">
-                                                                <a href="javascript:void(0);" class="text-dark fw-500">
-                                                                    Dr. John Cook PhD
-                                                                </a><span class="text-muted fs-xs opacity-70 ml-auto">
-                                                                    30 seconds
-                                                                </span>
+                                    <main id="js-page-content" role="main" class="page-content">
+                                        <div class="row">
+                                            <div class="col-lg-6 col-xl-3 order-lg-1 order-xl-1">
+                                                <!-- profile summary -->
+                                                <div class="card mb-g rounded-top">
+                                                    <div class="row no-gutters row-grid">
+                                                        <div class="col-12">
+                                                            <div class="d-flex flex-column align-items-center justify-content-center p-4">
+                                                                <img src="{% static 'EVA/Plantilla/img/profile.png' %}" class="rounded-circle shadow-2 img-thumbnail" alt="">
+                                                                <h5 class="mb-0 fw-700 text-center mt-3">
+                                                                    {{ colaborador.nombre_completo }}
+                                                                    <small class="text-muted mb-0">{{ colaborador.cargo }}</small>
+                                                                </h5>
+                                                                <div class="mt-4 text-center demo">
+                                                                    <a href="tel: {{ telefono }}" class="fs-xl">
+                                                                        <i class="fas fa-mobile-alt text-muted mr-2"></i></a>
+                                                                    <a href="mailto: {{ colaborador.usuario.email }}" class="fs-xl" >
+                                                                        <i class="fas fa-envelope text-muted mr-2"></i></a>
+                                                                    <a href="javascript:void(0);" class="fs-xl" style="color:#00AFF0">
+                                                                        <i class="fab fa-skype"></i>
+                                                                    </a>
+                                                                </div>
                                                             </div>
-                                                            <p class="mb-0">
-                                                                Thanks!
-                                                            </p>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <div class="text-center py-3">
+                                                                <h5 class="mb-0 fw-700">
+                                                                    {{ colaborador.contrato }}
+                                                                    <small class="text-muted mb-0">Contrato</small>
+                                                                </h5>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <div class="text-center py-3">
+                                                                <h5 class="mb-0 fw-700">
+                                                                    {{ colaborador.jefe_inmediato }}
+                                                                    <small class="text-muted mb-0">Jefe inmediato</small>
+                                                                </h5>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <div class="p-3 text-center">
+                                                                <a href="http://{{ colaborador.arl.direccion_web }}" target="_blank" class="btn-link font-weight-bold">ARL: {{ colaborador.arl }}</a> <span class="text-primary d-inline-block mx-3">&#9679;</span>
+                                                                <a href="http://{{ colaborador.eps.direccion_web }}" target="_blank" class="btn-link font-weight-bold">EPS: {{ colaborador.eps }}</a> <span class="text-primary d-inline-block mx-3">&#9679;</span>
+                                                                <a href="http://{{ colaborador.afp.direccion_web }}" target="_blank" class="btn-link font-weight-bold">AFP: {{ colaborador.afp }}</a> <span class="text-primary d-inline-block mx-3">&#9679;</span>
+                                                                <a href="http://{{ colaborador.caja_compensacion.direccion_web }}" target="_blank" class="btn-link font-weight-bold">Caja de compensación: {{ colaborador.caja_compensacion }}</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="card mb-g">
+                                                    <div class="row row-grid no-gutters">
+                                                        <div class="col-12">
+                                                            <div class="p-3">
+                                                                <h2 class="mb-0 fs-xl">
+                                                                    Información para contacto
+                                                                </h2>
+                                                            </div>
+                                                        </div>
+                                                            <div class="p-3">
+                                                                <h5>
+                                                                    <small class="mt-0 mb-3 text-muted">
+                                                                        Celular: {{ colaborador.telefono }}
+                                                                    </small>
+                                                                    <small class="mt-0 mb-3 text-muted">
+                                                                        Correo electrónico: {{ colaborador.usuario.email }}
+                                                                    </small>
+                                                                    <small class="mt-0 mb-3 text-muted">
+                                                                        Dirección: {{ colaborador.direccion }}
+                                                                    </small>
+                                                                </h5>
+
+                                                            </div>
+                                                    </div>
+                                                </div>
+                                                <!-- contacts -->
+                                                <div class="card mb-g">
+                                                    <div class="row row-grid no-gutters">
+                                                        <div class="col-12">
+                                                            <div class="p-3">
+                                                                <h2 class="mb-0 fs-xl">
+                                                                    Colaboradores
+                                                                </h2>
+                                                            </div>
+                                                        </div>
+                                                        {% for colaborador in colaboradores %}
+                                                            <div class="col-4">
+                                                                <a href="{% url 'TalentoHumano:colaboradores-perfil' colaborador.id %}" class="text-center p-3 d-flex flex-column hover-highlight">
+                                                                    <span class="profile-image rounded-circle d-block m-auto" style="background-image:url({% static 'EVA/Plantilla/img/profile.png' %}); background-size: cover;"></span>
+                                                                    <span class="d-block text-truncate text-muted fs-xs mt-1">{{ colaborador.nombre_completo }}</span>
+                                                                </a>
+                                                            </div>
+                                                        {% endfor %}
+                                                        <div class="col-12">
+                                                            <div class="p-3 text-center">
+                                                                <a href="{% url 'TalentoHumano:colaboradores-index' %}" class="btn-link font-weight-bold">Ver todos</a>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <hr class="m-0 w-100">
-                                            <!-- comment end -->
-                                            <!-- add comment -->
-                                            <div class="py-3 w-100">
-                                                <textarea class="form-control border-0 p-0" rows="2" placeholder="add a comment..."></textarea>
-                                            </div>
-                                            <!-- add comment end -->
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- post comment - end -->
-                                <!-- post picture -->
-                                <div class="card mb-g">
-                                    <div class="card-body pb-0 px-4">
-                                        <div class="d-flex flex-row pb-3 pt-2  border-top-0 border-left-0 border-right-0">
-                                            <div class="d-inline-block align-middle status status-success mr-3">
-                                                <span class="profile-image rounded-circle d-block" style="background-image:url('img/demo/avatars/avatar-admin.png'); background-size: cover;"></span>
-                                            </div>
-                                            <h5 class="mb-0 flex-1 text-dark fw-500">
-                                                Dr. Codex Lantern
-                                                <small class="m-0 l-h-n">
-                                                    Chief of Surgery
-                                                </small>
-                                            </h5>
-                                            <span class="text-muted fs-xs opacity-70">
+                                            <div class="col-lg-12 col-xl-6 order-lg-3 order-xl-2">
+                                                 <div class="card mb-g">
+                                                    <div class="row row-grid no-gutters">
+                                                        <div class="col-12">
+                                                            <div class="p-3">
+                                                                <h2 class="mb-0 fs-xl">
+                                                                    Información básica
+                                                                </h2>
+                                                            </div>
+                                                        </div>
+                                                            <div class="p-3">
+                                                                <h5>
+                                                                    <small class="mt-0 mb-3 text-muted">
+                                                                        Tipo de identificación: {{ colaborador.tipo_identificacion }}
+                                                                    </small>
+                                                                    <small class="mt-0 mb-3 text-muted">
+                                                                        Número de identificación: {{ colaborador.identificacion }}
+                                                                    </small>
+                                                                    <small class="mt-0 mb-3 text-muted">
+                                                                        Fecha de expedición: {{ colaborador.fecha_expedicion|date:'Y-m-d' }}
+                                                                    </small>
+                                                                    <small class="mt-0 mb-3 text-muted">
+                                                                        Género: {{ colaborador.genero }}
+                                                                    </small>
+                                                                    <small class="mt-0 mb-3 text-muted">
+                                                                        Fecha de nacimiento: {{ colaborador.fecha_nacimiento|date:'Y-m-d' }}
+                                                                    </small>
+                                                                    <small class="mt-0 mb-3 text-muted">
+                                                                        Lugar de nacimiento: {{ colaborador.lugar_nacimiento }}, {{ colaborador.lugar_nacimiento.municipio.departamento }}
+                                                                    </small>
+                                                                </h5>
+
+                                                            </div>
+                                                    </div>
+                                                </div>
+                                                <!-- post comment -->
+                                                <div class="card mb-g">
+                                                    <div class="card-body pb-0 px-4">
+                                                        <div class="d-flex flex-row pb-3 pt-2  border-top-0 border-left-0 border-right-0">
+                                                            <div class="d-inline-block align-middle status status-success mr-3">
+                                                                <span class="profile-image rounded-circle d-block" style="background-image:url('img/demo/avatars/avatar-e.png'); background-size: cover;"></span>
+                                                            </div>
+                                                            <h5 class="mb-0 flex-1 text-dark fw-500">
+                                                                Dr. John Cook PhD
+                                                                <small class="m-0 l-h-n">
+                                                                    Human Resources & Psychiatry Division
+                                                                </small>
+                                                            </h5>
+                                                            <span class="text-muted fs-xs opacity-70">
+                                                                3 hours
+                                                            </span>
+                                                        </div>
+                                                        <div class="pb-3 pt-2 border-top-0 border-left-0 border-right-0 text-muted">
+                                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                                                        </div>
+                                                        <div class="d-flex align-items-center demo-h-spacing py-3">
+                                                            <a href="javascript:void(0);" class="d-inline-flex align-items-center text-dark">
+                                                                <i class="fas fa-heart fs-xs mr-1 text-danger"></i> <span>2 Likes</span>
+                                                            </a>
+                                                            <a href="javascript:void(0);" class="d-inline-flex align-items-center text-dark">
+                                                                <i class="fal fa-comment fs-xs mr-1"></i> <span>2 Comments</span>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-body py-0 px-4 border-faded border-right-0 border-bottom-0 border-left-0">
+                                                        <div class="d-flex flex-column align-items-center">
+                                                            <!-- comment -->
+                                                            <div class="d-flex flex-row w-100 py-4">
+                                                                <div class="d-inline-block align-middle status status-sm status-success mr-3">
+                                                                    <span class="profile-image profile-image-md rounded-circle d-block mt-1" style="background-image:url('img/demo/avatars/avatar-c.png'); background-size: cover;"></span>
+                                                                </div>
+                                                                <div class="mb-0 flex-1 text-dark">
+                                                                    <div class="d-flex">
+                                                                        <a href="javascript:void(0);" class="text-dark fw-500">
+                                                                            Test name
+                                                                        </a><span class="text-muted fs-xs opacity-70 ml-auto">
+                                                                            15 minutes
+                                                                        </span>
+                                                                    </div>
+                                                                    <p class="mb-0">
+                                                                        Excellent work, looking forward to it.
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                            <hr class="m-0 w-100">
+                                                            <!-- comment end -->
+                                                            <!-- comment -->
+                                                            <div class="d-flex flex-row w-100 py-4">
+                                                                <div class="d-inline-block align-middle status status-sm status-success mr-3">
+                                                                    <span class="profile-image profile-image-md rounded-circle d-block mt-1" style="background-image:url('img/demo/avatars/avatar-admin.png'); background-size: cover;"></span>
+                                                                </div>
+                                                                <div class="mb-0 flex-1 text-dark">
+                                                                    <div class="d-flex">
+                                                                        <a href="javascript:void(0);" class="text-dark fw-500">
+                                                                            Dr. Codex Lantern
+                                                                        </a><span class="text-muted fs-xs opacity-70 ml-auto">
+                                                                            3 minutes
+                                                                        </span>
+                                                                    </div>
+                                                                    <p class="mb-0">
+                                                                        Congrats mate!
+                                                                    </p>
+                                                                    <div class="pl-0 d-flex flex-row w-100 pb-0 pt-4">
+                                                                        <div class="d-inline-block align-middle status status-sm status-success mr-3">
+                                                                            <span class="profile-image profile-image-md rounded-circle d-block mt-1" style="background-image:url('img/demo/avatars/avatar-e.png'); background-size: cover;"></span>
+                                                                        </div>
+                                                                        <div class="mb-0 flex-1 text-dark">
+                                                                            <div class="d-flex">
+                                                                                <a href="javascript:void(0);" class="text-dark fw-500">
+                                                                                    Dr. John Cook PhD
+                                                                                </a><span class="text-muted fs-xs opacity-70 ml-auto">
+                                                                                    30 seconds
+                                                                                </span>
+                                                                            </div>
+                                                                            <p class="mb-0">
+                                                                                Thanks!
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <hr class="m-0 w-100">
+                                                            <!-- comment end -->
+                                                            <!-- add comment -->
+                                                            <div class="py-3 w-100">
+                                                                <textarea class="form-control border-0 p-0" rows="2" placeholder="add a comment..."></textarea>
+                                                            </div>
+                                                            <!-- add comment end -->
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- post comment - end -->
+                                                <!-- post picture -->
+                                                <div class="card mb-g">
+                                                    <div class="card-body pb-0 px-4">
+                                                        <div class="d-flex flex-row pb-3 pt-2  border-top-0 border-left-0 border-right-0">
+                                                            <div class="d-inline-block align-middle status status-success mr-3">
+                                                                <span class="profile-image rounded-circle d-block" style="background-image:url('img/demo/avatars/avatar-admin.png'); background-size: cover;"></span>
+                                                            </div>
+                                                            <h5 class="mb-0 flex-1 text-dark fw-500">
+                                                                Dr. Codex Lantern
+                                                                <small class="m-0 l-h-n">
+                                                                    Chief of Surgery
+                                                                </small>
+                                                            </h5>
+                                                            <span class="text-muted fs-xs opacity-70">
                                                 1 day
                                             </span>
-                                        </div>
-                                        <div class="pb-3 pt-2 border-top-0 border-left-0 border-right-0 text-muted">
-                                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt</p>
-                                            <img src="img/demo/gallery/46.jpg" class="img-fluid" alt="">
-                                        </div>
-                                        <div class="d-flex align-items-center demo-h-spacing py-3">
-                                            <a href="javascript:void(0);" class="d-inline-flex align-items-center text-dark">
-                                                <i class="fal fa-heart fs-xs mr-1"></i> <span>37 Likes</span>
-                                            </a>
-                                            <a href="javascript:void(0);" class="d-inline-flex align-items-center text-dark">
-                                                <i class="fal fa-comment fs-xs mr-1"></i> <span>1 Comment</span>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="card-body py-0 px-4 border-faded border-right-0 border-bottom-0 border-left-0">
-                                        <div class="d-flex flex-column align-items-center">
-                                            <!-- comment -->
-                                            <div class="d-flex flex-row w-100 py-4">
-                                                <div class="d-inline-block align-middle status status-sm status-success mr-3">
-                                                    <span class="profile-image profile-image-md rounded-circle d-block mt-1" style="background-image:url('img/demo/avatars/avatar-h.png'); background-size: cover;"></span>
-                                                </div>
-                                                <div class="mb-0 flex-1 text-dark">
-                                                    <div class="d-flex">
-                                                        <a href="javascript:void(0);" class="text-dark fw-500">
-                                                            Sarah McBrook
-                                                        </a><span class="text-muted fs-xs opacity-70 ml-auto">
+                                                        </div>
+                                                        <div class="pb-3 pt-2 border-top-0 border-left-0 border-right-0 text-muted">
+                                                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt</p>
+                                                            <img src="img/demo/gallery/46.jpg" class="img-fluid" alt="">
+                                                        </div>
+                                                        <div class="d-flex align-items-center demo-h-spacing py-3">
+                                                            <a href="javascript:void(0);" class="d-inline-flex align-items-center text-dark">
+                                                                <i class="fal fa-heart fs-xs mr-1"></i> <span>37 Likes</span>
+                                                            </a>
+                                                            <a href="javascript:void(0);" class="d-inline-flex align-items-center text-dark">
+                                                                <i class="fal fa-comment fs-xs mr-1"></i> <span>1 Comment</span>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-body py-0 px-4 border-faded border-right-0 border-bottom-0 border-left-0">
+                                                        <div class="d-flex flex-column align-items-center">
+                                                            <!-- comment -->
+                                                            <div class="d-flex flex-row w-100 py-4">
+                                                                <div class="d-inline-block align-middle status status-sm status-success mr-3">
+                                                                    <span class="profile-image profile-image-md rounded-circle d-block mt-1" style="background-image:url('img/demo/avatars/avatar-h.png'); background-size: cover;"></span>
+                                                                </div>
+                                                                <div class="mb-0 flex-1 text-dark">
+                                                                    <div class="d-flex">
+                                                                        <a href="javascript:void(0);" class="text-dark fw-500">
+                                                                            Sarah McBrook
+                                                                        </a><span class="text-muted fs-xs opacity-70 ml-auto">
                                                             10 minutes
                                                         </span>
+                                                                    </div>
+                                                                    <p class="mb-0">
+                                                                        Nice shot! When are you going again?
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                            <hr class="m-0 w-100">
+                                                            <!-- comment end -->
+                                                            <!-- add comment -->
+                                                            <div class="py-3 w-100">
+                                                                <textarea class="form-control border-0 p-0" rows="2" placeholder="add a comment..."></textarea>
+                                                            </div>
+                                                            <!-- add comment end -->
+                                                        </div>
                                                     </div>
-                                                    <p class="mb-0">
-                                                        Nice shot! When are you going again?
-                                                    </p>
                                                 </div>
-                                            </div>
-                                            <hr class="m-0 w-100">
-                                            <!-- comment end -->
-                                            <!-- add comment -->
-                                            <div class="py-3 w-100">
-                                                <textarea class="form-control border-0 p-0" rows="2" placeholder="add a comment..."></textarea>
-                                            </div>
-                                            <!-- add comment end -->
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- post picture - end -->
-                                <!-- post article -->
-                                <div class="card mb-g">
-                                    <div class="card-body pb-0 px-4">
-                                        <div class="d-flex flex-row pb-3 pt-2  border-top-0 border-left-0 border-right-0">
-                                            <div class="d-inline-block align-middle status status-success mr-3">
-                                                <span class="profile-image rounded-circle d-block" style="background-image:url('img/demo/avatars/avatar-admin.png'); background-size: cover;"></span>
-                                            </div>
-                                            <h5 class="mb-0 flex-1 text-dark fw-500">
-                                                Dr. Codex Lantern
-                                                <small class="m-0 l-h-n">
-                                                    Chief of Surgery
-                                                </small>
-                                            </h5>
-                                            <span class="text-muted fs-xs opacity-70">
+                                                <!-- post picture - end -->
+                                                <!-- post article -->
+                                                <div class="card mb-g">
+                                                    <div class="card-body pb-0 px-4">
+                                                        <div class="d-flex flex-row pb-3 pt-2  border-top-0 border-left-0 border-right-0">
+                                                            <div class="d-inline-block align-middle status status-success mr-3">
+                                                                <span class="profile-image rounded-circle d-block" style="background-image:url('img/demo/avatars/avatar-admin.png'); background-size: cover;"></span>
+                                                            </div>
+                                                            <h5 class="mb-0 flex-1 text-dark fw-500">
+                                                                Dr. Codex Lantern
+                                                                <small class="m-0 l-h-n">
+                                                                    Chief of Surgery
+                                                                </small>
+                                                            </h5>
+                                                            <span class="text-muted fs-xs opacity-70">
                                                 2 days
                                             </span>
-                                        </div>
-                                        <div class="pb-3 pt-2 border-top-0 border-left-0 border-right-0 text-muted">
-                                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt</p>
-                                            <!-- URL post -->
-                                            <div class="d-flex overflow-hidden rounded w-100 border">
-                                                <div class="row no-gutters">
-                                                    <div class="col-2 col-sm-3" style="background-image:url('img/demo/profile/article-healthyfood.png'); background-size: cover;"></div>
-                                                    <div class="col">
-                                                        <div class="bg-faded flex-1 p-4 h-100">
-                                                            <h6 class="text-dark fw-500">
-                                                                Healthy food
-                                                            </h6>
-                                                            <p class="m-0">sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                                                            </p>
+                                                        </div>
+                                                        <div class="pb-3 pt-2 border-top-0 border-left-0 border-right-0 text-muted">
+                                                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt</p>
+                                                            <!-- URL post -->
+                                                            <div class="d-flex overflow-hidden rounded w-100 border">
+                                                                <div class="row no-gutters">
+                                                                    <div class="col-2 col-sm-3" style="background-image:url('img/demo/profile/article-healthyfood.png'); background-size: cover;"></div>
+                                                                    <div class="col">
+                                                                        <div class="bg-faded flex-1 p-4 h-100">
+                                                                            <h6 class="text-dark fw-500">
+                                                                                Healthy food
+                                                                            </h6>
+                                                                            <p class="m-0">sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="d-flex align-items-center demo-h-spacing py-3">
+                                                            <a href="javascript:void(0);" class="d-inline-flex align-items-center text-dark">
+                                                                <i class="fal fa-heart fs-xs mr-1"></i> <span>1 Likes</span>
+                                                            </a>
+                                                            <a href="javascript:void(0);" class="d-inline-flex align-items-center text-dark">
+                                                                <i class="fal fa-comment fs-xs mr-1"></i> <span>0 Comments</span>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-body py-0 px-4 border-faded border-right-0 border-bottom-0 border-left-0">
+                                                        <div class="d-flex flex-column align-items-center">
+                                                            <!-- add comment -->
+                                                            <div class="py-3 w-100">
+                                                                <textarea class="form-control border-0 p-0" rows="2" placeholder="add a comment..."></textarea>
+                                                            </div>
+                                                            <!-- add comment end -->
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <!-- post article - end -->
                                             </div>
-                                        </div>
-                                        <div class="d-flex align-items-center demo-h-spacing py-3">
-                                            <a href="javascript:void(0);" class="d-inline-flex align-items-center text-dark">
-                                                <i class="fal fa-heart fs-xs mr-1"></i> <span>1 Likes</span>
-                                            </a>
-                                            <a href="javascript:void(0);" class="d-inline-flex align-items-center text-dark">
-                                                <i class="fal fa-comment fs-xs mr-1"></i> <span>0 Comments</span>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="card-body py-0 px-4 border-faded border-right-0 border-bottom-0 border-left-0">
-                                        <div class="d-flex flex-column align-items-center">
-                                            <!-- add comment -->
-                                            <div class="py-3 w-100">
-                                                <textarea class="form-control border-0 p-0" rows="2" placeholder="add a comment..."></textarea>
-                                            </div>
-                                            <!-- add comment end -->
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- post article - end -->
-                            </div>
-                            <div class="col-lg-6 col-xl-3 order-lg-2 order-xl-3">
-                                <!-- add : -->
-                                <div class="card mb-2">
-                                    <div class="card-body">
-                                        <a href="javascript:void(0);" class="d-flex flex-row align-items-center">
-                                            <div class='icon-stack display-3 flex-shrink-0'>
-                                                <i class="fal fa-circle icon-stack-3x opacity-100 color-primary-400"></i>
-                                                <i class="fas fa-graduation-cap icon-stack-1x opacity-100 color-primary-500"></i>
-                                            </div>
-                                            <div class="ml-3">
-                                                <strong>
-                                                    Add Qualifications
-                                                </strong>
-                                                <br>
-                                                Adding qualifications will help gain more clients
-                                            </div>
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="card mb-g">
-                                    <div class="card-body">
-                                        <a href="javascript:void(0);" class="d-flex flex-row align-items-center">
-                                            <div class='icon-stack display-3 flex-shrink-0'>
-                                                <i class="fal fa-circle icon-stack-3x opacity-100 color-warning-400"></i>
-                                                <i class="fas fa-handshake icon-stack-1x opacity-100 color-warning-500"></i>
-                                            </div>
-                                            <div class="ml-3">
-                                                <strong>
-                                                    Add Skills
-                                                </strong>
-                                                <br>
-                                                Gain more potential clients by adding skills
-                                            </div>
-                                        </a>
-                                    </div>
-                                </div>
-                                <!-- rating -->
-                                <div class="card mb-g">
-                                    <div class="row row-grid no-gutters">
-                                        <div class="col-12">
-                                            <div class="p-3">
-                                                <h2 class="mb-0 fs-xl">
-                                                    Dr. Codex Lantern's Rating
-                                                </h2>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="p-3 d-flex text-primary align-items-center fs-xl">
-                                                <i class="fas fa-star mr-1"></i>
-                                                <i class="fas fa-star mr-1"></i>
-                                                <i class="fas fa-star mr-1"></i>
-                                                <i class="fas fa-star mr-1"></i>
-                                                <i class="fal fa-star mr-1"></i>
-                                                <span class="ml-auto">4/5 Stars</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="p-3">
-                                                <div class="fw-500 fs-xs">Staff</div>
-                                                <div class="progress progress-xs mt-2">
-                                                    <div class="progress-bar bg-primary-300 bg-primary-gradient" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="p-3">
-                                                <div class="fw-500 fs-xs">Punctuality</div>
-                                                <div class="progress progress-xs mt-2">
-                                                    <div class="progress-bar bg-primary-300 bg-primary-gradient" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="p-3">
-                                                <div class="fw-500 fs-xs">Helpfulness</div>
-                                                <div class="progress progress-xs mt-2">
-                                                    <div class="progress-bar bg-primary-300 bg-primary-gradient" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="p-3">
-                                                <div class="fw-500 fs-xs">Knowledge</div>
-                                                <div class="progress progress-xs mt-2">
-                                                    <div class="progress-bar bg-primary-300 bg-primary-gradient" role="progressbar" style="width: 95%" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="p-3">
-                                                <div class="fw-500 fs-xs">Bedside manners</div>
-                                                <div class="progress progress-xs mt-2">
-                                                    <div class="progress-bar bg-danger-300 bg-warning-gradient" role="progressbar" style="width: 30%" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="p-3 text-center">
-                                                <a href="javascript:void(0);" class="btn-link font-weight-bold">View all</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- skills -->
-                                <div class="card mb-g">
-                                    <div class="row row-grid no-gutters">
-                                        <div class="col-12">
-                                            <div class="p-3">
-                                                <h2 class="mb-0 fs-xl">
-                                                    Current Project
-                                                </h2>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="p-3">
-                                                <h5 class="text-danger">
-                                                    Xray improvement algorythm
-                                                    <small class="mt-0 mb-3 text-muted">
-                                                        Migration of new API to local servers
-                                                    </small>
-                                                    <span class="badge badge-danger fw-n position-absolute pos-top pos-right mt-3 mr-3">Delayed</span>
-                                                </h5>
-                                                <div class="row fs-b fw-300">
-                                                    <div class="col text-left">
-                                                        Progress
-                                                    </div>
-                                                    <div class="col text-right">
-                                                        26%
+                                            <div class="col-lg-6 col-xl-3 order-lg-2 order-xl-3">
+                                                <!-- add : -->
+                                                <div class="card mb-2">
+                                                    <div class="card-body">
+                                                        <a href="javascript:void(0);" class="d-flex flex-row align-items-center">
+                                                            <div class='icon-stack display-3 flex-shrink-0'>
+                                                                <i class="fal fa-circle icon-stack-3x opacity-100 color-primary-400"></i>
+                                                                <i class="fas fa-graduation-cap icon-stack-1x opacity-100 color-primary-500"></i>
+                                                            </div>
+                                                            <div class="ml-3">
+                                                                <strong>
+                                                                    Add Qualifications
+                                                                </strong>
+                                                                <br>
+                                                                Adding qualifications will help gain more clients
+                                                            </div>
+                                                        </a>
                                                     </div>
                                                 </div>
-                                                <div class="progress progress-xs d-flex mb-2 mt-1">
-                                                    <span class="progress-bar bg-danger-500 progress-bar-striped" role="progressbar" style="width: 26%" aria-valuenow="26" aria-valuemin="0" aria-valuemax="100"></span>
+                                                <div class="card mb-g">
+                                                    <div class="card-body">
+                                                        <a href="javascript:void(0);" class="d-flex flex-row align-items-center">
+                                                            <div class='icon-stack display-3 flex-shrink-0'>
+                                                                <i class="fal fa-circle icon-stack-3x opacity-100 color-warning-400"></i>
+                                                                <i class="fas fa-handshake icon-stack-1x opacity-100 color-warning-500"></i>
+                                                            </div>
+                                                            <div class="ml-3">
+                                                                <strong>
+                                                                    Add Skills
+                                                                </strong>
+                                                                <br>
+                                                                Gain more potential clients by adding skills
+                                                            </div>
+                                                        </a>
+                                                    </div>
                                                 </div>
-                                                <div class="fw-300 mb-3">
-                                                    <div class="row">
-                                                        <div class="col">
-                                                            Budget
+                                                <!-- rating -->
+                                                <div class="card mb-g">
+                                                    <div class="row row-grid no-gutters">
+                                                        <div class="col-12">
+                                                            <div class="p-3">
+                                                                <h2 class="mb-0 fs-xl">
+                                                                    Dr. Codex Lantern's Rating
+                                                                </h2>
+                                                            </div>
                                                         </div>
-                                                        <div class="col text-right text-danger">
-                                                            -$155,473.70
+                                                        <div class="col-12">
+                                                            <div class="p-3 d-flex text-primary align-items-center fs-xl">
+                                                                <i class="fas fa-star mr-1"></i>
+                                                                <i class="fas fa-star mr-1"></i>
+                                                                <i class="fas fa-star mr-1"></i>
+                                                                <i class="fas fa-star mr-1"></i>
+                                                                <i class="fal fa-star mr-1"></i>
+                                                                <span class="ml-auto">4/5 Stars</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <div class="p-3">
+                                                                <div class="fw-500 fs-xs">Staff</div>
+                                                                <div class="progress progress-xs mt-2">
+                                                                    <div class="progress-bar bg-primary-300 bg-primary-gradient" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <div class="p-3">
+                                                                <div class="fw-500 fs-xs">Punctuality</div>
+                                                                <div class="progress progress-xs mt-2">
+                                                                    <div class="progress-bar bg-primary-300 bg-primary-gradient" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <div class="p-3">
+                                                                <div class="fw-500 fs-xs">Helpfulness</div>
+                                                                <div class="progress progress-xs mt-2">
+                                                                    <div class="progress-bar bg-primary-300 bg-primary-gradient" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <div class="p-3">
+                                                                <div class="fw-500 fs-xs">Knowledge</div>
+                                                                <div class="progress progress-xs mt-2">
+                                                                    <div class="progress-bar bg-primary-300 bg-primary-gradient" role="progressbar" style="width: 95%" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <div class="p-3">
+                                                                <div class="fw-500 fs-xs">Bedside manners</div>
+                                                                <div class="progress progress-xs mt-2">
+                                                                    <div class="progress-bar bg-danger-300 bg-warning-gradient" role="progressbar" style="width: 30%" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <div class="p-3 text-center">
+                                                                <a href="javascript:void(0);" class="btn-link font-weight-bold">View all</a>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="p-3">
-                                                <h5>
-                                                    Radioactive Isotope Research
-                                                    <small class="mt-0 mb-3 text-muted">
-                                                        Accelerator based methods of Technetium99m production – target preparation and processing and beam monitoring technologies
-                                                    </small>
-                                                    <span class="badge badge-primary fw-n position-absolute pos-top pos-right mt-3 mr-3">A</span>
-                                                </h5>
-                                                <div class="row fs-b fw-300">
-                                                    <div class="col text-left">
-                                                        Progress
-                                                    </div>
-                                                    <div class="col text-right">
-                                                        90%
-                                                    </div>
-                                                </div>
-                                                <div class="progress progress-xs d-flex mb-2 mt-1">
-                                                    <span class="progress-bar bg-primary-500 progress-bar-striped" role="progressbar" style="width: 90%" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></span>
-                                                </div>
-                                                <div class="fw-300 mb-0">
-                                                    <div class="row">
-                                                        <div class="col">
-                                                            Budget
+                                                <!-- skills -->
+                                                <div class="card mb-g">
+                                                    <div class="row row-grid no-gutters">
+                                                        <div class="col-12">
+                                                            <div class="p-3">
+                                                                <h2 class="mb-0 fs-xl">
+                                                                    Current Project
+                                                                </h2>
+                                                            </div>
                                                         </div>
-                                                        <div class="col text-right">
-                                                            $1,325,987.30
+                                                        <div class="col-12">
+                                                            <div class="p-3">
+                                                                <h5 class="text-danger">
+                                                                    Xray improvement algorythm
+                                                                    <small class="mt-0 mb-3 text-muted">
+                                                                        Migration of new API to local servers
+                                                                    </small>
+                                                                    <span class="badge badge-danger fw-n position-absolute pos-top pos-right mt-3 mr-3">Delayed</span>
+                                                                </h5>
+                                                                <div class="row fs-b fw-300">
+                                                                    <div class="col text-left">
+                                                                        Progress
+                                                                    </div>
+                                                                    <div class="col text-right">
+                                                                        26%
+                                                                    </div>
+                                                                </div>
+                                                                <div class="progress progress-xs d-flex mb-2 mt-1">
+                                                                    <span class="progress-bar bg-danger-500 progress-bar-striped" role="progressbar" style="width: 26%" aria-valuenow="26" aria-valuemin="0" aria-valuemax="100"></span>
+                                                                </div>
+                                                                <div class="fw-300 mb-3">
+                                                                    <div class="row">
+                                                                        <div class="col">
+                                                                            Budget
+                                                                        </div>
+                                                                        <div class="col text-right text-danger">
+                                                                            -$155,473.70
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="p-3 text-center">
-                                                <div class="text-left fw-400 ">
-                                                    <div class="text-secondary mb-1">Project Owners</div>
-                                                    <div class="fs-sm d-flex align-items-center">
-                                                        <a href="#" class="btn-m-s">
-                                                            <img src="img/demo/avatars/avatar-a.png" class="profile-image-sm rounded-circle" alt="aa">
-                                                        </a>
-                                                        <a href="#" class="btn-m-s">
-                                                            <img src="img/demo/avatars/avatar-b.png" class="profile-image-sm rounded-circle" alt="aa">
-                                                        </a>
-                                                        <a href="#" class="btn-m-s">
-                                                            <img src="img/demo/avatars/avatar-c.png" class="profile-image-sm rounded-circle" alt="aa">
-                                                        </a>
-                                                        <a href="#" class="btn-m-s">
-                                                            <img src="img/demo/avatars/avatar-e.png" class="profile-image-sm rounded-circle" alt="aa">
-                                                        </a>
-                                                        <a href="#" class="btn-m-s">
-                                                            <img src="img/demo/avatars/avatar-h.png" class="profile-image-sm rounded-circle" alt="aa">
-                                                        </a>
-                                                        <a href="#" class="btn-m-s">
-                                                            <img src="img/demo/avatars/avatar-k.png" class="profile-image-sm rounded-circle" alt="aa">
-                                                        </a>
-                                                        <a href="#" class="btn-m-s fs-xs">
+                                                        <div class="col-12">
+                                                            <div class="p-3">
+                                                                <h5>
+                                                                    Radioactive Isotope Research
+                                                                    <small class="mt-0 mb-3 text-muted">
+                                                                        Accelerator based methods of Technetium99m production – target preparation and processing and beam monitoring technologies
+                                                                    </small>
+                                                                    <span class="badge badge-primary fw-n position-absolute pos-top pos-right mt-3 mr-3">A</span>
+                                                                </h5>
+                                                                <div class="row fs-b fw-300">
+                                                                    <div class="col text-left">
+                                                                        Progress
+                                                                    </div>
+                                                                    <div class="col text-right">
+                                                                        90%
+                                                                    </div>
+                                                                </div>
+                                                                <div class="progress progress-xs d-flex mb-2 mt-1">
+                                                                    <span class="progress-bar bg-primary-500 progress-bar-striped" role="progressbar" style="width: 90%" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></span>
+                                                                </div>
+                                                                <div class="fw-300 mb-0">
+                                                                    <div class="row">
+                                                                        <div class="col">
+                                                                            Budget
+                                                                        </div>
+                                                                        <div class="col text-right">
+                                                                            $1,325,987.30
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <div class="p-3 text-center">
+                                                                <div class="text-left fw-400 ">
+                                                                    <div class="text-secondary mb-1">Project Owners</div>
+                                                                    <div class="fs-sm d-flex align-items-center">
+                                                                        <a href="#" class="btn-m-s">
+                                                                            <img src="img/demo/avatars/avatar-a.png" class="profile-image-sm rounded-circle" alt="aa">
+                                                                        </a>
+                                                                        <a href="#" class="btn-m-s">
+                                                                            <img src="img/demo/avatars/avatar-b.png" class="profile-image-sm rounded-circle" alt="aa">
+                                                                        </a>
+                                                                        <a href="#" class="btn-m-s">
+                                                                            <img src="img/demo/avatars/avatar-c.png" class="profile-image-sm rounded-circle" alt="aa">
+                                                                        </a>
+                                                                        <a href="#" class="btn-m-s">
+                                                                            <img src="img/demo/avatars/avatar-e.png" class="profile-image-sm rounded-circle" alt="aa">
+                                                                        </a>
+                                                                        <a href="#" class="btn-m-s">
+                                                                            <img src="img/demo/avatars/avatar-h.png" class="profile-image-sm rounded-circle" alt="aa">
+                                                                        </a>
+                                                                        <a href="#" class="btn-m-s">
+                                                                            <img src="img/demo/avatars/avatar-k.png" class="profile-image-sm rounded-circle" alt="aa">
+                                                                        </a>
+                                                                        <a href="#" class="btn-m-s fs-xs">
                                                             <span data-hasmore="+7" class="rounded-circle profile-image-sm">
                                                                 <img src="img/demo/avatars/avatar-j.png" class="profile-image-sm rounded-circle" alt="aa">
                                                             </span>
-                                                        </a>
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </main>
+                                    <!-- this overlay is activated only when mobile menu is triggered -->
+                                    <div class="page-content-overlay" data-action="toggle" data-class="mobile-nav-on"></div> <!-- END Page Content -->
+                                    <!-- BEGIN Page Footer -->
+
+                                    <!-- END Page Footer -->
+
+                                    <!-- BEGIN Color profile -->
+                                    <!-- this area is hidden and will not be seen on screens or screen readers -->
+                                    <!-- we use this only for CSS color refernce for JS stuff -->
+
+                                    <!-- END Color profile -->
                                 </div>
                             </div>
                         </div>
-                    </main>
-                    <!-- this overlay is activated only when mobile menu is triggered -->
-                    <div class="page-content-overlay" data-action="toggle" data-class="mobile-nav-on"></div> <!-- END Page Content -->
-                    <!-- BEGIN Page Footer -->
 
-                    <!-- END Page Footer -->
 
-                    <!-- BEGIN Color profile -->
-                    <!-- this area is hidden and will not be seen on screens or screen readers -->
-                    <!-- we use this only for CSS color refernce for JS stuff -->
-
-                    <!-- END Color profile -->
+                    </div>
                 </div>
             </div>
         </div>
-
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    </div>
 
     {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='talento-humano/colaboradores' %}
 {% endblock main%}
