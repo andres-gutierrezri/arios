@@ -12,7 +12,14 @@
 {% elif tipo == 'checkbox' %}
      <input type="{{ tipo }}"  {% if valor %}checked {% endif %}   value="True" id="{{ nombre }}_id" name="{{ nombre }}" {{ propiedades }}>
 {% else %}
+{% if tipo == 'file' %}
+    <div class="custom-file">
+{% endif %}
     <input type="{{ tipo }}" id="{{ nombre }}_id" name="{{ nombre }}"  {% if is_fecha  %} value="{{ valor|date:'Y-m-d' }}" {% else %} value="{{ valor }}" {% endif %} {{ propiedades }}>
+{% if tipo == 'file' %}
+   <label class="custom-file-label" for="{{nombre}}_id">Seleccione un archivo</label>
+    </div>
+{% endif %}
 {% endif %}
 {% if mensaje_validacion %}
      <div class="invalid-tooltip">{{ mensaje_validacion }}</div>
