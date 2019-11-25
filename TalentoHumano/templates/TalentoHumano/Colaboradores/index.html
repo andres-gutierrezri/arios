@@ -1,7 +1,7 @@
 {% extends 'TalentoHumano/_common/base_talento_humano.html' %}
 {% load static %}
 {% load eva_tags %}
-<title>{% block titulo %}Perfil de colaboradores{% endblock %}</title>
+<title>{% block titulo %}Colaboradores{% endblock %}</title>
 {% block styles %}
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-brands.css' %}">
@@ -16,7 +16,7 @@
     <div class="panel-container show">
         <div class="header">
             <h1 class="header-title">
-                <i class='far fa-user'></i> Perfil de colaboradores <span class='fw-300'></span>
+                <i class='far fa-user'></i> Colaboradores <span class='fw-300'></span>
                 <br>
                 <br>
             </h1>
@@ -57,7 +57,7 @@
                                     </div>
                                     <div class="row" id="js-contacts">
                                         {% for colaborador in colaboradores %}
-                                            {% include 'TalentoHumano/_common/_tarjeta_empleado.html' with crear='TalentoHumano:colaboradores-crear'  id_tarjeta=colaborador.id  nombre=colaborador.nombre_completo  cargo=colaborador.cargo  correo=colaborador.usuario.email ubicacion='Bogotá D.C' telefono=colaborador.telefono%}
+                                            {% include 'TalentoHumano/_common/_tarjeta_empleado.html' with crear='TalentoHumano:colaboradores-crear'  id_tarjeta=colaborador.id  nombre=colaborador.nombre_completo  cargo=colaborador.cargo  correo=colaborador.usuario.email direccion=colaborador.direccion telefono=colaborador.telefono%}
                                         {% endfor %}
                                     </div>
                                 </div>
@@ -68,15 +68,14 @@
             </div>
         </div>
     </div>
-    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='talento-humano/entidades' %}
+    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='talento-humano/colaboradores' %}
 {% endblock main%}
 
 {% block scripts %}
     <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
-    <script src="{% static 'TalentoHumano/js/confirmarEliminarEntidad.js' %}"></script>
+    <script src="{% static 'TalentoHumano/js/confirmarEliminarColaborador.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
-    <script src="{% static 'TalentoHumano/js/filtro_entidad.js' %}"></script>
 
     <script>
         $(document).ready(function()
