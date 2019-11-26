@@ -18,7 +18,7 @@ from TalentoHumano.models import Colaborador, EntidadesCAFE
 class ColaboradoresIndexView(View):
 
     def get(self, request):
-        colaboradores = Colaborador.objects.all()
+        colaboradores = Colaborador.objects.all().order_by('usuario_id')
         return render(request, 'TalentoHumano/Colaboradores/index.html', {'colaboradores': colaboradores})
 
 
@@ -40,6 +40,9 @@ class ColaboradoresCrearView(View):
 
     def post(self, request):
         colaborador = Colaborador.from_dictionary(request.POST)
+
+        colaborador.foto_perfil = request.FILES.get('foto_perfil', None)
+
         try:
             # Se excluye el usuario debido a que el id no es asignado  después de ser guardado en la BD.
             colaborador.full_clean(exclude=['usuario'])
@@ -71,7 +74,7 @@ class ColaboradoresCrearView(View):
         #                   datos_xa_render(self.OPCION, colaborador))
 
         else:
-
+            colaborador.genero = colaborador.genero[0:1]
             colaborador.usuario.save()
             # Se realiza esto ya que el campo usuario_id del modelo no es asignado automáticamente despues de guardar el
             # ususario en la BD.
@@ -98,6 +101,16 @@ class ColaboradorEditarView(View):
                          'tipo_identificacion_id', 'fecha_expedicion', 'genero', 'telefono', 'estado']
 
         colaborador = Colaborador.from_dictionary(request.POST)
+        if colaborador.foto_perfil:
+            colaborador.foto_perfil = request.FILES.get('foto_perfil', None)
+            update_fields.append('foto_perfil')
+
+        # colaborador.usuario.first_name = request.POST.get('nombre', '')
+        # colaborador.usuario.last_name = request.POST.get('apellido', '')
+        # colaborador.usuario.email = request.POST.get('correo', '')
+        # update_fields.append('nombre')
+        # update_fields.append('apellido')
+        # update_fields.append('correo')
         colaborador.id = int(id)
 
         try:
@@ -130,7 +143,7 @@ class ColaboradorEditarView(View):
                           datos_xa_render(self.OPCION, colaborador))
 
         else:
-
+            # colaborador.genero_id = colaborador.genero[0:1]
             colaborador.save(update_fields=update_fields)
             messages.success(request, 'Se ha actualizado el colaborador {0}'.format(colaborador.nombre_completo)
                              + ' con identificación {0}'.format(colaborador.identificacion))
@@ -170,7 +183,7 @@ def datos_xa_render(opcion: str = None, colaborador: Colaborador = None) -> dict
     arl = EntidadesCAFE.objects.arl_xa_select()
     afp = EntidadesCAFE.objects.afp_xa_select()
     caja_compensacion = EntidadesCAFE.objects.caja_compensacion_xa_select()
-    jefe_inmediato = Colaborador.objects.get_xa_select()
+    jefe_inmediato = Colaborador.objects.get_xa_select_activos()
     contrato = Contrato.objects.get_xa_select_activos()
     cargo = Cargo.objects.get_xa_select_activos()
     proceso = Proceso.objects.get_xa_select_activos()
@@ -183,7 +196,7 @@ def datos_xa_render(opcion: str = None, colaborador: Colaborador = None) -> dict
                       range(6, 45)]
     talla_zapatos = [{'campo_valor': talla_zapatos, 'campo_texto': str(talla_zapatos)} for talla_zapatos in
                      range(20, 47)]
-    genero = [{'campo_valor': genero, 'campo_texto': str(genero)} for genero in ['Masculino', 'Femenino', 'Otro']]
+    genero = [{'campo_valor': 'M', 'campo_texto': 'Masculino'}, {'campo_valor': 'F', 'campo_texto': 'Femenino'},  {'campo_valor': 'O', 'campo_texto': 'Otro'}]
     tipo_identificacion = TipoIdentificacion.objects.get_xa_select_activos()
 
     datos = {'arl': arl, 'eps': eps, 'afp': afp, 'caja_compensacion': caja_compensacion,
