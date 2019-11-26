@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 import random
-
+import unicodedata
 
 from Administracion.models import Persona, Cargo, Proceso, TipoContrato, CentroPoblado, Rango
 from EVA.General.conversiones import string_to_date
@@ -102,8 +102,10 @@ class Colaborador(Persona, ModelDjangoExtensiones):
         usuario.email = correo
         nombre_1 = nombre.lower().split()
         apellido_1 = apellido.lower().split()
-        usuario.username = nombre_1[0] + '.' + apellido_1[0]
-        usuario_n = usuario.username
+        nombre_1_n = unicodedata.normalize("NFKD", str(nombre_1[0])).encode("ascii", "ignore").decode("ascii")
+        apellido_1_n = unicodedata.normalize("NFKD", str(apellido_1[0])).encode("ascii", "ignore").decode("ascii")
+        usuario.username = nombre_1_n + '.' + apellido_1_n
+        usuario_n = usuario.username.replace("[", "").replace("'", "").replace("]", "")
 
         while True:
 
