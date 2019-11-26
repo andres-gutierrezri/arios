@@ -40,10 +40,10 @@
                                     <div class="panel-container show">
                                         <div class="panel-content">
                                             {% if opcion == 'editar' %}
-                                                <form action="{% url 'TalentoHumano:colaboradores-editar' colaborador.id %}" id="colaboradores-form" method="post" class="needs-validation" novalidate>
+                                                <form action="{% url 'TalentoHumano:colaboradores-editar' colaborador.id %}" id="colaboradores-form" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
                                                 <input type="hidden" name="usuario_id" id="usuario_id" value="{{ colaborador.usuario_id }}">
                                             {% else %}
-                                                <form action="{% url 'TalentoHumano:colaboradores-crear' %}" id="colaboradores-form" method="post" class="needs-validation" novalidate>
+                                                <form action="{% url 'TalentoHumano:colaboradores-crear' %}" id="colaboradores-form" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
                                             {% endif %}
                                             {% csrf_token %}
                                             <div id="smartwizard">
