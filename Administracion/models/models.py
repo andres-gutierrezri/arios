@@ -1,9 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-
-# # Create your models here.
 from django.db.models import QuerySet
 
 from EVA.General.modelmanagers import ManagerGeneral
@@ -122,7 +118,7 @@ class Persona(models.Model):
                                           blank=False)
     fecha_modificacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Modificación', null=False,
                                               blank=False)
-    genero = models.TextField(max_length=1, verbose_name='Género', null=False, blank=False)
+    genero = models.CharField(max_length=1, verbose_name='Género', null=False, blank=False)
     tipo_identificacion = models.ForeignKey(TipoIdentificacion, on_delete=models.DO_NOTHING,
                                             verbose_name='Tipo de identificación', null=True, blank=False)
     usuario = models.OneToOneField(User, on_delete=models.DO_NOTHING, verbose_name="Usuario", null=True,
