@@ -73,7 +73,6 @@
                                                                     </div>
                                                                     <div class="col-md-6">
                                                                         {% input_number_tag 'identificacion' 'Identificación' placeholder="Ingrese el número de identificación" required="" min='0' max="99999999999" onInput="validarLongitud(11,this)" value=colaborador.identificacion mensaje_validacion='Por favor digite el número de identificación' invalido=errores.identificación %}
-
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -120,7 +119,7 @@
                                                             <div class="form-group">
                                                                 <div class="form-row">
                                                                     <div class="col-md-6">
-                                                                        {% select_tag lugar_nacimiento 'centro_poblado_id' 'Seleccione lugar de nacimiento' texto_label="Lugar de nacimiento" value=colaborador.lugar_nacimiento.id required="" mensaje_validacion='Por favor seleccione un lugar de nacimiento' invalido=errores.lugar_nacimiento %}
+                                                                        {% select_tag lugar_nacimiento 'centro_poblado_id' 'Seleccione un centro poblado' texto_label="Lugar de nacimiento" value=colaborador.lugar_nacimiento.id required="" mensaje_validacion='Por favor seleccione un centro poblado' invalido=errores.lugar_nacimiento %}
                                                                     </div>
                                                                     <div class="col-md-6">
                                                                         {% input_file_tag 'foto_perfil' 'Foto de perfil' placeholder="Seleccione la foto de perfil"   value=colaborador.foto_perfil  class='custom-file-input'  invalido=errores.foto_perfil  %}
