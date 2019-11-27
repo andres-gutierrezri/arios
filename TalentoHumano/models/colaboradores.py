@@ -2,6 +2,8 @@ from django.contrib.auth.models import User
 from django.db import models
 import random
 import unicodedata
+from django.db.models import F, QuerySet, CharField, Value
+from django.db.models.functions import Concat
 
 from Administracion.models import Persona, Cargo, Proceso, TipoContrato, CentroPoblado, Rango
 from EVA.General.conversiones import string_to_date
@@ -11,8 +13,25 @@ from Proyectos.models import Contrato
 from TalentoHumano.models import EntidadesCAFE
 
 
+class ColaboradorManger(ManagerGeneral):
+
+    def get_x_estado(self, estado: bool = None, xa_select: bool = False) -> QuerySet:
+        filtro = {}
+
+        if estado is not None and 'estado' in self.model._meta._forward_fields_map:
+            filtro['estado'] = estado
+        if xa_select:
+            return super().get_queryset().filter(**filtro).\
+                values(campo_valor=F('id')).annotate(campo_texto=Concat('usuario__first_name', Value(' '),
+                                                                        'usuario__last_name',
+                                                                        output_field=CharField()))\
+                .order_by('usuario__first_name', 'usuario__last_name')
+        else:
+            return super().get_queryset().filter(**filtro)
+
+
 class Colaborador(Persona, ModelDjangoExtensiones):
-    objects = ManagerGeneral(campo_texto='jefe_inmediato')
+    objects = ColaboradorManger()
     direccion = models.CharField(max_length=100, verbose_name='Dirección', null=False, blank=False)
     talla_camisa = models.CharField(max_length=3, verbose_name="Talla de camisa", null=True, blank=False)
     talla_pantalon = models.IntegerField(verbose_name="Talla de pantalón", null=True, blank=False)
@@ -42,7 +61,7 @@ class Colaborador(Persona, ModelDjangoExtensiones):
                                          null=False, blank=False)
     rango = models.ForeignKey(Rango, on_delete=models.DO_NOTHING, verbose_name='Rango', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
-    foto_perfil = models.ImageField(upload_to='foto_perfil', blank=True)
+    foto_perfil = models.ImageField(upload_to='foto_perfil', blank=True, default='foto_perfil/profile-none.png')
 
     class Meta:
         verbose_name = 'Colaborador'
@@ -84,19 +103,17 @@ class Colaborador(Persona, ModelDjangoExtensiones):
         colaborador.genero = datos.get('genero', '')
         colaborador.telefono = datos.get('telefono', '')
         colaborador.estado = datos.get('estado', 'False') == 'True'
-        colaborador.foto_perfil = datos.get('foto_perfil', '')
+        colaborador.foto_perfil = datos.get('foto_perfil', None)
         colaborador.usuario_id = datos.get('usuario_id', None)
-
-        if not colaborador.usuario_id:
-            usuario_creado = Colaborador.crear_usuario(datos.get('nombre', ''), datos.get('apellido', ''),
-                                                       datos.get('correo', ''))
-            colaborador.usuario = usuario_creado
+        usuario_creado = Colaborador.crear_usuario(datos.get('nombre', ''), datos.get('apellido', ''),
+                                                   datos.get('correo', ''),  colaborador.usuario_id)
+        colaborador.usuario = usuario_creado
         return colaborador
 
     @staticmethod
-    def crear_usuario(nombre: str, apellido: str, correo: str) -> User:
+    def crear_usuario(nombre: str, apellido: str, correo: str, usuario_id: int) -> User:
 
-        usuario = User()
+        usuario = User(id=usuario_id)
         usuario.first_name = nombre
         usuario.last_name = apellido
         usuario.email = correo
@@ -108,8 +125,10 @@ class Colaborador(Persona, ModelDjangoExtensiones):
         usuario_n = usuario.username.replace("[", "").replace("'", "").replace("]", "")
 
         while True:
+            existe = User.objects.filter(username=usuario_n).exclude(id=usuario_id).exists() if usuario_id else User.\
+                objects.filter(username=usuario_n).exists()
 
-            if User.objects.filter(username=usuario_n).exists():
+            if existe:
                 num = range(1, 99)
                 r_num = random.choice(num)
                 usuario_n = usuario.username + str(r_num)
