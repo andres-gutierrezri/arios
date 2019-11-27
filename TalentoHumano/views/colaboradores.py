@@ -1,10 +1,11 @@
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.views import View
-from datetime import datetime
 from django.contrib import messages
 from django.shortcuts import render, redirect, reverse
 from django.db import IntegrityError
 from django.http import JsonResponse
+
 
 from Administracion.models import Cargo, Proceso, TipoContrato, CentroPoblado, Rango, Municipio, Departamento, \
     TipoIdentificacion
@@ -18,7 +19,7 @@ from TalentoHumano.models import Colaborador, EntidadesCAFE
 class ColaboradoresIndexView(View):
 
     def get(self, request):
-        colaboradores = Colaborador.objects.all().order_by('usuario_id')
+        colaboradores = Colaborador.objects.all().order_by('usuario__first_name', 'usuario__last_name')
         return render(request, 'TalentoHumano/Colaboradores/index.html', {'colaboradores': colaboradores})
 
 
@@ -42,6 +43,8 @@ class ColaboradoresCrearView(View):
         colaborador = Colaborador.from_dictionary(request.POST)
 
         colaborador.foto_perfil = request.FILES.get('foto_perfil', None)
+        if not colaborador.foto_perfil:
+            colaborador.foto_perfil = 'foto_perfil/profile-none.png'
 
         try:
             # Se excluye el usuario debido a que el id no es asignado  después de ser guardado en la BD.
@@ -67,11 +70,11 @@ class ColaboradoresCrearView(View):
             return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
                           datos_xa_render(self.OPCION, colaborador))
 
-        # if Colaborador.objects.filter(usu
-        #
-        #     messages.warning(request, 'El correo elctrónico ya está asociado a otro usuario')
-        #     return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
-        #                   datos_xa_render(self.OPCION, colaborador))
+        if User.objects.filter(email__iexact=colaborador.usuario.email).exists():
+
+            messages.warning(request, 'El correo electrónico ya está asociado a otro usuario')
+            return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
+                          datos_xa_render(self.OPCION, colaborador))
 
         else:
             colaborador.genero = colaborador.genero[0:1]
@@ -101,17 +104,10 @@ class ColaboradorEditarView(View):
                          'tipo_identificacion_id', 'fecha_expedicion', 'genero', 'telefono', 'estado']
 
         colaborador = Colaborador.from_dictionary(request.POST)
+        colaborador.id = int(id)
         if colaborador.foto_perfil:
             colaborador.foto_perfil = request.FILES.get('foto_perfil', None)
             update_fields.append('foto_perfil')
-
-        # colaborador.usuario.first_name = request.POST.get('nombre', '')
-        # colaborador.usuario.last_name = request.POST.get('apellido', '')
-        # colaborador.usuario.email = request.POST.get('correo', '')
-        # update_fields.append('nombre')
-        # update_fields.append('apellido')
-        # update_fields.append('correo')
-        colaborador.id = int(id)
 
         try:
             colaborador.full_clean(validate_unique=False)
@@ -126,12 +122,34 @@ class ColaboradorEditarView(View):
             return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
                           datos_xa_render(self.OPCION, colaborador))
 
+        if User.objects.filter(email__iexact=colaborador.usuario.email).exclude(id=colaborador.usuario_id).exists():
+
+            messages.warning(request, 'El correo electrónico ya está asociado a otro usuario')
+            return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
+                          datos_xa_render(self.OPCION, colaborador))
+
         colaborador_db = Colaborador.objects.get(id=id)
 
-        if colaborador_db.comparar(colaborador):
+        cambios_usuario: list = []
+
+        if colaborador_db.usuario.first_name != colaborador.usuario.first_name:
+            cambios_usuario.append('first_name')
+
+        if colaborador_db.usuario.last_name != colaborador.usuario.last_name:
+            cambios_usuario.append('last_name')
+
+        if colaborador_db.usuario.email != colaborador.usuario.email:
+            cambios_usuario.append('email')
+
+        if 'first_name' in cambios_usuario or 'last_name' in cambios_usuario:
+            cambios_usuario.append('username')
+
+        if colaborador_db.comparar(colaborador, excluir='foto_perfil') and len(cambios_usuario) <= 0\
+                and not colaborador.foto_perfil:
             messages.success(request, 'No se hicieron cambios en el colaborador {0}'
                              .format(colaborador.nombre_completo))
             return redirect(reverse('TalentoHumano:colaboradores-index'))
+
         if colaborador.fecha_dotacion < colaborador.fecha_ingreso:
             messages.warning(request, 'La fecha de ingreso debe ser menor o igual a la fecha de entrega de dotación')
             return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
@@ -143,7 +161,9 @@ class ColaboradorEditarView(View):
                           datos_xa_render(self.OPCION, colaborador))
 
         else:
-            # colaborador.genero_id = colaborador.genero[0:1]
+            if len(cambios_usuario) > 0:
+                colaborador.usuario.save(update_fields=cambios_usuario)
+
             colaborador.save(update_fields=update_fields)
             messages.success(request, 'Se ha actualizado el colaborador {0}'.format(colaborador.nombre_completo)
                              + ' con identificación {0}'.format(colaborador.identificacion))
@@ -183,7 +203,7 @@ def datos_xa_render(opcion: str = None, colaborador: Colaborador = None) -> dict
     arl = EntidadesCAFE.objects.arl_xa_select()
     afp = EntidadesCAFE.objects.afp_xa_select()
     caja_compensacion = EntidadesCAFE.objects.caja_compensacion_xa_select()
-    jefe_inmediato = Colaborador.objects.get_xa_select_activos()
+    jefe_inmediato = Colaborador.objects.get_xa_select()
     contrato = Contrato.objects.get_xa_select_activos()
     cargo = Cargo.objects.get_xa_select_activos()
     proceso = Proceso.objects.get_xa_select_activos()
@@ -196,7 +216,8 @@ def datos_xa_render(opcion: str = None, colaborador: Colaborador = None) -> dict
                       range(6, 45)]
     talla_zapatos = [{'campo_valor': talla_zapatos, 'campo_texto': str(talla_zapatos)} for talla_zapatos in
                      range(20, 47)]
-    genero = [{'campo_valor': 'M', 'campo_texto': 'Masculino'}, {'campo_valor': 'F', 'campo_texto': 'Femenino'},  {'campo_valor': 'O', 'campo_texto': 'Otro'}]
+    genero = [{'campo_valor': 'M', 'campo_texto': 'Masculino'}, {'campo_valor': 'F', 'campo_texto': 'Femenino'},
+              {'campo_valor': 'O', 'campo_texto': 'Otro'}]
     tipo_identificacion = TipoIdentificacion.objects.get_xa_select_activos()
 
     datos = {'arl': arl, 'eps': eps, 'afp': afp, 'caja_compensacion': caja_compensacion,
@@ -217,3 +238,4 @@ def datos_xa_render(opcion: str = None, colaborador: Colaborador = None) -> dict
     return datos
 
 # endregion
+
