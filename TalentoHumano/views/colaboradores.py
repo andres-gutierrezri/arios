@@ -27,10 +27,22 @@ class ColaboradoresPerfilView(View):
 
     def get(self, request, id):
         colaborador = Colaborador.objects.get(id=id)
-        colaboradores = Colaborador.objects.all()[:9]
+        colaboradores = Colaborador.objects.filter(contrato=colaborador.contrato_id)[:9]
 
         return render(request, 'TalentoHumano/Colaboradores/perfil.html', {'colaborador': colaborador,
                                                                            'colaboradores': colaboradores})
+
+
+class ColaboradoresContratroView(View):
+
+    def get(self, request, id):
+        colaborador = Colaborador.objects.get(id=id)
+        colaboradores = Colaborador.objects.filter(contrato=colaborador.contrato_id)
+        OPCION = 'por_contratos'
+
+        return render(request, 'TalentoHumano/Colaboradores/index.html', {'colaborador': colaborador,
+                                                                          'colaboradores': colaboradores,
+                                                                          'OPCION': OPCION})
 
 
 class ColaboradoresCrearView(View):
