@@ -71,7 +71,7 @@
                                                         <div class="col-6">
                                                             <div class="text-center py-3">
                                                                 <h5 class="mb-0 fw-700">
-                                                                    {{ colaborador.jefe_inmediato.nombre_completo }}
+                                                                     {{ colaborador.jefe_inmediato.nombre_completo }}
                                                                     <small class="text-muted mb-0">Jefe inmediato</small>
                                                                 </h5>
                                                             </div>
@@ -116,7 +116,7 @@
                                                         <div class="col-12">
                                                             <div class="p-3">
                                                                 <h2 class="mb-0 fs-xl">
-                                                                    <strong> Colaboradores </strong>
+                                                                    <strong> Colaboradores vinculados al contrato {{ colaborador.contrato }} </strong>
                                                                 </h2>
                                                             </div>
                                                         </div>
@@ -130,7 +130,7 @@
                                                         {% endfor %}
                                                         <div class="col-12">
                                                             <div class="p-3 text-center">
-                                                                <a href="{% url 'TalentoHumano:colaboradores-index' %}" class="btn-link font-weight-bold">Ver todos</a>
+                                                                <a href="{% url 'TalentoHumano:colaboradores-contrato' colaborador.id %}" class="btn-link font-weight-bold">Ver todos</a>
                                                             </div>
                                                         </div>
                                                     </div>
