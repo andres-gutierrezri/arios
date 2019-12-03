@@ -16,21 +16,19 @@ Including another URLconf
 
 from django.urls import path
 from Administracion.views import terceros, views, inicio_sesion
-from EVA.views import index_view
 
 app_name = 'Administracion'
 
 urlpatterns = [
-    path('index/', terceros.principal_view, name='index'),
-    path('terceros/', terceros.tercero_view, name='terceros'),
+    path('index/', terceros.PrincipalView.as_view(), name='index'),
+    path('terceros/', terceros.TerceroView.as_view(), name='terceros'),
     path('terceros/add', terceros.TerceroCrearView.as_view(), name='terceros-crear'),
     path('terceros/<int:id>/', terceros.TerceroEditarView.as_view(), name='terceros-editar'),
     path('terceros/<int:id>/delete', terceros.TerceroEliminarView.as_view(), name='terceros-eliminar'),
     path('departamentos/<int:id>/municipios/json', views.CargarMunicipiosSelectJsonView.as_view(),
-        name='municipios-json'),
+         name='municipios-json'),
     path('municipios/<int:id>/centros-poblados/json', views.CargarCentroPobladoSelectJsonView.as_view(),
-        name='centros-poblados-json'),
+         name='centros-poblados-json'),
     path('iniciar-sesion', inicio_sesion.IniciarSesionView.as_view(), name='iniciar-sesion'),
-
-
+    path('cerrar-sesion', inicio_sesion.CerrarSesion.as_view(), name='cerrar-sesion'),
 ]
