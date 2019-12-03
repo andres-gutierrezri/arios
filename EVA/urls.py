@@ -22,7 +22,7 @@ from EVA.views import index_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', index_view),
+    path('', index_view, name='eva-index'),
     path('administracion/', include('Administracion.urls', namespace='administracion')),
     path('proyectos/', include('Proyectos.urls', namespace='proyectos')),
     path('talento-humano/', include('TalentoHumano.urls', namespace='talento-humano')),
