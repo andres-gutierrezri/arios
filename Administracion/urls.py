@@ -15,7 +15,8 @@ Including another URLconf
 """
 
 from django.urls import path
-from Administracion.views import terceros, views
+from Administracion.views import terceros, views, inicio_sesion
+from EVA.views import index_view
 
 app_name = 'Administracion'
 
@@ -29,5 +30,7 @@ urlpatterns = [
         name='municipios-json'),
     path('municipios/<int:id>/centros-poblados/json', views.CargarCentroPobladoSelectJsonView.as_view(),
         name='centros-poblados-json'),
+    path('iniciar-sesion', inicio_sesion.IniciarSesionView.as_view(), name='iniciar-sesion'),
+
 
 ]
