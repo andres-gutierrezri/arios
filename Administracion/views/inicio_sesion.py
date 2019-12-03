@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect, render, reverse
 from django.views import View
+from django.contrib import messages
 
 
 class IniciarSesionView(View):
@@ -19,15 +20,15 @@ class IniciarSesionView(View):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-
+                messages.success(request, 'Ha iniciado sesión como {0}'.format(username))
                 return redirect(reverse('eva-index'))
             else:
-                error = 'Usuario y/o contraseña no validos'
-                return render(request, 'Administracion/inicio_sesion/iniciar-sesion.html', {'error': error})
+                messages.warning(request, 'El usuario y/o la contraseña no son válidos')
+                return render(request, 'Administracion/inicio_sesion/iniciar-sesion.html')
 
 
 class CerrarSesion(View):
     def get(self, request):
         logout(request)
-        request.session['empresa'] = ''
-        return redirect(reverse('inventario:iniciar-sesion'))
+        messages.success(request, 'Ha cerrado sesión con éxito')
+        return redirect(reverse('eva-index'))
