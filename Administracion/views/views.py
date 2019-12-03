@@ -7,9 +7,10 @@ from django.http import JsonResponse
 from django.views import View
 
 from Administracion.models import Municipio, CentroPoblado
+from EVA.views.index import AbstractEvaLoggedView
 
 
-class CargarMunicipiosSelectJsonView(View):
+class CargarMunicipiosSelectJsonView(AbstractEvaLoggedView):
     def get(self, request, id):
         try:
             municipios = Municipio.objects.filter(departamento_id=id).order_by('nombre')
@@ -19,7 +20,7 @@ class CargarMunicipiosSelectJsonView(View):
             return JsonResponse({"Error": "True"})
 
 
-class CargarCentroPobladoSelectJsonView(View):
+class CargarCentroPobladoSelectJsonView(AbstractEvaLoggedView):
     def get(self, request, id):
         try:
             centropoblados = CentroPoblado.objects.filter(municipio_id=id).order_by('nombre')
