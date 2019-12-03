@@ -6,13 +6,13 @@ from django.views import View
 class IniciarSesionView(View):
     def get(self, request):
         if request.user.is_authenticated:
-            return redirect(reverse('eva-indexindex'))
+            return redirect(reverse('eva-index'))
         else:
             return render(request, 'Administracion/inicio_sesion/iniciar-sesion.html')
 
     def post(self, request):
         if request.user.is_authenticated:
-            return redirect(reverse('index'))
+            return redirect(reverse('eva-index'))
         else:
             username = request.POST.get('username', '')
             password = request.POST.get('password', '')
