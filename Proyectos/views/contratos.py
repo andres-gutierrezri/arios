@@ -3,23 +3,23 @@ from datetime import datetime
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.shortcuts import render, redirect, reverse
-from django.views import View
 from django.contrib import messages
 from django.http import JsonResponse
 from django.db.models import F
 
+from EVA.views.index import AbstractEvaLoggedView
 from Proyectos.models.contratos import Contrato
 from Administracion.models import Tercero, Empresa, TipoContrato
 
 
-class ContratoView(View):
+class ContratoView(AbstractEvaLoggedView):
     def get(self, request):
         contratos = Contrato.objects.all()
         fecha = datetime.now()
         return render(request, 'Proyectos/Contrato/index.html', {'contratos': contratos, 'fecha': fecha})
 
 
-class ContratoCrearView(View):
+class ContratoCrearView(AbstractEvaLoggedView):
     OPCION = 'crear'
 
     def get(self, request):
@@ -48,7 +48,7 @@ class ContratoCrearView(View):
         return redirect(reverse('proyectos:contratos'))
 
 
-class ContratoEditarView(View):
+class ContratoEditarView(AbstractEvaLoggedView):
     OPCION = 'editar'
 
     def get(self, request, id):
@@ -89,7 +89,7 @@ class ContratoEditarView(View):
             return redirect(reverse('Proyectos:contratos'))
 
 
-class ContratoEliminarView(View):
+class ContratoEliminarView(AbstractEvaLoggedView):
     def post(self, request, id):
         try:
             contrato = Contrato.objects.get(id=id)
