@@ -18,11 +18,11 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from EVA.views import index_view
+from EVA.views.index import IndexView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', index_view, name='eva-index'),
+    path('', IndexView.as_view(), name='eva-index'),
     path('administracion/', include('Administracion.urls', namespace='administracion')),
     path('proyectos/', include('Proyectos.urls', namespace='proyectos')),
     path('talento-humano/', include('TalentoHumano.urls', namespace='talento-humano')),
