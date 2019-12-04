@@ -119,9 +119,10 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
 
         colaborador = Colaborador.from_dictionary(request.POST)
         colaborador.id = int(id)
-        if not colaborador.foto_perfil:
-            colaborador.foto_perfil = request.FILES.get('foto_perfil', None)
+        colaborador.foto_perfil = request.FILES.get('foto_perfil', None)
+        if colaborador.foto_perfil:
             update_fields.append('foto_perfil')
+            request.session['colaborador'] = Colaborador.objects.get(usuario=request.user).foto_perfil.url
 
         try:
             colaborador.full_clean(validate_unique=False)
@@ -179,6 +180,9 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
                 colaborador.usuario.save(update_fields=cambios_usuario)
 
             colaborador.save(update_fields=update_fields)
+            if colaborador.foto_perfil:
+                request.session['colaborador'] = Colaborador.objects.get(usuario=request.user).foto_perfil.url
+
             messages.success(request, 'Se ha actualizado el colaborador {0}'.format(colaborador.nombre_completo)
                              + ' con identificación {0}'.format(colaborador.identificacion))
 
