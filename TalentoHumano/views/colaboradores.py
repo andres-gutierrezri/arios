@@ -119,7 +119,7 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
 
         colaborador = Colaborador.from_dictionary(request.POST)
         colaborador.id = int(id)
-        if colaborador.foto_perfil:
+        if not colaborador.foto_perfil:
             colaborador.foto_perfil = request.FILES.get('foto_perfil', None)
             update_fields.append('foto_perfil')
 
