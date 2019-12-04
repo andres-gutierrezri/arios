@@ -67,6 +67,12 @@ class Colaborador(Persona, ModelDjangoExtensiones):
         verbose_name = 'Colaborador'
         verbose_name_plural = 'Colaboradores'
 
+    def to_json(self, campos=None, excluir=None):
+        campos = [{
+            'foto_perfil': self.foto_perfil.url
+        }]
+        return campos
+
     @staticmethod
     def from_dictionary(datos: dict) -> 'Colaborador':
         """
