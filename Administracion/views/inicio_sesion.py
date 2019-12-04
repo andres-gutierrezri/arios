@@ -3,6 +3,8 @@ from django.shortcuts import redirect, render, reverse
 from django.views import View
 from django.contrib import messages
 
+from TalentoHumano.models import Colaborador
+
 
 class IniciarSesionView(View):
     def get(self, request):
@@ -20,6 +22,7 @@ class IniciarSesionView(View):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
+                request.session['colaborador'] = Colaborador.objects.get(usuario=request.user).foto_perfil.url
                 messages.success(request, 'Ha iniciado sesión como {0}'.format(username))
                 return redirect(reverse('eva-index'))
             else:
