@@ -55,8 +55,10 @@
                             <h1 class="text-white fw-300 mb-3 d-sm-block d-md-none">
                                 Secure login
                             </h1>
-                            <div class="card p-4 rounded-plus bg-faded">
-                                <img src="{% static 'EVA/Plantilla/img/logo-arios-tr.png' %}" style="width: 80%">
+                            <div class="card p-4 rounded-plus bg-faded" style="justify-content: center">
+                                <div style="display: flex; justify-content: center;">
+                                    <img src="{% static 'EVA/Plantilla/img/logo-arios-tr.png' %}" style="width: 80%">
+                                </div>
                                 <br>
                                 <form action="{% url 'Administracion:iniciar-sesion' %}" id="iniciar-sesion-form" method="post" class="needs-validation" novalidate>
                                     {% csrf_token %}
