@@ -1,8 +1,5 @@
-import json
-
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from django.views import View
 from django.contrib import messages
 from django.shortcuts import render, redirect, reverse
 from django.db import IntegrityError
