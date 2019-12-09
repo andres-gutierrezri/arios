@@ -1,10 +1,14 @@
 from django.contrib.auth.models import User
+from django.contrib.auth.tokens import default_token_generator
 from django.core.exceptions import ValidationError
 from django.contrib import messages
+from django.core.mail import EmailMultiAlternatives
 from django.shortcuts import render, redirect, reverse
 from django.db import IntegrityError
 from django.http import JsonResponse
-
+from django.template.loader import get_template
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 
 from Administracion.models import Cargo, Proceso, TipoContrato, CentroPoblado, Rango, Municipio, Departamento, \
     TipoIdentificacion
@@ -95,6 +99,24 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
             colaborador.usuario_id = colaborador.usuario.id
             colaborador.save()
             messages.success(request, 'Se ha agregado el colaborador  {0}'.format(colaborador.nombre_completo))
+
+            dominio = request.get_host()
+            uidb64 = urlsafe_base64_encode(force_bytes(colaborador.usuario.pk))
+            token = default_token_generator.make_token(colaborador.usuario)
+
+            plaintext = get_template('TalentoHumano/correo/texto.txt')
+            htmly = get_template('TalentoHumano/correo/correo.html')
+
+            d = dict({'dominio': dominio, 'uidb64': uidb64, 'token': token, 'nombre': colaborador.usuario.first_name,
+                      'usuario': colaborador.usuario.username})
+
+            subject, from_email, to = 'Bienvenido a Arios Ingenieria SAS', 'noreply@arios-ing.com', \
+                                      colaborador.usuario.email
+            text_content = plaintext.render(d)
+            html_content = htmly.render(d)
+            msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+            msg.attach_alternative(html_content, "text/html")
+            msg.send()
             return redirect(reverse('TalentoHumano:colaboradores-index'))
 
 
