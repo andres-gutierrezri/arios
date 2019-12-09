@@ -11,8 +11,10 @@ def select_tag(lista, nombre, texto_seleccion, **kwargs):
     texto_label = kwargs.pop('texto_label', None)
     mensaje_validacion = kwargs.pop('mensaje_validacion', None)
     valor = kwargs.pop('value', None)
+    primer_valor = kwargs.pop('primer_valor', None)
     return {'lista': lista, 'nombre': nombre, 'texto_seleccion': texto_seleccion, 'texto_label': texto_label,
-            'propiedades': propiedades_to_str(kwargs), 'mensaje_validacion': mensaje_validacion, 'valor': valor}
+            'propiedades': propiedades_to_str(kwargs), 'mensaje_validacion': mensaje_validacion, 'valor': valor,
+            'primer_valor': primer_valor}
 
 
 @register.inclusion_tag('EVA/_general_tags/_input_general_tag.html')
