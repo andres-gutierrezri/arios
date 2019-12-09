@@ -27,7 +27,7 @@
                         <br>
                         <div class="col-md-10">
                             <small>
-                                <a class="far fa-3x far fa-home"  href="{% url 'TalentoHumano:colaboradores-index' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ir al índice de colaboradores"></a>
+                                <a class="far fa-3x far fa-home"  href="{% url 'TalentoHumano:colaboradores-index' 0 %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ir al índice de colaboradores"></a>
                             </small>
                         </div>
                     </div>
@@ -130,7 +130,7 @@
                                                         {% endfor %}
                                                         <div class="col-12">
                                                             <div class="p-3 text-center">
-                                                                <a href="{% url 'TalentoHumano:colaboradores-contrato' colaborador.id %}" class="btn-link font-weight-bold">Ver todos</a>
+                                                                <a href="{% url 'TalentoHumano:colaboradores-index' contrato.id %}" class="btn-link font-weight-bold">Ver todos</a>
                                                             </div>
                                                         </div>
                                                     </div>
