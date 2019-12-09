@@ -11,3 +11,13 @@ $(document).ready(function() {
     });
 
 });
+
+$(document).ready(function() {
+
+    let contratoSelect = $("#contrato_id_select_id");
+
+    contratoSelect.change(function () {
+        window.location = '/talento-humano/colaboradores-index/' + contratoSelect.val();
+    });
+
+});
