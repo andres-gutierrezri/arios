@@ -84,11 +84,11 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
             return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
                           datos_xa_render(self.OPCION, colaborador))
 
-        if User.objects.filter(email__iexact=colaborador.usuario.email).exists():
-
-            messages.warning(request, 'El correo electrónico ya está asociado a otro usuario')
-            return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
-                          datos_xa_render(self.OPCION, colaborador))
+        # if User.objects.filter(email__iexact=colaborador.usuario.email).exists():
+        #
+        #     messages.warning(request, 'El correo electrónico ya está asociado a otro usuario')
+        #     return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
+        #                   datos_xa_render(self.OPCION, colaborador))
 
         else:
             colaborador.usuario.set_password('Arios1234')
@@ -117,7 +117,7 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
             msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
             msg.attach_alternative(html_content, "text/html")
             msg.send()
-            return redirect(reverse('TalentoHumano:colaboradores-index'))
+            return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
 
 
 class ColaboradorEditarView(AbstractEvaLoggedView):
