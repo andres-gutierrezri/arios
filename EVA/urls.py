@@ -28,7 +28,7 @@ urlpatterns = [
     path('proyectos/', include('Proyectos.urls', namespace='proyectos')),
     path('talento-humano/', include('TalentoHumano.urls', namespace='talento-humano')),
 
-    path('correo/', include('django.contrib.auth.urls')),
+    path('accounts/', include('django.contrib.auth.urls')),
     path('password-reset', auth_views.PasswordResetView.as_view(
             template_name='TalentoHumano/correo/password_reset.html',
             html_email_template_name="accounts/password_reset_complete.html",
