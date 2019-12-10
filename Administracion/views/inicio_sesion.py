@@ -35,3 +35,9 @@ class CerrarSesion(View):
         logout(request)
         messages.success(request, 'Ha cerrado sesión con éxito')
         return redirect(reverse('eva-index'))
+
+
+class TerminarSesion(View):
+    def get(self, request):
+        logout(request)
+        return redirect(reverse('Administracion:iniciar-sesion'))
