@@ -180,7 +180,7 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
                 and not colaborador.foto_perfil:
             messages.success(request, 'No se hicieron cambios en el colaborador {0}'
                              .format(colaborador.nombre_completo))
-            return redirect(reverse('TalentoHumano:colaboradores-index'))
+            return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
 
         if colaborador.fecha_dotacion < colaborador.fecha_ingreso:
             messages.warning(request, 'La fecha de ingreso debe ser menor o igual a la fecha de entrega de dotación')
@@ -203,7 +203,7 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
             messages.success(request, 'Se ha actualizado el colaborador {0}'.format(colaborador.nombre_completo)
                              + ' con identificación {0}'.format(colaborador.identificacion))
 
-            return redirect(reverse('TalentoHumano:colaboradores-index'))
+            return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
 
 
 class ColaboradorEliminarView(AbstractEvaLoggedView):
