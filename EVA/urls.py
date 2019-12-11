@@ -28,10 +28,10 @@ urlpatterns = [
     path('proyectos/', include('Proyectos.urls', namespace='proyectos')),
     path('talento-humano/', include('TalentoHumano.urls', namespace='talento-humano')),
     path('password-reset-complete/',
-         auth_views.PasswordResetCompleteView.as_view(template_name='TalentoHumano/correo/password_reset_complete.html')
+         auth_views.PasswordResetCompleteView.as_view(template_name='Administracion/correo/password_reset_complete.html')
          , name="password_reset_complete"),
     path('password-reset-confirm/<uidb64>/<token>/',
-         auth_views.PasswordResetConfirmView.as_view(template_name='TalentoHumano/correo/password_reset_confirm.html'),
+         auth_views.PasswordResetConfirmView.as_view(template_name='Administracion/correo/password_reset_confirm.html'),
          name="password_reset_confirm"),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

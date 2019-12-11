@@ -85,7 +85,6 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
                           datos_xa_render(self.OPCION, colaborador))
 
         if User.objects.filter(email__iexact=colaborador.usuario.email).exists():
-
             messages.warning(request, 'El correo electrónico ya está asociado a otro usuario')
             return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
                           datos_xa_render(self.OPCION, colaborador))
@@ -103,8 +102,8 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
             uidb64 = urlsafe_base64_encode(force_bytes(colaborador.usuario.pk))
             token = default_token_generator.make_token(colaborador.usuario)
 
-            plaintext = get_template('TalentoHumano/correo/texto.txt')
-            htmly = get_template('TalentoHumano/correo/correo.html')
+            plaintext = get_template('Administracion/correo/texto.txt')
+            htmly = get_template('Administracion/correo/correo.html')
 
             d = dict({'dominio': dominio, 'uidb64': uidb64, 'token': token, 'nombre': colaborador.usuario.first_name,
                       'usuario': colaborador.usuario.username})

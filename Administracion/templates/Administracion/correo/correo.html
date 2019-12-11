@@ -1,9 +1,11 @@
-<html lang="en">
+<!DOCTYPE html>
 {% load static %}
+
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <title>
-        Acceso a Arios Ingeniería S.A.S
+        Restablecer contraseña
     </title>
     <meta name="description" content="Login">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -14,40 +16,38 @@
     <meta name="msapplication-tap-highlight" content="no">
     <!-- base css -->
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/vendors.bundle.css' %}">
-    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/app.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static  'EVA/Plantilla/css/app.bundle.css' %}">
     <!-- Place favicon.ico in the root directory -->
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'EVA/Plantilla/img/favicon/apple-touch-icon.png'%}">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'EVA/Plantilla/img/favicon/favicon-32x32.png'%}">
     <link rel="mask-icon" href="{% static 'EVA/Plantilla/img/favicon/safari-pinned-tab.svg'%}" color="#5bbad5">
     <!-- Optional: page related CSS-->
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-brands.css'%}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/custom/generales.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/toastr/toastr.css' %}">
 </head>
 <body>
-<div class="page-wrapper" style="background: {% static 'EVA/Plantilla/img/svg/pattern-1.svg'%}; ">
-    <table width="80%" bgcolor="#f1f6f8" border="0" cellpadding="0" cellspacing="0" style="background-color: #584475;" >
-        <tr>
-            <td>
-                <table bgcolor="#f1f6f8" class="content" align="center" cellpadding="0" cellspacing="0" border="0" style="background: url('https://www.gotbootstrap.com/themes/smartadmin/4.0.1/img/svg/pattern-1.svg'); background-position-y: -300px;    background-size: cover; background-color: #584475;">
-                <tr>
-                        <td class="header">
-                            <table width="70" align="left" border="0" cellpadding="0" cellspacing="0">
-                                <tr>
-                                    <td height="0" style="padding: 0 0px 0px 0;">
-                                        <img src="https://www.arios-ing.com/images/Logos_Arios/LOGO_HEAD.jpg" alt="My image" width="350" height="120" style="padding-top: 10%">
-                                        <br>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="innerpadding borderbottom">
-                            <table width="80%" border="0" cellspacing="0" cellpadding="0">
-                                <tr>
-                                    <td class="h2" align='left'>
-                                    </td>
-                                <tr>
-                                </tr>
+<div class="messages">
+    {% if messages %}
+        {% for message in messages %}
+            <input class="alert.{{ message.tags }}" style="display: none" id="mensaje" value="{{ message }}">
+        {% endfor %}
+    {% endif %}
+</div>
+<div class="page-wrapper">
+    <div class="page-inner bg-brand-gradient">
+        <div class="page-content-wrapper bg-transparent m-0">
+
+            <div class="flex-1" style="background: url('{% static 'EVA/Plantilla/img/svg/pattern-1.svg'%}') no-repeat center bottom fixed; background-size: cover ">
+                <div class="container py-4 py-lg-5 my-lg-5 px-4 px-sm-0">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-3 col-lg-3 col-xl-4"></div>
+                        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4">
+                            <div class="card p-4 rounded-plus bg-faded" style="justify-content: center">
+                                <div style="display: flex; justify-content: center;">
+                                    <img src="https://www.arios-ing.com/images/Logos_Arios/LOGO_HEAD.jpg" style="width: 30%">
+                                </div>
+                                <br>
                                 <p>Hola {{ nombre }}, te estamos enviando este correo para que asignes una nueva contraseña a tu cuenta en Arios Ingeniería SAS.</p>
 
 
@@ -59,21 +59,13 @@
 
                                 <p>Si al hacer clic no funciona simplemente copia y pega la URL en tu navegador favorito.</p>
 
-                                <tr>
-                                    <td class="bodycopy">
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
-
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <!-- base vendor bundle:
      DOC: if you remove pace.js from core please note on Internet Explorer some CSS animations may execute before a page is fully loaded, resulting 'jump' animations
@@ -88,8 +80,11 @@
                 + waves.js (extension)
                 + smartpanels.js (extension)
                 + src/../jquery-snippets.js (core) -->
-<script src="{% static 'EVA/Plantilla/js/vendors.bundle.js'%}"></script>
+<script src="{% static 'EVA/Plantilla/js/vendors.bundle.js' %}"></script>
 <script src="{% static 'EVA/Plantilla/js/app.bundle.js'%}"></script>
+<script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
+<script src="{% static 'EVA/Plantilla/js/notifications/toastr/toastr.js' %}"></script>
+<script src="{% static 'EVA/Plantilla/js/custom/notificacion_toast.js' %}"></script>
 <script>
     $("#js-login-btn").click(function(event)
     {
@@ -110,3 +105,4 @@
 </script>
 </body>
 </html>
+
