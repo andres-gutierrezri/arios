@@ -61,8 +61,8 @@ class OlvidoContrasenaView(View):
             return redirect(reverse('eva-index'))
         else:
             email = request.POST.get('email', '')
-            usuario = User.objects.get(email=email)
-            if usuario is not None:
+            usuario = User.objects.filter(email=email).first()
+            if usuario:
                 dominio = request.get_host()
                 uidb64 = urlsafe_base64_encode(force_bytes(usuario.pk))
                 token = default_token_generator.make_token(usuario)
@@ -85,5 +85,5 @@ class OlvidoContrasenaView(View):
                                  ' con indicaciones para asignar una nueva contraseña')
                 return redirect(reverse('Administracion:iniciar-sesion'))
             else:
-                messages.warning(request, 'El correo no es válido')
+                messages.warning(request, 'El correo electrónico no es válido')
                 return render(request, 'Administracion/correo/olvido_contrasena.html')
