@@ -15,7 +15,7 @@ Including another URLconf
 """
 
 from django.urls import path
-from Administracion.views import terceros, views, inicio_sesion
+from Administracion.views import terceros, views, inicio_sesion, empresas
 
 app_name = 'Administracion'
 
@@ -33,4 +33,8 @@ urlpatterns = [
     path('cerrar-sesion', inicio_sesion.CerrarSesion.as_view(), name='cerrar-sesion'),
     path('terminar-sesion', inicio_sesion.TerminarSesion.as_view(), name='terminar-sesion'),
     path('olvido-contrasena', inicio_sesion.OlvidoContrasenaView.as_view(), name='olvido-contrasena'),
+    path('empresas/', empresas.EmpresaView.as_view(), name='empresas'),
+    path('empresas/add', empresas.EmpresaCrearView.as_view(), name='empresas-crear'),
+    path('empresas/<int:id>/', empresas.EmpresaEditarView.as_view(), name='empresas-editar'),
+    path('empresas/<int:id>/delete', empresas.EmpresaEliminarView.as_view(), name='empresas-eliminar'),
 ]
