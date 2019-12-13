@@ -27,6 +27,7 @@ class EmpresaCrearView(AbstractEvaLoggedView):
 
     def post(self, request):
         empresa = Empresa.from_dictionary(request.POST)
+        empresa.estado = True
         empresa.logo = request.FILES.get('logo', None)
         if not empresa.logo:
             empresa.logo = 'logos-empresas/empresa-default.jpg'
@@ -54,8 +55,7 @@ class EmpresaEditarView(AbstractEvaLoggedView):
     def get(self, request, id):
         empresa = Empresa.objects.get(id=id)
 
-        return render(request, 'Administracion/Empresas/crear-editar.html',
-                      datos_xa_render(self.OPCION, empresa))
+        return render(request, 'Administracion/Empresas/crear-editar.html', datos_xa_render(self.OPCION, empresa))
 
     def post(self, request, id):
         update_fields = ['nombre', 'nit', 'estado']
@@ -77,7 +77,7 @@ class EmpresaEditarView(AbstractEvaLoggedView):
             return render(request, 'Administracion/Empresas/crear-editar.html', datos_xa_render(self.OPCION, empresa))
 
         empresa_db = Empresa.objects.get(id=id)
-        if empresa_db.comparar(empresa, excluir=['logo']) and not empresa.logo:
+        if empresa_db.comparar(empresa, excluir=['logo', 'empresa_ppal', 'subempresa']) and not empresa.logo:
             messages.success(request, 'No se hicieron cambios en la empresa {0}'.format(empresa.nombre))
             return redirect(reverse('Administracion:empresas'))
 
