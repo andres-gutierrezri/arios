@@ -40,7 +40,7 @@ class Empresa(models.Model, ModelDjangoExtensiones):
         empresa.nombre = datos.get('nombre', '')
         empresa.nit = datos.get('nit', '')
         empresa.logo = datos.get('logo', '')
-        empresa.estado = datos.get('estado', 'True') == 'True'
+        empresa.estado = datos.get('estado', '') == 'True'
         empresa.subempresa = datos.get('subempresa', 'True') == 'True'
         empresa.empresa_ppal_id = datos.get('empresa_ppal_id', '')
 
