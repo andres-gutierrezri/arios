@@ -6,9 +6,8 @@ let controls = {
 };
 
 let runDatePicker = function () {
-
 	// minimum setup
-	$('#fecha_ingreso_id').datepicker({
+	$('.fecha-control ').datepicker({
 		todayHighlight: true,
 		orientation: "bottom left",
 		templates: controls,
@@ -16,35 +15,7 @@ let runDatePicker = function () {
 		autoclose: true
 	});
 
-	$('#fecha_examen_id').datepicker({
-		todayHighlight: true,
-		orientation: "bottom left",
-		templates: controls,
-		format: 'yyyy-mm-dd',
-		autoclose: true
-	});
 
-	$('#fecha_dotacion_id').datepicker({
-		todayHighlight: true,
-		orientation: "bottom left",
-		templates: controls,
-		format: 'yyyy-mm-dd',
-		autoclose: true
-	});
-	$('#fecha_nacimiento_id').datepicker({
-		todayHighlight: true,
-		orientation: "bottom left",
-		templates: controls,
-		format: 'yyyy-mm-dd',
-		autoclose: true
-	});
-	$('#fecha_expedicion_id').datepicker({
-		todayHighlight: true,
-		orientation: "bottom left",
-		templates: controls,
-		format: 'yyyy-mm-dd',
-		autoclose: true
-	});
 };
 
 $(document).ready(function () {
