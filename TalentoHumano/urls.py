@@ -21,18 +21,20 @@ app_name = 'TalentoHumano'
 
 urlpatterns = [
     path('index/', talento_humano.Index.as_view(), name='index'),
-    path('entidades-index/<int:id_entidad>/', entidades_cafe.EntidadCAFEIndexView.as_view(), name='entidades-index'),
-    path('entidades/add', entidades_cafe.EntidadCAFECrearView.as_view(), name='entidades-crear'),
-    path('entidades/<int:id>/', entidades_cafe.EntidadCAFEEditarView.as_view(), name='entidades-editar'),
-    path('entidades/<int:id>/delete', entidades_cafe.EntidadCAFEEliminarView.as_view(), name='entidades-eliminar'),
-    path('colaboradores-index/', colaboradores.ColaboradoresIndexView.as_view(), name='colaboradores-index'),
+    path('entidades-cafe/<int:id_entidad>/', entidades_cafe.EntidadCAFEIndexView.as_view(),
+         name='entidades-cafe-index'),
+    path('entidades-cafe/add', entidades_cafe.EntidadCAFECrearView.as_view(), name='entidades-cafe-crear'),
+    path('entidades-cafe/<int:id>/', entidades_cafe.EntidadCAFEEditarView.as_view(), name='entidades-cafe-editar'),
+    path('entidades-cafe/<int:id>/delete', entidades_cafe.EntidadCAFEEliminarView.as_view(),
+         name='entidades-cafe-eliminar'),
+    path('colaboradores/', colaboradores.ColaboradoresIndexView.as_view(), name='colaboradores-index'),
     path('colaboradores/add', colaboradores.ColaboradoresCrearView.as_view(), name='colaboradores-crear'),
     path('colaboradores/<int:id>/', colaboradores.ColaboradorEditarView.as_view(), name='colaboradores-editar'),
     path('colaboradores/<int:id>/delete', colaboradores.ColaboradorEliminarView.as_view(),
          name='colaboradores-eliminar'),
-    path('colaboradores-perfil/<int:id>/', colaboradores.ColaboradoresPerfilView.as_view(),
+    path('colaboradores/<int:id>/perfil', colaboradores.ColaboradoresPerfilView.as_view(),
          name='colaboradores-perfil'),
-    path('colaboradores-contrato/<int:id>/', colaboradores.ColaboradoresContratroView.as_view(),
+    path('colaboradores/contratos/<int:id>/', colaboradores.ColaboradoresContratroView.as_view(),
          name='colaboradores-contrato'),
 
 ]

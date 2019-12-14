@@ -27,7 +27,7 @@
                                 <br>
                             <div class="col-md-10">
                                 <small>
-                                     <a class="far fa-3x far fa-plus-circle"  href="{% url 'TalentoHumano:entidades-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar Entidad CAFE"></a>
+                                     <a class="far fa-3x far fa-plus-circle" href="{% url 'TalentoHumano:entidades-cafe-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar Entidad CAFE"></a>
                                 </small>
                                 </div>
                                 <div class="col-md-2" style="float: right" >
@@ -65,7 +65,7 @@
                                                                 <td>{{ entidad_cafe.correo}}</td>
                                                                 <td><a href="http://{{ entidad_cafe.direccion_web }}" target="_blank">{{ entidad_cafe.direccion_web }}</a></td>
                                                               <td>
-                                                                    <a class="far fa-2x fa-edit"   href="{% url 'TalentoHumano:entidades-editar' entidad_cafe.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                                    <a class="far fa-2x fa-edit" href="{% url 'TalentoHumano:entidades-cafe-editar' entidad_cafe.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
                                                                     <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ entidad_cafe.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminarEntidad({{ entidad_cafe.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
                                                               </td>
                                                             </tr>
@@ -84,7 +84,7 @@
     </div>
 
 
-    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='talento-humano/entidades' %}
+    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='talento-humano/entidades-cafe' %}
 {% endblock %}
 {% block scripts %}
     <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
