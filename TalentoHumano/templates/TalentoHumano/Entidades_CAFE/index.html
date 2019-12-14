@@ -1,11 +1,13 @@
-{% extends 'Proyectos/_common/base_proyectos.html' %}
+{% extends 'TalentoHumano/_common/base_talento_humano.html' %}
 {% load static %}
-<title>{% block titulo %}Contrato{% endblock %}</title>
+{% load eva_tags %}
+<title>{% block titulo %}Entidades CAFE{% endblock %}</title>
 {% block styles %}
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/datagrid/datatables/datatables.bundle.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/sweetalert2/sweetalert2.bundle.css'%}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/theme-demo.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
 {% endblock styles %}
 
 {% block main %}
@@ -13,7 +15,7 @@
     <div class="panel-container show">
             <div class="header">
                  <h1 class="header-title">
-                    <i class='far fa-file-alt'></i> Contratos <span class='fw-300'></span>
+                    <i class='far fa-hand-receiving'></i> Entidades CAFE <span class='fw-300'></span>
                      <br>
                      <br>
                  </h1>
@@ -22,55 +24,49 @@
                 <div class="col-xl-12">
                     <div id="panel-1" class="panel">
                         <div class="panel-hdr">
-                            <small>
-                                 <a class="far fa-3x far fa-plus-circle"  href="{% url 'Proyectos:contratos-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar contrato"></a>
-                            </small>
+                                <br>
+                            <div class="col-md-10">
+                                <small>
+                                     <a class="far fa-3x far fa-plus-circle"  href="{% url 'TalentoHumano:entidades-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar Entidad CAFE"></a>
+                                </small>
+                                </div>
+                                <div class="col-md-2" style="float: right" >
+                                    {% select_tag tipos_entidades 'tipo_entidad_id' '' value=id_entidad  %}
+                                </div>
                         </div>
                         <div class="panel-container show">
                             <div class="panel-content">
                                     <div class="panel-group">
                                         <div class="panel-body">
+                                            <div class="form-group">
+                                                <div class="form-row">
+                                                 </div>
+                                             </div>
                                             <div class="table-responsive">
                                                 <table class="table table-bordered w-100" id="dataTable">
                                                     <thead>
                                                         <tr>
-                                                            <th>Cliente</th>
-                                                            <th>Número de contrato</th>
-                                                            <th>Año</th>
-                                                            <th>Nombre del supervisor</th>
-                                                            <th>Teléfono del supervisor</th>
-                                                            <th>Correo del supervisor</th>
-                                                            <th>Nombre del residente</th>
-                                                            <th>Fecha de inicio</th>
-                                                            <th>Fecha de terminación</th>
-                                                            <th>Valor</th>
-                                                            <th>Periodicidad de informes</th>
-                                                            <th>Tiempo</th>
-                                                            <th>Tipo de contrato</th>
-                                                            <th>Empresa</th>
+                                                            <th>Nombre entidad</th>
+                                                            <th>Dirección</th>
+                                                            <th>Nombre del contacto</th>
+                                                            <th>Teléfono del contacto</th>
+                                                            <th>Correo electrónico</th>
+                                                            <th>Dirección web</th>
                                                             <th>Acción</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        {% for contrato in contratos %}
+                                                        {% for entidad_cafe in entidades_cafe %}
                                                             <tr>
-                                                                <td>{{ contrato.cliente}}</td>
-                                                                <td>{{ contrato.numero_contrato }}</td>
-                                                                <td>{{ contrato.anho}}</td>
-                                                                <td>{{ contrato.supervisor_nombre }}</td>
-                                                                <td>{{ contrato.supervisor_telefono }}</td>
-                                                                <td>{{ contrato.supervisor_correo }}</td>
-                                                                <td>{{ contrato.residente }}</td>
-                                                                <td>{{ contrato.fecha_inicio|date:'Y-m-d' }}</td>
-                                                                <td>{{ contrato.fecha_terminacion|date:'Y-m-d' }}</td>
-                                                                <td>{{ contrato.valor }}</td>
-                                                                <td>{{ contrato.periodicidad_informes }}</td>
-                                                                <td>{{ contrato.tiempo }}</td>
-                                                                <td>{{ contrato.tipo_contrato }}</td>
-                                                                <td>{{ contrato.empresa }}</td>
+                                                                <td>{{ entidad_cafe.nombre}}</td>
+                                                                <td>{{ entidad_cafe.direccion }}</td>
+                                                                <td>{{ entidad_cafe.nombre_contacto}}</td>
+                                                                <td>{{ entidad_cafe.telefono_contacto }}</td>
+                                                                <td>{{ entidad_cafe.correo}}</td>
+                                                                <td><a href="http://{{ entidad_cafe.direccion_web }}" target="_blank">{{ entidad_cafe.direccion_web }}</a></td>
                                                               <td>
-                                                                    <a class="far fa-2x fa-edit"   href="{% url 'Proyectos:contratos-editar' contrato.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
-                                                                    <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ contrato.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminarContrato({{ contrato.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+                                                                    <a class="far fa-2x fa-edit"   href="{% url 'TalentoHumano:entidades-editar' entidad_cafe.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                                    <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ entidad_cafe.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminarEntidad({{ entidad_cafe.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
                                                               </td>
                                                             </tr>
                                                         {% endfor %}
@@ -88,13 +84,15 @@
     </div>
 
 
-    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='proyectos/contratos' %}
+    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='talento-humano/entidades' %}
 {% endblock %}
 {% block scripts %}
     <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
-    <script src="{% static 'Proyectos/js/Contratos/confirmarEliminarContrato.js' %}"></script>
+    <script src="{% static 'TalentoHumano/js/confirmarEliminarEntidad.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
+    <script src="{% static 'TalentoHumano/js/filtro_entidad.js' %}"></script>
         <!-- datatbles buttons bundle contains:
     + "jszip.js",
     + "pdfmake.js",
@@ -105,7 +103,7 @@
         <script>
             $(document).ready(function()
             {
-                 let columnasExportar = [0, 1,3, 4, 6, 9, 12, 13];
+                 let columnasExportar = [0, 1,2,3,4,5];
 
                 // initialize datatable
                 $('#dataTable').dataTable(
@@ -161,7 +159,7 @@
                             text: 'Excel',
                             className: 'btn-outline-success btn-sm mr-1',
                             exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+                            columns: columnasExportar,
 
                           },
                         },
@@ -180,7 +178,7 @@
                             text: 'Copiar',
                             className: 'btn-outline-primary btn-sm mr-1',
                             exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+                            columns: columnasExportar,
                           },
                         },
                         {
@@ -188,7 +186,7 @@
                             text: 'Imprimir',
                             className: 'btn-outline-primary btn-sm',
                             exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+                            columns: columnasExportar,
                           },
                         }
                     ],
@@ -201,7 +199,7 @@
 
                             },
                         },
-                        info: 'Mostrando contratos del _START_ al _END_ de un total de  _TOTAL_ contratos',
+                        info: 'Mostrando entidades del _START_ al _END_ de un total de  _TOTAL_ entidades',
 
                      }
                 });
@@ -209,5 +207,11 @@
 
             });
         </script>
+
+        <script>
+		$(document).ready(function () {
+		    $('.select2').select2();
+		});
+	</script>
 
     {% endblock %}
