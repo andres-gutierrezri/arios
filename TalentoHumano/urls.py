@@ -32,9 +32,9 @@ urlpatterns = [
     path('colaboradores/<int:id>/', colaboradores.ColaboradorEditarView.as_view(), name='colaboradores-editar'),
     path('colaboradores/<int:id>/delete', colaboradores.ColaboradorEliminarView.as_view(),
          name='colaboradores-eliminar'),
-    path('colaboradores/perfil/<int:id>/', colaboradores.ColaboradoresPerfilView.as_view(),
+    path('colaboradores/<int:id>/perfil', colaboradores.ColaboradoresPerfilView.as_view(),
          name='colaboradores-perfil'),
-    path('colaboradores/contrato/<int:id>/', colaboradores.ColaboradoresContratroView.as_view(),
+    path('colaboradores/contratos/<int:id>/', colaboradores.ColaboradoresContratroView.as_view(),
          name='colaboradores-contrato'),
 
 ]
