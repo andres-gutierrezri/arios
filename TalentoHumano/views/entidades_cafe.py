@@ -7,10 +7,11 @@ from django.views import View
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 
+from EVA.views.index import AbstractEvaLoggedView
 from TalentoHumano.models import EntidadesCAFE, TipoEntidadesCAFE
 
 
-class EntidadCAFEIndexView(View):
+class EntidadCAFEIndexView(AbstractEvaLoggedView):
 
     def get(self, request, id_entidad):
         id_entidad = int(id_entidad)
@@ -26,7 +27,7 @@ class EntidadCAFEIndexView(View):
                                                                            'id_entidad': id_entidad})
 
 
-class EntidadCAFECrearView(View):
+class EntidadCAFECrearView(AbstractEvaLoggedView):
     OPCION = 'crear'
 
     def get(self, request):
@@ -53,7 +54,7 @@ class EntidadCAFECrearView(View):
         return redirect(reverse('TalentoHumano:entidades-cafe-index', args=[0]))
 
 
-class EntidadCAFEEditarView(View):
+class EntidadCAFEEditarView(AbstractEvaLoggedView):
     OPCION = 'editar'
 
     def get(self, request, id):
@@ -96,7 +97,7 @@ class EntidadCAFEEditarView(View):
             return redirect(reverse('TalentoHumano:entidades-cafe-index', args=[0]))
 
 
-class EntidadCAFEEliminarView(View):
+class EntidadCAFEEliminarView(AbstractEvaLoggedView):
     def post(self, request, id):
         try:
             entidad_cafe = EntidadesCAFE.objects.get(id=id)

@@ -5,25 +5,27 @@ from django.db.models import F
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from django.views import View
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 
 from Administracion.models import Tercero, TipoIdentificacion, TipoTercero, CentroPoblado, Empresa, Departamento, \
     Municipio
+from EVA.views.index import AbstractEvaLoggedView
 
 
-def tercero_view(request):
-    terceros = Tercero.objects.all()
-    fecha = datetime.now()
-    return render(request, 'Administracion/Tercero/index.html', {'terceros': terceros, 'fecha': fecha})
+class TerceroView(AbstractEvaLoggedView):
+    def get(self, request):
+        terceros = Tercero.objects.all()
+        fecha = datetime.now()
+        return render(request, 'Administracion/Tercero/index.html', {'terceros': terceros, 'fecha': fecha})
 
 
-def principal_view(request):
-    return render(request, 'Administracion/index.html')
+class PrincipalView(AbstractEvaLoggedView):
+    def get(self, request):
+        return render(request, 'Administracion/index.html')
 
 
-class TerceroCrearView(View):
+class TerceroCrearView(AbstractEvaLoggedView):
     OPCION = 'crear'
 
     def get(self, request):
@@ -50,7 +52,7 @@ class TerceroCrearView(View):
         return redirect(reverse('Administracion:terceros'))
 
 
-class TerceroEditarView(View):
+class TerceroEditarView(AbstractEvaLoggedView):
     OPCION = 'editar'
 
     def get(self, request, id):
@@ -89,7 +91,7 @@ class TerceroEditarView(View):
             return redirect(reverse('Administracion:terceros'))
 
 
-class TerceroEliminarView(View):
+class TerceroEliminarView(AbstractEvaLoggedView):
     def post(self, request, id):
         try:
             tercero = Tercero.objects.get(id=id)

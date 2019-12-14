@@ -20,7 +20,7 @@ from TalentoHumano.views import talento_humano, entidades_cafe, colaboradores
 app_name = 'TalentoHumano'
 
 urlpatterns = [
-    path('index/', talento_humano.index, name='index'),
+    path('index/', talento_humano.Index.as_view(), name='index'),
     path('entidades-cafe/<int:id_entidad>/', entidades_cafe.EntidadCAFEIndexView.as_view(),
          name='entidades-cafe-index'),
     path('entidades-cafe/add', entidades_cafe.EntidadCAFECrearView.as_view(), name='entidades-cafe-crear'),

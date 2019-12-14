@@ -9,6 +9,7 @@ from django.http import JsonResponse
 
 from Administracion.models import Cargo, Proceso, TipoContrato, CentroPoblado, Rango, Municipio, Departamento, \
     TipoIdentificacion
+from EVA.views.index import AbstractEvaLoggedView
 from Proyectos.models import Contrato
 from TalentoHumano.models import Colaborador, EntidadesCAFE
 
@@ -16,14 +17,14 @@ from TalentoHumano.models import Colaborador, EntidadesCAFE
 # Create your views here.
 
 
-class ColaboradoresIndexView(View):
+class ColaboradoresIndexView(AbstractEvaLoggedView):
 
     def get(self, request):
         colaboradores = Colaborador.objects.all().order_by('usuario__first_name', 'usuario__last_name')
         return render(request, 'TalentoHumano/Colaboradores/index.html', {'colaboradores': colaboradores})
 
 
-class ColaboradoresPerfilView(View):
+class ColaboradoresPerfilView(AbstractEvaLoggedView):
 
     def get(self, request, id):
         colaborador = Colaborador.objects.get(id=id)
@@ -33,7 +34,7 @@ class ColaboradoresPerfilView(View):
                                                                            'colaboradores': colaboradores})
 
 
-class ColaboradoresContratroView(View):
+class ColaboradoresContratroView(AbstractEvaLoggedView):
 
     def get(self, request, id):
         colaborador = Colaborador.objects.get(id=id)
@@ -45,7 +46,7 @@ class ColaboradoresContratroView(View):
                                                                           'OPCION': OPCION})
 
 
-class ColaboradoresCrearView(View):
+class ColaboradoresCrearView(AbstractEvaLoggedView):
     OPCION = 'crear'
 
     def get(self, request):
@@ -89,6 +90,7 @@ class ColaboradoresCrearView(View):
                           datos_xa_render(self.OPCION, colaborador))
 
         else:
+            colaborador.usuario.set_password('Arios1234')
             colaborador.genero = colaborador.genero[0:1]
             colaborador.usuario.save()
             # Se realiza esto ya que el campo usuario_id del modelo no es asignado automáticamente despues de guardar el
@@ -99,7 +101,7 @@ class ColaboradoresCrearView(View):
             return redirect(reverse('TalentoHumano:colaboradores-index'))
 
 
-class ColaboradorEditarView(View):
+class ColaboradorEditarView(AbstractEvaLoggedView):
     OPCION = 'editar'
 
     def get(self, request, id):
@@ -117,9 +119,10 @@ class ColaboradorEditarView(View):
 
         colaborador = Colaborador.from_dictionary(request.POST)
         colaborador.id = int(id)
+        colaborador.foto_perfil = request.FILES.get('foto_perfil', None)
         if colaborador.foto_perfil:
-            colaborador.foto_perfil = request.FILES.get('foto_perfil', None)
             update_fields.append('foto_perfil')
+            request.session['colaborador'] = Colaborador.objects.get(usuario=request.user).foto_perfil.url
 
         try:
             colaborador.full_clean(validate_unique=False)
@@ -177,13 +180,16 @@ class ColaboradorEditarView(View):
                 colaborador.usuario.save(update_fields=cambios_usuario)
 
             colaborador.save(update_fields=update_fields)
+            if colaborador.foto_perfil:
+                request.session['colaborador'] = Colaborador.objects.get(usuario=request.user).foto_perfil.url
+
             messages.success(request, 'Se ha actualizado el colaborador {0}'.format(colaborador.nombre_completo)
                              + ' con identificación {0}'.format(colaborador.identificacion))
 
             return redirect(reverse('TalentoHumano:colaboradores-index'))
 
 
-class ColaboradorEliminarView(View):
+class ColaboradorEliminarView(AbstractEvaLoggedView):
     def post(self, request, id):
         try:
             colaborador = Colaborador.objects.get(id=id)
