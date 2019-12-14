@@ -73,7 +73,7 @@
                             <img src="{{ request.session.colaborador }}" class="rounded-circle profile-image" alt="Nombre  Usuario">
                         </span>
                         <div class="info-card-text">
-                            <div id="identificacion_us" class="fs-lg text-truncate text-truncate-lg">{{ request.user.first_name.split | first }}{{ ' ' }}{{ request.user.last_name.split | first }}</div>
+                            <div id="identificacion_us" class="fs-lg text-truncate text-truncate-lg"><a style="color: white" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ver perfil" href="{% url 'TalentoHumano:colaboradores-perfil' request.session.colaborador_id %}"> {{ request.user.first_name.split | first }}{{ ' ' }}{{ request.user.last_name.split | first }}</a></div>
                             <span class="text-truncate text-truncate-md opacity-80">{{ request.user.username }}</span>
                         </div>
                     </div>
