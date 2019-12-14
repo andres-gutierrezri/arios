@@ -1,7 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-
-# # Create your models here.
 from django.db.models import QuerySet
 
 from EVA.General.modelmanagers import ManagerGeneral
@@ -24,7 +22,23 @@ class Empresa(models.Model):
         verbose_name_plural = 'Empresas'
 
 
+class Cargo(models.Model):
+    objects = ManagerGeneral()
+    nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
+    estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
+    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, verbose_name='Empresa',
+                                null=True, blank=False)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name = 'Cargo'
+        verbose_name_plural = 'Cargos'
+
+
 class Proceso(models.Model):
+    objects = ManagerGeneral()
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     objeto = models.CharField(max_length=100, verbose_name='Objeto', null=False, blank=False)
     empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa', null=True, blank=False)
@@ -35,6 +49,22 @@ class Proceso(models.Model):
     class Meta:
         verbose_name = 'Proceso'
         verbose_name_plural = 'Procesos'
+
+
+class Rango(models.Model):
+    objects = ManagerGeneral()
+    nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
+    estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
+    descripcion = models.TextField(max_length=300, verbose_name='Descripción', null=False, blank=False)
+    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, verbose_name='Empresa',
+                                null=True, blank=False)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name = 'Rango'
+        verbose_name_plural = 'Rangos'
 
 
 class TipoIdentificacion(models.Model):
@@ -76,31 +106,46 @@ class TipoContrato(models.Model):
 
 
 class Persona(models.Model):
+
     identificacion = models.CharField(max_length=20, verbose_name='Identificación', null=False, blank=False,
                                       unique=True)
     fecha_expedicion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Expedición', null=False,
                                             blank=False)
     fecha_nacimiento = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Nacimiento', null=True,
                                             blank=False)
-    telefono = models.TextField(max_length=15, verbose_name='Teléfono', null=False, blank=False)
+    telefono = models.CharField(max_length=20, verbose_name='Teléfono', null=False, blank=False)
     fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False,
                                           blank=False)
     fecha_modificacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Modificación', null=False,
                                               blank=False)
-    genero = models.TextField(max_length=1, verbose_name='Género', null=False, blank=False)
+    genero = models.CharField(max_length=1, verbose_name='Género', null=False, blank=False)
     tipo_identificacion = models.ForeignKey(TipoIdentificacion, on_delete=models.DO_NOTHING,
                                             verbose_name='Tipo de identificación', null=True, blank=False)
     usuario = models.OneToOneField(User, on_delete=models.DO_NOTHING, verbose_name="Usuario", null=True,
-                                   blank=False, related_name='UserAccess')
-    usuario_crea = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario Crea", null=False,
-                                     blank=False, related_name='UserCrea')
+                                   blank=False, related_name='%(app_label)s_%(class)s_usuario')
+    usuario_crea = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario Crea", null=True,
+                                     blank=True, related_name='%(app_label)s_%(class)s_usuario_crea')
     usuario_actualiza = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario Actualiza",
-                                          null=False, blank=False, related_name='UserModifica')
+                                          null=True, blank=True,
+                                          related_name='%(app_label)s_%(class)s_usuario_actualiza')
 
     def __str__(self):
-        return self.usuario.first_name
+        return '{0} - {1}'.format(self.identificacion, self.nombre_completo)
 
     class Meta:
         abstract = True
+
+    @property
+    def nombres(self):
+        return self.usuario.first_name if self.usuario else 'Sin nombres'
+
+    @property
+    def apellidos(self):
+        return self.usuario.last_name if self.usuario else 'Sin apellidos'
+
+    @property
+    def nombre_completo(self):
+        return '{0} {1}'.format(self.usuario.first_name, self.usuario.last_name) if self.usuario else 'Sin nombre'
+
 
 

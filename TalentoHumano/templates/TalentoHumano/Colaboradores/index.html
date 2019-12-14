@@ -1,0 +1,115 @@
+{% extends 'TalentoHumano/_common/base_talento_humano.html' %}
+{% load static %}
+{% load eva_tags %}
+<title>{% block titulo %}{% if OPCION == 'por_contratos' %} Colaboradores vinculados al contrato {{ colaborador.contrato }}{% else %} Colaboradores{% endif %}{% endblock %}</title>
+{% block styles %}
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-brands.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-solid.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/sweetalert2/sweetalert2.bundle.css'%}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/theme-demo.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
+    <link rel="mask-icon" href="{% static 'EVA/Plantilla/img/favicon/safari-pinned-tab.svg' %}" color="#5bbad5">
+{% endblock styles %}
+
+{% block main %}
+    <div class="panel-container show">
+        <div class="header">
+            <h1 class="header-title">
+                <i class='far fa-user'></i> {% if OPCION == 'por_contratos' %} Colaboradores vinculados al contrato {{ colaborador.contrato }}{% else %} Colaboradores{% endif %} <span class='fw-300'></span>
+                <br>
+                <br>
+            </h1>
+        </div>
+        <div class="row">
+            <div class="col-xl-12">
+                <div id="panel-1" class="panel">
+                    <div class="panel-hdr">
+                        <br>
+                        <div class="col-md-10">
+                            {% if OPCION == 'por_contratos' %}
+                            <small>
+                                <a class="far fa-3x far fa-home"  href="{% url 'TalentoHumano:colaboradores-index' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ir al índice de colaboradores"></a>
+                            </small>
+                            {% else %}
+                            <small>
+                                <a class="far fa-3x far fa-plus-circle"  href="{% url 'TalentoHumano:colaboradores-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar Colaborador"></a>
+                            </small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="panel-container show">
+                        <div class="panel-content">
+                            <div class="panel-group">
+                                <div class="panel-body">
+                                    <div class="form-group">
+                                        <div class="form-row">
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="col-xl-12">
+                                            <div class="border-faded bg-faded p-3 mb-g d-flex">
+                                                <input type="text" id="js-filter-contacts" name="filter-contacts" class="form-control shadow-inset-2 form-control-lg" placeholder="Filtrar empleados">
+                                                <div class="btn-group btn-group-lg btn-group-toggle hidden-lg-down ml-3" data-toggle="buttons">
+                                                    <label class="btn btn-default active">
+                                                        <input type="radio" name="contactview" id="grid" checked="" value="grid"><i class="fas fa-table"></i>
+                                                    </label>
+                                                    <label class="btn btn-default">
+                                                        <input type="radio" name="contactview" id="table" value="table"><i class="fas fa-th-list"></i>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" id="js-contacts">
+                                        {% for colaborador in colaboradores %}
+                                            {% include 'TalentoHumano/_common/_tarjeta_empleado.html' with  identificacion=colaborador.identificacion id_tarjeta=colaborador.id foto_perfil=colaborador.foto_perfil.url nombre=colaborador.nombre_completo  cargo=colaborador.cargo  correo=colaborador.usuario.email direccion=colaborador.direccion telefono=colaborador.telefono%}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='talento-humano/colaboradores' %}
+{% endblock main%}
+
+{% block scripts %}
+    <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
+    <script src="{% static 'TalentoHumano/js/confirmarEliminarColaborador.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
+
+    <script>
+        $(document).ready(function()
+        {
+
+            $('input[type=radio][name=contactview]').change(function()
+            {
+                if (this.value == 'grid')
+                {
+                    $('#js-contacts .card').removeClassPrefix('mb-').addClass('mb-g');
+                    $('#js-contacts .col-xl-12').removeClassPrefix('col-xl-').addClass('col-xl-4');
+                    $('#js-contacts .js-expand-btn').addClass('d-none');
+                    $('#js-contacts .card-body + .card-body').addClass('show');
+
+                }
+                else if (this.value == 'table')
+                {
+                    $('#js-contacts .card').removeClassPrefix('mb-').addClass('mb-1');
+                    $('#js-contacts .col-xl-4').removeClassPrefix('col-xl-').addClass('col-xl-12');
+                    $('#js-contacts .js-expand-btn').removeClass('d-none');
+                    $('#js-contacts .card-body + .card-body').removeClass('show');
+                }
+
+            });
+
+            //initialize filter
+            initApp.listFilter($('#js-contacts'), $('#js-filter-contacts'));
+        });
+
+    </script>
+{% endblock scripts%}

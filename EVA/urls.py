@@ -15,6 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 
 from EVA.views import index_view
 
@@ -24,4 +26,4 @@ urlpatterns = [
     path('administracion/', include('Administracion.urls', namespace='administracion')),
     path('proyectos/', include('Proyectos.urls', namespace='proyectos')),
     path('talento-humano/', include('TalentoHumano.urls', namespace='talento-humano')),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -50,7 +50,7 @@ class EntidadCAFECrearView(View):
         entidad_cafe.save()
         messages.success(request, 'Se ha agregado la  {0}'.format(entidad_cafe.tipo_entidad) + ' ' +
                          '{0}'.format(entidad_cafe.nombre))
-        return redirect(reverse('TalentoHumano:entidades-index', args=[0]))
+        return redirect(reverse('TalentoHumano:entidades-cafe-index', args=[0]))
 
 
 class EntidadCAFEEditarView(View):
@@ -85,7 +85,7 @@ class EntidadCAFEEditarView(View):
         if entidad_cafe_db.comparar(entidad_cafe):
             messages.success(request, 'No se hicieron cambios en la  {0}'.format(entidad_cafe.tipo_entidad) + ' ' +
                              '{0}'.format(entidad_cafe.nombre))
-            return redirect(reverse('TalentoHumano:entidades-index', args=[0]))
+            return redirect(reverse('TalentoHumano:entidades-cafe-index', args=[0]))
 
         else:
 
@@ -93,7 +93,7 @@ class EntidadCAFEEditarView(View):
             messages.success(request, 'Se ha actualizado la  {0}'.format(entidad_cafe.tipo_entidad) + ' ' +
                              '{0}'.format(entidad_cafe.nombre))
 
-            return redirect(reverse('TalentoHumano:entidades-index', args=[0]))
+            return redirect(reverse('TalentoHumano:entidades-cafe-index', args=[0]))
 
 
 class EntidadCAFEEliminarView(View):

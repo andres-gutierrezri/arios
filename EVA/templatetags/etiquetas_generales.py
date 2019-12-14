@@ -64,6 +64,18 @@ def input_email_tag(nombre, texto_label, **kwargs):
 
 
 @register.inclusion_tag('EVA/_general_tags/_input_general_tag.html')
+def input_file_tag(nombre, texto_label, **kwargs):
+
+    kwargs.pop('texto_label', None)
+    kwargs.pop('type', None)
+
+    kwargs['texto_label'] = texto_label
+    kwargs['type'] = u'file'
+
+    return arma_input_general_tag(nombre, **kwargs)
+
+
+@register.inclusion_tag('EVA/_general_tags/_input_general_tag.html')
 def input_checkbox_tag(nombre, texto_label, **kwargs):
 
     kwargs.pop('texto_label', None)
@@ -146,11 +158,11 @@ def arma_input_general_tag(nombre, **kwargs):
         tipo = 'text'
 
     if 'class' not in kwargs:
-        kwargs['class'] = 'form-control'
+        kwargs['class'] = 'form-control' if not is_fecha else 'form-control fecha-control'
 
     invalido = kwargs.pop('invalido', False)
     if invalido:
-        kwargs['class'] = 'form-control is-invalid'
+        kwargs['class'] = 'form-control is-invalid' if not is_fecha else 'form-control fecha-control is-invalid'
 
     texto_label = kwargs.pop('texto_label', None)
     mensaje_validacion = kwargs.pop('mensaje_validacion', None)
