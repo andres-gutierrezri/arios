@@ -51,8 +51,6 @@ class Colaborador(Persona, ModelDjangoExtensiones):
     salario = models.IntegerField(verbose_name="Salario", null=True, blank=False)
     jefe_inmediato = models.ForeignKey('self', on_delete=models.DO_NOTHING, verbose_name='Jefe inmediato', null=True,
                                        blank=True)
-    contrato = models.ForeignKey(Contrato, on_delete=models.DO_NOTHING, verbose_name='Contrato', null=False,
-                                 blank=False)
     cargo = models.ForeignKey(Cargo, on_delete=models.DO_NOTHING, verbose_name='Cargo', null=False, blank=False)
     proceso = models.ForeignKey(Proceso, on_delete=models.DO_NOTHING, verbose_name='Proceso', null=False, blank=False)
     tipo_contrato = models.ForeignKey(TipoContrato, on_delete=models.DO_NOTHING, verbose_name='Tipo de contrato',
@@ -96,7 +94,6 @@ class Colaborador(Persona, ModelDjangoExtensiones):
         colaborador.jefe_inmediato_id = datos.get('jefe_inmediato_id', '')
         if colaborador.jefe_inmediato_id == '':
             colaborador.jefe_inmediato_id = None
-        colaborador.contrato_id = datos.get('contrato_id', '')
         colaborador.cargo_id = datos.get('cargo_id', '')
         colaborador.proceso_id = datos.get('proceso_id', '')
         colaborador.tipo_contrato_id = datos.get('tipo_contrato_id', '')
@@ -143,3 +140,24 @@ class Colaborador(Persona, ModelDjangoExtensiones):
                 usuario.username = usuario_n
 
                 return usuario
+
+
+class ColaboradorContrato(models.Model):
+    objects = ManagerGeneral()
+    colaborador = models.ForeignKey(Colaborador, on_delete=models.DO_NOTHING, verbose_name='Colaborador', null=False,
+                                    blank=False)
+    contrato = models.ForeignKey(Contrato, on_delete=models.DO_NOTHING, verbose_name='Contrato', null=False,
+                                 blank=False)
+
+    @staticmethod
+    def from_dictionary(datos: dict) -> 'ColaboradorContrato':
+        """
+        Crea una instancia de Colaboradores con los datos pasados en el diccionario.
+        :param datos: Diccionario con los datos para crear Colaboradores.
+        :return: Instacia de entidad colaboradores con la información especificada en el diccionario.
+        """
+        colaborador_contrato = ColaboradorContrato()
+        colaborador_contrato.colaborador = datos.get('colaborador_id', '')
+        colaborador_contrato.contrato = datos.get('contrato_id', '')
+
+        return colaborador_contrato
