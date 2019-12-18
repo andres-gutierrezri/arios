@@ -18,6 +18,7 @@ from TalentoHumano.models import Colaborador, EntidadesCAFE
 
 
 # Create your views here.
+from TalentoHumano.models.colaboradores import ColaboradorContrato
 
 
 class ColaboradoresIndexView(AbstractEvaLoggedView):
@@ -51,10 +52,13 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
     OPCION = 'crear'
 
     def get(self, request):
-        return render(request, 'TalentoHumano/Colaboradores/crear-editar.html', datos_xa_render(self.OPCION))
+        contratos = Contrato.objects.all()
+        return render(request, 'TalentoHumano/Colaboradores/crear-editar.html', datos_xa_render(self.OPCION),
+                      {'contratos': contratos})
 
     def post(self, request):
         colaborador = Colaborador.from_dictionary(request.POST)
+        contratos = request.POST.getlist('contrato_id[]', None)
 
         colaborador.foto_perfil = request.FILES.get('foto_perfil', None)
         if not colaborador.foto_perfil:
@@ -123,9 +127,9 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
 
     def get(self, request, id):
         colaborador = Colaborador.objects.get(id=id)
-
+        contrato_colaborador = ColaboradorContrato.objects.filter(colaborador_id=id)
         return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
-                      datos_xa_render(self.OPCION, colaborador))
+                      datos_xa_render(self.OPCION, colaborador), {'contrato_colaborador': contrato_colaborador})
 
     def post(self, request, id):
         update_fields = ['direccion', 'talla_camisa', 'talla_zapatos', 'talla_pantalon', 'eps_id',
@@ -135,6 +139,12 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
                          'tipo_identificacion_id', 'fecha_expedicion', 'genero', 'telefono', 'estado']
 
         colaborador = Colaborador.from_dictionary(request.POST)
+        contratos = request.POST.getlist('contrato_id[]', None)
+
+        ColaboradorContrato.objects.filter(colaborador_id=id).delete()
+        for contrato in contratos:
+            ColaboradorContrato.objects.create(contrato_id=contrato, colaborador_id=id)
+
         colaborador.id = int(id)
         colaborador.foto_perfil = request.FILES.get('foto_perfil', None)
         if colaborador.foto_perfil:
