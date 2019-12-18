@@ -160,7 +160,7 @@
                                                                         {% select_tag jefe_inmediato 'jefe_inmediato_id' 'Seleccione el jefe inmediato' texto_label="Jefe inmediato" value=colaborador.jefe_inmediato_id  mensaje_validacion='Por favor seleccione un jefe inmediato.' invalido=errores.jefe_inmediato %}
                                                                     </div>
                                                                     <div class="col-md-6">
-                                                                        {% select_tag contrato 'contrato_id' 'Seleccione un contrato' texto_label="Contrato" value=colaborador.contrato_id required="" mensaje_validacion='Por favor seleccione un contrato' invalido=errores.contrato %}
+                                                                        {% select_tag contrato 'contrato_id' 'Seleccione un contrato' texto_label="Contrato" value=colaborador.contrato_id required="" mensaje_validacion='Por favor seleccione un contrato' multiple='multiple' invalido=errores.contrato %}
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -263,6 +263,11 @@
     <script>
         $(document).ready(function () {
             $('.select2').select2();
+             $('#contrato_id_select_id').select2(
+                    {
+                        placeholder: "Seleccione un contrato"
+                    });
+             $('#contrato_id_select_id').next().find("input").css("min-width","200px");
         });
     </script>
 {% endblock scripts%}
