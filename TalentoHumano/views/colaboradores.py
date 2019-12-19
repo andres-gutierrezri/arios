@@ -25,10 +25,12 @@ class ColaboradoresIndexView(AbstractEvaLoggedView):
 
     def get(self, request, id_contrato):
         if id_contrato != 0:
-            colaboradores = Colaborador.objects.filter(contrato_id=id_contrato).order_by('usuario__first_name',
-                                                                                         'usuario__last_name')
+            colaboradores = ColaboradorContrato.objects.filter(contrato_id=id_contrato)\
+                .order_by('colaborador__usuario__first_name',
+                          'colaborador__usuario__last_name')
         else:
-            colaboradores = Colaborador.objects.all().order_by('usuario__first_name', 'usuario__last_name')
+            colaboradores = ColaboradorContrato.objects.all().distinct('colaborador__usuario__first_name')\
+                .order_by('colaborador__usuario__first_name', 'colaborador__usuario__last_name')
 
         contratos = Contrato.objects.get_xa_select_activos()
         return render(request, 'TalentoHumano/Colaboradores/index.html', {'colaboradores': colaboradores,
