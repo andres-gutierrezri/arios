@@ -17,6 +17,18 @@ def select_tag(lista, nombre, texto_seleccion, **kwargs):
             'primer_valor': primer_valor}
 
 
+@register.inclusion_tag('EVA/_general_tags/_select_multiple_tag.html')
+def select_multiple_tag(lista, nombre, id,  texto_seleccion, **kwargs):
+
+    texto_label = kwargs.pop('texto_label', None)
+    mensaje_validacion = kwargs.pop('mensaje_validacion', None)
+    valor = kwargs.pop('value', None)
+    primer_valor = kwargs.pop('primer_valor', None)
+    return {'lista': lista, 'nombre': nombre, 'texto_seleccion': texto_seleccion, 'texto_label': texto_label,
+            'propiedades': propiedades_to_str(kwargs), 'mensaje_validacion': mensaje_validacion, 'valor': valor,
+            'primer_valor': primer_valor, 'id': id}
+
+
 @register.inclusion_tag('EVA/_general_tags/_input_general_tag.html')
 def input_text_tag(nombre, texto_label, **kwargs):
 
