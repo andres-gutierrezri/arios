@@ -152,20 +152,3 @@ class ColaboradorContrato(models.Model):
     def __str__(self):
         return str(self.contrato.id)
 
-    def to_json(self):
-        campos = [{
-            'contrato': self.contrato.id
-        }]
-        return campos
-
-    @staticmethod
-    def from_dictionary(datos: dict) -> 'ColaboradorContrato':
-        """
-        Crea una instancia de Colaboradores con los datos pasados en el diccionario.
-        :param datos: Diccionario con los datos para crear Colaboradores.
-        :return: Instacia de entidad colaboradores con la información especificada en el diccionario.
-        """
-        colaborador_contrato = ColaboradorContrato()
-        colaborador_contrato.colaborador_id = datos.get('colaborador_id', '')
-
-        return colaborador_contrato
