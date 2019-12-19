@@ -149,6 +149,15 @@ class ColaboradorContrato(models.Model):
     contrato = models.ForeignKey(Contrato, on_delete=models.DO_NOTHING, verbose_name='Contrato', null=False,
                                  blank=False)
 
+    def __str__(self):
+        return str(self.contrato.id)
+
+    def to_json(self):
+        campos = [{
+            'contrato': self.contrato.id
+        }]
+        return campos
+
     @staticmethod
     def from_dictionary(datos: dict) -> 'ColaboradorContrato':
         """
@@ -157,7 +166,6 @@ class ColaboradorContrato(models.Model):
         :return: Instacia de entidad colaboradores con la información especificada en el diccionario.
         """
         colaborador_contrato = ColaboradorContrato()
-        colaborador_contrato.colaborador = datos.get('colaborador_id', '')
-        colaborador_contrato.contrato = datos.get('contrato_id', '')
+        colaborador_contrato.colaborador_id = datos.get('colaborador_id', '')
 
         return colaborador_contrato
