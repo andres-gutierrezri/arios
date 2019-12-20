@@ -21,10 +21,7 @@ class SeleccionEmpresaModalView(AbstractEvaLoggedView):
             body_unicode = request.body.decode('utf-8')
             body = json.loads(body_unicode)
             request.session['empresa'] = Empresa.objects.get(id=int(body['idEmpresa'])).empresa_to_json()
-            colaborador = Colaborador(usuario=request.user)
-            update_fields = ['contrato_sesion_id']
-            colaborador.contrato_sesion_id = 5
-            colaborador.save(update_fields=update_fields)
+
             return JsonResponse({"Mensaje": "OK"})
         except:
             return JsonResponse({"Mensaje": "Falló"})
