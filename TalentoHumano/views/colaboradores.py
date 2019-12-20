@@ -67,7 +67,7 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
 
         try:
             # Se excluye el usuario debido a que el id no es asignado  después de ser guardado en la BD.
-            colaborador.full_clean(exclude=['usuario'])
+            colaborador.full_clean(exclude=['usuario', 'contrato_sesion'])
         except ValidationError as errores:
             datos = datos_xa_render(self.OPCION, colaborador)
             datos['errores'] = errores.message_dict
@@ -100,6 +100,7 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
             # Se realiza esto ya que el campo usuario_id del modelo no es asignado automáticamente despues de guardar el
             # ususario en la BD.
             colaborador.usuario_id = colaborador.usuario.id
+            colaborador.contrato_sesion_id = contratos[1]
             colaborador.save()
 
             for contrato in contratos:
@@ -157,7 +158,7 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
             request.session['colaborador'] = Colaborador.objects.get(usuario=request.user).foto_perfil.url
 
         try:
-            colaborador.full_clean(validate_unique=False)
+            colaborador.full_clean(validate_unique=False, exclude=['contrato_sesion'])
         except ValidationError as errores:
             datos = datos_xa_render(self.OPCION, colaborador)
             datos['errores'] = errores.message_dict
