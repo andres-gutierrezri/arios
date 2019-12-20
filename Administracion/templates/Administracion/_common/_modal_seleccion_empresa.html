@@ -1,0 +1,46 @@
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">
+                Empresas
+                <small class="m-0 text-muted">
+                    Selección de Empresa
+                </small>
+            </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"><i class="fal fa-times"></i></span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <table class="table table-bordered w-100" id="dataTable">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Nombre</th>
+                    <th>Id Ppal</th>
+                    <th>Acción</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for empresa in empresas %}
+                    <tr>
+                        <td>{{ empresa.contrato.empresa.id }}</td>
+                        <td>{{ empresa.contrato.empresa.nombre }}</td>
+                        <td>{{ empresa.contrato.empresa.empresa_ppal.id }}</td>
+                        <td>
+                            <button type="button" class="btn btn-info" onclick="clicEmpresa({{ empresa.contrato.empresa.id }})">
+                                Seleccionar
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary waves-effect waves-themed" data-dismiss="modal">Cancelar
+            </button>
+            <button type="button" class="btn btn-primary waves-effect waves-themed">Guardar</button>
+        </div>
+    </div>
+</div>
