@@ -23,11 +23,16 @@ class Empresa(models.Model, ModelDjangoExtensiones):
         verbose_name = 'Empresa'
         verbose_name_plural = 'Empresas'
 
-    def to_json(self, campos=None, excluir=None):
-        campos = [{
-            'logo': self.logo.url
-        }]
-        return campos
+    def empresa_to_json(self):
+        return {
+            "nombre": self.nombre,
+            "nit": self.nit,
+            "logo": self.logo.url,
+            "id": self.id,
+            "subempresa": self.subempresa,
+            "empresa_ppal_id": 0 if self.empresa_ppal is None
+            else self.empresa_ppal.id
+        }
 
     @staticmethod
     def from_dictionary(datos: dict) -> 'Empresa':
