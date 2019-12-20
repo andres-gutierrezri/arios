@@ -60,6 +60,8 @@ class Colaborador(Persona, ModelDjangoExtensiones):
     rango = models.ForeignKey(Rango, on_delete=models.DO_NOTHING, verbose_name='Rango', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
     foto_perfil = models.ImageField(upload_to='foto_perfil', blank=True, default='foto_perfil/profile-none.png')
+    contrato_sesion = models.ForeignKey(Contrato, on_delete=models.DO_NOTHING, verbose_name='Contrato Sesion',
+                                        null=True, blank=False)
 
     class Meta:
         verbose_name = 'Colaborador'
@@ -70,6 +72,17 @@ class Colaborador(Persona, ModelDjangoExtensiones):
             'foto_perfil': self.foto_perfil.url
         }]
         return campos
+
+    def empresa_to_json(self):
+        return {
+            "nombre": self.contrato_sesion.empresa.nombre,
+            "nit": self.contrato_sesion.empresa.nit,
+            "logo": self.contrato_sesion.empresa.logo.url,
+            "id": self.contrato_sesion.empresa.id,
+            "subempresa": self.contrato_sesion.empresa.subempresa,
+            "empresa_ppal_id": 0 if self.contrato_sesion.empresa.empresa_ppal is None
+            else self.contrato_sesion.empresa.empresa_ppal.id
+        }
 
     @staticmethod
     def from_dictionary(datos: dict) -> 'Colaborador':
