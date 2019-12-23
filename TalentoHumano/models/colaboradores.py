@@ -5,7 +5,7 @@ import unicodedata
 from django.db.models import F, QuerySet, CharField, Value
 from django.db.models.functions import Concat
 
-from Administracion.models import Persona, Cargo, Proceso, TipoContrato, CentroPoblado, Rango
+from Administracion.models import Persona, Cargo, Proceso, TipoContrato, CentroPoblado, Rango, Empresa
 from EVA.General.conversiones import string_to_date
 from EVA.General.modeljson import ModelDjangoExtensiones
 from EVA.General.modelmanagers import ManagerGeneral
@@ -60,7 +60,7 @@ class Colaborador(Persona, ModelDjangoExtensiones):
     rango = models.ForeignKey(Rango, on_delete=models.DO_NOTHING, verbose_name='Rango', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
     foto_perfil = models.ImageField(upload_to='foto_perfil', blank=True, default='foto_perfil/profile-none.png')
-    contrato_sesion = models.ForeignKey(Contrato, on_delete=models.DO_NOTHING, verbose_name='Contrato Sesion',
+    empresa_sesion = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa Sesion',
                                         null=True, blank=False)
 
     class Meta:
@@ -75,13 +75,13 @@ class Colaborador(Persona, ModelDjangoExtensiones):
 
     def empresa_to_json(self):
         return {
-            "nombre": self.contrato_sesion.empresa.nombre,
-            "nit": self.contrato_sesion.empresa.nit,
-            "logo": self.contrato_sesion.empresa.logo.url,
-            "id": self.contrato_sesion.empresa.id,
-            "subempresa": self.contrato_sesion.empresa.subempresa,
-            "empresa_ppal_id": 0 if self.contrato_sesion.empresa.empresa_ppal is None
-            else self.contrato_sesion.empresa.empresa_ppal.id
+            "nombre": self.empresa_sesion.nombre,
+            "nit": self.empresa_sesion.nit,
+            "logo": self.empresa_sesion.logo.url,
+            "id": self.empresa_sesion.id,
+            "subempresa": self.empresa_sesion.subempresa,
+            "empresa_ppal_id": 0 if self.empresa_sesion.empresa_ppal is None
+            else self.empresa_sesion.empresa_ppal.id
         }
 
     @staticmethod
