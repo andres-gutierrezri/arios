@@ -13,10 +13,12 @@ from TalentoHumano.models.colaboradores import ColaboradorContrato, Colaborador
 class SeleccionEmpresaModalView(AbstractEvaLoggedView):
     def get(self, request):
         empresas = ColaboradorContrato.objects.filter(colaborador__usuario=request.user).distinct('contrato__empresa')
+        empresa_actual = Empresa.objects.get(colaborador__usuario=request.user)
         colaborador = Colaborador.objects.get(usuario=request.user)
 
         return render(request, 'Administracion/_common/_modal_seleccion_empresa.html', {'empresas': empresas,
-                                                                                        'colaborador': colaborador})
+                                                                                        'colaborador': colaborador,
+                                                                                        'empresa_actual': empresa_actual})
 
     def post(self, request):
         try:
