@@ -2,7 +2,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <h4 class="modal-title">
-                Empresas
+                Empresas vinculadas al colaborador {{ colaborador.nombre_completo }}
                 <small class="m-0 text-muted">
                     Seleccione una Empresa
                 </small>
@@ -12,28 +12,12 @@
             </button>
         </div>
         <div class="modal-body">
-            <table class="table table-bordered w-100" id="dataTable">
-                <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Nombre</th>
-                    <th>Acción</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for empresa in empresas %}
-                    <tr>
-                        <td>{{ empresa.contrato.empresa.id }}</td>
-                        <td>{{ empresa.contrato.empresa.nombre }}</td>
-                        <td>
-                            <button type="button" class="btn btn-primary" onclick="clicEmpresa({{ empresa.contrato.empresa.id }})">
-                                Seleccionar
-                            </button>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+            {% for empresa in empresas %}
+                <div style="text-align: center">
+                    <img class="logo-nav" style="width: 300px;" onclick="clicEmpresa({{ empresa.contrato.empresa.id }})" src="{{ empresa.contrato.empresa.logo.url }}">
+                    <br>
+                </div>
+            {% endfor %}
         </div>
 
     </div>
