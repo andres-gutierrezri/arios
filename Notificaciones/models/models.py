@@ -1,3 +1,128 @@
+# coding=utf-8
+
+from __future__ import unicode_literals
+
+from django.contrib.auth.models import User
 from django.db import models
 
-# Create your models here.
+from django.utils.encoding import python_2_unicode_compatible
+
+
+@python_2_unicode_compatible
+class TipoNotificacion(models.Model):
+    nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
+    descripcion = models.TextField(max_length=300, verbose_name='Descripción', null=False, blank=False)
+    fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False,
+                                          blank=False)
+    estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name = 'Tipo de Notificacion'
+        verbose_name_plural = 'Tipos de Notificaciones'
+
+    # region Constantes Tipos de Notificacion
+    EVENTO_DEL_SISTEMA = 1
+    OBLIGATORIA = 2
+    INFORMATIVA = 3
+    # endregion
+
+
+@python_2_unicode_compatible
+class EventoDesencadenador(models.Model):
+    nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
+    descripcion = models.TextField(max_length=300, verbose_name='Descripción', null=False, blank=False)
+    ruta = models.TextField(max_length=300, verbose_name='Ruta', null=False, blank=False)
+    fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False,
+                                          blank=False)
+    estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name = 'Evento Desencadenador'
+        verbose_name_plural = 'Eventos Desencadenadores'
+
+    # region Constantes Estados
+    CONTRATO = 1
+    TERCERO = 2
+    EMPRESAS = 3
+    ENTIDADES_CAFE = 4
+    # endregion
+
+
+@python_2_unicode_compatible
+class Notificacion(models.Model):
+    titulo = models.CharField(max_length=100, verbose_name='Titulo', null=False, blank=False)
+    mensaje = models.TextField(max_length=300, verbose_name='Mensaje', null=False, blank=False)
+    fecha_creacion = models.DateTimeField(verbose_name='Fecha de Creación', null=False,
+                                          blank=False, )
+    tipo_notificacion = models.ForeignKey(TipoNotificacion, on_delete=models.DO_NOTHING,
+                                          verbose_name='Tipo Notificacion', null=True, blank=False)
+    evento_desencadenador = models.ForeignKey(EventoDesencadenador, on_delete=models.DO_NOTHING,
+                                              verbose_name='Evento Desencadenador', null=True, blank=False)
+    id_evento = models.IntegerField(verbose_name='Id Evento', null=True, blank=False)
+    imagen = models.ImageField(upload_to='imagenes-notificaciones', verbose_name='Logo', null=True, blank=False)
+    url = models.CharField(max_length=100, verbose_name='Url', null=True, blank=False)
+    id_usuario = models.CharField(max_length=100, verbose_name='Id Usuario', null=True, blank=False)
+
+    def __str__(self):
+        return self.titulo
+
+    class Meta:
+        verbose_name = 'Notificacion'
+        verbose_name_plural = 'Notificaciones'
+
+
+@python_2_unicode_compatible
+class DestinatarioNotificacion(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario", null=False, blank=False)
+    visto = models.BooleanField(verbose_name='Visto', null=False, blank=False)
+    notificacion = models.ForeignKey(Notificacion, on_delete=models.DO_NOTHING,
+                                     verbose_name='Tipo Notificacion', null=True, blank=False)
+    envio_email_exitoso = models.BooleanField(verbose_name='Envio Email Exitoso', null=False, blank=False)
+
+    def __str__(self):
+        return self.usuario.first_name
+
+    class Meta:
+        verbose_name = 'Destinatario Notificacion'
+        verbose_name_plural = 'Destinatarios de Notificaciones'
+
+
+@python_2_unicode_compatible
+class SeleccionDeNotificacionARecibir(models.Model):
+    evento_desencadenador = models.ForeignKey(EventoDesencadenador, on_delete=models.DO_NOTHING,
+                                              verbose_name='Evento Desencadenador', null=True, blank=False)
+    envio_x_email = models.BooleanField(verbose_name='Envio Por Email', null=False, blank=False)
+    usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario", null=False, blank=False)
+    estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
+
+    def __str__(self):
+        return '{0} (Seleccion: {1})'.format(self.evento_desencadenador.nombre, self.usuario)
+
+    class Meta:
+        verbose_name = 'Seleccion de Notificacion A Recibir'
+        verbose_name_plural = 'Selecciones de Notificaciones A Recibir'
+
+
+@python_2_unicode_compatible
+class TextoNotificacionDelSistema(models.Model):
+    titulo = models.CharField(max_length=100, verbose_name='Titulo', null=False, blank=False)
+    mensaje = models.TextField(max_length=300, verbose_name='Mensaje', null=False, blank=False)
+    fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False,
+                                          blank=False)
+    fecha_modificacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Modificación', null=False,
+                                              blank=False)
+    evento_desencadenador = models.ForeignKey(EventoDesencadenador, on_delete=models.DO_NOTHING,
+                                              verbose_name='Evento Desencadenador', null=True, blank=False)
+
+    def __str__(self):
+        return self.titulo
+
+    class Meta:
+        verbose_name = 'Texto de Notificacion del Sistema'
+        verbose_name_plural = 'Textos de Notificaciones del Sistema'
