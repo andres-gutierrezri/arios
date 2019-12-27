@@ -126,6 +126,26 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
+                                                            <div class="form-group">
+                                                                <div class="form-row">
+                                                                    <div class="col-md-6">
+                                                                        {% select_tag grupo_sanguineo 'grupo_sanguineo' 'Seleccione un grupo sanguíneo' texto_label="Grupo sanguíneo" value=colaborador.grupo_sanguineo required="" mensaje_validacion='Por favor seleccione un grupo sanguíneo' invalido=errores.grupo_sanguineo %}
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        {% input_text_tag 'nombre_contacto' 'Nombre del contacto' placeholder="Ingrese el nombre del contacto" required="" maxlength="100" value=colaborador.nombre_contacto mensaje_validacion='Por favor digite el nombre del contacto' invalido=errores.nombre_contacto %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <div class="form-row">
+                                                                    <div class="col-md-6">
+                                                                        {% input_text_tag 'parentesco' 'Parentesco' placeholder="Ingrese el parentesco" required="" maxlength="100" value=colaborador.parentesco mensaje_validacion='Por favor digite el parentesco' invalido=errores.parentesco %}
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        {% input_number_tag 'telefono_contacto' 'Teléfono del contacto' placeholder="Ingrese el número telefónico del contacto" required="" maxlength="20" onInput="validarLongitud(13,this)" value=colaborador.telefono_contacto mensaje_validacion='Por favor digite el número telefónico del contacto' invalido=errores.telefono_contacto %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                     <div id="step-2" class="">
