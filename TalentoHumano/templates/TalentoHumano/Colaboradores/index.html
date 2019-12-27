@@ -66,7 +66,7 @@
                                     </div>
                                     <div class="row" id="js-contacts">
                                         {% for colaborador in colaboradores %}
-                                            {% include 'TalentoHumano/_common/_tarjeta_empleado.html' with  identificacion=colaborador.colaborador.identificacion id_tarjeta=colaborador.colaborador.id foto_perfil=colaborador.colaborador.foto_perfil.url nombre=colaborador.colaborador.nombre_completo  cargo=colaborador.colaborador.cargo  correo=colaborador.colaborador.usuario.email direccion=colaborador.colaborador.direccion telefono=colaborador.colaborador.telefono%}
+                                            {% include 'TalentoHumano/_common/_tarjeta_empleado.html' with grupo_sanguineo=colaborador.colaborador.grupo_sanguineo identificacion=colaborador.colaborador.identificacion id_tarjeta=colaborador.colaborador.id foto_perfil=colaborador.colaborador.foto_perfil.url nombre=colaborador.colaborador.nombre_completo  cargo=colaborador.colaborador.cargo  correo=colaborador.colaborador.usuario.email direccion=colaborador.colaborador.direccion telefono=colaborador.colaborador.telefono%}
                                         {% endfor %}
                                     </div>
                                 </div>
