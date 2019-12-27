@@ -51,7 +51,7 @@ class EntidadCAFECrearView(AbstractEvaLoggedView):
                           datos_xa_render(self.OPCION, entidad_cafe))
 
         entidad_cafe.save()
-        crear_notificacion_por_evento(EventoDesencadenador.EMPRESAS, entidad_cafe.id)
+        crear_notificacion_por_evento(EventoDesencadenador.ENTIDADES_CAFE, entidad_cafe.id)
         messages.success(request, 'Se ha agregado la  {0}'.format(entidad_cafe.tipo_entidad) + ' ' +
                          '{0}'.format(entidad_cafe.nombre))
         return redirect(reverse('TalentoHumano:entidades-index', args=[0]))
