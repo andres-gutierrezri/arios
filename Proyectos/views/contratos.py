@@ -8,6 +8,8 @@ from django.http import JsonResponse
 from django.db.models import F
 
 from EVA.views.index import AbstractEvaLoggedView
+from Notificaciones.models.models import EventoDesencadenador
+from Notificaciones.views.views import crear_notificacion_por_evento
 from Proyectos.models.contratos import Contrato
 from Administracion.models import Tercero, Empresa, TipoContrato
 
@@ -44,6 +46,7 @@ class ContratoCrearView(AbstractEvaLoggedView):
             return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.OPCION, contrato))
 
         contrato.save()
+        crear_notificacion_por_evento(EventoDesencadenador.CONTRATO, contrato.id)
         messages.success(request, 'Se ha agregado el contrato número {0}'.format(contrato.numero_contrato))
         return redirect(reverse('proyectos:contratos'))
 

@@ -11,6 +11,8 @@ from django.core.exceptions import ValidationError
 from Administracion.models import Tercero, TipoIdentificacion, TipoTercero, CentroPoblado, Empresa, Departamento, \
     Municipio
 from EVA.views.index import AbstractEvaLoggedView
+from Notificaciones.models.models import EventoDesencadenador
+from Notificaciones.views.views import crear_notificacion_por_evento
 
 
 class TerceroView(AbstractEvaLoggedView):
@@ -48,6 +50,7 @@ class TerceroCrearView(AbstractEvaLoggedView):
             return render(request, 'Administracion/Tercero/crear-editar.html', datos)
 
         tercero.save()
+        crear_notificacion_por_evento(EventoDesencadenador.TERCERO, tercero.id)
         messages.success(request, 'Se ha agregado el tercero {0}'.format(tercero.nombre))
         return redirect(reverse('Administracion:terceros'))
 
