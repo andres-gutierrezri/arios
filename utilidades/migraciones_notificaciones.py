@@ -62,12 +62,12 @@ def textos_eventos_desencadenadores(apps, schema_editor):
                           mensaje="Creacion de Empresas",
                           evento_desencadenador_id=4)
 
-    textos.objects.create(titulo="Entrada por Devolucion",
-                          mensaje="Entrada por Devolucion",
+    textos.objects.create(titulo="Creacion Entidades Cafe",
+                          mensaje="Creacion Entidades Cafe",
                           evento_desencadenador_id=5)
 
-    textos.objects.create(titulo="Traslado",
-                          mensaje="Traslado",
+    textos.objects.create(titulo="Creacion de Colaboradores",
+                          mensaje="Creacion de Colaboradores",
                           evento_desencadenador_id=6)
 
 
