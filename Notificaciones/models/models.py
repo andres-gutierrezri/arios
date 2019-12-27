@@ -48,11 +48,11 @@ class EventoDesencadenador(models.Model):
 
     # region Constantes Estados
     BIENVENIDA = 1
-    CONTRATO = 1
-    TERCERO = 2
-    EMPRESAS = 3
-    ENTIDADES_CAFE = 4
-    COLABORADOR = 5
+    CONTRATO = 2
+    TERCERO = 3
+    EMPRESAS = 4
+    ENTIDADES_CAFE = 5
+    COLABORADOR = 6
     # endregion
 
 
