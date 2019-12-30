@@ -173,3 +173,6 @@ class ColaboradorContrato(models.Model):
     def __str__(self):
         return str(self.contrato.id)
 
+    class Meta:
+        unique_together = ('colaborador', 'contrato')
+
