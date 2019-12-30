@@ -16,7 +16,7 @@
     <div class="panel-container show">
         <div class="header">
             <h1 class="header-title">
-                <i class='far fa-user'></i> {% if OPCION == 'por_contratos' %} Colaboradores vinculados al contrato {{ colaborador.contrato }}{% else %} Colaboradores{% endif %} <span class='fw-300'></span>
+                <i class='far fa-user'></i> Colaboradores <span class='fw-300'></span>
                 <br>
                 <br>
             </h1>
@@ -29,13 +29,16 @@
                         <div class="col-md-10">
                             {% if OPCION == 'por_contratos' %}
                             <small>
-                                <a class="far fa-3x far fa-home"  href="{% url 'TalentoHumano:colaboradores-index' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ir al índice de colaboradores"></a>
+                                <a class="far fa-3x far fa-home"  href="{% url 'TalentoHumano:colaboradores-index' 0 %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ir al índice de colaboradores"></a>
                             </small>
                             {% else %}
                             <small>
                                 <a class="far fa-3x far fa-plus-circle"  href="{% url 'TalentoHumano:colaboradores-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar Colaborador"></a>
                             </small>
                             {% endif %}
+                        </div>
+                        <div class="col-md-2" style="float: right" >
+                            {% select_tag contratos 'contrato_id' 'Todos los contratos' value=id_contrato primer_valor=True %}
                         </div>
                     </div>
                     <div class="panel-container show">
@@ -82,6 +85,7 @@
     <script src="{% static 'TalentoHumano/js/confirmarEliminarColaborador.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
+    <script src="{% static 'TalentoHumano/js/filtro_entidad.js' %}"></script>
 
     <script>
         $(document).ready(function()

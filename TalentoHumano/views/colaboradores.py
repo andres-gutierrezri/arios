@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from django.views import View
 from django.contrib import messages
 from django.shortcuts import render, redirect, reverse
 from django.db import IntegrityError
@@ -19,9 +18,17 @@ from TalentoHumano.models import Colaborador, EntidadesCAFE
 
 class ColaboradoresIndexView(AbstractEvaLoggedView):
 
-    def get(self, request):
-        colaboradores = Colaborador.objects.all().order_by('usuario__first_name', 'usuario__last_name')
-        return render(request, 'TalentoHumano/Colaboradores/index.html', {'colaboradores': colaboradores})
+    def get(self, request, id_contrato):
+        if id_contrato != 0:
+            colaboradores = Colaborador.objects.filter(contrato_id=id_contrato).order_by('usuario__first_name',
+                                                                                         'usuario__last_name')
+        else:
+            colaboradores = Colaborador.objects.all().order_by('usuario__first_name', 'usuario__last_name')
+
+        contratos = Contrato.objects.get_xa_select_activos()
+        return render(request, 'TalentoHumano/Colaboradores/index.html', {'colaboradores': colaboradores,
+                                                                          'contratos': contratos,
+                                                                          'id_contrato': id_contrato})
 
 
 class ColaboradoresPerfilView(AbstractEvaLoggedView):
@@ -29,21 +36,11 @@ class ColaboradoresPerfilView(AbstractEvaLoggedView):
     def get(self, request, id):
         colaborador = Colaborador.objects.get(id=id)
         colaboradores = Colaborador.objects.filter(contrato=colaborador.contrato_id)[:9]
+        contrato = Contrato.objects.get(id=colaborador.contrato.id)
 
         return render(request, 'TalentoHumano/Colaboradores/perfil.html', {'colaborador': colaborador,
-                                                                           'colaboradores': colaboradores})
-
-
-class ColaboradoresContratroView(AbstractEvaLoggedView):
-
-    def get(self, request, id):
-        colaborador = Colaborador.objects.get(id=id)
-        colaboradores = Colaborador.objects.filter(contrato=colaborador.contrato_id)
-        OPCION = 'por_contratos'
-
-        return render(request, 'TalentoHumano/Colaboradores/index.html', {'colaborador': colaborador,
-                                                                          'colaboradores': colaboradores,
-                                                                          'OPCION': OPCION})
+                                                                           'colaboradores': colaboradores,
+                                                                           'contrato': contrato})
 
 
 class ColaboradoresCrearView(AbstractEvaLoggedView):
