@@ -27,7 +27,7 @@ urlpatterns = [
     path('entidades-cafe/<int:id>/', entidades_cafe.EntidadCAFEEditarView.as_view(), name='entidades-cafe-editar'),
     path('entidades-cafe/<int:id>/delete', entidades_cafe.EntidadCAFEEliminarView.as_view(),
          name='entidades-cafe-eliminar'),
-    path('colaboradores/<int:id_contrato>/', colaboradores.ColaboradoresIndexView.as_view(),
+    path('colaboradores/contratos/<int:id_contrato>/', colaboradores.ColaboradoresIndexView.as_view(),
          name='colaboradores-index'),
     path('colaboradores/add', colaboradores.ColaboradoresCrearView.as_view(), name='colaboradores-crear'),
     path('colaboradores/<int:id>/', colaboradores.ColaboradorEditarView.as_view(), name='colaboradores-editar'),
@@ -35,7 +35,4 @@ urlpatterns = [
          name='colaboradores-eliminar'),
     path('colaboradores/<int:id>/perfil', colaboradores.ColaboradoresPerfilView.as_view(),
          name='colaboradores-perfil'),
-    path('colaboradores-contrato/<int:id>/', colaboradores.ColaboradoresContratroView.as_view(),
-         name='colaboradores-contrato'),
-
 ]
