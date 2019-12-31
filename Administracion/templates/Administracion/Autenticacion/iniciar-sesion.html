@@ -1,0 +1,75 @@
+{% extends 'Administracion/Autenticacion/_common/base_autenticacion.html' %}
+{% load static %}
+{% block titulo %}
+    Inicio de sesión EVA
+{% endblock %}
+
+{% block main %}
+
+    <div class="flex-1" style="background: url('{% static 'EVA/Plantilla/img/svg/pattern-1.svg' %}') no-repeat center bottom fixed; background-size: cover ">
+        <div class="container py-4 py-lg-5 my-lg-5 px-4 px-sm-0">
+            <div class="row">
+                <div class="col col-md-6 col-lg-7 hidden-sm-down">
+                    <h1 class="fs-xxl fw-500 mt-4 text-white">
+                        <FONT SIZE=7>EVA</FONT>
+                        <small class="h3 fw-300 mt-3 mb-5 text-white opacity-60">
+                            Espacio Virtual de Arios
+                        </small>
+                    </h1>
+                    <br><br><br>
+                     <img src="{% static 'EVA/Plantilla/img/logo-transparente.png' %}" style="width: 100%; opacity: 20%">
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-5 col-xl-4 ml-auto">
+                    <h1 class="text-white fw-300 mb-3 d-sm-block d-md-none">
+                        Secure login
+                    </h1>
+                    <div class="card p-4 rounded-plus bg-faded" style="justify-content: center">
+                        <div style="display: flex; justify-content: center;">
+                            <img src="{% static 'EVA/Plantilla/img/logo-arios-tr.png' %}" style="width: 80%">
+                        </div>
+                        <br>
+                        <form action="{% url 'Administracion:iniciar-sesion' %}" id="iniciar-sesion-form" method="post" class="needs-validation" novalidate>
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label class="form-label" for="usuario">Usuario</label>
+                                <input type="text" id="username" name="username" class="form-control" placeholder="Digite su usuario"  required>
+                                <div class="invalid-feedback">Por favor digite su usuario</div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="contraseña">Contraseña</label>
+                                <input type="password" id="password" name="password" class="form-control form-control-lg" placeholder="Digite su contraseña"  required style="font-size: 0.8125rem;">
+                                <div class="invalid-feedback">Por favor digite su contraseña</div>
+                            </div>
+                            <div class="form-group text-left">
+                                <a href="{% url 'Administracion:olvido-contrasena' %}" >
+                                    ¿Olvidó su contraseña?
+                                </a>
+                            </div>
+                            <div class="row no-gutters">
+                                <div class="col-lg-6 pl-lg-1 my-2">
+                                    <button id="js-login-btn" type="submit" class="btn btn-danger btn-block ">Iniciar sesión</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        $("#js-login-btn").click(function(event)
+        {
+            // Fetch form to apply custom Bootstrap validation
+            let form = $("#js-login");
+
+            if (form[0].checkValidity() === false) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.addClass('was-validated');
+        });
+    </script>
+{% endblock %}

@@ -17,7 +17,7 @@ class IniciarSesionView(View):
         if request.user.is_authenticated:
             return redirect(reverse('eva-index'))
         else:
-            return render(request, 'Administracion/inicio_sesion/iniciar-sesion.html')
+            return render(request, 'Administracion/Autenticacion/iniciar-sesion.html')
 
     def post(self, request):
         if request.user.is_authenticated:
@@ -33,7 +33,7 @@ class IniciarSesionView(View):
                 return redirect(reverse('eva-index'))
             else:
                 messages.warning(request, 'El usuario y/o la contraseña no son válidos')
-                return render(request, 'Administracion/inicio_sesion/iniciar-sesion.html')
+                return render(request, 'Administracion/Autenticacion/iniciar-sesion.html')
 
 
 class CerrarSesion(View):
@@ -54,7 +54,7 @@ class OlvidoContrasenaView(View):
         if request.user.is_authenticated:
             return redirect(reverse('eva-index'))
         else:
-            return render(request, 'Administracion/correo/olvido_contrasena.html')
+            return render(request, 'Administracion/Autenticacion/olvido_contrasena.html')
 
     def post(self, request):
         if request.user.is_authenticated:
@@ -86,4 +86,4 @@ class OlvidoContrasenaView(View):
                 return redirect(reverse('Administracion:iniciar-sesion'))
             else:
                 messages.warning(request, 'El correo electrónico no es válido')
-                return render(request, 'Administracion/correo/olvido_contrasena.html')
+                return render(request, 'Administracion/Autenticacion/olvido_contrasena.html')
