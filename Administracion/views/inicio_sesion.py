@@ -38,14 +38,10 @@ class IniciarSesionView(View):
 
 class CerrarSesion(View):
     def get(self, request):
+        autenticado = request.user.is_authenticated
         logout(request)
-        messages.success(request, 'Ha cerrado sesión con éxito')
-        return redirect(reverse('eva-index'))
-
-
-class TerminarSesion(View):
-    def get(self, request):
-        logout(request)
+        if autenticado:
+            messages.success(request, 'Ha cerrado sesión con éxito')
         return redirect(reverse('Administracion:iniciar-sesion'))
 
 
