@@ -1,10 +1,14 @@
 from django.contrib.auth.models import User
+from django.contrib.auth.tokens import default_token_generator
 from django.core.exceptions import ValidationError
 from django.contrib import messages
+from django.core.mail import EmailMultiAlternatives
 from django.shortcuts import render, redirect, reverse
 from django.db import IntegrityError
 from django.http import JsonResponse
-
+from django.template.loader import get_template
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 
 from Administracion.models import Cargo, Proceso, TipoContrato, CentroPoblado, Rango, Municipio, Departamento, \
     TipoIdentificacion
@@ -81,21 +85,36 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
                           datos_xa_render(self.OPCION, colaborador))
 
         if User.objects.filter(email__iexact=colaborador.usuario.email).exists():
-
             messages.warning(request, 'El correo electrónico ya está asociado a otro usuario')
             return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
                           datos_xa_render(self.OPCION, colaborador))
 
         else:
-            colaborador.usuario.set_password('Arios1234')
-            colaborador.genero = colaborador.genero[0:1]
             colaborador.usuario.save()
             # Se realiza esto ya que el campo usuario_id del modelo no es asignado automáticamente despues de guardar el
             # ususario en la BD.
             colaborador.usuario_id = colaborador.usuario.id
             colaborador.save()
             messages.success(request, 'Se ha agregado el colaborador  {0}'.format(colaborador.nombre_completo))
-            return redirect(reverse('TalentoHumano:colaboradores-index'))
+
+            dominio = request.get_host()
+            uidb64 = urlsafe_base64_encode(force_bytes(colaborador.usuario.pk))
+            token = default_token_generator.make_token(colaborador.usuario)
+
+            plaintext = get_template('Administracion/Autenticacion/correo/texto.txt')
+            htmly = get_template('Administracion/Autenticacion/correo/correo.html')
+
+            d = dict({'dominio': dominio, 'uidb64': uidb64, 'token': token, 'nombre': colaborador.usuario.first_name,
+                      'usuario': colaborador.usuario.username})
+
+            subject, from_email, to = 'Bienvenido a Arios Ingenieria SAS', 'noreply@arios-ing.com', \
+                                      colaborador.usuario.email
+            text_content = plaintext.render(d)
+            html_content = htmly.render(d)
+            msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+            msg.attach_alternative(html_content, "text/html")
+            msg.send()
+            return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
 
 
 class ColaboradorEditarView(AbstractEvaLoggedView):
@@ -160,7 +179,7 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
                 and not colaborador.foto_perfil:
             messages.success(request, 'No se hicieron cambios en el colaborador {0}'
                              .format(colaborador.nombre_completo))
-            return redirect(reverse('TalentoHumano:colaboradores-index'))
+            return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
 
         if colaborador.fecha_dotacion < colaborador.fecha_ingreso:
             messages.warning(request, 'La fecha de ingreso debe ser menor o igual a la fecha de entrega de dotación')
@@ -183,7 +202,7 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
             messages.success(request, 'Se ha actualizado el colaborador {0}'.format(colaborador.nombre_completo)
                              + ' con identificación {0}'.format(colaborador.identificacion))
 
-            return redirect(reverse('TalentoHumano:colaboradores-index'))
+            return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
 
 
 class ColaboradorEliminarView(AbstractEvaLoggedView):

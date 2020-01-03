@@ -106,7 +106,7 @@ class Colaborador(Persona, ModelDjangoExtensiones):
         colaborador.identificacion = datos.get('identificacion', '')
         colaborador.tipo_identificacion_id = datos.get('tipo_identificacion_id', '')
         colaborador.fecha_expedicion = string_to_date(datos.get('fecha_expedicion', ''))
-        colaborador.genero = datos.get('genero', '')
+        colaborador.genero = datos.get('genero', '')[0:1]
         colaborador.telefono = datos.get('telefono', '')
         colaborador.estado = datos.get('estado', 'True') == 'True'
         colaborador.foto_perfil = datos.get('foto_perfil', None)

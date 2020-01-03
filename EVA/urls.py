@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.auth import views as auth_views
 
 from EVA.views.index import IndexView
 
@@ -26,4 +27,11 @@ urlpatterns = [
     path('administracion/', include('Administracion.urls', namespace='administracion')),
     path('proyectos/', include('Proyectos.urls', namespace='proyectos')),
     path('talento-humano/', include('TalentoHumano.urls', namespace='talento-humano')),
+    path('password-reset-complete/',
+         auth_views.PasswordResetCompleteView.as_view(template_name='Administracion/Autenticacion/password_reset_complete.html')
+         , name="password_reset_complete"),
+    path('password-reset-confirm/<uidb64>/<token>/',
+         auth_views.PasswordResetConfirmView.as_view(template_name='Administracion/Autenticacion/password_reset_confirm.html'),
+         name="password_reset_confirm"),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

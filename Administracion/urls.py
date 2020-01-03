@@ -31,4 +31,5 @@ urlpatterns = [
          name='centros-poblados-json'),
     path('iniciar-sesion', inicio_sesion.IniciarSesionView.as_view(), name='iniciar-sesion'),
     path('cerrar-sesion', inicio_sesion.CerrarSesion.as_view(), name='cerrar-sesion'),
+    path('olvido-contrasena', inicio_sesion.OlvidoContrasenaView.as_view(), name='olvido-contrasena'),
 ]
