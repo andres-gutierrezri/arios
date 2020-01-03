@@ -90,7 +90,6 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
                           datos_xa_render(self.OPCION, colaborador))
 
         else:
-            colaborador.genero = colaborador.genero[0:1]
             colaborador.usuario.save()
             # Se realiza esto ya que el campo usuario_id del modelo no es asignado automáticamente despues de guardar el
             # ususario en la BD.
