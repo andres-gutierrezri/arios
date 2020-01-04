@@ -35,6 +35,16 @@ class Empresa(models.Model, ModelDjangoExtensiones):
         }
 
     @staticmethod
+    def get_default():
+        return Empresa(nombre='Empresa Default',
+                       nit='',
+                       logo='',
+                       estado=False,
+                       subempresa=False,
+                       empresa_ppal=None,
+                       id=0)
+
+    @staticmethod
     def from_dictionary(datos: dict) -> 'Empresa':
         """
         Crea una instancia de Empresas con los datos pasados en el diccionario.
@@ -46,7 +56,7 @@ class Empresa(models.Model, ModelDjangoExtensiones):
         empresa.nit = datos.get('nit', '')
         empresa.logo = datos.get('logo', '')
         empresa.estado = datos.get('estado', '') == 'True'
-        empresa.subempresa = datos.get('subempresa', 'True') == 'True'
+        empresa.subempresa = datos.get('subempresa', 'False') == 'True'
         empresa.empresa_ppal_id = datos.get('empresa_ppal_id', '')
 
         return empresa
