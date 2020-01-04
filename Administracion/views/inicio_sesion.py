@@ -28,7 +28,9 @@ class IniciarSesionView(View):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                request.session['colaborador'] = Colaborador.objects.get(usuario=request.user).foto_perfil.url
+                colaborador = Colaborador.objects.get(usuario=request.user)
+                request.session['colaborador'] = colaborador.foto_perfil.url
+                request.session['colaborador_id'] = colaborador.id
                 messages.success(request, 'Ha iniciado sesión como {0}'.format(username))
                 return redirect(reverse('eva-index'))
             else:

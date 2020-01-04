@@ -2,10 +2,12 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import QuerySet
 
+from EVA.General.modeljson import ModelDjangoExtensiones
 from EVA.General.modelmanagers import ManagerGeneral
 
 
-class Empresa(models.Model):
+class Empresa(models.Model, ModelDjangoExtensiones):
+    objects = ManagerGeneral()
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     nit = models.TextField(max_length=20, verbose_name='NIT', null=False, blank=False, unique=True)
     logo = models.ImageField(upload_to='logos-empresas', verbose_name='Logo', null=False, blank=False)
@@ -20,6 +22,23 @@ class Empresa(models.Model):
     class Meta:
         verbose_name = 'Empresa'
         verbose_name_plural = 'Empresas'
+
+    @staticmethod
+    def from_dictionary(datos: dict) -> 'Empresa':
+        """
+        Crea una instancia de Empresas con los datos pasados en el diccionario.
+        :param datos: Diccionario con los datos para crear Empresas.
+        :return: Instacia de entidad empresas con la información especificada en el diccionario.
+        """
+        empresa = Empresa()
+        empresa.nombre = datos.get('nombre', '')
+        empresa.nit = datos.get('nit', '')
+        empresa.logo = datos.get('logo', '')
+        empresa.estado = datos.get('estado', '') == 'True'
+        empresa.subempresa = datos.get('subempresa', 'True') == 'True'
+        empresa.empresa_ppal_id = datos.get('empresa_ppal_id', '')
+
+        return empresa
 
 
 class Cargo(models.Model):

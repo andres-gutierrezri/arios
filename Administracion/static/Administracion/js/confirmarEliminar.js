@@ -10,7 +10,7 @@ function fConfirmarEliminar(idElemento) {
 
 function fSweetAlert() {
     Swal.fire({
-        title: '¿Está seguro de eliminar este Tercero?',
+        title: '¿Está seguro de eliminar este item?',
         text: "Esta acción no se podrá revertir",
         type: 'warning',
         showCancelButton: true,
