@@ -54,8 +54,7 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
 
     def get(self, request):
         contratos = Contrato.objects.all()
-        return render(request, 'TalentoHumano/Colaboradores/crear-editar.html', datos_xa_render(self.OPCION),
-                      {'contratos': contratos})
+        return render(request, 'TalentoHumano/Colaboradores/crear-editar.html', datos_xa_render(self.OPCION))
 
     def post(self, request):
         colaborador = Colaborador.from_dictionary(request.POST)
@@ -137,7 +136,7 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
             contratos.append(contrato.contrato.id)
 
         return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
-                      datos_xa_render(self.OPCION, colaborador), {'contratos': contratos})
+                      datos_xa_render(self.OPCION, colaborador))
 
     def post(self, request, id):
         update_fields = ['direccion', 'talla_camisa', 'talla_zapatos', 'talla_pantalon', 'eps_id',
