@@ -95,7 +95,6 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
                           datos_xa_render(self.OPCION, colaborador))
 
         else:
-            colaborador.genero = colaborador.genero[0:1]
             colaborador.usuario.save()
             # Se realiza esto ya que el campo usuario_id del modelo no es asignado automáticamente despues de guardar el
             # ususario en la BD.
@@ -111,8 +110,8 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
             uidb64 = urlsafe_base64_encode(force_bytes(colaborador.usuario.pk))
             token = default_token_generator.make_token(colaborador.usuario)
 
-            plaintext = get_template('Administracion/correo/texto.txt')
-            htmly = get_template('Administracion/correo/correo.html')
+            plaintext = get_template('Administracion/Autenticacion/correo/texto.txt')
+            htmly = get_template('Administracion/Autenticacion/correo/correo.html')
 
             d = dict({'dominio': dominio, 'uidb64': uidb64, 'token': token, 'nombre': colaborador.usuario.first_name,
                       'usuario': colaborador.usuario.username})
