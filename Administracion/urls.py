@@ -38,5 +38,6 @@ urlpatterns = [
     path('empresas/add', empresas.EmpresaCrearView.as_view(), name='empresas-crear'),
     path('empresas/<int:id>/', empresas.EmpresaEditarView.as_view(), name='empresas-editar'),
     path('empresas/<int:id>/delete', empresas.EmpresaEliminarView.as_view(), name='empresas-eliminar'),
-    path('empresas/modal-seleccion', SeleccionEmpresaModalView.as_view(), name='empresas-modal-seleccion')
+    path('empresas/modal-seleccion', SeleccionEmpresaModalView.as_view(), name='empresas-modal-seleccion'),
+    path('sub-empresas/', empresas.SubempresasView.as_view(), name='sub-empresas')
 ]
