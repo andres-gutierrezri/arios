@@ -142,8 +142,24 @@ class Colaborador(Persona, ModelDjangoExtensiones):
                 return usuario
 
 
+class ColaboradorContratoManger(models.Manager):
+
+    def get_ids_contratos(self, colaborador_id: int = None, colaborador: Colaborador = None) -> QuerySet:
+        if colaborador:
+            colaborador_id = colaborador.id
+
+        filtro = {}
+        if colaborador_id:
+            filtro['colaborador_id'] = colaborador_id
+
+        return super().get_queryset().filter(**filtro).values_list('contrato_id', flat=True)
+
+    def get_ids_contratos_list(self, colaborador_id: int = None, colaborador: Colaborador = None) -> list:
+        return list(self.get_ids_contratos(colaborador_id, colaborador))
+
+
 class ColaboradorContrato(models.Model):
-    objects = ManagerGeneral()
+    objects = ColaboradorContratoManger()
     colaborador = models.ForeignKey(Colaborador, on_delete=models.DO_NOTHING, verbose_name='Colaborador', null=False,
                                     blank=False)
     contrato = models.ForeignKey(Contrato, on_delete=models.DO_NOTHING, verbose_name='Contrato', null=False,

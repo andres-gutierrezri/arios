@@ -261,10 +261,7 @@ def datos_xa_render(opcion: str = None, colaborador: Colaborador = None) -> dict
     caja_compensacion = EntidadesCAFE.objects.caja_compensacion_xa_select()
     jefe_inmediato = Colaborador.objects.get_xa_select()
     contrato = Contrato.objects.get_xa_select_activos()
-    contratos_colaborador = ColaboradorContrato.objects.filter(colaborador=colaborador)
-    contratos_colaborador_list = []
-    for ctr in contratos_colaborador:
-        contratos_colaborador_list.append(ctr.contrato.id)
+    contratos_colaborador = ColaboradorContrato.objects.get_ids_contratos_list(colaborador)
     cargo = Cargo.objects.get_xa_select_activos()
     proceso = Proceso.objects.get_xa_select_activos()
     tipo_contratos = TipoContrato.objects.tipos_laborares(True, True)
@@ -285,7 +282,7 @@ def datos_xa_render(opcion: str = None, colaborador: Colaborador = None) -> dict
              'tipo_contrato': tipo_contratos, 'rango': rango, 'departamentos': departamentos,
              'talla_camisa': talla_camisa, 'talla_zapatos': talla_zapatos, 'talla_pantalon': talla_pantalon,
              'tipo_identificacion': tipo_identificacion, 'opcion': opcion, 'genero': genero,
-             'contratos_colaborador': contratos_colaborador_list}
+             'contratos_colaborador': contratos_colaborador}  # _list}
 
     if colaborador:
         municipios = Municipio.objects.get_xa_select_activos() \
