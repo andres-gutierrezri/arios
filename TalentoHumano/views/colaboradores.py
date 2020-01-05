@@ -51,7 +51,6 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
     OPCION = 'crear'
 
     def get(self, request):
-        contratos = Contrato.objects.all()
         return render(request, 'TalentoHumano/Colaboradores/crear-editar.html', datos_xa_render(self.OPCION))
 
     def post(self, request):
@@ -128,10 +127,6 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
 
     def get(self, request, id):
         colaborador = Colaborador.objects.get(id=id)
-        contrato_colaborador = ColaboradorContrato.objects.filter(colaborador_id=id)
-        contratos = []
-        for contrato in contrato_colaborador:
-            contratos.append(contrato.contrato.id)
 
         return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
                       datos_xa_render(self.OPCION, colaborador))
