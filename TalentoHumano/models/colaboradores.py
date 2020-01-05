@@ -51,8 +51,6 @@ class Colaborador(Persona, ModelDjangoExtensiones):
     salario = models.IntegerField(verbose_name="Salario", null=True, blank=False)
     jefe_inmediato = models.ForeignKey('self', on_delete=models.DO_NOTHING, verbose_name='Jefe inmediato', null=True,
                                        blank=True)
-    contrato = models.ForeignKey(Contrato, on_delete=models.DO_NOTHING, verbose_name='Contrato', null=False,
-                                 blank=False)
     cargo = models.ForeignKey(Cargo, on_delete=models.DO_NOTHING, verbose_name='Cargo', null=False, blank=False)
     proceso = models.ForeignKey(Proceso, on_delete=models.DO_NOTHING, verbose_name='Proceso', null=False, blank=False)
     tipo_contrato = models.ForeignKey(TipoContrato, on_delete=models.DO_NOTHING, verbose_name='Tipo de contrato',
@@ -96,7 +94,6 @@ class Colaborador(Persona, ModelDjangoExtensiones):
         colaborador.jefe_inmediato_id = datos.get('jefe_inmediato_id', '')
         if colaborador.jefe_inmediato_id == '':
             colaborador.jefe_inmediato_id = None
-        colaborador.contrato_id = datos.get('contrato_id', '')
         colaborador.cargo_id = datos.get('cargo_id', '')
         colaborador.proceso_id = datos.get('proceso_id', '')
         colaborador.tipo_contrato_id = datos.get('tipo_contrato_id', '')
@@ -143,3 +140,31 @@ class Colaborador(Persona, ModelDjangoExtensiones):
                 usuario.username = usuario_n
 
                 return usuario
+
+
+class ColaboradorContratoManger(models.Manager):
+
+    def get_ids_contratos(self, colaborador_id: int = None, colaborador: Colaborador = None) -> QuerySet:
+        if colaborador:
+            colaborador_id = colaborador.id
+
+        filtro = {}
+        if colaborador_id:
+            filtro['colaborador_id'] = colaborador_id
+
+        return super().get_queryset().filter(**filtro).values_list('contrato_id', flat=True)
+
+    def get_ids_contratos_list(self, colaborador_id: int = None, colaborador: Colaborador = None) -> list:
+        return list(self.get_ids_contratos(colaborador_id, colaborador))
+
+
+class ColaboradorContrato(models.Model):
+    objects = ColaboradorContratoManger()
+    colaborador = models.ForeignKey(Colaborador, on_delete=models.DO_NOTHING, verbose_name='Colaborador', null=False,
+                                    blank=False)
+    contrato = models.ForeignKey(Contrato, on_delete=models.DO_NOTHING, verbose_name='Contrato', null=False,
+                                 blank=False)
+
+    def __str__(self):
+        return str(self.contrato.id)
+

@@ -18,14 +18,15 @@ from TalentoHumano.models import Colaborador, EntidadesCAFE
 
 
 # Create your views here.
+from TalentoHumano.models.colaboradores import ColaboradorContrato
 
 
 class ColaboradoresIndexView(AbstractEvaLoggedView):
 
     def get(self, request, id_contrato):
         if id_contrato != 0:
-            colaboradores = Colaborador.objects.filter(contrato_id=id_contrato).order_by('usuario__first_name',
-                                                                                         'usuario__last_name')
+            colaboradores = Colaborador.objects.filter(colaboradorcontrato__contrato_id=id_contrato)\
+                .order_by('usuario__first_name', 'usuario__last_name')
         else:
             colaboradores = Colaborador.objects.all().order_by('usuario__first_name', 'usuario__last_name')
 
@@ -39,12 +40,11 @@ class ColaboradoresPerfilView(AbstractEvaLoggedView):
 
     def get(self, request, id):
         colaborador = Colaborador.objects.get(id=id)
-        colaboradores = Colaborador.objects.filter(contrato=colaborador.contrato_id)[:9]
-        contrato = Contrato.objects.get(id=colaborador.contrato.id)
-
+        colaboradores = Colaborador.objects.all()[:9]
+        contratos = ColaboradorContrato.objects.filter(colaborador=colaborador)
         return render(request, 'TalentoHumano/Colaboradores/perfil.html', {'colaborador': colaborador,
-                                                                           'colaboradores': colaboradores,
-                                                                           'contrato': contrato})
+                                                                           'contratos': contratos,
+                                                                           'colaboradores': colaboradores})
 
 
 class ColaboradoresCrearView(AbstractEvaLoggedView):
@@ -55,6 +55,7 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
 
     def post(self, request):
         colaborador = Colaborador.from_dictionary(request.POST)
+        contratos = request.POST.getlist('contrato_id[]', None)
 
         colaborador.foto_perfil = request.FILES.get('foto_perfil', None)
         if not colaborador.foto_perfil:
@@ -74,12 +75,12 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
                         break
             return render(request, 'TalentoHumano/Colaboradores/crear-editar.html', datos)
 
-        if colaborador.fecha_dotacion <= colaborador.fecha_ingreso:
+        if colaborador.fecha_dotacion < colaborador.fecha_ingreso:
             messages.warning(request, 'La fecha de ingreso debe ser menor o igual a la fecha de entrega de dotación')
             return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
                           datos_xa_render(self.OPCION, colaborador))
 
-        if colaborador.fecha_ingreso <= colaborador.fecha_examen:
+        if colaborador.fecha_ingreso < colaborador.fecha_examen:
             messages.warning(request, 'La fecha de examen debe ser menor o igual a la fecha de ingreso')
             return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
                           datos_xa_render(self.OPCION, colaborador))
@@ -95,6 +96,10 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
             # ususario en la BD.
             colaborador.usuario_id = colaborador.usuario.id
             colaborador.save()
+
+            for contrato in contratos:
+                ColaboradorContrato.objects.create(contrato_id=contrato, colaborador=colaborador)
+
             messages.success(request, 'Se ha agregado el colaborador  {0}'.format(colaborador.nombre_completo))
 
             dominio = request.get_host()
@@ -129,11 +134,13 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
     def post(self, request, id):
         update_fields = ['direccion', 'talla_camisa', 'talla_zapatos', 'talla_pantalon', 'eps_id',
                          'arl_id', 'afp_id', 'caja_compensacion_id', 'fecha_ingreso', 'fecha_examen', 'fecha_dotacion',
-                         'salario', 'jefe_inmediato_id', 'contrato_id', 'cargo_id', 'proceso_id', 'tipo_contrato_id',
+                         'salario', 'jefe_inmediato_id', 'cargo_id', 'proceso_id', 'tipo_contrato_id',
                          'lugar_nacimiento_id', 'rango_id', 'fecha_nacimiento', 'identificacion',
                          'tipo_identificacion_id', 'fecha_expedicion', 'genero', 'telefono', 'estado']
 
         colaborador = Colaborador.from_dictionary(request.POST)
+        contratos = request.POST.getlist('contrato_id[]', None)
+
         colaborador.id = int(id)
         colaborador.foto_perfil = request.FILES.get('foto_perfil', None)
         if colaborador.foto_perfil:
@@ -175,8 +182,18 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
         if 'first_name' in cambios_usuario or 'last_name' in cambios_usuario:
             cambios_usuario.append('username')
 
+        colaborador_contrato_db = ColaboradorContrato.objects.filter(colaborador_id=id)
+        cant = colaborador_contrato_db.count()
+
+        cont = 0
+        if cant == len(contratos):
+            for clb in colaborador_contrato_db:
+                for ctr in contratos:
+                    if clb.contrato.id == int(ctr):
+                        cont += 1
+
         if colaborador_db.comparar(colaborador, excluir='foto_perfil') and len(cambios_usuario) <= 0\
-                and not colaborador.foto_perfil:
+                and not colaborador.foto_perfil and cont == cant:
             messages.success(request, 'No se hicieron cambios en el colaborador {0}'
                              .format(colaborador.nombre_completo))
             return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
@@ -196,6 +213,11 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
                 colaborador.usuario.save(update_fields=cambios_usuario)
 
             colaborador.save(update_fields=update_fields)
+
+            ColaboradorContrato.objects.filter(colaborador_id=id).delete()
+            for contrato in contratos:
+                ColaboradorContrato.objects.create(contrato_id=contrato, colaborador_id=id)
+
             if colaborador.foto_perfil:
                 request.session['colaborador'] = Colaborador.objects.get(usuario=request.user).foto_perfil.url
 
@@ -239,6 +261,7 @@ def datos_xa_render(opcion: str = None, colaborador: Colaborador = None) -> dict
     caja_compensacion = EntidadesCAFE.objects.caja_compensacion_xa_select()
     jefe_inmediato = Colaborador.objects.get_xa_select()
     contrato = Contrato.objects.get_xa_select_activos()
+    contratos_colaborador = ColaboradorContrato.objects.get_ids_contratos_list(colaborador)
     cargo = Cargo.objects.get_xa_select_activos()
     proceso = Proceso.objects.get_xa_select_activos()
     tipo_contratos = TipoContrato.objects.tipos_laborares(True, True)
@@ -258,7 +281,8 @@ def datos_xa_render(opcion: str = None, colaborador: Colaborador = None) -> dict
              'jefe_inmediato': jefe_inmediato, 'contrato': contrato, 'cargo': cargo, 'proceso': proceso,
              'tipo_contrato': tipo_contratos, 'rango': rango, 'departamentos': departamentos,
              'talla_camisa': talla_camisa, 'talla_zapatos': talla_zapatos, 'talla_pantalon': talla_pantalon,
-             'tipo_identificacion': tipo_identificacion, 'opcion': opcion, 'genero': genero}
+             'tipo_identificacion': tipo_identificacion, 'opcion': opcion, 'genero': genero,
+             'contratos_colaborador': contratos_colaborador}  # _list}
 
     if colaborador:
         municipios = Municipio.objects.get_xa_select_activos() \

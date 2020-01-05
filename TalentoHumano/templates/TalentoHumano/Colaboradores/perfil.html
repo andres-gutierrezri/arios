@@ -63,16 +63,19 @@
                                                         <div class="col-6">
                                                             <div class="text-center py-3">
                                                                 <h5 class="mb-0 fw-700">
-                                                                    {{ colaborador.contrato }}
-                                                                    <small class="text-muted mb-0">Contrato</small>
+                                                                    <small class="text-muted mb-0">Contratos</small>
+                                                                    {% for contrato in contratos %}
+                                                                    {{ contrato.contrato }}<br>
+                                                                    {% endfor %}
+
                                                                 </h5>
                                                             </div>
                                                         </div>
                                                         <div class="col-6">
                                                             <div class="text-center py-3">
                                                                 <h5 class="mb-0 fw-700">
-                                                                     {{ colaborador.jefe_inmediato.nombre_completo }}
                                                                     <small class="text-muted mb-0">Jefe inmediato</small>
+                                                                     {{ colaborador.jefe_inmediato.nombre_completo }}
                                                                 </h5>
                                                             </div>
                                                         </div>
@@ -116,7 +119,7 @@
                                                         <div class="col-12">
                                                             <div class="p-3">
                                                                 <h2 class="mb-0 fs-xl">
-                                                                    <strong> Colaboradores vinculados al contrato {{ colaborador.contrato }} </strong>
+                                                                    <strong> Colaboradores </strong>
                                                                 </h2>
                                                             </div>
                                                         </div>
@@ -130,7 +133,7 @@
                                                         {% endfor %}
                                                         <div class="col-12">
                                                             <div class="p-3 text-center">
-                                                                <a href="{% url 'TalentoHumano:colaboradores-index' contrato.id %}" class="btn-link font-weight-bold">Ver todos</a>
+                                                                <a href="{% url 'TalentoHumano:colaboradores-index' 0 %}" class="btn-link font-weight-bold">Ver todos</a>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -185,7 +188,7 @@
                                                                     <b>Jefe inmediato:</b> {{ colaborador.jefe_inmediato.nombre_completo }}
                                                                 </small>
                                                                 <small class="mt-0 mb-3 text-muted">
-                                                                    <b>Contrato:</b> {{ colaborador.contrato }}
+                                                                    <b>Contrato:</b> {% for contrato in contratos %}{% if contratos.last == contrato %}{{ contrato.contrato }}{% else %}{{ contrato.contrato }}{{ ', ' }}{% endif %}{% endfor %}
                                                                 </small>
                                                                 <small class="mt-0 mb-3 text-muted">
                                                                     <b>Tipo de contrato:</b> {{ colaborador.tipo_contrato }}
