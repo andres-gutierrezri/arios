@@ -31,7 +31,7 @@ class IniciarSesionView(View):
                 colaborador = Colaborador.objects.get(usuario=request.user)
                 request.session['colaborador'] = colaborador.foto_perfil.url
                 request.session['colaborador_id'] = colaborador.id
-                request.session['empresa'] = colaborador.empresa_to_json()
+                request.session['empresa'] = colaborador.empresa_to_dict()
                 messages.success(request, 'Ha iniciado sesión como {0}'.format(username))
                 return redirect(reverse('eva-index'))
             else:

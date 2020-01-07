@@ -25,7 +25,7 @@ class SeleccionEmpresaModalView(AbstractEvaLoggedView):
             body_unicode = request.body.decode('utf-8')
             body = json.loads(body_unicode)
             empresa = Empresa.objects.get(id=int(body['idEmpresa']))
-            request.session['empresa'] = empresa.empresa_to_json()
+            request.session['empresa'] = empresa.to_dict()
             colaborador = Colaborador.objects.get(usuario=request.user)
             colaborador.empresa_sesion_id = int(body['idEmpresa'])
             colaborador.save(update_fields=['empresa_sesion_id'])
