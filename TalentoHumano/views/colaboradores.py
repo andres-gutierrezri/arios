@@ -137,7 +137,8 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
                          'arl_id', 'afp_id', 'caja_compensacion_id', 'fecha_ingreso', 'fecha_examen', 'fecha_dotacion',
                          'salario', 'jefe_inmediato_id', 'cargo_id', 'proceso_id', 'tipo_contrato_id',
                          'lugar_nacimiento_id', 'rango_id', 'fecha_nacimiento', 'identificacion',
-                         'tipo_identificacion_id', 'fecha_expedicion', 'genero', 'telefono', 'estado']
+                         'tipo_identificacion_id', 'fecha_expedicion', 'genero', 'telefono', 'estado',
+                         'nombre_contacto', 'grupo_sanguineo', 'telefono_contacto', 'parentesco']
 
         colaborador = Colaborador.from_dictionary(request.POST)
         contratos = request.POST.getlist('contrato_id[]', None)
@@ -193,8 +194,8 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
                     if clb.contrato.id == int(ctr):
                         cont += 1
 
-        if colaborador_db.comparar(colaborador, excluir='foto_perfil') and len(cambios_usuario) <= 0\
-                and not colaborador.foto_perfil and cont == cant:
+        if colaborador_db.comparar(colaborador, excluir=['foto_perfil', 'empresa_sesion']) and len(cambios_usuario) \
+                <= 0 and not colaborador.foto_perfil and cont == cant:
             messages.success(request, 'No se hicieron cambios en el colaborador {0}'
                              .format(colaborador.nombre_completo))
             return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
@@ -277,13 +278,15 @@ def datos_xa_render(opcion: str = None, colaborador: Colaborador = None) -> dict
     genero = [{'campo_valor': 'M', 'campo_texto': 'Masculino'}, {'campo_valor': 'F', 'campo_texto': 'Femenino'},
               {'campo_valor': 'O', 'campo_texto': 'Otro'}]
     tipo_identificacion = TipoIdentificacion.objects.get_xa_select_activos()
+    grupo_sanguineo = [{'campo_valor': grupo_sanguineo, 'campo_texto': str(grupo_sanguineo)} for grupo_sanguineo in
+                    ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']]
 
     datos = {'arl': arl, 'eps': eps, 'afp': afp, 'caja_compensacion': caja_compensacion,
              'jefe_inmediato': jefe_inmediato, 'contrato': contrato, 'cargo': cargo, 'proceso': proceso,
              'tipo_contrato': tipo_contratos, 'rango': rango, 'departamentos': departamentos,
              'talla_camisa': talla_camisa, 'talla_zapatos': talla_zapatos, 'talla_pantalon': talla_pantalon,
              'tipo_identificacion': tipo_identificacion, 'opcion': opcion, 'genero': genero,
-             'contratos_colaborador': contratos_colaborador}  # _list}
+             'contratos_colaborador': contratos_colaborador, 'grupo_sanguineo': grupo_sanguineo}
 
     if colaborador:
         municipios = Municipio.objects.get_xa_select_activos() \

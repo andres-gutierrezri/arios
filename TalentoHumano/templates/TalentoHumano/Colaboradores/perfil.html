@@ -167,7 +167,19 @@
                                                                     <b>Fecha de nacimiento:</b> {{ colaborador.fecha_nacimiento|date:'Y-m-d' }}
                                                                 </small>
                                                                 <small class="mt-0 mb-3 text-muted">
-                                                                    <b>Lugar de nacimiento:</b> {{ colaborador.lugar_nacimiento }}, {{ colaborador.lugar_nacimiento.municipio.departamento }}
+                                                                    <b>Lugar de nacimiento:</b> {{ colaborador.lugar_nacimiento |lower|capfirst }}, {{ colaborador.lugar_nacimiento.municipio.departamento |lower|capfirst}}
+                                                                </small>
+                                                                <small class="mt-0 mb-3 text-muted">
+                                                                    <b>Grupo sanguíneo:</b> {{ colaborador.grupo_sanguineo }}
+                                                                </small>
+                                                                <small class="mt-0 mb-3 text-muted">
+                                                                    <b>En caso de emergencia llamar a:</b> {{ colaborador.nombre_contacto }}
+                                                                </small>
+                                                                <small class="mt-0 mb-3 text-muted">
+                                                                    <b>Teléfono:</b> {{ colaborador.telefono_contacto }}
+                                                                </small>
+                                                                <small class="mt-0 mb-3 text-muted">
+                                                                    <b>Parentesco:</b> {{ colaborador.parentesco }}
                                                                 </small>
                                                             </h5>
                                                         </div>

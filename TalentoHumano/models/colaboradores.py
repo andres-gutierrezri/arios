@@ -61,7 +61,11 @@ class Colaborador(Persona, ModelDjangoExtensiones):
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
     foto_perfil = models.ImageField(upload_to='foto_perfil', blank=True, default='foto_perfil/profile-none.png')
     empresa_sesion = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa Sesion',
-                                        null=True, blank=False)
+                                       null=True, blank=False)
+    grupo_sanguineo = models.CharField(max_length=3, verbose_name="Grupo sanguíneo", null=False, blank=False)
+    nombre_contacto = models.CharField(max_length=100, verbose_name='Nombre del contacto', null=False, blank=False)
+    parentesco = models.CharField(max_length=100, verbose_name='Parentesco', null=False, blank=False)
+    telefono_contacto = models.CharField(max_length=20, verbose_name='Teléfono del contacto', null=False, blank=False)
 
     class Meta:
         verbose_name = 'Colaborador'
@@ -119,6 +123,10 @@ class Colaborador(Persona, ModelDjangoExtensiones):
         usuario_creado = Colaborador.crear_usuario(datos.get('nombre', ''), datos.get('apellido', ''),
                                                    datos.get('correo', ''),  colaborador.usuario_id)
         colaborador.usuario = usuario_creado
+        colaborador.nombre_contacto = datos.get('nombre_contacto', '')
+        colaborador.telefono_contacto = datos.get('telefono_contacto', '')
+        colaborador.grupo_sanguineo = datos.get('grupo_sanguineo', '')
+        colaborador.parentesco = datos.get('parentesco', '')
         return colaborador
 
     @staticmethod
@@ -175,4 +183,7 @@ class ColaboradorContrato(models.Model):
 
     def __str__(self):
         return str(self.contrato.id)
+
+    class Meta:
+        unique_together = ('colaborador', 'contrato')
 
