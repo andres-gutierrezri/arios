@@ -1,1 +1,3 @@
-iniciarTablaExportar([0, 1, 3]);
+$(document).ready(function() {
+    iniciarTablaExportar([0, 1, 3]);
+});
