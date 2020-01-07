@@ -106,8 +106,10 @@ class EmpresaEliminarView(AbstractEvaLoggedView):
 class SubempresaView(AbstractEvaLoggedView):
     def get(self, request):
         subempresas = Empresa.objects.filter(subempresa=True, empresa_ppal_id=get_id_empresa_global(request))
+        empresa_actual = Empresa.objects.get(colaborador__usuario=request.user)
         return render(request, 'Administracion/Subempresas/index.html', {'subempresas': subempresas,
-                                                                         'fecha': datetime.now()})
+                                                                         'fecha': datetime.now(),
+                                                                         'empresa_actual': empresa_actual})
 
 
 class SubempresaCrearView(AbstractEvaLoggedView):
