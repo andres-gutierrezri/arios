@@ -25,12 +25,10 @@ class ColaboradoresIndexView(AbstractEvaLoggedView):
 
     def get(self, request, id_contrato):
         if id_contrato != 0:
-            colaboradores = ColaboradorContrato.objects.filter(contrato_id=id_contrato)\
-                .order_by('colaborador__usuario__first_name',
-                          'colaborador__usuario__last_name')
+            colaboradores = Colaborador.objects.filter(colaboradorcontrato__contrato_id=id_contrato)\
+                .order_by('usuario__first_name', 'usuario__last_name')
         else:
-            colaboradores = ColaboradorContrato.objects.all().distinct('colaborador__usuario__first_name')\
-                .order_by('colaborador__usuario__first_name', 'colaborador__usuario__last_name')
+            colaboradores = Colaborador.objects.all().order_by('usuario__first_name', 'usuario__last_name')
 
         contratos = Contrato.objects.get_xa_select_activos()
         return render(request, 'TalentoHumano/Colaboradores/index.html', {'colaboradores': colaboradores,
@@ -53,9 +51,7 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
     OPCION = 'crear'
 
     def get(self, request):
-        contratos = Contrato.objects.all()
-        return render(request, 'TalentoHumano/Colaboradores/crear-editar.html', datos_xa_render(self.OPCION),
-                      {'contratos': contratos})
+        return render(request, 'TalentoHumano/Colaboradores/crear-editar.html', datos_xa_render(self.OPCION))
 
     def post(self, request):
         colaborador = Colaborador.from_dictionary(request.POST)
@@ -95,7 +91,6 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
                           datos_xa_render(self.OPCION, colaborador))
 
         else:
-            colaborador.genero = colaborador.genero[0:1]
             colaborador.usuario.save()
             # Se realiza esto ya que el campo usuario_id del modelo no es asignado automáticamente despues de guardar el
             # ususario en la BD.
@@ -112,8 +107,8 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
             uidb64 = urlsafe_base64_encode(force_bytes(colaborador.usuario.pk))
             token = default_token_generator.make_token(colaborador.usuario)
 
-            plaintext = get_template('Administracion/correo/texto.txt')
-            htmly = get_template('Administracion/correo/correo.html')
+            plaintext = get_template('Administracion/Autenticacion/correo/texto.txt')
+            htmly = get_template('Administracion/Autenticacion/correo/correo.html')
 
             d = dict({'dominio': dominio, 'uidb64': uidb64, 'token': token, 'nombre': colaborador.usuario.first_name,
                       'usuario': colaborador.usuario.username})
@@ -133,13 +128,9 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
 
     def get(self, request, id):
         colaborador = Colaborador.objects.get(id=id)
-        contrato_colaborador = ColaboradorContrato.objects.filter(colaborador_id=id)
-        contratos = []
-        for contrato in contrato_colaborador:
-            contratos.append(contrato.contrato.id)
 
         return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
-                      datos_xa_render(self.OPCION, colaborador), {'contratos': contratos})
+                      datos_xa_render(self.OPCION, colaborador))
 
     def post(self, request, id):
         update_fields = ['direccion', 'talla_camisa', 'talla_zapatos', 'talla_pantalon', 'eps_id',
@@ -272,10 +263,7 @@ def datos_xa_render(opcion: str = None, colaborador: Colaborador = None) -> dict
     caja_compensacion = EntidadesCAFE.objects.caja_compensacion_xa_select()
     jefe_inmediato = Colaborador.objects.get_xa_select()
     contrato = Contrato.objects.get_xa_select_activos()
-    contratos_colaborador = ColaboradorContrato.objects.filter(colaborador=colaborador)
-    contratos_colaborador_list = []
-    for ctr in contratos_colaborador:
-        contratos_colaborador_list.append(ctr.contrato.id)
+    contratos_colaborador = ColaboradorContrato.objects.get_ids_contratos_list(colaborador)
     cargo = Cargo.objects.get_xa_select_activos()
     proceso = Proceso.objects.get_xa_select_activos()
     tipo_contratos = TipoContrato.objects.tipos_laborares(True, True)
@@ -298,7 +286,7 @@ def datos_xa_render(opcion: str = None, colaborador: Colaborador = None) -> dict
              'tipo_contrato': tipo_contratos, 'rango': rango, 'departamentos': departamentos,
              'talla_camisa': talla_camisa, 'talla_zapatos': talla_zapatos, 'talla_pantalon': talla_pantalon,
              'tipo_identificacion': tipo_identificacion, 'opcion': opcion, 'genero': genero,
-             'contratos_colaborador': contratos_colaborador_list, 'grupo_sanguineo': grupo_sanguineo}
+             'contratos_colaborador': contratos_colaborador, 'grupo_sanguineo': grupo_sanguineo}
 
     if colaborador:
         municipios = Municipio.objects.get_xa_select_activos() \

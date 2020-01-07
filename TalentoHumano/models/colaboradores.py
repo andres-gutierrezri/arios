@@ -77,16 +77,11 @@ class Colaborador(Persona, ModelDjangoExtensiones):
         }]
         return campos
 
-    def empresa_to_json(self):
-        return {
-            "nombre": self.empresa_sesion.nombre,
-            "nit": self.empresa_sesion.nit,
-            "logo": self.empresa_sesion.logo.url,
-            "id": self.empresa_sesion.id,
-            "subempresa": self.empresa_sesion.subempresa,
-            "empresa_ppal_id": 0 if self.empresa_sesion.empresa_ppal is None
-            else self.empresa_sesion.empresa_ppal.id
-        }
+    def empresa_to_dict(self):
+        if self.empresa_sesion:
+            return self.empresa_sesion.to_dict()
+        else:
+            return Empresa.get_default().to_dict()
 
     @staticmethod
     def from_dictionary(datos: dict) -> 'Colaborador':
@@ -120,7 +115,7 @@ class Colaborador(Persona, ModelDjangoExtensiones):
         colaborador.identificacion = datos.get('identificacion', '')
         colaborador.tipo_identificacion_id = datos.get('tipo_identificacion_id', '')
         colaborador.fecha_expedicion = string_to_date(datos.get('fecha_expedicion', ''))
-        colaborador.genero = datos.get('genero', '')
+        colaborador.genero = datos.get('genero', '')[0:1]
         colaborador.telefono = datos.get('telefono', '')
         colaborador.estado = datos.get('estado', 'True') == 'True'
         colaborador.foto_perfil = datos.get('foto_perfil', None)
@@ -163,8 +158,24 @@ class Colaborador(Persona, ModelDjangoExtensiones):
                 return usuario
 
 
+class ColaboradorContratoManger(models.Manager):
+
+    def get_ids_contratos(self, colaborador_id: int = None, colaborador: Colaborador = None) -> QuerySet:
+        if colaborador:
+            colaborador_id = colaborador.id
+
+        filtro = {}
+        if colaborador_id:
+            filtro['colaborador_id'] = colaborador_id
+
+        return super().get_queryset().filter(**filtro).values_list('contrato_id', flat=True)
+
+    def get_ids_contratos_list(self, colaborador_id: int = None, colaborador: Colaborador = None) -> list:
+        return list(self.get_ids_contratos(colaborador_id, colaborador))
+
+
 class ColaboradorContrato(models.Model):
-    objects = ManagerGeneral()
+    objects = ColaboradorContratoManger()
     colaborador = models.ForeignKey(Colaborador, on_delete=models.DO_NOTHING, verbose_name='Colaborador', null=False,
                                     blank=False)
     contrato = models.ForeignKey(Contrato, on_delete=models.DO_NOTHING, verbose_name='Contrato', null=False,

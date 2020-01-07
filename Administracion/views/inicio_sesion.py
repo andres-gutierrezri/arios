@@ -17,7 +17,7 @@ class IniciarSesionView(View):
         if request.user.is_authenticated:
             return redirect(reverse('eva-index'))
         else:
-            return render(request, 'Administracion/inicio_sesion/iniciar-sesion.html')
+            return render(request, 'Administracion/Autenticacion/iniciar-sesion.html')
 
     def post(self, request):
         if request.user.is_authenticated:
@@ -31,24 +31,20 @@ class IniciarSesionView(View):
                 colaborador = Colaborador.objects.get(usuario=request.user)
                 request.session['colaborador'] = colaborador.foto_perfil.url
                 request.session['colaborador_id'] = colaborador.id
-                request.session['empresa'] = colaborador.empresa_to_json()
+                request.session['empresa'] = colaborador.empresa_to_dict()
                 messages.success(request, 'Ha iniciado sesión como {0}'.format(username))
                 return redirect(reverse('eva-index'))
             else:
                 messages.warning(request, 'El usuario y/o la contraseña no son válidos')
-                return render(request, 'Administracion/inicio_sesion/iniciar-sesion.html')
+                return render(request, 'Administracion/Autenticacion/iniciar-sesion.html')
 
 
 class CerrarSesion(View):
     def get(self, request):
+        autenticado = request.user.is_authenticated
         logout(request)
-        messages.success(request, 'Ha cerrado sesión con éxito')
-        return redirect(reverse('eva-index'))
-
-
-class TerminarSesion(View):
-    def get(self, request):
-        logout(request)
+        if autenticado:
+            messages.success(request, 'Ha cerrado sesión con éxito')
         return redirect(reverse('Administracion:iniciar-sesion'))
 
 
@@ -57,7 +53,7 @@ class OlvidoContrasenaView(View):
         if request.user.is_authenticated:
             return redirect(reverse('eva-index'))
         else:
-            return render(request, 'Administracion/correo/olvido_contrasena.html')
+            return render(request, 'Administracion/Autenticacion/olvido_contrasena.html')
 
     def post(self, request):
         if request.user.is_authenticated:
@@ -70,8 +66,8 @@ class OlvidoContrasenaView(View):
                 uidb64 = urlsafe_base64_encode(force_bytes(usuario.pk))
                 token = default_token_generator.make_token(usuario)
 
-                plaintext = get_template('Administracion/correo/texto.txt')
-                htmly = get_template('Administracion/correo/correo.html')
+                plaintext = get_template('Administracion/Autenticacion/correo/texto.txt')
+                htmly = get_template('Administracion/Autenticacion/correo/correo.html')
 
                 d = dict(
                     {'dominio': dominio, 'uidb64': uidb64, 'token': token, 'nombre': usuario.first_name,
@@ -89,4 +85,4 @@ class OlvidoContrasenaView(View):
                 return redirect(reverse('Administracion:iniciar-sesion'))
             else:
                 messages.warning(request, 'El correo electrónico no es válido')
-                return render(request, 'Administracion/correo/olvido_contrasena.html')
+                return render(request, 'Administracion/Autenticacion/olvido_contrasena.html')

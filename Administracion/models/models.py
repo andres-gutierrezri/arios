@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
 from django.db.models import QuerySet
 
 from EVA.General.modeljson import ModelDjangoExtensiones
@@ -23,16 +23,13 @@ class Empresa(models.Model, ModelDjangoExtensiones):
         verbose_name = 'Empresa'
         verbose_name_plural = 'Empresas'
 
-    def empresa_to_json(self):
-        return {
-            "nombre": self.nombre,
-            "nit": self.nit,
-            "logo": self.logo.url,
-            "id": self.id,
-            "subempresa": self.subempresa,
-            "empresa_ppal_id": 0 if self.empresa_ppal is None
-            else self.empresa_ppal.id
-        }
+    def to_dict(self, campos=None, excluir=None):
+        emp_dict = super().to_dict(excluir='logo')
+        emp_dict['logo'] = self.logo.url
+        if not self.empresa_ppal and (campos is None or (campos is not None and 'empresal_ppal' in campos))\
+                and (excluir is None or (excluir is not None and 'empresal_ppal' not in campos)):
+            emp_dict['empresa_ppal'] = 0
+        return emp_dict
 
     @staticmethod
     def from_dictionary(datos: dict) -> 'Empresa':
@@ -50,6 +47,16 @@ class Empresa(models.Model, ModelDjangoExtensiones):
         empresa.empresa_ppal_id = datos.get('empresa_ppal_id', '')
 
         return empresa
+
+    @staticmethod
+    def get_default():
+        return Empresa(nombre='Empresa Default',
+                       nit='',
+                       logo='',
+                       estado=False,
+                       subempresa=False,
+                       empresa_ppal=None,
+                       id=0)
 
 
 class Cargo(models.Model):
