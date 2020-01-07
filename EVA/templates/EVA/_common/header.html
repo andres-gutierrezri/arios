@@ -29,6 +29,9 @@
             </li>
         </ul>
     </div>
+    <div class="hidden-md-down dropdown-icon-menu position-relative">
+        <img class="seleccionEmpresaGlobal logo-nav" src="{{ request.session.empresa.logo }}"  data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="{{ request.session.empresa.nombre}}">
+    </div>
 
     <!-- DOC: mobile button appears during mobile width -->
     <div class="hidden-lg-up">

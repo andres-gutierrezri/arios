@@ -5,7 +5,7 @@ import unicodedata
 from django.db.models import F, QuerySet, CharField, Value
 from django.db.models.functions import Concat
 
-from Administracion.models import Persona, Cargo, Proceso, TipoContrato, CentroPoblado, Rango
+from Administracion.models import Persona, Cargo, Proceso, TipoContrato, CentroPoblado, Rango, Empresa
 from EVA.General.conversiones import string_to_date
 from EVA.General.modeljson import ModelDjangoExtensiones
 from EVA.General.modelmanagers import ManagerGeneral
@@ -60,6 +60,8 @@ class Colaborador(Persona, ModelDjangoExtensiones):
     rango = models.ForeignKey(Rango, on_delete=models.DO_NOTHING, verbose_name='Rango', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
     foto_perfil = models.ImageField(upload_to='foto_perfil', blank=True, default='foto_perfil/profile-none.png')
+    empresa_sesion = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa Sesion',
+                                        null=True, blank=False)
 
     class Meta:
         verbose_name = 'Colaborador'
@@ -70,6 +72,12 @@ class Colaborador(Persona, ModelDjangoExtensiones):
             'foto_perfil': self.foto_perfil.url
         }]
         return campos
+
+    def empresa_to_dict(self):
+        if self.empresa_sesion:
+            return self.empresa_sesion.to_dict()
+        else:
+            return Empresa.get_default().to_dict()
 
     @staticmethod
     def from_dictionary(datos: dict) -> 'Colaborador':

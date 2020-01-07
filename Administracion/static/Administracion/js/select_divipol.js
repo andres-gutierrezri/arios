@@ -1,6 +1,6 @@
 'use strict';
 
-let URLDomain = document.location.origin+"/";
+let DivipolURLDomain = document.location.origin+"/";
 
 let departamento = $("#departamento_id_select_id");
 let municipio = $("#municipio_id_select_id");
@@ -12,7 +12,7 @@ $(document).ready(function() {
 
     departamento.change(function () {
         $.ajax({
-            url: URLDomain + "administracion/departamentos/" + this.value + "/municipios/json",
+            url: DivipolURLDomain + "administracion/departamentos/" + this.value + "/municipios/json",
             type: 'GET',
             context: document.body,
             success: function (data) {
@@ -35,7 +35,7 @@ $(document).ready(function() {
     });
     municipio.change(function () {
         $.ajax({
-            url: URLDomain + "administracion/municipios/" + this.value + "/centros-poblados/json",
+            url: DivipolURLDomain + "administracion/municipios/" + this.value + "/centros-poblados/json",
             type: 'GET',
             context: document.body,
             success: function (data) {

@@ -28,6 +28,9 @@
 
         {% include 'EVA/_common/load_settings.html' %}
 
+        <!-- Modal, aqui se cargara el modal para la seleccion de la cooperativa-->
+        <div class="modal fade"  tabindex="-1" id="selectEmpresaGlobal" role="dialog"></div>
+
         <!-- BEGIN Page Wrapper -->
         <div class="page-wrapper">
             <div class="page-inner">
@@ -143,6 +146,8 @@
         <script src="{% static 'EVA/Plantilla/js/app.bundle.js' %}"></script>
         <script src="{% static 'EVA/Plantilla/js/notifications/toastr/toastr.js' %}"></script>
         <script src="{% static 'EVA/Plantilla/js/custom/notificacion_toast.js' %}"></script>
+        <script src="{% static 'Administracion/js/seleccionEmpresa.js' %}"></script>
+        <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
 
        {% block scripts %}
        {% endblock %}

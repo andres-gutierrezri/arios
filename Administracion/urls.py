@@ -16,6 +16,7 @@ Including another URLconf
 
 from django.urls import path
 from Administracion.views import terceros, views, inicio_sesion, empresas
+from Administracion.views.seleccion_empresa import SeleccionEmpresaModalView
 
 app_name = 'Administracion'
 
@@ -36,4 +37,5 @@ urlpatterns = [
     path('empresas/add', empresas.EmpresaCrearView.as_view(), name='empresas-crear'),
     path('empresas/<int:id>/', empresas.EmpresaEditarView.as_view(), name='empresas-editar'),
     path('empresas/<int:id>/delete', empresas.EmpresaEliminarView.as_view(), name='empresas-eliminar'),
+    path('empresas/modal-seleccion', SeleccionEmpresaModalView.as_view(), name='empresas-modal-seleccion')
 ]

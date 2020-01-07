@@ -29,3 +29,9 @@ input[type=checkbox] ~ label:before {
     color: #666666!important;
 }
 
+.seleccionEmpresaGlobal {
+    height:60px;
+    width:auto;
+    max-width:500px;
+    padding-bottom: 6px;
+}
