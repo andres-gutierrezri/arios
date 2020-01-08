@@ -1,7 +1,7 @@
-from sqlite3 import IntegrityError
 
 from django.core.exceptions import ValidationError
 from django.contrib import messages
+from django.db import IntegrityError
 from django.http import JsonResponse
 from django.urls import reverse
 
@@ -90,16 +90,16 @@ class EmpresaEditarView(AbstractEvaLoggedView):
 
 class EmpresaEliminarView(AbstractEvaLoggedView):
     def post(self, request, id):
+        empresa = None
         try:
             empresa = Empresa.objects.get(id=id)
             empresa.delete()
             messages.success(request, 'Se ha eliminado la empresa {0}'.format(empresa.nombre))
             return JsonResponse({"Mensaje": "OK"})
 
-        except:
-            empresa = Empresa.objects.get(id=id)
-            messages.warning(request, 'No se puede eliminar la empresa {0}'.format(empresa.nombre) +
-                             ' porque ya se encuentra asociado a otros módulos')
+        except IntegrityError:
+            messages.warning(request, 'No se puede eliminar la empresa {0}'
+                                      ' porque ya se encuentra asociado a otros módulos'.format(empresa.nombre))
             return JsonResponse({"Mensaje": "No se puede eliminar"})
 
 

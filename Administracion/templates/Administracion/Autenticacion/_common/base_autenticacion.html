@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>
+            {% block titulo %}{% endblock %}
+        </title>
+        <meta name="description" content="Login">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no, minimal-ui">
+        <!-- Call App Mode on ios devices -->
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <!-- Remove Tap Highlight on Windows Phone IE -->
+        <meta name="msapplication-tap-highlight" content="no">
+        <!-- base css -->
+        <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/vendors.bundle.css' %}">
+        <link rel="stylesheet" media="screen, print" href="{% static  'EVA/Plantilla/css/app.bundle.css' %}">
+        <!-- Place favicon.ico in the root directory -->
+        <link rel="apple-touch-icon" sizes="180x180" href="{% static 'EVA/Plantilla/img/favicon/apple-touch-icon.png' %}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{% static 'EVA/Plantilla/img/favicon/favicon-32x32.png' %}">
+        <link rel="mask-icon" href="{% static 'EVA/Plantilla/img/favicon/safari-pinned-tab.svg' %}" color="#5bbad5">
+        <!-- Optional: page related CSS-->
+        <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-brands.css' %}">
+        <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/custom/generales.css' %}">
+        <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/toastr/toastr.css' %}">
+    </head>
+    <body>
+    <div class="messages">
+        {% if messages %}
+            {% for message in messages %}
+                <input class="alert.{{ message.tags }}" style="display: none" id="mensaje" value="{{ message }}">
+            {% endfor %}
+        {% endif %}
+    </div>
+    <div class="page-wrapper">
+        <div class="page-inner bg-brand-gradient">
+            <div class="page-content-wrapper bg-transparent m-0">
+                {% block main %}
+
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'EVA/Plantilla/js/vendors.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/app.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/notifications/toastr/toastr.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/notificacion_toast.js' %}"></script>
+    {% block scripts %}
+    {% endblock %}
+
+    </body>
+    {% include 'EVA/_common/footer.html' %}
+</html>
+
