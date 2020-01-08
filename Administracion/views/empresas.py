@@ -105,6 +105,19 @@ class EmpresaEliminarView(AbstractEvaLoggedView):
             return JsonResponse({"Mensaje": "No se puede eliminar"})
 
 
+def datos_xa_render(opcion: str, empresa: Empresa = None) -> dict:
+    """
+    Datos necesarios para la creación de los html de Empresas.
+    :param opcion: valor de la acción a realizar 'crear' o 'editar'
+    :param empresa: Es opcional si se requiere pre cargar datos.
+    :return: Un diccionario con los datos.
+    """
+
+    datos = {'empresa': empresa, 'opcion': opcion}
+
+    return datos
+
+
 class SubempresaView(AbstractEvaLoggedView):
     def get(self, request):
         subempresas = Empresa.objects.filter(subempresa=True, empresa_ppal_id=get_id_empresa_global(request))
@@ -115,9 +128,10 @@ class SubempresaView(AbstractEvaLoggedView):
 
 
 class SubempresaCrearView(AbstractEvaLoggedView):
+    OPCION = 'crear'
+
     def get(self, request):
-        OPCION = 'crear'
-        return render(request, 'Administracion/Subempresas/crear-editar.html', {'opcion': OPCION})
+        return render(request, 'Administracion/Subempresas/crear-editar.html', {'opcion': self.OPCION})
 
     def post(self, request):
 
@@ -133,18 +147,20 @@ class SubempresaCrearView(AbstractEvaLoggedView):
 
         if Empresa.objects.filter(nit=nit):
             messages.warning(request, 'Ya existe una sub-empresa con número de NIT {0}'.format(nit))
-            return render(request, 'Administracion/Subempresas/crear-editar.html', {'subempresa': subempresa})
+            return render(request, 'Administracion/Subempresas/crear-editar.html',
+                          datos_xa_render_subempresa(self.OPCION, subempresa))
         subempresa.save()
         messages.success(request, 'Se ha agregado la sub-empresa {0}'.format(subempresa.nombre))
         return redirect(reverse('Administracion:sub-empresas'))
 
 
 class SubempresaEditarView(AbstractEvaLoggedView):
+    OPCION = 'editar'
+
     def get(self, request, id):
-        OPCION = 'editar'
         subempresa = Empresa.objects.get(id=id)
-        return render(request, 'Administracion/Subempresas/crear-editar.html', {'subempresa': subempresa,
-                                                                                'opcion': OPCION})
+        return render(request, 'Administracion/Subempresas/crear-editar.html',
+                      datos_xa_render_subempresa(self.OPCION, subempresa))
 
     def post(self, request, id):
         update_fields = ['nombre', 'nit', 'estado']
@@ -161,14 +177,17 @@ class SubempresaEditarView(AbstractEvaLoggedView):
 
         if Empresa.objects.filter(nit=subempresa.nit).exclude(id=id).exists():
             messages.warning(request, 'Ya existe una sub-empresa con número de NIT {0}'.format(subempresa.nit))
-            return render(request, 'Administracion/Subempresas/crear-editar.html', {'subempresa': subempresa})
+            return render(request, 'Administracion/Subempresas/crear-editar.html',
+                          datos_xa_render_subempresa(self.OPCION, subempresa))
 
         subempresa_db = Empresa.objects.get(id=id)
+
+        # empresa_ppal y subempresa  se ignoran en la comparación ya que nunca están disponibles en el formulario.
         if subempresa_db.comparar(subempresa, excluir=['logo', 'empresa_ppal', 'subempresa']) and not subempresa.logo:
             messages.success(request, 'No se hicieron cambios en la sub-empresa {0}'.format(subempresa.nombre))
-
-        subempresa.save(update_fields=update_fields)
-        messages.success(request, 'Se ha actualizado la sub-empresa {0}'.format(subempresa.nombre))
+        else:
+            subempresa.save(update_fields=update_fields)
+            messages.success(request, 'Se ha actualizado la sub-empresa {0}'.format(subempresa.nombre))
         return redirect(reverse('Administracion:sub-empresas'))
 
 
@@ -180,21 +199,21 @@ class SubEmpresaEliminarView(AbstractEvaLoggedView):
             messages.success(request, 'Se ha eliminado la sub-empresa {0}'.format(subempresa.nombre))
             return JsonResponse({"Mensaje": "OK"})
 
-        except:
+        except IntegrityError:
             subempresa = Empresa.objects.get(id=id)
             messages.warning(request, 'No se puede eliminar la empresa {0}'.format(subempresa.nombre) +
                              ' porque ya se encuentra asociado a otros módulos')
             return JsonResponse({"Mensaje": "No se puede eliminar"})
 
 
-def datos_xa_render(opcion: str, empresa: Empresa = None) -> dict:
+def datos_xa_render_subempresa(opcion: str, subempresa: Empresa = None) -> dict:
     """
-    Datos necesarios para la creación de los html de Empresas.
+    Datos necesarios para la creación de los html de Subempresas.
     :param opcion: valor de la acción a realizar 'crear' o 'editar'
-    :param empresa: Es opcional si se requiere pre cargar datos.
+    :param subempresa: Es opcional si se requiere pre cargar datos.
     :return: Un diccionario con los datos.
     """
 
-    datos = {'empresa': empresa, 'opcion': opcion}
+    datos = {'subempresa': subempresa, 'opcion': opcion}
 
     return datos
