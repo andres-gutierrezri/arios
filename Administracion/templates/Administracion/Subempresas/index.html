@@ -6,6 +6,8 @@
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/sweetalert2/sweetalert2.bundle.css'%}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/theme-demo.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'Administracion/css/Empresas/generales.css' %}">
+
 {% endblock styles %}
 
 {% block main %}
@@ -45,7 +47,7 @@
                                                             <tr>
                                                                 <td>{{ subempresa.nombre }}</td>
                                                                 <td>{{ subempresa.nit}}</td>
-                                                                <td><img src="{{ subempresa.logo.url }}" alt="" style="height: 12%"></td>
+                                                                <td><img class="empresa-logo-index" src="{{ subempresa.logo.url }}" alt=""></td>
                                                                 <td>{% if subempresa.estado == True %}
                                                                     <span class="badge badge-primary">Activo</span>
                                                                     {% else %}
