@@ -24,10 +24,15 @@ class Empresa(models.Model, ModelDjangoExtensiones):
         verbose_name_plural = 'Empresas'
 
     def to_dict(self, campos=None, excluir=None):
-        emp_dict = super().to_dict(excluir='logo')
-        emp_dict['logo'] = self.logo.url
-        if not self.empresa_ppal and (campos is None or (campos is not None and 'empresal_ppal' in campos))\
-                and (excluir is None or (excluir is not None and 'empresal_ppal' not in campos)):
+        excluir_cp = excluir.copy()
+        excluir_cp.append('logo')
+        emp_dict = super().to_dict(excluir=excluir_cp)
+
+        if excluir is None or (excluir is not None and 'logo' not in excluir):
+            emp_dict['logo'] = self.logo.url
+
+        if not self.empresa_ppal and (campos is None or (campos is not None and 'empresa_ppal' in campos))\
+                and (excluir is None or (excluir is not None and 'empresa_ppal' not in excluir)):
             emp_dict['empresa_ppal'] = 0
         return emp_dict
 
