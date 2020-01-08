@@ -58,16 +58,6 @@ class Empresa(models.Model, ModelDjangoExtensiones):
 
         return empresa
 
-    @staticmethod
-    def get_default():
-        return Empresa(nombre='Empresa Default',
-                       nit='',
-                       logo='',
-                       estado=False,
-                       subempresa=False,
-                       empresa_ppal=None,
-                       id=0)
-
 
 class Cargo(models.Model):
     objects = ManagerGeneral()
