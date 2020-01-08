@@ -145,10 +145,19 @@ class SubempresaCrearView(AbstractEvaLoggedView):
         subempresa = Empresa(nombre=nombre, nit=nit, logo=logo, estado=True, subempresa=True,
                              empresa_ppal_id=empresa_ppal_id)
 
-        if Empresa.objects.filter(nit=nit):
-            messages.warning(request, 'Ya existe una sub-empresa con número de NIT {0}'.format(nit))
-            return render(request, 'Administracion/Subempresas/crear-editar.html',
-                          datos_xa_render_subempresa(self.OPCION, subempresa))
+        try:
+            # empresa_ppal y subempresa  se ignoran en la comparación ya que nunca están disponibles en el formulario.
+            subempresa.full_clean(exclude=['estado', 'subempresa', 'empresa_ppal'])
+        except ValidationError as errores:
+            datos = datos_xa_render_subempresa(self.OPCION, subempresa)
+            datos['errores'] = errores.message_dict
+            if 'nit' in errores.message_dict:
+                for mensaje in errores.message_dict['nit']:
+                    if mensaje.startswith('Ya existe'):
+                        messages.warning(request, 'Ya existe una sub-empresa con NIT {0}'.format(subempresa.nit))
+                        datos['errores'] = ''
+                        break
+            return render(request, 'Administracion/Subempresas/crear-editar.html', datos)
         subempresa.save()
         messages.success(request, 'Se ha agregado la sub-empresa {0}'.format(subempresa.nombre))
         return redirect(reverse('Administracion:sub-empresas'))
@@ -174,6 +183,14 @@ class SubempresaEditarView(AbstractEvaLoggedView):
             update_fields.append('logo')
         subempresa.subempresa = True
         subempresa.estado = request.POST.get('estado', 'False') == 'True'
+
+        try:
+            # empresa_ppal y subempresa  se ignoran en la comparación ya que nunca están disponibles en el formulario.
+            subempresa.full_clean(validate_unique=False, exclude=['logo', 'subempresa', 'empresa_ppal'])
+        except ValidationError as errores:
+            datos = datos_xa_render_subempresa(self.OPCION, subempresa)
+            datos['errores'] = errores.message_dict
+            return render(request, 'Administracion/Subempresas/crear-editar.html', datos)
 
         if Empresa.objects.filter(nit=subempresa.nit).exclude(id=id).exists():
             messages.warning(request, 'Ya existe una sub-empresa con número de NIT {0}'.format(subempresa.nit))
