@@ -33,6 +33,7 @@ class EmpresaCrearView(AbstractEvaLoggedView):
         if not empresa.logo:
             empresa.logo = 'logos-empresas/empresa-default.jpg'
         try:
+            # empresa_ppal y subempresa  se ignoran en la comparación ya que nunca están disponibles en el formulario.
             empresa.full_clean(exclude=['estado', 'subempresa', 'empresa_ppal'])
         except ValidationError as errores:
             datos = datos_xa_render(self.OPCION, empresa)
@@ -67,6 +68,7 @@ class EmpresaEditarView(AbstractEvaLoggedView):
         if empresa.logo:
             update_fields.append('logo')
         try:
+            # empresa_ppal y subempresa  se ignoran en la comparación ya que nunca están disponibles en el formulario.
             empresa.full_clean(validate_unique=False, exclude=['logo', 'subempresa', 'empresa_ppal'])
         except ValidationError as errores:
             datos = datos_xa_render(self.OPCION, empresa)
