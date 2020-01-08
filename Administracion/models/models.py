@@ -24,12 +24,30 @@ class Empresa(models.Model, ModelDjangoExtensiones):
         verbose_name_plural = 'Empresas'
 
     def to_dict(self, campos=None, excluir=None):
-        emp_dict = super().to_dict(excluir='logo')
-        emp_dict['logo'] = self.logo.url
-        if not self.empresa_ppal and (campos is None or (campos is not None and 'empresal_ppal' in campos))\
-                and (excluir is None or (excluir is not None and 'empresal_ppal' not in campos)):
+        if excluir:
+            excluir_cp = excluir.copy()
+            excluir_cp.append('logo')
+        else:
+            excluir_cp = None
+        emp_dict = super().to_dict(excluir=excluir_cp)
+
+        if excluir is None or (excluir is not None and 'logo' not in excluir):
+            emp_dict['logo'] = self.logo.url
+
+        if not self.empresa_ppal and (campos is None or (campos is not None and 'empresa_ppal' in campos))\
+                and (excluir is None or (excluir is not None and 'empresa_ppal' not in excluir)):
             emp_dict['empresa_ppal'] = 0
         return emp_dict
+
+    @staticmethod
+    def get_default():
+        return Empresa(nombre='Empresa Default',
+                       nit='',
+                       logo='',
+                       estado=False,
+                       subempresa=False,
+                       empresa_ppal=None,
+                       id=0)
 
     @staticmethod
     def from_dictionary(datos: dict) -> 'Empresa':
@@ -43,20 +61,10 @@ class Empresa(models.Model, ModelDjangoExtensiones):
         empresa.nit = datos.get('nit', '')
         empresa.logo = datos.get('logo', '')
         empresa.estado = datos.get('estado', '') == 'True'
-        empresa.subempresa = datos.get('subempresa', 'True') == 'True'
+        empresa.subempresa = datos.get('subempresa', 'False') == 'True'
         empresa.empresa_ppal_id = datos.get('empresa_ppal_id', '')
 
         return empresa
-
-    @staticmethod
-    def get_default():
-        return Empresa(nombre='Empresa Default',
-                       nit='',
-                       logo='',
-                       estado=False,
-                       subempresa=False,
-                       empresa_ppal=None,
-                       id=0)
 
 
 class Cargo(models.Model):

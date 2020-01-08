@@ -1,7 +1,7 @@
 {% extends 'Administracion/_common/base_administracion.html' %}
 {% load static %}
 {% load eva_tags %}
-<title>{% block titulo %}{% if opcion == 'editar' %}Editar Empresas{% else %} Crear Empresas {% endif %}{% endblock %}</title>
+<title>{% block titulo %}{% if opcion == 'editar' %}Editar Sub-empresas{% else %} Crear Sub-empresas {% endif %}{% endblock %}</title>
 {% block styles %}
 <!-- DEMO related CSS below -->
 	<link rel="stylesheet" media="screen, print" href="{%static 'EVA/Plantilla/css/fa-brands.css' %}">
@@ -14,7 +14,7 @@
     <div class="panel-container show">
         <div class="header">
              <h1 class="header-title">
-                <i class='far fa-briefcase'></i> Empresas: <span class='fw-300'>{% if opcion == 'editar' %} Editar {% else%} Crear {% endif %}</span>
+                <i class='far fa-sitemap'></i> Sub-empresas: <span class='fw-300'>{% if opcion == 'editar' %} Editar {% else%} Crear {% endif %}</span>
                  <br>
                  <br>
              </h1>
@@ -27,25 +27,25 @@
                             <div class="panel-group">
                                 <div class="panel-body">
                                      {% if opcion == 'editar' %}
-                                    <form action="{% url 'Administracion:empresas-editar' empresa.id %}" id="empresas-form" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                                    <form action="{% url 'Administracion:sub-empresas-editar' subempresa.id %}" id="empresas-form" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
                                      {% else %}
-                                    <form action="{% url 'Administracion:empresas-crear' %}" id="empresas-form" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                                    <form action="{% url 'Administracion:sub-empresas-crear' %}" id="empresas-form" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
                                      {% endif %}
                                         {% csrf_token %}
                                         <div class="form-group">
                                             <div class="form-row">
                                                 <div class="col-md-6">
-                                                    {% input_text_tag 'nombre' 'Nombre' placeholder="Ingrese el nombre" required="" maxlength="100" value=empresa.nombre mensaje_validacion='Por favor digite el nombre.' invalido=errores.nombre %}
+                                                    {% input_text_tag 'nombre' 'Nombre' placeholder="Ingrese el nombre" required="" maxlength="100" value=subempresa.nombre mensaje_validacion='Por favor digite el nombre' invalido=errores.nombre %}
                                                 </div>
                                                 <div class="col-md-6">
-                                                    {% input_text_tag 'nit' 'NIT' placeholder="Ingrese el nit de la empresa" required="" maxlength="20" value=empresa.nit mensaje_validacion='Por favor digite el nit de la empresa' invalido=errores.nit %}
+                                                    {% input_text_tag 'nit' 'NIT' placeholder="Ingrese el nit" required="" maxlength="20" value=subempresa.nit mensaje_validacion='Por favor digite el nit' invalido=errores.nit %}
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <div class="form-row">
                                                 <div class="col-md-6">
-                                                    {% input_file_tag 'logo' 'Logo de la Empresa' placeholder="Seleccione el logo de la Empresa" class='custom-file-input'  invalido=errores.logo accept="image/png, .jpeg, .jpg, image/gif"  %}
+                                                    {% input_file_tag 'logo' 'Logo de la sub-empresa' placeholder="Seleccione el logo de la sub-empresa" class='custom-file-input'  invalido=errores.logo accept="image/png, .jpeg, .jpg, image/gif"  %}
                                                 </div>
                                             </div>
                                         </div>
@@ -53,7 +53,7 @@
                                              <div class="form-group">
                                                 <div class="form-row">
                                                     <div class="col-md-6">
-                                                        {% input_checkbox_tag 'estado' 'Estado' value=empresa.estado  %}
+                                                        {% input_checkbox_tag 'estado' 'Estado' value=subempresa.estado  %}
                                                     </div>
                                                 </div>
                                             </div>
@@ -63,7 +63,7 @@
                                                 <button id="guardar" class="btn btn-primary btn-block">{% if opcion == 'editar' %} Actualizar {% else %} Agregar {% endif %}</button>
                                             </div>
                                             <div style="padding-left: 15px">
-                                                <a href="{% url 'Administracion:empresas' %}" class="btn btn-danger btn-block">Cancelar</a>
+                                                <a href="{% url 'Administracion:sub-empresas' %}" class="btn btn-danger btn-block">Cancelar</a>
                                             </div>
                                         </div>
                                     </form>
