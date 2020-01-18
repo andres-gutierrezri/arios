@@ -10,7 +10,7 @@ class ResolucionFacturacion (models.Model):
     numero_resolucion = models.CharField(verbose_name='Número de resolución', max_length=30, null=False, blank=False)
     numero_desde = models.IntegerField(verbose_name='Número desde', null=False, blank=False)
     numero_hasta = models.IntegerField(verbose_name='Número hasta', null=False, blank=False)
-    prefijo = models.CharField(verbose_name='Prefijo', max_length=10, null=True, blank=False)
+    prefijo = models.CharField(verbose_name='Prefijo', max_length=10, null=True, blank=True)
     fecha_creacion = models.DateField(auto_now_add=True, verbose_name='Fecha de Creación', null=False, blank=False)
     fecha_modificacion = models.DateField(verbose_name='Fecha de Modificación', null=True, blank=False)
     usuario_crea = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario Crea", null=False,
