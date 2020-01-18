@@ -193,4 +193,23 @@ class Persona(models.Model):
         return '{0} {1}'.format(self.usuario.first_name, self.usuario.last_name) if self.usuario else 'Sin nombre'
 
 
+class Impuesto(models.Model, ModelDjangoExtensiones):
+    nombre = models.CharField(verbose_name="Nombre", max_length=50, null=False, blank=False)
+    porcentaje = models.DecimalField(verbose_name='Porcentaje', decimal_places=2, max_digits=5, null=False)
+    aplica_item = models.BooleanField(verbose_name='Aplica a Item', null=False)
+    aplica_global = models.BooleanField(verbose_name='Aplica Global', null=False)
+    estado = models.BooleanField(verbose_name='Estado', null=False, default=True)
+    fecha_creacion = models.DateField(auto_now_add=True, verbose_name='Fecha de Creación', null=False, blank=False)
+    fecha_modificacion = models.DateField(verbose_name='Fecha de Modificación', null=True, blank=False)
+    usuario_crea = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario Crea", null=False,
+                                     blank=False, related_name='ImpuestoCrea')
+    usuario_modifica = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario Modifica", null=True,
+                                         blank=False, related_name='ImpuestoModifica')
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name = 'Impuesto'
+        verbose_name_plural = 'Impuestos'
 
