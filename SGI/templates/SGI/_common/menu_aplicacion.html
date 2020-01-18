@@ -1,0 +1,17 @@
+{% for proceso in procesos %}
+
+    <li>
+        <a href="#" title="Form Plugins" data-filter-tags="form plugins">
+            <i class="fal fa-calculator"></i>
+            <span class="nav-link-text" data-i18n="nav.form_plugins">{{ proceso.nombre }}</span>
+        </a>
+        <ul>
+            <li>
+                <a href="{% url 'SGI:documentos-index' proceso.id  %}" title="Color Picker" data-filter-tags="form plugins color picker">
+                    <span class="nav-link-text" data-i18n="nav.form_plugins_color_picker">Documentos</span>
+                </a>
+            </li>
+
+        </ul>
+    </li>
+{% endfor %}
