@@ -8,7 +8,7 @@ from SGI.models import Documento, GrupoDocumento
 
 class IndexView(AbstractEvaLoggedView):
     def get(self, request, id):
-        documentos = Documento.objects.filter(id=id)
+        documentos = Documento.objects.filter(grupo_documento_id=id)
         procesos = Proceso.objects.all()
         grupo_documentos = GrupoDocumento.objects.all()
         return render(request, 'SGI/documentos/index.html', {'documentos': documentos, 'procesos': procesos,
