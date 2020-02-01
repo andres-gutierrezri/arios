@@ -1,10 +1,15 @@
 from django.db import models
+from datetime import datetime
 from EVA.General.conversiones import string_to_date
+from django.contrib.auth.models import User
 # Create your models here.
 from Administracion.models import Empresa, Proceso
+from EVA.General.modeljson import ModelDjangoExtensiones
+from EVA.General.modelmanagers import ManagerGeneral
 
 
 class GrupoDocumento(models.Model):
+    objects = ManagerGeneral()
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     descripcion = models.CharField(max_length=100, verbose_name='Descripción', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
@@ -26,15 +31,18 @@ class CadenaAprobacionEncabezado(models.Model):
         return self.nombre
 
     class Meta:
-        verbose_name = 'Cadena de aprobación'
-        verbose_name_plural = 'Cadenas de aprobaciones'
+        verbose_name = 'Cadena de aprobación encabezado'
+        verbose_name_plural = 'Cadenas de aprobaciones encabezados'
 
 
-class Documento(models.Model):
+class Documento(models.Model, ModelDjangoExtensiones):
+    objects = ManagerGeneral()
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     codigo = models.CharField(max_length=20, verbose_name='Código', null=False, blank=False)
-    fecha = models.DateTimeField(verbose_name='Fecha', null=False, blank=False)
-    version = models.DecimalField(verbose_name='Versión', max_digits=2, decimal_places=2, null=False, blank=False)
+    fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False, blank=False)
+    fecha_modificacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Modificación', null=True,
+                                              blank=False)
+    version = models.CharField(max_length=4, verbose_name='Versión', null=False, blank=False)
     cadena_aprobacion = models.ForeignKey(CadenaAprobacionEncabezado, on_delete=models.DO_NOTHING,
                                           verbose_name='Cadena de aprobación', null=True, blank=False)
     grupo_documento = models.ForeignKey(GrupoDocumento, on_delete=models.DO_NOTHING,
@@ -47,6 +55,7 @@ class Documento(models.Model):
     class Meta:
         verbose_name = 'Documento'
         verbose_name_plural = 'Documentos'
+        unique_together = ('codigo', 'version', 'grupo_documento', 'proceso')
 
     @staticmethod
     def from_dictionary(datos: dict) -> 'Documento':
@@ -58,7 +67,7 @@ class Documento(models.Model):
         documento = Documento()
         documento.nombre = datos.get('nombre', '')
         documento.codigo = datos.get('codigo', '')
-        documento.fecha = string_to_date(datos.get('fecha', ''))
+        documento.fecha_modificacion = datetime.now()
         documento.version = datos.get('version', '')
         documento.cadena_aprobacion_id = datos.get('cadena_aprobacion_id', '')
         documento.grupo_documento_id = datos.get('grupo_documento_id', '')
