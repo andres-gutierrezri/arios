@@ -21,6 +21,8 @@ app_name = 'SGI'
 
 urlpatterns = [
     path('index/', sgi.Index.as_view(), name='index'),
-    path('procesos/<int:id>/documentos', documentos.IndexView.as_view(), name='documentos-index'),
+    path('procesos/<int:id>/grupos-documentos', documentos.IndexView.as_view(), name='documentos-index'),
+    path('procesos/<int:id_proceso>/grupos-documentos/<int:id_grupo>/documentos/add',
+         documentos.DocumentosCrearView.as_view(), name='documentos-crear'),
 
 ]
