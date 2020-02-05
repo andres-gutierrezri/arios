@@ -53,6 +53,41 @@ class DocumentosCrearView(AbstractEvaLoggedView):
         return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
 
+class DocumentoscargarView(AbstractEvaLoggedView):
+    OPCION = 'cargar'
+
+    def get(self, request, id_proceso, id_grupo):
+
+        proceso = Proceso.objects.get(id=id_proceso)
+        grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
+        return render(request, 'SGI/documentos/cargar-documento.html',
+                      datos_xa_render(self.OPCION, proceso=proceso, grupo_documento=grupo_documento))
+
+    def post(self, request):
+        empresa = Empresa.from_dictionary(request.POST)
+        empresa.estado = True
+        empresa.logo = request.FILES.get('logo', None)
+        if not empresa.logo:
+            empresa.logo = 'logos-empresas/empresa-default.jpg'
+        try:
+            # empresa_ppal y subempresa  se ignoran en la comparación ya que nunca están disponibles en el formulario.
+            empresa.full_clean(exclude=['estado', 'subempresa', 'empresa_ppal'])
+        except ValidationError as errores:
+            datos = datos_xa_render(self.OPCION, empresa)
+            datos['errores'] = errores.message_dict
+            if 'nit' in errores.message_dict:
+                for mensaje in errores.message_dict['nit']:
+                    if mensaje.startswith('Ya existe'):
+                        messages.warning(request, 'Ya existe una empresa con nit {0}'.format(empresa.nit))
+                        datos['errores'] = ''
+                        break
+            return render(request, 'Administracion/Empresas/crear-editar.html', datos)
+
+        empresa.save()
+        messages.success(request, 'Se ha agregado la empresa {0}'.format(empresa.nombre))
+        return redirect(reverse('Administracion:empresas'))
+
+
 # region Métodos de ayuda
 
 
