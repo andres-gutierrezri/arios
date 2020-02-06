@@ -60,6 +60,9 @@ class Tercero(models.Model, ModelDjangoExtensiones):
                                        verbose_name='Centro poblado', null=True, blank=False)
     tipo_tercero = models.ForeignKey(TipoTercero, on_delete=models.DO_NOTHING, verbose_name='Tipo Tercero', null=True,
                                      blank=False)
+    direccion = models.CharField(max_length=100, verbose_name='Dirección', null=False, blank=False)
+    telefono = models.CharField(max_length=30, verbose_name='Teléfono', null=False, blank=False)
+    fax = models.CharField(max_length=30, verbose_name='fax', null=True, blank=True)
 
     def __str__(self):
         return self.nombre
