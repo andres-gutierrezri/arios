@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models import QuerySet
+from django.db.models import QuerySet, F, Value, CharField
+from django.db.models.functions import Concat
 
 from EVA.General.modeljson import ModelDjangoExtensiones
 from EVA.General.modelmanagers import ManagerGeneral
@@ -193,7 +194,17 @@ class Persona(models.Model):
         return '{0} {1}'.format(self.usuario.first_name, self.usuario.last_name) if self.usuario else 'Sin nombre'
 
 
+class ImpuestoManager(ManagerGeneral):
+    def get_xa_select_porcentaje(self) -> QuerySet:
+
+        return super().get_queryset().filter(estado=True).values(campo_texto=F(self.campo_texto))\
+            .annotate(campo_valor=Concat(Value('{"id":'), 'id', Value(', "porcentaje":'), 'porcentaje', Value('}'),
+                                         output_field=CharField())) \
+            .order_by(self.campo_texto)
+
+
 class Impuesto(models.Model, ModelDjangoExtensiones):
+    objects = ImpuestoManager()
     nombre = models.CharField(verbose_name="Nombre", max_length=50, null=False, blank=False)
     porcentaje = models.DecimalField(verbose_name='Porcentaje', decimal_places=2, max_digits=5, null=False)
     aplica_item = models.BooleanField(verbose_name='Aplica a Item', null=False)
