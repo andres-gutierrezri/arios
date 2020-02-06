@@ -105,6 +105,19 @@ class TerceroEliminarView(AbstractEvaLoggedView):
                              ' porque ya se encuentra asociado a otros módulos')
             return JsonResponse({"Mensaje": "No se puede eliminar"})
 
+
+class TerceroDetalleView(AbstractEvaLoggedView):
+    def get(self, request, id):
+
+        try:
+            tercero = Tercero.objects.get(id=id)
+            return JsonResponse({'estado': 'OK', 'datos': tercero.to_dict(campos=['id', 'identificacion',
+                                                                                  'direccion', 'telefono',
+                                                                                  'fax', 'correo'])})
+        except Tercero.DoesNotExist:
+            return JsonResponse({"estado": "error", "mensaje": 'El cliente seleccionado no existe.'})
+
+
 # region Métodos de ayuda
 
 

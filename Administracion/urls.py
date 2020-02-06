@@ -25,6 +25,7 @@ urlpatterns = [
     path('terceros/', terceros.TerceroView.as_view(), name='terceros'),
     path('terceros/add', terceros.TerceroCrearView.as_view(), name='terceros-crear'),
     path('terceros/<int:id>/', terceros.TerceroEditarView.as_view(), name='terceros-editar'),
+    path('terceros/<int:id>/json', terceros.TerceroDetalleView.as_view(), name='terceros-detalle'),
     path('terceros/<int:id>/delete', terceros.TerceroEliminarView.as_view(), name='terceros-eliminar'),
     path('departamentos/<int:id>/municipios/json', views.CargarMunicipiosSelectJsonView.as_view(),
          name='municipios-json'),
