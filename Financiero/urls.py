@@ -16,10 +16,12 @@ Including another URLconf
 
 from django.urls import path
 
-from Financiero.views import PrincipalView
+from Financiero.views import PrincipalView, FacturaCrearView, FacturasView
 
 app_name = 'Financiero'
 
 urlpatterns = [
     path('index/', PrincipalView.as_view(), name='index'),
+    path('facturas/', FacturasView.as_view(), name='factura-index'),
+    path('facturas/add', FacturaCrearView.as_view(), name='factura-crea'),
 ]

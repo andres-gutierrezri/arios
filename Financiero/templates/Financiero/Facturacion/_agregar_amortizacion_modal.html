@@ -1,0 +1,32 @@
+{% load eva_tags %}
+<form id="famortizacion_factura">
+    <div class="modal fade"  tabindex="-1" id="agregar_amortizacion_modal" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        Factura - Agregar amortización
+                    </h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-12">
+                                {% input_number_tag 'valor_amortizacion' "Valor amortización:" placeholder="Ingrese valor amortización" required="" min="0.00" max="9999999999.99" step="0.01" %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-pills" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary btn-pills agregarAmortizacion ">Agregar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

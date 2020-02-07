@@ -1,0 +1,114 @@
+{% extends 'Financiero/_common/base_financiero.html' %}
+{% load static %}
+<title>{% block titulo %}Terceros{% endblock %}</title>
+{% block styles %}
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/datagrid/datatables/datatables.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/theme-demo.css' %}">
+{% endblock styles %}
+
+{% block main %}
+    <div class="panel-container show">
+        <div class="header">
+            <h1 class="header-title">
+                <i class='far fa-calculator'></i> Facturas <span class='fw-300'></span>
+                 <br>
+                 <br>
+            </h1>
+        </div>
+    </div>
+    <div id="panel-3" class="panel">
+        <div class="panel-hdr">
+            <small>
+                <a class="far fa-3x far fa-plus-circle"  href="{% url 'Financiero:factura-crea' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear factura"></a>
+            </small>
+        </div>
+        <div class="panel-container show">
+            <div class="panel-content">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#tab_generadas" role="tab">Generadas</a></li>
+                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab_borradores" role="tab">Borradores</a></li>
+                </ul>
+                <div class="tab-content p-3">
+                    <div class="tab-pane fade show active" id="tab_generadas" role="tabpanel">
+                        <div class="table-responsive">
+                            <table class="table table-bordered w-100" id="tabla-facturas">
+                                <thead>
+                                    <tr>
+                                        <th>Número</th>
+                                        <th>Nombre cliente</th>
+                                        <th>Ítems</th>
+                                        <th>Total</th>
+                                        <th>Estado</th>
+                                        <th>Fecha</th>
+                                        <th>Usuario</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for factura in facturas %}
+                                        <tr>
+                                            <td>{{ factura.numero_factura }}</td>
+                                            <td>{{ factura.tercero.nombre}}</td>
+                                            <td>{{ factura.can_items }}</td>
+                                            <td>{{ factura.total_factura }}</td>
+                                            <td><span class="badge badge-primary">Activa</span></td>
+                                            <td>{{ factura.fecha_creacion |date:'Y-m-d' }}</td>
+                                            <td>{{ factura.usuario_crea.username}}</td>
+                                            <td>
+                                                <a class="far fa-2x fa-eye" id="eliminar_{{ empresa.id }}" href="javascript:void(0);"></a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="tab_borradores" role="tabpanel">
+                        <div class="table-responsive">
+                            <table class="table table-bordered w-100" id="tabla-facturas">
+                                <thead>
+                                    <tr>
+                                        <th>Id Borrador</th>
+                                        <th>Nombre cliente</th>
+                                        <th>Ítems</th>
+                                        <th>Total</th>
+                                        <th>Fecha</th>
+                                        <th>Usuario</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for factura in borradores %}
+                                        <tr>
+                                            <td>{{ factura.numero_factura }}</td>
+                                            <td>{{ factura.tercero.nombre}}</td>
+                                            <td>{{ factura.can_items }}</td>
+                                            <td>{{ factura.total_factura }}</td>
+                                            <td>{{ factura.fecha_creacion |date:'Y-m-d' }}</td>
+                                            <td>{{ factura.usuario_crea.username}}</td>
+                                            <td>
+                                                <a class="far fa-2x fa-eye" id="eliminar_{{ empresa.id }}" href="javascript:void(0);"></a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='administracion/terceros' %}
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
+    <script src="{% static 'Administracion/js/confirmarEliminar.js' %}"></script>
+    <script src="{% static 'Administracion/js/select_divipol.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script>
+    <script src="{% static 'Administracion/js/Tercero/exportar_tabla.js' %}"></script>
+{% endblock %}
