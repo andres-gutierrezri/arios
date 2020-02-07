@@ -76,31 +76,32 @@ class FacturaEncabezado(models.Model, ModelDjangoExtensiones):
     @property
     def total_administracion(self):
         return Decimal(round(
-            ((self.subtotal * self.porcentaje_administracion) / Decimal(100.00) if self.porcentaje_administracion is not None
-             else 0.00), 2))
+            (Decimal(self.subtotal * self.porcentaje_administracion) / Decimal(100.00) if
+             self.porcentaje_administracion is not None
+             else Decimal(0.00)), 2))
 
     @property
     def total_imprevistos(self):
-        return Decimal(round(((self.subtotal * self.porcentaje_imprevistos) / Decimal(100.00) if self.porcentaje_imprevistos is not None
-                      else 0.00), 2))
+        return Decimal(round((Decimal(self.subtotal * self.porcentaje_imprevistos) / Decimal(100.00) if
+                              self.porcentaje_imprevistos is not None else Decimal(0.00)), 2))
 
     @property
     def total_utilidad(self):
-        return Decimal(round(((self.subtotal * self.porcentaje_utilidad) / Decimal(100.00) if self.porcentaje_utilidad is not None
-                      else 0.00), 2))
+        return Decimal(round((Decimal(self.subtotal * self.porcentaje_utilidad) / Decimal(100.00) if
+                              self.porcentaje_utilidad is not None else Decimal(0.00)), 2))
 
     @property
     def total_amortizacion(self):
-        return Decimal(round(self.amortizacion if self.amortizacion is not None else 0.00, 2))
+        return Decimal(round(self.amortizacion if self.amortizacion is not None else Decimal(0.00), 2))
 
     @property
     def total_impuesto(self):
-        return Decimal(round(self.valor_impuesto if self.valor_impuesto is not None else 0.00, 2))
+        return Decimal(round(self.valor_impuesto if self.valor_impuesto is not None else Decimal(0.00), 2))
 
     @property
     def total_factura(self):
-        return Decimal(round(self.subtotal + self.total_administracion + self.total_imprevistos + self.total_utilidad
-                             + self.total_impuesto - self.total_amortizacion, 2))
+        return Decimal(round(Decimal(self.subtotal) + self.total_administracion + self.total_imprevistos +
+                             self.total_utilidad + self.total_impuesto - self.total_amortizacion, 2))
 
 
 class FacturaDetalle(models.Model):
