@@ -2,12 +2,14 @@ from datetime import datetime
 import json
 from typing import List, Optional
 
+from django.db.models import F, DecimalField, ExpressionWrapper
 from django.db.transaction import atomic
 from django.http import JsonResponse
 from django.shortcuts import render
 
 from Administracion.models import Tercero, Impuesto, ConsecutivoDocumento, TipoDocumento
 from Administracion.utils import get_id_empresa_global
+from EVA.General.jsonencoders import AriosJSONEncoder
 from EVA.views.index import AbstractEvaLoggedView
 from Financiero.models import FacturaEncabezado, ResolucionFacturacion, FacturaDetalle
 from Financiero.models.facturacion import FacturaImpuesto
@@ -72,10 +74,10 @@ class FacturaCrearView(AbstractEvaLoggedView):
             factura_enc.subtotal = factura['subtotal']
             factura_enc.can_items = factura['cantidadItems']
             factura_enc.valor_impuesto = factura['valorImpuestos']
-                factura_enc.porcentaje_administracion = factura['porcentajeAdministracion']
-                factura_enc.porcentaje_imprevistos = factura['porcentajeImprevistos'] != 0
-                factura_enc.porcentaje_utilidad = factura['porcentajeUtilidad']
-                factura_enc.amortizacion = factura['amortizacion']
+            factura_enc.porcentaje_administracion = factura['porcentajeAdministracion']
+            factura_enc.porcentaje_imprevistos = factura['porcentajeImprevistos'] != 0
+            factura_enc.porcentaje_utilidad = factura['porcentajeUtilidad']
+            factura_enc.amortizacion = factura['amortizacion']
             if factura_enc.id:
                 factura_enc.usuario_crea_id = factura_borrador.usuario_crea_id
             else:
@@ -188,3 +190,49 @@ class FacturaCrearView(AbstractEvaLoggedView):
         # endregion
 
         return None
+
+
+class FacturaEditarView(AbstractEvaLoggedView):
+    def get(self, request, id_factura):
+
+        terceros = Tercero.objects.clientes_xa_select()
+        impuestos = Impuesto.objects.get_xa_select_porcentaje()
+        factura = FacturaEncabezado.objects.get(id=id_factura)
+        return render(request, 'Financiero/Facturacion/crear_factura.html',
+                      {'terceros': terceros, 'impuestos': impuestos, 'factura': factura})
+
+
+class FacturaDetalleView(AbstractEvaLoggedView):
+    def get(self, request, id_factura):
+
+        try:
+            factura = FacturaEncabezado.objects.\
+                values('id', 'estado', 'subtotal', 'amortizacion', 'total', cliente=F('tercero_id'),
+                       fechaVencimiento=F('fecha_vencimiento'), cantidadItems=F('can_items'),
+                       numeroFactura=F('numero_factura'), valorImpuestos=F('valor_impuesto'),
+                       porcentajeAdministracion=F('porcentaje_administracion'),
+                       porcentajeImprevistos=F('porcentaje_imprevistos'), porcentajeUtilidad=F('porcentaje_utilidad'),)\
+                .get(id=id_factura)
+
+            items_factura = list(FacturaDetalle.objects
+                                 .values('titulo', 'descripcion', 'cantidad', 'impuesto',
+                                         valorUnitario=F('valor_unitario'),
+                                         valorTotal=ExpressionWrapper(F('valor_unitario') * F('cantidad'),
+                                                                      output_field=DecimalField()))
+                                 .filter(factura_encabezado_id=id_factura))
+
+            impuestos_factura = list(FacturaImpuesto.objects
+                                     .values('impuesto', porcentaje=F('impuesto__porcentaje'),
+                                             nombre=F('impuesto__nombre'), base=F('valor_base'))
+                                     .filter(factura_encabezado_id=id_factura))
+
+            for impuesto in impuestos_factura:
+                impuesto['id'] = impuesto.pop('impuesto')
+
+            factura['items'] = items_factura
+            factura['impuestos'] = impuestos_factura
+
+            return JsonResponse({'estado': 'OK', 'datos': factura}, encoder=AriosJSONEncoder)
+
+        except FacturaEncabezado.DoesNotExist:
+            return JsonResponse({"estado": "error", "mensaje": 'La factura no existe.'})

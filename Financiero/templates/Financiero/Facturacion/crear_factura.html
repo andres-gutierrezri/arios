@@ -20,6 +20,9 @@
         </div>
         <form id="fCrearFactura" method="post">
             {% csrf_token %}
+            {% if factura %}
+                <input type="hidden" name="id_factura" id="id_factura" value="{{ factura.id }}">
+            {% endif %}
             <div class="row">
                 <div class="col-xl-12">
                     <div id="panel-cliente" class="panel">

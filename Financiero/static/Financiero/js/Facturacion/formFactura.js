@@ -1,6 +1,7 @@
 'use strict';
 
 let tablaItems;
+let cargandoBorrador = false;
 class Factura
 {
     constructor() {
@@ -98,6 +99,12 @@ class Factura
        this.amortizacion = amortizacion;
        this.actualizarTotal();
     }
+
+    static fromJSON(jsonData) {
+        let factura = new Factura();
+        Object.assign(factura, jsonData);
+        return factura;
+    }
 }
 
 let factura = new Factura();
@@ -121,7 +128,7 @@ $(document).ready(function () {
     configurarFormularios();
     configurarBotones();
     cargaImpuestosEnFactura();
-
+    cargarBorrador();
 });
 
 function configurarTablaDetalle() {
@@ -418,7 +425,7 @@ function enviarFactura(estado) {
                 if (response.hasOwnProperty('mensaje'))
                     EVANotificacion.toast.error(response.mensaje);
                 else
-                    EVANotificacion.toast.error("Error no esperado");
+                    EVANotificacion.toast.error("Error no esperado.");
             }
         }
 
@@ -462,6 +469,9 @@ function cargarDatosCliente(idCliente) {
     }).done(response => {
         if (response.estado === 'OK') {
             renderDatosCliente(response.datos);
+            if(cargandoBorrador)
+               cargandoBorrador = false;
+            else
                 habilitarBotones(true, false);
         }
         else
@@ -482,4 +492,47 @@ function renderDatosCliente(datos) {
 function habilitarBotones(borrador, generar) {
     $('#btn_guardar_borrador').prop('disabled', !borrador);
     $('#btn_generar_factura').prop('disabled', !generar);
+}
+
+function cargarBorrador() {
+    const idFactura = $('#id_factura').val();
+    if ((idFactura !== undefined) && (idFactura > 0)) {
+        EVANotificacion.modal.cargando('Cargando borrador de factura.');
+        $.ajax({
+            url: `/financiero/facturas/${idFactura}/json`,
+            context: document.body
+        }).done(response => {
+            if (response.estado === 'OK') {
+                try {
+                    factura = Factura.fromJSON(response.datos);
+                    console.log(factura);
+                    renderBorrador();
+                    EVANotificacion.toast.exitoso('Borrador cargado exitosamente.');
+                } catch {
+                     EVANotificacion.toast.error("Error con el borrador recibido.");
+                }
+            }
+            else
+                EVANotificacion.toast.error(response.mensaje);
+
+        }).fail(() => {
+             EVANotificacion.toast.error('Error cargando borrador de factura.');
+        }).always(() => {
+            EVANotificacion.modal.cerrar();
+        });
+    }
+
+}
+
+function renderBorrador() {
+
+    cargandoBorrador = true;
+    factura.items.forEach(item =>{
+        tablaItems.row.add(getItemXaTabla(item)).node();
+    });
+    tablaItems.draw(false);
+    renderTotalFactura();
+    const clienteSelect = $('#cliente_select_id');
+    clienteSelect.val(factura.cliente).change();
+    habilitarBotones(false, true);
 }

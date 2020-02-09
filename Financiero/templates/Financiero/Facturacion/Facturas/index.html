@@ -89,6 +89,7 @@
                                             <td>{{ factura.usuario_crea.username}}</td>
                                             <td>
                                                 <a class="far fa-2x fa-eye" id="eliminar_{{ empresa.id }}" href="javascript:void(0);"></a>
+                                                <a class="far fa-2x fa-edit"  href="{% url 'Financiero:factura-editar' factura.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
                                             </td>
                                         </tr>
                                     {% endfor %}
