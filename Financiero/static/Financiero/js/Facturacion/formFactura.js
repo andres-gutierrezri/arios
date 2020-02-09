@@ -38,7 +38,9 @@ class Factura
     }
 
     get isAplicaAIU() {
-        return (this.porcentajeAdministracion !== 0 || this.porcentajeImprevistos !== 0 || this.porcentajeUtilidad !== 0);
+        return ((this.porcentajeAdministracion != null && this.porcentajeAdministracion !== 0) ||
+            (this.porcentajeImprevistos != null && this.porcentajeImprevistos !== 0) ||
+            (this.porcentajeUtilidad != null && this.porcentajeUtilidad !== 0));
     }
 
     agregarItem(tituloItem, descripcionItem, valorUnitario, cantidad, impuesto) {
