@@ -42,20 +42,20 @@ class Factura
     }
 
     agregarItem(tituloItem, descripcionItem, valorUnitario, cantidad, impuesto) {
-        const item = new ItemFactura(tituloItem, descripcionItem, valorUnitario, cantidad, impuesto);
+        const item = new ItemFactura(tituloItem, descripcionItem, valorUnitario, cantidad, impuesto );
         this.items.push(item);
-        this.subtotal += item.getValorTotal();
+        this.subtotal += item.valorTotal;
         this.cantidadItems++;
-        this.actualizarImpuesto(item.impuesto, item.getValorTotal(), true);
+        this.actualizarImpuesto(item.impuesto, item.valorTotal, true);
         this.actualizarTotal();
         return(item);
     }
 
     eliminarItem(posicionItem) {
          const item = this.items.splice(posicionItem, 1)[0];
-         this.subtotal -= item.getValorTotal();
+         this.subtotal -= item.valorTotal;
          this.cantidadItems--;
-         this.actualizarImpuesto(item.impuesto, item.getValorTotal(), false);
+         this.actualizarImpuesto(item.impuesto, item.valorTotal, false);
          this.actualizarTotal();
     }
 
@@ -245,10 +245,7 @@ function ItemFactura(titulo, descripcion, valorUnitario, cantidad, impuesto) {
     this.valorUnitario = valorUnitario;
     this.cantidad = cantidad;
     this.impuesto = impuesto;
-
-    this.getValorTotal = function() {
-        return(valorUnitario * cantidad)
-    }
+    this.valorTotal = valorUnitario * cantidad;
 }
 
 function getItemXaTabla(itemFactura) {
@@ -256,7 +253,7 @@ function getItemXaTabla(itemFactura) {
         `<b>${itemFactura.titulo}</b><br>${itemFactura.descripcion}`,
         itemFactura.cantidad,
         itemFactura.valorUnitario,
-        itemFactura.getValorTotal()
+        itemFactura.valorTotal
     ]);
 }
 
@@ -463,7 +460,7 @@ function cargarDatosCliente(idCliente) {
     }).done(function(response) {
         if (response.estado === 'OK') {
             renderDatosCliente(response.datos);
-            habilitarBotones(true, false);
+                habilitarBotones(true, false);
         }
         else
             EVANotificacion.toast.error(response.mensaje);
