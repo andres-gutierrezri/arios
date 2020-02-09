@@ -50,7 +50,7 @@ const EVANotificacion = {
         informacion(mensaje) {
             this.general('info', mensaje);
         },
-        cerrar(mensaje) {
+        cerrar() {
             Swal.close();
         },
     },
@@ -71,7 +71,7 @@ const EVANotificacion = {
         informacion(mensaje) {
             this.general('info', mensaje);
         },
-        cerrarTodos(mensaje) {
+        cerrarTodos() {
             toastr.clear();
         }
     }
