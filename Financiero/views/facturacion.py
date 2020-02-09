@@ -72,13 +72,9 @@ class FacturaCrearView(AbstractEvaLoggedView):
             factura_enc.subtotal = factura['subtotal']
             factura_enc.can_items = factura['cantidadItems']
             factura_enc.valor_impuesto = factura['valorImpuestos']
-            if factura['porcentajeAdministracion'] > 0:
                 factura_enc.porcentaje_administracion = factura['porcentajeAdministracion']
-            if factura['porcentajeImprevistos'] > 0:
                 factura_enc.porcentaje_imprevistos = factura['porcentajeImprevistos'] != 0
-            if factura['porcentajeUtilidad'] > 0:
                 factura_enc.porcentaje_utilidad = factura['porcentajeUtilidad']
-            if factura['amortizacion'] > 0:
                 factura_enc.amortizacion = factura['amortizacion']
             if factura_enc.id:
                 factura_enc.usuario_crea_id = factura_borrador.usuario_crea_id
@@ -152,6 +148,17 @@ class FacturaCrearView(AbstractEvaLoggedView):
             return 'El total a pagar debe ser mayor a 0'
         # endregion
 
+        # region Valida AUI y amortización.
+        if factura['porcentajeAdministracion'] < 0:
+            return 'El porcentaje de administración es inválido'
+        if factura['porcentajeImprevistos'] < 0:
+            return 'El porcentaje de imprevistos es inválido'
+        if factura['porcentajeUtilidad'] < 0:
+            return 'El porcentaje de utilidad es inválido'
+        if factura['amortizacion'] < 0:
+            return 'El valor de amortización es inválido'
+        # endregion
+
         # region Valida ítems
         items: List[dict] = factura['items']
         if len(items) != factura['cantidadItems']:
@@ -160,7 +167,7 @@ class FacturaCrearView(AbstractEvaLoggedView):
         ids_impuestos_items: list = []
         for item in items:
             id_impuesto = item['impuesto']
-            if id_impuesto != 0 and id_impuesto not in ids_impuestos_items:
+            if id_impuesto is not None and id_impuesto != 0 and id_impuesto not in ids_impuestos_items:
                 ids_impuestos_items.append(id_impuesto)
 
         if Impuesto.objects.filter(id__in=ids_impuestos_items).count() != len(ids_impuestos_items):
