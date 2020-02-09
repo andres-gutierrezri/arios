@@ -55,6 +55,7 @@ class FacturaEncabezado(models.Model, ModelDjangoExtensiones):
     usuario_modifica = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario Modifica", null=True,
                                          blank=False, related_name='FacturaModifica')
     estado = models.SmallIntegerField(verbose_name='Estado', null=False, blank=False)
+    total = models.DecimalField(verbose_name='Total', max_digits=12, decimal_places=2, null=False)
 
     def __str__(self):
         return 'Factura # {0}'.format(self.numero_factura)

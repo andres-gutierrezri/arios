@@ -89,6 +89,7 @@ class FacturaCrearView(AbstractEvaLoggedView):
             factura_enc.fecha_vencimiento = datetime.now()
             factura_enc.fecha_creacion = datetime.now()
             factura_enc.numero_factura = None
+            factura_enc.total = factura['total']
 
             factura_enc.save()
             factura['id'] = factura_enc.id
