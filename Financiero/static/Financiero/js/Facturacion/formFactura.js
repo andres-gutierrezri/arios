@@ -455,9 +455,9 @@ function cargarDatosCliente(idCliente) {
     factura.cliente = idCliente;
 
     $.ajax({
-            url: "/administracion/terceros/" + idCliente + "/json",
+            url: `/administracion/terceros/${idCliente}/json`,
             context: document.body
-    }).done(function(response) {
+    }).done(response => {
         if (response.estado === 'OK') {
             renderDatosCliente(response.datos);
                 habilitarBotones(true, false);
@@ -465,7 +465,7 @@ function cargarDatosCliente(idCliente) {
         else
             EVANotificacion.toast.error(response.mensaje);
 
-    }).fail(function () {
+    }).fail(() => {
          EVANotificacion.toast.error('Error consultando cliente');
     });
 }
