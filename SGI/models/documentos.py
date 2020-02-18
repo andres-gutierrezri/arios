@@ -48,7 +48,7 @@ class Documento(models.Model, ModelDjangoExtensiones):
     grupo_documento = models.ForeignKey(GrupoDocumento, on_delete=models.DO_NOTHING,
                                         verbose_name='Grupo de documento', null=True, blank=False)
     proceso = models.ForeignKey(Proceso, on_delete=models.DO_NOTHING, verbose_name='Proceso', null=True, blank=False)
-    archivo = models.FileField(upload_to='documentos', verbose_name='Archivo', null=True, blank=False)
+    archivo = models.FileField(upload_to='documentos', verbose_name='Archivo', null=False, blank=False)
 
     def __str__(self):
         return self.nombre
