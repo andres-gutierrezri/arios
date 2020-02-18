@@ -24,5 +24,7 @@ urlpatterns = [
     path('procesos/<int:id>/grupos-documentos', documentos.IndexView.as_view(), name='documentos-index'),
     path('procesos/<int:id_proceso>/grupos-documentos/<int:id_grupo>/documentos/add',
          documentos.DocumentosCrearView.as_view(), name='documentos-crear'),
+    path('procesos/<int:id_proceso>/grupos-documentos/<int:id_grupo>/documentos/<int:id_documento>/cargar',
+         documentos.DocumentosCargarView.as_view(), name='documentos-cargar'),
 
 ]
