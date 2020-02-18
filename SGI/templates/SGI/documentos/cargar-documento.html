@@ -1,10 +1,34 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
-</html>
+{% load eva_tags %}
+{% load static %}
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">
+                Cargar archivo al documento {{ documento }}
+            </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"><i class="fal fa-times"></i></span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form action="{% url 'sgi:documentos-cargar' proceso.id  grupo_documento.id documento.id %}" id="empresas-form" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <div class="form-group">
+                    <div class="form-row">
+                        <div class="col-md-6">
+                            {% input_file_tag 'archivo' 'Archivo' placeholder="Seleccione un archivo" class='custom-file-input'  invalido=errores.logo accept="image/png, .jpeg, .jpg, image/gif, .pdf"  %}
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div >
+                        <button id="guardar" type="submit" class="btn btn-primary btn-block"> Cargar </button>
+                    </div>
+                    <div style="padding-left: 15px">
+                        <button data-dismiss="modal" class="btn btn-danger btn-block">Cancelar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
