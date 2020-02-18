@@ -44,11 +44,11 @@
                                                                     <div id="panel-1" class="panel">
                                                                         <div class="panel-container show">
                                                                             <div class="panel-content">
-                                                                                 {{ documento.nombre }}
+                                                                                {{ documento.nombre }}
                                                                                 <a class="far fa-custom fa-eye" style="padding-left: 10px"   href="" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ver"></a>
                                                                                 <a class="far fa-custom fa-list-alt" style="padding-left: 10px"   href="" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Historial"></a>
-                                                                                <a class="far fa-custom fa-long-arrow-alt-up" style="padding-left: 10px"   href="" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Cargar archivo"></a>
-                                                                                <a class="far fa-custom fa-edit" style="padding-left: 10px"   href="" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                                                <a class="far fa-custom fa-long-arrow-alt-up" style="padding-left: 10px"  href="javascript:abrir_modal_cargar('{% url 'sgi:documentos-cargar' proceso.id  grupo_documento.id documento.id %}');" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Cargar"></a>
+                                                                                <a class="far fa-custom fa-edit" style="padding-left: 10px"  href="" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
                                                                                 <a class="far fa-custom fa-trash-alt color-danger-900" style="padding-left: 10px"   href="" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
                                                                             </div>
                                                                         </div>
@@ -69,6 +69,9 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" tabindex="-1" id="cargar" role="dialog">
+
+    </div>
     {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='talento-humano/colaboradores' %}
 {% endblock main%}
 
@@ -80,36 +83,13 @@
     <script src="{% static 'TalentoHumano/js/filtro_entidad.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/miscellaneous/treeview/treeview.js' %}"></script>
 
+
     <script>
-        $(document).ready(function()
-        {
 
-            $('input[type=radio][name=contactview]').change(function()
-            {
-                if (this.value == 'grid')
-                {
-                    $('#js-contacts .card').removeClassPrefix('mb-').addClass('mb-g');
-                    $('#js-contacts .col-xl-12').removeClassPrefix('col-xl-').addClass('col-xl-4');
-                    $('#js-contacts .js-expand-btn').addClass('d-none');
-                    $('#js-contacts .card-body + .card-body').addClass('show');
-
-                }
-                else if (this.value == 'table')
-                {
-                    $('#js-contacts .card').removeClassPrefix('mb-').addClass('mb-1');
-                    $('#js-contacts .col-xl-4').removeClassPrefix('col-xl-').addClass('col-xl-12');
-                    $('#js-contacts .js-expand-btn').removeClass('d-none');
-                    $('#js-contacts .card-body + .card-body').removeClass('show');
-                }
-
+        function abrir_modal_cargar(url) {
+            $('#cargar').load(url, function () {
+                $(this).modal('show');
             });
-
-            //initialize filter
-            initApp.listFilter($('#js-contacts'), $('#js-filter-contacts'));
-        });
-        $(document).ready(function () {
-            $('.select2').select2();
-        });
-
+        }
     </script>
 {% endblock scripts%}
