@@ -25,8 +25,10 @@ class DocumentosCrearView(AbstractEvaLoggedView):
 
         proceso = Proceso.objects.get(id=id_proceso)
         grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
+        documento = Documento.objects.get(grupo_documento_id=id_grupo, proceso_id=id_proceso)
         return render(request, 'SGI/documentos/crear-editar.html',
-                      datos_xa_render(self.OPCION, proceso=proceso, grupo_documento=grupo_documento))
+                      datos_xa_render(self.OPCION, proceso=proceso, grupo_documento=grupo_documento,
+                                      documento=documento))
 
     def post(self, request,  id_proceso, id_grupo):
         documento = Documento.from_dictionary(request.POST)
@@ -53,46 +55,49 @@ class DocumentosCrearView(AbstractEvaLoggedView):
         return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
 
-class DocumentoscargarView(AbstractEvaLoggedView):
+class DocumentosCargarView(AbstractEvaLoggedView):
     OPCION = 'cargar'
 
-    def get(self, request, id_proceso, id_grupo):
+    def get(self, request, id_proceso, id_grupo, id_documento):
 
         proceso = Proceso.objects.get(id=id_proceso)
         grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
+        documento = Documento.objects.get(id=id_documento)
         return render(request, 'SGI/documentos/cargar-documento.html',
-                      datos_xa_render(self.OPCION, proceso=proceso, grupo_documento=grupo_documento))
+                      datos_xa_render(self.OPCION, proceso=proceso, grupo_documento=grupo_documento,
+                                      documento=documento))
 
-    def post(self, request):
-        empresa = Empresa.from_dictionary(request.POST)
-        empresa.estado = True
-        empresa.logo = request.FILES.get('logo', None)
-        if not empresa.logo:
-            empresa.logo = 'logos-empresas/empresa-default.jpg'
+    def post(self, request, id_proceso, id_grupo, id_documento):
+        documento = Documento.from_dictionary(request.POST)
+
+        documento.archivo = request.FILES.get('archivo', None)
+        # if not empresa.logo:
+        #     empresa.logo = 'logos-empresas/empresa-default.jpg'
         try:
             # empresa_ppal y subempresa  se ignoran en la comparación ya que nunca están disponibles en el formulario.
-            empresa.full_clean(exclude=['estado', 'subempresa', 'empresa_ppal'])
+            documento.full_clean()
         except ValidationError as errores:
-            datos = datos_xa_render(self.OPCION, empresa)
+            datos = datos_xa_render(self.OPCION, documento)
             datos['errores'] = errores.message_dict
-            if 'nit' in errores.message_dict:
-                for mensaje in errores.message_dict['nit']:
+            if 'archivo' in errores.message_dict:
+                for mensaje in errores.message_dict['archivo']:
                     if mensaje.startswith('Ya existe'):
-                        messages.warning(request, 'Ya existe una empresa con nit {0}'.format(empresa.nit))
+                        messages.warning(request, 'Por favor cargue un archivo al documento {0}'
+                                         .format(documento.nombre))
                         datos['errores'] = ''
                         break
-            return render(request, 'Administracion/Empresas/crear-editar.html', datos)
+            return render(request, 'SGI/documentos/index.html', datos)
 
-        empresa.save()
-        messages.success(request, 'Se ha agregado la empresa {0}'.format(empresa.nombre))
-        return redirect(reverse('Administracion:empresas'))
+        documento.save()
+        messages.success(request, 'Se ha cargado un archivo al documento {0}'.format(documento.nombre))
+        return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
 
 # region Métodos de ayuda
 
 
 def datos_xa_render(opcion: str = None, documento: Documento = None, proceso: Proceso = None,
-                    grupo_documento: GrupoDocumento = None) -> dict:
+                    grupo_documento: GrupoDocumento = None ) -> dict:
     """
     Datos necesarios para la creación de los html de Documento.
     :param opcion: valor de la acción a realizar 'crear' o 'editar'
