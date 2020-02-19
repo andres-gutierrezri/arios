@@ -16,7 +16,8 @@ Including another URLconf
 
 from django.urls import path
 
-from Financiero.views import PrincipalView, FacturaCrearView, FacturasView, FacturaEditarView, FacturaDetalleView
+from Financiero.views import PrincipalView, FacturaCrearView, FacturasView, FacturaEditarView, FacturaDetalleView, \
+    FacturaImprimirView
 
 app_name = 'Financiero'
 
@@ -26,4 +27,5 @@ urlpatterns = [
     path('facturas/add', FacturaCrearView.as_view(), name='factura-crea'),
     path('facturas/<int:id_factura>', FacturaEditarView.as_view(), name='factura-editar'),
     path('facturas/<int:id_factura>/json', FacturaDetalleView.as_view(), name='factura-detalle'),
+    path('facturas/<int:id_factura>/imprimir', FacturaImprimirView.as_view(), name='factura-imprimir'),
 ]

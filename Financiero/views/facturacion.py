@@ -4,8 +4,8 @@ from typing import List, Optional
 
 from django.db.models import F, DecimalField, ExpressionWrapper
 from django.db.transaction import atomic
-from django.http import JsonResponse
-from django.shortcuts import render
+from django.http import JsonResponse, HttpResponse
+from django.shortcuts import render, get_object_or_404
 
 from Administracion.models import Tercero, Impuesto, ConsecutivoDocumento, TipoDocumento
 from Administracion.utils import get_id_empresa_global
@@ -13,6 +13,7 @@ from EVA.General.jsonencoders import AriosJSONEncoder
 from EVA.views.index import AbstractEvaLoggedView
 from Financiero.models import FacturaEncabezado, ResolucionFacturacion, FacturaDetalle
 from Financiero.models.facturacion import FacturaImpuesto
+from Financiero.reportes.facturacion.factura import FacturaPdf
 
 
 class FacturasView(AbstractEvaLoggedView):
@@ -236,3 +237,14 @@ class FacturaDetalleView(AbstractEvaLoggedView):
 
         except FacturaEncabezado.DoesNotExist:
             return JsonResponse({"estado": "error", "mensaje": 'La factura no existe.'})
+
+
+class FacturaImprimirView(AbstractEvaLoggedView):
+    def get(self, request, id_factura):
+        factura = get_object_or_404(FacturaEncabezado, id=id_factura)
+        empresa = factura.empresa
+        reporte = FacturaPdf.generar(factura, empresa)
+
+        http_response = HttpResponse(reporte, 'application/pdf')
+        http_response['Content-Disposition'] = 'inline; filename="factura {0}.pdf"'.format(factura.id)
+        return http_response

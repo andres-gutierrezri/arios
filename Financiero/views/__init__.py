@@ -1,2 +1,2 @@
 from .views import PrincipalView
-from .facturacion import FacturaCrearView, FacturasView, FacturaEditarView, FacturaDetalleView
+from .facturacion import FacturaCrearView, FacturasView, FacturaEditarView, FacturaDetalleView, FacturaImprimirView
