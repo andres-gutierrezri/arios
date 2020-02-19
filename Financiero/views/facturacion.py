@@ -18,8 +18,8 @@ from Financiero.reportes.facturacion.factura import FacturaPdf
 
 class FacturasView(AbstractEvaLoggedView):
     def get(self, request):
-        facturas = FacturaEncabezado.objects.exclude(estado=0)
-        borradores = FacturaEncabezado.objects.filter(estado=0)
+        facturas = FacturaEncabezado.objects.exclude(estado=0).order_by('-fecha_creacion')
+        borradores = FacturaEncabezado.objects.filter(estado=0).order_by('-fecha_creacion')
         return render(request, 'Financiero/Facturacion/facturas/index.html', {'facturas': facturas,
                                                                               'borradores': borradores})
 
