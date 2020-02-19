@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
+from datetime import datetime, date
 from typing import Optional
 
 import pytz
@@ -17,3 +17,11 @@ def string_to_date(fecha_string: str) -> Optional[datetime]:
             .astimezone(pytz.timezone('UTC'))
     except ValueError:
         return None
+
+
+def add_years(d, years):
+    try:
+        return d.replace(year=d.year + years)
+    except ValueError:
+        return d + (date(d.year + years, 1, 1) - date(d.year, 1, 1))
+
