@@ -122,6 +122,10 @@ class FacturaDetalle(models.Model):
         verbose_name = 'Detalle Factura'
         verbose_name_plural = 'Detalles Factura'
 
+    @property
+    def valor_total(self):
+        return Decimal(round(Decimal(self.cantidad) * Decimal(self.valor_unitario), 2))
+
 
 class FacturaImpuesto(models.Model):
     factura_encabezado = models.ForeignKey(FacturaEncabezado, on_delete=models.CASCADE,
