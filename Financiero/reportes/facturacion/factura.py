@@ -99,7 +99,9 @@ class FacturaPdf:
         # endregion
 
         # region Fechas y Ciudad.
-        data = [['Ciudad:', '', 'Fecha Expedición:', '{:%d/%m/%Y}'.format(factura.fecha_creacion)],
+        data = [['Ciudad:', '{1} - {0}'.format(cliente.centro_poblado.municipio.departamento.nombre,
+                                             cliente.centro_poblado.nombre), 'Fecha Expedición:',
+                 '{:%d/%m/%Y}'.format(factura.fecha_creacion)],
                 ['', '', 'Fecha Vencimiento:', '']]
         t = Table(data, style=[('FACE', (0, 0), (-1, -1), letra_factura),
                                ('SIZE', (0, 0), (-1, -1), 10),

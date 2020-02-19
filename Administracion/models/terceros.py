@@ -83,10 +83,13 @@ class Tercero(models.Model, ModelDjangoExtensiones):
         tercero.identificacion = datos.get('identificacion', '')
         tercero.tipo_identificacion_id = datos.get('tipo_identificacion_id', '')
         tercero.estado = datos.get('estado', 'False') == 'True'
-        tercero.empresa_id = datos.get('empresa_id', '')
+        tercero.empresa_id = datos.get('empresa', '')
         tercero.fecha_modificacion = datetime.now()
         tercero.tipo_tercero_id = datos.get('tipo_tercero_id', '')
         tercero.centro_poblado_id = datos.get('centro_poblado_id', '')
+        tercero.telefono = datos.get('telefono', '')
+        tercero.fax = datos.get('fax', '')
+        tercero.direccion = datos.get('direccion', '')
 
         return tercero
 

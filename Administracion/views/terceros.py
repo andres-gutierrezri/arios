@@ -10,6 +10,7 @@ from django.core.exceptions import ValidationError
 
 from Administracion.models import Tercero, TipoIdentificacion, TipoTercero, CentroPoblado, Empresa, Departamento, \
     Municipio
+from Administracion.utils import get_id_empresa_global
 from EVA.views.index import AbstractEvaLoggedView
 
 
@@ -33,6 +34,7 @@ class TerceroCrearView(AbstractEvaLoggedView):
 
     def post(self, request):
         tercero = Tercero.from_dictionary(request.POST)
+        tercero.empresa_id = get_id_empresa_global(request)
         tercero.estado = True
         try:
             tercero.full_clean()
@@ -60,10 +62,11 @@ class TerceroEditarView(AbstractEvaLoggedView):
         return render(request, 'Administracion/Tercero/crear-editar.html', datos_xa_render(self.OPCION, tercero))
 
     def post(self, request, id):
-        update_fields = ['nombre', 'identificacion', 'tipo_identificacion_id', 'estado', 'empresa_id',
-                         'fecha_modificacion', 'tipo_tercero_id', 'centro_poblado_id']
+        update_fields = ['nombre', 'identificacion', 'tipo_identificacion_id', 'estado',
+                         'fecha_modificacion', 'tipo_tercero_id', 'centro_poblado_id', 'telefono', 'fax', 'direccion']
 
         tercero = Tercero.from_dictionary(request.POST)
+        tercero.empresa_id = get_id_empresa_global(request)
         tercero.id = int(id)
 
         try:
