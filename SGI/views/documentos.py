@@ -25,10 +25,9 @@ class DocumentosCrearView(AbstractEvaLoggedView):
 
         proceso = Proceso.objects.get(id=id_proceso)
         grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
-        documento = Documento.objects.get(grupo_documento_id=id_grupo, proceso_id=id_proceso)
         return render(request, 'SGI/documentos/crear-editar.html',
                       datos_xa_render(self.OPCION, proceso=proceso, grupo_documento=grupo_documento,
-                                      documento=documento))
+                                      ))
 
     def post(self, request,  id_proceso, id_grupo):
         documento = Documento.from_dictionary(request.POST)
@@ -55,7 +54,7 @@ class DocumentosCrearView(AbstractEvaLoggedView):
         return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
 
-class DocumentosCargarView(AbstractEvaLoggedView):
+class ArchivoCargarView(AbstractEvaLoggedView):
     OPCION = 'cargar'
 
     def get(self, request, id_proceso, id_grupo, id_documento):
@@ -69,15 +68,20 @@ class DocumentosCargarView(AbstractEvaLoggedView):
 
     def post(self, request, id_proceso, id_grupo, id_documento):
         documento = Documento.from_dictionary(request.POST)
+        documento.id = id_documento
+        documento.proceso_id = id_proceso
+        documento.grupo_documento_id = id_grupo
+        proceso = Proceso.objects.get(id=id_proceso)
+        grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
 
         documento.archivo = request.FILES.get('archivo', None)
-        # if not empresa.logo:
-        #     empresa.logo = 'logos-empresas/empresa-default.jpg'
+        print(documento.archivo)
+
         try:
-            # empresa_ppal y subempresa  se ignoran en la comparación ya que nunca están disponibles en el formulario.
-            documento.full_clean()
+
+            documento.full_clean(exclude=['nombre', 'codigo', 'version', 'cadena_aprobacion', 'id', 'fecha_creacion'])
         except ValidationError as errores:
-            datos = datos_xa_render(self.OPCION, documento)
+            datos = datos_xa_render(self.OPCION, documento, proceso, grupo_documento)
             datos['errores'] = errores.message_dict
             if 'archivo' in errores.message_dict:
                 for mensaje in errores.message_dict['archivo']:
@@ -86,9 +90,9 @@ class DocumentosCargarView(AbstractEvaLoggedView):
                                          .format(documento.nombre))
                         datos['errores'] = ''
                         break
-            return render(request, 'SGI/documentos/index.html', datos)
+            return render(request, 'SGI/documentos/cargar-documento.html', datos)
 
-        documento.save()
+        documento.save(update_fields=['archivo'])
         messages.success(request, 'Se ha cargado un archivo al documento {0}'.format(documento.nombre))
         return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
