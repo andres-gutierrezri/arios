@@ -13,6 +13,7 @@
     <link rel="mask-icon" href="{% static 'EVA/Plantilla/img/favicon/safari-pinned-tab.svg' %}" color="#5bbad5">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/miscellaneous/treeview/treeview.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'SGI/css/icono_documento.css' %}">
+     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/bootstrap-datepicker/bootstrap-datepicker.css' %}">
 {% endblock styles %}
 
 {% block main %}
@@ -82,6 +83,8 @@
     <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
     <script src="{% static 'TalentoHumano/js/filtro_entidad.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/miscellaneous/treeview/treeview.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js'%}"></script>
+    <script src="{% static 'TalentoHumano/js/date_picker.js' %}"></script>
 
 
     <script>
@@ -89,6 +92,13 @@
         function abrir_modal_cargar(url) {
             $('#cargar').load(url, function () {
                 $(this).modal('show');
+                $('#fecha_id').datepicker({
+                    todayHighlight: true,
+                    orientation: "bottom left",
+                    templates: controls,
+                    format: 'yyyy-mm-dd',
+                    autoclose: true
+                });
             });
         }
     </script>
