@@ -5,7 +5,7 @@ from django.contrib import messages
 
 from Administracion.models import Proceso
 from EVA.views.index import AbstractEvaLoggedView
-from SGI.models import Documento, GrupoDocumento
+from SGI.models import Documento, GrupoDocumento, Archivo
 
 
 class IndexView(AbstractEvaLoggedView):
@@ -67,33 +67,33 @@ class ArchivoCargarView(AbstractEvaLoggedView):
                                       documento=documento))
 
     def post(self, request, id_proceso, id_grupo, id_documento):
-        documento = Documento.from_dictionary(request.POST)
-        documento.id = id_documento
-        documento.proceso_id = id_proceso
-        documento.grupo_documento_id = id_grupo
+        archivo = Archivo.from_dictionary(request.POST)
+        archivo.documento_id = id_documento
+        archivo.documento.proceso.id = id_proceso
+        archivo.documento.grupo_documento_id = id_grupo
         proceso = Proceso.objects.get(id=id_proceso)
         grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
 
-        documento.archivo = request.FILES.get('archivo', None)
-        print(documento.archivo)
+        archivo.archivo = request.FILES.get('archivo', None)
+        print(archivo.archivo)
 
         try:
 
-            documento.full_clean(exclude=['nombre', 'codigo', 'version', 'cadena_aprobacion', 'id', 'fecha_creacion'])
+            archivo.full_clean(exclude=['cadena_aprobacion'])
         except ValidationError as errores:
-            datos = datos_xa_render(self.OPCION, documento, proceso, grupo_documento)
+            datos = archivo_xa_render(self.OPCION, archivo, proceso, grupo_documento, )
             datos['errores'] = errores.message_dict
             if 'archivo' in errores.message_dict:
                 for mensaje in errores.message_dict['archivo']:
                     if mensaje.startswith('Ya existe'):
                         messages.warning(request, 'Por favor cargue un archivo al documento {0}'
-                                         .format(documento.nombre))
+                                         .format(archivo.documento.nombre))
                         datos['errores'] = ''
                         break
             return render(request, 'SGI/documentos/cargar-documento.html', datos)
 
-        documento.save(update_fields=['archivo'])
-        messages.success(request, 'Se ha cargado un archivo al documento {0}'.format(documento.nombre))
+        archivo.save()
+        messages.success(request, 'Se ha cargado un archivo al documento {0}'.format(archivo.documento.nombre))
         return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
 
@@ -101,13 +101,14 @@ class ArchivoCargarView(AbstractEvaLoggedView):
 
 
 def datos_xa_render(opcion: str = None, documento: Documento = None, proceso: Proceso = None,
-                    grupo_documento: GrupoDocumento = None ) -> dict:
+                    grupo_documento: GrupoDocumento = None, archivo: Archivo = None) -> dict:
     """
     Datos necesarios para la creación de los html de Documento.
     :param opcion: valor de la acción a realizar 'crear' o 'editar'
     :param documento: Es opcional si se requiere pre cargar datos.
     :param proceso: Es opcional si se requiere pre cargar datos.
     :param grupo_documento: Es opcional si se requiere pre cargar datos.
+    :param archivo: Es opcional si se requiere pre cargar datos.
     :return: Un diccionario con los datos.
     """
     procesos = Proceso.objects.get_x_estado(estado=True)
@@ -120,6 +121,33 @@ def datos_xa_render(opcion: str = None, documento: Documento = None, proceso: Pr
         datos['proceso'] = proceso
     if grupo_documento:
         datos['grupo_documento'] = grupo_documento
+    if archivo:
+        datos['archivo'] = archivo
+
+    return datos
+
+
+def archivo_xa_render(opcion: str = None, archivo: Archivo = None, proceso: Proceso = None,
+                      grupo_documento: GrupoDocumento = None) -> dict:
+    """
+    Datos necesarios para la creación de los html de Documento.
+    :param opcion: valor de la acción a realizar 'crear' o 'editar'
+    :param archivo: Es opcional si se requiere pre cargar datos.
+    :param proceso: Es opcional si se requiere pre cargar datos.
+    :param grupo_documento: Es opcional si se requiere pre cargar datos.
+    :return: Un diccionario con los datos.
+    """
+    procesos = Proceso.objects.get_x_estado(estado=True)
+    grupos_documentos = GrupoDocumento.objects.get_xa_select_activos()
+
+    datos = {'procesos': procesos, 'grupos_documentos': grupos_documentos, 'opcion': opcion}
+
+    if proceso:
+        datos['proceso'] = proceso
+    if grupo_documento:
+        datos['grupo_documento'] = grupo_documento
+    if archivo:
+        datos['archivo'] = archivo
 
     return datos
 
