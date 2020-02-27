@@ -72,7 +72,6 @@ class Documento(models.Model, ModelDjangoExtensiones):
         documento.cadena_aprobacion_id = datos.get('cadena_aprobacion_id', '')
         documento.grupo_documento_id = datos.get('grupo_documento_id', '')
         documento.proceso_id = datos.get('proceso_id', '')
-        documento.archivo = datos.get('archivo', '')
 
         return documento
 
@@ -80,15 +79,12 @@ class Documento(models.Model, ModelDjangoExtensiones):
 class Archivo(models.Model):
     objects = ManagerGeneral()
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
-    ruta = models.CharField(max_length=100, verbose_name='Ruta', null=False, blank=False)
-    fecha = models.DateTimeField(auto_now_add=True, verbose_name='Fecha', null=False, blank=False)
-    hash_Archivo = models.CharField(max_length=100, verbose_name='Hash', null=False, blank=False)
-    estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
     notas = models.CharField(max_length=100, verbose_name='Notas', null=False, blank=False)
     documento = models.ForeignKey(Documento, on_delete=models.DO_NOTHING, verbose_name='Documento', null=True,
                                   blank=False)
     cadena_aprobacion = models.ForeignKey(CadenaAprobacionEncabezado, on_delete=models.DO_NOTHING,
-                                          verbose_name='Documento', null=True, blank=False)
+                                          verbose_name='Cadena de aprobación', null=True, blank=False)
+    archivo = models.FileField(upload_to='documentos', blank=True)
 
     def __str__(self):
         return self.nombre
@@ -106,13 +102,10 @@ class Archivo(models.Model):
         """
         archivo = Archivo()
         archivo.nombre = datos.get('nombre', '')
-        archivo.ruta = datos.get('ruta', '')
-        archivo.fecha = datetime.now()
-        archivo.hash_Archivo = datos.get('hash_archivo', '')
-        archivo.estado = datos.get('estado', 'False') == 'True'
         archivo.notas = datos.get('notas', '')
         archivo.cadena_aprobacion_id = datos.get('cadena_aprobacion_id', '')
         archivo.documento_id = datos.get('documento_id', '')
+        archivo.archivo = datos.get('archivo', None)
 
         return archivo
 
