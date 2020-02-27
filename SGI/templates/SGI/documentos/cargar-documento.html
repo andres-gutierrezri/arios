@@ -1,5 +1,7 @@
 {% load eva_tags %}
 {% load static %}
+
+
 <div class="modal-dialog" role="document">
     <div class="modal-content">
         <div class="modal-header">
@@ -18,26 +20,16 @@
                         <div class="col-md-6">
                             {% input_text_tag 'nombre' 'Nombre' placeholder="Ingrese el nombre" required="" maxlength="100" value=archivo.nombre mensaje_validacion='Por favor digite el nombre.' invalido=errores.nombre %}
                         </div>
-                        <div class="col-md-6">
-                            {% input_text_tag 'ruta' 'Ruta' placeholder="Ingrese la ruta del archivo" required="" maxlength="100" value=archivo.ruta mensaje_validacion='Por favor digite la ruta del archivo' invalido=errores.ruta %}
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="form-row">
-                        <div class="col-md-6">
-                            {% input_date_tag 'fecha' 'Fecha' placeholder="Seleccione una fecha" required="" autocomplete="off" value=archivo.fecha  mensaje_validacion='Por favor seleccione una fecha' invalido=errores.fecha %}
-                        </div>
-                        <div class="col-md-6">
-                            {% input_text_tag 'hash' 'Hash' placeholder="Ingrese el nit de la empresa" required="" maxlength="20" value=empresa.nit mensaje_validacion='Por favor digite el nit de la empresa' invalido=errores.nit %}
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="form-row">
-                        <div class="col-md-6">
+                         <div class="col-md-6">
                             {% input_text_tag 'notas' 'Notas' placeholder="Digite una nota" required="" maxlength="100" value=archivo.notas mensaje_validacion='Por favor ingrese una nota' invalido=errores.notas %}
                         </div>
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-row">
+
                         <div class="col-md-6">
                             {% input_file_tag 'archivo' 'Archivo' placeholder="Seleccione un archivo" class='custom-file-input'  invalido=errores.logo accept="image/png, .jpeg, .jpg, image/gif, .pdf"  %}
                         </div>
@@ -55,3 +47,4 @@
         </div>
     </div>
 </div>
+
