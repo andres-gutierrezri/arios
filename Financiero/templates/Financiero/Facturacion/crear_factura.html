@@ -1,0 +1,128 @@
+{% extends 'Financiero/_common/base_financiero.html' %}
+{% load static %}
+{% load eva_tags %}
+<title>{% block titulo %}Crear Factura{% endblock %}</title>
+
+{% block styles %}
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/datagrid/datatables/datatables.bundle.css' %}">
+	<link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
+{% endblock styles%}
+
+{% block main %}
+    <div class="panel-container show">
+        <div class="header">
+            <h1 class="header-title">
+                <i class='far fa-handshake'></i> Factura: <span class='fw-300'>Crear</span>
+                <br>
+                <br>
+            </h1>
+        </div>
+        <form id="fCrearFactura" method="post">
+            {% csrf_token %}
+            {% if factura %}
+                <input type="hidden" name="id_factura" id="id_factura" value="{{ factura.id }}">
+            {% endif %}
+            <div class="row">
+                <div class="col-xl-12">
+                    <div id="panel-cliente" class="panel">
+                        <div class="panel-hdr">
+                            <h2>
+                                Cliente
+                            </h2>
+                            <div class="panel-toolbar">
+                                <button class="btn btn-panel" data-action="panel-collapse" data-toggle="tooltip" data-offset="0,10" data-original-title="Collapse"></button>
+                            </div>
+                        </div>
+                        <div class="panel-container show">
+                            <div class="panel-content">
+                                <div class="form-group">
+                                    <div class="form-row">
+                                        <div class="col-sm-12 col-md-6 col-lg-6">
+                                            {% select_tag terceros 'cliente' 'Seleccione el cliente' texto_label="Cliente:" requiered="" %}
+                                        </div>
+                                        <div class="col-sm-12 col-md-6 col-lg-6">
+                                            {% input_text_tag 'cliente_nit' 'NIT:' readonly=""%}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="form-row">
+                                        <div class="col-sm-12 col-md-4 col-lg-4">
+                                             {% input_text_tag 'cliente_direccion' 'Dirección:' readonly=""%}
+                                        </div>
+                                        <div class="col-sm-12 col-md-4 col-lg-4">
+                                            {% input_text_tag 'cliente_telefono' 'Teléfono:' readonly=""%}
+                                        </div>
+                                        <div class="col-sm-12 col-md-4 col-lg-4">
+                                            {% input_text_tag 'cliente_fax' 'Fax:' readonly=""%}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xl-12">
+                    <div id="panel-detalle-factura" class="panel">
+                        <div class="panel-hdr">
+                            <h2>
+                                Detalle Factura
+                            </h2>
+                            <div class="panel-toolbar">
+                                <button class="btn btn-panel" data-action="panel-collapse" data-toggle="tooltip" data-offset="0,10" data-original-title="Collapse"></button>
+                            </div>
+                        </div>
+                        <div class="panel-container show">
+                            <div class="panel-content">
+                                <table class="table table-bordered table-hover w-100" id="dt_detalle_factura">
+                                    <thead>
+                                        <tr>
+                                            <th>Descripción</th>
+                                            <th>Cantidad</th>
+                                            <th>Valor unitario</th>
+                                            <th>Valor total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="itemsFactura">
+
+                                    </tbody>
+                                    <tfoot id="tableItemsFooter">
+                                        <tr>
+                                            <td colspan="3" class="text-right"><b>SubTotal</b></td>
+                                            <td class="text-right">0</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="3" class="text-right"><b>Total</b></td>
+                                            <td class="text-right">0</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-auto">
+                    <a href="{% url 'Financiero:factura-index' %}" class="btn btn-danger btn-pills mr-1"><i class="fal fa-times"></i> Cancelar</a>
+                    <button class="btn btn-info btn-pills mr-1" type="button" id="btn_guardar_borrador"><i class="fal fa-eraser"></i> Guardar borrador</button>
+                    <button class="btn btn-success btn-pills mr-1" type="button" id="btn_generar_factura" disabled><i class="fal fa-file-alt"></i> Generar factura</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    {% include 'Financiero/Facturacion/_agregar_item_modal.html' with impuestos=impuestos %}
+    {% include 'Financiero/Facturacion/_agregar_amortizacion_modal.html'%}
+    {% include 'Financiero/Facturacion/_agregar_aiu_modal.html'%}
+{% endblock main %}
+
+{% block scripts %}
+     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
+    <script src="{% static 'Financiero/js/Facturacion/formFactura.js' %}"></script>
+{% endblock scripts%}

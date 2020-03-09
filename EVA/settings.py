@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'Administracion.apps.AdministracionConfig',
     'Proyectos.apps.ProyectosConfig',
     'TalentoHumano.apps.TalentohumanoConfig',
+    'Financiero.apps.FinancieroConfig',
     'SGI.apps.SgiConfig',
 ]
 
@@ -144,6 +145,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'Administracion', 'static', 'Administracion'),
     os.path.join(BASE_DIR, 'Proyectos', 'static', 'Proyectos'),
     os.path.join(BASE_DIR, 'TalentoHumano', 'static', 'TalentoHumano'),
+    os.path.join(BASE_DIR, 'Financiero', 'static', 'Financiero'),
     os.path.join(BASE_DIR, 'SGI', 'static', 'SGI'),
 
 )

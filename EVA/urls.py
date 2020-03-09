@@ -34,5 +34,5 @@ urlpatterns = [
     path('password-reset-confirm/<uidb64>/<token>/',
          auth_views.PasswordResetConfirmView.as_view(template_name='Administracion/Autenticacion/password_reset_confirm.html'),
          name="password_reset_confirm"),
-
+    path('financiero/', include('Financiero.urls', namespace='financiero')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

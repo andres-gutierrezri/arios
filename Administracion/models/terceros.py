@@ -60,6 +60,9 @@ class Tercero(models.Model, ModelDjangoExtensiones):
                                        verbose_name='Centro poblado', null=True, blank=False)
     tipo_tercero = models.ForeignKey(TipoTercero, on_delete=models.DO_NOTHING, verbose_name='Tipo Tercero', null=True,
                                      blank=False)
+    direccion = models.CharField(max_length=100, verbose_name='Dirección', null=False, blank=False)
+    telefono = models.CharField(max_length=30, verbose_name='Teléfono', null=False, blank=False)
+    fax = models.CharField(max_length=30, verbose_name='fax', null=True, blank=True)
 
     def __str__(self):
         return self.nombre
@@ -80,10 +83,13 @@ class Tercero(models.Model, ModelDjangoExtensiones):
         tercero.identificacion = datos.get('identificacion', '')
         tercero.tipo_identificacion_id = datos.get('tipo_identificacion_id', '')
         tercero.estado = datos.get('estado', 'False') == 'True'
-        tercero.empresa_id = datos.get('empresa_id', '')
+        tercero.empresa_id = datos.get('empresa', '')
         tercero.fecha_modificacion = datetime.now()
         tercero.tipo_tercero_id = datos.get('tipo_tercero_id', '')
         tercero.centro_poblado_id = datos.get('centro_poblado_id', '')
+        tercero.telefono = datos.get('telefono', '')
+        tercero.fax = datos.get('fax', '')
+        tercero.direccion = datos.get('direccion', '')
 
         return tercero
 
