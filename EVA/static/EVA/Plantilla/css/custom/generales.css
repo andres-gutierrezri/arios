@@ -35,3 +35,7 @@ input[type=checkbox] ~ label:before {
     max-width:500px;
     padding-bottom: 6px;
 }
+
+.custom-file-label{
+    overflow: hidden;
+}
