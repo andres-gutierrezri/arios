@@ -1,4 +1,5 @@
-from django.shortcuts import render, redirect, reverse
+from django.http import HttpResponse
+from django.shortcuts import render, redirect, reverse, get_object_or_404
 from datetime import datetime
 from django.core.exceptions import ValidationError
 from django.contrib import messages
@@ -95,6 +96,18 @@ class ArchivoCargarView(AbstractEvaLoggedView):
         archivo.save()
         messages.success(request, 'Se ha cargado un archivo al documento {0}'.format(archivo.documento.nombre))
         return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
+
+
+class VerDocumentoView(AbstractEvaLoggedView):
+    def get(self, request, id_archivo, id_proceso):
+        archivo = get_object_or_404(Archivo, id=id_archivo)
+        print(archivo)
+        if archivo:
+            response = HttpResponse(archivo.archivo, content_type='text/plain')
+            response['Content-Disposition'] = 'attachment; filename="%s"' % archivo.archivo
+            return HttpResponse(response, 'application/pdf')
+        else:
+            return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
 
 # region Métodos de ayuda
