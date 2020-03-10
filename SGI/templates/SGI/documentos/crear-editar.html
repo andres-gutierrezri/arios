@@ -28,7 +28,7 @@
                             <div class="panel-group">
                                 <div class="panel-body">
                                     {% if opcion == 'editar' %}
-                                        {#                                    <form action="{% url 'TalentoHumano:entidades-cafe-editar' entidad_cafe.id %}" id="entidades-form" method="post" class="needs-validation" novalidate>#}
+                                        <form action="{% url 'SGI:documentos-editar' documento.id proceso.id grupo_documento.id %}" id="documentos-form" method="post" class="needs-validation" novalidate>
                                     {% else %}
                                         <form action="{% url 'SGI:documentos-crear'  proceso.id grupo_documento.id%}" id="documentos-form" method="post" class="needs-validation" novalidate>
                                     {% endif %}
