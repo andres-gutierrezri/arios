@@ -55,6 +55,48 @@ class DocumentosCrearView(AbstractEvaLoggedView):
         return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
 
+class DocumentosEditarView(AbstractEvaLoggedView):
+    OPCION = 'editar'
+
+    def get(self, request, id_documento, id_proceso, id_grupo):
+        documento = Documento.objects.get(id=id_documento)
+        proceso = Proceso.objects.get(id=id_proceso)
+        grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
+        return render(request, 'SGI/documentos/crear-editar.html',
+                      datos_xa_render(self.OPCION, proceso=proceso, grupo_documento=grupo_documento,
+                                      documento=documento))
+
+    def post(self, request,  id_documento, id_proceso, id_grupo):
+        documento = Documento.from_dictionary(request.POST)
+        proceso = Proceso.objects.get(id=id_proceso)
+        grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
+        documento.grupo_documento_id = id_grupo
+        documento.proceso_id = id_proceso
+
+        try:
+            documento.full_clean(validate_unique=False, exclude=['cadena_aprobacion'])
+        except ValidationError as errores:
+            datos = datos_xa_render(self.OPCION, documento, proceso=proceso, grupo_documento=grupo_documento)
+            datos['errores'] = errores.message_dict
+            if '__all__' in errores.message_dict:
+                for mensaje in errores.message_dict['__all__']:
+                    if mensaje.startswith('Ya existe'):
+                        messages.warning(request, 'Ya existe un documento con código {0} y versión {1}'
+                                         .format(documento.codigo, documento.version))
+                        break
+            return render(request, 'SGI/documentos/crear-editar.html', datos)
+
+        documento_db = Documento.objects.get(id=id_documento)
+        if documento_db.comparar(documento, excluir=['cadena_aprobacion', 'grupo_documento', 'proceso_id']):
+            messages.success(request, 'No se hicieron cambios en el documento {0}'.format(documento.nombre))
+            return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
+
+        documento.save(update_fields=['nombre', 'codigo', 'version'])
+        messages.success(request, 'Se ha actualizado el documento {0} con versión {1}'
+                         .format(documento.nombre, documento.version))
+        return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
+
+
 class ArchivoCargarView(AbstractEvaLoggedView):
     OPCION = 'cargar'
 
