@@ -99,10 +99,10 @@ class ArchivoCargarView(AbstractEvaLoggedView):
 
 
 class VerDocumentoView(AbstractEvaLoggedView):
-    def get(self, request, id_archivo, id_proceso):
-        archivo = get_object_or_404(Archivo, id=id_archivo)
-        print(archivo)
+    def get(self, request, id_documento, id_proceso):
+        archivo = Archivo.objects.filter(documento_id=id_documento)
         if archivo:
+            archivo = archivo.first()
             response = HttpResponse(archivo.archivo, content_type='text/plain')
             response['Content-Disposition'] = 'attachment; filename="%s"' % archivo.archivo
             return HttpResponse(response, 'application/pdf')
