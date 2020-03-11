@@ -72,6 +72,7 @@ class DocumentosEditarView(AbstractEvaLoggedView):
         grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
         documento.grupo_documento_id = id_grupo
         documento.proceso_id = id_proceso
+        documento.id = id_documento
 
         try:
             documento.full_clean(validate_unique=False, exclude=['cadena_aprobacion'])

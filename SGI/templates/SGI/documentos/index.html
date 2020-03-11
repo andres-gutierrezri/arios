@@ -49,7 +49,7 @@
                                                                                 <a class="far fa-custom fa-eye" style="padding-left: 10px"   href="{% url 'sgi:documentos-ver' proceso.id documento.id  %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ver"></a>
                                                                                 <a class="far fa-custom fa-list-alt" style="padding-left: 10px"   href="" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Historial"></a>
                                                                                 <a class="far fa-custom fa-long-arrow-alt-up" style="padding-left: 10px"  href="javascript:abrir_modal_cargar('{% url 'sgi:documentos-cargar' proceso.id  grupo_documento.id documento.id %}');" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Cargar"></a>
-                                                                                <a class="far fa-custom fa-edit" style="padding-left: 10px"  href="javascript:abrir_modal_cargar('{% url 'sgi:documentos-cargar' proceso.id  grupo_documento.id documento.id %}');" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                                                <a class="far fa-custom fa-edit" style="padding-left: 10px"  href="{% url 'sgi:documentos-editar' proceso.id  grupo_documento.id documento.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
                                                                                 <a class="far fa-custom fa-trash-alt color-danger-900" style="padding-left: 10px"   href="" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
                                                                             </div>
                                                                         </div>
@@ -73,12 +73,12 @@
     <div class="modal fade" tabindex="-1" id="cargar" role="dialog">
 
     </div>
-    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='talento-humano/colaboradores' %}
+    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='sgi/documentos' %}
 {% endblock main%}
 
 {% block scripts %}
     <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
-    <script src="{% static 'TalentoHumano/js/confirmarEliminarColaborador.js' %}"></script>
+    <script src="{% static 'SGI/js/confirmarEliminarDocumento.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
     <script src="{% static 'TalentoHumano/js/filtro_entidad.js' %}"></script>
