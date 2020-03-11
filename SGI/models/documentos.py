@@ -115,6 +115,8 @@ class Archivo(models.Model):
     cadena_aprobacion = models.ForeignKey(CadenaAprobacionEncabezado, on_delete=models.DO_NOTHING,
                                           verbose_name='Cadena de aprobación', null=True, blank=False)
     archivo = models.FileField(upload_to='documentos', blank=True)
+    estado = models.ForeignKey(EstadoArchivo, on_delete=models.DO_NOTHING, verbose_name='Estado de Archivo', null=False,
+                               blank=False)
 
     def __str__(self):
         return self.nombre
