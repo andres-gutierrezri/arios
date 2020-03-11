@@ -9,6 +9,7 @@ from django.db import IntegrityError
 from Administracion.models import Proceso
 from EVA.views.index import AbstractEvaLoggedView
 from SGI.models import Documento, GrupoDocumento, Archivo
+from SGI.models.documentos import EstadoArchivo
 
 
 class IndexView(AbstractEvaLoggedView):
@@ -126,6 +127,7 @@ class ArchivoCargarView(AbstractEvaLoggedView):
 
     def post(self, request, id_proceso, id_grupo, id_documento):
         archivo = Archivo.from_dictionary(request.POST)
+        archivo.estado_id = EstadoArchivo.APROBADO
         archivo.documento_id = id_documento
         archivo.documento.proceso.id = id_proceso
         archivo.documento.grupo_documento_id = id_grupo
@@ -133,7 +135,11 @@ class ArchivoCargarView(AbstractEvaLoggedView):
         grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
 
         archivo.archivo = request.FILES.get('archivo', None)
-        print(archivo.archivo)
+        archivo_db = Archivo.objects.filter(documento_id=id_documento, estado=EstadoArchivo.APROBADO)
+        if archivo_db:
+            for archv in archivo_db:
+                archv.estado_id = EstadoArchivo.OBSOLETO
+                archv.save(update_fields=['estado_id'])
 
         try:
 
