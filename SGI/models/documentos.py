@@ -76,6 +76,36 @@ class Documento(models.Model, ModelDjangoExtensiones):
         return documento
 
 
+class EstadoArchivo(models.Model):
+    objects = ManagerGeneral()
+    nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
+    descripcion = models.CharField(max_length=100, verbose_name='Descripción', null=False, blank=False)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name = 'Estado de Archivo'
+        verbose_name_plural = 'Estados de Archivos'
+
+    @staticmethod
+    def from_dictionary(datos: dict) -> 'EstadoArchivo':
+        """
+        Crea una instancia de Archivo con los datos pasados en el diccionario.
+        :param datos: Diccionario con los datos para crear el docuemento.
+        :return: Instacia de Documento con la información especificada en el diccionario.
+        """
+        estado = EstadoArchivo()
+        estado.nombre = datos.get('nombre', '')
+        estado.notas = datos.get('', '')
+
+        return estado
+    #Estados Fijos
+    PENDIENTE = 0
+    ACTIVO = 1
+    OBSOLETO = 2
+
+
 class Archivo(models.Model):
     objects = ManagerGeneral()
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
