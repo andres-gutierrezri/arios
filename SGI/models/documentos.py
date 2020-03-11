@@ -102,8 +102,9 @@ class EstadoArchivo(models.Model):
         return estado
     #Estados Fijos
     PENDIENTE = 0
-    ACTIVO = 1
+    APROBADO = 1
     OBSOLETO = 2
+    RECHAZADO = 3
 
 
 class Archivo(models.Model):
