@@ -167,17 +167,20 @@ class VerDocumentoView(AbstractEvaLoggedView):
         archivo = Archivo.objects.filter(documento_id=id_documento, estado_id=EstadoArchivo.APROBADO)
         if archivo:
             archivo = archivo.first()
-            response = HttpResponse(archivo.archivo, content_type='text/plain')
-            response['Content-Disposition'] = 'attachment; filename*="%s"' % archivo.nombre
-            extension = os.path.splitext(archivo.archivo.url)
-            if extension == '.pdf':
-                return HttpResponse(response, 'application/pdf')
-            elif extension == '.docx':
-                return HttpResponse(response, 'application/msword')
+            extension = os.path.splitext(archivo.archivo.url)[1]
+
+            if extension == '.docx':
+                mime_type = 'application/msword'
             elif extension == '.xlsx':
-                return HttpResponse(response, 'application/vnd.ms-excel')
+                mime_type = 'application/vnd.ms-excel'
             elif extension == '.pptx':
-                return HttpResponse(response, 'application/vnd.ms-powerpoint')
+                mime_type = 'application/vnd.ms-powerpoint'
+            else:
+                mime_type = 'application/pdf'
+
+            response = HttpResponse(archivo.archivo, content_type=mime_type)
+            response['Content-Disposition'] = 'attachment; filename="%s"' % archivo.archivo
+            return response
         else:
             return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
