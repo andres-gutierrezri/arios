@@ -1,8 +1,10 @@
-from django.http import HttpResponse
+
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from datetime import datetime
 from django.core.exceptions import ValidationError
 from django.contrib import messages
+from django.db import IntegrityError
 
 from Administracion.models import Proceso
 from EVA.views.index import AbstractEvaLoggedView
@@ -96,6 +98,18 @@ class DocumentosEditarView(AbstractEvaLoggedView):
         messages.success(request, 'Se ha actualizado el documento {0} con versión {1}'
                          .format(documento.nombre, documento.version))
         return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
+
+
+class DocumentosEliminarView(AbstractEvaLoggedView):
+    def post(self, request, id):
+        try:
+            documento = Documento.objects.get(id=id)
+            documento.delete()
+            messages.success(request, 'Se ha eliminado el documento {0}'.format(documento.nombre))
+            return JsonResponse({"Mensaje": "OK"})
+
+        except IntegrityError:
+            return JsonResponse({"Mensaje": "Este documento no puede ser eliminado, porque tiene archivos asociados"})
 
 
 class ArchivoCargarView(AbstractEvaLoggedView):

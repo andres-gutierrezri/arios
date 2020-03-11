@@ -30,4 +30,5 @@ urlpatterns = [
          documentos.VerDocumentoView.as_view(), name='documentos-ver'),
     path('procesos/<int:id_proceso>/grupos-documentos/<int:id_grupo>/documentos/<int:id_documento>',
          documentos.DocumentosEditarView.as_view(), name='documentos-editar'),
+    path('documentos/<int:id>/delete', documentos.DocumentosEliminarView.as_view(), name='documentos-eliminar'),
 ]
