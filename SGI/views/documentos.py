@@ -5,6 +5,7 @@ from datetime import datetime
 from django.core.exceptions import ValidationError
 from django.contrib import messages
 from django.db import IntegrityError
+import os.path
 
 from Administracion.models import Proceso
 from EVA.views.index import AbstractEvaLoggedView
@@ -163,12 +164,20 @@ class ArchivoCargarView(AbstractEvaLoggedView):
 
 class VerDocumentoView(AbstractEvaLoggedView):
     def get(self, request, id_documento, id_proceso):
-        archivo = Archivo.objects.filter(documento_id=id_documento)
+        archivo = Archivo.objects.filter(documento_id=id_documento, estado_id=EstadoArchivo.APROBADO)
         if archivo:
             archivo = archivo.first()
             response = HttpResponse(archivo.archivo, content_type='text/plain')
-            response['Content-Disposition'] = 'attachment; filename="%s"' % archivo.archivo
-            return HttpResponse(response, 'application/pdf')
+            response['Content-Disposition'] = 'attachment; filename*="%s"' % archivo.nombre
+            extension = os.path.splitext(archivo.archivo.url)
+            if extension == '.pdf':
+                return HttpResponse(response, 'application/pdf')
+            elif extension == '.docx':
+                return HttpResponse(response, 'application/msword')
+            elif extension == '.xlsx':
+                return HttpResponse(response, 'application/vnd.ms-excel')
+            elif extension == '.pptx':
+                return HttpResponse(response, 'application/vnd.ms-powerpoint')
         else:
             return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
