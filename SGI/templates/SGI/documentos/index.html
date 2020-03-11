@@ -34,7 +34,7 @@
                                 <ul>
                                     {% for grupo_documento in grupo_documentos %}
                                         <li>
-                                            <span><i class="fa fa-lg fa-file-alt"></i> {{ grupo_documento }}</span>
+                                            <span class="col-md-4"><i class="fa fa-lg fa-file-alt"></i> {{ grupo_documento }}</span>
                                             <a class="far fa-custom fa-file-plus" style="padding-left: 10px"   href="{% url 'SGI:documentos-crear' proceso.id  grupo_documento.id%}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear documento"></a>
                                             <ul>
                                                 {% for documento in documentos %}
