@@ -97,7 +97,7 @@ class EstadoArchivo(models.Model):
         """
         estado = EstadoArchivo()
         estado.nombre = datos.get('nombre', '')
-        estado.notas = datos.get('', '')
+        estado.descripcion = datos.get('descripcion', '')
 
         return estado
     #Estados Fijos
