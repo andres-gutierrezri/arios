@@ -147,7 +147,7 @@ class ArchivoCargarView(AbstractEvaLoggedView):
         try:
             archivo.full_clean(exclude=['cadena_aprobacion', 'hash'])
         except ValidationError as errores:
-            datos = archivo_xa_render(self.OPCION, archivo, proceso, grupo_documento, )
+            datos = archivo_xa_render(self.OPCION, archivo, proceso, grupo_documento, documento)
             datos['errores'] = errores.message_dict
             if 'archivo' in errores.message_dict:
                 for mensaje in errores.message_dict['archivo']:
@@ -157,9 +157,8 @@ class ArchivoCargarView(AbstractEvaLoggedView):
                         datos['errores'] = ''
                         break
 
-            return render(request, 'SGI/documentos/cargar-documento.html', datos,
-                          datos_xa_render(self.OPCION, proceso=proceso, grupo_documento=grupo_documento,
-                                          documento=documento))
+            return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
+            return render(request, 'SGI/documentos/cargar-documento.html', datos)
 
         archivo.save()
         messages.success(request, 'Se ha cargado un archivo al documento {0}'.format(archivo.documento.nombre))
@@ -183,8 +182,9 @@ class VerDocumentoView(AbstractEvaLoggedView):
                 mime_type = 'application/pdf'
 
             response = HttpResponse(archivo.archivo, content_type=mime_type)
-            response['Content-Disposition'] = 'attachment; filename="%s"' % (archivo.nombre + '_V' +
-                                                                             archivo.documento.version_actual + extension)
+            response['Content-Disposition'] = 'attachment; filename="%s"' % (archivo.documento.codigo + ' V' +
+                                                                             str(archivo.documento.version_actual) +
+                                                                             extension)
 
             return response
         else:
@@ -222,7 +222,7 @@ def datos_xa_render(opcion: str = None, documento: Documento = None, proceso: Pr
 
 
 def archivo_xa_render(opcion: str = None, archivo: Archivo = None, proceso: Proceso = None,
-                      grupo_documento: GrupoDocumento = None) -> dict:
+                      grupo_documento: GrupoDocumento = None, documento: Documento = None) -> dict:
     """
     Datos necesarios para la creación de los html de Documento.
     :param opcion: valor de la acción a realizar 'crear' o 'editar'
@@ -235,7 +235,8 @@ def archivo_xa_render(opcion: str = None, archivo: Archivo = None, proceso: Proc
     grupos_documentos = GrupoDocumento.objects.get_xa_select_activos()
 
     datos = {'procesos': procesos, 'grupos_documentos': grupos_documentos, 'opcion': opcion}
-
+    if documento:
+        datos['documento'] = documento
     if proceso:
         datos['proceso'] = proceso
     if grupo_documento:
