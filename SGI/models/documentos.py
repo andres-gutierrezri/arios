@@ -56,7 +56,7 @@ class Documento(models.Model, ModelDjangoExtensiones):
     class Meta:
         verbose_name = 'Documento'
         verbose_name_plural = 'Documentos'
-        unique_together = ('codigo', 'version', 'grupo_documento', 'proceso')
+        unique_together = ('codigo', 'version_actual', 'grupo_documento', 'proceso')
 
     @staticmethod
     def from_dictionary(datos: dict) -> 'Documento':

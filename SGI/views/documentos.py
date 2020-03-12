@@ -40,6 +40,7 @@ class DocumentosCrearView(AbstractEvaLoggedView):
         grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
         documento.grupo_documento_id = id_grupo
         documento.proceso_id = id_proceso
+        documento.version_actual = 0.00
 
         try:
             documento.full_clean(exclude=['cadena_aprobacion'])
@@ -50,12 +51,12 @@ class DocumentosCrearView(AbstractEvaLoggedView):
                 for mensaje in errores.message_dict['__all__']:
                     if mensaje.startswith('Ya existe'):
                         messages.warning(request, 'Ya existe un documento con código {0} y versión {1}'
-                                         .format(documento.codigo, documento.version))
+                                         .format(documento.codigo, documento.version_actual))
                         break
             return render(request, 'SGI/documentos/crear-editar.html', datos)
         documento.save()
         messages.success(request, 'Se ha creado el documento {0} con versión {1}'
-                         .format(documento.nombre, documento.version))
+                         .format(documento.nombre, documento.version_actual))
         return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
 
@@ -87,7 +88,7 @@ class DocumentosEditarView(AbstractEvaLoggedView):
                 for mensaje in errores.message_dict['__all__']:
                     if mensaje.startswith('Ya existe'):
                         messages.warning(request, 'Ya existe un documento con código {0} y versión {1}'
-                                         .format(documento.codigo, documento.version))
+                                         .format(documento.codigo, documento.version_actual))
                         break
             return render(request, 'SGI/documentos/crear-editar.html', datos)
 
@@ -96,9 +97,9 @@ class DocumentosEditarView(AbstractEvaLoggedView):
             messages.success(request, 'No se hicieron cambios en el documento {0}'.format(documento.nombre))
             return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
-        documento.save(update_fields=['nombre', 'codigo', 'version'])
+        documento.save(update_fields=['nombre', 'codigo', 'version_actual'])
         messages.success(request, 'Se ha actualizado el documento {0} con versión {1}'
-                         .format(documento.nombre, documento.version))
+                         .format(documento.nombre, documento.version_actual))
         return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
 
@@ -180,7 +181,7 @@ class VerDocumentoView(AbstractEvaLoggedView):
 
             response = HttpResponse(archivo.archivo, content_type=mime_type)
             response['Content-Disposition'] = 'attachment; filename="%s"' % (archivo.nombre + '_V' +
-                                                                             archivo.documento.version + extension)
+                                                                             archivo.documento.version_actual + extension)
 
             return response
         else:
