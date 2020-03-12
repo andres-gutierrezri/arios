@@ -69,7 +69,7 @@ class Documento(models.Model, ModelDjangoExtensiones):
         documento.nombre = datos.get('nombre', '')
         documento.codigo = datos.get('codigo', '')
         documento.fecha_modificacion = datetime.now()
-        documento.version = datos.get('version', '')
+        documento.version_actual = datos.get('version_actual', '')
         documento.cadena_aprobacion_id = datos.get('cadena_aprobacion_id', '')
         documento.grupo_documento_id = datos.get('grupo_documento_id', '')
         documento.proceso_id = datos.get('proceso_id', '')
