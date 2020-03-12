@@ -179,7 +179,9 @@ class VerDocumentoView(AbstractEvaLoggedView):
                 mime_type = 'application/pdf'
 
             response = HttpResponse(archivo.archivo, content_type=mime_type)
-            response['Content-Disposition'] = 'attachment; filename="%s"' % archivo.archivo
+            response['Content-Disposition'] = 'attachment; filename="%s"' % (archivo.nombre + '_V' +
+                                                                             archivo.documento.version + extension)
+
             return response
         else:
             return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
