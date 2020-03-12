@@ -107,6 +107,10 @@ class EstadoArchivo(models.Model):
     RECHAZADO = 3
 
 
+def custom_upload_to(instance, filename):
+    return f'documentos/{ instance.documento.proceso.empresa.nombre }/{ instance.documento.proceso.nombre }/' + filename
+
+
 class Archivo(models.Model):
     objects = ManagerGeneral()
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
@@ -115,7 +119,7 @@ class Archivo(models.Model):
                                   blank=False)
     cadena_aprobacion = models.ForeignKey(CadenaAprobacionEncabezado, on_delete=models.DO_NOTHING,
                                           verbose_name='Cadena de aprobación', null=True, blank=False)
-    archivo = models.FileField(upload_to='documentos', blank=True)
+    archivo = models.FileField(upload_to=custom_upload_to, blank=True)
     estado = models.ForeignKey(EstadoArchivo, on_delete=models.DO_NOTHING, verbose_name='Estado de Archivo', null=False,
                                blank=False)
 
