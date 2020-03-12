@@ -79,27 +79,9 @@
 {% block scripts %}
     <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
     <script src="{% static 'SGI/js/confirmarEliminarDocumento.js' %}"></script>
-    <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
-    <script src="{% static 'TalentoHumano/js/filtro_entidad.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/miscellaneous/treeview/treeview.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js'%}"></script>
     <script src="{% static 'TalentoHumano/js/date_picker.js' %}"></script>
-
-
-    <script>
-
-        function abrir_modal_cargar(url) {
-            $('#cargar').load(url, function () {
-                $(this).modal('show');
-                $('#fecha_id').datepicker({
-                    todayHighlight: true,
-                    orientation: "bottom left",
-                    templates: controls,
-                    format: 'yyyy-mm-dd',
-                    autoclose: true
-                });
-            });
-        }
-    </script>
+    <script src="{% static 'SGI/js/modalCargarArchivo.js' %}"></script>
 {% endblock scripts%}
