@@ -135,6 +135,7 @@ class ArchivoCargarView(AbstractEvaLoggedView):
         archivo.documento.grupo_documento_id = id_grupo
         proceso = Proceso.objects.get(id=id_proceso)
         grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
+        documento = Documento.objects.get(id=id_documento)
 
         archivo.archivo = request.FILES.get('archivo', None)
         archivo_db = Archivo.objects.filter(documento_id=id_documento, estado=EstadoArchivo.APROBADO)
@@ -144,8 +145,7 @@ class ArchivoCargarView(AbstractEvaLoggedView):
                 archv.save(update_fields=['estado_id'])
 
         try:
-
-            archivo.full_clean(exclude=['cadena_aprobacion'])
+            archivo.full_clean(exclude=['cadena_aprobacion', 'hash'])
         except ValidationError as errores:
             datos = archivo_xa_render(self.OPCION, archivo, proceso, grupo_documento, )
             datos['errores'] = errores.message_dict
@@ -156,7 +156,10 @@ class ArchivoCargarView(AbstractEvaLoggedView):
                                          .format(archivo.documento.nombre))
                         datos['errores'] = ''
                         break
-            return render(request, 'SGI/documentos/cargar-documento.html', datos)
+
+            return render(request, 'SGI/documentos/cargar-documento.html', datos,
+                          datos_xa_render(self.OPCION, proceso=proceso, grupo_documento=grupo_documento,
+                                          documento=documento))
 
         archivo.save()
         messages.success(request, 'Se ha cargado un archivo al documento {0}'.format(archivo.documento.nombre))
