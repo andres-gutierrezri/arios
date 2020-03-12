@@ -43,14 +43,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="form-group">
-                                        <div class="form-row">
-
-                                            <div class="col-md-6">
-                                                {% input_text_tag 'version' 'Versión' placeholder="Ingrese la versión" required="" maxlength="100" value=documento.version mensaje_validacion='Por favor digite la versión del documento' invalido=errores.version %}
-                                            </div>
-                                        </div>
-                                    </div>
                                     <div class="form-row">
                                         <div >
                                             <button id="guardar" class="btn btn-primary btn-block">{% if opcion == 'editar' %} Actualizar {% else %} Agregar {% endif %}</button>
@@ -75,7 +67,6 @@
     <script src="{% static 'Administracion/js/select_divipol.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js' %}"></script>
-    <script src="{% static 'TalentoHumano/js/date_picker.js' %}"></script>
     <script>
         $(document).ready(function () {
             $('.select2').select2();
