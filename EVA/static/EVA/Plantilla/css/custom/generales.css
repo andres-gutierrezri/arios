@@ -39,3 +39,11 @@ input[type=checkbox] ~ label:before {
 .custom-file-label{
     overflow: hidden;
 }
+
+.m-b-10{
+    margin-bottom: 10px !important;
+}
+
+.p-b-0{
+    padding-bottom: 0 !important;
+}
