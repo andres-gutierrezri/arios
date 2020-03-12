@@ -42,7 +42,8 @@ class Documento(models.Model, ModelDjangoExtensiones):
     fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False, blank=False)
     fecha_modificacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Modificación', null=True,
                                               blank=False)
-    version = models.CharField(max_length=4, verbose_name='Versión', null=False, blank=False)
+    version_actual = models.DecimalField(max_digits=4, decimal_places=2, verbose_name='Versión Actual',
+                                         null=False, blank=False)
     cadena_aprobacion = models.ForeignKey(CadenaAprobacionEncabezado, on_delete=models.DO_NOTHING,
                                           verbose_name='Cadena de aprobación', null=True, blank=False)
     grupo_documento = models.ForeignKey(GrupoDocumento, on_delete=models.DO_NOTHING,
