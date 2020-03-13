@@ -199,6 +199,7 @@ class VerDocumentoView(AbstractEvaLoggedView):
 
             return response
         else:
+            messages.warning(request, 'Este documento no tiene archivos disponibles')
             return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
 
