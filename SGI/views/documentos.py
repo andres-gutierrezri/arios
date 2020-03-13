@@ -120,9 +120,16 @@ class ArchivoCargarView(AbstractEvaLoggedView):
         proceso = Proceso.objects.get(id=id_proceso)
         grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
         documento = Documento.objects.get(id=id_documento)
+        archivo_db = Archivo.objects.filter(documento_id=id_documento, estado=EstadoArchivo.APROBADO)
+
+        if archivo_db:
+            version = float(archivo_db.first().version) + 0.1
+        else:
+            version = 1
+
         return render(request, 'SGI/documentos/cargar-documento.html',
                       datos_xa_render(self.OPCION, proceso=proceso, grupo_documento=grupo_documento,
-                                      documento=documento))
+                                      documento=documento, version=version))
 
     def post(self, request, id_proceso, id_grupo, id_documento):
         archivo = Archivo.from_dictionary(request.POST)
@@ -192,7 +199,7 @@ class VerDocumentoView(AbstractEvaLoggedView):
 
 
 def datos_xa_render(opcion: str = None, documento: Documento = None, proceso: Proceso = None,
-                    grupo_documento: GrupoDocumento = None, archivo: Archivo = None) -> dict:
+                    grupo_documento: GrupoDocumento = None, archivo: Archivo = None, version: float = 1) -> dict:
     """
     Datos necesarios para la creación de los html de Documento.
     :param opcion: valor de la acción a realizar 'crear' o 'editar'
@@ -205,7 +212,7 @@ def datos_xa_render(opcion: str = None, documento: Documento = None, proceso: Pr
     procesos = Proceso.objects.get_x_estado(estado=True)
     grupos_documentos = GrupoDocumento.objects.get_xa_select_activos()
 
-    datos = {'procesos': procesos, 'grupos_documentos': grupos_documentos, 'opcion': opcion}
+    datos = {'procesos': procesos, 'grupos_documentos': grupos_documentos, 'opcion': opcion, 'version': version}
     if documento:
         datos['documento'] = documento
     if proceso:
@@ -214,6 +221,8 @@ def datos_xa_render(opcion: str = None, documento: Documento = None, proceso: Pr
         datos['grupo_documento'] = grupo_documento
     if archivo:
         datos['archivo'] = archivo
+    if version:
+        datos['version'] = version
 
     return datos
 
