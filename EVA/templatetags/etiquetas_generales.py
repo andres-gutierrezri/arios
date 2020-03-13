@@ -12,9 +12,10 @@ def select_tag(lista, nombre, texto_seleccion, **kwargs):
     mensaje_validacion = kwargs.pop('mensaje_validacion', None)
     valor = kwargs.pop('value', None)
     primer_valor = kwargs.pop('primer_valor', None)
+    modal = kwargs.pop('modal', False)
     return {'lista': lista, 'nombre': nombre, 'texto_seleccion': texto_seleccion, 'texto_label': texto_label,
             'propiedades': propiedades_to_str(kwargs), 'mensaje_validacion': mensaje_validacion, 'valor': valor,
-            'primer_valor': primer_valor}
+            'primer_valor': primer_valor, 'modal': modal}
 
 
 @register.inclusion_tag('EVA/_general_tags/_select_multiple_tag.html')
@@ -24,9 +25,10 @@ def select_multiple_tag(lista, nombre, id,  texto_seleccion, **kwargs):
     mensaje_validacion = kwargs.pop('mensaje_validacion', None)
     valor = kwargs.pop('value', None)
     primer_valor = kwargs.pop('primer_valor', None)
+    modal = kwargs.pop('modal', False)
     return {'lista': lista, 'nombre': nombre, 'texto_seleccion': texto_seleccion, 'texto_label': texto_label,
             'propiedades': propiedades_to_str(kwargs), 'mensaje_validacion': mensaje_validacion, 'valor': valor,
-            'primer_valor': primer_valor, 'id': id}
+            'primer_valor': primer_valor, 'id': id, 'modal': modal}
 
 
 @register.inclusion_tag('EVA/_general_tags/_input_general_tag.html')
@@ -193,8 +195,11 @@ def arma_input_general_tag(nombre, **kwargs):
     texto_label = kwargs.pop('texto_label', None)
     mensaje_validacion = kwargs.pop('mensaje_validacion', None)
 
+    modal = kwargs.pop('modal', False)
+
     return {'nombre': nombre, 'texto_label': texto_label, 'tipo': tipo, 'valor': valor,
-            'propiedades': propiedades_to_str(kwargs), 'mensaje_validacion': mensaje_validacion, 'is_fecha': is_fecha}
+            'propiedades': propiedades_to_str(kwargs), 'mensaje_validacion': mensaje_validacion, 'is_fecha': is_fecha,
+            'modal': modal}
 
 
 def get_min_decimal_string(decimal_places):

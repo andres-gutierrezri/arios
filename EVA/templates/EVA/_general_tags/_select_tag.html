@@ -10,5 +10,5 @@
     {% endfor %}
 </select>
 {% if mensaje_validacion %}
-<div class="invalid-tooltip">{{ mensaje_validacion }}</div>
+<div class="invalid-tooltip {% if modal %}invalid-tooltip-modal{% endif %}">{{ mensaje_validacion }}</div>
 {% endif %}

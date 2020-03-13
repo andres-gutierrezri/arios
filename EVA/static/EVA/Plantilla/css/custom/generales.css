@@ -1,6 +1,10 @@
 .invalid-tooltip {
-  line-height: 0.9;
-  background-color: #fd395e;
+    line-height: 0.9;
+    background-color: #fd395e;
+}
+
+.invalid-tooltip-modal {
+    position: relative;
 }
 
 .was-validated .form-control:invalid, .form-control.is-invalid {
