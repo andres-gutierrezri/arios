@@ -44,6 +44,10 @@ input[type=checkbox] ~ label:before {
     overflow: hidden;
 }
 
+.custom-file-label::after{
+    content: 'Buscar';
+}
+
 .m-b-10{
     margin-bottom: 10px !important;
 }
