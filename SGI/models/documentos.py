@@ -42,7 +42,7 @@ class Documento(models.Model, ModelDjangoExtensiones):
     fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False, blank=False)
     fecha_modificacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Modificación', null=True,
                                               blank=False)
-    version_actual = models.DecimalField(max_digits=4, decimal_places=2, verbose_name='Versión Actual',
+    version_actual = models.DecimalField(max_digits=4, decimal_places=1, verbose_name='Versión Actual',
                                          null=False, blank=False)
     cadena_aprobacion = models.ForeignKey(CadenaAprobacionEncabezado, on_delete=models.DO_NOTHING,
                                           verbose_name='Cadena de aprobación', null=True, blank=False)
@@ -116,7 +116,7 @@ class Archivo(models.Model):
     objects = ManagerGeneral()
     documento = models.ForeignKey(Documento, on_delete=models.DO_NOTHING, verbose_name='Documento', null=True,
                                   blank=False)
-    version = models.DecimalField(max_digits=4, decimal_places=2, verbose_name='Versión',
+    version = models.DecimalField(max_digits=4, decimal_places=1, verbose_name='Versión',
                                   null=False, blank=False)
     notas = models.CharField(max_length=100, verbose_name='Notas', null=False, blank=False)
     fecha_documento = models.DateField(verbose_name='Fecha del Documento', null=False, blank=False)
