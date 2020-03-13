@@ -26,15 +26,10 @@ function fSweetAlert() {
                 context: document.body,
                 success: function (data) {
                     if(data.Mensaje === "OK") {
-
                         location.reload();
                     }
                     else {
-                        Swal.fire({
-                            title: "¡Error!",
-                            text: data.Mensaje,
-                            type: 'error',
-                        });
+                        location.reload();
                     }
                 },
                 failure: function (errMsg) {

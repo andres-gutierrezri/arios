@@ -109,7 +109,8 @@ class DocumentosEliminarView(AbstractEvaLoggedView):
             return JsonResponse({"Mensaje": "OK"})
 
         except IntegrityError:
-            return JsonResponse({"Mensaje": "Este documento no puede ser eliminado, porque tiene archivos asociados"})
+            messages.error(request, 'Este documento no puede ser eliminado, porque tiene archivos asociados')
+            return JsonResponse({"Mensaje": "ERROR"})
 
 
 class ArchivoCargarView(AbstractEvaLoggedView):
