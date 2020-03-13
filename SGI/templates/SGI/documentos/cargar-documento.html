@@ -17,16 +17,16 @@
                 {% csrf_token %}
                 <div class="form-group">
                     <div class="m-b-10">
-                        {% input_textarea_tag 'notas' 'Notas' type="textarea" placeholder="Digite una nota"  maxlength="100" value=archivo.notas mensaje_validacion='Por favor ingrese una nota' invalido=errores.notas %}
+                        {% input_textarea_tag 'notas' 'Notas' type="textarea" placeholder="Digite una nota"  maxlength="100" required="" modal=True value=archivo.notas mensaje_validacion='Por favor ingrese una nota' invalido=errores.notas %}
                     </div>
                     <div class="m-b-10">
-                        {% input_file_tag 'archivo' 'Archivo' placeholder="Seleccione un archivo" class='custom-file-input'  invalido=errores.logo accept=".docx, .pptx, .xlsx, .pdf"  %}
+                        {% input_file_tag 'archivo' 'Archivo' placeholder="Seleccione un archivo" class='custom-file-input'  required="" modal=True invalido=errores.logo accept=".docx, .pptx, .xlsx, .pdf" mensaje_validacion='Por favor seleccione un archivo'%}
                     </div>
                     <div class="m-b-10">
-                        {% input_date_tag 'fecha_documento' 'Fecha del Documento' placeholder="Seleccione una fecha"   value=archivo.fecha_documento autocomplete="off"  mensaje_validacion='Por favor seleccione una fecha.' invalido=errores.fecha_documento %}
+                        {% input_date_tag 'fecha_documento' 'Fecha del Documento' placeholder="Seleccione una fecha"   required="" modal=True value=archivo.fecha_documento autocomplete="off"  mensaje_validacion='Por favor seleccione una fecha.' invalido=errores.fecha_documento %}
                     </div>
                     <div class="m-b-10">
-                        {% input_number_tag 'version' 'Versión' placeholder="Ingrese la versión del documento"  min='0.01' max="9999.99" step="0.01" value=archivo.version mensaje_validacion='Por favor digite el valor del contrato.' invalido=errores.version %}
+                        {% input_number_tag 'version' 'Versión' placeholder="Ingrese la versión del documento"  required="" modal=True min='0.01' max="9999.99" step="0.01" value=archivo.version mensaje_validacion='Por favor digite el valor del contrato.' invalido=errores.version %}
                     </div>
                 </div>
                 <div class="form-row">
@@ -41,5 +41,3 @@
         </div>
     </div>
 </div>
-<script src="{% static 'SGI/js/modalCargarArchivo.js' %}"></script>
-
