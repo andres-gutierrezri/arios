@@ -69,7 +69,7 @@ class DocumentosEditarView(AbstractEvaLoggedView):
                       datos_xa_render(self.OPCION, proceso=proceso, grupo_documento=grupo_documento,
                                       documento=documento))
 
-    def post(self, request,  id_documento, id_proceso, id_grupo):
+    def post(self, request,  id_proceso, id_grupo, id_documento):
         documento = Documento.from_dictionary(request.POST)
         proceso = Proceso.objects.get(id=id_proceso)
         grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
@@ -90,7 +90,8 @@ class DocumentosEditarView(AbstractEvaLoggedView):
             return render(request, 'SGI/documentos/crear-editar.html', datos)
 
         documento_db = Documento.objects.get(id=id_documento)
-        if documento_db.comparar(documento, excluir=['cadena_aprobacion', 'grupo_documento', 'proceso_id']):
+        if documento_db.comparar(documento, excluir=['cadena_aprobacion', 'grupo_documento', 'proceso_id',
+                                                     'version_actual']):
             messages.success(request, 'No se hicieron cambios en el documento {0}'.format(documento.nombre))
             return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
