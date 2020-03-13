@@ -144,9 +144,16 @@ class ArchivoCargarView(AbstractEvaLoggedView):
         archivo.archivo = request.FILES.get('archivo', None)
         archivo_db = Archivo.objects.filter(documento_id=id_documento, estado=EstadoArchivo.APROBADO)
         if archivo_db:
+            if float(archivo.version) <= documento.version_actual:
+                messages.error(request, 'La versión del documento debe ser mayor a la actual {0}'
+                               .format(documento.version_actual))
+                return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
             for archv in archivo_db:
                 archv.estado_id = EstadoArchivo.OBSOLETO
                 archv.save(update_fields=['estado_id'])
+
+        documento.version_actual = archivo.version
+        documento.save(update_fields=['version_actual'])
 
         try:
             archivo.full_clean(exclude=['cadena_aprobacion', 'hash'])
@@ -162,7 +169,6 @@ class ArchivoCargarView(AbstractEvaLoggedView):
                         break
 
             return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
-            return render(request, 'SGI/documentos/cargar-documento.html', datos)
 
         archivo.save()
         messages.success(request, 'Se ha cargado un archivo al documento {0}'.format(archivo.documento.nombre))
