@@ -28,9 +28,9 @@
                             <div class="panel-group">
                                 <div class="panel-body">
                                     {% if opcion == 'editar' %}
-                                        <form action="{% url 'SGI:documentos-editar' documento.id proceso.id grupo_documento.id %}" id="documentos-form" method="post" class="needs-validation" novalidate>
+                                        <form action="{% url 'SGI:documentos-editar' proceso.id grupo_documento.id documento.id %}" id="documentos-form" method="post" class="needs-validation" novalidate>
                                     {% else %}
-                                        <form action="{% url 'SGI:documentos-crear'  proceso.id grupo_documento.id%}" id="documentos-form" method="post" class="needs-validation" novalidate>
+                                        <form action="{% url 'SGI:documentos-crear'  proceso.id grupo_documento.id %}" id="documentos-form" method="post" class="needs-validation" novalidate>
                                     {% endif %}
                                     {% csrf_token %}
                                     <div class="form-group">
