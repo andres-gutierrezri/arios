@@ -122,7 +122,7 @@
                                                                         {% select_tag lugar_nacimiento 'centro_poblado_id' 'Seleccione un centro poblado' texto_label="Lugar de nacimiento" value=colaborador.lugar_nacimiento.id required="" mensaje_validacion='Por favor seleccione un centro poblado' invalido=errores.lugar_nacimiento %}
                                                                     </div>
                                                                     <div class="col-md-6">
-                                                                        {% input_file_tag 'foto_perfil' 'Foto de perfil' placeholder="Seleccione la foto de perfil"   value=colaborador.foto_perfil  class='custom-file-input'  invalido=errores.foto_perfil  %}
+                                                                        {% input_file_tag 'foto_perfil' 'Foto de perfil' placeholder="Seleccione la foto de perfil"   value=colaborador.foto_perfil  invalido=errores.foto_perfil  %}
                                                                     </div>
                                                                 </div>
                                                             </div>

@@ -100,6 +100,9 @@ def input_file_tag(nombre, texto_label, **kwargs):
     kwargs['texto_label'] = texto_label
     kwargs['type'] = u'file'
 
+    if 'class' not in kwargs:
+        kwargs['class'] = 'custom-file-input'
+
     return arma_input_general_tag(nombre, **kwargs)
 
 
