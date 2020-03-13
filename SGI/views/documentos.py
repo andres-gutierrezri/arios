@@ -50,13 +50,11 @@ class DocumentosCrearView(AbstractEvaLoggedView):
             if '__all__' in errores.message_dict:
                 for mensaje in errores.message_dict['__all__']:
                     if mensaje.startswith('Ya existe'):
-                        messages.warning(request, 'Ya existe un documento con código {0} y versión {1}'
-                                         .format(documento.codigo, documento.version_actual))
+                        messages.warning(request, 'Ya existe un documento con código {0}'.format(documento.codigo))
                         break
             return render(request, 'SGI/documentos/crear-editar.html', datos)
         documento.save()
-        messages.success(request, 'Se ha creado el documento {0} con versión {1}'
-                         .format(documento.nombre, documento.version_actual))
+        messages.success(request, 'Se ha creado el documento {0} ' .format(documento.nombre))
         return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
 
@@ -80,15 +78,14 @@ class DocumentosEditarView(AbstractEvaLoggedView):
         documento.id = id_documento
 
         try:
-            documento.full_clean(validate_unique=False, exclude=['cadena_aprobacion'])
+            documento.full_clean(validate_unique=False, exclude=['cadena_aprobacion', 'version_actual'])
         except ValidationError as errores:
             datos = datos_xa_render(self.OPCION, documento, proceso=proceso, grupo_documento=grupo_documento)
             datos['errores'] = errores.message_dict
             if '__all__' in errores.message_dict:
                 for mensaje in errores.message_dict['__all__']:
                     if mensaje.startswith('Ya existe'):
-                        messages.warning(request, 'Ya existe un documento con código {0} y versión {1}'
-                                         .format(documento.codigo, documento.version_actual))
+                        messages.warning(request, 'Ya existe un documento con código {0}' .format(documento.codigo))
                         break
             return render(request, 'SGI/documentos/crear-editar.html', datos)
 
@@ -97,9 +94,8 @@ class DocumentosEditarView(AbstractEvaLoggedView):
             messages.success(request, 'No se hicieron cambios en el documento {0}'.format(documento.nombre))
             return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
-        documento.save(update_fields=['nombre', 'codigo', 'version_actual'])
-        messages.success(request, 'Se ha actualizado el documento {0} con versión {1}'
-                         .format(documento.nombre, documento.version_actual))
+        documento.save(update_fields=['nombre', 'codigo'])
+        messages.success(request, 'Se ha actualizado el documento {0}' .format(documento.nombre))
         return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
 
