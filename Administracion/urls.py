@@ -21,7 +21,7 @@ from Administracion.views.seleccion_empresa import SeleccionEmpresaModalView
 app_name = 'Administracion'
 
 urlpatterns = [
-    path('index/', terceros.PrincipalView.as_view(), name='index'),
+    path('index/', views.PrincipalView.as_view(), name='index'),
     path('terceros/', terceros.TerceroView.as_view(), name='terceros'),
     path('terceros/add', terceros.TerceroCrearView.as_view(), name='terceros-crear'),
     path('terceros/<int:id>/', terceros.TerceroEditarView.as_view(), name='terceros-editar'),
