@@ -15,7 +15,7 @@ from Administracion.models import Empresa
 
 class EmpresaView(AbstractEvaLoggedView):
     def get(self, request):
-        if not request.user.has_perms(['Administracion.view_empresa', 'Colaborador.can_menu_administracion']):
+        if not request.user.has_perms(['Administracion.view_empresa', 'TalentoHumano.can_menu_administracion']):
             return redirect(reverse('eva-index'))
         else:
             empresas = Empresa.objects.filter(subempresa=False)
@@ -27,13 +27,13 @@ class EmpresaCrearView(AbstractEvaLoggedView):
     OPCION = 'crear'
 
     def get(self, request):
-        if not request.user.has_perms(['Administracion.add_empresa', 'Colaborador.can_menu_administracion']):
+        if not request.user.has_perms(['Administracion.add_empresa', 'TalentoHumano.can_menu_administracion']):
             return redirect(reverse('eva-index'))
         else:
             return render(request, 'Administracion/Empresas/crear-editar.html', datos_xa_render(self.OPCION))
 
     def post(self, request):
-        if not request.user.has_perms(['Administracion.add_empresa', 'Colaborador.can_menu_administracion']):
+        if not request.user.has_perms(['Administracion.add_empresa', 'TalentoHumano.can_menu_administracion']):
             return redirect(reverse('eva-index'))
         else:
             empresa = Empresa.from_dictionary(request.POST)
@@ -65,7 +65,7 @@ class EmpresaEditarView(AbstractEvaLoggedView):
     OPCION = 'editar'
 
     def get(self, request, id):
-        if not request.user.has_perms(['Administracion.change_empresa', 'Colaborador.can_menu_administracion']):
+        if not request.user.has_perms(['Administracion.change_empresa', 'TalentoHumano.can_menu_administracion']):
             return redirect(reverse('eva-index'))
         else:
             empresa = Empresa.objects.get(id=id)
@@ -73,7 +73,7 @@ class EmpresaEditarView(AbstractEvaLoggedView):
             return render(request, 'Administracion/Empresas/crear-editar.html', datos_xa_render(self.OPCION, empresa))
 
     def post(self, request, id):
-        if not request.user.has_perms(['Administracion.change_empresa', 'Colaborador.can_menu_administracion']):
+        if not request.user.has_perms(['Administracion.change_empresa', 'TalentoHumano.can_menu_administracion']):
             return redirect(reverse('eva-index'))
         else:
             update_fields = ['nombre', 'nit', 'estado']
@@ -108,7 +108,7 @@ class EmpresaEditarView(AbstractEvaLoggedView):
 
 class EmpresaEliminarView(AbstractEvaLoggedView):
     def post(self, request, id):
-        if not request.user.has_perms(['Administracion.delete_empresa', 'Colaborador.can_menu_administracion']):
+        if not request.user.has_perms(['Administracion.delete_empresa', 'TalentoHumano.can_menu_administracion']):
             return redirect(reverse('eva-index'))
         else:
             empresa = None
@@ -139,7 +139,7 @@ def datos_xa_render(opcion: str, empresa: Empresa = None) -> dict:
 
 class SubempresaView(AbstractEvaLoggedView):
     def get(self, request):
-        if not request.user.has_perms(['Administracion.view_empresa', 'Colaborador.can_menu_administracion']):
+        if not request.user.has_perms(['Administracion.view_empresa', 'TalentoHumano.can_menu_administracion']):
             return redirect(reverse('eva-index'))
         else:
             subempresas = Empresa.objects.filter(subempresa=True, empresa_ppal_id=get_id_empresa_global(request))
@@ -153,13 +153,13 @@ class SubempresaCrearView(AbstractEvaLoggedView):
     OPCION = 'crear'
 
     def get(self, request):
-        if not request.user.has_perms(['Administracion.add_empresa', 'Colaborador.can_menu_administracion']):
+        if not request.user.has_perms(['Administracion.add_empresa', 'TalentoHumano.can_menu_administracion']):
             return redirect(reverse('eva-index'))
         else:
             return render(request, 'Administracion/Subempresas/crear-editar.html', {'opcion': self.OPCION})
 
     def post(self, request):
-        if not request.user.has_perms(['Administracion.add_empresa', 'Colaborador.can_menu_administracion']):
+        if not request.user.has_perms(['Administracion.add_empresa', 'TalentoHumano.can_menu_administracion']):
             return redirect(reverse('eva-index'))
         else:
             nombre = request.POST.get('nombre', '')
@@ -194,7 +194,7 @@ class SubempresaEditarView(AbstractEvaLoggedView):
     OPCION = 'editar'
 
     def get(self, request, id):
-        if not request.user.has_perms(['Administracion.change_empresa', 'Colaborador.can_menu_administracion']):
+        if not request.user.has_perms(['Administracion.change_empresa', 'TalentoHumano.can_menu_administracion']):
             return redirect(reverse('eva-index'))
         else:
             subempresa = Empresa.objects.get(id=id)
@@ -202,7 +202,7 @@ class SubempresaEditarView(AbstractEvaLoggedView):
                           datos_xa_render_subempresa(self.OPCION, subempresa))
 
     def post(self, request, id):
-        if not request.user.has_perms(['Administracion.change_empresa', 'Colaborador.can_menu_administracion']):
+        if not request.user.has_perms(['Administracion.change_empresa', 'TalentoHumano.can_menu_administracion']):
             return redirect(reverse('eva-index'))
         else:
             update_fields = ['nombre', 'nit', 'estado']
@@ -243,7 +243,7 @@ class SubempresaEditarView(AbstractEvaLoggedView):
 
 class SubEmpresaEliminarView(AbstractEvaLoggedView):
     def post(self, request, id):
-        if not request.user.has_perms(['Administracion.delete_empresa', 'Colaborador.can_menu_administracion']):
+        if not request.user.has_perms(['Administracion.delete_empresa', 'TalentoHumano.can_menu_administracion']):
             return redirect(reverse('eva-index'))
         else:
             try:
