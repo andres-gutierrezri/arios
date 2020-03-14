@@ -21,11 +21,6 @@ class TerceroView(AbstractEvaLoggedView):
         return render(request, 'Administracion/Tercero/index.html', {'terceros': terceros, 'fecha': fecha})
 
 
-class PrincipalView(AbstractEvaLoggedView):
-    def get(self, request):
-        return render(request, 'Administracion/index.html')
-
-
 class TerceroCrearView(AbstractEvaLoggedView):
     OPCION = 'crear'
 

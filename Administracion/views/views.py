@@ -4,10 +4,16 @@ from __future__ import unicode_literals
 
 from django.db import IntegrityError
 from django.http import JsonResponse
+from django.shortcuts import render
 from django.views import View
 
 from Administracion.models import Municipio, CentroPoblado
 from EVA.views.index import AbstractEvaLoggedView
+
+
+class PrincipalView(AbstractEvaLoggedView):
+    def get(self, request):
+        return render(request, 'Administracion/index.html')
 
 
 class CargarMunicipiosSelectJsonView(AbstractEvaLoggedView):
