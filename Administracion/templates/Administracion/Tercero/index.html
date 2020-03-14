@@ -11,82 +11,87 @@
 {% block main %}
 
     <div class="panel-container show">
-            <div class="header">
-                 <h1 class="header-title">
-                    <i class='far fa-handshake'></i> Terceros <span class='fw-300'></span>
-                     <br>
-                     <br>
-                 </h1>
-
-            </div>
-            <div class="row">
-                <div class="col-xl-12">
-                    <div id="panel-1" class="panel">
-                        <div class="panel-hdr">
-
-                            <small>
-                                 <a class="far fa-3x far fa-plus-circle"  href="{% url 'Administracion:terceros-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar tercero"></a>
-                            </small>
-                        </div>
-                        <div class="panel-container show">
-                            <div class="panel-content">
-
-                                    <div class="panel-group">
-                                        <div class="panel-body">
-                                            <div class="table-responsive">
-                                                <table class="table table-bordered w-100" id="dataTable">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Nombre</th>
-                                                            <th>Identificación</th>
-                                                            <th>Tipo de identificación</th>
-                                                            <th>Estado</th>
-                                                            <th>Empresa</th>
-                                                            <th>Fecha de creación</th>
-                                                            <th>Fecha de modificación</th>
-                                                            <th>Tipo tercero</th>
-                                                            <th>Ciudad</th>
-                                                            <th>Acción</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {% for tercero in terceros %}
-                                                            <tr>
-                                                                <td>{{ tercero.nombre }}</td>
-                                                                <td>{{ tercero.identificacion}}</td>
-                                                                <td>{{ tercero.tipo_identificacion}}</td>
-
-                                                                <td>{% if tercero.estado == True %}
-                                                                    <span class="badge badge-primary">Activo</span>
-                                                                    {% else %}
-                                                                    <span class="badge badge-secondary">Inactivo</span>
-                                                                    {% endif %}
-                                                                </td>
-                                                                <td>{{ tercero.empresa }}</td>
-                                                                <td>{{ tercero.fecha_creacion|date:'Y-m-d H:i' }}</td>
-                                                                <td>{{ tercero.fecha_modificacion|date:'Y-m-d H:i' }}</td>
-                                                                <td>{{ tercero.tipo_tercero }}</td>
-                                                                <td>{{ tercero.centro_poblado }}</td>
-                                                              <td>
-                                                                    <a class="far fa-2x fa-edit"  href="{% url 'Administracion:terceros-editar' tercero.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
-                                                                    <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ tercero.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ tercero.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
-
-                                                              </td>
-                                                            </tr>
-                                                        {% endfor %}
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                        <div class="card-footer small text-muted">Actualizado: {{ fecha }}</div>
+        <div class="header">
+             <h1 class="header-title">
+                <i class='far fa-handshake'></i> Terceros <span class='fw-300'></span>
+                 <br>
+                 <br>
+             </h1>
+        </div>
+        <div class="row">
+            <div class="col-xl-12">
+                <div id="panel-1" class="panel">
+                    {%if 'Administracion.add_tercero' in perms %}
+                    <div class="panel-hdr">
+                        <small>
+                             <a class="far fa-3x far fa-plus-circle"  href="{% url 'Administracion:terceros-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar tercero"></a>
+                        </small>
+                    </div>
+                    {% endif %}
+                    <div class="panel-container show">
+                        <div class="panel-content">
+                            <div class="panel-group">
+                                <div class="panel-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered w-100" id="dataTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Nombre</th>
+                                                    <th>Identificación</th>
+                                                    <th>Tipo de identificación</th>
+                                                    <th>Estado</th>
+                                                    <th>Empresa</th>
+                                                    <th>Fecha de creación</th>
+                                                    <th>Fecha de modificación</th>
+                                                    <th>Tipo tercero</th>
+                                                    <th>Ciudad</th>
+                                                    {% if perms.Administracion.change_tercero or perms.Administracion.delete_tercero %}
+                                                        <th>Acción</th>
+                                                    {% endif %}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for tercero in terceros %}
+                                                    <tr>
+                                                        <td>{{ tercero.nombre }}</td>
+                                                        <td>{{ tercero.identificacion}}</td>
+                                                        <td>{{ tercero.tipo_identificacion}}</td>
+                                                        <td>
+                                                            {% if tercero.estado == True %}
+                                                            <span class="badge badge-primary">Activo</span>
+                                                            {% else %}
+                                                            <span class="badge badge-secondary">Inactivo</span>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>{{ tercero.empresa }}</td>
+                                                        <td>{{ tercero.fecha_creacion|date:'Y-m-d H:i' }}</td>
+                                                        <td>{{ tercero.fecha_modificacion|date:'Y-m-d H:i' }}</td>
+                                                        <td>{{ tercero.tipo_tercero }}</td>
+                                                        <td>{{ tercero.centro_poblado }}</td>
+                                                        {% if perms.Administracion.change_tercero or perms.Administracion.delete_tercero %}
+                                                        <td>
+                                                            {%if 'Administracion.change_tercero' in perms %}
+                                                            <a class="far fa-2x fa-edit"  href="{% url 'Administracion:terceros-editar' tercero.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                            {% endif %}
+                                                            {%if 'Administracion.delete_tercero' in perms %}
+                                                            <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ tercero.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ tercero.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+                                                            {% endif %}
+                                                        </td>
+                                                        {% endif %}
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
+                                <div class="card-footer small text-muted">Actualizado: {{ fecha }}</div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
     </div>
-
 
     {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='administracion/terceros' %}
 {% endblock %}
