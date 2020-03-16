@@ -195,7 +195,8 @@ class VerDocumentoView(AbstractEvaLoggedView):
                 mime_type = 'application/pdf'
 
             response = HttpResponse(archivo.archivo, content_type=mime_type)
-            response['Content-Disposition'] = 'attachment; filename="%s"' % (archivo.documento.codigo + ' V' +
+            response['Content-Disposition'] = 'attachment; filename="%s"' % (archivo.documento.codigo + ' ' +
+                                                                             archivo.documento.nombre + ' V' +
                                                                              str(archivo.documento.version_actual) +
                                                                              extension)
 
