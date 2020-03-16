@@ -109,7 +109,8 @@ class EstadoArchivo(models.Model):
 
 
 def custom_upload_to(instance, filename):
-    return f'documentos/{ instance.documento.proceso.empresa.nombre }/{ instance.documento.proceso.nombre }/' + filename
+    return f'Documentos/{ instance.documento.proceso.empresa.id }/{ instance.documento.proceso.id }/' \
+           + instance.documento.codigo + ' ' + instance.documento.nombre + ' V' + str(instance.version)
 
 
 class Archivo(models.Model):
