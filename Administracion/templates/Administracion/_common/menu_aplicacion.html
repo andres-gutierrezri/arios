@@ -1,4 +1,4 @@
-{%if 'Administracion.view_tercero' in perms %}
+{% if perms.Administracion.view_tercero %}
 <li>
     <a href="{% url 'Administracion:terceros' %}" title="Terceros" data-filter-tags="terceros">
         <i class="far fa-handshake"></i>
@@ -6,7 +6,7 @@
     </a>
 </li>
 {% endif %}
-{%if 'Administracion.view_empresa' in perms %}
+{% if perms.Administracion.view_empresa %}
     <li>
         <a href="{% url 'Administracion:empresas' %}" title="Empresas" data-filter-tags="empresas">
             <i class="far fa-briefcase"></i>

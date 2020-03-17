@@ -22,7 +22,7 @@
             <div class="row">
                 <div class="col-xl-12">
                     <div id="panel-1" class="panel">
-                        {%if 'Administracion.add_empresa' in perms %}
+                        {% if perms.Administracion.add_empresa %}
                         <div class="panel-hdr">
                             <small>
                                  <a class="far fa-3x far fa-plus-circle"  href="{% url 'Administracion:sub-empresas-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar sub-empresas"></a>
@@ -60,10 +60,10 @@
                                                                 </td>
                                                                 {% if perms.Administracion.change_empresa or perms.Administracion.delete_empresa %}
                                                                 <td>
-                                                                    {%if 'Administracion.change_empresa' in perms %}
+                                                                    {% if perms.Administracion.change_empresa %}
                                                                         <a class="far fa-2x fa-edit"  href="{% url 'Administracion:sub-empresas-editar' subempresa.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
                                                                     {% endif %}
-                                                                    {%if 'Administracion.delete_empresa' in perms %}
+                                                                    {% if perms.Administracion.delete_empresa %}
                                                                         <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ subempresa.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ subempresa.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
                                                                     {% endif %}
                                                                 </td>

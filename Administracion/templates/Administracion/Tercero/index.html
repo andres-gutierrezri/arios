@@ -21,7 +21,7 @@
         <div class="row">
             <div class="col-xl-12">
                 <div id="panel-1" class="panel">
-                    {%if 'Administracion.add_tercero' in perms %}
+                    {% if perms.Administracion.add_tercero %}
                     <div class="panel-hdr">
                         <small>
                              <a class="far fa-3x far fa-plus-circle"  href="{% url 'Administracion:terceros-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar tercero"></a>
@@ -70,10 +70,10 @@
                                                         <td>{{ tercero.centro_poblado }}</td>
                                                         {% if perms.Administracion.change_tercero or perms.Administracion.delete_tercero %}
                                                         <td>
-                                                            {%if 'Administracion.change_tercero' in perms %}
+                                                            {% if perms.Administracion.change_tercero %}
                                                             <a class="far fa-2x fa-edit"  href="{% url 'Administracion:terceros-editar' tercero.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
                                                             {% endif %}
-                                                            {%if 'Administracion.delete_tercero' in perms %}
+                                                            {% if perms.Administracion.delete_tercero %}
                                                             <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ tercero.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ tercero.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
                                                             {% endif %}
                                                         </td>
