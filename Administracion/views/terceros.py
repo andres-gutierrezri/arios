@@ -11,12 +11,13 @@ from django.core.exceptions import ValidationError
 from Administracion.models import Tercero, TipoIdentificacion, TipoTercero, CentroPoblado, Empresa, Departamento, \
     Municipio
 from Administracion.utils import get_id_empresa_global
+from EVA.General.validacionpermisos import tiene_permisos
 from EVA.views.index import AbstractEvaLoggedView
 
 
 class TerceroView(AbstractEvaLoggedView):
     def get(self, request):
-        if not request.user.has_perms(['Administracion.view_tercero', 'TalentoHumano.can_menu_administracion']):
+        if not tiene_permisos(request, 'Administracion', ['view_tercero'], None):
             return redirect(reverse('eva-index'))
         else:
             terceros = Tercero.objects.all()
@@ -28,13 +29,13 @@ class TerceroCrearView(AbstractEvaLoggedView):
     OPCION = 'crear'
 
     def get(self, request):
-        if not request.user.has_perms(['Administracion.add_tercero', 'TalentoHumano.can_menu_administracion']):
+        if not tiene_permisos(request, 'Administracion', ['add_tercero'], None):
             return redirect(reverse('eva-index'))
         else:
             return render(request, 'Administracion/Tercero/crear-editar.html', datos_xa_render(self.OPCION))
 
     def post(self, request):
-        if not request.user.has_perms(['Administracion.add_tercero', 'TalentoHumano.can_menu_administracion']):
+        if not tiene_permisos(request, 'Administracion', ['add_tercero'], None):
             return redirect(reverse('eva-index'))
         else:
             tercero = Tercero.from_dictionary(request.POST)
@@ -62,14 +63,14 @@ class TerceroEditarView(AbstractEvaLoggedView):
     OPCION = 'editar'
 
     def get(self, request, id):
-        if not request.user.has_perms(['Administracion.change_tercero', 'TalentoHumano.can_menu_administracion']):
+        if not tiene_permisos(request, 'Administracion', ['change_tercero'], None):
             return redirect(reverse('eva-index'))
         else:
             tercero = Tercero.objects.get(id=id)
             return render(request, 'Administracion/Tercero/crear-editar.html', datos_xa_render(self.OPCION, tercero))
 
     def post(self, request, id):
-        if not request.user.has_perms(['Administracion.change_tercero', 'TalentoHumano.can_menu_administracion']):
+        if not tiene_permisos(request, 'Administracion', ['change_tercero'], None):
             return redirect(reverse('eva-index'))
         else:
             update_fields = ['nombre', 'identificacion', 'tipo_identificacion_id', 'estado',
@@ -106,7 +107,7 @@ class TerceroEditarView(AbstractEvaLoggedView):
 
 class TerceroEliminarView(AbstractEvaLoggedView):
     def post(self, request, id):
-        if not request.user.has_perms(['Administracion.delete_tercero', 'TalentoHumano.can_menu_administracion']):
+        if not tiene_permisos(request, 'Administracion', ['delete_tercero'], None):
             return redirect(reverse('eva-index'))
         else:
             try:
@@ -124,7 +125,7 @@ class TerceroEliminarView(AbstractEvaLoggedView):
 
 class TerceroDetalleView(AbstractEvaLoggedView):
     def get(self, request, id):
-        if not request.user.has_perms(['Administracion.view_tercero', 'TalentoHumano.can_menu_administracion']):
+        if not tiene_permisos(request, 'Administracion', ['view_tercero'], None):
             return redirect(reverse('eva-index'))
         else:
             try:
