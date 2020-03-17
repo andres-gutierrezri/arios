@@ -9,12 +9,13 @@ from django.urls import reverse
 from django.views import View
 
 from Administracion.models import Municipio, CentroPoblado
+from EVA.General.validacionpermisos import tiene_permisos
 from EVA.views.index import AbstractEvaLoggedView
 
 
 class PrincipalView(AbstractEvaLoggedView):
     def get(self, request):
-        if not request.user.has_perms(['TalentoHumano.can_menu_administracion']):
+        if not tiene_permisos(request, 'Administracion', None, None):
             return redirect(reverse('eva-index'))
         else:
             return render(request, 'Administracion/index.html')
