@@ -125,16 +125,13 @@ class TerceroEliminarView(AbstractEvaLoggedView):
 
 class TerceroDetalleView(AbstractEvaLoggedView):
     def get(self, request, id):
-        if not tiene_permisos(request, 'Administracion', ['view_tercero'], None):
-            return redirect(reverse('eva-index'))
-        else:
-            try:
-                tercero = Tercero.objects.get(id=id)
-                return JsonResponse({'estado': 'OK', 'datos': tercero.to_dict(campos=['id', 'identificacion',
-                                                                                      'direccion', 'telefono',
-                                                                                      'fax', 'correo'])})
-            except Tercero.DoesNotExist:
-                return JsonResponse({"estado": "error", "mensaje": 'El cliente seleccionado no existe.'})
+        try:
+            tercero = Tercero.objects.get(id=id)
+            return JsonResponse({'estado': 'OK', 'datos': tercero.to_dict(campos=['id', 'identificacion',
+                                                                                  'direccion', 'telefono',
+                                                                                  'fax', 'correo'])})
+        except Tercero.DoesNotExist:
+            return JsonResponse({"estado": "error", "mensaje": 'El cliente seleccionado no existe.'})
 
 
 # region Métodos de ayuda
