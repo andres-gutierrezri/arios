@@ -1,18 +1,16 @@
 {% for proceso in procesos %}
-
-    <li>
-        <a href="#" title="{{ proceso.nombre }}" data-filter-tags="form plugins">
-            <i class="fal fa-cog"></i>
-            <span class="nav-link-text" data-i18n="nav.form_plugins">{{ proceso.nombre }}</span>
-        </a>
-        <ul>
-            <li>
-                <a href="{% url 'SGI:documentos-index' proceso.id  %}" title="Documentos" data-filter-tags="form plugins">
-                    <i class="fal fa-file-alt"></i>
-                    <span class="nav-link-text" data-i18n="nav.form_plugins">Documentos</span>
-                </a>
-            </li>
-        </ul>
-    </li>
-
+<li>
+    <a href="#" title="{{ proceso.nombre }}" data-filter-tags="form plugins">
+        <i class="fal fa-cog"></i>
+        <span class="nav-link-text" data-i18n="nav.form_plugins">{{ proceso.nombre }}</span>
+    </a>
+    <ul>
+        <li>
+            <a href="{% url 'SGI:documentos-index' proceso.id  %}" title="Documentos" data-filter-tags="form plugins">
+                <i class="fal fa-file-alt"></i>
+                <span class="nav-link-text" data-i18n="nav.form_plugins">Documentos</span>
+            </a>
+        </li>
+    </ul>
+</li>
 {% endfor %}
