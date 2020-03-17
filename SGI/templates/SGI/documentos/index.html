@@ -46,11 +46,21 @@
                                                                         <div class="panel-container show">
                                                                             <div class="panel-content">
                                                                                 {{ documento.nombre }}
+                                                                                {%  if perms.SGI.view_archivo %}
                                                                                 <a class="far fa-custom fa-eye" style="padding-left: 10px" {% if documento.version_actual != 0.0 %}href="{% url 'sgi:documentos-ver' proceso.id documento.id  %}" data-original-title="Ver"{% else %}data-original-title="No hay archivos"{% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
+                                                                                {% endif %}
+                                                                                {%  if perms.SGI.view_documento %}
                                                                                 <a class="far fa-custom fa-list-alt" style="padding-left: 10px"  data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Historial (Funcionalidad en Desarrollo)"></a>
+                                                                                {% endif %}
+                                                                                {% if perms.SGI.add_archivo %}
                                                                                 <a class="far fa-custom fa-long-arrow-alt-up" style="padding-left: 10px"  href="javascript:abrir_modal_cargar('{% url 'sgi:documentos-cargar' proceso.id  grupo_documento.id documento.id %}');" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Cargar"></a>
+                                                                                {% endif %}
+                                                                                {% if perms.SGI.change_documento %}
                                                                                 <a class="far fa-custom fa-edit" style="padding-left: 10px"  href="{% url 'sgi:documentos-editar' proceso.id  grupo_documento.id documento.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                                                {% endif %}
+                                                                                {% if perms.SGI.delete_documento %}
                                                                                 <a class="far fa-custom fa-trash-alt color-danger-900" style="padding-left: 10px"  id="eliminar_{{ documento.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminarDocumento({{ documento.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+                                                                                {% endif %}
                                                                             </div>
                                                                         </div>
                                                                     </div>
