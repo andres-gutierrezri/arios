@@ -16,7 +16,7 @@
                             </span>
                         </a>
                     </li>
-                    {% if 'TalentoHumano.can_menu_administracion' in perms %}
+                    {% if perms.TalentoHumano.can_menu_administracion %}
                     <li>
                         <a href="{% url 'Administracion:index' %}" class="app-list-item text-white border-0 m-0">
                             <div class="icon-stack">
@@ -30,6 +30,7 @@
                         </a>
                     </li>
                     {% endif %}
+                    {% if perms.TalentoHumano.can_menu_proyectos %}
                      <li>
                         <a href="{% url 'Proyectos:index' %}" class="app-list-item text-white border-0 m-0">
                             <div class="icon-stack">
@@ -42,6 +43,8 @@
                             </span>
                         </a>
                     </li>
+                    {% endif %}
+                    {% if perms.TalentoHumano.can_menu_talentohumano %}
                     <li>
                         <a href="{% url 'TalentoHumano:index' %}" class="app-list-item text-white border-0 m-0">
                             <div class="icon-stack">
@@ -54,6 +57,8 @@
                             </span>
                         </a>
                     </li>
+                    {% endif %}
+                    {% if perms.TalentoHumano.can_menu_sgi %}
                     <li>
                         <a href="{% url 'SGI:index' %}" class="app-list-item text-white border-0 m-0">
                             <div class="icon-stack">
@@ -66,6 +71,8 @@
                             </span>
                         </a>
                     </li>
+                    {% endif %}
+                    {% if perms.TalentoHumano.can_menu_financiero %}
                     <li>
                         <a href="{% url 'Financiero:index' %}" class="app-list-item text-white border-0 m-0">
                             <div class="icon-stack">
@@ -78,6 +85,7 @@
                             </span>
                         </a>
                     </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
