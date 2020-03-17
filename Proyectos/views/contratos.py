@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.db.models import F
 
+from EVA.General.validacionpermisos import tiene_permisos
 from EVA.views.index import AbstractEvaLoggedView
 from Proyectos.models.contratos import Contrato
 from Administracion.models import Tercero, Empresa, TipoContrato
@@ -14,8 +15,7 @@ from Administracion.models import Tercero, Empresa, TipoContrato
 
 class ContratoView(AbstractEvaLoggedView):
     def get(self, request):
-        if not request.user.has_perms(['Proyectos.view_contrato', 'TalentoHumano.can_menu_administracion']):
-            messages.error(request, 'No tiene permisos para acceder a esta funcionalidad')
+        if not tiene_permisos(request, 'Proyectos', ['view_contrato'], None):
             return redirect(reverse('eva-index'))
         else:
             contratos = Contrato.objects.all()
@@ -27,15 +27,13 @@ class ContratoCrearView(AbstractEvaLoggedView):
     OPCION = 'crear'
 
     def get(self, request):
-        if not request.user.has_perms(['Proyectos.add_contrato', 'TalentoHumano.can_menu_administracion']):
-            messages.error(request, 'No tiene permisos para acceder a esta funcionalidad')
+        if not tiene_permisos(request, 'Proyectos', ['add_contrato'], None):
             return redirect(reverse('eva-index'))
         else:
             return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.OPCION))
 
     def post(self, request):
-        if not request.user.has_perms(['Proyectos.add_contrato', 'TalentoHumano.can_menu_administracion']):
-            messages.error(request, 'No tiene permisos para acceder a esta funcionalidad')
+        if not tiene_permisos(request, 'Proyectos', ['add_contrato'], None):
             return redirect(reverse('eva-index'))
         else:
             contrato = Contrato.from_dictionary(request.POST)
@@ -63,16 +61,14 @@ class ContratoEditarView(AbstractEvaLoggedView):
     OPCION = 'editar'
 
     def get(self, request, id):
-        if not request.user.has_perms(['Proyectos.change_contrato', 'TalentoHumano.can_menu_administracion']):
-            messages.error(request, 'No tiene permisos para acceder a esta funcionalidad')
+        if not tiene_permisos(request, 'Proyectos', ['change_contrato'], None):
             return redirect(reverse('eva-index'))
         else:
             contrato = Contrato.objects.get(id=id)
             return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.OPCION, contrato))
 
     def post(self, request, id):
-        if not request.user.has_perms(['Proyectos.change_contrato', 'TalentoHumano.can_menu_administracion']):
-            messages.error(request, 'No tiene permisos para acceder a esta funcionalidad')
+        if not tiene_permisos(request, 'Proyectos', ['change_contrato'], None):
             return redirect(reverse('eva-index'))
         else:
             update_fields = ['numero_contrato', 'cliente_id', 'anho', 'supervisor_nombre', 'supervisor_correo',
@@ -110,8 +106,7 @@ class ContratoEditarView(AbstractEvaLoggedView):
 
 class ContratoEliminarView(AbstractEvaLoggedView):
     def post(self, request, id):
-        if not request.user.has_perms(['Proyectos.delete_contrato', 'TalentoHumano.can_menu_administracion']):
-            messages.error(request, 'No tiene permisos para acceder a esta funcionalidad')
+        if not tiene_permisos(request, 'Proyectos', ['change_contrato'], None):
             return redirect(reverse('eva-index'))
         else:
             try:
