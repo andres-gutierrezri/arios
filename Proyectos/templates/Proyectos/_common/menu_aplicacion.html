@@ -1,4 +1,4 @@
-{% if 'Proyectos.view_contrato' in perms %}
+{% if perms.Proyectos.view_contrato %}
 <li>
     <a href="{% url 'Proyectos:contratos' %}" title="Contratos" data-filter-tags="contratos">
         <i class="far fa-file-alt"></i>

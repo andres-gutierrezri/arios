@@ -21,7 +21,7 @@
             <div class="row">
                 <div class="col-xl-12">
                     <div id="panel-1" class="panel">
-                        {% if 'Proyectos.add_contrato' in perms %}
+                        {% if perms.Proyectos.add_contrato %}
                         <div class="panel-hdr">
                             <small>
                                  <a class="far fa-3x far fa-plus-circle"  href="{% url 'Proyectos:contratos-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar contrato"></a>
@@ -74,10 +74,10 @@
                                                                 <td>{{ contrato.empresa }}</td>
                                                                 {% if perms.Proyectos.change_contrato or perms.Proyectos.delete_contrato %}
                                                                 <td>
-                                                                    {% if 'Proyectos.change_contrato' in perms %}
+                                                                    {% if perms.Proyectos.change_contrato %}
                                                                     <a class="far fa-2x fa-edit"   href="{% url 'Proyectos:contratos-editar' contrato.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
                                                                     {% endif %}
-                                                                    {% if 'Proyectos.delete_contrato' in perms %}
+                                                                    {% if perms.Proyectos.delete_contrato %}
                                                                     <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ contrato.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminarContrato({{ contrato.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
                                                                     {% endif %}
                                                                 </td>
