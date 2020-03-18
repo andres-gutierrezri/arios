@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.db import models
 from datetime import datetime
 from EVA.General.conversiones import string_to_date
@@ -76,6 +78,10 @@ class Documento(models.Model, ModelDjangoExtensiones):
 
         return documento
 
+    @property
+    def version_minima_siguiente(self):
+        return '{0:.1f}'.format(self.version_actual + Decimal('0.1'))
+
 
 class EstadoArchivo(models.Model):
     objects = ManagerGeneral()
@@ -109,7 +115,9 @@ class EstadoArchivo(models.Model):
 
 
 def custom_upload_to(instance, filename):
-    return f'documentos/{ instance.documento.proceso.empresa.nombre }/{ instance.documento.proceso.nombre }/' + filename
+    return 'SGI/Documentos/{0:d}/{1:d}/{2} {3} v{4:.1f}.{5}'\
+        .format(instance.documento.proceso.empresa.id, instance.documento.proceso.id, instance.documento.codigo,
+                instance.documento.nombre, instance.version, filename.split(".")[1])
 
 
 class Archivo(models.Model):

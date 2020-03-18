@@ -142,11 +142,9 @@ class ArchivoCargarView(AbstractEvaLoggedView):
             proceso = Proceso.objects.get(id=id_proceso)
             grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
             documento = Documento.objects.get(id=id_documento)
-            archivo_db = Archivo.objects.filter(documento_id=id_documento, estado=EstadoArchivo.APROBADO)
 
-            if archivo_db:
-                version = float(archivo_db.first().version) + 0.1
-                version = str(version).replace(',', '.')
+            if documento.version_actual > 0:
+                version = documento.version_minima_siguiente
             else:
                 version = 1
 
@@ -221,9 +219,9 @@ class VerDocumentoView(AbstractEvaLoggedView):
                     mime_type = 'application/pdf'
 
                 response = HttpResponse(archivo.archivo, content_type=mime_type)
-                response['Content-Disposition'] = 'attachment; filename="%s"' % (archivo.documento.codigo + ' V' +
-                                                                                 str(archivo.documento.version_actual) +
-                                                                                 extension)
+                response['Content-Disposition'] = 'attachment; filename="{0} {1} v{2:.1f}{3}"'\
+                    .format(archivo.documento.codigo, archivo.documento.nombre,
+                            archivo.documento.version_actual, extension)
 
                 return response
             else:
