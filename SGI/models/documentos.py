@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.db import models
 from datetime import datetime
 from EVA.General.conversiones import string_to_date
@@ -75,6 +77,10 @@ class Documento(models.Model, ModelDjangoExtensiones):
         documento.proceso_id = datos.get('proceso_id', '')
 
         return documento
+
+    @property
+    def version_minima_siguiente(self):
+        return '{0:.1f}'.format(self.version_actual + Decimal('0.1'))
 
 
 class EstadoArchivo(models.Model):
