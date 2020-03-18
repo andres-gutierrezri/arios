@@ -35,7 +35,7 @@ class Empresa(models.Model, ModelDjangoExtensiones):
         if excluir is None or (excluir is not None and 'logo' not in excluir):
             emp_dict['logo'] = self.logo.url
 
-        if not self.empresa_ppal and (campos is None or (campos is not None and 'empresa_ppal' in campos))\
+        if not self.empresa_ppal_id and (campos is None or (campos is not None and 'empresa_ppal' in campos))\
                 and (excluir is None or (excluir is not None and 'empresa_ppal' not in excluir)):
             emp_dict['empresa_ppal'] = 0
         return emp_dict
@@ -60,7 +60,7 @@ class Empresa(models.Model, ModelDjangoExtensiones):
         empresa = Empresa()
         empresa.nombre = datos.get('nombre', '')
         empresa.nit = datos.get('nit', '')
-        empresa.logo = datos.get('logo', '')
+        empresa.logo = datos.get('logo', None)
         empresa.estado = datos.get('estado', '') == 'True'
         empresa.subempresa = datos.get('subempresa', 'False') == 'True'
         empresa.empresa_ppal_id = datos.get('empresa_ppal_id', '')
