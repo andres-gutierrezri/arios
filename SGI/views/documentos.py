@@ -8,7 +8,6 @@ from django.db import IntegrityError
 import os.path
 
 from Administracion.models import Proceso
-from EVA.General.conversiones import formatear_a_decimal, reemplazar_coma_x_punto
 from EVA.views.index import AbstractEvaLoggedView
 from SGI.models import Documento, GrupoDocumento, Archivo
 from SGI.models.documentos import EstadoArchivo
@@ -122,11 +121,9 @@ class ArchivoCargarView(AbstractEvaLoggedView):
         proceso = Proceso.objects.get(id=id_proceso)
         grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
         documento = Documento.objects.get(id=id_documento)
-        archivo_db = Archivo.objects.filter(documento_id=id_documento, estado=EstadoArchivo.APROBADO)
 
-        if archivo_db:
-            version = formatear_a_decimal(float(archivo_db.first().version) + 0.1, 2)
-            version = reemplazar_coma_x_punto(version)
+        if documento.version_actual > 0:
+            version = documento.version_minima_siguiente
         else:
             version = 1
 
