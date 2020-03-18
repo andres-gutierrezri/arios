@@ -1,6 +1,6 @@
 from django.db import models
 from datetime import datetime
-from EVA.General.conversiones import string_to_date, formatear_a_decimal
+from EVA.General.conversiones import string_to_date
 from django.contrib.auth.models import User
 # Create your models here.
 from Administracion.models import Empresa, Proceso
@@ -109,9 +109,9 @@ class EstadoArchivo(models.Model):
 
 
 def custom_upload_to(instance, filename):
-    return f'SGI/Documentos/{ instance.documento.proceso.empresa.id }/{ instance.documento.proceso.id }/' \
-           + instance.documento.codigo + ' ' + instance.documento.nombre + ' V' + \
-           str(formatear_a_decimal(instance.version, 2)) + "." + filename.split(".")[1]
+    return 'SGI/Documentos/{0:d}/{1:d}/{2} {3} v{4:.1f}.{5}'\
+        .format(instance.documento.proceso.empresa.id, instance.documento.proceso.id, instance.documento.codigo,
+                instance.documento.nombre, instance.version, filename.split(".")[1])
 
 
 class Archivo(models.Model):
