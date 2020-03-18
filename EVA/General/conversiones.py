@@ -147,18 +147,3 @@ def valor_pesos_a_letras(valor) -> str:
         return '{0} PESOS M/CTE'.format(numero_a_letras(parte_entera))
     else:
         return '{0} PESOS CON {1} CENTAVOS M/CTE'.format(numero_a_letras(parte_entera), numero_a_letras(parte_decimal))
-
-
-def formatear_a_decimal(valor, n_decimales: int) -> float:
-
-    cantidad_decimales = "{0:." + str(n_decimales) + "f}"
-    valor = cantidad_decimales.format(float(valor))
-
-    return float(valor)
-
-
-def reemplazar_coma_x_punto(valor) -> str:
-
-    valor = str(valor).replace(',', '.')
-
-    return valor
