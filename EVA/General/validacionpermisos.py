@@ -20,13 +20,13 @@ def validar_permisos(usuario: User, aplicacion: str, nombre_url: str) -> bool:
 
     permisos = get_permisos_eva()
     permiso_menu = 'TalentoHumano.can_menu_' + lower(aplicacion)
-    if usuario.has_perm(permiso_menu):
-        if aplicacion in permisos:
-            for permiso in permisos[aplicacion]:
-                if nombre_url == permiso.nombre_url:
-                    return permiso.permisos is None or usuario.has_perms(permiso.permisos)
-    else:
-        return False
+    if aplicacion in permisos:
+        for permiso in permisos[aplicacion]:
+            if nombre_url == permiso.nombre_url:
+                if permiso.permisos is None:
+                    return usuario.has_perm(permiso_menu)
+                else:
+                    return usuario.has_perms(permiso.permisos + [permiso_menu])
     return True
 
 
