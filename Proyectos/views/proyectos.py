@@ -7,7 +7,4 @@ from django.shortcuts import render, redirect, reverse
 
 class Index(AbstractEvaLoggedView):
     def get(self, request):
-        if not tiene_permisos(request, 'Proyectos', None, None):
-            return redirect(reverse('eva-index'))
-        else:
-            return render(request, 'Proyectos/index.html')
+        return render(request, 'Proyectos/index.html')
