@@ -13,7 +13,7 @@ permisos_eva = {}
 
 def incluir_permisos_app(modulo: str):
     app_name = None
-    modulo_permisos = import_module('SGI.permisos')
+    modulo_permisos = import_module(modulo)
     permisos = getattr(modulo_permisos, 'permisos', modulo_permisos)
     app_name = getattr(modulo_permisos, 'app_name', app_name)
     permisos_eva[app_name] = permisos
@@ -21,6 +21,3 @@ def incluir_permisos_app(modulo: str):
 
 def get_permisos_eva():
     return permisos_eva
-
-
-
