@@ -16,9 +16,6 @@ from SGI.models.documentos import EstadoArchivo
 
 class IndexView(AbstractEvaLoggedView):
     def get(self, request, id):
-        if not tiene_permisos(request, 'SGI', ['view_documento'], None):
-            return redirect(reverse('eva-index'))
-        else:
             documentos = Documento.objects.filter(proceso_id=id)
             procesos = Proceso.objects.all()
             proceso = Proceso.objects.get(id=id)
