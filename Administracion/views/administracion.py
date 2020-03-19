@@ -15,10 +15,7 @@ from EVA.views.index import AbstractEvaLoggedView
 
 class PrincipalView(AbstractEvaLoggedView):
     def get(self, request):
-        if not tiene_permisos(request, 'Administracion', None, None):
-            return redirect(reverse('eva-index'))
-        else:
-            return render(request, 'Administracion/index.html')
+        return render(request, 'Administracion/index.html')
 
 
 class CargarMunicipiosSelectJsonView(AbstractEvaLoggedView):
