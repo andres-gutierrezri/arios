@@ -11,7 +11,6 @@ from django.core.exceptions import ValidationError
 from Administracion.models import Tercero, TipoIdentificacion, TipoTercero, CentroPoblado, Empresa, Departamento, \
     Municipio
 from Administracion.utils import get_id_empresa_global
-from EVA.General.validacionpermisos import tiene_permisos
 from EVA.views.index import AbstractEvaLoggedView
 
 

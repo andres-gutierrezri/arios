@@ -1,5 +1,4 @@
-from django.shortcuts import render, reverse, redirect
-from EVA.General.validacionpermisos import tiene_permisos
+from django.shortcuts import render
 from EVA.views.index import AbstractEvaLoggedView
 
 

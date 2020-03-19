@@ -5,12 +5,11 @@ from typing import List, Optional
 from django.db.models import F, DecimalField, ExpressionWrapper
 from django.db.transaction import atomic
 from django.http import JsonResponse, HttpResponse
-from django.shortcuts import render, get_object_or_404, redirect, reverse
+from django.shortcuts import render, get_object_or_404
 
 from Administracion.models import Tercero, Impuesto, ConsecutivoDocumento, TipoDocumento
 from Administracion.utils import get_id_empresa_global
 from EVA.General.jsonencoders import AriosJSONEncoder
-from EVA.General.validacionpermisos import tiene_permisos
 from EVA.views.index import AbstractEvaLoggedView
 from Financiero.models import FacturaEncabezado, ResolucionFacturacion, FacturaDetalle
 from Financiero.models.facturacion import FacturaImpuesto

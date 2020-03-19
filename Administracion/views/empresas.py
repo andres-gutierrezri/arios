@@ -6,7 +6,6 @@ from django.http import JsonResponse
 from django.urls import reverse
 
 from Administracion.utils import get_id_empresa_global
-from EVA.General.validacionpermisos import tiene_permisos
 from EVA.views.index import AbstractEvaLoggedView
 from datetime import datetime
 from django.shortcuts import render, redirect

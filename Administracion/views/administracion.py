@@ -1,15 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-
-from django.db import IntegrityError
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
-from django.urls import reverse
-from django.views import View
+from django.shortcuts import render
 
 from Administracion.models import Municipio, CentroPoblado
-from EVA.General.validacionpermisos import tiene_permisos
 from EVA.views.index import AbstractEvaLoggedView
 
 

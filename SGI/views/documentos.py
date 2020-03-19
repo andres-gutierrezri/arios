@@ -1,7 +1,6 @@
 
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render, redirect, reverse, get_object_or_404
-from datetime import datetime
+from django.shortcuts import render, redirect, reverse
 from django.core.exceptions import ValidationError
 from django.contrib import messages
 from django.db import IntegrityError

@@ -1,10 +1,5 @@
-from django.shortcuts import render, redirect, reverse
-
-from EVA.General.validacionpermisos import tiene_permisos
+from django.shortcuts import render
 from EVA.views.index import AbstractEvaLoggedView
-from django.contrib import messages
-
-# Create your views here.
 
 
 class Index(AbstractEvaLoggedView):
