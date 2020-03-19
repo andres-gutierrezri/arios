@@ -25,7 +25,7 @@ def validar_permisos(usuario: User, aplicacion: str, nombre_url: str) -> bool:
             for permiso in permisos[aplicacion]:
                 if nombre_url == permiso.nombre_url:
                     return permiso.permisos is None or usuario.has_perms(permiso.permisos)
-    return True
+    return False
 
 
 def tiene_permisos(request, aplicacion: str, permisos: [], permisos_compuestos: []):
