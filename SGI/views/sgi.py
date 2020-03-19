@@ -8,8 +8,5 @@ from EVA.views.index import AbstractEvaLoggedView
 
 class Index(AbstractEvaLoggedView):
         def get(self, request):
-            if not tiene_permisos(request, 'SGI', None, None):
-                return redirect(reverse('eva-index'))
-            else:
-                procesos = Proceso.objects.all()
-                return render(request, 'SGI/index.html', {'procesos': procesos})
+            procesos = Proceso.objects.all()
+            return render(request, 'SGI/index.html', {'procesos': procesos})
