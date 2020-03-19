@@ -9,7 +9,4 @@ from django.contrib import messages
 
 class Index(AbstractEvaLoggedView):
     def get(self, request):
-        if not tiene_permisos(request, 'TalentoHumano', None, None):
-            return redirect(reverse('eva-index'))
-        else:
-            return render(request, 'TalentoHumano/index.html')
+        return render(request, 'TalentoHumano/index.html')

@@ -7,129 +7,109 @@ from django.views import View
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 
-from EVA.General.validacionpermisos import tiene_permisos
 from EVA.views.index import AbstractEvaLoggedView
 from TalentoHumano.models import EntidadesCAFE, TipoEntidadesCAFE
 
 
 class EntidadCAFEIndexView(AbstractEvaLoggedView):
-
     def get(self, request, id_entidad):
-        if not tiene_permisos(request, 'TalentoHumano', ['view_entidadescafe'], None):
-            return redirect(reverse('eva-index'))
-        else:
-            id_entidad = int(id_entidad)
+        id_entidad = int(id_entidad)
 
-            entidades_cafe = EntidadesCAFE.objects.all() if id_entidad == 0 else \
-                EntidadesCAFE.objects.filter(tipo_entidad_id=id_entidad)
+        entidades_cafe = EntidadesCAFE.objects.all() if id_entidad == 0 else \
+            EntidadesCAFE.objects.filter(tipo_entidad_id=id_entidad)
 
-            tipos_entidades = TipoEntidadesCAFE.objects.get_xa_select_activos()
-            fecha = datetime.now()
-            return render(request, 'TalentoHumano/Entidades_CAFE/index.html', {'entidades_cafe': entidades_cafe,
-                                                                               'fecha': fecha,
-                                                                               'tipos_entidades': tipos_entidades,
-                                                                               'id_entidad': id_entidad})
+        tipos_entidades = TipoEntidadesCAFE.objects.get_xa_select_activos()
+        fecha = datetime.now()
+        return render(request, 'TalentoHumano/Entidades_CAFE/index.html', {'entidades_cafe': entidades_cafe,
+                                                                           'fecha': fecha,
+                                                                           'tipos_entidades': tipos_entidades,
+                                                                           'id_entidad': id_entidad})
 
 
 class EntidadCAFECrearView(AbstractEvaLoggedView):
     OPCION = 'crear'
 
     def get(self, request):
-        if not tiene_permisos(request, 'TalentoHumano', ['add_entidadescafe'], None):
-            return redirect(reverse('eva-index'))
-        else:
-            return render(request, 'TalentoHumano/Entidades_CAFE/crear-editar.html', datos_xa_render(self.OPCION))
+        return render(request, 'TalentoHumano/Entidades_CAFE/crear-editar.html', datos_xa_render(self.OPCION))
 
     def post(self, request):
-        if not tiene_permisos(request, 'TalentoHumano', ['add_entidadescafe'], None):
-            return redirect(reverse('eva-index'))
-        else:
-            entidad_cafe = EntidadesCAFE.from_dictionary(request.POST)
-            try:
-                entidad_cafe.full_clean()
-            except ValidationError as errores:
-                datos = datos_xa_render(self.OPCION, entidad_cafe)
-                datos['errores'] = errores.message_dict
-                return render(request, 'TalentoHumano/Entidades_CAFE/crear-editar.html', datos)
+        entidad_cafe = EntidadesCAFE.from_dictionary(request.POST)
+        try:
+            entidad_cafe.full_clean()
+        except ValidationError as errores:
+            datos = datos_xa_render(self.OPCION, entidad_cafe)
+            datos['errores'] = errores.message_dict
+            return render(request, 'TalentoHumano/Entidades_CAFE/crear-editar.html', datos)
 
-            if EntidadesCAFE.objects.filter(nombre__iexact=entidad_cafe.nombre).exists():
-                messages.warning(request, 'Ya existe una  {0}'.format(entidad_cafe.tipo_entidad) + ' con nombre {0}'
-                                 .format(entidad_cafe.nombre))
-                return render(request, 'TalentoHumano/Entidades_CAFE/crear-editar.html',
-                              datos_xa_render(self.OPCION, entidad_cafe))
+        if EntidadesCAFE.objects.filter(nombre__iexact=entidad_cafe.nombre).exists():
+            messages.warning(request, 'Ya existe una  {0}'.format(entidad_cafe.tipo_entidad) + ' con nombre {0}'
+                             .format(entidad_cafe.nombre))
+            return render(request, 'TalentoHumano/Entidades_CAFE/crear-editar.html',
+                          datos_xa_render(self.OPCION, entidad_cafe))
 
-            entidad_cafe.save()
-            messages.success(request, 'Se ha agregado la  {0}'.format(entidad_cafe.tipo_entidad) + ' ' +
-                             '{0}'.format(entidad_cafe.nombre))
-            return redirect(reverse('TalentoHumano:entidades-cafe-index', args=[0]))
+        entidad_cafe.save()
+        messages.success(request, 'Se ha agregado la  {0}'.format(entidad_cafe.tipo_entidad) + ' ' +
+                         '{0}'.format(entidad_cafe.nombre))
+        return redirect(reverse('TalentoHumano:entidades-cafe-index', args=[0]))
 
 
 class EntidadCAFEEditarView(AbstractEvaLoggedView):
     OPCION = 'editar'
 
     def get(self, request, id):
-        if not tiene_permisos(request, 'TalentoHumano', ['change_entidadescafe'], None):
-            return redirect(reverse('eva-index'))
-        else:
-            entidad_cafe = EntidadesCAFE.objects.get(id=id)
-            return render(request, 'TalentoHumano/Entidades_CAFE/crear-editar.html', datos_xa_render(self.OPCION,
+        entidad_cafe = EntidadesCAFE.objects.get(id=id)
+        return render(request, 'TalentoHumano/Entidades_CAFE/crear-editar.html', datos_xa_render(self.OPCION,
                                                                                                      entidad_cafe))
 
     def post(self, request, id):
-        if not tiene_permisos(request, 'TalentoHumano', ['change_entidadescafe'], None):
-            return redirect(reverse('eva-index'))
+        update_fields = ['tipo_entidad_id', 'nombre', 'direccion', 'nombre_contacto', 'telefono_contacto',
+                         'correo', 'direccion_web']
+
+        entidad_cafe = EntidadesCAFE.from_dictionary(request.POST)
+        entidad_cafe.id = int(id)
+
+        try:
+            entidad_cafe.full_clean(validate_unique=False)
+        except ValidationError as errores:
+            datos = datos_xa_render(self.OPCION, entidad_cafe)
+            datos['errores'] = errores.message_dict
+            return render(request, 'TalentoHumano/Entidades_CAFE/crear-editar.html', datos)
+
+        if EntidadesCAFE.objects.filter(nombre__iexact=entidad_cafe.nombre).exclude(id=id).exists():
+            messages.warning(request, 'Ya existe una  {0}'.format(entidad_cafe.tipo_entidad) + ' con nombre {0}'
+                             .format(entidad_cafe.nombre))
+            return render(request, 'TalentoHumano/Entidades_CAFE/crear-editar.html', datos_xa_render(self.OPCION,
+                                                                                                     entidad_cafe))
+
+        entidad_cafe_db = EntidadesCAFE.objects.get(id=id)
+        if entidad_cafe_db.comparar(entidad_cafe):
+            messages.success(request, 'No se hicieron cambios en la  {0}'.format(entidad_cafe.tipo_entidad) + ' ' +
+                             '{0}'.format(entidad_cafe.nombre))
+            return redirect(reverse('TalentoHumano:entidades-cafe-index', args=[0]))
+
         else:
-            update_fields = ['tipo_entidad_id', 'nombre', 'direccion', 'nombre_contacto', 'telefono_contacto',
-                             'correo', 'direccion_web']
 
-            entidad_cafe = EntidadesCAFE.from_dictionary(request.POST)
-            entidad_cafe.id = int(id)
+            entidad_cafe.save(update_fields=update_fields)
+            messages.success(request, 'Se ha actualizado la  {0}'.format(entidad_cafe.tipo_entidad) + ' ' +
+                             '{0}'.format(entidad_cafe.nombre))
 
-            try:
-                entidad_cafe.full_clean(validate_unique=False)
-            except ValidationError as errores:
-                datos = datos_xa_render(self.OPCION, entidad_cafe)
-                datos['errores'] = errores.message_dict
-                return render(request, 'TalentoHumano/Entidades_CAFE/crear-editar.html', datos)
-
-            if EntidadesCAFE.objects.filter(nombre__iexact=entidad_cafe.nombre).exclude(id=id).exists():
-                messages.warning(request, 'Ya existe una  {0}'.format(entidad_cafe.tipo_entidad) + ' con nombre {0}'
-                                 .format(entidad_cafe.nombre))
-                return render(request, 'TalentoHumano/Entidades_CAFE/crear-editar.html', datos_xa_render(self.OPCION,
-                                                                                                         entidad_cafe))
-
-            entidad_cafe_db = EntidadesCAFE.objects.get(id=id)
-            if entidad_cafe_db.comparar(entidad_cafe):
-                messages.success(request, 'No se hicieron cambios en la  {0}'.format(entidad_cafe.tipo_entidad) + ' ' +
-                                 '{0}'.format(entidad_cafe.nombre))
-                return redirect(reverse('TalentoHumano:entidades-cafe-index', args=[0]))
-
-            else:
-
-                entidad_cafe.save(update_fields=update_fields)
-                messages.success(request, 'Se ha actualizado la  {0}'.format(entidad_cafe.tipo_entidad) + ' ' +
-                                 '{0}'.format(entidad_cafe.nombre))
-
-                return redirect(reverse('TalentoHumano:entidades-cafe-index', args=[0]))
+            return redirect(reverse('TalentoHumano:entidades-cafe-index', args=[0]))
 
 
 class EntidadCAFEEliminarView(AbstractEvaLoggedView):
     def post(self, request, id):
-        if not tiene_permisos(request, 'TalentoHumano', ['delete_entidadescafe'], None):
-            return redirect(reverse('eva-index'))
-        else:
-            try:
-                entidad_cafe = EntidadesCAFE.objects.get(id=id)
-                entidad_cafe.delete()
-                messages.success(request, 'Se ha eliminado la  {0}'.format(entidad_cafe.tipo_entidad) + ' ' +
-                                 '{0}'.format(entidad_cafe.nombre))
-                return JsonResponse({"Mensaje": "OK"})
+        try:
+            entidad_cafe = EntidadesCAFE.objects.get(id=id)
+            entidad_cafe.delete()
+            messages.success(request, 'Se ha eliminado la  {0}'.format(entidad_cafe.tipo_entidad) + ' ' +
+                             '{0}'.format(entidad_cafe.nombre))
+            return JsonResponse({"Mensaje": "OK"})
 
-            except IntegrityError:
-                entidad_cafe = EntidadesCAFE.objects.get(id=id)
-                messages.warning(request, 'No se puede eliminar la  {0}'.format(entidad_cafe.tipo_entidad) + ' ' +
-                                 '{0}'.format(entidad_cafe.nombre) + ' porque ya se encuentra asociada a otro módulo')
-                return JsonResponse({"Mensaje": "No se puede eliminar"})
+        except IntegrityError:
+            entidad_cafe = EntidadesCAFE.objects.get(id=id)
+            messages.warning(request, 'No se puede eliminar la  {0}'.format(entidad_cafe.tipo_entidad) + ' ' +
+                             '{0}'.format(entidad_cafe.nombre) + ' porque ya se encuentra asociada a otro módulo')
+            return JsonResponse({"Mensaje": "No se puede eliminar"})
 
 # region Métodos de ayuda
 
