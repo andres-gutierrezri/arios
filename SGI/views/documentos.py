@@ -226,30 +226,4 @@ def datos_xa_render(opcion: str = None, documento: Documento = None, proceso: Pr
 
     return datos
 
-
-def archivo_xa_render(opcion: str = None, archivo: Archivo = None, proceso: Proceso = None,
-                      grupo_documento: GrupoDocumento = None, documento: Documento = None) -> dict:
-    """
-    Datos necesarios para la creación de los html de Documento.
-    :param opcion: valor de la acción a realizar 'crear' o 'editar'
-    :param archivo: Es opcional si se requiere pre cargar datos.
-    :param proceso: Es opcional si se requiere pre cargar datos.
-    :param grupo_documento: Es opcional si se requiere pre cargar datos.
-    :return: Un diccionario con los datos.
-    """
-    procesos = Proceso.objects.get_x_estado(estado=True)
-    grupos_documentos = GrupoDocumento.objects.get_xa_select_activos()
-
-    datos = {'procesos': procesos, 'grupos_documentos': grupos_documentos, 'opcion': opcion}
-    if documento:
-        datos['documento'] = documento
-    if proceso:
-        datos['proceso'] = proceso
-    if grupo_documento:
-        datos['grupo_documento'] = grupo_documento
-    if archivo:
-        datos['archivo'] = archivo
-
-    return datos
-
 # endregion
