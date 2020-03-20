@@ -150,9 +150,6 @@ class ArchivoCargarView(AbstractEvaLoggedView):
                 archv.estado_id = EstadoArchivo.OBSOLETO
                 archv.save(update_fields=['estado_id'])
 
-        documento.version_actual = archivo.version
-        documento.save(update_fields=['version_actual'])
-
         try:
             archivo.full_clean(exclude=['cadena_aprobacion', 'hash'])
         except ValidationError as errores:
@@ -169,6 +166,8 @@ class ArchivoCargarView(AbstractEvaLoggedView):
             return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
         archivo.save()
+        documento.version_actual = archivo.version
+        documento.save(update_fields=['version_actual'])
         messages.success(request, 'Se ha cargado un archivo al documento {0}'.format(archivo.documento.nombre))
         return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
