@@ -4,7 +4,12 @@ var controls = {
 };
 
 function abrir_modal_cargar(url) {
-    $('#cargar').load(url, function () {
+    $('#cargar').load(url, function (responseText, textStatus, req) {
+        try {
+            if(responseText.includes("<!DOCTYPE html>")){
+                EVANotificacion.toast.error('No tiene permisos para acceder a esta funcionalidad');
+                return false;
+            }
         $(this).modal('show');
         $('#fecha_documento_id').datepicker({
             todayHighlight: true,
@@ -17,5 +22,10 @@ function abrir_modal_cargar(url) {
             $('.custom-file-label').html(e.target.files[0].name);
         });
         agregarValidacionFormularios();
+        }
+    catch(err) {
+            console.log(err);
+        EVANotificacion.toast.error('Ha ocurrido un error al cargar el archivo');
+    }
     });
 }
