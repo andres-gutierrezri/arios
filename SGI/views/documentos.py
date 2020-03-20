@@ -135,8 +135,6 @@ class ArchivoCargarView(AbstractEvaLoggedView):
         archivo.documento_id = id_documento
         archivo.documento.proceso.id = id_proceso
         archivo.documento.grupo_documento_id = id_grupo
-        proceso = Proceso.objects.get(id=id_proceso)
-        grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
         documento = Documento.objects.get(id=id_documento)
 
         archivo.archivo = request.FILES.get('archivo', None)
@@ -153,16 +151,14 @@ class ArchivoCargarView(AbstractEvaLoggedView):
         try:
             archivo.full_clean(exclude=['cadena_aprobacion', 'hash'])
         except ValidationError as errores:
-            datos = archivo_xa_render(self.OPCION, archivo, proceso, grupo_documento, documento)
-            datos['errores'] = errores.message_dict
             if 'archivo' in errores.message_dict:
                 for mensaje in errores.message_dict['archivo']:
                     if mensaje.startswith('Ya existe'):
                         messages.warning(request, 'Por favor cargue un archivo al documento {0}'
                                          .format(archivo.documento.nombre))
-                        datos['errores'] = ''
                         break
-
+            else:
+                messages.error(request, 'Ha ocurrido un error cargando el archivo')
             return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
         archivo.save()
