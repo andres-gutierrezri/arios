@@ -11,5 +11,4 @@ permisos = [Permiso('index', None),
             Permiso('colaboradores-crear', ['TalentoHumano.add_colaborador']),
             Permiso('colaboradores-editar', ['TalentoHumano.change_colaborador']),
             Permiso('colaboradores-eliminar', ['TalentoHumano.delete_colaborador']),
-            Permiso('colaboradores-perfil', ['TalentoHumano.view_colaborador']),
             ]
