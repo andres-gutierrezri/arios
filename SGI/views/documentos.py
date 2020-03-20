@@ -188,7 +188,7 @@ class VerDocumentoView(AbstractEvaLoggedView):
                 mime_type = 'application/pdf'
 
             response = HttpResponse(archivo.archivo, content_type=mime_type)
-            response['Content-Disposition'] = 'attachment; filename="{0} {1} v{2:.1f}{3}"'\
+            response['Content-Disposition'] = 'inline; filename="{0} {1} v{2:.1f}{3}"'\
                 .format(archivo.documento.codigo, archivo.documento.nombre,
                         archivo.documento.version_actual, extension)
 
