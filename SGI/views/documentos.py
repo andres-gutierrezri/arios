@@ -32,7 +32,7 @@ class DocumentosCrearView(AbstractEvaLoggedView):
         grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
         return render(request, 'SGI/documentos/crear-editar.html',
                       datos_xa_render(self.OPCION, proceso=proceso, grupo_documento=grupo_documento,
-                                      ))
+                                      empresa=request.session['empresa']['id']))
 
     def post(self, request,  id_proceso, id_grupo):
         documento = Documento.from_dictionary(request.POST)
@@ -45,7 +45,8 @@ class DocumentosCrearView(AbstractEvaLoggedView):
         try:
             documento.full_clean(exclude=['cadena_aprobacion'])
         except ValidationError as errores:
-            datos = datos_xa_render(self.OPCION, documento, proceso=proceso, grupo_documento=grupo_documento)
+            datos = datos_xa_render(self.OPCION, documento, proceso=proceso, grupo_documento=grupo_documento,
+                                    empresa=request.session['empresa']['id'])
             datos['errores'] = errores.message_dict
             if '__all__' in errores.message_dict:
                 for mensaje in errores.message_dict['__all__']:
@@ -67,7 +68,7 @@ class DocumentosEditarView(AbstractEvaLoggedView):
         grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
         return render(request, 'SGI/documentos/crear-editar.html',
                       datos_xa_render(self.OPCION, proceso=proceso, grupo_documento=grupo_documento,
-                                      documento=documento))
+                                      documento=documento, empresa=request.session['empresa']['id']))
 
     def post(self, request,  id_proceso, id_grupo, id_documento):
         documento = Documento.from_dictionary(request.POST)
@@ -80,7 +81,8 @@ class DocumentosEditarView(AbstractEvaLoggedView):
         try:
             documento.full_clean(validate_unique=False, exclude=['cadena_aprobacion', 'version_actual'])
         except ValidationError as errores:
-            datos = datos_xa_render(self.OPCION, documento, proceso=proceso, grupo_documento=grupo_documento)
+            datos = datos_xa_render(self.OPCION, documento, proceso=proceso, grupo_documento=grupo_documento,
+                                    empresa=request.session['empresa']['id'])
             datos['errores'] = errores.message_dict
             if '__all__' in errores.message_dict:
                 for mensaje in errores.message_dict['__all__']:
@@ -128,7 +130,7 @@ class ArchivoCargarView(AbstractEvaLoggedView):
 
         return render(request, 'SGI/documentos/cargar-documento.html',
                       datos_xa_render(self.OPCION, proceso=proceso, grupo_documento=grupo_documento,
-                                      documento=documento, version=version))
+                                      documento=documento, version=version, empresa=request.session['empresa']['id']))
 
     def post(self, request, id_proceso, id_grupo, id_documento):
         archivo = Archivo.from_dictionary(request.POST)
@@ -199,18 +201,22 @@ class VerDocumentoView(AbstractEvaLoggedView):
 # region Métodos de ayuda
 
 
-def datos_xa_render(opcion: str = None, documento: Documento = None, proceso: Proceso = None,
+def datos_xa_render(opcion: str = None, documento: Documento = None, proceso: Proceso = None, empresa: int = None,
                     grupo_documento: GrupoDocumento = None, archivo: Archivo = None, version: float = 1) -> dict:
     """
     Datos necesarios para la creación de los html de Documento.
     :param opcion: valor de la acción a realizar 'crear' o 'editar'
     :param documento: Es opcional si se requiere pre cargar datos.
-    :param proceso: Es opcional si se requiere pre cargar datos.
-    :param grupo_documento: Es opcional si se requiere pre cargar datos.
+    :param proceso: Necesario para la ubicación del proceso al que pertenece el documento.
+    :param grupo_documento: Necesario para la ubicación del grupo de documentos al que pertenece.
     :param archivo: Es opcional si se requiere pre cargar datos.
     :return: Un diccionario con los datos.
     """
-    procesos = Proceso.objects.get_x_estado(estado=True)
+    if empresa:
+        procesos = Proceso.objects.filter(empresa_id=empresa)
+    else:
+        procesos = Proceso.objects.all()
+
     grupos_documentos = GrupoDocumento.objects.get_xa_select_activos()
 
     datos = {'procesos': procesos, 'grupos_documentos': grupos_documentos, 'opcion': opcion, 'version': version}
