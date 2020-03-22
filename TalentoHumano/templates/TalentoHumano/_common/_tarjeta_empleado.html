@@ -11,11 +11,19 @@
                         {{ nombre }}
                         <i class="fal fa-angle-down d-inline-block ml-1 fs-md"></i>
                     </a>
+                    {% if perms.TalentoHumano.view_colaborador %}
                     <div class="dropdown-menu">
+                        {% if perms.TalentoHumano.view_colaborador %}
                         <a class="dropdown-item" href="{% url 'TalentoHumano:colaboradores-perfil' id_tarjeta %}">Ver perfil</a>
+                        {% endif %}
+                        {% if perms.TalentoHumano.change_colaborador %}
                         <a class="dropdown-item" href="{% url 'TalentoHumano:colaboradores-editar' id_tarjeta %}">Editar</a>
+                        {% endif %}
+                        {% if perms.TalentoHumano.delete_colaborador %}
                         <a class="dropdown-item" href="javascript:void(0);" id="eliminar_{{ id_tarjeta }}"   onclick="fConfirmarEliminarColaborador({{ id_tarjeta }})">Eliminar</a>
+                        {% endif %}
                     </div>
+                    {% endif %}
                     <span class="text-truncate text-truncate-xl">{{ cargo }}</span>
                 </div>
                 <button class="js-expand-btn btn btn-sm btn-default d-none" data-toggle="collapse" data-target="#c_{{ id_tarjeta }} > .card-body + .card-body" aria-expanded="false">

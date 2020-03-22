@@ -12,13 +12,10 @@ from django.utils.http import urlsafe_base64_encode
 
 from Administracion.models import Cargo, Proceso, TipoContrato, CentroPoblado, Rango, Municipio, Departamento, \
     TipoIdentificacion
+from TalentoHumano.models.colaboradores import ColaboradorContrato
 from EVA.views.index import AbstractEvaLoggedView
 from Proyectos.models import Contrato
 from TalentoHumano.models import Colaborador, EntidadesCAFE
-
-
-# Create your views here.
-from TalentoHumano.models.colaboradores import ColaboradorContrato
 
 
 class ColaboradoresIndexView(AbstractEvaLoggedView):
@@ -92,8 +89,8 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
 
         else:
             colaborador.usuario.save()
-            # Se realiza esto ya que el campo usuario_id del modelo no es asignado automáticamente despues de guardar el
-            # ususario en la BD.
+            # Se realiza esto ya que el campo usuario_id del modelo no es asignado automáticamente
+            # despues de guardar el ususario en la BD.
             colaborador.usuario_id = colaborador.usuario.id
             colaborador.empresa_sesion_id = Contrato.objects.get(id=contratos[0]).empresa_id
             colaborador.save()
@@ -110,8 +107,8 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
             plaintext = get_template('Administracion/Autenticacion/correo/texto.txt')
             htmly = get_template('Administracion/Autenticacion/correo/correo.html')
 
-            d = dict({'dominio': dominio, 'uidb64': uidb64, 'token': token, 'nombre': colaborador.usuario.first_name,
-                      'usuario': colaborador.usuario.username})
+            d = dict({'dominio': dominio, 'uidb64': uidb64, 'token': token,
+                      'nombre': colaborador.usuario.first_name, 'usuario': colaborador.usuario.username})
 
             subject, from_email, to = 'Bienvenido a Arios Ingenieria SAS', 'noreply@arios-ing.com', \
                                       colaborador.usuario.email
@@ -134,11 +131,11 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
 
     def post(self, request, id):
         update_fields = ['direccion', 'talla_camisa', 'talla_zapatos', 'talla_pantalon', 'eps_id',
-                         'arl_id', 'afp_id', 'caja_compensacion_id', 'fecha_ingreso', 'fecha_examen', 'fecha_dotacion',
-                         'salario', 'jefe_inmediato_id', 'cargo_id', 'proceso_id', 'tipo_contrato_id',
-                         'lugar_nacimiento_id', 'rango_id', 'fecha_nacimiento', 'identificacion',
-                         'tipo_identificacion_id', 'fecha_expedicion', 'genero', 'telefono', 'estado',
-                         'nombre_contacto', 'grupo_sanguineo', 'telefono_contacto', 'parentesco']
+                         'arl_id', 'afp_id', 'caja_compensacion_id', 'fecha_ingreso', 'fecha_examen',
+                         'fecha_dotacion', 'salario', 'jefe_inmediato_id', 'cargo_id', 'proceso_id',
+                         'tipo_contrato_id', 'lugar_nacimiento_id', 'rango_id', 'fecha_nacimiento',
+                         'identificacion', 'tipo_identificacion_id', 'fecha_expedicion', 'genero', 'telefono',
+                         'estado', 'nombre_contacto', 'grupo_sanguineo', 'telefono_contacto', 'parentesco']
 
         colaborador = Colaborador.from_dictionary(request.POST)
         contratos = request.POST.getlist('contrato_id[]', None)
@@ -194,8 +191,8 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
                     if clb.contrato.id == int(ctr):
                         cont += 1
 
-        if colaborador_db.comparar(colaborador, excluir=['foto_perfil', 'empresa_sesion']) and len(cambios_usuario) \
-                <= 0 and not colaborador.foto_perfil and cont == cant:
+        if colaborador_db.comparar(colaborador, excluir=['foto_perfil', 'empresa_sesion']) and \
+                len(cambios_usuario) <= 0 and not colaborador.foto_perfil and cont == cant:
             messages.success(request, 'No se hicieron cambios en el colaborador {0}'
                              .format(colaborador.nombre_completo))
             return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
@@ -234,14 +231,14 @@ class ColaboradorEliminarView(AbstractEvaLoggedView):
         try:
             colaborador = Colaborador.objects.get(id=id)
             colaborador.delete()
-            messages.success(request, 'Se ha eliminado el colaborador  {0}'.format(colaborador.nombre_completo) + ' '
-                             + ' con indentificación {0}'.format(colaborador.identificacion))
+            messages.success(request, 'Se ha eliminado el colaborador  {0}'.format(colaborador.nombre_completo)
+                             + ' ' + ' con indentificación {0}'.format(colaborador.identificacion))
             return JsonResponse({"Mensaje": "OK"})
 
         except IntegrityError:
             colaborador = Colaborador.objects.get(id=id)
-            messages.warning(request, 'No se puede eliminar el colaborador  {0}'.format(colaborador.nombre_completo) +
-                             ' ' + ' con identificación {0}'.format(colaborador.identificacion) +
+            messages.warning(request, 'No se puede eliminar el colaborador  {0}'.format(colaborador.nombre_completo)
+                             + ' ' + ' con identificación {0}'.format(colaborador.identificacion) +
                              ' porque ya se encuentra asociada a otro módulo')
             return JsonResponse({"Mensaje": "No se puede eliminar"})
 

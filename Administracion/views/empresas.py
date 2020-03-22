@@ -33,7 +33,8 @@ class EmpresaCrearView(AbstractEvaLoggedView):
         if not empresa.logo:
             empresa.logo = 'logos-empresas/empresa-default.jpg'
         try:
-            # empresa_ppal y subempresa  se ignoran en la comparación ya que nunca están disponibles en el formulario.
+            # empresa_ppal y subempresa  se ignoran en la comparación ya que nunca están disponibles
+            # en el formulario.
             empresa.full_clean(exclude=['estado', 'subempresa', 'empresa_ppal'])
         except ValidationError as errores:
             datos = datos_xa_render(self.OPCION, empresa)
@@ -124,7 +125,7 @@ class SubempresaView(AbstractEvaLoggedView):
         empresa_actual = Empresa.objects.get(colaborador__usuario=request.user)
         return render(request, 'Administracion/Subempresas/index.html', {'subempresas': subempresas,
                                                                          'fecha': datetime.now(),
-                                                                         'empresa_actual': empresa_actual})
+                                                                             'empresa_actual': empresa_actual})
 
 
 class SubempresaCrearView(AbstractEvaLoggedView):
@@ -134,7 +135,6 @@ class SubempresaCrearView(AbstractEvaLoggedView):
         return render(request, 'Administracion/Subempresas/crear-editar.html', {'opcion': self.OPCION})
 
     def post(self, request):
-
         nombre = request.POST.get('nombre', '')
         nit = request.POST.get('nit', '')
         logo = request.FILES.get('logo', None)

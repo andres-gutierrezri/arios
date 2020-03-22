@@ -29,7 +29,7 @@ function fSweetAlert() {
                         location.reload();
                     }
                     else {
-                        location.reload();
+                        EVANotificacion.toast.error('No tiene permisos para acceder a esta funcionalidad');
                     }
                 },
                 failure: function (errMsg) {

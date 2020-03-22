@@ -3,7 +3,6 @@ from django.db import IntegrityError
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from django.views import View
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 
@@ -12,7 +11,6 @@ from TalentoHumano.models import EntidadesCAFE, TipoEntidadesCAFE
 
 
 class EntidadCAFEIndexView(AbstractEvaLoggedView):
-
     def get(self, request, id_entidad):
         id_entidad = int(id_entidad)
 
@@ -60,7 +58,7 @@ class EntidadCAFEEditarView(AbstractEvaLoggedView):
     def get(self, request, id):
         entidad_cafe = EntidadesCAFE.objects.get(id=id)
         return render(request, 'TalentoHumano/Entidades_CAFE/crear-editar.html', datos_xa_render(self.OPCION,
-                                                                                                 entidad_cafe))
+                                                                                                     entidad_cafe))
 
     def post(self, request, id):
         update_fields = ['tipo_entidad_id', 'nombre', 'direccion', 'nombre_contacto', 'telefono_contacto',

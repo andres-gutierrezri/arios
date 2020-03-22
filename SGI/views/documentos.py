@@ -1,7 +1,6 @@
 
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render, redirect, reverse, get_object_or_404
-from datetime import datetime
+from django.shortcuts import render, redirect, reverse
 from django.core.exceptions import ValidationError
 from django.contrib import messages
 from django.db import IntegrityError
@@ -20,14 +19,14 @@ class IndexView(AbstractEvaLoggedView):
         proceso = Proceso.objects.get(id=id)
         grupo_documentos = GrupoDocumento.objects.all()
         return render(request, 'SGI/documentos/index.html', {'documentos': documentos, 'procesos': procesos,
-                                                             'grupo_documentos': grupo_documentos, 'proceso': proceso})
+                                                             'grupo_documentos': grupo_documentos,
+                                                             'proceso': proceso})
 
 
 class DocumentosCrearView(AbstractEvaLoggedView):
     OPCION = 'crear'
 
     def get(self, request, id_proceso, id_grupo):
-
         proceso = Proceso.objects.get(id=id_proceso)
         grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
         return render(request, 'SGI/documentos/crear-editar.html',
@@ -117,7 +116,6 @@ class ArchivoCargarView(AbstractEvaLoggedView):
     OPCION = 'cargar'
 
     def get(self, request, id_proceso, id_grupo, id_documento):
-
         proceso = Proceso.objects.get(id=id_proceso)
         grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
         documento = Documento.objects.get(id=id_documento)
@@ -193,7 +191,8 @@ class VerDocumentoView(AbstractEvaLoggedView):
 
             response = HttpResponse(archivo.archivo, content_type=mime_type)
             response['Content-Disposition'] = 'attachment; filename="{0} {1} v{2:.1f}{3}"'\
-                .format(archivo.documento.codigo, archivo.documento.nombre, archivo.documento.version_actual, extension)
+                .format(archivo.documento.codigo, archivo.documento.nombre,
+                        archivo.documento.version_actual, extension)
 
             return response
         else:

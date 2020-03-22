@@ -21,11 +21,6 @@ class TerceroView(AbstractEvaLoggedView):
         return render(request, 'Administracion/Tercero/index.html', {'terceros': terceros, 'fecha': fecha})
 
 
-class PrincipalView(AbstractEvaLoggedView):
-    def get(self, request):
-        return render(request, 'Administracion/index.html')
-
-
 class TerceroCrearView(AbstractEvaLoggedView):
     OPCION = 'crear'
 
@@ -111,7 +106,6 @@ class TerceroEliminarView(AbstractEvaLoggedView):
 
 class TerceroDetalleView(AbstractEvaLoggedView):
     def get(self, request, id):
-
         try:
             tercero = Tercero.objects.get(id=id)
             return JsonResponse({'estado': 'OK', 'datos': tercero.to_dict(campos=['id', 'identificacion',

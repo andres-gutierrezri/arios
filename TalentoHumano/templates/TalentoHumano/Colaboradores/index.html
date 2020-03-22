@@ -27,11 +27,7 @@
                     <div class="panel-hdr">
                         <br>
                         <div class="col-md-10">
-                            {% if OPCION == 'por_contratos' %}
-                            <small>
-                                <a class="far fa-3x far fa-home"  href="{% url 'TalentoHumano:colaboradores-index' 0 %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ir al índice de colaboradores"></a>
-                            </small>
-                            {% else %}
+                            {% if perms.TalentoHumano.add_colaborador %}
                             <small>
                                 <a class="far fa-3x far fa-plus-circle"  href="{% url 'TalentoHumano:colaboradores-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar Colaborador"></a>
                             </small>

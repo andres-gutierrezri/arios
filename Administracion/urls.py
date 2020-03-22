@@ -15,21 +15,21 @@ Including another URLconf
 """
 
 from django.urls import path
-from Administracion.views import terceros, views, inicio_sesion, empresas
+from Administracion.views import terceros, administracion, inicio_sesion, empresas
 from Administracion.views.seleccion_empresa import SeleccionEmpresaModalView
 
 app_name = 'Administracion'
 
 urlpatterns = [
-    path('index/', terceros.PrincipalView.as_view(), name='index'),
+    path('index/', administracion.PrincipalView.as_view(), name='index'),
     path('terceros/', terceros.TerceroView.as_view(), name='terceros'),
     path('terceros/add', terceros.TerceroCrearView.as_view(), name='terceros-crear'),
     path('terceros/<int:id>/', terceros.TerceroEditarView.as_view(), name='terceros-editar'),
     path('terceros/<int:id>/json', terceros.TerceroDetalleView.as_view(), name='terceros-detalle'),
     path('terceros/<int:id>/delete', terceros.TerceroEliminarView.as_view(), name='terceros-eliminar'),
-    path('departamentos/<int:id>/municipios/json', views.CargarMunicipiosSelectJsonView.as_view(),
+    path('departamentos/<int:id>/municipios/json', administracion.CargarMunicipiosSelectJsonView.as_view(),
          name='municipios-json'),
-    path('municipios/<int:id>/centros-poblados/json', views.CargarCentroPobladoSelectJsonView.as_view(),
+    path('municipios/<int:id>/centros-poblados/json', administracion.CargarCentroPobladoSelectJsonView.as_view(),
          name='centros-poblados-json'),
     path('iniciar-sesion', inicio_sesion.IniciarSesionView.as_view(), name='iniciar-sesion'),
     path('cerrar-sesion', inicio_sesion.CerrarSesion.as_view(), name='cerrar-sesion'),

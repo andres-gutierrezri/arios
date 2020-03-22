@@ -24,15 +24,17 @@
                 <div class="col-xl-12">
                     <div id="panel-1" class="panel">
                         <div class="panel-hdr">
-                                <br>
+                            <br>
                             <div class="col-md-10">
+                                {% if perms.TalentoHumano.add_entidadescafe %}
                                 <small>
                                      <a class="far fa-3x far fa-plus-circle" href="{% url 'TalentoHumano:entidades-cafe-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar Entidad CAFE"></a>
                                 </small>
-                                </div>
-                                <div class="col-md-2" style="float: right" >
-                                    {% select_tag tipos_entidades 'tipo_entidad_id' '' value=id_entidad  %}
-                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-2" style="float: right" >
+                                {% select_tag tipos_entidades 'tipo_entidad_id' '' value=id_entidad  %}
+                            </div>
                         </div>
                         <div class="panel-container show">
                             <div class="panel-content">
@@ -52,7 +54,9 @@
                                                             <th>Teléfono del contacto</th>
                                                             <th>Correo electrónico</th>
                                                             <th>Dirección web</th>
+                                                            {% if perms.TalentoHumano.change_entidadescafe or perms.TalentoHumano.delete_entidadescafe %}
                                                             <th>Acción</th>
+                                                            {% endif %}
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -64,10 +68,16 @@
                                                                 <td>{{ entidad_cafe.telefono_contacto }}</td>
                                                                 <td>{{ entidad_cafe.correo}}</td>
                                                                 <td><a href="http://{{ entidad_cafe.direccion_web }}" target="_blank">{{ entidad_cafe.direccion_web }}</a></td>
-                                                              <td>
+                                                                {% if perms.TalentoHumano.change_entidadescafe or perms.TalentoHumano.delete_entidadescafe %}
+                                                                <td>
+                                                                    {% if perms.TalentoHumano.change_entidadescafe %}
                                                                     <a class="far fa-2x fa-edit" href="{% url 'TalentoHumano:entidades-cafe-editar' entidad_cafe.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                                    {% endif %}
+                                                                    {% if perms.TalentoHumano.delete_entidadescafe %}
                                                                     <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ entidad_cafe.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminarEntidad({{ entidad_cafe.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
-                                                              </td>
+                                                                    {% endif %}
+                                                                </td>
+                                                                {% endif %}
                                                             </tr>
                                                         {% endfor %}
                                                     </tbody>

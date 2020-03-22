@@ -26,7 +26,6 @@ class FacturasView(AbstractEvaLoggedView):
 
 class FacturaCrearView(AbstractEvaLoggedView):
     def get(self, request):
-
         terceros = Tercero.objects.clientes_xa_select()
         impuestos = Impuesto.objects.get_xa_select_porcentaje()
 
@@ -195,7 +194,6 @@ class FacturaCrearView(AbstractEvaLoggedView):
 
 class FacturaEditarView(AbstractEvaLoggedView):
     def get(self, request, id_factura):
-
         terceros = Tercero.objects.clientes_xa_select()
         impuestos = Impuesto.objects.get_xa_select_porcentaje()
         factura = FacturaEncabezado.objects.get(id=id_factura)
@@ -205,7 +203,6 @@ class FacturaEditarView(AbstractEvaLoggedView):
 
 class FacturaDetalleView(AbstractEvaLoggedView):
     def get(self, request, id_factura):
-
         try:
             factura = FacturaEncabezado.objects.\
                 values('id', 'estado', 'subtotal', 'amortizacion', 'total', cliente=F('tercero_id'),

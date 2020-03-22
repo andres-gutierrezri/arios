@@ -1,7 +1,5 @@
-from django.shortcuts import render
-
-# Create your views here.
 from EVA.views.index import AbstractEvaLoggedView
+from django.shortcuts import render
 
 
 class Index(AbstractEvaLoggedView):

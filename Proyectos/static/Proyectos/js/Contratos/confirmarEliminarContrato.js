@@ -30,7 +30,7 @@ function fSweetAlert() {
                         location.reload();
                     }
                     else {
-                        Swal.fire("Error!", "Error");
+                        EVANotificacion.toast.error('No tiene permisos para acceder a esta funcionalidad');
                     }
                 },
                 failure: function (errMsg) {
