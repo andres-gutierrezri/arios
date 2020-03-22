@@ -2,10 +2,12 @@ from datetime import datetime
 import json
 from typing import List, Optional
 
+from django.contrib import messages
 from django.db.models import F, DecimalField, ExpressionWrapper
 from django.db.transaction import atomic
 from django.http import JsonResponse, HttpResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect
+from django.urls import reverse
 
 from Administracion.models import Tercero, Impuesto, ConsecutivoDocumento, TipoDocumento
 from Administracion.utils import get_id_empresa_global
@@ -18,8 +20,9 @@ from Financiero.reportes.facturacion.factura import FacturaPdf
 
 class FacturasView(AbstractEvaLoggedView):
     def get(self, request):
-        facturas = FacturaEncabezado.objects.exclude(estado=0).order_by('-fecha_creacion')
-        borradores = FacturaEncabezado.objects.filter(estado=0).order_by('-fecha_creacion')
+        empresa_id = get_id_empresa_global(request)
+        facturas = FacturaEncabezado.objects.filter(empresa_id=empresa_id).exclude(estado=0).order_by('-fecha_creacion')
+        borradores = FacturaEncabezado.objects.filter(estado=0, empresa_id=empresa_id).order_by('-fecha_creacion')
         return render(request, 'Financiero/Facturacion/facturas/index.html', {'facturas': facturas,
                                                                               'borradores': borradores})
 
@@ -38,12 +41,12 @@ class FacturaCrearView(AbstractEvaLoggedView):
         factura = json.loads(body_unicode)
 
         factura_id = factura['id']
-
+        empresa_id = get_id_empresa_global(request)
         # region Obtiene borrador de factura.
         factura_borrador = None
         if factura_id != 0:
             try:
-                factura_borrador = FacturaEncabezado.objects.get(id=factura_id)
+                factura_borrador = FacturaEncabezado.objects.get(id=factura_id, empresa_id=empresa_id)
             except FacturaEncabezado.DoesNotExist:
                 return JsonResponse({'estado': 'error',
                                      'mensaje': 'No se encuentra información del borrador en el sistema'})
@@ -58,7 +61,7 @@ class FacturaCrearView(AbstractEvaLoggedView):
         if factura['estado'] == 0:
             # region Factura encabezado.
             factura_enc = FacturaEncabezado()
-            factura_enc.empresa_id = get_id_empresa_global(request)
+            factura_enc.empresa_id = empresa_id
             resolucion = ResolucionFacturacion.objects.filter(empresa_id=factura_enc.empresa_id, estado=True).only('id')\
                 .order_by('-fecha_resolucion').first()
 
@@ -194,9 +197,14 @@ class FacturaCrearView(AbstractEvaLoggedView):
 
 class FacturaEditarView(AbstractEvaLoggedView):
     def get(self, request, id_factura):
-        terceros = Tercero.objects.clientes_xa_select()
-        impuestos = Impuesto.objects.get_xa_select_porcentaje()
-        factura = FacturaEncabezado.objects.get(id=id_factura)
+        try:
+            terceros = Tercero.objects.clientes_xa_select()
+            impuestos = Impuesto.objects.get_xa_select_porcentaje()
+            factura = FacturaEncabezado.objects.get(id=id_factura, empresa_id=get_id_empresa_global(request))
+        except FacturaEncabezado.DoesNotExist:
+            messages.error(self.request, 'No se encontró el borrador de factura solicitado.')
+            return redirect(reverse('Financiero:factura-index'))
+
         return render(request, 'Financiero/Facturacion/crear_factura.html',
                       {'terceros': terceros, 'impuestos': impuestos, 'factura': factura})
 
@@ -210,7 +218,7 @@ class FacturaDetalleView(AbstractEvaLoggedView):
                        numeroFactura=F('numero_factura'), valorImpuestos=F('valor_impuesto'),
                        porcentajeAdministracion=F('porcentaje_administracion'),
                        porcentajeImprevistos=F('porcentaje_imprevistos'), porcentajeUtilidad=F('porcentaje_utilidad'),)\
-                .get(id=id_factura)
+                .get(id=id_factura, empresa_id=get_id_empresa_global(request))
 
             items_factura = list(FacturaDetalle.objects
                                  .values('titulo', 'descripcion', 'cantidad', 'impuesto',
@@ -238,10 +246,13 @@ class FacturaDetalleView(AbstractEvaLoggedView):
 
 class FacturaImprimirView(AbstractEvaLoggedView):
     def get(self, request, id_factura):
-        factura = get_object_or_404(FacturaEncabezado, id=id_factura)
-        empresa = factura.empresa
-        reporte = FacturaPdf.generar(factura, empresa)
-
-        http_response = HttpResponse(reporte, 'application/pdf')
-        http_response['Content-Disposition'] = 'inline; filename="factura {0}.pdf"'.format(factura.id)
-        return http_response
+        try:
+            factura = FacturaEncabezado.objects.get(id=id_factura, empresa_id=get_id_empresa_global(request))
+            empresa = factura.empresa
+            reporte = FacturaPdf.generar(factura, empresa)
+            http_response = HttpResponse(reporte, 'application/pdf')
+            http_response['Content-Disposition'] = 'inline; filename="factura {0}.pdf"'.format(factura.id)
+            return http_response
+        except FacturaEncabezado.DoesNotExist:
+            messages.error(self.request, 'No se encontró la factura solicitada.')
+            return redirect(reverse('Financiero:factura-index'))
