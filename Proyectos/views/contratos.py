@@ -7,7 +7,6 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.db.models import F
 
-from EVA.General.validacionpermisos import tiene_permisos
 from EVA.views.index import AbstractEvaLoggedView
 from Proyectos.models.contratos import Contrato
 from Administracion.models import Tercero, Empresa, TipoContrato
@@ -15,108 +14,90 @@ from Administracion.models import Tercero, Empresa, TipoContrato
 
 class ContratoView(AbstractEvaLoggedView):
     def get(self, request):
-        if not tiene_permisos(request, 'Proyectos', ['view_contrato'], None):
-            return redirect(reverse('eva-index'))
-        else:
-            contratos = Contrato.objects.all()
-            fecha = datetime.now()
-            return render(request, 'Proyectos/Contrato/index.html', {'contratos': contratos, 'fecha': fecha})
+        contratos = Contrato.objects.all()
+        fecha = datetime.now()
+        return render(request, 'Proyectos/Contrato/index.html', {'contratos': contratos, 'fecha': fecha})
 
 
 class ContratoCrearView(AbstractEvaLoggedView):
     OPCION = 'crear'
 
     def get(self, request):
-        if not tiene_permisos(request, 'Proyectos', ['add_contrato'], None):
-            return redirect(reverse('eva-index'))
-        else:
-            return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.OPCION))
+        return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.OPCION))
 
     def post(self, request):
-        if not tiene_permisos(request, 'Proyectos', ['add_contrato'], None):
-            return redirect(reverse('eva-index'))
-        else:
-            contrato = Contrato.from_dictionary(request.POST)
-            try:
-                contrato.full_clean()
-            except ValidationError as errores:
-                datos = datos_xa_render(self.OPCION, contrato)
-                datos['errores'] = errores.message_dict
-                return render(request, 'Proyectos/Contrato/crear-editar.html', datos)
+        contrato = Contrato.from_dictionary(request.POST)
+        try:
+            contrato.full_clean()
+        except ValidationError as errores:
+            datos = datos_xa_render(self.OPCION, contrato)
+            datos['errores'] = errores.message_dict
+            return render(request, 'Proyectos/Contrato/crear-editar.html', datos)
 
-            if Contrato.objects.filter(numero_contrato=contrato.numero_contrato).exists():
-                messages.warning(request, 'Ya existe un contrato con número {0}'.format(contrato.numero_contrato))
-                return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.OPCION, contrato))
+        if Contrato.objects.filter(numero_contrato=contrato.numero_contrato).exists():
+            messages.warning(request, 'Ya existe un contrato con número {0}'.format(contrato.numero_contrato))
+            return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.OPCION, contrato))
 
-            if contrato.fecha_inicio > contrato.fecha_terminacion:
-                messages.warning(request, 'La fecha de inicio debe ser menor o igual a la fecha de terminación')
-                return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.OPCION, contrato))
+        if contrato.fecha_inicio > contrato.fecha_terminacion:
+            messages.warning(request, 'La fecha de inicio debe ser menor o igual a la fecha de terminación')
+            return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.OPCION, contrato))
 
-            contrato.save()
-            messages.success(request, 'Se ha agregado el contrato número {0}'.format(contrato.numero_contrato))
-            return redirect(reverse('proyectos:contratos'))
+        contrato.save()
+        messages.success(request, 'Se ha agregado el contrato número {0}'.format(contrato.numero_contrato))
+        return redirect(reverse('proyectos:contratos'))
 
 
 class ContratoEditarView(AbstractEvaLoggedView):
     OPCION = 'editar'
 
     def get(self, request, id):
-        if not tiene_permisos(request, 'Proyectos', ['change_contrato'], None):
-            return redirect(reverse('eva-index'))
-        else:
-            contrato = Contrato.objects.get(id=id)
-            return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.OPCION, contrato))
+        contrato = Contrato.objects.get(id=id)
+        return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.OPCION, contrato))
 
     def post(self, request, id):
-        if not tiene_permisos(request, 'Proyectos', ['change_contrato'], None):
-            return redirect(reverse('eva-index'))
+        update_fields = ['numero_contrato', 'cliente_id', 'anho', 'supervisor_nombre', 'supervisor_correo',
+                         'supervisor_telefono', 'residente', 'fecha_inicio', 'fecha_terminacion', 'valor',
+                         'periodicidad_informes', 'tiempo', 'tipo_contrato_id', 'empresa_id']
+
+        contrato = Contrato.from_dictionary(request.POST)
+        contrato.id = int(id)
+
+        try:
+            contrato.full_clean(validate_unique=False)
+        except ValidationError as errores:
+            datos = datos_xa_render(self.OPCION, contrato)
+            datos['errores'] = errores.message_dict
+            return render(request, 'Proyectos/Contrato/crear-editar.html', datos)
+
+        if Contrato.objects.filter(numero_contrato=contrato.numero_contrato).exclude(id=id).exists():
+            messages.warning(request, 'Ya existe un contrato con número {0}'.format(contrato.numero_contrato))
+            return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.OPCION, contrato))
+
+        if contrato.fecha_inicio > contrato.fecha_terminacion:
+            messages.warning(request, 'La fecha de inicio debe ser menor o igual a la fecha de terminación')
+            return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.OPCION, contrato))
+
+        contrato_db = Contrato.objects.get(id=id)
+        if contrato_db.comparar(contrato):
+            messages.success(request, 'No se hicieron cambios en el contrato número {0}'
+                             .format(contrato.numero_contrato))
+            return redirect(reverse('Proyectos:contratos'))
         else:
-            update_fields = ['numero_contrato', 'cliente_id', 'anho', 'supervisor_nombre', 'supervisor_correo',
-                             'supervisor_telefono', 'residente', 'fecha_inicio', 'fecha_terminacion', 'valor',
-                             'periodicidad_informes', 'tiempo', 'tipo_contrato_id', 'empresa_id']
-
-            contrato = Contrato.from_dictionary(request.POST)
-            contrato.id = int(id)
-
-            try:
-                contrato.full_clean(validate_unique=False)
-            except ValidationError as errores:
-                datos = datos_xa_render(self.OPCION, contrato)
-                datos['errores'] = errores.message_dict
-                return render(request, 'Proyectos/Contrato/crear-editar.html', datos)
-
-            if Contrato.objects.filter(numero_contrato=contrato.numero_contrato).exclude(id=id).exists():
-                messages.warning(request, 'Ya existe un contrato con número {0}'.format(contrato.numero_contrato))
-                return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.OPCION, contrato))
-
-            if contrato.fecha_inicio > contrato.fecha_terminacion:
-                messages.warning(request, 'La fecha de inicio debe ser menor o igual a la fecha de terminación')
-                return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.OPCION, contrato))
-
-            contrato_db = Contrato.objects.get(id=id)
-            if contrato_db.comparar(contrato):
-                messages.success(request, 'No se hicieron cambios en el contrato número {0}'
-                                 .format(contrato.numero_contrato))
-                return redirect(reverse('Proyectos:contratos'))
-            else:
-                contrato.save(update_fields=update_fields)
-                messages.success(request, 'Se ha actualizado el contrato número {0}'.format(contrato.numero_contrato))
-                return redirect(reverse('Proyectos:contratos'))
+            contrato.save(update_fields=update_fields)
+            messages.success(request, 'Se ha actualizado el contrato número {0}'.format(contrato.numero_contrato))
+            return redirect(reverse('Proyectos:contratos'))
 
 
 class ContratoEliminarView(AbstractEvaLoggedView):
     def post(self, request, id):
-        if not tiene_permisos(request, 'Proyectos', ['change_contrato'], None):
-            return redirect(reverse('eva-index'))
-        else:
-            try:
-                contrato = Contrato.objects.get(id=id)
-                contrato.delete()
-                messages.success(request, 'Se ha eliminado el contrato {0}'.format(contrato.numero_contrato))
-                return JsonResponse({"Mensaje": "OK"})
+        try:
+            contrato = Contrato.objects.get(id=id)
+            contrato.delete()
+            messages.success(request, 'Se ha eliminado el contrato {0}'.format(contrato.numero_contrato))
+            return JsonResponse({"Mensaje": "OK"})
 
-            except IntegrityError:
-                return JsonResponse({"Mensaje": "No se puede eliminar"})
+        except IntegrityError:
+            return JsonResponse({"Mensaje": "No se puede eliminar"})
 
 
 # region Métodos de ayuda
