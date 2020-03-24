@@ -15,13 +15,17 @@ from SGI.models.documentos import EstadoArchivo
 class IndexView(AbstractEvaLoggedView):
     def get(self, request, id):
         empresa_id = request.session['empresa']['id']
-        documentos = Documento.objects.filter(proceso_id=id, proceso__empresa_id=empresa_id)
         procesos = Proceso.objects.filter(empresa_id=empresa_id)
-        proceso = procesos.get(id=id)
-        grupo_documentos = GrupoDocumento.objects.all()
-        return render(request, 'SGI/documentos/index.html', {'documentos': documentos, 'procesos': procesos,
-                                                             'grupo_documentos': grupo_documentos,
-                                                             'proceso': proceso})
+        if procesos.filter(id=id):
+            documentos = Documento.objects.filter(proceso_id=id, proceso__empresa_id=empresa_id)
+            proceso = procesos.get(id=id)
+            grupo_documentos = GrupoDocumento.objects.filter(empresa_id=empresa_id)
+            return render(request, 'SGI/documentos/index.html', {'documentos': documentos, 'procesos': procesos,
+                                                                 'grupo_documentos': grupo_documentos,
+                                                                 'proceso': proceso
+                                                                 })
+        else:
+            return redirect(reverse('SGI:index'))
 
 
 class DocumentosCrearView(AbstractEvaLoggedView):
