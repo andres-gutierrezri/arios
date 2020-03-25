@@ -1,7 +1,7 @@
 import datetime
 
 from Notificaciones.models.models import TextoNotificacionDelSistema, Notificacion, TipoNotificacion, \
-    SeleccionDeNotificacionARecibir, DestinatarioNotificacion
+    SeleccionDeNotificacionARecibir, DestinatarioNotificacion, EventoDesencadenador
 
 
 def crear_notificacion_por_evento(id_desencadenador, id_evento):
@@ -14,12 +14,17 @@ def crear_notificacion_por_evento(id_desencadenador, id_evento):
                                                id_evento=id_evento,
                                                evento_desencadenador_id=id_desencadenador,
                                                tipo_notificacion_id=TipoNotificacion.EVENTO_DEL_SISTEMA)
-    crear_destinatarios(notificacion, '')
+    usuario = []
+    if id_desencadenador == EventoDesencadenador.BIENVENIDA:
+        usuario = [id_evento]
+
+    crear_destinatarios(notificacion, usuario)
 
 
 def crear_destinatarios(notificacion, lista_usuarios):
 
-    if notificacion.tipo_notificacion_id == TipoNotificacion.EVENTO_DEL_SISTEMA:
+    if notificacion.tipo_notificacion_id == TipoNotificacion.EVENTO_DEL_SISTEMA and \
+            notificacion.evento_desencadenador_id != EventoDesencadenador.BIENVENIDA:
         selecciones = SeleccionDeNotificacionARecibir.objects \
             .filter(evento_desencadenador=notificacion.evento_desencadenador, estado=True)
 
