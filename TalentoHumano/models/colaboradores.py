@@ -70,6 +70,12 @@ class Colaborador(Persona, ModelDjangoExtensiones):
     class Meta:
         verbose_name = 'Colaborador'
         verbose_name_plural = 'Colaboradores'
+        permissions = (("can_menu_administracion", "Can access menu administracion"),
+                       ("can_menu_proyectos", "Can access menu proyectos"),
+                       ("can_menu_talentohumano", "Can access menu talento humano"),
+                       ("can_menu_sgi", "Can access menu sgi"),
+                       ("can_menu_financiero", "Can access menu financiero"),
+                       )
 
     def empresa_to_dict(self):
         if self.empresa_sesion:

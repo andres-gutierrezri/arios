@@ -27,6 +27,7 @@ urlpatterns = [
     path('administracion/', include('Administracion.urls', namespace='administracion')),
     path('proyectos/', include('Proyectos.urls', namespace='proyectos')),
     path('talento-humano/', include('TalentoHumano.urls', namespace='talento-humano')),
+    path('sgi/', include('SGI.urls', namespace='sgi')),
     path('notificaciones/', include('Notificaciones.urls', namespace='notificaciones')),
     path('password-reset-complete/',
          auth_views.PasswordResetCompleteView.as_view(template_name='Administracion/Autenticacion/password_reset_complete.html')

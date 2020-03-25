@@ -28,7 +28,6 @@ class ContratoCrearView(AbstractEvaLoggedView):
         return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.OPCION))
 
     def post(self, request):
-
         contrato = Contrato.from_dictionary(request.POST)
         try:
             contrato.full_clean()

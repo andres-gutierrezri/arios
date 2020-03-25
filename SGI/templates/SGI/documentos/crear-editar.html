@@ -1,0 +1,75 @@
+{% extends 'SGI/_common/base_sgi.html' %}
+{% load static %}
+{% load eva_tags %}
+<title>{% block titulo %}{% if opcion == 'editar' %}Editar Documentos{% else %} Crear Documentos {% endif %}{% endblock %}</title>
+{% block styles %}
+    <!-- DEMO related CSS below -->
+    <link rel="stylesheet" media="screen, print" href="{%static 'EVA/Plantilla/css/fa-brands.css' %}">
+    <!-- page related CSS below -->
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/bootstrap-datepicker/bootstrap-datepicker.css' %}">
+{% endblock styles%}
+
+{% block main %}
+    <div class="panel-container show">
+        <div class="header">
+            <h1 class="header-title">
+                <i class='far fa-file-alt'></i> {{proceso}} / {{ grupo_documento }} / Documentos: <span class='fw-300'>{% if opcion == 'editar' %} Editar {% else%} Crear {% endif %}</span>
+                <br>
+                <br>
+            </h1>
+        </div>
+        <div class="row">
+            <div class="col-xl-12">
+                <div id="panel-1" class="panel">
+                    <div class="panel-container show">
+                        <div class="panel-content">
+                            <div class="panel-group">
+                                <div class="panel-body">
+                                    {% if opcion == 'editar' %}
+                                        <form action="{% url 'SGI:documentos-editar' proceso.id grupo_documento.id documento.id %}" id="documentos-form" method="post" class="needs-validation" novalidate>
+                                    {% else %}
+                                        <form action="{% url 'SGI:documentos-crear'  proceso.id grupo_documento.id %}" id="documentos-form" method="post" class="needs-validation" novalidate>
+                                    {% endif %}
+                                    {% csrf_token %}
+                                    <div class="form-group">
+                                        <div class="form-row">
+                                            <div class="col-md-6">
+                                                {% input_text_tag 'nombre' 'Nombre' placeholder="Ingrese el nombre" required="" maxlength="100" value=documento.nombre mensaje_validacion='Por favor digite el nombre' invalido=errores.nombre %}
+                                            </div>
+                                            <div class="col-md-6">
+                                                {% input_text_tag 'codigo' 'Código' placeholder="Ingrese el código" required="" maxlength="100" value=documento.codigo mensaje_validacion='Por favor digite el código' invalido=errores.codigo %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div >
+                                            <button id="guardar" class="btn btn-primary btn-block">{% if opcion == 'editar' %} Actualizar {% else %} Agregar {% endif %}</button>
+                                        </div>
+                                        <div style="padding-left: 15px">
+                                            <a href="{% url 'SGI:documentos-index' proceso.id %}" class="btn btn-danger btn-block">Cancelar</a>
+                                        </div>
+                                    </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock main %}
+
+{% block scripts %}
+    <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
+    <script src="{% static 'Administracion/js/select_divipol.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js' %}"></script>
+    <script>
+        $(document).ready(function () {
+            $('.select2').select2();
+        });
+    </script>
+{% endblock scripts%}

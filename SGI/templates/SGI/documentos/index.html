@@ -1,0 +1,99 @@
+{% extends 'SGI/_common/base_sgi.html'  %}
+{% load static %}
+{% load eva_tags %}
+<title>{% block titulo %} Documentos {% endblock %}</title>
+
+{% block styles %}
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-brands.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-solid.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/sweetalert2/sweetalert2.bundle.css'%}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/theme-demo.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
+    <link rel="mask-icon" href="{% static 'EVA/Plantilla/img/favicon/safari-pinned-tab.svg' %}" color="#5bbad5">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/miscellaneous/treeview/treeview.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'SGI/css/icono_documento.css' %}">
+     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/bootstrap-datepicker/bootstrap-datepicker.css' %}">
+{% endblock styles %}
+
+{% block main %}
+    <div class="panel-container show">
+        <div class="header">
+            <h1 class="header-title">
+                <i class='far fa-file-alt'></i> {{ proceso }} / Documentos <span class='fw-300'></span>
+                <br>
+                <br>
+            </h1>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div id="panel-1" class="panel">
+                    <div class="panel-container show">
+                        <div class="panel-content">
+                            <div class="tree">
+                                <ul>
+                                    {% for grupo_documento in grupo_documentos %}
+                                        <li>
+                                            <span class="col-md-4"><i class="fa fa-lg fa-file-alt"></i> {{ grupo_documento }}</span>
+                                            {% if perms.SGI.add_documento %}
+                                            <a class="far fa-custom fa-file-plus" style="padding-left: 10px"   href="{% url 'SGI:documentos-crear' proceso.id  grupo_documento.id%}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear documento"></a>
+                                            {% endif %}
+                                            <ul>
+                                                {% for documento in documentos %}
+                                                    {% if documento.grupo_documento_id == grupo_documento.id %}
+                                                        <li style="display: none">
+                                                            <div class="row" style="padding-left: 12px">
+                                                                <div class="">
+                                                                    <div id="panel-1" class="panel">
+                                                                        <div class="panel-container show">
+                                                                            <div class="panel-content">
+                                                                                {{ documento.nombre }} {% if documento.version_actual != 0.0 %}V{{ documento.version_actual }}{% endif %}
+                                                                                {%  if perms.SGI.view_archivo %}
+                                                                                <a class="far fa-custom fa-eye" style="padding-left: 10px" {% if documento.version_actual != 0.0 %}href="{% url 'sgi:documentos-ver' proceso.id documento.id  %}" data-original-title="Ver"{% else %}data-original-title="No hay archivos"{% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
+                                                                                {% endif %}
+                                                                                {%  if perms.SGI.view_documento %}
+                                                                                <a class="far fa-custom fa-list-alt" style="padding-left: 10px"  data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Historial (Funcionalidad en Desarrollo)"></a>
+                                                                                {% endif %}
+                                                                                {% if perms.SGI.add_archivo %}
+                                                                                <a class="far fa-custom fa-long-arrow-alt-up" style="padding-left: 10px"  href="javascript:abrir_modal_cargar('{% url 'sgi:documentos-cargar' proceso.id  grupo_documento.id documento.id %}');" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Cargar"></a>
+                                                                                {% endif %}
+                                                                                {% if perms.SGI.change_documento %}
+                                                                                <a class="far fa-custom fa-edit" style="padding-left: 10px"  href="{% url 'sgi:documentos-editar' proceso.id  grupo_documento.id documento.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                                                {% endif %}
+                                                                                {% if perms.SGI.delete_documento %}
+                                                                                <a class="far fa-custom fa-trash-alt color-danger-900" style="padding-left: 10px"  id="eliminar_{{ documento.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminarDocumento({{ documento.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+                                                                                {% endif %}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </ul>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" tabindex="-1" id="cargar" role="dialog">
+
+    </div>
+    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='sgi/documentos' %}
+{% endblock main%}
+
+{% block scripts %}
+    <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
+    <script src="{% static 'SGI/js/confirmarEliminarDocumento.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/miscellaneous/treeview/treeview.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js'%}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
+    <script src="{% static 'SGI/js/modalCargarArchivo.js' %}"></script>
+{% endblock scripts%}

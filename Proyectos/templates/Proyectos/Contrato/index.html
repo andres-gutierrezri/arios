@@ -21,11 +21,13 @@
             <div class="row">
                 <div class="col-xl-12">
                     <div id="panel-1" class="panel">
+                        {% if perms.Proyectos.add_contrato %}
                         <div class="panel-hdr">
                             <small>
                                  <a class="far fa-3x far fa-plus-circle"  href="{% url 'Proyectos:contratos-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar contrato"></a>
                             </small>
                         </div>
+                        {% endif %}
                         <div class="panel-container show">
                             <div class="panel-content">
                                     <div class="panel-group">
@@ -48,7 +50,9 @@
                                                             <th>Tiempo</th>
                                                             <th>Tipo de contrato</th>
                                                             <th>Empresa</th>
-                                                            <th>Acción</th>
+                                                            {% if perms.Proyectos.change_contrato or perms.Proyectos.delete_contrato %}
+                                                                <th>Acción</th>
+                                                            {% endif %}
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -68,10 +72,16 @@
                                                                 <td>{{ contrato.tiempo }}</td>
                                                                 <td>{{ contrato.tipo_contrato }}</td>
                                                                 <td>{{ contrato.empresa }}</td>
-                                                              <td>
+                                                                {% if perms.Proyectos.change_contrato or perms.Proyectos.delete_contrato %}
+                                                                <td>
+                                                                    {% if perms.Proyectos.change_contrato %}
                                                                     <a class="far fa-2x fa-edit"   href="{% url 'Proyectos:contratos-editar' contrato.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                                    {% endif %}
+                                                                    {% if perms.Proyectos.delete_contrato %}
                                                                     <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ contrato.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminarContrato({{ contrato.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
-                                                              </td>
+                                                                    {% endif %}
+                                                                </td>
+                                                                {% endif %}
                                                             </tr>
                                                         {% endfor %}
                                                     </tbody>

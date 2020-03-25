@@ -1,0 +1,43 @@
+{% load eva_tags %}
+{% load static %}
+
+
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header p-b-0">
+            <h4 class="modal-title">
+                Cargar archivo al documento {{ documento }}
+            </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"><i class="fal fa-times"></i></span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form action="{% url 'sgi:documentos-cargar' proceso.id  grupo_documento.id documento.id %}" id="empresas-form" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <div class="form-group">
+                    <div class="m-b-10">
+                        {% input_file_tag 'archivo' 'Archivo' placeholder="Seleccione un archivo" required="" modal=True invalido=errores.logo accept=".docx, .pptx, .xlsx, .pdf" mensaje_validacion='Por favor seleccione un archivo'%}
+                    </div>
+                    <div class="m-b-10">
+                        {% input_date_tag 'fecha_documento' 'Fecha del Documento' placeholder="Seleccione una fecha"   required="" modal=True value=archivo.fecha_documento autocomplete="off"  mensaje_validacion='Por favor seleccione una fecha.' invalido=errores.fecha_documento %}
+                    </div>
+                    <div class="m-b-10">
+                        {% input_number_tag 'version' 'Versión' placeholder="Ingrese la versión del documento"  required="" modal=True min=version max="9999.9" step="0.1" value=version mensaje_validacion='Por favor digite una version mayor a la anterior.' invalido=errores.version %}
+                    </div>
+                    <div class="m-b-10">
+                        {% input_textarea_tag 'notas' 'Notas' type="textarea" placeholder="Digite una nota o los cambios realizados al documento."  maxlength="100" required="" modal=True value=archivo.notas mensaje_validacion='Por favor ingrese una nota' invalido=errores.notas %}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div >
+                        <button id="guardar" type="submit" class="btn btn-primary btn-block"> Cargar </button>
+                    </div>
+                    <div style="padding-left: 15px">
+                        <button data-dismiss="modal" class="btn btn-danger btn-block">Cancelar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
