@@ -54,8 +54,11 @@ class DocumentosCrearView(AbstractEvaLoggedView):
             datos['errores'] = errores.message_dict
             if '__all__' in errores.message_dict:
                 for mensaje in errores.message_dict['__all__']:
-                    if mensaje.startswith('Ya existe'):
+                    if mensaje.find("Código") > 0:
                         messages.warning(request, 'Ya existe un documento con código {0}'.format(documento.codigo))
+                        break
+                    elif mensaje.find('Nombre') > 0:
+                        messages.warning(request, 'Ya existe un documento con nombre {0}'.format(documento.nombre))
                         break
             return render(request, 'SGI/documentos/crear-editar.html', datos)
         documento.save()
@@ -90,8 +93,11 @@ class DocumentosEditarView(AbstractEvaLoggedView):
             datos['errores'] = errores.message_dict
             if '__all__' in errores.message_dict:
                 for mensaje in errores.message_dict['__all__']:
-                    if mensaje.startswith('Ya existe'):
-                        messages.warning(request, 'Ya existe un documento con código {0}' .format(documento.codigo))
+                    if mensaje.find("Código") > 0:
+                        messages.warning(request, 'Ya existe un documento con código {0}'.format(documento.codigo))
+                        break
+                    elif mensaje.find('Nombre') > 0:
+                        messages.warning(request, 'Ya existe un documento con nombre {0}'.format(documento.nombre))
                         break
             return render(request, 'SGI/documentos/crear-editar.html', datos)
 
