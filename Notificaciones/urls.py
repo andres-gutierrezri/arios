@@ -15,9 +15,10 @@ Including another URLconf
 """
 
 from django.urls import path
-from Administracion.views import terceros, views, inicio_sesion, empresas
-from Administracion.views.seleccion_empresa import SeleccionEmpresaModalView
+from Notificaciones.views import views
 
 app_name = 'Notificaciones'
 
-urlpatterns = []
+urlpatterns = [
+    path('notificaciones/', views.NotificacionesView.as_view(), name='notificaciones-ver'),
+]
