@@ -147,3 +147,25 @@ def valor_pesos_a_letras(valor) -> str:
         return '{0} PESOS M/CTE'.format(numero_a_letras(parte_entera))
     else:
         return '{0} PESOS CON {1} CENTAVOS M/CTE'.format(numero_a_letras(parte_entera), numero_a_letras(parte_decimal))
+
+
+def distancia_entre_fechas_a_texto(fecha_creacion):
+
+    dias = (date.today() - fecha_creacion.date()).days
+
+    if dias == 0:
+        fecha = 'Hoy'
+    elif dias == 1:
+        fecha = 'Ayer'
+    elif 2 <= dias <= 6:
+        fecha = str(dias) + 'd'
+    elif 7 <= dias <= 14:
+        fecha = '1sem'
+    elif 15 <= dias <= 22:
+        fecha = '2sem'
+    elif 23 <= dias <= 30:
+        fecha = '3sem'
+    else:
+        fecha = datetime.strftime(fecha_creacion, "%d-%m-%Y %H:%M")
+
+    return fecha
