@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'Proyectos.apps.ProyectosConfig',
     'TalentoHumano.apps.TalentohumanoConfig',
     'Financiero.apps.FinancieroConfig',
+    'Notificaciones.apps.NotificacionesConfig',
 ]
 
 MIDDLEWARE = [
@@ -145,7 +146,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'Proyectos', 'static', 'Proyectos'),
     os.path.join(BASE_DIR, 'TalentoHumano', 'static', 'TalentoHumano'),
     os.path.join(BASE_DIR, 'Financiero', 'static', 'Financiero'),
-
+    os.path.join(BASE_DIR, 'Notificaciones', 'static', 'Notificaciones'),
 )
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
