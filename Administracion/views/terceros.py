@@ -12,6 +12,8 @@ from Administracion.models import Tercero, TipoIdentificacion, TipoTercero, Cent
     Municipio
 from Administracion.utils import get_id_empresa_global
 from EVA.views.index import AbstractEvaLoggedView
+from Notificaciones.models.models import EventoDesencadenador
+from Notificaciones.views.views import crear_notificacion_por_evento
 
 
 class TerceroView(AbstractEvaLoggedView):
@@ -50,6 +52,7 @@ class TerceroCrearView(AbstractEvaLoggedView):
             return render(request, 'Administracion/Tercero/crear-editar.html', datos)
 
         tercero.save()
+        crear_notificacion_por_evento(EventoDesencadenador.TERCERO, tercero.id)
         messages.success(request, 'Se ha agregado el tercero {0}'.format(tercero.nombre))
         return redirect(reverse('Administracion:terceros'))
 

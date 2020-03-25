@@ -13,6 +13,8 @@ from django.utils.http import urlsafe_base64_encode
 from Administracion.models import Cargo, Proceso, TipoContrato, CentroPoblado, Rango, Municipio, Departamento, \
     TipoIdentificacion
 from EVA.views.index import AbstractEvaLoggedView
+from Notificaciones.models.models import EventoDesencadenador
+from Notificaciones.views.views import crear_notificacion_por_evento
 from Proyectos.models import Contrato
 from TalentoHumano.models import Colaborador, EntidadesCAFE
 
@@ -97,6 +99,8 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
             colaborador.usuario_id = colaborador.usuario.id
             colaborador.empresa_sesion_id = Contrato.objects.get(id=contratos[0]).empresa_id
             colaborador.save()
+            crear_notificacion_por_evento(EventoDesencadenador.BIENVENIDA, colaborador.id)
+            crear_notificacion_por_evento(EventoDesencadenador.COLABORADOR, colaborador.id)
 
             for contrato in contratos:
                 ColaboradorContrato.objects.create(contrato_id=contrato, colaborador=colaborador)

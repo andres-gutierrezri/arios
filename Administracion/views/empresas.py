@@ -11,6 +11,8 @@ from datetime import datetime
 from django.shortcuts import render, redirect
 
 from Administracion.models import Empresa
+from Notificaciones.models.models import EventoDesencadenador
+from Notificaciones.views.views import crear_notificacion_por_evento
 
 
 class EmpresaView(AbstractEvaLoggedView):
@@ -47,6 +49,7 @@ class EmpresaCrearView(AbstractEvaLoggedView):
             return render(request, 'Administracion/Empresas/crear-editar.html', datos)
 
         empresa.save()
+        crear_notificacion_por_evento(EventoDesencadenador.EMPRESAS, empresa.id)
         messages.success(request, 'Se ha agregado la empresa {0}'.format(empresa.nombre))
         return redirect(reverse('Administracion:empresas'))
 

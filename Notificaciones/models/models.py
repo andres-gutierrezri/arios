@@ -47,10 +47,12 @@ class EventoDesencadenador(models.Model):
         verbose_name_plural = 'Eventos Desencadenadores'
 
     # region Constantes Estados
-    CONTRATO = 1
-    TERCERO = 2
-    EMPRESAS = 3
-    ENTIDADES_CAFE = 4
+    BIENVENIDA = 1
+    CONTRATO = 2
+    TERCERO = 3
+    EMPRESAS = 4
+    ENTIDADES_CAFE = 5
+    COLABORADOR = 6
     # endregion
 
 
