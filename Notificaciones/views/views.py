@@ -2,6 +2,7 @@ import datetime
 
 from django.db import IntegrityError
 from django.http import JsonResponse
+from django.shortcuts import render
 
 from EVA.General.conversiones import distancia_entre_fechas_a_texto
 from EVA.views.index import AbstractEvaLoggedView
@@ -50,40 +51,47 @@ def crear_destinatarios(notificacion, lista_usuarios):
 class NotificacionesView(AbstractEvaLoggedView):
     def get(self, request):
         try:
-            contador = 0
-            limite_notificaciones = 10
-            destinatarios = DestinatarioNotificacion.objects.filter(usuario=request.user)\
-                .order_by('-notificacion__fecha_creacion')
-            lista_notificaciones = []
-            for destinatario in destinatarios:
-                if destinatario.notificacion.fecha_creacion.date() <= datetime.date.today():
-                    fecha = distancia_entre_fechas_a_texto(destinatario.notificacion.fecha_creacion)
-                    contador += 1
-
-                    if destinatario.notificacion.tipo_notificacion_id == TipoNotificacion.EVENTO_DEL_SISTEMA:
-                        url = destinatario.notificacion.evento_desencadenador.ruta
-                        evento = destinatario.notificacion.id_evento
-                    else:
-                        url = '/notificaciones/detalle-info-oblig'
-                        evento = destinatario.notificacion.id
-
-                    lista_notificaciones.append(
-                        {"id": destinatario.notificacion.id,
-                         "titulo": destinatario.notificacion.titulo,
-                         "mensaje": destinatario.notificacion.mensaje,
-                         "fecha": fecha,
-                         "visto": destinatario.visto,
-                         "id_evento": evento,
-                         "url": url})
-                    if contador > limite_notificaciones:
-                        break
-            contador_notificaciones = 0
-            for dest in destinatarios:
-                if not dest.visto and dest.notificacion.fecha_creacion.date() <= datetime.date.today():
-                    contador_notificaciones += 1
-            return JsonResponse({"Mensaje": contador_notificaciones,
-                                 "Notificaciones": lista_notificaciones})
-
+            notificaciones = construir_notificaciones(request, limite=10)
+            return JsonResponse({"Mensaje": notificaciones['numero_notificaciones'],
+                                 "Notificaciones": notificaciones['lista_notificaciones']})
         except IntegrityError:
 
             return JsonResponse({"Mensaje": "Error interno del servidor", "Notificaciones": []})
+
+
+class NotificacionesVerTodasView(AbstractEvaLoggedView):
+    def get(self, request):
+        notificaciones = construir_notificaciones(request, limite=None)
+        return render(request, 'Notificaciones/ver_todas.html',
+                      {"Notificaciones": notificaciones['lista_notificaciones']})
+
+
+def construir_notificaciones(request, limite):
+    destinatarios = DestinatarioNotificacion.objects\
+                    .filter(usuario=request.user, notificacion__fecha_creacion__lte=datetime.date.today()) \
+                    .order_by('-notificacion__fecha_creacion')
+    if limite:
+        destinatarios = destinatarios[:limite]
+
+    lista_notificaciones = []
+    for destinatario in destinatarios:
+        fecha = distancia_entre_fechas_a_texto(destinatario.notificacion.fecha_creacion)
+
+        url = destinatario.notificacion.evento_desencadenador.ruta
+        evento = destinatario.notificacion.id_evento
+
+        lista_notificaciones.append(
+            {"id": destinatario.notificacion.id,
+             "titulo": destinatario.notificacion.titulo,
+             "mensaje": destinatario.notificacion.mensaje,
+             "fecha": fecha,
+             "visto": destinatario.visto,
+             "id_evento": evento,
+             "url": url})
+
+    contador_notificaciones = 0
+    for dest in destinatarios:
+        if not dest.visto and dest.notificacion.fecha_creacion.date() <= datetime.date.today():
+            contador_notificaciones += 1
+
+    return {'lista_notificaciones': lista_notificaciones, 'numero_notificaciones': contador_notificaciones}
