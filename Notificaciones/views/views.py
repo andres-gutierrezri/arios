@@ -68,7 +68,7 @@ class NotificacionesVerTodasView(AbstractEvaLoggedView):
 
 def construir_notificaciones(request, limite):
     destinatarios = DestinatarioNotificacion.objects\
-                    .filter(usuario=request.user, notificacion__fecha_creacion__lte=datetime.date.today()) \
+                    .filter(usuario=request.user, notificacion__fecha_creacion__lte=datetime.datetime.today()) \
                     .order_by('-notificacion__fecha_creacion')
     if limite:
         destinatarios = destinatarios[:limite]
