@@ -95,3 +95,14 @@ def construir_notificaciones(request, limite):
             contador_notificaciones += 1
 
     return {'lista_notificaciones': lista_notificaciones, 'numero_notificaciones': contador_notificaciones}
+
+
+class NotificacionesActualizarView(AbstractEvaLoggedView):
+    def post(self, request, id):
+        try:
+            DestinatarioNotificacion.objects.filter(notificacion_id=id, usuario=request.user)\
+                .update(visto=True)
+            return JsonResponse({"Mensaje": "OK"})
+
+        except IntegrityError:
+            return JsonResponse({"Mensaje": "FAIL"})
