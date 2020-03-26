@@ -87,6 +87,7 @@ def construir_notificaciones(request, limite):
              "fecha": fecha,
              "visto": destinatario.visto,
              "id_evento": evento,
+             "modal": destinatario.notificacion.evento_desencadenador.modal,
              "url": url})
 
     contador_notificaciones = 0
