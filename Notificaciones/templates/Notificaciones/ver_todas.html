@@ -19,9 +19,10 @@
                 </div>
                 {% for notificacion in Notificaciones %}
                 <div class="divider_not "></div>
-                <div class="no-leido">
+                <div {% if not notificacion.visto  %}class="no-leido"{% endif %}>
                     <div class="m-l-20">
-                        <a href="#" class="d-flex align-items-center">
+                        <a class="d-flex align-items-center"
+                            onclick="fDetalleNotificacion('{{ notificacion.url }}', {{ notificacion.id }}, {{ notificacion.id_evento }})">
                             <span class="d-flex flex-column flex-1 ml-1">
                                 <span class="name"><b>{{ notificacion.titulo }}</b></span>
                                 <span class="msg-b fs-xs text-dark">{{ notificacion.mensaje }}</span>
