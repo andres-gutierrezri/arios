@@ -1,18 +1,24 @@
-function fDetalleNotificacion(ruta, id_notificacion, id_evento) {
-    if (ruta.indexOf('°') > -1){
-        accionesNotificacion(id_notificacion);
-        window.location = ruta.replace('°', id_evento);
-    }else {
+function fDetalleNotificacion(ruta, id_notificacion, id_evento, modal) {
+    if (ruta.indexOf('°') > -1) {
+        ruta_compuesta = ruta.replace('°', id_evento);
+    }else if (!modal){
+        ruta_compuesta = ruta
+    }else{
+        ruta_compuesta = ruta + '/' + id_evento;
+    }
+    if(modal){
         $.ajax({
-            url: ruta + '/' + id_evento,
+            url: ruta_compuesta,
             context: document.body
         }).done(function (response) {
             accionesNotificacion(id_notificacion);
             var mDetalleGeneral = $("#mDetalleGeneral");
             mDetalleGeneral.html(response);
-
             mDetalleGeneral.modal('show');
         });
+    }else {
+        accionesNotificacion(id_notificacion);
+        window.location = ruta_compuesta;
     }
 }
 

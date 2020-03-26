@@ -30,7 +30,7 @@ function fCargarNotificaciones() {
             var accionClic;
 
             accionClic = 'fDetalleNotificacion(\''+ item.url +'\',' +
-            item.id +','+ item.id_evento +')';
+            item.id +','+ item.id_evento +',' + item.modal + ')';
 
             notificaciones +=(
                 '<li class="'+ estilo +'">' +
