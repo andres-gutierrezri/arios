@@ -28,12 +28,10 @@ function fCargarNotificaciones() {
                 estilo = 'unread'
             }
             var accionClic;
-            if (item.medidas === true || item.caracteristica === true){
-                accionClic = 'accionEvento('+ item.id +')'
-            }else {
-                accionClic = 'fDetalleNotificacion(\''+ item.url +'\',' +
-                item.id +','+ item.id_evento +')'
-            }
+
+            accionClic = 'fDetalleNotificacion(\''+ item.url +'\',' +
+            item.id +','+ item.id_evento +')';
+
             notificaciones +=(
                 '<li class="'+ estilo +'">' +
                 '<a onclick="'+ accionClic +'" class="d-flex align-items-center">' +
