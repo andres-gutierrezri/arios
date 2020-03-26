@@ -1,6 +1,8 @@
 var ver_todas = $('#ver_todas');
 var not_empty = $('#not_empty');
 var tab_notificaciones = $('#tab-messages');
+var icono_not = $('#icono_not');
+var titulo_not = $('#titulo_not');
 
 $(document).ready(function () {
     fCargarNotificaciones();
@@ -11,13 +13,13 @@ function fCargarNotificaciones() {
         url: document.location.origin + "/notificaciones/notificaciones",
         context: document.body
     }).done(function (response) {
-        console.log(response);
         if (response.Mensaje === 0){
-            $('.alerta_nueva').hide()
+            icono_not.show().hide();
+            titulo_not.attr('title', 'No tienes notificaciones');
         }else {
-            $('#indicador_notificacion_lg').text(response.Mensaje);
-            $('#indicador_notificacion_sm').text(response.Mensaje + ' New');
-            $('.alerta_nueva').show()
+            icono_not.text(response.Mensaje);
+            titulo_not.attr('title', 'Tienes nuevas notifcaciones');
+            icono_not.show()
         }
         var notificaciones = "";
         response.Notificaciones.forEach(function (item) {
@@ -53,6 +55,6 @@ function fCargarNotificaciones() {
     });
 }
 
- $('#alertsDropdown').click(function () {
-     $('.alerta_nueva').hide();
+titulo_not.click(function () {
+     icono_not.hide();
  });
