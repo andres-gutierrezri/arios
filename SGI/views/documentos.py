@@ -7,6 +7,7 @@ from django.db import IntegrityError
 import os.path
 
 from Administracion.models import Proceso
+from Administracion.utils import get_id_empresa_global
 from EVA.views.index import AbstractEvaLoggedView
 from SGI.models import Documento, GrupoDocumento, Archivo
 from SGI.models.documentos import EstadoArchivo
@@ -14,7 +15,7 @@ from SGI.models.documentos import EstadoArchivo
 
 class IndexView(AbstractEvaLoggedView):
     def get(self, request, id):
-        empresa_id = request.session['empresa']['id']
+        empresa_id = get_id_empresa_global(request)
         procesos = Proceso.objects.filter(empresa_id=empresa_id)
         if procesos.filter(id=id):
             documentos = Documento.objects.filter(proceso_id=id, proceso__empresa_id=empresa_id)
@@ -36,7 +37,7 @@ class DocumentosCrearView(AbstractEvaLoggedView):
         grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
         return render(request, 'SGI/documentos/crear-editar.html',
                       datos_xa_render(self.OPCION, proceso=proceso, grupo_documento=grupo_documento,
-                                      empresa=request.session['empresa']['id']))
+                                      empresa=get_id_empresa_global(request)))
 
     def post(self, request,  id_proceso, id_grupo):
         documento = Documento.from_dictionary(request.POST)
@@ -50,7 +51,7 @@ class DocumentosCrearView(AbstractEvaLoggedView):
             documento.full_clean(exclude=['cadena_aprobacion'])
         except ValidationError as errores:
             datos = datos_xa_render(self.OPCION, documento, proceso=proceso, grupo_documento=grupo_documento,
-                                    empresa=request.session['empresa']['id'])
+                                    empresa=get_id_empresa_global(request))
             datos['errores'] = errores.message_dict
             if '__all__' in errores.message_dict:
                 for mensaje in errores.message_dict['__all__']:
@@ -75,7 +76,7 @@ class DocumentosEditarView(AbstractEvaLoggedView):
         grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
         return render(request, 'SGI/documentos/crear-editar.html',
                       datos_xa_render(self.OPCION, proceso=proceso, grupo_documento=grupo_documento,
-                                      documento=documento, empresa=request.session['empresa']['id']))
+                                      documento=documento, empresa=get_id_empresa_global(request)))
 
     def post(self, request,  id_proceso, id_grupo, id_documento):
         documento = Documento.from_dictionary(request.POST)
@@ -89,7 +90,7 @@ class DocumentosEditarView(AbstractEvaLoggedView):
             documento.full_clean(validate_unique=False, exclude=['cadena_aprobacion', 'version_actual'])
         except ValidationError as errores:
             datos = datos_xa_render(self.OPCION, documento, proceso=proceso, grupo_documento=grupo_documento,
-                                    empresa=request.session['empresa']['id'])
+                                    empresa=get_id_empresa_global(request))
             datos['errores'] = errores.message_dict
             if '__all__' in errores.message_dict:
                 for mensaje in errores.message_dict['__all__']:
@@ -140,7 +141,7 @@ class ArchivoCargarView(AbstractEvaLoggedView):
 
         return render(request, 'SGI/documentos/cargar-documento.html',
                       datos_xa_render(self.OPCION, proceso=proceso, grupo_documento=grupo_documento,
-                                      documento=documento, version=version, empresa=request.session['empresa']['id']))
+                                      documento=documento, version=version, empresa=get_id_empresa_global(request)))
 
     def post(self, request, id_proceso, id_grupo, id_documento):
         archivo = Archivo.from_dictionary(request.POST)
