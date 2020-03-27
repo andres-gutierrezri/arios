@@ -73,7 +73,7 @@ class OlvidoContrasenaView(View):
 
                 ruta = 'http://{0}/password-reset-confirm/{1}/{2}'.format(dominio, uidb64, token)
 
-                mensaje = "<p>Hola " + usuario.first_name + ", <br>" \
+                mensaje = "<p>Hola " + usuario.first_name + ", " \
                           "<p>Se ha generado una solicitud de recuperación de contraseña"\
                           "<p>Tu usuario es: " + usuario.username + "</p>" \
                           "<p>El siguiente enlace te redireccionará a la página donde puedes realizar el cambio:</p>" \
