@@ -6,6 +6,7 @@ Estimado(a) usuario: {{ nombre }}
 <div style="max-width: 800px;padding:20px;background:#ededed;border-radius:5px">
 {{ mensaje | safe }}
 <br>
+{% if token %}
 <br>
 Links para acceder a la aplicación EVA:
 <br>
@@ -13,6 +14,7 @@ Links para acceder a la aplicación EVA:
 <a target="_blank" href='http://produccion.arios-ing.com:8002/notificaciones/token/{{ token }}'>Acceso Externo</a><br>
 <br>
 <a target="_blank" href='http://192.168.1.100:8002/notificaciones/token/{{ token }}'>Acceso Local</a><br>
+{% endif %}
 </div>
 <br>
 <i>*** Si al hacer click no se abre el enlace, por favor, cópielo y péguelo en su navegador favorito.
