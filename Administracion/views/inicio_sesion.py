@@ -9,6 +9,7 @@ from django.utils.http import urlsafe_base64_encode
 from django.views import View
 from django.contrib import messages
 
+from Notificaciones.views.correo_electronico import enviar_correo
 from TalentoHumano.models import Colaborador
 
 
@@ -70,20 +71,20 @@ class OlvidoContrasenaView(View):
                 uidb64 = urlsafe_base64_encode(force_bytes(usuario.pk))
                 token = default_token_generator.make_token(usuario)
 
-                plaintext = get_template('Administracion/Autenticacion/correo/texto.txt')
-                htmly = get_template('Administracion/Autenticacion/correo/correo.html')
+                ruta = 'http://{0}/password-reset-confirm/{1}/{2}'.format(dominio, uidb64, token)
 
-                d = dict(
-                    {'dominio': dominio, 'uidb64': uidb64, 'token': token, 'nombre': usuario.first_name,
-                     'usuario': usuario.username})
+                mensaje = "<p>Hola " + usuario.first_name + ", <br>" \
+                          "<p>Se ha generado una solicitud de recuperación de contraseña"\
+                          "<p>Tu usuario es: " + usuario.username + "</p>" \
+                          "<p>El siguiente enlace te redireccionará a la página donde puedes realizar el cambio:</p>" \
+                          "<a href=" + ruta + ">Ir a la página para reestablecer la contraseña</a>"
 
-                subject, from_email, to = 'Bienvenido a Arios Ingenieria SAS', 'noreply@arios-ing.com', \
-                                          usuario.email
-                text_content = plaintext.render(d)
-                html_content = htmly.render(d)
-                msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
-                msg.attach_alternative(html_content, "text/html")
-                msg.send()
+                enviar_correo({'nombre': usuario.first_name,
+                               'mensaje': mensaje,
+                               'asunto': 'Reestablecimiento de Contraseña',
+                               'token': False,
+                               'lista_destinatarios': [usuario.email]})
+
                 messages.success(request, 'Se ha enviado un mensaje al correo {0}'.format(usuario.email) +
                                  ' con indicaciones para asignar una nueva contraseña')
                 return redirect(reverse('Administracion:iniciar-sesion'))
