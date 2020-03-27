@@ -20,8 +20,8 @@ from Notificaciones.views import views
 app_name = 'Notificaciones'
 
 urlpatterns = [
-    path('notificaciones/', views.NotificacionesView.as_view(), name='notificaciones-ver'),
-    path('notificaciones/ver-todas', views.NotificacionesVerTodasView.as_view(), name='notificaciones-ver-todas'),
-    path('notificaciones/<int:id>/actualizar', views.NotificacionesActualizarView.as_view(),
+    path('ver', views.NotificacionesView.as_view(), name='notificaciones-ver'),
+    path('ver-todas', views.NotificacionesVerTodasView.as_view(), name='notificaciones-ver-todas'),
+    path('<int:id>/actualizar', views.NotificacionesActualizarView.as_view(),
          name='notificaciones-actualizar'),
 ]

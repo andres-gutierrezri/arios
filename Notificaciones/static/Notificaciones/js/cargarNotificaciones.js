@@ -10,7 +10,7 @@ $(document).ready(function () {
 
 function fCargarNotificaciones() {
     $.ajax({
-        url: document.location.origin + "/notificaciones/notificaciones",
+        url: document.location.origin + "/notificaciones/ver",
         context: document.body
     }).done(function (response) {
         if (response.Mensaje === 0){
