@@ -64,40 +64,30 @@ def enviar_mensaje_x_email(notificaciones):
 
 def enviar_notificacion_por_email(self):
 
-    fecha = datetime.date.today() - datetime.timedelta(days=2)
-
-    emails = DestinatarioNotificacion.objects.filter(envio_email_exitoso=False,
-                                                     notificacion__fecha_creacion__gt=fecha)
+    emails = DestinatarioNotificacion.objects\
+        .filter(envio_email_exitoso=False,
+                notificacion__fecha_creacion__gt=datetime.date.today() - datetime.timedelta(days=2))
 
     notificaciones = []
     for email in emails:
-        datos = {'id_not': email.notificacion.id,
-                 'id_dest': email.id,
-                 'asunto': email.notificacion.titulo,
-                 'nombre': email.usuario.first_name,
-                 'mensaje': email.notificacion.mensaje,
-                 'destinatario': email.usuario.email,
-                 'ruta': email.notificacion.evento_desencadenador.ruta}
+        datos = {'id_not': email.notificacion.id, 'id_dest': email.id, 'asunto': email.notificacion.titulo,
+                 'nombre': email.usuario.first_name, 'mensaje': email.notificacion.mensaje,
+                 'destinatario': email.usuario.email, 'ruta': email.notificacion.evento_desencadenador.ruta}
 
-        if email.notificacion.tipo_notificacion_id == TipoNotificacion.OBLIGATORIA:
-            notificaciones.append(datos)
-
-        elif email.notificacion.tipo_notificacion_id == TipoNotificacion.INFORMATIVA:
-            correo = SeleccionDeNotificacionARecibir.objects \
-                     .filter(evento_desencadenador_id=0, usuario=email.usuario, envio_x_email=True)
-            if correo:
+        if email.notificacion.tipo_notificacion_id == TipoNotificacion.INFORMATIVA:
+            if SeleccionDeNotificacionARecibir.objects.filter(evento_desencadenador_id=0, envio_x_email=True,
+                                                              usuario=email.usuario):
                 notificaciones.append(datos)
-        elif email.notificacion.tipo_notificacion_id == TipoNotificacion.EVENTO_DEL_SISTEMA and \
-                email.notificacion.evento_desencadenador_id == EventoDesencadenador.BIENVENIDA:
-            notificaciones.append(datos)
 
-        elif email.notificacion.tipo_notificacion_id == TipoNotificacion.EVENTO_DEL_SISTEMA:
+        elif email.notificacion.tipo_notificacion_id == TipoNotificacion.EVENTO_DEL_SISTEMA and \
+                not email.notificacion.evento_desencadenador_id == EventoDesencadenador.BIENVENIDA:
             seleccion = SeleccionDeNotificacionARecibir.objects \
                         .filter(evento_desencadenador=email.notificacion.evento_desencadenador,
                                 usuario=email.usuario)
-            if seleccion:
-                if seleccion.first().envio_x_email:
-                    notificaciones.append(datos)
+            if seleccion and seleccion.first().envio_x_email:
+                notificaciones.append(datos)
+        else:
+            notificaciones.append(datos)
 
     if enviar_mensaje_x_email(notificaciones):
         for notif in notificaciones:
