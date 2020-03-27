@@ -13,7 +13,7 @@ from Notificaciones.models.models import DestinatarioNotificacion, TipoNotificac
 from Notificaciones.views.views import construir_notificaciones
 
 
-def enviar_mensaje_x_email(notificaciones):
+def construir_y_enviar_notificacion_x_email(notificaciones):
     try:
         lista_notificaciones = []
         for notif in notificaciones:
@@ -41,25 +41,28 @@ def enviar_mensaje_x_email(notificaciones):
                     lista_destinatarios.append(notif['destinatario'])
             token = get_random_string(length=30)
             TokenRutaCorreo.objects.create(token=token, ruta=ruta, destinatario_id=id_dest)
-            plantilla = get_template('Notificaciones/CorreoElectronico/correo.html')
-            contenido = dict({'nombre': nombre, 'mensaje': mensaje, 'asunto': asunto, 'token': token})
-
-            email = EmailMessage(
-                asunto,
-                plantilla.render(contenido),
-                'noreply@arios-ing.com',
-                [],
-                lista_destinatarios,
-                headers={'Message-ID': 'foo'},
-            )
-            email.content_subtype = "html"
-            email.send()
-            EmailMessage()
-
+            contenido = {'nombre': nombre, 'mensaje': mensaje, 'asunto': asunto, 'token': token, 'lista_destinatarios': lista_destinatarios}
+            enviar_correo(contenido)
         return True
 
     except:
         return False
+
+
+def enviar_correo(contenido):
+
+    plantilla = get_template('Notificaciones/CorreoElectronico/correo.html')
+    email = EmailMessage(
+        contenido['asunto'],
+        plantilla.render(contenido),
+        'noreply@arios-ing.com',
+        [],
+        contenido['lista_destinatarios'],
+        headers={'Message-ID': 'foo'},
+    )
+    email.content_subtype = "html"
+    email.send()
+    EmailMessage()
 
 
 def enviar_notificacion_por_email(self):
@@ -89,7 +92,7 @@ def enviar_notificacion_por_email(self):
         else:
             notificaciones.append(datos)
 
-    if enviar_mensaje_x_email(notificaciones):
+    if construir_y_enviar_notificacion_x_email(notificaciones):
         for notif in notificaciones:
             DestinatarioNotificacion.objects.filter(id=notif['id_dest']).update(envio_email_exitoso=True)
 
