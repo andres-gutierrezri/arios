@@ -15,7 +15,7 @@ Including another URLconf
 """
 
 from django.urls import path
-from Notificaciones.views import views
+from Notificaciones.views import views, correo_electronico
 
 app_name = 'Notificaciones'
 
@@ -24,4 +24,6 @@ urlpatterns = [
     path('ver-todas', views.NotificacionesVerTodasView.as_view(), name='notificaciones-ver-todas'),
     path('<int:id>/actualizar', views.NotificacionesActualizarView.as_view(),
          name='notificaciones-actualizar'),
+    path('enviar-email', correo_electronico.enviar_notificacion_por_email, name='envio-email'),
+    path('token/<str:datos>', correo_electronico.TokenCorreoView.as_view(), name='token-correo'),
 ]
