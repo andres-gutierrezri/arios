@@ -51,7 +51,7 @@ def crear_destinatarios(notificacion, lista_usuarios):
 class NotificacionesView(AbstractEvaLoggedView):
     def get(self, request):
         try:
-            notificaciones = construir_notificaciones(request, limite=10)
+            notificaciones = construir_notificaciones(request, limite=10, destinatarios=[])
             return JsonResponse({"Mensaje": notificaciones['numero_notificaciones'],
                                  "Notificaciones": notificaciones['lista_notificaciones']})
         except IntegrityError:
@@ -61,15 +61,18 @@ class NotificacionesView(AbstractEvaLoggedView):
 
 class NotificacionesVerTodasView(AbstractEvaLoggedView):
     def get(self, request):
-        notificaciones = construir_notificaciones(request, limite=None)
+        notificaciones = construir_notificaciones(request, limite=None, destinatarios=[])
         return render(request, 'Notificaciones/ver_todas.html',
                       {"Notificaciones": notificaciones['lista_notificaciones']})
 
 
-def construir_notificaciones(request, limite):
-    destinatarios = DestinatarioNotificacion.objects\
-                    .filter(usuario=request.user, notificacion__fecha_creacion__lte=datetime.datetime.today()) \
-                    .order_by('-notificacion__fecha_creacion')
+def construir_notificaciones(request, limite, destinatarios):
+
+    if not destinatarios:
+        destinatarios = DestinatarioNotificacion.objects \
+            .filter(usuario=request.user, notificacion__fecha_creacion__lte=datetime.datetime.today()) \
+            .order_by('-notificacion__fecha_creacion')
+
     if limite:
         destinatarios = destinatarios[:limite]
 
