@@ -2,7 +2,7 @@ var ver_todas = $('#ver_todas');
 var not_empty = $('#not_empty');
 var tab_notificaciones = $('#tab-messages');
 var icono_not = $('#icono_not');
-var titulo_not = $('#titulo_not');
+var texto_not = $('#texto_not');
 
 $(document).ready(function () {
     fCargarNotificaciones();
@@ -15,10 +15,10 @@ function fCargarNotificaciones() {
     }).done(function (response) {
         if (response.Mensaje === 0){
             icono_not.show().hide();
-            titulo_not.attr('title', 'No tienes notificaciones');
+            texto_not.text('No tienes notificaciones nuevas');
         }else {
             icono_not.text(response.Mensaje);
-            titulo_not.attr('title', 'Tienes nuevas notifcaciones');
+            texto_not.text('Tienes nuevas notifcaciones');
             icono_not.show()
         }
         var notificaciones = "";
