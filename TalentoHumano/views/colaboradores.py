@@ -117,11 +117,11 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
                       "<p>El siguiente enlace te redireccionará a la página donde puedes realizar el cambio:</p>"\
                       "<a href=" + ruta + ">Ir a la página para asignación de nueva contraseña </a>"
 
-            enviar_correo([{'nombre': colaborador.usuario.first_name,
-                            'mensaje': mensaje,
-                            'asunto': 'Bienvenido a Arios Ingenieria SAS',
-                            'token': False,
-                            'lista_destinatarios': [colaborador.usuario.email]}])
+            enviar_correo({'nombre': colaborador.usuario.first_name,
+                           'mensaje': mensaje,
+                           'asunto': 'Bienvenido a Arios Ingenieria SAS',
+                           'token': False,
+                           'lista_destinatarios': [colaborador.usuario.email]})
             return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
 
 
