@@ -53,6 +53,6 @@ function fCargarNotificaciones() {
     });
 }
 
-titulo_not.click(function () {
+$('#btn_not').click(function () {
      icono_not.hide();
  });
