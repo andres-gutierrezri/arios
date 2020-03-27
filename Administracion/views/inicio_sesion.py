@@ -23,6 +23,7 @@ class IniciarSesionView(View):
         if request.user.is_authenticated:
             return redirect(reverse('eva-index'))
         else:
+            datos = request.POST.get('datos')
             username = request.POST.get('username', '')
             password = request.POST.get('password', '')
             user = authenticate(username=username, password=password)
@@ -33,7 +34,10 @@ class IniciarSesionView(View):
                 request.session['colaborador_id'] = colaborador.id
                 request.session['empresa'] = colaborador.empresa_to_dict()
                 messages.success(request, 'Ha iniciado sesión como {0}'.format(username))
-                return redirect(reverse('eva-index'))
+                if datos:
+                    return render(request, 'EVA/index.html', {'datos': datos})
+                else:
+                    return redirect(reverse('eva-index'))
             else:
                 messages.warning(request, 'El usuario y/o la contraseña no son válidos')
                 return render(request, 'Administracion/Autenticacion/iniciar-sesion.html')
