@@ -12,6 +12,7 @@ from django.utils.http import urlsafe_base64_encode
 
 from Administracion.models import Cargo, Proceso, TipoContrato, CentroPoblado, Rango, Municipio, Departamento, \
     TipoIdentificacion
+from Notificaciones.views.correo_electronico import enviar_correo
 from TalentoHumano.models.colaboradores import ColaboradorContrato
 from EVA.views.index import AbstractEvaLoggedView
 from Notificaciones.models.models import EventoDesencadenador
@@ -107,20 +108,20 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
             dominio = request.get_host()
             uidb64 = urlsafe_base64_encode(force_bytes(colaborador.usuario.pk))
             token = default_token_generator.make_token(colaborador.usuario)
+            ruta = 'http://{0}/password-reset-confirm/{1}/{2}'.format(dominio, uidb64, token)
 
-            plaintext = get_template('Administracion/Autenticacion/correo/texto.txt')
-            htmly = get_template('Administracion/Autenticacion/correo/correo.html')
+            mensaje = "<p>Hola " + colaborador.usuario.first_name + ", <br>" \
+                      "Te estamos enviando este correo para que asignes una nueva contraseña a tu " \
+                                                                    "cuenta en Arios Ingeniería SAS.</p>" \
+                      "<p>Tu usuario es: " + colaborador.usuario.username + "</p>"\
+                      "<p>El siguiente enlace te redireccionará a la página donde puedes realizar el cambio:</p>"\
+                      "<a href=" + ruta + ">Ir a la página para asignación de nueva contraseña </a>"
 
-            d = dict({'dominio': dominio, 'uidb64': uidb64, 'token': token,
-                      'nombre': colaborador.usuario.first_name, 'usuario': colaborador.usuario.username})
-
-            subject, from_email, to = 'Bienvenido a Arios Ingenieria SAS', 'noreply@arios-ing.com', \
-                                      colaborador.usuario.email
-            text_content = plaintext.render(d)
-            html_content = htmly.render(d)
-            msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
-            msg.attach_alternative(html_content, "text/html")
-            msg.send()
+            enviar_correo([{'nombre': colaborador.usuario.first_name,
+                            'mensaje': mensaje,
+                            'asunto': 'Bienvenido a Arios Ingenieria SAS',
+                            'token': False,
+                            'lista_destinatarios': [colaborador.usuario.email]}])
             return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
 
 
