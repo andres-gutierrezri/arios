@@ -110,7 +110,7 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
             token = default_token_generator.make_token(colaborador.usuario)
             ruta = 'http://{0}/password-reset-confirm/{1}/{2}'.format(dominio, uidb64, token)
 
-            mensaje = "<p>Hola " + colaborador.usuario.first_name + ", <br>" \
+            mensaje = "<p>Hola " + colaborador.usuario.first_name + ", " \
                       "Te estamos enviando este correo para que asignes una nueva contraseña a tu " \
                                                                     "cuenta en Arios Ingeniería SAS.</p>" \
                       "<p>Tu usuario es: " + colaborador.usuario.username + "</p>"\
