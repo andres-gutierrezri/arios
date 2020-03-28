@@ -13,25 +13,25 @@
     {% block main %}
         <div class="content-wrapper">
             <div class="container-fluid">
-            <div class="panel  mx-auto mt-8" style="max-width: 50rem">
-                <div class="titulo_ver_todas">
-                    <h2>Tus Notificaciones</h2>
-                </div>
-                {% for notificacion in Notificaciones %}
-                <div class="divider_not "></div>
-                <div {% if not notificacion.visto  %}class="no-leido"{% endif %}>
-                    <div class="m-l-20">
-                        <a class="d-flex align-items-center"
-                            onclick="fDetalleNotificacion('{{ notificacion.url }}', {{ notificacion.id }}, {{ notificacion.id_evento }})">
-                            <span class="d-flex flex-column flex-1 ml-1">
-                                <span class="name"><b>{{ notificacion.titulo }}</b></span>
-                                <span class="msg-b fs-xs text-dark">{{ notificacion.mensaje }}</span>
-                                <span class="fs-nano text-muted mt-1">{{ notificacion.fecha }}</span>
-                            </span>
-                        </a>
+                <div class="panel  mx-auto mt-8" style="max-width: 50rem">
+                    <div class="titulo_ver_todas">
+                        <h2>Tus Notificaciones</h2>
                     </div>
+                    {% for notificacion in Notificaciones %}
+                    <div class="divider_not "></div>
+                    <div {% if not notificacion.visto  %}class="no-leido"{% endif %}>
+                        <div class="m-l-20">
+                            <a class="d-flex align-items-center" href="#" onclick="fDetalleNotificacion('{{ notificacion.url }}', {{ notificacion.id }}, {{ notificacion.id_evento }})">
+                                <span class="d-flex flex-column flex-1 ml-1">
+                                    <span class="name"><b>{{ notificacion.titulo }}</b></span>
+                                    <span class="msg-b fs-xs text-dark">{{ notificacion.mensaje }}</span>
+                                    <span class="fs-nano text-muted mt-1">{{ notificacion.fecha }}</span>
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
             </div>
         </div>
     {% endblock %}
