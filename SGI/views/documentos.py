@@ -80,35 +80,46 @@ class DocumentosEditarView(AbstractEvaLoggedView):
 
     def post(self, request,  id_proceso, id_grupo, id_documento):
         documento = Documento.from_dictionary(request.POST)
-        proceso = Proceso.objects.get(id=id_proceso)
-        grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
+        documento.id = id_documento
         documento.grupo_documento_id = id_grupo
         documento.proceso_id = id_proceso
-        documento.id = id_documento
+        proceso = Proceso.objects.get(id=id_proceso)
+        grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
 
         try:
-            documento.full_clean(validate_unique=False, exclude=['cadena_aprobacion', 'version_actual'])
+            documento.clean_fields(exclude=['cadena_aprobacion', 'version_actual'])
+        except ValidationError as errores:
+            datos = datos_xa_render(self.OPCION, documento, proceso=proceso, grupo_documento=grupo_documento,
+                                    empresa=get_id_empresa_global(request))
+            datos['errores'] = errores.message_dict
+
+        documento_db = Documento.objects.get(id=id_documento)
+
+        if documento_db.comparar(documento, campos=['nombre', 'codigo']):
+            messages.success(request, 'No se hicieron cambios en el documento {0}'.format(documento.nombre))
+            return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
+
+        documento_db.nombre = documento.nombre
+        documento_db.codigo = documento.codigo
+
+        try:
+            documento_db.validate_unique()
         except ValidationError as errores:
             datos = datos_xa_render(self.OPCION, documento, proceso=proceso, grupo_documento=grupo_documento,
                                     empresa=get_id_empresa_global(request))
             datos['errores'] = errores.message_dict
             if '__all__' in errores.message_dict:
                 for mensaje in errores.message_dict['__all__']:
-                    if mensaje.find("Código") > 0:
+                    if 'Código' in mensaje:
                         messages.warning(request, 'Ya existe un documento con código {0}'.format(documento.codigo))
                         break
-                    elif mensaje.find('Nombre') > 0:
+                    elif 'Nombre' in mensaje:
                         messages.warning(request, 'Ya existe un documento con nombre {0}'.format(documento.nombre))
                         break
+
             return render(request, 'SGI/documentos/crear-editar.html', datos)
 
-        documento_db = Documento.objects.get(id=id_documento)
-        if documento_db.comparar(documento, excluir=['cadena_aprobacion', 'grupo_documento', 'proceso_id',
-                                                     'version_actual']):
-            messages.success(request, 'No se hicieron cambios en el documento {0}'.format(documento.nombre))
-            return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
-
-        documento.save(update_fields=['nombre', 'codigo'])
+        documento_db.save(update_fields=['nombre', 'codigo'])
         messages.success(request, 'Se ha actualizado el documento {0}' .format(documento.nombre))
         return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
