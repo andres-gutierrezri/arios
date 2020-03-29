@@ -1,5 +1,5 @@
 {%  if perms.Financiero.view_facturaencabezado %}
-<li>
+<li {% if menu_actual == 'facturas' %} class="active" {% endif %}>
     <a href="{% url 'Financiero:factura-index' %}" title="Facturas" data-filter-tags="facturas">
         <i class="far fa-calculator"></i>
         <span class="nav-link-text" data-i18n="nav.Financiero_facturacion">Facturas</span>

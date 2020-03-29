@@ -1,18 +1,18 @@
 {%  if perms.SGI.view_documento %}
-{% for proceso in procesos %}
-<li>
-    <a href="#" title="{{ proceso.nombre }}" data-filter-tags="form plugins">
-        <i class="fal fa-cog"></i>
-        <span class="nav-link-text" data-i18n="nav.form_plugins">{{ proceso.nombre }}</span>
-    </a>
-    <ul>
-        <li>
-            <a href="{% url 'SGI:documentos-index' proceso.id  %}" title="Documentos" data-filter-tags="form plugins">
-                <i class="fal fa-file-alt"></i>
-                <span class="nav-link-text" data-i18n="nav.form_plugins">Documentos</span>
+    {% for proc in procesos %}
+        <li {% if proc.id == proceso.id %} class="active open" {% endif %}>
+            <a href="#" title="{{ proc.nombre }}" data-filter-tags="{{ proc.nombre | lower }}">
+                <i class="fal fa-cog"></i>
+                <span class="nav-link-text" >{{ proc.nombre }}</span>
             </a>
+            <ul>
+                <li {% if proc.id == proceso.id %} class="active" {% endif %}>
+                    <a href="{% url 'SGI:documentos-index' proc.id  %}" title="Documentos" data-filter-tags="{{ proc.nombre | lower }} documentos">
+                        <i class="fal fa-file-alt"></i>
+                        <span class="nav-link-text" data-i18n="nav.sgi_documentos">Documentos</span>
+                    </a>
+                </li>
+            </ul>
         </li>
-    </ul>
-</li>
-{% endfor %}
+    {% endfor %}
 {% endif %}
