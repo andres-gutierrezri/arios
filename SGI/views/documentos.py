@@ -16,11 +16,11 @@ from SGI.models.documentos import EstadoArchivo
 class IndexView(AbstractEvaLoggedView):
     def get(self, request, id):
         empresa_id = get_id_empresa_global(request)
-        procesos = Proceso.objects.filter(empresa_id=empresa_id)
+        procesos = Proceso.objects.filter(empresa_id=empresa_id).order_by('nombre')
         if procesos.filter(id=id):
-            documentos = Documento.objects.filter(proceso_id=id, proceso__empresa_id=empresa_id)
+            documentos = Documento.objects.filter(proceso_id=id, proceso__empresa_id=empresa_id).order_by('codigo')
             proceso = procesos.get(id=id)
-            grupo_documentos = GrupoDocumento.objects.filter(empresa_id=empresa_id)
+            grupo_documentos = GrupoDocumento.objects.filter(empresa_id=empresa_id).order_by('nombre')
             return render(request, 'SGI/documentos/index.html', {'documentos': documentos, 'procesos': procesos,
                                                                  'grupo_documentos': grupo_documentos,
                                                                  'proceso': proceso
@@ -235,11 +235,11 @@ def datos_xa_render(opcion: str = None, documento: Documento = None, proceso: Pr
     :return: Un diccionario con los datos.
     """
     if empresa:
-        procesos = Proceso.objects.filter(empresa_id=empresa)
+        procesos = Proceso.objects.filter(empresa_id=empresa).order_by('nombre')
     else:
-        procesos = Proceso.objects.all()
+        procesos = Proceso.objects.all().order_by('nombre')
 
-    grupos_documentos = GrupoDocumento.objects.get_xa_select_activos()
+    grupos_documentos = GrupoDocumento.objects.get_xa_select_activos().order_by('nombres')
 
     datos = {'procesos': procesos, 'grupos_documentos': grupos_documentos, 'opcion': opcion, 'version': version}
     if documento:
