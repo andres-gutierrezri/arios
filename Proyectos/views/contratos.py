@@ -16,7 +16,8 @@ class ContratoView(AbstractEvaLoggedView):
     def get(self, request):
         contratos = Contrato.objects.all()
         fecha = datetime.now()
-        return render(request, 'Proyectos/Contrato/index.html', {'contratos': contratos, 'fecha': fecha})
+        return render(request, 'Proyectos/Contrato/index.html', {'contratos': contratos, 'fecha': fecha,
+                                                                 'menu_actual': 'contratos'})
 
 
 class ContratoCrearView(AbstractEvaLoggedView):
@@ -119,7 +120,8 @@ def datos_xa_render(opcion: str, contrato: Contrato = None) -> dict:
              'empresas': empresas,
              'terceros': terceros,
              'rango_anho': rango_anho,
-             'opcion': opcion}
+             'opcion': opcion,
+             'menu_actual': 'contratos'}
     if contrato:
         datos['contrato'] = contrato
 

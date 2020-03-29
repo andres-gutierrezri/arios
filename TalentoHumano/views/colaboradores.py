@@ -12,6 +12,7 @@ from django.utils.http import urlsafe_base64_encode
 
 from Administracion.models import Cargo, Proceso, TipoContrato, CentroPoblado, Rango, Municipio, Departamento, \
     TipoIdentificacion
+from EVA.General.validacionpermisos import tiene_permisos
 from TalentoHumano.models.colaboradores import ColaboradorContrato
 from EVA.views.index import AbstractEvaLoggedView
 from Proyectos.models import Contrato
@@ -30,18 +31,23 @@ class ColaboradoresIndexView(AbstractEvaLoggedView):
         contratos = Contrato.objects.get_xa_select_activos()
         return render(request, 'TalentoHumano/Colaboradores/index.html', {'colaboradores': colaboradores,
                                                                           'contratos': contratos,
-                                                                          'id_contrato': id_contrato})
+                                                                          'id_contrato': id_contrato,
+                                                                          'menu_actual': 'colaboradores'})
 
 
 class ColaboradoresPerfilView(AbstractEvaLoggedView):
 
     def get(self, request, id):
-        colaborador = Colaborador.objects.get(id=id)
-        colaboradores = Colaborador.objects.all()[:9]
-        contratos = ColaboradorContrato.objects.filter(colaborador=colaborador)
-        return render(request, 'TalentoHumano/Colaboradores/perfil.html', {'colaborador': colaborador,
-                                                                           'contratos': contratos,
-                                                                           'colaboradores': colaboradores})
+        if request.session['colaborador_id'] != id and \
+                not tiene_permisos(request, 'TalentoHumano', ['view_colaborador'], None):
+            return redirect(reverse('eva-index'))
+        else:
+            colaborador = Colaborador.objects.get(id=id)
+            colaboradores = Colaborador.objects.all()[:9]
+            contratos = ColaboradorContrato.objects.filter(colaborador=colaborador)
+            return render(request, 'TalentoHumano/Colaboradores/perfil.html', {'colaborador': colaborador,
+                                                                               'contratos': contratos,
+                                                                               'colaboradores': colaboradores})
 
 
 class ColaboradoresCrearView(AbstractEvaLoggedView):
@@ -283,7 +289,8 @@ def datos_xa_render(opcion: str = None, colaborador: Colaborador = None) -> dict
              'tipo_contrato': tipo_contratos, 'rango': rango, 'departamentos': departamentos,
              'talla_camisa': talla_camisa, 'talla_zapatos': talla_zapatos, 'talla_pantalon': talla_pantalon,
              'tipo_identificacion': tipo_identificacion, 'opcion': opcion, 'genero': genero,
-             'contratos_colaborador': contratos_colaborador, 'grupo_sanguineo': grupo_sanguineo}
+             'contratos_colaborador': contratos_colaborador, 'grupo_sanguineo': grupo_sanguineo,
+             'menu_actual': 'colaboradores'}
 
     if colaborador:
         municipios = Municipio.objects.get_xa_select_activos() \

@@ -1,5 +1,5 @@
 {% if perms.TalentoHumano.view_entidadescafe %}
-<li>
+<li {% if menu_actual == 'entidades-cafe' %} class="active" {% endif %}>
     <a href="{% url 'TalentoHumano:entidades-cafe-index' 0 %}" title="Entidades CAFE" data-filter-tags="entidades cafe">
         <i class="far fa-hand-receiving"></i>
         <span class="nav-link-text" data-i18n="nav.talentohumano_entidades-cafe">Entidades CAFE</span>
@@ -7,7 +7,7 @@
 </li>
 {% endif%}
 {% if perms.TalentoHumano.view_colaborador %}
-<li>
+<li  {% if menu_actual == 'colaboradores' %} class="active" {% endif %}>
     <a href="{% url 'TalentoHumano:colaboradores-index' 0 %}" title="Colaboradores" data-filter-tags="Colaboradores">
         <i class="far fa-user"></i>
         <span class="nav-link-text" data-i18n="nav.talentohumano_perfil-colaboradores">Colaboradores</span>
