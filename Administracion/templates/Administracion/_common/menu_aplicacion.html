@@ -1,5 +1,5 @@
 {% if perms.Administracion.view_tercero %}
-<li>
+<li {% if menu_actual == 'terceros' %} class="active" {% endif %}>
     <a href="{% url 'Administracion:terceros' %}" title="Terceros" data-filter-tags="terceros">
         <i class="far fa-handshake"></i>
         <span class="nav-link-text" data-i18n="nav.administracion_terceros">Terceros</span>
@@ -7,13 +7,13 @@
 </li>
 {% endif %}
 {% if perms.Administracion.view_empresa %}
-    <li>
+    <li{% if menu_actual == 'empresas' %} class="active" {% endif %}>
         <a href="{% url 'Administracion:empresas' %}" title="Empresas" data-filter-tags="empresas">
             <i class="far fa-briefcase"></i>
             <span class="nav-link-text" data-i18n="nav.administracion_empresas">Empresas</span>
         </a>
     </li>
-<li style="padding-left: 15px">
+<li {% if menu_actual == 'subempresas' %} class="active" {% endif %} style="padding-left: 15px">
     <a href="{% url 'Administracion:sub-empresas' %}" title="Sub-empresas" data-filter-tags="sub-empresas">
         <i class="far fa-sitemap"></i>
         <span class="nav-link-text" data-i18n="nav.administracion_empresas">Sub-empresas</span>
