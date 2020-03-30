@@ -21,7 +21,7 @@ app_name = 'TalentoHumano'
 
 urlpatterns = [
     path('index/', talento_humano.Index.as_view(), name='index'),
-    path('entidades-cafe/<int:id_entidad>/', entidades_cafe.EntidadCAFEIndexView.as_view(),
+    path('entidades-cafe/<int:id_entidad>/index', entidades_cafe.EntidadCAFEIndexView.as_view(),
          name='entidades-cafe-index'),
     path('entidades-cafe/add', entidades_cafe.EntidadCAFECrearView.as_view(), name='entidades-cafe-crear'),
     path('entidades-cafe/<int:id>/', entidades_cafe.EntidadCAFEEditarView.as_view(), name='entidades-cafe-editar'),

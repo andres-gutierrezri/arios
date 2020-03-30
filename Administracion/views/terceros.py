@@ -20,7 +20,8 @@ class TerceroView(AbstractEvaLoggedView):
     def get(self, request):
         terceros = Tercero.objects.all()
         fecha = datetime.now()
-        return render(request, 'Administracion/Tercero/index.html', {'terceros': terceros, 'fecha': fecha})
+        return render(request, 'Administracion/Tercero/index.html', {'terceros': terceros, 'fecha': fecha,
+                                                                     'menu_actual': 'terceros'})
 
 
 class TerceroCrearView(AbstractEvaLoggedView):
@@ -135,7 +136,7 @@ def datos_xa_render(opcion: str, tercero: Tercero = None) -> dict:
     departamentos = Departamento.objects.get_xa_select_activos()
 
     datos = {'empresas': empresas, 'tipos_identificacion': tipos_identificacion, 'tipo_terceros': tipo_terceros,
-             'departamentos': departamentos, 'opcion': opcion}
+             'departamentos': departamentos, 'opcion': opcion, 'menu_actual': 'terceros'}
     if tercero:
         municipios = Municipio.objects.get_xa_select_activos()\
             .filter(departamento_id=tercero.centro_poblado.municipio.departamento_id)
