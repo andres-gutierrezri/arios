@@ -24,7 +24,8 @@ class EntidadCAFEIndexView(AbstractEvaLoggedView):
         return render(request, 'TalentoHumano/Entidades_CAFE/index.html', {'entidades_cafe': entidades_cafe,
                                                                            'fecha': fecha,
                                                                            'tipos_entidades': tipos_entidades,
-                                                                           'id_entidad': id_entidad})
+                                                                           'id_entidad': id_entidad,
+                                                                           'menu_actual': 'entidades-cafe'})
 
 
 class EntidadCAFECrearView(AbstractEvaLoggedView):
@@ -126,7 +127,7 @@ def datos_xa_render(opcion: str, entidad: EntidadesCAFE = None) -> dict:
 
     tipos_entidades = TipoEntidadesCAFE.objects.get_xa_select_activos()
 
-    datos = {'tipos_entidades': tipos_entidades, 'opcion': opcion}
+    datos = {'tipos_entidades': tipos_entidades, 'opcion': opcion, 'menu_actual': 'entidades-cafe'}
 
     if entidad:
         datos['entidad_cafe'] = entidad

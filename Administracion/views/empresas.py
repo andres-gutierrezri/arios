@@ -19,7 +19,8 @@ class EmpresaView(AbstractEvaLoggedView):
     def get(self, request):
         empresas = Empresa.objects.filter(subempresa=False)
         fecha = datetime.now()
-        return render(request, 'Administracion/Empresas/index.html', {'empresas': empresas, 'fecha': fecha})
+        return render(request, 'Administracion/Empresas/index.html', {'empresas': empresas, 'fecha': fecha,
+                                                                      'menu_actual': 'empresas'})
 
 
 class EmpresaCrearView(AbstractEvaLoggedView):
@@ -117,7 +118,7 @@ def datos_xa_render(opcion: str, empresa: Empresa = None) -> dict:
     :return: Un diccionario con los datos.
     """
 
-    datos = {'empresa': empresa, 'opcion': opcion}
+    datos = {'empresa': empresa, 'opcion': opcion, 'menu_actual': 'empresas'}
 
     return datos
 
@@ -128,14 +129,16 @@ class SubempresaView(AbstractEvaLoggedView):
         empresa_actual = Empresa.objects.get(colaborador__usuario=request.user)
         return render(request, 'Administracion/Subempresas/index.html', {'subempresas': subempresas,
                                                                          'fecha': datetime.now(),
-                                                                             'empresa_actual': empresa_actual})
+                                                                         'empresa_actual': empresa_actual,
+                                                                         'menu_actual': 'subempresas'})
 
 
 class SubempresaCrearView(AbstractEvaLoggedView):
     OPCION = 'crear'
 
     def get(self, request):
-        return render(request, 'Administracion/Subempresas/crear-editar.html', {'opcion': self.OPCION})
+        return render(request, 'Administracion/Subempresas/crear-editar.html', {'opcion': self.OPCION,
+                                                                                'menu_actual': 'subempresas'})
 
     def post(self, request):
         nombre = request.POST.get('nombre', '')
@@ -234,6 +237,6 @@ def datos_xa_render_subempresa(opcion: str, subempresa: Empresa = None) -> dict:
     :return: Un diccionario con los datos.
     """
 
-    datos = {'subempresa': subempresa, 'opcion': opcion}
+    datos = {'subempresa': subempresa, 'opcion': opcion, 'menu_actual': 'subempresas'}
 
     return datos
