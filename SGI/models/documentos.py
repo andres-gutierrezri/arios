@@ -37,6 +37,21 @@ class CadenaAprobacionEncabezado(models.Model):
         verbose_name_plural = 'Cadenas de aprobaciones encabezados'
 
 
+class CadenaAprobacionDetalle(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario', null=True,
+                                blank=False)
+    orden = models.SmallIntegerField(verbose_name='Orden', null=False, blank=False)
+    cadena_aprobacion = models.ForeignKey(CadenaAprobacionEncabezado, on_delete=models.DO_NOTHING,
+                                          verbose_name='Cadena de Aprobación', null=False, blank=False)
+
+    def __str__(self):
+        return self.usuario
+
+    class Meta:
+        verbose_name = 'Detalle de cadena de aprobación'
+        verbose_name_plural = 'Detalles de cadenas de aprobaciones'
+
+
 class Documento(models.Model, ModelDjangoExtensiones):
     objects = ManagerGeneral()
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
