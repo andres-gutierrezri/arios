@@ -15,7 +15,7 @@ Including another URLconf
 """
 
 from django.urls import path
-from SGI.views import sgi, documentos
+from SGI.views import sgi, documentos, cadena_aprobacion
 
 app_name = 'SGI'
 
@@ -31,4 +31,5 @@ urlpatterns = [
     path('procesos/<int:id_proceso>/grupos-documentos/<int:id_grupo>/documentos/<int:id_documento>',
          documentos.DocumentosEditarView.as_view(), name='documentos-editar'),
     path('documentos/<int:id>/delete', documentos.DocumentosEliminarView.as_view(), name='documentos-eliminar'),
+    path('cadenas_aprobacion', cadena_aprobacion.CadenaAprobacionView.as_view(), name='cadenas-aprobacion-ver'),
 ]
