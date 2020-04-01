@@ -20,3 +20,120 @@ class CadenaAprobacionView(AbstractEvaLoggedView):
         return render(request, 'SGI/CadenasAprobacion/index.html', {'cadenas_aprobacion': cadenas_aprobacion,
                                                                     'fecha': fecha,
                                                                     'menu_actual': 'cadenas_aprobacion'})
+
+
+class CadenaAprobacionCrearView(AbstractEvaLoggedView):
+    OPCION = 'crear'
+
+    def get(self, request):
+        return render(request, 'SGI/CadenasAprobacion/crear-editar.html', datos_xa_render(self.OPCION))
+
+    def post(self, request):
+        usuarios_seleccionados = request.POST.get('usuarios_seleccionados', '').split(',')
+        if usuarios_seleccionados[0]:
+            usuarios_seleccionados.append(request.POST.get('ultimo_usuario', '')[0])
+        else:
+            usuarios_seleccionados = request.POST.get('ultimo_usuario', '')
+
+        cadena = CadenaAprobacionEncabezado()
+        cadena.nombre = request.POST.get('nombre', '')
+        cadena.empresa_id = get_id_empresa_global(request)
+        cadena.fecha_creacion = datetime.today()
+        cadena.estado = True
+
+        try:
+            cadena.full_clean()
+        except ValidationError as errores:
+            datos = datos_xa_render(self.OPCION, cadena)
+            datos['errores'] = errores.message_dict
+            if 'nombre' in errores.message_dict:
+                for mensaje in errores.message_dict['nombre']:
+                    if mensaje.startswith('Ya existe'):
+                        messages.warning(request,
+                                         'Ya existe una cadena de aprobación con ese nombre {0}'.format(cadena.nombre))
+                        break
+            return render(request, 'SGI/CadenasAprobacion/crear-editar.html', datos)
+        cadena.save()
+
+        orden = 1
+        for usuarios in usuarios_seleccionados:
+            CadenaAprobacionDetalle.objects.create(cadena_aprobacion=cadena, usuario_id=usuarios, orden=orden)
+            orden += 1
+
+        messages.success(request, 'Se ha agregado la cadena de aprobación {0}'.format(cadena.nombre))
+        return redirect(reverse('SGI:cadenas-aprobacion-ver'))
+
+
+class CadenaAprobacionEditarView(AbstractEvaLoggedView):
+    OPCION = 'editar'
+
+    def get(self, request, id):
+        cadena = CadenaAprobacionEncabezado.objects.get(id=id)
+        if Archivo.objects.filter(cadena_aprobacion=cadena):
+            messages.warning(request, 'Esta cadena de aprobación no puede ser editata porque ya está en uso')
+            return redirect(reverse('SGI:cadenas-aprobacion-ver'))
+        return render(request, 'SGI/CadenasAprobacion/crear-editar.html', datos_xa_render(self.OPCION, cadena))
+
+    def post(self, request, id):
+        usuarios_seleccionados = request.POST.get('usuarios_seleccionados', '').split(',')
+        if usuarios_seleccionados[0]:
+            usuarios_seleccionados.append(request.POST.get('ultimo_usuario', '')[0])
+        else:
+            usuarios_seleccionados = request.POST.get('ultimo_usuario', '')[0]
+
+        cadena = CadenaAprobacionEncabezado(id=id)
+        cadena.nombre = request.POST.get('nombre', '')
+        cadena.empresa_id = get_id_empresa_global(request)
+        cadena.fecha_creacion = datetime.today()
+        cadena.estado = request.POST.get('estado', True)
+
+        try:
+            cadena.full_clean(validate_unique=False)
+        except ValidationError as errores:
+            datos = datos_xa_render(self.OPCION, cadena)
+            datos['errores'] = errores.message_dict
+            if 'nombre' in errores.message_dict:
+                for mensaje in errores.message_dict['nombre']:
+                    if mensaje.startswith('Ya existe'):
+                        messages.warning(request,
+                                         'Ya existe una cadena de aprobación con ese nombre {0}'.format(cadena.nombre))
+                        break
+            return render(request, 'SGI/CadenasAprobacion/crear-editar.html', datos)
+
+        CadenaAprobacionDetalle.objects.filter(cadena_aprobacion=cadena).delete()
+
+        cadena.save()
+        orden = 1
+        for usuarios in usuarios_seleccionados:
+            CadenaAprobacionDetalle.objects.create(cadena_aprobacion=cadena, usuario_id=usuarios, orden=orden)
+            orden += 1
+
+        messages.success(request, 'Se ha actualizado la cadena de aprobación {0}'.format(cadena.nombre))
+        return redirect(reverse('SGI:cadenas-aprobacion-ver'))
+
+
+# region Métodos de ayuda
+
+def datos_xa_render(opcion: str, cadena_aprobacion: CadenaAprobacionEncabezado = None) -> dict:
+    """
+    Datos necesarios para la creación de los html de Cadena de aprobación.
+    :param opcion: valor de la acción a realizar 'crear' o 'editar'
+    :return: Un diccionario con los datos.
+    """
+
+    colaboradores = Colaborador.objects.get_xa_select_activos()
+    contador = 1
+    selecciones = ''
+    if opcion == 'editar':
+        detalle = CadenaAprobacionDetalle.objects.filter(cadena_aprobacion=cadena_aprobacion)
+        contador = detalle.count()
+        selecciones = list(detalle.values('usuario_id', 'orden'))
+    datos = {'opcion': opcion, 'cadena': cadena_aprobacion,
+             'valores_selectores': json.dumps({'colaboradores': list(colaboradores),
+                                               'contador': contador, 'opcion': opcion, 'selecciones': selecciones})}
+
+    if cadena_aprobacion:
+        datos['cadena'] = cadena_aprobacion
+    return datos
+
+# endregion
