@@ -39,6 +39,20 @@ class CadenaAprobacionEncabezado(models.Model):
         verbose_name = 'Cadena de aprobación encabezado'
         verbose_name_plural = 'Cadenas de aprobaciones encabezados'
 
+    @staticmethod
+    def from_dictionary(datos: dict) -> 'CadenaAprobacionEncabezado':
+        """
+        Crea una instancia de Documento con los datos pasados en el diccionario.
+        :param datos: Diccionario con los datos para crear el docuemento.
+        :return: Instacia de Documento con la información especificada en el diccionario.
+        """
+        cadena_aprobacion = CadenaAprobacionEncabezado()
+        cadena_aprobacion.nombre = datos.get('nombre', '')
+        cadena_aprobacion.fecha_creacion = datetime.today()
+        cadena_aprobacion.estado = datos.get('estado', 'False') == 'True'
+
+        return cadena_aprobacion
+
 
 class CadenaAprobacionDetalle(models.Model):
     usuario = models.ForeignKey(Colaborador, on_delete=models.DO_NOTHING, verbose_name='Usuario', null=True,

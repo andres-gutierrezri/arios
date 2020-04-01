@@ -42,10 +42,8 @@ class CadenaAprobacionCrearView(AbstractEvaLoggedView):
         else:
             usuarios_seleccionados = request.POST.get('ultimo_usuario', '')
 
-        cadena = CadenaAprobacionEncabezado()
-        cadena.nombre = request.POST.get('nombre', '')
+        cadena = CadenaAprobacionEncabezado.from_dictionary(request.POST)
         cadena.empresa_id = get_id_empresa_global(request)
-        cadena.fecha_creacion = datetime.today()
         cadena.estado = True
 
         try:
@@ -85,11 +83,9 @@ class CadenaAprobacionEditarView(AbstractEvaLoggedView):
         else:
             usuarios_seleccionados = request.POST.get('ultimo_usuario', '')[0]
 
-        cadena = CadenaAprobacionEncabezado(id=id)
-        cadena.nombre = request.POST.get('nombre', '')
+        cadena = CadenaAprobacionEncabezado.from_dictionary(request.POST)
         cadena.empresa_id = get_id_empresa_global(request)
-        cadena.fecha_creacion = datetime.today()
-        cadena.estado = request.POST.get('estado', 'False') == 'True'
+        cadena.id = id
 
         try:
             cadena.full_clean(validate_unique=False)
