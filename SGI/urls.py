@@ -32,4 +32,8 @@ urlpatterns = [
          documentos.DocumentosEditarView.as_view(), name='documentos-editar'),
     path('documentos/<int:id>/delete', documentos.DocumentosEliminarView.as_view(), name='documentos-eliminar'),
     path('cadenas_aprobacion', cadena_aprobacion.CadenaAprobacionView.as_view(), name='cadenas-aprobacion-ver'),
+    path('cadenas_aprobacion/add', cadena_aprobacion.CadenaAprobacionCrearView.as_view(),
+         name='cadenas-aprobacion-crear'),
+    path('cadenas_aprobacion/<int:id>', cadena_aprobacion.CadenaAprobacionEditarView.as_view(),
+         name='cadenas-aprobacion-editar'),
 ]
