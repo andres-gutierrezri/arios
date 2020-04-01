@@ -39,6 +39,7 @@
                                                     <th>Nombre</th>
                                                     <th>Usuarios</th>
                                                     <th>Fecha de Creación</th>
+                                                    <th>Estado</th>
                                                     {% if perms.SGI.change_cadenaaprobacionencabezado or perms.SGI.delete_cadenaaprobacionencabezado %}
                                                         <th>Acción</th>
                                                     {% endif %}
@@ -50,6 +51,13 @@
                                                         <td>{{ cadenas.nombre }}</td>
                                                         <td>{% for detalle in detalles%}{% if detalle.cadena_aprobacion == cadenas %}{{ detalle.usuario.usuario.first_name }}<br>{% endif %}{% endfor %}</td>
                                                         <td>{{ cadenas.fecha_creacion|date:'Y-m-d H:i' }}</td>
+                                                        <td>
+                                                            {% if cadenas.estado == True %}
+                                                            <span class="badge badge-primary">Activo</span>
+                                                            {% else %}
+                                                            <span class="badge badge-secondary">Inactivo</span>
+                                                            {% endif %}
+                                                        </td>
                                                         {% if perms.SGI.change_cadenaaprobacionencabezado or perms.SGI.delete_cadenaaprobacionencabezado %}
                                                         <td>
                                                             {% if perms.SGI.change_cadenaaprobacionencabezado %}
