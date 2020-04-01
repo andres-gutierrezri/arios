@@ -1,6 +1,8 @@
 import json
 from datetime import datetime
 
+from django.db import IntegrityError
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib import messages
@@ -112,6 +114,26 @@ class CadenaAprobacionEditarView(AbstractEvaLoggedView):
 
         messages.success(request, 'Se ha actualizado la cadena de aprobación {0}'.format(cadena.nombre))
         return redirect(reverse('SGI:cadenas-aprobacion-ver'))
+
+
+class CadenaAprobacionEliminarView(AbstractEvaLoggedView):
+    def post(self, request, id):
+        try:
+            if Archivo.objects.filter(cadena_aprobacion=CadenaAprobacionEncabezado.objects.get(id=id)):
+                messages.warning(request, 'Esta cadena de aprobación no puede ser eliminada porque se ecuentra en uso')
+                return redirect(reverse('SGI:cadenas-aprobacion-ver'))
+
+            CadenaAprobacionDetalle.objects.filter(cadena_aprobacion_id=id).delete()
+            cadena_encabezado = CadenaAprobacionEncabezado.objects.get(id=id)
+            cadena_encabezado.delete()
+            messages.success(request, 'Se ha eliminado la cadena de aprobación {0}'.format(cadena_encabezado.nombre))
+            return JsonResponse({"Mensaje": "OK"})
+
+        except IntegrityError:
+            cadena = CadenaAprobacionEncabezado.objects.get(id=id)
+            messages.warning(request, 'No se puede eliminar la cadena de aprobación {0} porque ya se encuentra en uso.'
+                             .format(cadena.nombre))
+            return JsonResponse({"Mensaje": "No se puede eliminar"})
 
 
 # region Métodos de ayuda
