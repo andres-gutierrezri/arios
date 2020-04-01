@@ -3,7 +3,7 @@ var idBorrar = 0;
 var urlFinal;
 var rutaBorrado = $('#rutaBorrado').val();
 
-function fConfirmarEliminarDocumento(idElemento) {
+function fConfirmarEliminar(idElemento) {
 
      fSweetAlert();
     idBorrar = idElemento;
@@ -11,7 +11,7 @@ function fConfirmarEliminarDocumento(idElemento) {
 
 function fSweetAlert() {
     Swal.fire({
-        title: '¿Está seguro de eliminar este Documento?',
+        title: '¿Está seguro de eliminar este Item?',
         text: "Esta acción no se podrá revertir",
         type: 'warning',
         showCancelButton: true,
@@ -27,6 +27,8 @@ function fSweetAlert() {
                 success: function (data) {
                     if(data.Mensaje === "OK") {
                         location.reload();
+                    }else if(data.Mensaje === "ERROR-CADENA"){
+                        EVANotificacion.toast.error('Esta cadena de aprobación no puede ser eliminada porque se ecuentra en uso');
                     }
                     else {
                         EVANotificacion.toast.error('No tiene permisos para acceder a esta funcionalidad');
@@ -36,7 +38,7 @@ function fSweetAlert() {
                     location.reload();
                     Swal.fire({
                             title: "¡Error!",
-                            text: "Ha ocurrido un error eliminando el documento",
+                            text: "Ha ocurrido un error eliminando el item",
                             type: 'error',
                         });
                 }

@@ -61,7 +61,7 @@
                                                                                 <a class="far fa-custom fa-edit" style="padding-left: 10px"  href="{% url 'sgi:documentos-editar' proceso.id  grupo_documento.id documento.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
                                                                                 {% endif %}
                                                                                 {% if perms.SGI.delete_documento %}
-                                                                                <a class="far fa-custom fa-trash-alt color-danger-900" style="padding-left: 10px"  id="eliminar_{{ documento.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminarDocumento({{ documento.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+                                                                                <a class="far fa-custom fa-trash-alt color-danger-900" style="padding-left: 10px"  id="eliminar_{{ documento.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ documento.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
                                                                                 {% endif %}
                                                                             </div>
                                                                         </div>
@@ -90,7 +90,7 @@
 
 {% block scripts %}
     <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
-    <script src="{% static 'SGI/js/confirmarEliminarDocumento.js' %}"></script>
+    <script src="{% static 'SGI/js/confirmarEliminarSGI.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/miscellaneous/treeview/treeview.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js'%}"></script>
