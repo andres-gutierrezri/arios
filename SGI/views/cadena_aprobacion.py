@@ -81,7 +81,7 @@ class CadenaAprobacionEditarView(AbstractEvaLoggedView):
         if usuarios_seleccionados[0]:
             usuarios_seleccionados.append(request.POST.get('ultimo_usuario', '')[0])
         else:
-            usuarios_seleccionados = request.POST.get('ultimo_usuario', '')[0]
+            usuarios_seleccionados = request.POST.get('ultimo_usuario', '')
 
         cadena = CadenaAprobacionEncabezado.from_dictionary(request.POST)
         cadena.empresa_id = get_id_empresa_global(request)
