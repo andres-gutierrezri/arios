@@ -22,11 +22,11 @@ $(document).ready(function () {
             });
             orden += 1
         }
-        orden_anteior = orden - 1;
+        orden_anterior = orden - 1;
         if(orden > valores_selectores.colaboradores.length){
-             $("#agregar_" + (orden_anteior)).hide();
+             $("#agregar_" + (orden_anterior)).hide();
         }
-         $('#colaborador_id_' + orden_anteior).removeAttr('disabled', true);
+         $('#colaborador_id_' + orden_anterior).removeAttr('disabled', true);
         usuarios_seleccionados.val(selecciones.pop());
     }else{
         while(temp > 0){
@@ -39,8 +39,9 @@ $(document).ready(function () {
 
 function agregar() {
     var selector = $('#colaborador_id_' + contador);
-    $("#agregar_" + (contador)).hide();
-    $("#eliminar_" + (contador)).hide();
+    var contador_nuevo = contador;
+    $("#agregar_" + (contador_nuevo)).hide();
+    $("#eliminar_" + (contador_nuevo)).hide();
     selecciones.push(selector.val());
     selector.attr('disabled',true);
     if (valores_selectores.colaboradores.length > (contador)) {
