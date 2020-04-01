@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 
+from Administracion.models import Proceso
 from Administracion.utils import get_id_empresa_global
 from EVA.views.index import AbstractEvaLoggedView
 from SGI.models import CadenaAprobacionEncabezado
@@ -30,7 +31,7 @@ class CadenaAprobacionCrearView(AbstractEvaLoggedView):
     OPCION = 'crear'
 
     def get(self, request):
-        return render(request, 'SGI/CadenasAprobacion/crear-editar.html', datos_xa_render(self.OPCION))
+        return render(request, 'SGI/CadenasAprobacion/crear-editar.html', datos_xa_render(self.OPCION, request))
 
     def post(self, request):
         usuarios_seleccionados = request.POST.get('usuarios_seleccionados', '').split(',')
@@ -48,7 +49,7 @@ class CadenaAprobacionCrearView(AbstractEvaLoggedView):
         try:
             cadena.full_clean()
         except ValidationError as errores:
-            datos = datos_xa_render(self.OPCION, cadena)
+            datos = datos_xa_render(self.OPCION, request, cadena)
             datos['errores'] = errores.message_dict
             if 'nombre' in errores.message_dict:
                 for mensaje in errores.message_dict['nombre']:
@@ -86,12 +87,12 @@ class CadenaAprobacionEditarView(AbstractEvaLoggedView):
         cadena.nombre = request.POST.get('nombre', '')
         cadena.empresa_id = get_id_empresa_global(request)
         cadena.fecha_creacion = datetime.today()
-        cadena.estado = request.POST.get('estado', True)
+        cadena.estado = request.POST.get('estado', 'False') == 'True'
 
         try:
             cadena.full_clean(validate_unique=False)
         except ValidationError as errores:
-            datos = datos_xa_render(self.OPCION, cadena)
+            datos = datos_xa_render(self.OPCION, request, cadena)
             datos['errores'] = errores.message_dict
             if 'nombre' in errores.message_dict:
                 for mensaje in errores.message_dict['nombre']:
@@ -115,13 +116,14 @@ class CadenaAprobacionEditarView(AbstractEvaLoggedView):
 
 # region Métodos de ayuda
 
-def datos_xa_render(opcion: str, cadena_aprobacion: CadenaAprobacionEncabezado = None) -> dict:
+def datos_xa_render(opcion: str, request, cadena_aprobacion: CadenaAprobacionEncabezado = None) -> dict:
     """
     Datos necesarios para la creación de los html de Cadena de aprobación.
+    :param request: request del usuario
     :param opcion: valor de la acción a realizar 'crear' o 'editar'
     :return: Un diccionario con los datos.
     """
-
+    procesos = Proceso.objects.filter(empresa_id=get_id_empresa_global(request)).order_by('nombre')
     colaboradores = Colaborador.objects.get_xa_select_activos()
     contador = 1
     selecciones = ''
