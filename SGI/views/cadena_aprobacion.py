@@ -99,8 +99,8 @@ class CadenaAprobacionEditarView(AbstractEvaLoggedView):
                                          'Ya existe una cadena de aprobación con ese nombre {0}'.format(cadena.nombre))
                         break
             return render(request, 'SGI/CadenasAprobacion/crear-editar.html', datos)
-
-        CadenaAprobacionDetalle.objects.filter(cadena_aprobacion=cadena).delete()
+        if usuarios_seleccionados:
+            CadenaAprobacionDetalle.objects.filter(cadena_aprobacion=cadena).delete()
 
         cadena.save(update_fields=['nombre', 'estado'])
         orden = 1
