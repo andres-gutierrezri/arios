@@ -120,8 +120,7 @@ class CadenaAprobacionEliminarView(AbstractEvaLoggedView):
     def post(self, request, id):
         try:
             if Archivo.objects.filter(cadena_aprobacion=CadenaAprobacionEncabezado.objects.get(id=id)):
-                messages.warning(request, 'Esta cadena de aprobación no puede ser eliminada porque se ecuentra en uso')
-                return redirect(reverse('SGI:cadenas-aprobacion-ver'))
+                return JsonResponse({"Mensaje": "ERROR-CADENA"})
 
             CadenaAprobacionDetalle.objects.filter(cadena_aprobacion_id=id).delete()
             cadena_encabezado = CadenaAprobacionEncabezado.objects.get(id=id)
@@ -130,10 +129,7 @@ class CadenaAprobacionEliminarView(AbstractEvaLoggedView):
             return JsonResponse({"Mensaje": "OK"})
 
         except IntegrityError:
-            cadena = CadenaAprobacionEncabezado.objects.get(id=id)
-            messages.warning(request, 'No se puede eliminar la cadena de aprobación {0} porque ya se encuentra en uso.'
-                             .format(cadena.nombre))
-            return JsonResponse({"Mensaje": "No se puede eliminar"})
+            return JsonResponse({"Mensaje": "ERROR-CADENA"})
 
 
 # region Métodos de ayuda
