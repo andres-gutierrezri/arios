@@ -27,6 +27,7 @@ $(document).ready(function () {
              $("#agregar_" + (orden_anteior)).hide();
         }
          $('#colaborador_id_' + orden_anteior).removeAttr('disabled', true);
+        usuarios_seleccionados.val(selecciones.pop());
     }else{
         while(temp > 0){
         contenedor.append(crearSelectores(temp));
