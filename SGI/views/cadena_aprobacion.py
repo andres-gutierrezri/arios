@@ -69,10 +69,7 @@ class CadenaAprobacionEditarView(AbstractEvaLoggedView):
 
     def get(self, request, id):
         cadena = CadenaAprobacionEncabezado.objects.get(id=id)
-        if Archivo.objects.filter(cadena_aprobacion=cadena):
-            messages.warning(request, 'Esta cadena de aprobación no puede ser editata porque ya está en uso')
-            return redirect(reverse('SGI:cadenas-aprobacion-ver'))
-        return render(request, 'SGI/CadenasAprobacion/crear-editar.html', datos_xa_render(self.OPCION, cadena))
+        return render(request, 'SGI/CadenasAprobacion/crear-editar.html', datos_xa_render(self.OPCION, request, cadena))
 
     def post(self, request, id):
         usuarios_seleccionados = request.POST.get('usuarios_seleccionados', '').split(',')
@@ -126,9 +123,14 @@ def datos_xa_render(opcion: str, cadena_aprobacion: CadenaAprobacionEncabezado =
     selecciones = ''
     if opcion == 'editar':
         detalle = CadenaAprobacionDetalle.objects.filter(cadena_aprobacion=cadena_aprobacion)
-        contador = detalle.count()
-        selecciones = list(detalle.values('usuario_id', 'orden'))
-    datos = {'opcion': opcion, 'cadena': cadena_aprobacion,
+        if not Archivo.objects.filter(cadena_aprobacion=cadena_aprobacion):
+            contador = detalle.count()
+            selecciones = list(detalle.values('usuario_id', 'orden'))
+        else:
+            messages.warning(request, 'Solo es posible editar nombre y estado '
+                                      'porque esta cadena de aprobación ya se encuentra en uso.')
+
+    datos = {'opcion': opcion, 'cadena': cadena_aprobacion, 'procesos': procesos,
              'valores_selectores': json.dumps({'colaboradores': list(colaboradores),
                                                'contador': contador, 'opcion': opcion, 'selecciones': selecciones})}
 
