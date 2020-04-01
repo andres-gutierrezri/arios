@@ -48,7 +48,7 @@ class CadenaAprobacionEncabezado(models.Model):
         """
         cadena_aprobacion = CadenaAprobacionEncabezado()
         cadena_aprobacion.nombre = datos.get('nombre', '')
-        cadena_aprobacion.fecha_creacion = datetime.today()
+        cadena_aprobacion.fecha_creacion = datos.get('fecha_creacion', '')
         cadena_aprobacion.estado = datos.get('estado', 'False') == 'True'
 
         return cadena_aprobacion

@@ -45,6 +45,7 @@ class CadenaAprobacionCrearView(AbstractEvaLoggedView):
         cadena = CadenaAprobacionEncabezado.from_dictionary(request.POST)
         cadena.empresa_id = get_id_empresa_global(request)
         cadena.estado = True
+        cadena.fecha_creacion = datetime.today()
 
         try:
             cadena.full_clean()
@@ -84,11 +85,10 @@ class CadenaAprobacionEditarView(AbstractEvaLoggedView):
             usuarios_seleccionados = request.POST.get('ultimo_usuario', '')
 
         cadena = CadenaAprobacionEncabezado.from_dictionary(request.POST)
-        cadena.empresa_id = get_id_empresa_global(request)
         cadena.id = id
 
         try:
-            cadena.full_clean(validate_unique=False)
+            cadena.full_clean(validate_unique=False, exclude=['empresa', 'fecha_creacion'])
         except ValidationError as errores:
             datos = datos_xa_render(self.OPCION, request, cadena)
             datos['errores'] = errores.message_dict
@@ -102,7 +102,7 @@ class CadenaAprobacionEditarView(AbstractEvaLoggedView):
 
         CadenaAprobacionDetalle.objects.filter(cadena_aprobacion=cadena).delete()
 
-        cadena.save()
+        cadena.save(update_fields=['nombre', 'estado'])
         orden = 1
         for usuarios in usuarios_seleccionados:
             CadenaAprobacionDetalle.objects.create(cadena_aprobacion=cadena, usuario_id=usuarios, orden=orden)
