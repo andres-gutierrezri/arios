@@ -132,13 +132,62 @@ class AprobacionDocumentoView(AbstractEvaLoggedView):
     def get(self, request):
         usuario = Colaborador.objects.get(usuario=request.user)
         archivos = ResultadosAprobacion.objects.filter(usuario=usuario, usuario_anterior=EstadoArchivo.APROBADO,
-                                                       estado=None)
+                                                       estado=EstadoArchivo.PENDIENTE)
         procesos = Proceso.objects.filter(empresa_id=get_id_empresa_global(request)).order_by('nombre')
         fecha = datetime.now()
         return render(request, 'SGI/AprobacionDocumentos/index.html', {'archivos': archivos,
                                                                        'procesos': procesos,
                                                                        'menu_actual': 'aprobacion_documentos',
                                                                        'fecha': fecha})
+
+
+class AccionDocumentoView(AbstractEvaLoggedView):
+    def get(self, request, id):
+        documento = Archivo.objects.get(resultadosaprobacion=id)
+        opciones = [{'texto': 'Aprobado', 'valor': EstadoArchivo.APROBADO},
+                    {'texto': 'Rechazado', 'valor': EstadoArchivo.RECHAZADO}]
+        return render(request, 'SGI/AprobacionDocumentos/accion_documento.html', {'documento': documento,
+                                                                                  'opciones': opciones})
+
+    def post(self, request, id):
+        comentario = request.POST.get('comentario', '')
+        opcion = request.POST.get('opcion', '')
+        usuario_colaborador = Colaborador.objects.get(usuario=request.user)
+        resultado = ResultadosAprobacion.objects.get(archivo_id=id, usuario=usuario_colaborador)
+        resultado.estado = opcion
+        resultado.comentario = comentario
+        resultado.save(update_fields=['estado', 'comentario'])
+
+        cadena = CadenaAprobacionDetalle.objects.filter(cadena_aprobacion__archivo__resultadosaprobacion=resultado).order_by('orden')
+        if int(opcion) == EstadoArchivo.APROBADO:
+            siguiente = False
+            for usuario in cadena:
+                if usuario.usuario == usuario_colaborador and usuario != cadena.last() and not siguiente:
+                    siguiente = True
+                elif siguiente:
+                    usuario_siguiente = ResultadosAprobacion.objects.get(usuario=usuario.usuario, archivo_id=id)
+                    usuario_siguiente.usuario_anterior = EstadoArchivo.APROBADO
+                    usuario_siguiente.save(update_fields=['usuario_anterior'])
+                    break
+                if usuario == cadena.last() and not siguiente:
+                    archivo_nuevo = Archivo(id=id)
+                    archivo_nuevo.estado_id = EstadoArchivo.APROBADO
+                    archivo_nuevo.save(update_fields=['estado'])
+                    archivo_anterior = Archivo.objects.filter(documento=archivo_nuevo.documento,
+                                                              estado=EstadoArchivo.APROBADO)
+                    if archivo_anterior:
+                        archivo_anterior[0].estado = EstadoArchivo.OBSOLETO
+                        archivo_anterior[0].save(update_fields=['estado'])
+        else:
+            otros_usuarios = ResultadosAprobacion.objects.filter(archivo_id=id, estado=EstadoArchivo.PENDIENTE)
+            for otro_usuario in otros_usuarios:
+                otro_usuario = ResultadosAprobacion(id=otro_usuario.id)
+                otro_usuario.usuario_anterior = EstadoArchivo.RECHAZADO
+                otro_usuario.estado = EstadoArchivo.RECHAZADO
+                otro_usuario.comentario = 'Rechazado por el usuario {0}'.format(usuario_colaborador.usuario.first_name)
+                otro_usuario.save(update_fields=['usuario_anterior', 'estado', 'comentario'])
+
+        return redirect(reverse('SGI:aprobacion-documentos-ver'))
 
 
 # region Métodos de ayuda
