@@ -122,6 +122,22 @@ def input_checkbox_tag(nombre, texto_label, **kwargs):
 
 
 @register.inclusion_tag('EVA/_general_tags/_input_general_tag.html')
+def input_select_radio_tag(nombre, texto_label, opciones, **kwargs):
+
+    kwargs.pop('texto_label', None)
+    kwargs.pop('type', None)
+
+    kwargs['texto_label'] = texto_label
+    kwargs['type'] = u'radio'
+    kwargs['opciones'] = opciones
+
+    if 'class' not in kwargs:
+        kwargs['class'] = 'custom-control-input form-control'
+
+    return arma_input_general_tag(nombre, **kwargs)
+
+
+@register.inclusion_tag('EVA/_general_tags/_input_general_tag.html')
 def input_general_tag(nombre, **kwargs):
     return arma_input_general_tag(nombre, **kwargs)
 
@@ -184,6 +200,7 @@ def model_autoinput_tag(modelo, nombre_campo, incluir_label, **kwargs):
 def arma_input_general_tag(nombre, **kwargs):
     valor = kwargs.pop('value', '')
     tipo = kwargs.pop('type', u'text')
+    opciones = kwargs.pop('opciones', '')
     is_fecha = tipo == 'date'
     if is_fecha:
         tipo = 'text'
@@ -202,7 +219,7 @@ def arma_input_general_tag(nombre, **kwargs):
 
     return {'nombre': nombre, 'texto_label': texto_label, 'tipo': tipo, 'valor': valor,
             'propiedades': propiedades_to_str(kwargs), 'mensaje_validacion': mensaje_validacion, 'is_fecha': is_fecha,
-            'modal': modal}
+            'modal': modal, 'opciones': opciones}
 
 
 def get_min_decimal_string(decimal_places):
