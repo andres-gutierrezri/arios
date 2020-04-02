@@ -12,7 +12,7 @@ from Administracion.models import Proceso
 from Administracion.utils import get_id_empresa_global
 from EVA.views.index import AbstractEvaLoggedView
 from SGI.models import CadenaAprobacionEncabezado
-from SGI.models.documentos import CadenaAprobacionDetalle, Archivo
+from SGI.models.documentos import CadenaAprobacionDetalle, Archivo, ResultadosAprobacion, EstadoArchivo
 from TalentoHumano.models import Colaborador
 
 
@@ -126,6 +126,19 @@ class CadenaAprobacionEliminarView(AbstractEvaLoggedView):
 
         except IntegrityError:
             return JsonResponse({"Mensaje": "ERROR-CADENA"})
+
+
+class AprobacionDocumentoView(AbstractEvaLoggedView):
+    def get(self, request):
+        usuario = Colaborador.objects.get(usuario=request.user)
+        archivos = ResultadosAprobacion.objects.filter(usuario=usuario, usuario_anterior=EstadoArchivo.APROBADO,
+                                                       estado=None)
+        procesos = Proceso.objects.filter(empresa_id=get_id_empresa_global(request)).order_by('nombre')
+        fecha = datetime.now()
+        return render(request, 'SGI/AprobacionDocumentos/index.html', {'archivos': archivos,
+                                                                       'procesos': procesos,
+                                                                       'menu_actual': 'aprobacion_documentos',
+                                                                       'fecha': fecha})
 
 
 # region Métodos de ayuda
