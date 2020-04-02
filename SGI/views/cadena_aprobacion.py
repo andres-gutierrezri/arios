@@ -188,6 +188,11 @@ class AccionDocumentoView(AbstractEvaLoggedView):
                 otro_usuario.comentario = 'Rechazado por el usuario {0}'.format(usuario_colaborador.usuario.first_name)
                 otro_usuario.save(update_fields=['usuario_anterior', 'estado', 'comentario'])
 
+                anterior = Archivo(id=id)
+                anterior.estado_id = EstadoArchivo.RECHAZADO
+                anterior.save(update_fields=['estado'])
+
+        messages.success(request, 'Se guardaron los datos correctamente')
         return redirect(reverse('SGI:aprobacion-documentos-ver'))
 
 
