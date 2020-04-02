@@ -198,7 +198,8 @@ class Archivo(models.Model):
 class ResultadosAprobacion(models.Model):
     usuario = models.ForeignKey(Colaborador, on_delete=models.DO_NOTHING, verbose_name='Usuario', null=True,
                                 blank=False)
-    estado = models.SmallIntegerField(verbose_name='Estado', null=True, blank=False)
+    estado = models.ForeignKey(EstadoArchivo, on_delete=models.DO_NOTHING, verbose_name='Estado', null=False,
+                               blank=False)
     comentario = models.CharField(max_length=300, verbose_name='Comentario', null=True, blank=False)
     fecha = models.DateTimeField(verbose_name='Fecha', null=False, blank=False)
     archivo = models.ForeignKey(Archivo, on_delete=models.DO_NOTHING, verbose_name='Archivo', null=False, blank=False)

@@ -132,7 +132,7 @@ class AprobacionDocumentoView(AbstractEvaLoggedView):
     def get(self, request):
         usuario = Colaborador.objects.get(usuario=request.user)
         archivos = ResultadosAprobacion.objects.filter(usuario=usuario, usuario_anterior=EstadoArchivo.APROBADO,
-                                                       estado=EstadoArchivo.PENDIENTE)
+                                                       estado_id=EstadoArchivo.PENDIENTE)
         procesos = Proceso.objects.filter(empresa_id=get_id_empresa_global(request)).order_by('nombre')
         fecha = datetime.now()
         return render(request, 'SGI/AprobacionDocumentos/index.html', {'archivos': archivos,
@@ -154,7 +154,7 @@ class AccionDocumentoView(AbstractEvaLoggedView):
         opcion = request.POST.get('opcion', '')
         usuario_colaborador = Colaborador.objects.get(usuario=request.user)
         resultado = ResultadosAprobacion.objects.get(archivo_id=id, usuario=usuario_colaborador)
-        resultado.estado = opcion
+        resultado.estado_id = opcion
         resultado.comentario = comentario
         resultado.save(update_fields=['estado', 'comentario'])
 
@@ -180,11 +180,11 @@ class AccionDocumentoView(AbstractEvaLoggedView):
                         anterior.estado_id = EstadoArchivo.OBSOLETO
                         anterior.save(update_fields=['estado'])
         else:
-            otros_usuarios = ResultadosAprobacion.objects.filter(archivo_id=id, estado=EstadoArchivo.PENDIENTE)
+            otros_usuarios = ResultadosAprobacion.objects.filter(archivo_id=id, estado_id=EstadoArchivo.PENDIENTE)
             for otro_usuario in otros_usuarios:
                 otro_usuario = ResultadosAprobacion(id=otro_usuario.id)
                 otro_usuario.usuario_anterior = EstadoArchivo.RECHAZADO
-                otro_usuario.estado = EstadoArchivo.RECHAZADO
+                otro_usuario.estado_id = EstadoArchivo.RECHAZADO
                 otro_usuario.comentario = 'Rechazado por el usuario {0}'.format(usuario_colaborador.usuario.first_name)
                 otro_usuario.save(update_fields=['usuario_anterior', 'estado', 'comentario'])
 
