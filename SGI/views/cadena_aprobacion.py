@@ -170,14 +170,15 @@ class AccionDocumentoView(AbstractEvaLoggedView):
                     usuario_siguiente.save(update_fields=['usuario_anterior'])
                     break
                 if usuario == cadena.last() and not siguiente:
-                    archivo_nuevo = Archivo(id=id)
+                    archivo_nuevo = Archivo.objects.get(id=id)
                     archivo_nuevo.estado_id = EstadoArchivo.APROBADO
                     archivo_nuevo.save(update_fields=['estado'])
                     archivo_anterior = Archivo.objects.filter(documento=archivo_nuevo.documento,
-                                                              estado=EstadoArchivo.APROBADO)
+                                                              estado_id=EstadoArchivo.APROBADO)
                     if archivo_anterior:
-                        archivo_anterior[0].estado = EstadoArchivo.OBSOLETO
-                        archivo_anterior[0].save(update_fields=['estado'])
+                        anterior = Archivo(id=archivo_anterior.first().id)
+                        anterior.estado_id = EstadoArchivo.OBSOLETO
+                        anterior.save(update_fields=['estado'])
         else:
             otros_usuarios = ResultadosAprobacion.objects.filter(archivo_id=id, estado=EstadoArchivo.PENDIENTE)
             for otro_usuario in otros_usuarios:
