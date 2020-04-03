@@ -167,27 +167,26 @@ class AccionDocumentoView(AbstractEvaLoggedView):
         resultado.comentario = comentario
         resultado.save(update_fields=['estado', 'comentario'])
 
-        cadena = CadenaAprobacionDetalle.objects.filter(cadena_aprobacion__archivo__resultadosaprobacion=resultado).order_by('orden')
         if int(opcion) == EstadoArchivo.APROBADO:
-            siguiente = False
-            for usuario in cadena:
-                if usuario.usuario == usuario_colaborador and usuario != cadena.last() and not siguiente:
-                    siguiente = True
-                elif siguiente:
-                    usuario_siguiente = ResultadosAprobacion.objects.get(usuario=usuario.usuario, archivo_id=id)
-                    usuario_siguiente.usuario_anterior = EstadoArchivo.APROBADO
-                    usuario_siguiente.save(update_fields=['usuario_anterior'])
-                    break
-                if usuario == cadena.last() and not siguiente:
-                    archivo_nuevo = Archivo.objects.get(id=id)
-                    archivo_nuevo.estado_id = EstadoArchivo.APROBADO
-                    archivo_nuevo.save(update_fields=['estado'])
-                    archivo_anterior = Archivo.objects.filter(documento=archivo_nuevo.documento,
-                                                              estado_id=EstadoArchivo.APROBADO)
-                    if archivo_anterior:
-                        anterior = Archivo(id=archivo_anterior.first().id)
-                        anterior.estado_id = EstadoArchivo.OBSOLETO
-                        anterior.save(update_fields=['estado'])
+            usuario_cadena = usuarios_cadena_aprobacion(resultado.archivo, usuario_colaborador)
+            if usuario_cadena:
+                usuario_siguiente = ResultadosAprobacion.objects.get(usuario=usuario_cadena.usuario, archivo_id=id)
+                usuario_siguiente.usuario_anterior = EstadoArchivo.APROBADO
+                usuario_siguiente.save(update_fields=['usuario_anterior'])
+                enviar_notificacion_cadena(usuario_siguiente.archivo, CADENA_APROBADO)
+                enviar_notificacion_cadena(usuario_cadena, NUEVO)
+            else:
+                archivo_nuevo = Archivo.objects.get(id=id)
+                archivo_nuevo.estado_id = EstadoArchivo.APROBADO
+                archivo_nuevo.save(update_fields=['estado'])
+                archivo_anterior = Archivo.objects.filter(documento=archivo_nuevo.documento,
+                                                          estado_id=EstadoArchivo.APROBADO)
+                enviar_notificacion_cadena(archivo_nuevo, APROBADO)
+
+                if archivo_anterior:
+                    anterior = Archivo(id=archivo_anterior.first().id)
+                    anterior.estado_id = EstadoArchivo.OBSOLETO
+                    anterior.save(update_fields=['estado'])
         else:
             otros_usuarios = ResultadosAprobacion.objects.filter(archivo_id=id, estado_id=EstadoArchivo.PENDIENTE)
             for otro_usuario in otros_usuarios:
@@ -200,6 +199,7 @@ class AccionDocumentoView(AbstractEvaLoggedView):
                 anterior = Archivo(id=id)
                 anterior.estado_id = EstadoArchivo.RECHAZADO
                 anterior.save(update_fields=['estado'])
+            enviar_notificacion_cadena(Archivo.objects.get(id=id), RECHAZADO)
 
         messages.success(request, 'Se guardaron los datos correctamente')
         return redirect(reverse('SGI:aprobacion-documentos-ver'))
