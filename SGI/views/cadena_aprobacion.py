@@ -180,7 +180,7 @@ class AccionDocumentoView(AbstractEvaLoggedView):
                 archivo_nuevo.estado_id = EstadoArchivo.APROBADO
                 archivo_nuevo.save(update_fields=['estado'])
                 archivo_anterior = Archivo.objects.filter(documento=archivo_nuevo.documento,
-                                                          estado_id=EstadoArchivo.APROBADO)
+                                                          estado_id=EstadoArchivo.APROBADO).exclude(id=id)
                 enviar_notificacion_cadena(archivo_nuevo, APROBADO)
 
                 if archivo_anterior:
