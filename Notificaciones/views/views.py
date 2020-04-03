@@ -10,9 +10,15 @@ from Notificaciones.models.models import TextoNotificacionDelSistema, Notificaci
     SeleccionDeNotificacionARecibir, DestinatarioNotificacion, EventoDesencadenador
 
 
-def crear_notificacion_por_evento(id_desencadenador, id_evento):
-
-    texto = TextoNotificacionDelSistema.objects.get(evento_desencadenador_id=id_desencadenador)
+def crear_notificacion_por_evento(id_desencadenador, id_evento, contenido: {} = None):
+    usuario = []
+    if contenido:
+        texto = TextoNotificacionDelSistema()
+        texto.titulo = contenido['titulo']
+        texto.mensaje = contenido['mensaje']
+        usuario.append(contenido['usuario'])
+    else:
+        texto = TextoNotificacionDelSistema.objects.get(evento_desencadenador_id=id_desencadenador)
 
     notificacion = Notificacion.objects.create(titulo=texto.titulo,
                                                mensaje=texto.mensaje,
@@ -20,7 +26,7 @@ def crear_notificacion_por_evento(id_desencadenador, id_evento):
                                                id_evento=id_evento,
                                                evento_desencadenador_id=id_desencadenador,
                                                tipo_notificacion_id=TipoNotificacion.EVENTO_DEL_SISTEMA)
-    usuario = []
+
     if id_desencadenador == EventoDesencadenador.BIENVENIDA:
         usuario = [id_evento]
 
@@ -30,7 +36,8 @@ def crear_notificacion_por_evento(id_desencadenador, id_evento):
 def crear_destinatarios(notificacion, lista_usuarios):
 
     if notificacion.tipo_notificacion_id == TipoNotificacion.EVENTO_DEL_SISTEMA and \
-            notificacion.evento_desencadenador_id != EventoDesencadenador.BIENVENIDA:
+            notificacion.evento_desencadenador_id != EventoDesencadenador.BIENVENIDA and \
+            lista_usuarios.__len__() == 0:
         selecciones = SeleccionDeNotificacionARecibir.objects \
             .filter(evento_desencadenador=notificacion.evento_desencadenador, estado=True)
 
