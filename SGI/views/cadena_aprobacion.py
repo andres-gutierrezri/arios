@@ -11,6 +11,8 @@ from django.core.exceptions import ValidationError
 from Administracion.models import Proceso
 from Administracion.utils import get_id_empresa_global
 from EVA.views.index import AbstractEvaLoggedView
+from Notificaciones.models.models import EventoDesencadenador
+from Notificaciones.views.views import crear_notificacion_por_evento
 from SGI.models import CadenaAprobacionEncabezado
 from SGI.models.documentos import CadenaAprobacionDetalle, Archivo, ResultadosAprobacion, EstadoArchivo
 from TalentoHumano.models import Colaborador
@@ -201,6 +203,41 @@ class AccionDocumentoView(AbstractEvaLoggedView):
 
         messages.success(request, 'Se guardaron los datos correctamente')
         return redirect(reverse('SGI:aprobacion-documentos-ver'))
+
+
+def enviar_notificacion_cadena(archivo, accion):
+    if accion == NUEVO:
+        crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
+                                      {'titulo': 'Solicitud de Aprobación',
+                                       'mensaje': 'Tienes un documento pendiente para aprobación',
+                                       'usuario': archivo.usuario.usuario_id})
+    if accion == APROBADO:
+        crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
+                                      {'titulo': 'Documento Aprobado',
+                                       'mensaje': 'Tu solicitud ha sido aprobada',
+                                       'usuario': archivo.usuario.usuario_id})
+    elif accion == CADENA_APROBADO:
+        crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
+                                      {'titulo': 'Documento en aprobación',
+                                       'mensaje': 'Tu solicitud está avanzando',
+                                       'usuario': archivo.usuario.usuario_id})
+    elif accion == RECHAZADO:
+        crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
+                                      {'titulo': 'Documento Rechazado',
+                                       'mensaje': 'Tu solicitud ha sido rechazada',
+                                       'usuario': archivo.usuario.usuario_id})
+
+
+def usuarios_cadena_aprobacion(archivo, usuario_colaborador):
+    cadena = CadenaAprobacionDetalle.objects.filter(cadena_aprobacion=archivo.cadena_aprobacion).order_by('orden')
+    siguiente = False
+    for usuario in cadena:
+        if usuario.usuario == usuario_colaborador and usuario != cadena.last() and not siguiente:
+            siguiente = True
+        elif siguiente:
+            return usuario
+        if usuario == cadena.last() and not siguiente:
+            return False
 
 
 # region Métodos de ayuda
