@@ -140,6 +140,13 @@ class AprobacionDocumentoView(AbstractEvaLoggedView):
                                                                        'menu_actual': 'aprobacion_documentos',
                                                                        'fecha': fecha})
 
+# region Constantes de Accion de Documento
+NUEVO = 0
+CADENA_APROBADO = 1
+APROBADO = 2
+RECHAZADO = 3
+# endregion
+
 
 class AccionDocumentoView(AbstractEvaLoggedView):
     def get(self, request, id):
