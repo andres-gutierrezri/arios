@@ -78,7 +78,7 @@ def construir_notificaciones(request, limite, destinatarios):
     if not destinatarios:
         destinatarios = DestinatarioNotificacion.objects \
             .filter(usuario=request.user, notificacion__fecha_creacion__lte=datetime.datetime.today()) \
-            .order_by('-notificacion__fecha_creacion')
+            .order_by('-id')
 
     if limite:
         destinatarios = destinatarios[:limite]
