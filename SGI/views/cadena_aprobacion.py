@@ -14,7 +14,7 @@ from EVA.views.index import AbstractEvaLoggedView
 from Notificaciones.models.models import EventoDesencadenador
 from Notificaciones.views.views import crear_notificacion_por_evento
 from SGI.models import CadenaAprobacionEncabezado
-from SGI.models.documentos import CadenaAprobacionDetalle, Archivo, ResultadosAprobacion, EstadoArchivo
+from SGI.models.documentos import CadenaAprobacionDetalle, Archivo, ResultadosAprobacion, EstadoArchivo, Documento
 from TalentoHumano.models import Colaborador
 
 
@@ -179,6 +179,9 @@ class AccionDocumentoView(AbstractEvaLoggedView):
                 archivo_nuevo = Archivo.objects.get(id=id)
                 archivo_nuevo.estado_id = EstadoArchivo.APROBADO
                 archivo_nuevo.save(update_fields=['estado'])
+                documento = Documento(id=archivo_nuevo.documento.id)
+                documento.version_actual = archivo_nuevo.version
+                documento.save(update_fields=['version_actual'])
                 archivo_anterior = Archivo.objects.filter(documento=archivo_nuevo.documento,
                                                           estado_id=EstadoArchivo.APROBADO).exclude(id=id)
                 enviar_notificacion_cadena(archivo_nuevo, APROBADO)
