@@ -19,11 +19,13 @@ class IndexView(AbstractEvaLoggedView):
         procesos = Proceso.objects.filter(empresa_id=empresa_id).order_by('nombre')
         if procesos.filter(id=id):
             documentos = Documento.objects.filter(proceso_id=id, proceso__empresa_id=empresa_id).order_by('codigo')
+            archivos = Archivo.objects.filter(documento__proceso_id=id, estado_id=EstadoArchivo.APROBADO)
             proceso = procesos.get(id=id)
             grupo_documentos = GrupoDocumento.objects.filter(empresa_id=empresa_id).order_by('nombre')
             return render(request, 'SGI/documentos/index.html', {'documentos': documentos, 'procesos': procesos,
                                                                  'grupo_documentos': grupo_documentos,
-                                                                 'proceso': proceso
+                                                                 'proceso': proceso,
+                                                                 'archivos': archivos
                                                                  })
         else:
             return redirect(reverse('SGI:index'))
