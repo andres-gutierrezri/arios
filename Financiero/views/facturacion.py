@@ -24,7 +24,8 @@ class FacturasView(AbstractEvaLoggedView):
         facturas = FacturaEncabezado.objects.filter(empresa_id=empresa_id).exclude(estado=0).order_by('-fecha_creacion')
         borradores = FacturaEncabezado.objects.filter(estado=0, empresa_id=empresa_id).order_by('-fecha_creacion')
         return render(request, 'Financiero/Facturacion/facturas/index.html', {'facturas': facturas,
-                                                                              'borradores': borradores})
+                                                                              'borradores': borradores,
+                                                                              'menu_actual': 'facturas'})
 
 
 class FacturaCrearView(AbstractEvaLoggedView):
@@ -33,7 +34,7 @@ class FacturaCrearView(AbstractEvaLoggedView):
         impuestos = Impuesto.objects.get_xa_select_porcentaje()
 
         return render(request, 'Financiero/Facturacion/crear_factura.html',
-                      {'terceros': terceros, 'impuestos': impuestos})
+                      {'terceros': terceros, 'impuestos': impuestos, 'menu_actual': 'facturas'})
 
     @atomic
     def post(self, request):
@@ -206,7 +207,7 @@ class FacturaEditarView(AbstractEvaLoggedView):
             return redirect(reverse('Financiero:factura-index'))
 
         return render(request, 'Financiero/Facturacion/crear_factura.html',
-                      {'terceros': terceros, 'impuestos': impuestos, 'factura': factura})
+                      {'terceros': terceros, 'impuestos': impuestos, 'factura': factura, 'menu_actual': 'facturas'})
 
 
 class FacturaDetalleView(AbstractEvaLoggedView):

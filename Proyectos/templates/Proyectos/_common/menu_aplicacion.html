@@ -1,5 +1,5 @@
 {% if perms.Proyectos.view_contrato %}
-<li>
+<li {% if menu_actual == 'contratos' %} class="active" {% endif %}>
     <a href="{% url 'Proyectos:contratos' %}" title="Contratos" data-filter-tags="contratos">
         <i class="far fa-file-alt"></i>
         <span class="nav-link-text" data-i18n="nav.proyectos_contratos">Contratos</span>

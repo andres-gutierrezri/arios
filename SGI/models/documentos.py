@@ -53,12 +53,13 @@ class Documento(models.Model, ModelDjangoExtensiones):
     proceso = models.ForeignKey(Proceso, on_delete=models.DO_NOTHING, verbose_name='Proceso', null=True, blank=False)
 
     def __str__(self):
-        return self.nombre
+        return '{0} {1}'.format(self.codigo, self.nombre) +\
+               (' v{:.1f}'.format(self.version_actual) if self.version_actual != 0 else '')
 
     class Meta:
         verbose_name = 'Documento'
         verbose_name_plural = 'Documentos'
-        unique_together = ('codigo', 'version_actual', 'grupo_documento', 'proceso')
+        unique_together = ('codigo', 'grupo_documento', 'proceso'), ('nombre', 'grupo_documento', 'proceso')
 
     @staticmethod
     def from_dictionary(datos: dict) -> 'Documento':
