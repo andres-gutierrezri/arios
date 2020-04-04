@@ -200,30 +200,25 @@ class ArchivoCargarView(AbstractEvaLoggedView):
 
 class VerDocumentoView(AbstractEvaLoggedView):
     def get(self, request, id):
-        archivo = Archivo.objects.filter(id=id)
 
-        if archivo:
-            archivo = archivo.first()
-            extension = os.path.splitext(archivo.archivo.url)[1]
+        archivo = Archivo.objects.get(id=id)
+        extension = os.path.splitext(archivo.archivo.url)[1]
 
-            if extension == '.docx':
-                mime_type = 'application/msword'
-            elif extension == '.xlsx':
-                mime_type = 'application/vnd.ms-excel'
-            elif extension == '.pptx':
-                mime_type = 'application/vnd.ms-powerpoint'
-            else:
-                mime_type = 'application/pdf'
-
-            response = HttpResponse(archivo.archivo, content_type=mime_type)
-            response['Content-Disposition'] = 'inline; filename="{0} {1} v{2:.1f}{3}"'\
-                .format(archivo.documento.codigo, archivo.documento.nombre,
-                        archivo.documento.version_actual, extension)
-
-            return response
+        if extension == '.docx':
+            mime_type = 'application/msword'
+        elif extension == '.xlsx':
+            mime_type = 'application/vnd.ms-excel'
+        elif extension == '.pptx':
+            mime_type = 'application/vnd.ms-powerpoint'
         else:
-            messages.warning(request, 'Este documento no tiene archivos disponibles')
-            return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
+            mime_type = 'application/pdf'
+
+        response = HttpResponse(archivo.archivo, content_type=mime_type)
+        response['Content-Disposition'] = 'inline; filename="{0} {1} v{2:.1f}{3}"'\
+            .format(archivo.documento.codigo, archivo.documento.nombre,
+                    archivo.documento.version_actual, extension)
+
+        return response
 
 
 # region Métodos de ayuda
