@@ -27,8 +27,8 @@ function fSweetAlert() {
                 success: function (data) {
                     if(data.Mensaje === "OK") {
                         location.reload();
-                    }else if(data.Mensaje === "ERROR-CADENA"){
-                        EVANotificacion.toast.error('Esta cadena de aprobación no puede ser eliminada porque se ecuentra en uso');
+                    }else if(data.Mensaje === "ERROR"){
+                        EVANotificacion.toast.error(data.Error);
                     }
                     else {
                         EVANotificacion.toast.error('No tiene permisos para acceder a esta funcionalidad');
