@@ -161,11 +161,13 @@ class ArchivoCargarView(AbstractEvaLoggedView):
 
     def post(self, request, id_proceso, id_grupo, id_documento):
         archivo = Archivo.from_dictionary(request.POST)
-        archivo.estado_id = EstadoArchivo.APROBADO
+        archivo.estado_id = EstadoArchivo.PENDIENTE
         archivo.documento_id = id_documento
         archivo.documento.proceso.id = id_proceso
         archivo.documento.grupo_documento_id = id_grupo
         documento = Documento.objects.get(id=id_documento)
+        archivo.cadena_aprobacion = documento.cadena_aprobacion
+        archivo.usuario = Colaborador.objects.get(usuario=request.user)
 
         archivo.archivo = request.FILES.get('archivo', None)
         archivo_db = Archivo.objects.filter(documento_id=id_documento, estado=EstadoArchivo.APROBADO)
@@ -174,12 +176,9 @@ class ArchivoCargarView(AbstractEvaLoggedView):
                 messages.error(request, 'La versión del documento debe ser mayor a la actual {0}'
                                .format(documento.version_actual))
                 return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
-            for archv in archivo_db:
-                archv.estado_id = EstadoArchivo.OBSOLETO
-                archv.save(update_fields=['estado_id'])
 
         try:
-            archivo.full_clean(exclude=['cadena_aprobacion', 'hash'])
+            archivo.full_clean(exclude=['hash'])
         except ValidationError as errores:
             if 'archivo' in errores.message_dict:
                 for mensaje in errores.message_dict['archivo']:
@@ -192,8 +191,17 @@ class ArchivoCargarView(AbstractEvaLoggedView):
             return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
         archivo.save()
-        documento.version_actual = archivo.version
-        documento.save(update_fields=['version_actual'])
+        usuarios_cadena = CadenaAprobacionDetalle.objects.filter(cadena_aprobacion=archivo.cadena_aprobacion)
+        NUEVO = 0
+        for usuario in usuarios_cadena:
+            if usuario == usuarios_cadena.first():
+                usuario_anterior = EstadoArchivo.APROBADO
+            else:
+                usuario_anterior = EstadoArchivo.PENDIENTE
+            ResultadosAprobacion.objects.create(usuario=usuario.usuario, fecha=archivo.fecha_documento, archivo=archivo,
+                                                usuario_anterior=usuario_anterior, estado_id=EstadoArchivo.PENDIENTE)
+
+        enviar_notificacion_cadena(archivo, NUEVO)
         messages.success(request, 'Se ha cargado un archivo al documento {0}'.format(archivo.documento.nombre))
         return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
