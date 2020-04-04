@@ -1,14 +1,9 @@
 # coding=utf-8
 
-from __future__ import unicode_literals
-
 from django.contrib.auth.models import User
 from django.db import models
 
-from django.utils.encoding import python_2_unicode_compatible
 
-
-@python_2_unicode_compatible
 class TipoNotificacion(models.Model):
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     descripcion = models.TextField(max_length=300, verbose_name='Descripción', null=False, blank=False)
@@ -30,7 +25,6 @@ class TipoNotificacion(models.Model):
     # endregion
 
 
-@python_2_unicode_compatible
 class EventoDesencadenador(models.Model):
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     descripcion = models.TextField(max_length=300, verbose_name='Descripción', null=False, blank=False)
@@ -56,7 +50,6 @@ class EventoDesencadenador(models.Model):
     # endregion
 
 
-@python_2_unicode_compatible
 class Notificacion(models.Model):
     titulo = models.CharField(max_length=100, verbose_name='Titulo', null=False, blank=False)
     mensaje = models.TextField(max_length=300, verbose_name='Mensaje', null=False, blank=False)
@@ -79,7 +72,6 @@ class Notificacion(models.Model):
         verbose_name_plural = 'Notificaciones'
 
 
-@python_2_unicode_compatible
 class DestinatarioNotificacion(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario", null=False, blank=False)
     visto = models.BooleanField(verbose_name='Visto', null=False, blank=False)
@@ -95,7 +87,6 @@ class DestinatarioNotificacion(models.Model):
         verbose_name_plural = 'Destinatarios de Notificaciones'
 
 
-@python_2_unicode_compatible
 class SeleccionDeNotificacionARecibir(models.Model):
     evento_desencadenador = models.ForeignKey(EventoDesencadenador, on_delete=models.DO_NOTHING,
                                               verbose_name='Evento Desencadenador', null=True, blank=False)
@@ -111,7 +102,6 @@ class SeleccionDeNotificacionARecibir(models.Model):
         verbose_name_plural = 'Selecciones de Notificaciones A Recibir'
 
 
-@python_2_unicode_compatible
 class TextoNotificacionDelSistema(models.Model):
     titulo = models.CharField(max_length=100, verbose_name='Titulo', null=False, blank=False)
     mensaje = models.TextField(max_length=300, verbose_name='Mensaje', null=False, blank=False)
