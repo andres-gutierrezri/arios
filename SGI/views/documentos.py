@@ -10,7 +10,10 @@ from Administracion.models import Proceso
 from Administracion.utils import get_id_empresa_global
 from EVA.views.index import AbstractEvaLoggedView
 from SGI.models import Documento, GrupoDocumento, Archivo
-from SGI.models.documentos import EstadoArchivo
+from SGI.models.documentos import EstadoArchivo, CadenaAprobacionDetalle, ResultadosAprobacion, \
+    CadenaAprobacionEncabezado
+from SGI.views.cadena_aprobacion import enviar_notificacion_cadena
+from TalentoHumano.models import Colaborador
 
 
 class IndexView(AbstractEvaLoggedView):
@@ -50,7 +53,7 @@ class DocumentosCrearView(AbstractEvaLoggedView):
         documento.version_actual = 0.00
 
         try:
-            documento.full_clean(exclude=['cadena_aprobacion'])
+            documento.full_clean()
         except ValidationError as errores:
             datos = datos_xa_render(self.OPCION, documento, proceso=proceso, grupo_documento=grupo_documento,
                                     empresa=get_id_empresa_global(request))
@@ -89,7 +92,7 @@ class DocumentosEditarView(AbstractEvaLoggedView):
         grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
 
         try:
-            documento.clean_fields(exclude=['cadena_aprobacion', 'version_actual'])
+            documento.clean_fields(exclude=['version_actual'])
         except ValidationError as errores:
             datos = datos_xa_render(self.OPCION, documento, proceso=proceso, grupo_documento=grupo_documento,
                                     empresa=get_id_empresa_global(request))
@@ -97,13 +100,13 @@ class DocumentosEditarView(AbstractEvaLoggedView):
 
         documento_db = Documento.objects.get(id=id_documento)
 
-        if documento_db.comparar(documento, campos=['nombre', 'codigo']):
+        if documento_db.comparar(documento, campos=['nombre', 'codigo', 'cadena_aprobacion']):
             messages.success(request, 'No se hicieron cambios en el documento {0}'.format(documento.nombre))
             return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
         documento_db.nombre = documento.nombre
         documento_db.codigo = documento.codigo
-
+        documento_db.cadena_aprobacion_id = documento.cadena_aprobacion_id
         try:
             documento_db.validate_unique()
         except ValidationError as errores:
@@ -121,7 +124,7 @@ class DocumentosEditarView(AbstractEvaLoggedView):
 
             return render(request, 'SGI/documentos/crear-editar.html', datos)
 
-        documento_db.save(update_fields=['nombre', 'codigo'])
+        documento_db.save(update_fields=['nombre', 'codigo', 'cadena_aprobacion_id'])
         messages.success(request, 'Se ha actualizado el documento {0}' .format(documento.nombre))
         return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
@@ -242,9 +245,11 @@ def datos_xa_render(opcion: str = None, documento: Documento = None, proceso: Pr
     else:
         procesos = Proceso.objects.all().order_by('nombre')
 
-    grupos_documentos = GrupoDocumento.objects.get_xa_select_activos().order_by('nombres')
+    grupos_documentos = GrupoDocumento.objects.get_xa_select_activos().order_by('nombre')
+    cadenas_aprobacion = CadenaAprobacionEncabezado.objects.get_xa_select_activos().order_by('nombre')
 
-    datos = {'procesos': procesos, 'grupos_documentos': grupos_documentos, 'opcion': opcion, 'version': version}
+    datos = {'procesos': procesos, 'grupos_documentos': grupos_documentos, 'opcion': opcion, 'version': version,
+             'cadenas_aprobacion': cadenas_aprobacion}
     if documento:
         datos['documento'] = documento
     if proceso:
