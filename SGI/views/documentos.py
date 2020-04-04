@@ -194,8 +194,9 @@ class ArchivoCargarView(AbstractEvaLoggedView):
 
 
 class VerDocumentoView(AbstractEvaLoggedView):
-    def get(self, request, id_documento, id_proceso):
-        archivo = Archivo.objects.filter(documento_id=id_documento, estado_id=EstadoArchivo.APROBADO)
+    def get(self, request, id):
+        archivo = Archivo.objects.filter(id=id)
+
         if archivo:
             archivo = archivo.first()
             extension = os.path.splitext(archivo.archivo.url)[1]
