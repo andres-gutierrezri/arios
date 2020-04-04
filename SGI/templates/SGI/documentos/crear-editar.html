@@ -43,6 +43,13 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="form-group">
+                                        <div class="form-row">
+                                            <div class="col-md-6">
+                                                    {% select_tag cadenas_aprobacion 'cadena_aprobacion_id' 'Seleccione una cadena de aprobación' texto_label="Cadena de Aprobación" value=documento.cadena_aprobacion_id required="" mensaje_validacion='Por favor seleccione una cadena de aprobación' invalido=errores.cadena_aprobacion %}
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="form-row">
                                         <div >
                                             <button id="guardar" class="btn btn-primary btn-block">{% if opcion == 'editar' %} Actualizar {% else %} Agregar {% endif %}</button>
