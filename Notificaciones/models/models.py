@@ -121,7 +121,6 @@ class TextoNotificacionDelSistema(models.Model):
         verbose_name_plural = 'Textos de Notificaciones del Sistema'
 
 
-@python_2_unicode_compatible
 class TokenRutaCorreo(models.Model):
     token = models.CharField(max_length=100, verbose_name='Token', null=False, blank=False)
     ruta = models.CharField(max_length=100, verbose_name='Ruta', null=False, blank=False)
