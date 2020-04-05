@@ -47,7 +47,7 @@ def enviar_mensaje_x_email(notificaciones):
             email = EmailMessage(
                 asunto,
                 plantilla.render(contenido),
-                'noreply@arios-ing.com',
+                '"EVA" <noreply@arios-ing.com>',
                 [],
                 lista_destinatarios,
                 headers={'Message-ID': 'foo'},
