@@ -34,7 +34,7 @@ function fCargarNotificaciones() {
 
             notificaciones +=(
                 '<li class="'+ estilo +'">' +
-                '<a onclick="'+ accionClic +'" class="d-flex align-items-center">' +
+                '<a href="#" onclick="'+ accionClic +'" class="d-flex align-items-center">' +
                 '<span class="d-flex flex-column flex-1 ml-1">' +
                 '<span class="name">' + item.titulo + '</span>' +
                 '<span class="msg-b fs-xs">' + item.mensaje + '</span>' +
