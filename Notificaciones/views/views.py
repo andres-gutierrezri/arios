@@ -4,7 +4,7 @@ from django.db import IntegrityError
 from django.http import JsonResponse
 from django.shortcuts import render
 
-from EVA.General.conversiones import distancia_entre_fechas_a_texto
+from EVA.General import tiempo_transcurrido
 from EVA.views.index import AbstractEvaLoggedView
 from Notificaciones.models.models import TextoNotificacionDelSistema, Notificacion, TipoNotificacion, \
     SeleccionDeNotificacionARecibir, DestinatarioNotificacion, EventoDesencadenador
@@ -75,7 +75,7 @@ def construir_notificaciones(request, limite):
 
     lista_notificaciones = []
     for destinatario in destinatarios:
-        fecha = distancia_entre_fechas_a_texto(destinatario.notificacion.fecha_creacion)
+        fecha = tiempo_transcurrido(destinatario.notificacion.fecha_creacion)
 
         url = destinatario.notificacion.evento_desencadenador.ruta
         evento = destinatario.notificacion.id_evento
