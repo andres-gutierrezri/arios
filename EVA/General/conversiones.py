@@ -5,6 +5,7 @@ from typing import Optional
 
 import pytz
 from django.conf import settings
+from EVA.General import  app_date_now
 
 
 def string_to_date(fecha_string: str) -> Optional[datetime]:
@@ -151,7 +152,7 @@ def valor_pesos_a_letras(valor) -> str:
 
 def distancia_entre_fechas_a_texto(fecha_creacion):
 
-    dias = (date.today() - fecha_creacion.date()).days
+    dias = (app_date_now() - fecha_creacion.date()).days
 
     if dias == 0:
         fecha = 'Hoy'
