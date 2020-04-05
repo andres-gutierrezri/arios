@@ -5,6 +5,10 @@ from typing import Optional
 
 import pytz
 from django.conf import settings
+from django.utils.timesince import timesince
+from django.utils.translation import ngettext_lazy
+
+from EVA.General import app_datetime_now
 
 
 def string_to_date(fecha_string: str) -> Optional[datetime]:
@@ -147,3 +151,23 @@ def valor_pesos_a_letras(valor) -> str:
         return '{0} PESOS M/CTE'.format(numero_a_letras(parte_entera))
     else:
         return '{0} PESOS CON {1} CENTAVOS M/CTE'.format(numero_a_letras(parte_entera), numero_a_letras(parte_decimal))
+
+
+TIME_STRINGS = {
+    'year': ngettext_lazy('%d año', '%d años'),
+    'month': ngettext_lazy('%d mes', '%d meses'),
+    'week': ngettext_lazy('%d semana', '%d semanas'),
+    'day': ngettext_lazy('%d día', '%d días'),
+    'hour': ngettext_lazy('%d hora', '%d horas'),
+    'minute': ngettext_lazy('%d minuto', '%d minutos'),
+}
+
+
+def tiempo_transcurrido(fecha) -> str:
+    """
+    Utiliza django.utils.timesince.timesince() para la conversión y se calcula con
+    respecto a la fecha y hora actual.
+    :param fecha: Fecha para la cual se quiere calcular el tiempo transcurrido.
+    :return: Retorna un texto con el tiempo transcurrido en español.
+    """
+    return timesince(fecha, app_datetime_now(), False, TIME_STRINGS)
