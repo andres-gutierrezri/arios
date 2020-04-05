@@ -16,28 +16,28 @@ def agregar_eventos_desencadenadores(apps, schema_editor):
                                             ruta="/",
                                             fecha_creacion=datetime.datetime.today(), estado=True)
 
-    eventos_desencadenadores.objects.create(id=2, nombre="Creacion de Contratos",
-                                            descripcion="Creacion de Contratos",
+    eventos_desencadenadores.objects.create(id=2, nombre="Creación de Contratos",
+                                            descripcion="Creación de Contratos",
                                             ruta="/proyectos/contratos",
                                             fecha_creacion=datetime.datetime.today(), estado=True)
 
-    eventos_desencadenadores.objects.create(id=3, nombre="Creacion de Tercero",
-                                            descripcion="Creacion de Tercero",
+    eventos_desencadenadores.objects.create(id=3, nombre="Creación de Tercero",
+                                            descripcion="Creación de Tercero",
                                             ruta="/administracion/terceros",
                                             fecha_creacion=datetime.datetime.today(), estado=True)
 
-    eventos_desencadenadores.objects.create(id=4, nombre="Creacion de Empresas",
-                                            descripcion="Creacion de Empresas",
+    eventos_desencadenadores.objects.create(id=4, nombre="Creación de Empresas",
+                                            descripcion="Creación de Empresas",
                                             ruta="/administracion/empresas",
                                             fecha_creacion=datetime.datetime.today(), estado=True)
 
-    eventos_desencadenadores.objects.create(id=5, nombre="Creacion Entidades Cafe",
-                                            descripcion="Creacion Entidades Cafe",
+    eventos_desencadenadores.objects.create(id=5, nombre="Creación Entidades CAFE",
+                                            descripcion="Creación Entidades CAFE",
                                             ruta="/talento-humano/entidades-index/0",
                                             fecha_creacion=datetime.datetime.today(), estado=True)
 
-    eventos_desencadenadores.objects.create(id=6, nombre="Creacion de Colaboradores",
-                                            descripcion="Creacion de Colaboradores",
+    eventos_desencadenadores.objects.create(id=6, nombre="Creación de Colaboradores",
+                                            descripcion="Creación de Colaboradores",
                                             ruta="/talento-humano/colaboradores-index/0",
                                             fecha_creacion=datetime.datetime.today(), estado=True)
 
@@ -50,24 +50,24 @@ def textos_eventos_desencadenadores(apps, schema_editor):
                           mensaje="Bienvenido a EVA",
                           evento_desencadenador_id=1)
 
-    textos.objects.create(titulo="Creacion de Contratos",
-                          mensaje="Creacion de Contratos",
+    textos.objects.create(titulo="Creación de Contratos",
+                          mensaje="Creación de Contratos",
                           evento_desencadenador_id=2)
 
-    textos.objects.create(titulo="Creacion de Tercero",
-                          mensaje="Creacion de Tercero",
+    textos.objects.create(titulo="Creación de Tercero",
+                          mensaje="Creación de Tercero",
                           evento_desencadenador_id=3)
 
-    textos.objects.create(titulo="Creacion de Empresas",
-                          mensaje="Creacion de Empresas",
+    textos.objects.create(titulo="Creación de Empresas",
+                          mensaje="Creación de Empresas",
                           evento_desencadenador_id=4)
 
-    textos.objects.create(titulo="Creacion Entidades Cafe",
-                          mensaje="Creacion Entidades Cafe",
+    textos.objects.create(titulo="Creación Entidades CAFE",
+                          mensaje="Creación Entidades CAFE",
                           evento_desencadenador_id=5)
 
-    textos.objects.create(titulo="Creacion de Colaboradores",
-                          mensaje="Creacion de Colaboradores",
+    textos.objects.create(titulo="Creación de Colaboradores",
+                          mensaje="Creación de Colaboradores",
                           evento_desencadenador_id=6)
 
 
@@ -77,18 +77,18 @@ def tipos_de_notificaciones(apps, schema_editor):
 
     tipo_notificacion.objects.create(id=1,
                                      nombre="Evento del Sistema",
-                                     descripcion="Tipo de notificacion que se genera con eventos del sistema",
+                                     descripcion="Tipo de notificación que se genera con eventos del sistema",
                                      estado=True)
 
     tipo_notificacion.objects.create(id=2,
                                      nombre="Obligatoria",
-                                     descripcion="Tipo de notificacion que crea el administrador y que la "
+                                     descripcion="Tipo de notificación que crea el administrador y que la "
                                                  "establece de tipo obligatoria",
                                      estado=True)
 
     tipo_notificacion.objects.create(id=3,
                                      nombre="Informativa",
-                                     descripcion="Tipo de notificacion informativa",
+                                     descripcion="Tipo de notificación informativa",
                                      estado=True)
 
 
