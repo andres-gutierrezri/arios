@@ -119,3 +119,18 @@ class TextoNotificacionDelSistema(models.Model):
     class Meta:
         verbose_name = 'Texto de Notificación del Sistema'
         verbose_name_plural = 'Textos de Notificaciones del Sistema'
+
+
+class TokenRutaCorreo(models.Model):
+    token = models.CharField(max_length=100, verbose_name='Token', null=False, blank=False)
+    ruta = models.CharField(max_length=100, verbose_name='Ruta', null=False, blank=False)
+    activo = models.BooleanField(verbose_name='Activo', null=False, blank=False, default=True)
+    destinatario = models.ForeignKey(DestinatarioNotificacion, on_delete=models.DO_NOTHING,
+                                     verbose_name="Destinatario", null=False, blank=False)
+
+    def __str__(self):
+        return self.token
+
+    class Meta:
+        verbose_name = 'Token Ruta Correo'
+        verbose_name_plural = 'Tokens Rutas Correos'

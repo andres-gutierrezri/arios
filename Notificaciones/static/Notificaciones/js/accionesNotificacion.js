@@ -24,7 +24,7 @@ function fDetalleNotificacion(ruta, id_notificacion, id_evento, modal) {
 
 function accionesNotificacion(id_notificacion){
     $.ajax({
-            url: document.location.origin + '/notificaciones/notificaciones/'+ id_notificacion + '/actualizar',
+            url: document.location.origin + '/notificaciones/'+ id_notificacion + '/actualizar',
             type: 'POST',
             context: document.body,
             success: function (data) {
