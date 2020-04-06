@@ -28,8 +28,8 @@ function accionesNotificacion(id_notificacion){
             type: 'POST',
             context: document.body,
             success: function (data) {
-                if(data.Mensaje === "FAIL") {
-                    console.log(data.Mensaje);
+                if(data.estado === "error") {
+                    console.log(data.mensaje);
                 }
             },
             failure: function (errMsg) {

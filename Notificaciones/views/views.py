@@ -51,11 +51,11 @@ class NotificacionesView(AbstractEvaLoggedView):
     def get(self, request):
         try:
             notificaciones = construir_notificaciones(request, limite=10, destinatarios=[])
-            return JsonResponse({"Mensaje": notificaciones['numero_notificaciones'],
-                                 "Notificaciones": notificaciones['lista_notificaciones']})
+            return JsonResponse({"estado": "OK",
+                                 "datos": {"cantidad": notificaciones['numero_notificaciones'],
+                                           "Notificaciones": notificaciones['lista_notificaciones']}})
         except IntegrityError:
-
-            return JsonResponse({"Mensaje": "Error interno del servidor", "Notificaciones": []})
+            return JsonResponse({"estado": "error",  "Mensaje": "Error interno del servidor", "Notificaciones": []})
 
 
 class NotificacionesVerTodasView(AbstractEvaLoggedView):
@@ -105,7 +105,7 @@ class NotificacionesActualizarView(AbstractEvaLoggedView):
         try:
             DestinatarioNotificacion.objects.filter(notificacion_id=id, usuario=request.user)\
                 .update(visto=True)
-            return JsonResponse({"Mensaje": "OK"})
+            return JsonResponse({"estado": "OK"})
 
         except IntegrityError:
-            return JsonResponse({"Mensaje": "FAIL"})
+            return JsonResponse({"estado": "error", "mensaje": 'Ha ocurrido un error al actualizar la notificación'})
