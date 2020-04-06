@@ -54,7 +54,7 @@ class EventoDesencadenador(models.Model):
 class Notificacion(models.Model):
     titulo = models.CharField(max_length=100, verbose_name='Título', null=False, blank=False)
     mensaje = models.TextField(max_length=300, verbose_name='Mensaje', null=False, blank=False)
-    fecha_creacion = models.DateTimeField(verbose_name='Fecha de Creación', null=False,
+    fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False,
                                           blank=False, )
     tipo_notificacion = models.ForeignKey(TipoNotificacion, on_delete=models.DO_NOTHING,
                                           verbose_name='Tipo Notificación', null=True, blank=False)

@@ -16,7 +16,6 @@ def crear_notificacion_por_evento(id_desencadenador, id_evento):
 
     notificacion = Notificacion.objects.create(titulo=texto.titulo,
                                                mensaje=texto.mensaje,
-                                               fecha_creacion=datetime.datetime.today(),
                                                id_evento=id_evento,
                                                evento_desencadenador_id=id_desencadenador,
                                                tipo_notificacion_id=TipoNotificacion.EVENTO_DEL_SISTEMA)
