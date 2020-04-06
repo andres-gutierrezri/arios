@@ -4,7 +4,7 @@ from django.db import IntegrityError
 from django.http import JsonResponse
 from django.shortcuts import render
 
-from EVA.General import tiempo_transcurrido
+from EVA.General import tiempo_transcurrido, app_datetime_now, app_date_now
 from EVA.views.index import AbstractEvaLoggedView
 from Notificaciones.models.models import TextoNotificacionDelSistema, Notificacion, TipoNotificacion, \
     SeleccionDeNotificacionARecibir, DestinatarioNotificacion, EventoDesencadenador
@@ -69,7 +69,7 @@ def construir_notificaciones(request, limite, destinatarios):
 
     if not destinatarios:
         destinatarios = DestinatarioNotificacion.objects \
-            .filter(usuario=request.user, notificacion__fecha_creacion__lte=datetime.datetime.today()) \
+            .filter(usuario=request.user, notificacion__fecha_creacion__lte=app_datetime_now()) \
             .order_by('-notificacion__fecha_creacion')
 
     if limite:
@@ -94,7 +94,7 @@ def construir_notificaciones(request, limite, destinatarios):
 
     contador_notificaciones = 0
     for dest in destinatarios:
-        if not dest.visto and dest.notificacion.fecha_creacion.date() <= datetime.date.today():
+        if not dest.visto and dest.notificacion.fecha_creacion.date() <= app_date_now():
             contador_notificaciones += 1
 
     return {'lista_notificaciones': lista_notificaciones, 'numero_notificaciones': contador_notificaciones}
