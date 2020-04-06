@@ -55,7 +55,7 @@ def enviar_correo(contenido):
     email = EmailMessage(
         contenido['asunto'],
         plantilla.render(contenido),
-        '"EVA" <noreply@arios-ing.com>'
+        '"EVA" <noreply@arios-ing.com>',
         [],
         contenido['lista_destinatarios'],
         headers={'Message-ID': 'foo'},
