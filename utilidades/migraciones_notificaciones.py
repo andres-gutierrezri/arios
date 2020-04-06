@@ -37,13 +37,13 @@ def agregar_eventos_desencadenadores(apps, schema_editor):
 
     eventos_desencadenadores.objects.create(id=5, nombre="Creación Entidades CAFE",
                                             descripcion="Creación Entidades CAFE",
-                                            ruta="/talento-humano/entidades-index/0",
+                                            ruta="/talento-humano/entidades-cafe/0/index",
                                             fecha_creacion=datetime.datetime.today(),
                                             estado=True, modal=False)
 
     eventos_desencadenadores.objects.create(id=6, nombre="Creación de Colaboradores",
                                             descripcion="Creación de Colaboradores",
-                                            ruta="/talento-humano/colaboradores-index/0",
+                                            ruta="/talento-humano/colaboradores/contratos/0",
                                             fecha_creacion=datetime.datetime.today(),
                                             estado=True, modal=False)
 
