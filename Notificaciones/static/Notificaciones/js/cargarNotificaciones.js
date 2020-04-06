@@ -1,8 +1,9 @@
-var ver_todas = $('#ver_todas');
-var not_empty = $('#not_empty');
-var tab_notificaciones = $('#tab-messages');
-var icono_not = $('#icono_not');
-var texto_not = $('#texto_not');
+'use strict';
+let ver_todas = $('#ver_todas');
+let not_empty = $('#not_empty');
+let tab_notificaciones = $('#tab-messages');
+let icono_not = $('#icono_not');
+let texto_not = $('#texto_not');
 
 $(document).ready(function () {
     fCargarNotificaciones();
@@ -21,13 +22,13 @@ function fCargarNotificaciones() {
             texto_not.text('Tienes nuevas notifcaciones');
             icono_not.show()
         }
-        var notificaciones = "";
+        let notificaciones = "";
         response.Notificaciones.forEach(function (item) {
-            var estilo = 'read';
+            let estilo = 'read';
             if (!item.visto) {
                 estilo = 'unread'
             }
-            var accionClic;
+            let accionClic;
 
             accionClic = 'fDetalleNotificacion(\''+ item.url +'\',' +
             item.id +','+ item.id_evento +',' + item.modal + ')';
