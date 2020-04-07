@@ -52,28 +52,29 @@ def textos_eventos_desencadenadores(apps, schema_editor):
 
     textos = apps.get_model('Notificaciones', 'TextoNotificacionDelSistema')
 
-    textos.objects.create(titulo="Bienvenido a EVA",
-                          mensaje="Bienvenido a EVA",
+    textos.objects.create(titulo="Bienvenido a EVA!",
+                          mensaje="Hola {0}, Le damos la bienvenida a EVA, "
+                                  "una aplicación desarrollada por Arios Ingeniería.",
                           evento_desencadenador_id=1)
 
-    textos.objects.create(titulo="Creación de Contratos",
-                          mensaje="Creación de Contratos",
+    textos.objects.create(titulo="Hay un nuevo Contrato!",
+                          mensaje="Se ha creado el contrato {0}, haz clic aquí para verlo.",
                           evento_desencadenador_id=2)
 
-    textos.objects.create(titulo="Creación de Tercero",
-                          mensaje="Creación de Tercero",
+    textos.objects.create(titulo="Hay un Tercero nuevo!",
+                          mensaje="Se ha creado el tercero {0}, haz clic aquí para verlo.",
                           evento_desencadenador_id=3)
 
-    textos.objects.create(titulo="Creación de Empresas",
-                          mensaje="Creación de Empresas",
+    textos.objects.create(titulo="Hay una nueva Empresa!",
+                          mensaje="Se ha creado la empresa {0}, haz clic aquí para verla.",
                           evento_desencadenador_id=4)
 
-    textos.objects.create(titulo="Creación Entidades CAFE",
-                          mensaje="Creación Entidades CAFE",
+    textos.objects.create(titulo="Hay una nueva Entidad CAFE!",
+                          mensaje="Se ha creado la entidad CAFE {0}, haz clic aquí para verla.",
                           evento_desencadenador_id=5)
 
-    textos.objects.create(titulo="Creación de Colaboradores",
-                          mensaje="Creación de Colaboradores",
+    textos.objects.create(titulo="Hay un nuevo Colaborador!",
+                          mensaje="Se ha creado el colaborador {0}, haz clic aquí para verlo.",
                           evento_desencadenador_id=6)
 
 
