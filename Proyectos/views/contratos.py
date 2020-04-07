@@ -101,7 +101,7 @@ class ContratoEliminarView(AbstractEvaLoggedView):
             return JsonResponse({"estado": "OK"})
 
         except IntegrityError:
-            return JsonResponse({"estado": "error", "mensaje": "Este contrato no se puede eliminar"
+            return JsonResponse({"estado": "error", "mensaje": "Este contrato no se puede eliminar "
                                                                "porque ya está siendo usado."})
 
 
