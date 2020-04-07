@@ -41,6 +41,11 @@ def agregar_eventos_desencadenadores(apps, schema_editor):
                                             ruta="/talento-humano/colaboradores-index/0",
                                             fecha_creacion=datetime.datetime.today(), estado=True)
 
+    eventos_desencadenadores.objects.create(id=8, nombre="Cadenas de Aprobación",
+                                            descripcion="Cadenas de Aprobación",
+                                            ruta="/sgi/aprobacion_documentos",
+                                            fecha_creacion=datetime.datetime.today(), estado=True)
+
 
 def textos_eventos_desencadenadores(apps, schema_editor):
 
