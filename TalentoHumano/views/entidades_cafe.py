@@ -106,13 +106,13 @@ class EntidadCAFEEliminarView(AbstractEvaLoggedView):
             entidad_cafe.delete()
             messages.success(request, 'Se ha eliminado la  {0}'.format(entidad_cafe.tipo_entidad) + ' ' +
                              '{0}'.format(entidad_cafe.nombre))
-            return JsonResponse({"Mensaje": "OK"})
+            return JsonResponse({"estado": "OK"})
 
         except IntegrityError:
             return JsonResponse({"estado": "error",
-                                 "mensaje": "No se puede eliminar el colaborador {0} con identificación {1} porque ya"
-                                            " se encuentra asociado a otro módulo".format(entidad_cafe.tipo_entidad,
-                                                                                          entidad_cafe.nombre)})
+                                 "mensaje": "No se puede eliminar la {0} {1} porque ya "
+                                            "se encuentra asociado a otro módulo".format(entidad_cafe.tipo_entidad,
+                                                                                         entidad_cafe.nombre)})
 
 # region Métodos de ayuda
 
