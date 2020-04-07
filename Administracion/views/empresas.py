@@ -97,17 +97,16 @@ class EmpresaEditarView(AbstractEvaLoggedView):
 
 class EmpresaEliminarView(AbstractEvaLoggedView):
     def post(self, request, id):
-        empresa = None
+        empresa = Empresa.objects.get(id=id)
         try:
-            empresa = Empresa.objects.get(id=id)
             empresa.delete()
             messages.success(request, 'Se ha eliminado la empresa {0}'.format(empresa.nombre))
-            return JsonResponse({"Mensaje": "OK"})
+            return JsonResponse({"estado": "OK"})
 
         except IntegrityError:
-            messages.warning(request, 'No se puede eliminar la empresa {0}'
-                                      ' porque ya se encuentra asociado a otros módulos'.format(empresa.nombre))
-            return JsonResponse({"Mensaje": "No se puede eliminar"})
+            return JsonResponse({"estado": "error",
+                                 "mensaje": 'No se puede eliminar la empresa {0} '
+                                            'porque ya se encuentra asociado a otros módulos'.format(empresa.nombre)})
 
 
 def datos_xa_render(opcion: str, empresa: Empresa = None) -> dict:
@@ -216,17 +215,16 @@ class SubempresaEditarView(AbstractEvaLoggedView):
 
 class SubEmpresaEliminarView(AbstractEvaLoggedView):
     def post(self, request, id):
+        subempresa = Empresa.objects.get(id=id)
         try:
-            subempresa = Empresa.objects.get(id=id)
             subempresa.delete()
             messages.success(request, 'Se ha eliminado la sub-empresa {0}'.format(subempresa.nombre))
-            return JsonResponse({"Mensaje": "OK"})
+            return JsonResponse({"estado": "OK"})
 
         except IntegrityError:
-            subempresa = Empresa.objects.get(id=id)
-            messages.warning(request, 'No se puede eliminar la empresa {0}'.format(subempresa.nombre) +
-                             ' porque ya se encuentra asociado a otros módulos')
-            return JsonResponse({"Mensaje": "No se puede eliminar"})
+            return JsonResponse({"estado": "error",
+                                 "mensaje": 'No se puede eliminar la empresa {0} porque ya se '
+                                            'encuentra asociado a otros módulos'.format(subempresa.nombre)})
 
 
 def datos_xa_render_subempresa(opcion: str, subempresa: Empresa = None) -> dict:
