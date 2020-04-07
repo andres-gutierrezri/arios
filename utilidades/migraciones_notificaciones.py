@@ -47,6 +47,12 @@ def agregar_eventos_desencadenadores(apps, schema_editor):
                                             fecha_creacion=datetime.datetime.today(),
                                             estado=True, modal=False)
 
+    eventos_desencadenadores.objects.create(id=7, nombre="Creación de SubEmpresa",
+                                            descripcion="Creación de SubEmpresa",
+                                            ruta="/administracion/sub-empresas",
+                                            fecha_creacion=datetime.datetime.today(),
+                                            estado=True, modal=False)
+
 
 def textos_eventos_desencadenadores(apps, schema_editor):
 
@@ -76,6 +82,10 @@ def textos_eventos_desencadenadores(apps, schema_editor):
     textos.objects.create(titulo="Hay un nuevo Colaborador!",
                           mensaje="Se ha creado el colaborador {0}, haz clic aquí para verlo.",
                           evento_desencadenador_id=6)
+
+    textos.objects.create(titulo="Hay una nueva Subempresa!",
+                          mensaje="Se ha creado la subempresa {0}, haz clic aquí para verla.",
+                          evento_desencadenador_id=7)
 
 
 def tipos_de_notificaciones(apps, schema_editor):

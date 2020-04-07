@@ -164,6 +164,7 @@ class SubempresaCrearView(AbstractEvaLoggedView):
                         break
             return render(request, 'Administracion/Subempresas/crear-editar.html', datos)
         subempresa.save()
+        crear_notificacion_por_evento(EventoDesencadenador.EMPRESAS, subempresa.id, subempresa.nombre)
         messages.success(request, 'Se ha agregado la sub-empresa {0}'.format(subempresa.nombre))
         return redirect(reverse('Administracion:sub-empresas'))
 
