@@ -98,10 +98,11 @@ class ContratoEliminarView(AbstractEvaLoggedView):
             contrato = Contrato.objects.get(id=id)
             contrato.delete()
             messages.success(request, 'Se ha eliminado el contrato {0}'.format(contrato.numero_contrato))
-            return JsonResponse({"Mensaje": "OK"})
+            return JsonResponse({"estado": "OK"})
 
         except IntegrityError:
-            return JsonResponse({"Mensaje": "No se puede eliminar"})
+            return JsonResponse({"estado": "error", "mensaje": "Este contrato no se puede eliminar"
+                                                               "porque ya está siendo usado."})
 
 
 # region Métodos de ayuda
