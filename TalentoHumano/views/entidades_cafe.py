@@ -101,18 +101,18 @@ class EntidadCAFEEditarView(AbstractEvaLoggedView):
 
 class EntidadCAFEEliminarView(AbstractEvaLoggedView):
     def post(self, request, id):
+        entidad_cafe = EntidadesCAFE.objects.get(id=id)
         try:
-            entidad_cafe = EntidadesCAFE.objects.get(id=id)
             entidad_cafe.delete()
             messages.success(request, 'Se ha eliminado la  {0}'.format(entidad_cafe.tipo_entidad) + ' ' +
                              '{0}'.format(entidad_cafe.nombre))
             return JsonResponse({"Mensaje": "OK"})
 
         except IntegrityError:
-            entidad_cafe = EntidadesCAFE.objects.get(id=id)
-            messages.warning(request, 'No se puede eliminar la  {0}'.format(entidad_cafe.tipo_entidad) + ' ' +
-                             '{0}'.format(entidad_cafe.nombre) + ' porque ya se encuentra asociada a otro módulo')
-            return JsonResponse({"Mensaje": "No se puede eliminar"})
+            return JsonResponse({"estado": "error",
+                                 "mensaje": "No se puede eliminar el colaborador {0} con identificación {1} porque ya"
+                                            " se encuentra asociado a otro módulo".format(entidad_cafe.tipo_entidad,
+                                                                                          entidad_cafe.nombre)})
 
 # region Métodos de ayuda
 
