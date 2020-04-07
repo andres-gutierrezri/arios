@@ -201,7 +201,7 @@ class ArchivoCargarView(AbstractEvaLoggedView):
             ResultadosAprobacion.objects.create(usuario=usuario.usuario, fecha=archivo.fecha_documento, archivo=archivo,
                                                 usuario_anterior=usuario_anterior, estado_id=EstadoArchivo.PENDIENTE)
 
-        enviar_notificacion_cadena(archivo, NUEVO)
+        enviar_notificacion_cadena(archivo, NUEVO, posicion=1)
         messages.success(request, 'Se ha cargado un archivo al documento {0}'.format(archivo.documento.nombre))
         return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 

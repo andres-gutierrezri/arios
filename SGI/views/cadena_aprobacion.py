@@ -172,7 +172,7 @@ class AccionDocumentoView(AbstractEvaLoggedView):
                 usuario_siguiente.usuario_anterior = EstadoArchivo.APROBADO
                 usuario_siguiente.save(update_fields=['usuario_anterior'])
                 enviar_notificacion_cadena(usuario_siguiente.archivo, CADENA_APROBADO)
-                enviar_notificacion_cadena(usuario_cadena, NUEVO)
+                enviar_notificacion_cadena(usuario_cadena, NUEVO, posicion=usuario_cadena.orden)
             else:
                 archivo_nuevo = Archivo.objects.get(id=id)
                 archivo_nuevo.estado_id = EstadoArchivo.APROBADO
@@ -206,12 +206,14 @@ class AccionDocumentoView(AbstractEvaLoggedView):
         return redirect(reverse('SGI:aprobacion-documentos-ver'))
 
 
-def enviar_notificacion_cadena(archivo, accion):
+def enviar_notificacion_cadena(archivo, accion, posicion: int = 0):
     if accion == NUEVO:
+        usuario = CadenaAprobacionDetalle.objects.get(cadena_aprobacion=archivo.cadena_aprobacion, orden=posicion)
+
         crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
                                       {'titulo': 'Solicitud de Aprobación',
                                        'mensaje': 'Tienes un documento pendiente para aprobación',
-                                       'usuario': archivo.usuario.usuario_id})
+                                       'usuario': usuario.usuario.usuario_id})
     if accion == APROBADO:
         crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
                                       {'titulo': 'Documento Aprobado',
