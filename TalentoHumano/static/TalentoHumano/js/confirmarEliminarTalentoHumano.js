@@ -3,7 +3,7 @@ let idBorrar = 0;
 let urlFinal;
 let rutaBorrado = $('#rutaBorrado').val();
 
-function fConfirmarEliminarColaborador(idElemento) {
+function fConfirmarEliminar(idElemento) {
     fSweetAlert();
     idBorrar = idElemento;
 }

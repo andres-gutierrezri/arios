@@ -74,7 +74,7 @@
                                                                     <a class="far fa-2x fa-edit" href="{% url 'TalentoHumano:entidades-cafe-editar' entidad_cafe.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
                                                                     {% endif %}
                                                                     {% if perms.TalentoHumano.delete_entidadescafe %}
-                                                                    <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ entidad_cafe.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminarEntidad({{ entidad_cafe.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+                                                                    <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ entidad_cafe.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ entidad_cafe.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
                                                                     {% endif %}
                                                                 </td>
                                                                 {% endif %}
