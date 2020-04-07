@@ -46,7 +46,7 @@ class ContratoCrearView(AbstractEvaLoggedView):
             return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.OPCION, contrato))
 
         contrato.save()
-        crear_notificacion_por_evento(EventoDesencadenador.CONTRATO, contrato.id)
+        crear_notificacion_por_evento(EventoDesencadenador.CONTRATO, contrato.id, contrato.numero_contrato)
         messages.success(request, 'Se ha agregado el contrato número {0}'.format(contrato.numero_contrato))
         return redirect(reverse('proyectos:contratos'))
 

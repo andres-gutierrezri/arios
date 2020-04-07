@@ -48,7 +48,7 @@ class TerceroCrearView(AbstractEvaLoggedView):
             return render(request, 'Administracion/Tercero/crear-editar.html', datos)
 
         tercero.save()
-        crear_notificacion_por_evento(EventoDesencadenador.TERCERO, tercero.id)
+        crear_notificacion_por_evento(EventoDesencadenador.TERCERO, tercero.id, tercero.nombre)
         messages.success(request, 'Se ha agregado el tercero {0}'.format(tercero.nombre))
         return redirect(reverse('Administracion:terceros'))
 

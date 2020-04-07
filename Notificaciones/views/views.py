@@ -10,12 +10,12 @@ from Notificaciones.models.models import TextoNotificacionDelSistema, Notificaci
     SeleccionDeNotificacionARecibir, DestinatarioNotificacion, EventoDesencadenador
 
 
-def crear_notificacion_por_evento(id_desencadenador, id_evento):
+def crear_notificacion_por_evento(id_desencadenador, id_evento, nombre: str = None):
 
     texto = TextoNotificacionDelSistema.objects.get(evento_desencadenador_id=id_desencadenador)
-
+    mensaje = texto.mensaje.format(nombre)
     notificacion = Notificacion.objects.create(titulo=texto.titulo,
-                                               mensaje=texto.mensaje,
+                                               mensaje=mensaje,
                                                id_evento=id_evento,
                                                evento_desencadenador_id=id_desencadenador,
                                                tipo_notificacion_id=TipoNotificacion.EVENTO_DEL_SISTEMA)

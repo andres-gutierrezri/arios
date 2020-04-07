@@ -51,7 +51,7 @@ class EmpresaCrearView(AbstractEvaLoggedView):
             return render(request, 'Administracion/Empresas/crear-editar.html', datos)
 
         empresa.save()
-        crear_notificacion_por_evento(EventoDesencadenador.EMPRESAS, empresa.id)
+        crear_notificacion_por_evento(EventoDesencadenador.EMPRESAS, empresa.id, empresa.nombre)
         messages.success(request, 'Se ha agregado la empresa {0}'.format(empresa.nombre))
         return redirect(reverse('Administracion:empresas'))
 

@@ -103,8 +103,8 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
             colaborador.usuario_id = colaborador.usuario.id
             colaborador.empresa_sesion_id = Contrato.objects.get(id=contratos[0]).empresa_id
             colaborador.save()
-            crear_notificacion_por_evento(EventoDesencadenador.BIENVENIDA, colaborador.id)
-            crear_notificacion_por_evento(EventoDesencadenador.COLABORADOR, colaborador.id)
+            crear_notificacion_por_evento(EventoDesencadenador.BIENVENIDA, colaborador.id, colaborador.nombre_completo)
+            crear_notificacion_por_evento(EventoDesencadenador.COLABORADOR, colaborador.id, colaborador.nombre_completo)
 
             for contrato in contratos:
                 ColaboradorContrato.objects.create(contrato_id=contrato, colaborador=colaborador)
