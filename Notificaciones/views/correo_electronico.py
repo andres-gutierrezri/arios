@@ -96,7 +96,7 @@ def enviar_notificacion_por_email(self):
         for notif in notificaciones:
             DestinatarioNotificacion.objects.filter(id=notif['id_dest']).update(envio_email_exitoso=True)
 
-    return JsonResponse({"Mensaje": "OK"})
+    return JsonResponse({"estado": "OK"})
 
 
 class TokenCorreoView(View):

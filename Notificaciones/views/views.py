@@ -55,7 +55,7 @@ class NotificacionesView(AbstractEvaLoggedView):
                                  "datos": {"cantidad": notificaciones['numero_notificaciones'],
                                            "Notificaciones": notificaciones['lista_notificaciones']}})
         except IntegrityError:
-            return JsonResponse({"estado": "error",  "Mensaje": "Error interno del servidor", "Notificaciones": []})
+            return JsonResponse({"estado": "error",  "mensaje": "Error interno del servidor"})
 
 
 class NotificacionesVerTodasView(AbstractEvaLoggedView):
