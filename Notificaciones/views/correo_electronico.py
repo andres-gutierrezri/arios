@@ -58,11 +58,9 @@ def enviar_correo(contenido):
         '"EVA" <noreply@arios-ing.com>',
         [],
         contenido['lista_destinatarios'],
-        headers={'Message-ID': 'foo'},
     )
     email.content_subtype = "html"
     email.send()
-    EmailMessage()
 
 
 def enviar_notificacion_por_email(self):
