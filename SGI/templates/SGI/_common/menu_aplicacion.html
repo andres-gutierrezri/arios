@@ -32,3 +32,11 @@
         </a>
     </li>
 {% endif %}
+{% if perms.SGI.add_archivo %}
+    <li {% if menu_actual == 'solicitudes_aprobacion' %} class="active" {% endif %}>
+        <a href="{% url 'SGI:solicitudes-aprobacion' %}" title="Solicitudes de Aprobación" data-filter-tags="solicitudes aprobacion">
+            <i class="fal fa-tasks"></i>
+            <span class="nav-link-text" data-i18n="nav.sgi_solicitudes_aprobacion">Solicitudes de Aprobación</span>
+        </a>
+    </li>
+{% endif %}
