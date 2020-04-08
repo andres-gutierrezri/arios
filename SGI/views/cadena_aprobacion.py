@@ -197,9 +197,9 @@ class AccionDocumentoView(AbstractEvaLoggedView):
                 otro_usuario.comentario = 'Rechazado por el usuario {0}'.format(usuario_colaborador.usuario.first_name)
                 otro_usuario.save(update_fields=['usuario_anterior', 'estado', 'comentario'])
 
-                anterior = Archivo(id=id)
-                anterior.estado_id = EstadoArchivo.RECHAZADO
-                anterior.save(update_fields=['estado'])
+            archivo = Archivo(id=id)
+            archivo.estado_id = EstadoArchivo.RECHAZADO
+            archivo.save(update_fields=['estado_id'])
             enviar_notificacion_cadena(Archivo.objects.get(id=id), RECHAZADO)
 
         messages.success(request, 'Se guardaron los datos correctamente')
