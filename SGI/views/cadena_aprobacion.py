@@ -211,23 +211,26 @@ def enviar_notificacion_cadena(archivo, accion, posicion: int = 0):
         usuario = CadenaAprobacionDetalle.objects.get(cadena_aprobacion=archivo.cadena_aprobacion, orden=posicion)
 
         crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
-                                      {'titulo': 'Solicitud de Aprobación',
+                                      {'titulo': 'Nueva Solicitud de Aprobación',
                                        'mensaje': 'Tienes un documento pendiente para aprobación',
                                        'usuario': usuario.usuario.usuario_id})
     if accion == APROBADO:
-        crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
+        crear_notificacion_por_evento(EventoDesencadenador.SOLICITUDES_APROBACION, archivo.id,
                                       {'titulo': 'Documento Aprobado',
-                                       'mensaje': 'Tu solicitud ha sido aprobada',
+                                       'mensaje': 'Tu solicitud para el documento ' + archivo.documento.nombre +
+                                                  ' ha sido aprobada',
                                        'usuario': archivo.usuario.usuario_id})
     elif accion == CADENA_APROBADO:
-        crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
+        crear_notificacion_por_evento(EventoDesencadenador.SOLICITUDES_APROBACION, archivo.id,
                                       {'titulo': 'Documento en aprobación',
-                                       'mensaje': 'Tu solicitud está avanzando',
+                                       'mensaje': 'Tu solicitud para el documento ' + archivo.documento.nombre +
+                                                  ' está avanzando',
                                        'usuario': archivo.usuario.usuario_id})
     elif accion == RECHAZADO:
-        crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
+        crear_notificacion_por_evento(EventoDesencadenador.SOLICITUDES_APROBACION, archivo.id,
                                       {'titulo': 'Documento Rechazado',
-                                       'mensaje': 'Tu solicitud ha sido rechazada',
+                                       'mensaje': 'Tu solicitud para el documento ' + archivo.documento.nombre +
+                                                  ' ha sido rechazada',
                                        'usuario': archivo.usuario.usuario_id})
 
 
