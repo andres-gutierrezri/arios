@@ -43,7 +43,7 @@
                                                     <tr>
                                                         <td>{{ archivo.documento.nombre }}</td>
                                                         <td>{{ archivo.version }}</td>
-                                                        <td>{{ archivo.estado }}</td>
+                                                        <td {% if archivo.estado_id == 0 %}class="campo_activo"{% endif %}>{{ archivo.estado }}</td>
                                                         <td>{{ archivo.notas }}</td>
                                                         <td>{{ archivo.fecha_documento|date:'Y-m-d' }}</td>
                                                         <td>
