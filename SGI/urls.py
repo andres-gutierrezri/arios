@@ -41,4 +41,8 @@ urlpatterns = [
          name='aprobacion-documentos-ver'),
     path('aprobacion_documentos/<int:id>', cadena_aprobacion.AccionDocumentoView.as_view(),
          name='aprobacion-documentos-accion'),
+    path('solicitudes_aprobacion', cadena_aprobacion.SolicitudesAprobacionDocumentoView.as_view(),
+         name='solicitudes-aprobacion'),
+    path('solicitudes_aprobacion/detalle/<int:id>', cadena_aprobacion.DetalleSolicitudAprobacionView.as_view(),
+         name='detalle-solicitud-aprobacion'),
 ]

@@ -243,6 +243,29 @@ def usuarios_cadena_aprobacion(archivo, usuario_colaborador):
             return False
 
 
+class SolicitudesAprobacionDocumentoView(AbstractEvaLoggedView):
+    def get(self, request):
+        usuario = Colaborador.objects.get(usuario=request.user)
+        resultados_aprobacion = ResultadosAprobacion.objects.filter(archivo__usuario=usuario)
+        archivos = Archivo.objects.filter(usuario=usuario)
+
+        procesos = Proceso.objects.filter(empresa_id=get_id_empresa_global(request)).order_by('nombre')
+        return render(request, 'SGI/AprobacionDocumentos/solicitudes_aprobacion.html',
+                      {'archivos': archivos,
+                       'procesos': procesos,
+                       'resultados_aprobacion': resultados_aprobacion,
+                       'menu_actual': 'solicitudes_aprobacion',
+                       'fecha': datetime.now()})
+
+
+class DetalleSolicitudAprobacionView(AbstractEvaLoggedView):
+    def get(self, request, id):
+        archivos = ResultadosAprobacion.objects.filter(archivo_id=id)
+
+        return render(request, 'SGI/AprobacionDocumentos/detalle_solicitud_aprobacion.html',
+                      {'archivos': archivos})
+
+
 # region Métodos de ayuda
 
 def datos_xa_render(opcion: str, request, cadena_aprobacion: CadenaAprobacionEncabezado = None) -> dict:
