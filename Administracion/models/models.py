@@ -193,6 +193,11 @@ class Persona(models.Model):
     def nombre_completo(self):
         return '{0} {1}'.format(self.usuario.first_name, self.usuario.last_name) if self.usuario else 'Sin nombre'
 
+    @property
+    def primer_nombre_apellido(self):
+        return '{0} {1}'.format(self.usuario.first_name.split(' ')[0], self.usuario.last_name.split(' ')[0]) \
+            if self.usuario else 'Sin nombre'
+
 
 class ImpuestoManager(ManagerGeneral):
     def get_xa_select_porcentaje(self) -> QuerySet:
