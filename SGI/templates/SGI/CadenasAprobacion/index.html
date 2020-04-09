@@ -13,7 +13,7 @@
     <div class="panel-container show">
         <div class="header">
              <h1 class="header-title">
-                <i class='far fa-handshake'></i> Cadenas de Aprobación <span class='fw-300'></span>
+                <i class='fal fa-link'></i> Cadenas de Aprobación <span class='fw-300'></span>
                  <br>
                  <br>
              </h1>
@@ -49,7 +49,20 @@
                                                 {% for cadenas in cadenas_aprobacion %}
                                                     <tr>
                                                         <td>{{ cadenas.nombre }}</td>
-                                                        <td>{% for detalle in detalles%}{% if detalle.cadena_aprobacion == cadenas %}{{ detalle.usuario.usuario.first_name }}<br>{% endif %}{% endfor %}</td>
+                                                        <td style="width: 50%;">
+                                                            <div class="frame-wrap">
+                                                                {% for detalle in detalles%}
+                                                                    {% if detalle.cadena_aprobacion == cadenas %}
+                                                                        <span class="badge badge-primary">
+                                                                            <span class="badge bg-primary-500 p-l-0"><font style="vertical-align: inherit;">
+                                                                                <font style="vertical-align: inherit;">{{ detalle.orden }}</font></font>
+                                                                            </span>
+                                                                            <font style="vertical-align: inherit;"><font style="vertical-align: inherit;">{{ detalle.usuario.primer_nombre_apellido }}</font></font>
+                                                                        </span>
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            </div>
+                                                        </td>
                                                         <td>{{ cadenas.fecha_creacion|date:'Y-m-d H:i' }}</td>
                                                         <td>
                                                             {% if cadenas.estado == True %}
