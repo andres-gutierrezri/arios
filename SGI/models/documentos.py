@@ -199,8 +199,8 @@ class Archivo(models.Model):
 
 
 class ResultadosAprobacion(models.Model):
-    usuario = models.ForeignKey(Colaborador, on_delete=models.DO_NOTHING, verbose_name='Usuario', null=True,
-                                blank=False)
+    colaborador = models.ForeignKey(Colaborador, on_delete=models.DO_NOTHING, verbose_name='Colaborador', null=True,
+                                    blank=False)
     estado = models.ForeignKey(EstadoArchivo, on_delete=models.DO_NOTHING, verbose_name='Estado', null=False,
                                blank=False)
     comentario = models.CharField(max_length=300, verbose_name='Comentario', null=True, blank=False)
@@ -209,7 +209,7 @@ class ResultadosAprobacion(models.Model):
     aprobacion_anterior = models.SmallIntegerField(verbose_name='Aprobación Anterior', null=True, blank=False)
 
     def __str__(self):
-        return self.usuario.usuario.first_name
+        return self.colaborador.usuario.first_name
 
     class Meta:
         verbose_name = 'Detalle de cadena de aprobación'

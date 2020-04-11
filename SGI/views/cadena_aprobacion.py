@@ -130,9 +130,9 @@ class CadenaAprobacionEliminarView(AbstractEvaLoggedView):
 
 class AprobacionDocumentoView(AbstractEvaLoggedView):
     def get(self, request):
-        usuario = Colaborador.objects.get(usuario=request.user)
-        archivos = ResultadosAprobacion.objects.filter(usuario=usuario, aprobacion_anterior=EstadoArchivo.APROBADO,
-                                                       estado_id=EstadoArchivo.PENDIENTE)
+        colaborador = Colaborador.objects.get(usuario=request.user)
+        archivos = ResultadosAprobacion.objects.filter(colaborador=colaborador, estado_id=EstadoArchivo.PENDIENTE,
+                                                       aprobacion_anterior=EstadoArchivo.APROBADO)
         procesos = Proceso.objects.filter(empresa_id=get_id_empresa_global(request)).order_by('nombre')
         fecha = datetime.now()
         return render(request, 'SGI/AprobacionDocumentos/index.html', {'archivos': archivos,
@@ -160,7 +160,7 @@ class AccionDocumentoView(AbstractEvaLoggedView):
         comentario = request.POST.get('comentario', '')
         opcion = request.POST.get('opcion', '')
         usuario_colaborador = Colaborador.objects.get(usuario=request.user)
-        resultado = ResultadosAprobacion.objects.get(archivo_id=id, usuario=usuario_colaborador)
+        resultado = ResultadosAprobacion.objects.get(archivo_id=id, colaborador=usuario_colaborador)
         resultado.estado_id = opcion
         resultado.comentario = comentario
         resultado.save(update_fields=['estado', 'comentario'])
@@ -168,7 +168,8 @@ class AccionDocumentoView(AbstractEvaLoggedView):
         if int(opcion) == EstadoArchivo.APROBADO:
             usuario_cadena = usuarios_cadena_aprobacion(resultado.archivo, usuario_colaborador)
             if usuario_cadena:
-                usuario_siguiente = ResultadosAprobacion.objects.get(usuario=usuario_cadena.colaborador, archivo_id=id)
+                usuario_siguiente = ResultadosAprobacion.objects.get(colaborador=usuario_cadena.colaborador,
+                                                                     archivo_id=id)
                 usuario_siguiente.aprobacion_anterior = EstadoArchivo.APROBADO
                 usuario_siguiente.save(update_fields=['aprobacion_anterior'])
                 enviar_notificacion_cadena(usuario_siguiente.archivo, CADENA_APROBADO)

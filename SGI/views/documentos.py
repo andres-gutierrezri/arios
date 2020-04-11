@@ -199,8 +199,9 @@ class ArchivoCargarView(AbstractEvaLoggedView):
                 aprobacion_anterior = EstadoArchivo.APROBADO
             else:
                 aprobacion_anterior = EstadoArchivo.PENDIENTE
-            ResultadosAprobacion.objects.create(usuario=usuario.colaborador, fecha=archivo.fecha_documento, archivo=archivo,
-                                                aprobacion_anterior=aprobacion_anterior, estado_id=EstadoArchivo.PENDIENTE)
+            ResultadosAprobacion.objects.create(colaborador=usuario.colaborador, fecha=archivo.fecha_documento,
+                                                archivo=archivo, aprobacion_anterior=aprobacion_anterior,
+                                                estado_id=EstadoArchivo.PENDIENTE)
 
         enviar_notificacion_cadena(archivo, NUEVO, posicion=1)
         messages.success(request, 'Se ha cargado un archivo al documento {0}'.format(archivo.documento.nombre))
