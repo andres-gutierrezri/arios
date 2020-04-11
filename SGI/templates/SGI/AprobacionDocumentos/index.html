@@ -1,0 +1,79 @@
+{% extends 'SGI/_common/base_sgi.html' %}
+{% load static %}
+<title>{% block titulo %}Aprobacion de Documentos{% endblock %}</title>
+{% block styles %}
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/datagrid/datatables/datatables.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/sweetalert2/sweetalert2.bundle.css'%}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/theme-demo.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
+{% endblock styles %}
+
+{% block main %}
+
+    <div class="panel-container show">
+        <div class="header">
+             <h1 class="header-title">
+                <i class='far fa-handshake'></i> Aprobacion de Documentos <span class='fw-300'></span>
+                 <br>
+                 <br>
+             </h1>
+        </div>
+        <div class="row">
+            <div class="col-xl-12">
+                <div id="panel-1" class="panel">
+                    <div class="panel-container show">
+                        <div class="panel-content">
+                            <div class="panel-group">
+                                <div class="panel-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered w-100" id="dataTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Nombre</th>
+                                                    <th>Versión</th>
+                                                    <th>Notas</th>
+                                                    <th>Fecha del Documento</th>
+                                                    <th>Acción</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for archivo in archivos %}
+                                                    <tr>
+                                                        <td>{{ archivo.archivo.documento.nombre }}</td>
+                                                        <td>{{ archivo.archivo.version }}</td>
+                                                        <td>{{ archivo.archivo.notas }}</td>
+                                                        <td>{{ archivo.archivo.fecha_documento|date:'Y-m-d' }}</td>
+                                                        <td>
+                                                            <a class="far fa-2x fa-eye" style="padding-left: 10px; text-decoration: none !important;" href="{% url 'sgi:documentos-ver' 0 archivo.archivo.id  %}" target="_blank" data-original-title="Ver"  data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="Ver Documento"></a>
+                                                            &nbsp;&nbsp;<a class="far fa-2x fa-check-square"  href="javascript:abrir_modal_accion_documento('{% url 'sgi:aprobacion-documentos-accion' archivo.id %}');" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Aprobar/Rechazar"></a>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="card-footer small text-muted">Actualizado: {{ fecha }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" tabindex="-1" id="accion_documento" role="dialog">
+
+    </div>
+
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.export.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script>
+    <script src="{% static 'SGI/js/modalAccionDocumento.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
+{% endblock %}

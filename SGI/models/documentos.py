@@ -194,3 +194,20 @@ class Archivo(models.Model):
 
         return archivo
 
+
+class ResultadosAprobacion(models.Model):
+    usuario = models.ForeignKey(Colaborador, on_delete=models.DO_NOTHING, verbose_name='Usuario', null=True,
+                                blank=False)
+    estado = models.ForeignKey(EstadoArchivo, on_delete=models.DO_NOTHING, verbose_name='Estado', null=False,
+                               blank=False)
+    comentario = models.CharField(max_length=300, verbose_name='Comentario', null=True, blank=False)
+    fecha = models.DateTimeField(verbose_name='Fecha', null=False, blank=False)
+    archivo = models.ForeignKey(Archivo, on_delete=models.DO_NOTHING, verbose_name='Archivo', null=False, blank=False)
+    usuario_anterior = models.SmallIntegerField(verbose_name='Usuario Anterior', null=True, blank=False)
+
+    def __str__(self):
+        return self.usuario.usuario.first_name
+
+    class Meta:
+        verbose_name = 'Detalle de cadena de aprobación'
+        verbose_name_plural = 'Detalles de cadenas de aprobaciones'
