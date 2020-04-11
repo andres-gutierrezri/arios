@@ -47,7 +47,6 @@ class CadenaAprobacionCrearView(AbstractEvaLoggedView):
         cadena = CadenaAprobacionEncabezado.from_dictionary(request.POST)
         cadena.empresa_id = get_id_empresa_global(request)
         cadena.estado = True
-        cadena.fecha_creacion = datetime.today()
 
         try:
             cadena.full_clean()
@@ -90,7 +89,7 @@ class CadenaAprobacionEditarView(AbstractEvaLoggedView):
         cadena.id = id
 
         try:
-            cadena.full_clean(validate_unique=False, exclude=['empresa', 'fecha_creacion'])
+            cadena.full_clean(validate_unique=False, exclude=['empresa'])
         except ValidationError as errores:
             datos = datos_xa_render(self.OPCION, request, cadena)
             datos['errores'] = errores.message_dict
