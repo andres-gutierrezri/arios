@@ -32,7 +32,7 @@ function clicEmpresa(idEmpresa) {
         dataType: "json",
         success: function (data) {
             cerrarModalEmpresa();
-            if(data.Mensaje === "OK") {
+            if(data.estado === "OK") {
                 location.reload();
             }
         },
