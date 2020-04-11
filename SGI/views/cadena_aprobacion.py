@@ -11,6 +11,8 @@ from django.core.exceptions import ValidationError
 from Administracion.models import Proceso
 from Administracion.utils import get_id_empresa_global
 from EVA.views.index import AbstractEvaLoggedView
+from Notificaciones.models.models import EventoDesencadenador
+from Notificaciones.views.views import crear_notificacion_por_evento
 from SGI.models import CadenaAprobacionEncabezado
 from SGI.models.documentos import CadenaAprobacionDetalle, Archivo, ResultadosAprobacion, EstadoArchivo
 from TalentoHumano.models import Colaborador
@@ -140,6 +142,13 @@ class AprobacionDocumentoView(AbstractEvaLoggedView):
                                                                        'menu_actual': 'aprobacion_documentos',
                                                                        'fecha': fecha})
 
+# region Constantes de Accion de Documento
+NUEVO = 0
+CADENA_APROBADO = 1
+APROBADO = 2
+RECHAZADO = 3
+# endregion
+
 
 class AccionDocumentoView(AbstractEvaLoggedView):
     def get(self, request, id):
@@ -158,27 +167,26 @@ class AccionDocumentoView(AbstractEvaLoggedView):
         resultado.comentario = comentario
         resultado.save(update_fields=['estado', 'comentario'])
 
-        cadena = CadenaAprobacionDetalle.objects.filter(cadena_aprobacion__archivo__resultadosaprobacion=resultado).order_by('orden')
         if int(opcion) == EstadoArchivo.APROBADO:
-            siguiente = False
-            for usuario in cadena:
-                if usuario.usuario == usuario_colaborador and usuario != cadena.last() and not siguiente:
-                    siguiente = True
-                elif siguiente:
-                    usuario_siguiente = ResultadosAprobacion.objects.get(usuario=usuario.usuario, archivo_id=id)
-                    usuario_siguiente.usuario_anterior = EstadoArchivo.APROBADO
-                    usuario_siguiente.save(update_fields=['usuario_anterior'])
-                    break
-                if usuario == cadena.last() and not siguiente:
-                    archivo_nuevo = Archivo.objects.get(id=id)
-                    archivo_nuevo.estado_id = EstadoArchivo.APROBADO
-                    archivo_nuevo.save(update_fields=['estado'])
-                    archivo_anterior = Archivo.objects.filter(documento=archivo_nuevo.documento,
-                                                              estado_id=EstadoArchivo.APROBADO)
-                    if archivo_anterior:
-                        anterior = Archivo(id=archivo_anterior.first().id)
-                        anterior.estado_id = EstadoArchivo.OBSOLETO
-                        anterior.save(update_fields=['estado'])
+            usuario_cadena = usuarios_cadena_aprobacion(resultado.archivo, usuario_colaborador)
+            if usuario_cadena:
+                usuario_siguiente = ResultadosAprobacion.objects.get(usuario=usuario_cadena.usuario, archivo_id=id)
+                usuario_siguiente.usuario_anterior = EstadoArchivo.APROBADO
+                usuario_siguiente.save(update_fields=['usuario_anterior'])
+                enviar_notificacion_cadena(usuario_siguiente.archivo, CADENA_APROBADO)
+                enviar_notificacion_cadena(usuario_cadena, NUEVO)
+            else:
+                archivo_nuevo = Archivo.objects.get(id=id)
+                archivo_nuevo.estado_id = EstadoArchivo.APROBADO
+                archivo_nuevo.save(update_fields=['estado'])
+                archivo_anterior = Archivo.objects.filter(documento=archivo_nuevo.documento,
+                                                          estado_id=EstadoArchivo.APROBADO).exclude(id=id)
+                enviar_notificacion_cadena(archivo_nuevo, APROBADO)
+
+                if archivo_anterior:
+                    anterior = Archivo(id=archivo_anterior.first().id)
+                    anterior.estado_id = EstadoArchivo.OBSOLETO
+                    anterior.save(update_fields=['estado'])
         else:
             otros_usuarios = ResultadosAprobacion.objects.filter(archivo_id=id, estado_id=EstadoArchivo.PENDIENTE)
             for otro_usuario in otros_usuarios:
@@ -191,9 +199,45 @@ class AccionDocumentoView(AbstractEvaLoggedView):
                 anterior = Archivo(id=id)
                 anterior.estado_id = EstadoArchivo.RECHAZADO
                 anterior.save(update_fields=['estado'])
+            enviar_notificacion_cadena(Archivo.objects.get(id=id), RECHAZADO)
 
         messages.success(request, 'Se guardaron los datos correctamente')
         return redirect(reverse('SGI:aprobacion-documentos-ver'))
+
+
+def enviar_notificacion_cadena(archivo, accion):
+    if accion == NUEVO:
+        crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
+                                      contenido={'titulo': 'Solicitud de Aprobación',
+                                                 'mensaje': 'Tienes un documento pendiente para aprobación',
+                                                 'usuario': archivo.usuario.usuario_id})
+    if accion == APROBADO:
+        crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
+                                      contenido={'titulo': 'Documento Aprobado',
+                                                 'mensaje': 'Tu solicitud ha sido aprobada',
+                                                 'usuario': archivo.usuario.usuario_id})
+    elif accion == CADENA_APROBADO:
+        crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
+                                      contenido={'titulo': 'Documento en aprobación',
+                                                 'mensaje': 'Tu solicitud está avanzando',
+                                                 'usuario': archivo.usuario.usuario_id})
+    elif accion == RECHAZADO:
+        crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
+                                      contenido={'titulo': 'Documento Rechazado',
+                                                 'mensaje': 'Tu solicitud ha sido rechazada',
+                                                 'usuario': archivo.usuario.usuario_id})
+
+
+def usuarios_cadena_aprobacion(archivo, usuario_colaborador):
+    cadena = CadenaAprobacionDetalle.objects.filter(cadena_aprobacion=archivo.cadena_aprobacion).order_by('orden')
+    siguiente = False
+    for usuario in cadena:
+        if usuario.usuario == usuario_colaborador and usuario != cadena.last() and not siguiente:
+            siguiente = True
+        elif siguiente:
+            return usuario
+        if usuario == cadena.last() and not siguiente:
+            return False
 
 
 # region Métodos de ayuda

@@ -167,6 +167,7 @@ class Archivo(models.Model):
                                           verbose_name='Cadena de aprobación', null=True, blank=False)
     estado = models.ForeignKey(EstadoArchivo, on_delete=models.DO_NOTHING, verbose_name='Estado de Archivo', null=False,
                                blank=False)
+    usuario = models.ForeignKey(Colaborador, on_delete=models.DO_NOTHING, verbose_name='Usuario', null=False, blank=False)
 
     def __str__(self):
         return self.documento.nombre

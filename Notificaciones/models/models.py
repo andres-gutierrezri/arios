@@ -49,6 +49,7 @@ class EventoDesencadenador(models.Model):
     ENTIDADES_CAFE = 5
     COLABORADOR = 6
     SUBEMPRESA = 7
+    CADENA_APROBACION = 8
     # endregion
 
 
