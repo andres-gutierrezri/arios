@@ -14,7 +14,7 @@ from EVA.views.index import AbstractEvaLoggedView
 from Notificaciones.models.models import EventoDesencadenador
 from Notificaciones.views.views import crear_notificacion_por_evento
 from SGI.models import CadenaAprobacionEncabezado
-from SGI.models.documentos import CadenaAprobacionDetalle, Archivo, ResultadosAprobacion, EstadoArchivo
+from SGI.models.documentos import CadenaAprobacionDetalle, Archivo, ResultadosAprobacion, EstadoArchivo, Documento
 from TalentoHumano.models import Colaborador
 
 
@@ -117,17 +117,16 @@ class CadenaAprobacionEditarView(AbstractEvaLoggedView):
 class CadenaAprobacionEliminarView(AbstractEvaLoggedView):
     def post(self, request, id):
         try:
-            if Archivo.objects.filter(cadena_aprobacion=CadenaAprobacionEncabezado.objects.get(id=id)):
-                return JsonResponse({"Mensaje": "ERROR-CADENA"})
-
             CadenaAprobacionDetalle.objects.filter(cadena_aprobacion_id=id).delete()
             cadena_encabezado = CadenaAprobacionEncabezado.objects.get(id=id)
             cadena_encabezado.delete()
             messages.success(request, 'Se ha eliminado la cadena de aprobación {0}'.format(cadena_encabezado.nombre))
-            return JsonResponse({"Mensaje": "OK"})
+            return JsonResponse({"estado": "OK"})
 
         except IntegrityError:
-            return JsonResponse({"Mensaje": "ERROR-CADENA"})
+            return JsonResponse(
+                {"estado": "error",
+                 "error": "Esta cadena de aprobación no puede ser eliminada porque se encuentra en uso"})
 
 
 class AprobacionDocumentoView(AbstractEvaLoggedView):
@@ -174,11 +173,14 @@ class AccionDocumentoView(AbstractEvaLoggedView):
                 usuario_siguiente.usuario_anterior = EstadoArchivo.APROBADO
                 usuario_siguiente.save(update_fields=['usuario_anterior'])
                 enviar_notificacion_cadena(usuario_siguiente.archivo, CADENA_APROBADO)
-                enviar_notificacion_cadena(usuario_cadena, NUEVO)
+                enviar_notificacion_cadena(usuario_cadena, NUEVO, posicion=usuario_cadena.orden)
             else:
                 archivo_nuevo = Archivo.objects.get(id=id)
                 archivo_nuevo.estado_id = EstadoArchivo.APROBADO
                 archivo_nuevo.save(update_fields=['estado'])
+                documento = Documento(id=archivo_nuevo.documento.id)
+                documento.version_actual = archivo_nuevo.version
+                documento.save(update_fields=['version_actual'])
                 archivo_anterior = Archivo.objects.filter(documento=archivo_nuevo.documento,
                                                           estado_id=EstadoArchivo.APROBADO).exclude(id=id)
                 enviar_notificacion_cadena(archivo_nuevo, APROBADO)
@@ -205,12 +207,14 @@ class AccionDocumentoView(AbstractEvaLoggedView):
         return redirect(reverse('SGI:aprobacion-documentos-ver'))
 
 
-def enviar_notificacion_cadena(archivo, accion):
+def enviar_notificacion_cadena(archivo, accion, posicion: int = 0):
     if accion == NUEVO:
+        usuario = CadenaAprobacionDetalle.objects.get(cadena_aprobacion=archivo.cadena_aprobacion, orden=posicion)
+
         crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
                                       contenido={'titulo': 'Solicitud de Aprobación',
                                                  'mensaje': 'Tienes un documento pendiente para aprobación',
-                                                 'usuario': archivo.usuario.usuario_id})
+                                                 'usuario': usuario.usuario.usuario_id})
     if accion == APROBADO:
         crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
                                       contenido={'titulo': 'Documento Aprobado',

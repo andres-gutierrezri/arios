@@ -28,7 +28,7 @@ function fSweetAlert() {
                     if(data.estado === "OK") {
                         location.reload();
                     }else if(data.estado === "error"){
-                        EVANotificacion.toast.error(data.mensaje);
+                        EVANotificacion.toast.error(data.error);
                     }
                     else {
                         EVANotificacion.toast.error('No tiene permisos para acceder a esta funcionalidad');
