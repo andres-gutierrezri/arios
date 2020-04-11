@@ -56,14 +56,14 @@ class CadenaAprobacionEncabezado(models.Model):
 
 
 class CadenaAprobacionDetalle(models.Model):
-    usuario = models.ForeignKey(Colaborador, on_delete=models.DO_NOTHING, verbose_name='Usuario', null=True,
-                                blank=False)
+    colaborador = models.ForeignKey(Colaborador, on_delete=models.DO_NOTHING, verbose_name='Colaborador', null=True,
+                                    blank=False)
     orden = models.SmallIntegerField(verbose_name='Orden', null=False, blank=False)
     cadena_aprobacion = models.ForeignKey(CadenaAprobacionEncabezado, on_delete=models.DO_NOTHING,
                                           verbose_name='Cadena de Aprobación', null=False, blank=False)
 
     def __str__(self):
-        return self.usuario.usuario.first_name
+        return self.colaborador.usuario.first_name
 
     class Meta:
         verbose_name = 'Detalle de cadena de aprobación'

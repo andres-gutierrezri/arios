@@ -13,8 +13,8 @@ $(function () {
                 $("#agregar_" + (orden - 1)).hide();
                 $("#eliminar_" + (orden - 1)).hide();
                 valores_selectores.selecciones.forEach(function (item) {
-                    (item.orden === orden ? contenedor.append(crearSelectores(item.orden, item.usuario_id))
-                        & selecciones.push(item.usuario_id) : null);
+                    (item.orden === orden ? contenedor.append(crearSelectores(item.orden, item.colaborador_id))
+                        & selecciones.push(item.colaborador_id) : null);
                     (orden === 1 ? $("#eliminar_" + (orden)).hide() : null);
                 });
                 orden++;
@@ -55,14 +55,14 @@ let eliminar = function (id) {
     usuarios_seleccionados.val(selecciones);
 };
 
-let crearSelectores = function (posicion, usuario_id) {
-    let desactivar = usuario_id ? 'disabled="disabled"' : '';
+let crearSelectores = function (posicion, colaborador_id) {
+    let desactivar = colaborador_id ? 'disabled="disabled"' : '';
     return `<div class="form-group" id="elemento_${posicion}">
     <div class="form-row">
         <div class="col-md-11">
             <label for="colaborador_id_${posicion}">Usuario ${posicion} </label>
             <select class="select2 form-control" ${desactivar} name="ultimo_usuario" id="colaborador_id_${posicion}"> 
-                ${crearOpciones(usuario_id)}
+                ${crearOpciones(colaborador_id)}
             </select>
         </div>
         <div class="col-md-1" style="padding-top:30px" id="botones_${posicion}">
@@ -72,7 +72,7 @@ let crearSelectores = function (posicion, usuario_id) {
     </div></div>`;
 };
 
-let crearOpciones = function (usuario_id) {
+let crearOpciones = function (colaborador_id) {
     let opciones_colaborador = '';
     if (valores_selectores) {
         valores_selectores['colaboradores'].forEach(function (usuario) {
@@ -81,7 +81,7 @@ let crearOpciones = function (usuario_id) {
                 existe = usuario['campo_valor'].toString() === id.toString() ? true : existe;
             });
             (existe ? null :
-                opciones_colaborador += optionSelect((usuario_id === usuario.campo_valor ? 'selected ' : ''), usuario.campo_valor, usuario.campo_texto));
+                opciones_colaborador += optionSelect((colaborador_id === usuario.campo_valor ? 'selected ' : ''), usuario.campo_valor, usuario.campo_texto));
         });
         return opciones_colaborador;
     } else {
