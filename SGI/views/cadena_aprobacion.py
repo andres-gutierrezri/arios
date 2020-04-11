@@ -121,11 +121,12 @@ class CadenaAprobacionEliminarView(AbstractEvaLoggedView):
             cadena_encabezado = CadenaAprobacionEncabezado.objects.get(id=id)
             cadena_encabezado.delete()
             messages.success(request, 'Se ha eliminado la cadena de aprobación {0}'.format(cadena_encabezado.nombre))
-            return JsonResponse({"Mensaje": "OK"})
+            return JsonResponse({"estado": "OK"})
 
         except IntegrityError:
-            return JsonResponse({"Mensaje": "ERROR",
-                                 "Error": "Esta cadena de aprobación no puede ser eliminada porque se ecuentra en uso"})
+            return JsonResponse(
+                {"estado": "error",
+                 "error": "Esta cadena de aprobación no puede ser eliminada porque se encuentra en uso"})
 
 
 class AprobacionDocumentoView(AbstractEvaLoggedView):
@@ -211,27 +212,27 @@ def enviar_notificacion_cadena(archivo, accion, posicion: int = 0):
         usuario = CadenaAprobacionDetalle.objects.get(cadena_aprobacion=archivo.cadena_aprobacion, orden=posicion)
 
         crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
-                                      {'titulo': 'Nueva Solicitud de Aprobación',
-                                       'mensaje': 'Tienes un documento pendiente para aprobación',
-                                       'usuario': usuario.usuario.usuario_id})
+                                      contenido={'titulo': 'Solicitud de Aprobación',
+                                                 'mensaje': 'Tienes un documento pendiente para aprobación',
+                                                 'usuario': usuario.usuario.usuario_id})
     if accion == APROBADO:
-        crear_notificacion_por_evento(EventoDesencadenador.SOLICITUDES_APROBACION, archivo.id,
-                                      {'titulo': 'Documento Aprobado',
-                                       'mensaje': 'Tu solicitud para el documento ' + archivo.documento.nombre +
-                                                  ' ha sido aprobada',
-                                       'usuario': archivo.usuario.usuario_id})
+        crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
+                                      contenido={'titulo': 'Documento Aprobado',
+                                                 'mensaje': 'Tu solicitud para el documento '
+                                                            + archivo.documento.nombre + ' ha sido aprobada',
+                                                 'usuario': archivo.usuario.usuario_id})
     elif accion == CADENA_APROBADO:
-        crear_notificacion_por_evento(EventoDesencadenador.SOLICITUDES_APROBACION, archivo.id,
-                                      {'titulo': 'Documento en aprobación',
-                                       'mensaje': 'Tu solicitud para el documento ' + archivo.documento.nombre +
-                                                  ' está avanzando',
-                                       'usuario': archivo.usuario.usuario_id})
+        crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
+                                      contenido={'titulo': 'Documento en aprobación',
+                                                 'mensaje': 'Tu solicitud para el documento '
+                                                            + archivo.documento.nombre + ' está avanzando',
+                                                 'usuario': archivo.usuario.usuario_id})
     elif accion == RECHAZADO:
-        crear_notificacion_por_evento(EventoDesencadenador.SOLICITUDES_APROBACION, archivo.id,
-                                      {'titulo': 'Documento Rechazado',
-                                       'mensaje': 'Tu solicitud para el documento ' + archivo.documento.nombre +
-                                                  ' ha sido rechazada',
-                                       'usuario': archivo.usuario.usuario_id})
+        crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
+                                      contenido={'titulo': 'Documento Rechazado',
+                                                 'mensaje': 'Tu solicitud para el documento '
+                                                            + archivo.documento.nombre + ' ha sido rechazada',
+                                                 'usuario': archivo.usuario.usuario_id})
 
 
 def usuarios_cadena_aprobacion(archivo, usuario_colaborador):

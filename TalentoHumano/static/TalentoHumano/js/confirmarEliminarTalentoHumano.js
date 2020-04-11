@@ -3,7 +3,7 @@ let idBorrar = 0;
 let urlFinal;
 let rutaBorrado = $('#rutaBorrado').val();
 
-function fConfirmarEliminarColaborador(idElemento) {
+function fConfirmarEliminar(idElemento) {
     fSweetAlert();
     idBorrar = idElemento;
 }
@@ -24,8 +24,10 @@ function fSweetAlert() {
                 type: 'POST',
                 context: document.body,
                 success: function (data) {
-                    if(data.Mensaje === "OK") {
+                    if(data.estado === "OK") {
                         location.reload();
+                    }else if(data.estado === "error"){
+                        EVANotificacion.toast.error(data.mensaje);
                     }
                     else {
                         EVANotificacion.toast.error('No tiene permisos para acceder a esta funcionalidad');
