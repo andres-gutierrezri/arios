@@ -168,7 +168,7 @@ class AccionDocumentoView(AbstractEvaLoggedView):
         if int(opcion) == EstadoArchivo.APROBADO:
             usuario_cadena = usuarios_cadena_aprobacion(resultado.archivo, usuario_colaborador)
             if usuario_cadena:
-                usuario_siguiente = ResultadosAprobacion.objects.get(usuario=usuario_cadena.usuario, archivo_id=id)
+                usuario_siguiente = ResultadosAprobacion.objects.get(usuario=usuario_cadena.colaborador, archivo_id=id)
                 usuario_siguiente.aprobacion_anterior = EstadoArchivo.APROBADO
                 usuario_siguiente.save(update_fields=['aprobacion_anterior'])
                 enviar_notificacion_cadena(usuario_siguiente.archivo, CADENA_APROBADO)
@@ -248,7 +248,7 @@ def usuarios_cadena_aprobacion(archivo, usuario_colaborador):
 
 class SolicitudesAprobacionDocumentoView(AbstractEvaLoggedView):
     def get(self, request):
-        archivos = Archivo.objects.filter(usuario=Colaborador.objects.get(usuario=request.user))\
+        archivos = Archivo.objects.filter(colaborador=Colaborador.objects.get(usuario=request.user))\
             .exclude(estado=EstadoArchivo.OBSOLETO)
 
         procesos = Proceso.objects.filter(empresa_id=get_id_empresa_global(request)).order_by('nombre')
