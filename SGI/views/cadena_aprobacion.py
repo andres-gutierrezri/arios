@@ -131,7 +131,7 @@ class CadenaAprobacionEliminarView(AbstractEvaLoggedView):
 class AprobacionDocumentoView(AbstractEvaLoggedView):
     def get(self, request):
         usuario = Colaborador.objects.get(usuario=request.user)
-        archivos = ResultadosAprobacion.objects.filter(usuario=usuario, usuario_anterior=EstadoArchivo.APROBADO,
+        archivos = ResultadosAprobacion.objects.filter(usuario=usuario, aprobacion_anterior=EstadoArchivo.APROBADO,
                                                        estado_id=EstadoArchivo.PENDIENTE)
         procesos = Proceso.objects.filter(empresa_id=get_id_empresa_global(request)).order_by('nombre')
         fecha = datetime.now()
@@ -169,8 +169,8 @@ class AccionDocumentoView(AbstractEvaLoggedView):
             usuario_cadena = usuarios_cadena_aprobacion(resultado.archivo, usuario_colaborador)
             if usuario_cadena:
                 usuario_siguiente = ResultadosAprobacion.objects.get(usuario=usuario_cadena.usuario, archivo_id=id)
-                usuario_siguiente.usuario_anterior = EstadoArchivo.APROBADO
-                usuario_siguiente.save(update_fields=['usuario_anterior'])
+                usuario_siguiente.aprobacion_anterior = EstadoArchivo.APROBADO
+                usuario_siguiente.save(update_fields=['aprobacion_anterior'])
                 enviar_notificacion_cadena(usuario_siguiente.archivo, CADENA_APROBADO)
                 enviar_notificacion_cadena(usuario_cadena, NUEVO, posicion=usuario_cadena.orden)
             else:
@@ -192,10 +192,10 @@ class AccionDocumentoView(AbstractEvaLoggedView):
             otros_usuarios = ResultadosAprobacion.objects.filter(archivo_id=id, estado_id=EstadoArchivo.PENDIENTE)
             for otro_usuario in otros_usuarios:
                 otro_usuario = ResultadosAprobacion(id=otro_usuario.id)
-                otro_usuario.usuario_anterior = EstadoArchivo.RECHAZADO
+                otro_usuario.aprobacion_anterior = EstadoArchivo.RECHAZADO
                 otro_usuario.estado_id = EstadoArchivo.RECHAZADO
                 otro_usuario.comentario = 'Rechazado por el usuario {0}'.format(usuario_colaborador.usuario.first_name)
-                otro_usuario.save(update_fields=['usuario_anterior', 'estado', 'comentario'])
+                otro_usuario.save(update_fields=['aprobacion_anterior', 'estado', 'comentario'])
 
             archivo = Archivo(id=id)
             archivo.estado_id = EstadoArchivo.RECHAZADO

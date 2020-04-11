@@ -205,7 +205,7 @@ class ResultadosAprobacion(models.Model):
     comentario = models.CharField(max_length=300, verbose_name='Comentario', null=True, blank=False)
     fecha = models.DateTimeField(verbose_name='Fecha', null=False, blank=False)
     archivo = models.ForeignKey(Archivo, on_delete=models.DO_NOTHING, verbose_name='Archivo', null=False, blank=False)
-    usuario_anterior = models.SmallIntegerField(verbose_name='Usuario Anterior', null=True, blank=False)
+    aprobacion_anterior = models.SmallIntegerField(verbose_name='Aprobación Anterior', null=True, blank=False)
 
     def __str__(self):
         return self.usuario.usuario.first_name

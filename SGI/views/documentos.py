@@ -196,11 +196,11 @@ class ArchivoCargarView(AbstractEvaLoggedView):
         NUEVO = 0
         for usuario in usuarios_cadena:
             if usuario == usuarios_cadena.first():
-                usuario_anterior = EstadoArchivo.APROBADO
+                aprobacion_anterior = EstadoArchivo.APROBADO
             else:
-                usuario_anterior = EstadoArchivo.PENDIENTE
+                aprobacion_anterior = EstadoArchivo.PENDIENTE
             ResultadosAprobacion.objects.create(usuario=usuario.usuario, fecha=archivo.fecha_documento, archivo=archivo,
-                                                usuario_anterior=usuario_anterior, estado_id=EstadoArchivo.PENDIENTE)
+                                                aprobacion_anterior=aprobacion_anterior, estado_id=EstadoArchivo.PENDIENTE)
 
         enviar_notificacion_cadena(archivo, NUEVO, posicion=1)
         messages.success(request, 'Se ha cargado un archivo al documento {0}'.format(archivo.documento.nombre))
