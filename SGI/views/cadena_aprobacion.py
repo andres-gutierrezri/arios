@@ -121,11 +121,12 @@ class CadenaAprobacionEliminarView(AbstractEvaLoggedView):
             cadena_encabezado = CadenaAprobacionEncabezado.objects.get(id=id)
             cadena_encabezado.delete()
             messages.success(request, 'Se ha eliminado la cadena de aprobación {0}'.format(cadena_encabezado.nombre))
-            return JsonResponse({"Mensaje": "OK"})
+            return JsonResponse({"estado": "OK"})
 
         except IntegrityError:
-            return JsonResponse({"Mensaje": "ERROR",
-                                 "Error": "Esta cadena de aprobación no puede ser eliminada porque se ecuentra en uso"})
+            return JsonResponse(
+                {"estado": "error",
+                 "error": "Esta cadena de aprobación no puede ser eliminada porque se encuentra en uso"})
 
 
 class AprobacionDocumentoView(AbstractEvaLoggedView):
