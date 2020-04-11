@@ -48,7 +48,7 @@ class TerceroCrearView(AbstractEvaLoggedView):
             return render(request, 'Administracion/Tercero/crear-editar.html', datos)
 
         tercero.save()
-        crear_notificacion_por_evento(EventoDesencadenador.TERCERO, tercero.id)
+        crear_notificacion_por_evento(EventoDesencadenador.TERCERO, tercero.id, tercero.nombre)
         messages.success(request, 'Se ha agregado el tercero {0}'.format(tercero.nombre))
         return redirect(reverse('Administracion:terceros'))
 
@@ -95,17 +95,16 @@ class TerceroEditarView(AbstractEvaLoggedView):
 
 class TerceroEliminarView(AbstractEvaLoggedView):
     def post(self, request, id):
+        tercero = Tercero.objects.get(id=id)
         try:
-            tercero = Tercero.objects.get(id=id)
             tercero.delete()
             messages.success(request, 'Se ha eliminado el tercero {0}'.format(tercero.nombre))
-            return JsonResponse({"Mensaje": "OK"})
+            return JsonResponse({"estado": "OK"})
 
         except IntegrityError:
-            tercero = Tercero.objects.get(id=id)
-            messages.warning(request, 'No se puede eliminar el tercero {0}'.format(tercero.nombre) +
-                             ' porque ya se encuentra asociado a otros módulos')
-            return JsonResponse({"Mensaje": "No se puede eliminar"})
+            return JsonResponse({"estado": "error",
+                                 "mensaje": "No se puede eliminar el tercero {0}".format(tercero.nombre) +
+                                 "porque ya se encuentra asociado a otros módulos"})
 
 
 class TerceroDetalleView(AbstractEvaLoggedView):

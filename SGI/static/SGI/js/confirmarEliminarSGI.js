@@ -25,10 +25,10 @@ function fSweetAlert() {
                 type: 'POST',
                 context: document.body,
                 success: function (data) {
-                    if(data.Mensaje === "OK") {
+                    if(data.estado === "OK") {
                         location.reload();
-                    }else if(data.Mensaje === "ERROR-CADENA"){
-                        EVANotificacion.toast.error('Esta cadena de aprobación no puede ser eliminada porque se ecuentra en uso');
+                    }else if(data.estado === "error"){
+                        EVANotificacion.toast.error(data.mensaje);
                     }
                     else {
                         EVANotificacion.toast.error('No tiene permisos para acceder a esta funcionalidad');

@@ -4,25 +4,25 @@ from django.db import IntegrityError
 from django.http import JsonResponse
 from django.shortcuts import render
 
-from EVA.General.conversiones import distancia_entre_fechas_a_texto
+from EVA.General import tiempo_transcurrido, app_datetime_now, app_date_now
 from EVA.views.index import AbstractEvaLoggedView
 from Notificaciones.models.models import TextoNotificacionDelSistema, Notificacion, TipoNotificacion, \
     SeleccionDeNotificacionARecibir, DestinatarioNotificacion, EventoDesencadenador
 
 
-def crear_notificacion_por_evento(id_desencadenador, id_evento, contenido: {} = None):
+def crear_notificacion_por_evento(id_desencadenador, id_evento, nombre: str = None, contenido: {} = None):
     usuario = []
     if contenido:
         texto = TextoNotificacionDelSistema()
         texto.titulo = contenido['titulo']
-        texto.mensaje = contenido['mensaje']
+        mensaje = contenido['mensaje']
         usuario.append(contenido['usuario'])
-    else:
+    else
         texto = TextoNotificacionDelSistema.objects.get(evento_desencadenador_id=id_desencadenador)
+        mensaje = texto.mensaje.format(nombre)
 
     notificacion = Notificacion.objects.create(titulo=texto.titulo,
-                                               mensaje=texto.mensaje,
-                                               fecha_creacion=datetime.date.today(),
+                                               mensaje=mensaje,
                                                id_evento=id_evento,
                                                evento_desencadenador_id=id_desencadenador,
                                                tipo_notificacion_id=TipoNotificacion.EVENTO_DEL_SISTEMA)
@@ -59,11 +59,11 @@ class NotificacionesView(AbstractEvaLoggedView):
     def get(self, request):
         try:
             notificaciones = construir_notificaciones(request, limite=10, destinatarios=[])
-            return JsonResponse({"Mensaje": notificaciones['numero_notificaciones'],
-                                 "Notificaciones": notificaciones['lista_notificaciones']})
+            return JsonResponse({"estado": "OK",
+                                 "datos": {"cantidad": notificaciones['numero_notificaciones'],
+                                           "Notificaciones": notificaciones['lista_notificaciones']}})
         except IntegrityError:
-
-            return JsonResponse({"Mensaje": "Error interno del servidor", "Notificaciones": []})
+            return JsonResponse({"estado": "error",  "mensaje": "Error interno del servidor"})
 
 
 class NotificacionesVerTodasView(AbstractEvaLoggedView):
@@ -77,7 +77,7 @@ def construir_notificaciones(request, limite, destinatarios):
 
     if not destinatarios:
         destinatarios = DestinatarioNotificacion.objects \
-            .filter(usuario=request.user, notificacion__fecha_creacion__lte=datetime.datetime.today()) \
+            .filter(usuario=request.user, notificacion__fecha_creacion__lte=app_datetime_now()) \
             .order_by('-id')
 
     if limite:
@@ -85,7 +85,7 @@ def construir_notificaciones(request, limite, destinatarios):
 
     lista_notificaciones = []
     for destinatario in destinatarios:
-        fecha = distancia_entre_fechas_a_texto(destinatario.notificacion.fecha_creacion)
+        fecha = tiempo_transcurrido(destinatario.notificacion.fecha_creacion)
 
         url = destinatario.notificacion.evento_desencadenador.ruta
         evento = destinatario.notificacion.id_evento
@@ -102,7 +102,7 @@ def construir_notificaciones(request, limite, destinatarios):
 
     contador_notificaciones = 0
     for dest in destinatarios:
-        if not dest.visto and dest.notificacion.fecha_creacion.date() <= datetime.date.today():
+        if not dest.visto and dest.notificacion.fecha_creacion.date() <= app_date_now():
             contador_notificaciones += 1
 
     return {'lista_notificaciones': lista_notificaciones, 'numero_notificaciones': contador_notificaciones}
@@ -113,7 +113,7 @@ class NotificacionesActualizarView(AbstractEvaLoggedView):
         try:
             DestinatarioNotificacion.objects.filter(notificacion_id=id, usuario=request.user)\
                 .update(visto=True)
-            return JsonResponse({"Mensaje": "OK"})
+            return JsonResponse({"estado": "OK"})
 
         except IntegrityError:
-            return JsonResponse({"Mensaje": "FAIL"})
+            return JsonResponse({"estado": "error", "mensaje": 'Ha ocurrido un error al actualizar la notificación'})
