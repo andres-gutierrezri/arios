@@ -103,8 +103,8 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
             colaborador.usuario_id = colaborador.usuario.id
             colaborador.empresa_sesion_id = Contrato.objects.get(id=contratos[0]).empresa_id
             colaborador.save()
-            crear_notificacion_por_evento(EventoDesencadenador.BIENVENIDA, colaborador.id)
-            crear_notificacion_por_evento(EventoDesencadenador.COLABORADOR, colaborador.id)
+            crear_notificacion_por_evento(EventoDesencadenador.BIENVENIDA, colaborador.id, colaborador.nombre_completo)
+            crear_notificacion_por_evento(EventoDesencadenador.COLABORADOR, colaborador.id, colaborador.nombre_completo)
 
             for contrato in contratos:
                 ColaboradorContrato.objects.create(contrato_id=contrato, colaborador=colaborador)
@@ -239,19 +239,18 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
 
 class ColaboradorEliminarView(AbstractEvaLoggedView):
     def post(self, request, id):
+        colaborador = Colaborador.objects.get(id=id)
         try:
-            colaborador = Colaborador.objects.get(id=id)
             colaborador.delete()
             messages.success(request, 'Se ha eliminado el colaborador  {0}'.format(colaborador.nombre_completo)
                              + ' ' + ' con indentificación {0}'.format(colaborador.identificacion))
-            return JsonResponse({"Mensaje": "OK"})
+            return JsonResponse({"estados": "OK"})
 
         except IntegrityError:
-            colaborador = Colaborador.objects.get(id=id)
-            messages.warning(request, 'No se puede eliminar el colaborador  {0}'.format(colaborador.nombre_completo)
-                             + ' ' + ' con identificación {0}'.format(colaborador.identificacion) +
-                             ' porque ya se encuentra asociada a otro módulo')
-            return JsonResponse({"Mensaje": "No se puede eliminar"})
+            return JsonResponse({"estado": "error",
+                                 "mensaje": "No se puede eliminar el colaborador {0} con identificación {1} porque ya"
+                                            " se encuentra asociado a otro módulo".format(colaborador.nombre_completo,
+                                                                                          colaborador.identificacion)})
 
 
 # region Métodos de ayuda

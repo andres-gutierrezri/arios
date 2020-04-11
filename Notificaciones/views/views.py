@@ -10,12 +10,12 @@ from Notificaciones.models.models import TextoNotificacionDelSistema, Notificaci
     SeleccionDeNotificacionARecibir, DestinatarioNotificacion, EventoDesencadenador
 
 
-def crear_notificacion_por_evento(id_desencadenador, id_evento):
+def crear_notificacion_por_evento(id_desencadenador, id_evento, nombre: str = None):
 
     texto = TextoNotificacionDelSistema.objects.get(evento_desencadenador_id=id_desencadenador)
-
+    mensaje = texto.mensaje.format(nombre)
     notificacion = Notificacion.objects.create(titulo=texto.titulo,
-                                               mensaje=texto.mensaje,
+                                               mensaje=mensaje,
                                                id_evento=id_evento,
                                                evento_desencadenador_id=id_desencadenador,
                                                tipo_notificacion_id=TipoNotificacion.EVENTO_DEL_SISTEMA)
@@ -51,11 +51,11 @@ class NotificacionesView(AbstractEvaLoggedView):
     def get(self, request):
         try:
             notificaciones = construir_notificaciones(request, limite=10, destinatarios=[])
-            return JsonResponse({"Mensaje": notificaciones['numero_notificaciones'],
-                                 "Notificaciones": notificaciones['lista_notificaciones']})
+            return JsonResponse({"estado": "OK",
+                                 "datos": {"cantidad": notificaciones['numero_notificaciones'],
+                                           "Notificaciones": notificaciones['lista_notificaciones']}})
         except IntegrityError:
-
-            return JsonResponse({"Mensaje": "Error interno del servidor", "Notificaciones": []})
+            return JsonResponse({"estado": "error",  "mensaje": "Error interno del servidor"})
 
 
 class NotificacionesVerTodasView(AbstractEvaLoggedView):
@@ -105,7 +105,7 @@ class NotificacionesActualizarView(AbstractEvaLoggedView):
         try:
             DestinatarioNotificacion.objects.filter(notificacion_id=id, usuario=request.user)\
                 .update(visto=True)
-            return JsonResponse({"Mensaje": "OK"})
+            return JsonResponse({"estado": "OK"})
 
         except IntegrityError:
-            return JsonResponse({"Mensaje": "FAIL"})
+            return JsonResponse({"estado": "error", "mensaje": 'Ha ocurrido un error al actualizar la notificación'})
