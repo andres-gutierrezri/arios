@@ -198,9 +198,9 @@ class AccionDocumentoView(AbstractEvaLoggedView):
                 otro_usuario.comentario = 'Rechazado por el usuario {0}'.format(usuario_colaborador.usuario.first_name)
                 otro_usuario.save(update_fields=['usuario_anterior', 'estado', 'comentario'])
 
-                anterior = Archivo(id=id)
-                anterior.estado_id = EstadoArchivo.RECHAZADO
-                anterior.save(update_fields=['estado'])
+            archivo = Archivo(id=id)
+            archivo.estado_id = EstadoArchivo.RECHAZADO
+            archivo.save(update_fields=['estado_id'])
             enviar_notificacion_cadena(Archivo.objects.get(id=id), RECHAZADO)
 
         messages.success(request, 'Se guardaron los datos correctamente')
@@ -218,17 +218,20 @@ def enviar_notificacion_cadena(archivo, accion, posicion: int = 0):
     if accion == APROBADO:
         crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
                                       contenido={'titulo': 'Documento Aprobado',
-                                                 'mensaje': 'Tu solicitud ha sido aprobada',
+                                                 'mensaje': 'Tu solicitud para el documento '
+                                                            + archivo.documento.nombre + ' ha sido aprobada',
                                                  'usuario': archivo.usuario.usuario_id})
     elif accion == CADENA_APROBADO:
         crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
                                       contenido={'titulo': 'Documento en aprobación',
-                                                 'mensaje': 'Tu solicitud está avanzando',
+                                                 'mensaje': 'Tu solicitud para el documento '
+                                                            + archivo.documento.nombre + ' está avanzando',
                                                  'usuario': archivo.usuario.usuario_id})
     elif accion == RECHAZADO:
         crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
                                       contenido={'titulo': 'Documento Rechazado',
-                                                 'mensaje': 'Tu solicitud ha sido rechazada',
+                                                 'mensaje': 'Tu solicitud para el documento '
+                                                            + archivo.documento.nombre + ' ha sido rechazada',
                                                  'usuario': archivo.usuario.usuario_id})
 
 
@@ -242,6 +245,27 @@ def usuarios_cadena_aprobacion(archivo, usuario_colaborador):
             return usuario
         if usuario == cadena.last() and not siguiente:
             return False
+
+
+class SolicitudesAprobacionDocumentoView(AbstractEvaLoggedView):
+    def get(self, request):
+        archivos = Archivo.objects.filter(usuario=Colaborador.objects.get(usuario=request.user))\
+            .exclude(estado=EstadoArchivo.OBSOLETO)
+
+        procesos = Proceso.objects.filter(empresa_id=get_id_empresa_global(request)).order_by('nombre')
+        return render(request, 'SGI/AprobacionDocumentos/solicitudes_aprobacion.html',
+                      {'archivos': archivos,
+                       'procesos': procesos,
+                       'menu_actual': 'solicitudes_aprobacion',
+                       'fecha': datetime.now()})
+
+
+class DetalleSolicitudAprobacionView(AbstractEvaLoggedView):
+    def get(self, request, id):
+        archivos = ResultadosAprobacion.objects.filter(archivo_id=id).order_by('id')
+
+        return render(request, 'SGI/AprobacionDocumentos/detalle_solicitud_aprobacion.html',
+                      {'archivos': archivos})
 
 
 # region Métodos de ayuda

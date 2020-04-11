@@ -191,7 +191,8 @@ class ArchivoCargarView(AbstractEvaLoggedView):
             return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
         archivo.save()
-        usuarios_cadena = CadenaAprobacionDetalle.objects.filter(cadena_aprobacion=archivo.cadena_aprobacion)
+        usuarios_cadena = CadenaAprobacionDetalle.objects.filter(cadena_aprobacion=archivo.cadena_aprobacion)\
+            .order_by('orden')
         NUEVO = 0
         for usuario in usuarios_cadena:
             if usuario == usuarios_cadena.first():

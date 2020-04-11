@@ -1,0 +1,46 @@
+{% load eva_tags %}
+{% load static %}
+
+
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header p-b-0">
+            <h4 class="modal-title">
+                Solicitud del Documento: {{ archivos.first.archivo.documento }}
+            </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"><i class="fal fa-times"></i></span>
+            </button>
+        </div>
+        <div class="modal-body p-b-0">
+        {% for archivo in archivos %}
+            <div class="col-lg-6 col-xl-12">
+                <div class="card mb-g">
+                    <div class="row row-grid no-gutters">
+                        <div class="p-3">
+                            <h5>
+                                <small class="mt-0 mb-1">
+                                    <b>Aprobación: </b> {{ archivo.usuario.nombre_completo }}
+                                </small>
+                                <small class="mt-0 mb-1 text-muted">
+                                    <b>Estado: </b> {{ archivo.estado }}
+                                </small>
+                                {% if archivo.estado.id != 0 %}
+                                <small class="mt-0 mb-1 text-muted">
+                                    <b>Comentarios: </b> {{ archivo.comentario }}
+                                </small>
+                                {% endif %}
+                            </h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+        <div class="modal-footer p-t-0" style="align-items: end">
+            <div style="padding-left: 15px">
+                <button data-dismiss="modal" class="btn btn-danger btn-block">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>

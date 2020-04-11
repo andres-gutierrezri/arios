@@ -21,7 +21,7 @@
                     <ul class="notification" id="cargar_notificaciones" style="overflow: hidden; width: auto; height: 100%;">
                         {% for notificacion in Notificaciones %}
                             <li class="{% if notificacion.visto %} read {% else %} unread {% endif %}">
-                                <a href="#" onclick="fDetalleNotificacion('{{ notificacion.url }}', {{ notificacion.id }}, {{ notificacion.id_evento }})" class="d-flex align-items-center">
+                                <a class="d-flex align-items-center" href="#" onclick="fDetalleNotificacion('{{ notificacion.url }}', {{ notificacion.id }}, {{ notificacion.id_evento }}, '{{ notificacion.modal }}')">
                                     <span class="d-flex flex-column flex-1 ml-1"><span class="name">{{ notificacion.titulo }}</span>
                                         <span class="msg-b fs-xs">{{ notificacion.mensaje }}</span>
                                         <span class="fs-nano text-muted mt-1">{{ notificacion.fecha }}</span>
