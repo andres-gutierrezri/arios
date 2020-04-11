@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from Administracion.models import Empresa, Proceso
 from EVA.General.modeljson import ModelDjangoExtensiones
 from EVA.General.modelmanagers import ManagerGeneral
+from TalentoHumano.models import Colaborador
 
 
 class GrupoDocumento(models.Model):
@@ -27,7 +28,9 @@ class GrupoDocumento(models.Model):
 
 class CadenaAprobacionEncabezado(models.Model):
     empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa', null=True, blank=False)
-    nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
+    nombre = models.CharField(max_length=100, unique=True, verbose_name='Nombre', null=False, blank=False)
+    fecha_creacion = models.DateTimeField(verbose_name='Fecha de Creación', null=False, blank=False)
+    estado = models.BooleanField(verbose_name='Estado', null=False, blank=False, default=True)
 
     def __str__(self):
         return self.nombre
@@ -35,6 +38,35 @@ class CadenaAprobacionEncabezado(models.Model):
     class Meta:
         verbose_name = 'Cadena de aprobación encabezado'
         verbose_name_plural = 'Cadenas de aprobaciones encabezados'
+
+    @staticmethod
+    def from_dictionary(datos: dict) -> 'CadenaAprobacionEncabezado':
+        """
+        Crea una instancia de Documento con los datos pasados en el diccionario.
+        :param datos: Diccionario con los datos para crear el docuemento.
+        :return: Instacia de Documento con la información especificada en el diccionario.
+        """
+        cadena_aprobacion = CadenaAprobacionEncabezado()
+        cadena_aprobacion.nombre = datos.get('nombre', '')
+        cadena_aprobacion.fecha_creacion = datos.get('fecha_creacion', '')
+        cadena_aprobacion.estado = datos.get('estado', 'False') == 'True'
+
+        return cadena_aprobacion
+
+
+class CadenaAprobacionDetalle(models.Model):
+    usuario = models.ForeignKey(Colaborador, on_delete=models.DO_NOTHING, verbose_name='Usuario', null=True,
+                                blank=False)
+    orden = models.SmallIntegerField(verbose_name='Orden', null=False, blank=False)
+    cadena_aprobacion = models.ForeignKey(CadenaAprobacionEncabezado, on_delete=models.DO_NOTHING,
+                                          verbose_name='Cadena de Aprobación', null=False, blank=False)
+
+    def __str__(self):
+        return self.usuario.usuario.first_name
+
+    class Meta:
+        verbose_name = 'Detalle de cadena de aprobación'
+        verbose_name_plural = 'Detalles de cadenas de aprobaciones'
 
 
 class Documento(models.Model, ModelDjangoExtensiones):

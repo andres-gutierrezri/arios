@@ -16,3 +16,11 @@
         </li>
     {% endfor %}
 {% endif %}
+{% if perms.SGI.view_cadenaaprobacionencabezado %}
+    <li {% if menu_actual == 'cadenas_aprobacion' %} class="active" {% endif %}>
+        <a href="{% url 'SGI:cadenas-aprobacion-ver' %}" title="Cadenas de Aprobación" data-filter-tags="cadenas aprobacion">
+            <i class="fal fa-link"></i>
+            <span class="nav-link-text" data-i18n="nav.sgi_cadenas_aprobacion">Cadenas de Aprobación</span>
+        </a>
+    </li>
+{% endif %}
