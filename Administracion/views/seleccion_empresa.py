@@ -29,6 +29,6 @@ class SeleccionEmpresaModalView(AbstractEvaLoggedView):
             colaborador = Colaborador.objects.get(usuario=request.user)
             colaborador.empresa_sesion_id = int(body['idEmpresa'])
             colaborador.save(update_fields=['empresa_sesion_id'])
-            return JsonResponse({"Mensaje": "OK"})
+            return JsonResponse({"estado": "OK"})
         except:
-            return JsonResponse({"Mensaje": "Falló"})
+            return JsonResponse({"estado": "error"})
