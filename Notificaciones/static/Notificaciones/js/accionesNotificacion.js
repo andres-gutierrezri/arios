@@ -12,7 +12,7 @@ function fDetalleNotificacion(ruta, id_notificacion, id_evento, modal) {
             context: document.body
         }).done(function (response) {
             accionesNotificacion(id_notificacion);
-            var mDetalleGeneral = $("#mDetalleGeneral");
+            let mDetalleGeneral = $("#mDetalleGeneral");
             mDetalleGeneral.html(response);
             mDetalleGeneral.modal('show');
         });
@@ -28,8 +28,8 @@ function accionesNotificacion(id_notificacion){
             type: 'POST',
             context: document.body,
             success: function (data) {
-                if(data.Mensaje === "FAIL") {
-                    console.log(data.Mensaje);
+                if(data.estado === "error") {
+                    console.log(data.mensaje);
                 }
             },
             failure: function (errMsg) {
