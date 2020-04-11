@@ -57,32 +57,32 @@ def textos_eventos_desencadenadores(apps, schema_editor):
 
     textos = apps.get_model('Notificaciones', 'TextoNotificacionDelSistema')
 
-    textos.objects.create(titulo="!Bienvenido a EVA!",
+    textos.objects.create(titulo="¡Bienvenido a EVA!",
                           mensaje="Hola {0}, te damos la bienvenida a EVA, "
                                   "una aplicación desarrollada por Arios Ingeniería S.A.S.",
                           evento_desencadenador_id=1)
 
-    textos.objects.create(titulo="!Hay un Contrato nuevo!",
+    textos.objects.create(titulo="¡Hay un Contrato nuevo!",
                           mensaje="Se ha creado el contrato {0}, haz clic aquí para verlo.",
                           evento_desencadenador_id=2)
 
-    textos.objects.create(titulo="!Hay un Tercero nuevo!",
+    textos.objects.create(titulo="¡Hay un Tercero nuevo!",
                           mensaje="Se ha creado el tercero {0}, haz clic aquí para verlo.",
                           evento_desencadenador_id=3)
 
-    textos.objects.create(titulo="!Hay una Empresa nueva!",
+    textos.objects.create(titulo="¡Hay una Empresa nueva!",
                           mensaje="Se ha creado la empresa {0}, haz clic aquí para verla.",
                           evento_desencadenador_id=4)
 
-    textos.objects.create(titulo="!Hay una Entidad CAFE nueva!",
+    textos.objects.create(titulo="¡Hay una Entidad CAFE nueva!",
                           mensaje="Se ha creado la entidad CAFE {0}, haz clic aquí para verla.",
                           evento_desencadenador_id=5)
 
-    textos.objects.create(titulo="!Hay un Colaborador nuevo!",
+    textos.objects.create(titulo="¡Hay un Colaborador nuevo!",
                           mensaje="Se ha creado el colaborador {0}, haz clic aquí para verlo.",
                           evento_desencadenador_id=6)
 
-    textos.objects.create(titulo="!Hay una Subempresa nueva!",
+    textos.objects.create(titulo="¡Hay una Subempresa nueva!",
                           mensaje="Se ha creado la subempresa {0}, haz clic aquí para verla.",
                           evento_desencadenador_id=7)
 
