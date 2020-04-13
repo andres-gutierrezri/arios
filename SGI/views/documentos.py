@@ -12,7 +12,7 @@ from EVA.views.index import AbstractEvaLoggedView
 from SGI.models import Documento, GrupoDocumento, Archivo
 from SGI.models.documentos import EstadoArchivo, CadenaAprobacionDetalle, ResultadosAprobacion, \
     CadenaAprobacionEncabezado
-from SGI.views.cadena_aprobacion import enviar_notificacion_cadena
+from SGI.views.cadena_aprobacion import crear_notificacion_cadena
 
 
 class IndexView(AbstractEvaLoggedView):
@@ -202,7 +202,7 @@ class ArchivoCargarView(AbstractEvaLoggedView):
                                                 archivo=archivo, aprobacion_anterior=aprobacion_anterior,
                                                 estado_id=EstadoArchivo.PENDIENTE)
 
-        enviar_notificacion_cadena(archivo, ACCION_NUEVO, posicion=1)
+        crear_notificacion_cadena(archivo, ACCION_NUEVO, posicion=1)
         messages.success(request, 'Se ha cargado un archivo al documento {0}'.format(archivo.documento.nombre))
         return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 

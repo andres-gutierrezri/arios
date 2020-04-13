@@ -188,13 +188,13 @@ class AccionAprobacionDocumentosView(AbstractEvaLoggedView):
             archivo = Archivo(id=id)
             archivo.estado_id = EstadoArchivo.RECHAZADO
             archivo.save(update_fields=['estado_id'])
-            enviar_notificacion_cadena(Archivo.objects.get(id=id), ACCION_RECHAZADO)
+            crear_notificacion_cadena(Archivo.objects.get(id=id), ACCION_RECHAZADO)
 
         messages.success(request, 'Se guardaron los datos correctamente')
         return redirect(reverse('SGI:aprobacion-documentos-ver'))
 
 
-def enviar_notificacion_cadena(archivo, accion, posicion: int = 0):
+def crear_notificacion_cadena(archivo, accion, posicion: int = 0):
     if accion == ACCION_NUEVO:
         usuario = CadenaAprobacionDetalle.objects.get(cadena_aprobacion=archivo.cadena_aprobacion, orden=posicion)
 
