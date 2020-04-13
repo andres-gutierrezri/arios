@@ -129,10 +129,10 @@ class AprobacionDocumentoView(AbstractEvaLoggedView):
                                                                        'fecha': fecha})
 
 # region Constantes de Accion de Documento
-NUEVO = 0
-CADENA_APROBADO = 1
-APROBADO = 2
-RECHAZADO = 3
+ACCION_NUEVO = 0
+ACCION_CADENA_APROBADO = 1
+ACCION_APROBADO = 2
+ACCION_RECHAZADO = 3
 # endregion
 
 
@@ -159,8 +159,8 @@ class AccionDocumentoView(AbstractEvaLoggedView):
                                                                      archivo_id=id)
                 usuario_siguiente.aprobacion_anterior = EstadoArchivo.APROBADO
                 usuario_siguiente.save(update_fields=['aprobacion_anterior'])
-                enviar_notificacion_cadena(usuario_siguiente.archivo, CADENA_APROBADO)
-                enviar_notificacion_cadena(usuario_cadena, NUEVO, posicion=usuario_cadena.orden)
+                enviar_notificacion_cadena(usuario_siguiente.archivo, ACCION_CADENA_APROBADO)
+                enviar_notificacion_cadena(usuario_cadena, ACCION_NUEVO, posicion=usuario_cadena.orden)
             else:
                 archivo_nuevo = Archivo.objects.get(id=id)
                 archivo_nuevo.estado_id = EstadoArchivo.APROBADO
@@ -170,7 +170,7 @@ class AccionDocumentoView(AbstractEvaLoggedView):
                 documento.save(update_fields=['version_actual'])
                 archivo_anterior = Archivo.objects.filter(documento=archivo_nuevo.documento,
                                                           estado_id=EstadoArchivo.APROBADO).exclude(id=id)
-                enviar_notificacion_cadena(archivo_nuevo, APROBADO)
+                enviar_notificacion_cadena(archivo_nuevo, ACCION_APROBADO)
 
                 if archivo_anterior:
                     anterior = Archivo(id=archivo_anterior.first().id)
@@ -188,33 +188,33 @@ class AccionDocumentoView(AbstractEvaLoggedView):
             archivo = Archivo(id=id)
             archivo.estado_id = EstadoArchivo.RECHAZADO
             archivo.save(update_fields=['estado_id'])
-            enviar_notificacion_cadena(Archivo.objects.get(id=id), RECHAZADO)
+            enviar_notificacion_cadena(Archivo.objects.get(id=id), ACCION_RECHAZADO)
 
         messages.success(request, 'Se guardaron los datos correctamente')
         return redirect(reverse('SGI:aprobacion-documentos-ver'))
 
 
 def enviar_notificacion_cadena(archivo, accion, posicion: int = 0):
-    if accion == NUEVO:
+    if accion == ACCION_NUEVO:
         usuario = CadenaAprobacionDetalle.objects.get(cadena_aprobacion=archivo.cadena_aprobacion, orden=posicion)
 
         crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
                                       contenido={'titulo': 'Solicitud de Aprobación',
                                                  'mensaje': 'Tienes un documento pendiente para aprobación',
                                                  'usuario': usuario.usuario_id})
-    if accion == APROBADO:
+    if accion == ACCION_APROBADO:
         crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
                                       contenido={'titulo': 'Documento Aprobado',
                                                  'mensaje': 'Tu solicitud para el documento '
                                                             + archivo.documento.nombre + ' ha sido aprobada',
                                                  'usuario': archivo.usuario_id})
-    elif accion == CADENA_APROBADO:
+    elif accion == ACCION_CADENA_APROBADO:
         crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
                                       contenido={'titulo': 'Documento en aprobación',
                                                  'mensaje': 'Tu solicitud para el documento '
                                                             + archivo.documento.nombre + ' está avanzando',
                                                  'usuario': archivo.usuario_id})
-    elif accion == RECHAZADO:
+    elif accion == ACCION_RECHAZADO:
         crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
                                       contenido={'titulo': 'Documento Rechazado',
                                                  'mensaje': 'Tu solicitud para el documento '

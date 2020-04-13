@@ -192,7 +192,7 @@ class ArchivoCargarView(AbstractEvaLoggedView):
         archivo.save()
         usuarios_cadena = CadenaAprobacionDetalle.objects.filter(cadena_aprobacion=archivo.cadena_aprobacion)\
             .order_by('orden')
-        NUEVO = 0
+        ACCION_NUEVO = 0
         for usuario in usuarios_cadena:
             if usuario == usuarios_cadena.first():
                 aprobacion_anterior = EstadoArchivo.APROBADO
@@ -202,7 +202,7 @@ class ArchivoCargarView(AbstractEvaLoggedView):
                                                 archivo=archivo, aprobacion_anterior=aprobacion_anterior,
                                                 estado_id=EstadoArchivo.PENDIENTE)
 
-        enviar_notificacion_cadena(archivo, NUEVO, posicion=1)
+        enviar_notificacion_cadena(archivo, ACCION_NUEVO, posicion=1)
         messages.success(request, 'Se ha cargado un archivo al documento {0}'.format(archivo.documento.nombre))
         return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
