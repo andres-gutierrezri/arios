@@ -39,7 +39,7 @@ urlpatterns = [
          name='cadenas-aprobacion-eliminar'),
     path('aprobacion_documentos', cadena_aprobacion.AprobacionDocumentoView.as_view(),
          name='aprobacion-documentos-ver'),
-    path('aprobacion_documentos/<int:id>', cadena_aprobacion.AccionDocumentoView.as_view(),
+    path('aprobacion_documentos/<int:id>', cadena_aprobacion.AccionAprobacionDocumentosView.as_view(),
          name='aprobacion-documentos-accion'),
     path('solicitudes_aprobacion', cadena_aprobacion.SolicitudesAprobacionDocumentoView.as_view(),
          name='solicitudes-aprobacion'),

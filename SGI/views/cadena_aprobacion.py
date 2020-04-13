@@ -136,7 +136,7 @@ ACCION_RECHAZADO = 3
 # endregion
 
 
-class AccionDocumentoView(AbstractEvaLoggedView):
+class AccionAprobacionDocumentosView(AbstractEvaLoggedView):
     def get(self, request, id):
         documento = Archivo.objects.get(resultadosaprobacion=id)
         opciones = [{'texto': 'Aprobado', 'valor': EstadoArchivo.APROBADO},
