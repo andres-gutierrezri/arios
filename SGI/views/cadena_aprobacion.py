@@ -153,7 +153,7 @@ class AccionAprobacionDocumentosView(AbstractEvaLoggedView):
         resultado.save(update_fields=['estado', 'comentario'])
 
         if int(opcion) == EstadoArchivo.APROBADO:
-            usuario_cadena = usuarios_cadena_aprobacion(resultado.archivo, request.user)
+            usuario_cadena = detalle_cadena_aprobacion(resultado.archivo, request.user)
             if usuario_cadena:
                 usuario_siguiente = ResultadosAprobacion.objects.get(usuario=usuario_cadena.usuario,
                                                                      archivo_id=id)
@@ -222,15 +222,16 @@ def crear_notificacion_cadena(archivo, accion, posicion: int = 0):
                                                  'usuario': archivo.usuario_id})
 
 
-def usuarios_cadena_aprobacion(archivo, usuario):
-    cadena = CadenaAprobacionDetalle.objects.filter(cadena_aprobacion=archivo.cadena_aprobacion).order_by('orden')
+def detalle_cadena_aprobacion(archivo, usuario):
+    detalle_cadena = CadenaAprobacionDetalle.objects.filter(cadena_aprobacion=archivo.cadena_aprobacion)\
+        .order_by('orden')
     siguiente = False
-    for usuario_cadena in cadena:
-        if usuario_cadena.usuario == usuario and usuario_cadena != cadena.last() and not siguiente:
+    for usuario_cadena in detalle_cadena:
+        if usuario_cadena.usuario == usuario and usuario_cadena != detalle_cadena.last() and not siguiente:
             siguiente = True
         elif siguiente:
             return usuario_cadena
-        if usuario_cadena == cadena.last() and not siguiente:
+        if usuario_cadena == detalle_cadena.last() and not siguiente:
             return CadenaAprobacionDetalle.objects.none()
 
 
