@@ -243,7 +243,7 @@ def usuarios_cadena_aprobacion(archivo, usuario):
         elif siguiente:
             return usuario_cadena
         if usuario_cadena == cadena.last() and not siguiente:
-            return False
+            return CadenaAprobacionDetalle.objects.none()
 
 
 class SolicitudesAprobacionDocumentoView(AbstractEvaLoggedView):
