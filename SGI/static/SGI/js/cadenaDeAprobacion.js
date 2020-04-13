@@ -13,15 +13,15 @@ $(function () {
                 $("#agregar_" + (orden - 1)).hide();
                 $("#eliminar_" + (orden - 1)).hide();
                 valores_selectores.selecciones.forEach(function (item) {
-                    (item.orden === orden ? contenedor.append(crearSelectores(item.orden, item.colaborador_id))
-                        & selecciones.push(item.colaborador_id) : null);
+                    (item.orden === orden ? contenedor.append(crearSelectores(item.orden, item.usuario_id))
+                        & selecciones.push(item.usuario_id) : null);
                     (orden === 1 ? $("#eliminar_" + (orden)).hide() : null);
                 });
                 orden++;
             }
             orden_anterior = orden - 1;
             (orden > valores_selectores.colaboradores.length ? $("#agregar_" + (orden_anterior)).hide() : null);
-            $('#colaborador_id_' + orden_anterior).removeAttr('disabled', true);
+            $('#usuario_id_' + orden_anterior).removeAttr('disabled', true);
             usuarios_seleccionados.val(selecciones.pop());
         } else {
             while (temp > 0) {
@@ -34,7 +34,7 @@ $(function () {
 });
 
 let agregar = function () {
-    let selector = $('#colaborador_id_' + contador);
+    let selector = $('#usuario_id_' + contador);
     $("#agregar_" + (contador)).hide();
     $("#eliminar_" + (contador)).hide();
     selecciones.push(selector.val());
@@ -51,18 +51,18 @@ let eliminar = function (id) {
     $("#elemento_" + id).remove();
     $("#agregar_" + (contador)).show();
     (contador !== 1 ? $("#eliminar_" + (contador)).show() : null);
-    $('#colaborador_id_' + contador).removeAttr('disabled', true);
+    $('#usuario_id_' + contador).removeAttr('disabled', true);
     usuarios_seleccionados.val(selecciones);
 };
 
-let crearSelectores = function (posicion, colaborador_id) {
-    let desactivar = colaborador_id ? 'disabled="disabled"' : '';
+let crearSelectores = function (posicion, usuario_id) {
+    let desactivar = usuario_id ? 'disabled="disabled"' : '';
     return `<div class="form-group" id="elemento_${posicion}">
     <div class="form-row">
         <div class="col-md-11">
-            <label for="colaborador_id_${posicion}">Usuario ${posicion} </label>
-            <select class="select2 form-control" ${desactivar} name="ultimo_usuario" id="colaborador_id_${posicion}"> 
-                ${crearOpciones(colaborador_id)}
+            <label for="usuario_id_${posicion}">Usuario ${posicion} </label>
+            <select class="select2 form-control" ${desactivar} name="ultimo_usuario" id="usuario_id_${posicion}"> 
+                ${crearOpciones(usuario_id)}
             </select>
         </div>
         <div class="col-md-1" style="padding-top:30px" id="botones_${posicion}">
@@ -72,16 +72,17 @@ let crearSelectores = function (posicion, colaborador_id) {
     </div></div>`;
 };
 
-let crearOpciones = function (colaborador_id) {
+let crearOpciones = function (usuario_id) {
     let opciones_colaborador = '';
     if (valores_selectores) {
-        valores_selectores['colaboradores'].forEach(function (usuario) {
+        valores_selectores['colaboradores'].forEach(function (colaborador) {
             let existe = false;
             selecciones.forEach(function (id) {
-                existe = usuario['campo_valor'].toString() === id.toString() ? true : existe;
+                existe = colaborador['id_usuario'].toString() === id.toString() ? true : existe;
             });
             (existe ? null :
-                opciones_colaborador += optionSelect((colaborador_id === usuario.campo_valor ? 'selected ' : ''), usuario.campo_valor, usuario.campo_texto));
+                opciones_colaborador += optionSelect((usuario_id === colaborador.id_usuario ? 'selected ' : ''),
+                    colaborador.id_usuario, colaborador.nombre + ' ' + colaborador.apellido));
         });
         return opciones_colaborador;
     } else {

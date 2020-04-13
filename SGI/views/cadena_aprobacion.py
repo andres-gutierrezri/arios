@@ -2,6 +2,7 @@ import json
 from datetime import datetime
 
 from django.db import IntegrityError
+from django.db.models import F
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -64,7 +65,7 @@ class CadenaAprobacionCrearView(AbstractEvaLoggedView):
 
         orden = 1
         for usuario in usuarios_seleccionados:
-            CadenaAprobacionDetalle.objects.create(cadena_aprobacion=cadena, colaborador_id=usuario, orden=orden)
+            CadenaAprobacionDetalle.objects.create(cadena_aprobacion=cadena, usuario_id=usuario, orden=orden)
             orden += 1
 
         messages.success(request, 'Se ha agregado la cadena de aprobación {0}'.format(cadena.nombre))
@@ -106,7 +107,7 @@ class CadenaAprobacionEditarView(AbstractEvaLoggedView):
         cadena.save(update_fields=['nombre', 'estado'])
         orden = 1
         for usuarios in usuarios_seleccionados:
-            CadenaAprobacionDetalle.objects.create(cadena_aprobacion=cadena, colaborador_id=usuarios, orden=orden)
+            CadenaAprobacionDetalle.objects.create(cadena_aprobacion=cadena, usuario_id=usuarios, orden=orden)
             orden += 1
 
         messages.success(request, 'Se ha actualizado la cadena de aprobación {0}'.format(cadena.nombre))
@@ -130,8 +131,7 @@ class CadenaAprobacionEliminarView(AbstractEvaLoggedView):
 
 class AprobacionDocumentoView(AbstractEvaLoggedView):
     def get(self, request):
-        colaborador = Colaborador.objects.get(usuario=request.user)
-        archivos = ResultadosAprobacion.objects.filter(colaborador=colaborador, estado_id=EstadoArchivo.PENDIENTE,
+        archivos = ResultadosAprobacion.objects.filter(usuario=request.user, estado_id=EstadoArchivo.PENDIENTE,
                                                        aprobacion_anterior=EstadoArchivo.APROBADO)
         procesos = Proceso.objects.filter(empresa_id=get_id_empresa_global(request)).order_by('nombre')
         fecha = datetime.now()
@@ -159,16 +159,15 @@ class AccionDocumentoView(AbstractEvaLoggedView):
     def post(self, request, id):
         comentario = request.POST.get('comentario', '')
         opcion = request.POST.get('opcion', '')
-        usuario_colaborador = Colaborador.objects.get(usuario=request.user)
-        resultado = ResultadosAprobacion.objects.get(archivo_id=id, colaborador=usuario_colaborador)
+        resultado = ResultadosAprobacion.objects.get(archivo_id=id, usuario=request.user)
         resultado.estado_id = opcion
         resultado.comentario = comentario
         resultado.save(update_fields=['estado', 'comentario'])
 
         if int(opcion) == EstadoArchivo.APROBADO:
-            usuario_cadena = usuarios_cadena_aprobacion(resultado.archivo, usuario_colaborador)
+            usuario_cadena = usuarios_cadena_aprobacion(resultado.archivo, request.user)
             if usuario_cadena:
-                usuario_siguiente = ResultadosAprobacion.objects.get(colaborador=usuario_cadena.colaborador,
+                usuario_siguiente = ResultadosAprobacion.objects.get(usuario=usuario_cadena.usuario,
                                                                      archivo_id=id)
                 usuario_siguiente.aprobacion_anterior = EstadoArchivo.APROBADO
                 usuario_siguiente.save(update_fields=['aprobacion_anterior'])
@@ -195,7 +194,7 @@ class AccionDocumentoView(AbstractEvaLoggedView):
                 otro_usuario = ResultadosAprobacion(id=otro_usuario.id)
                 otro_usuario.aprobacion_anterior = EstadoArchivo.RECHAZADO
                 otro_usuario.estado_id = EstadoArchivo.RECHAZADO
-                otro_usuario.comentario = 'Rechazado por el usuario {0}'.format(usuario_colaborador.usuario.first_name)
+                otro_usuario.comentario = 'Rechazado por el usuario {0}'.format(request.usuario.first_name)
                 otro_usuario.save(update_fields=['aprobacion_anterior', 'estado', 'comentario'])
 
             archivo = Archivo(id=id)
@@ -214,42 +213,42 @@ def enviar_notificacion_cadena(archivo, accion, posicion: int = 0):
         crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
                                       contenido={'titulo': 'Solicitud de Aprobación',
                                                  'mensaje': 'Tienes un documento pendiente para aprobación',
-                                                 'usuario': usuario.colaborador.usuario_id})
+                                                 'usuario': usuario.usuario_id})
     if accion == APROBADO:
         crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
                                       contenido={'titulo': 'Documento Aprobado',
                                                  'mensaje': 'Tu solicitud para el documento '
                                                             + archivo.documento.nombre + ' ha sido aprobada',
-                                                 'usuario': archivo.colaborador.usuario_id})
+                                                 'usuario': archivo.usuario_id})
     elif accion == CADENA_APROBADO:
         crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
                                       contenido={'titulo': 'Documento en aprobación',
                                                  'mensaje': 'Tu solicitud para el documento '
                                                             + archivo.documento.nombre + ' está avanzando',
-                                                 'usuario': archivo.colaborador.usuario_id})
+                                                 'usuario': archivo.usuario_id})
     elif accion == RECHAZADO:
         crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
                                       contenido={'titulo': 'Documento Rechazado',
                                                  'mensaje': 'Tu solicitud para el documento '
                                                             + archivo.documento.nombre + ' ha sido rechazada',
-                                                 'usuario': archivo.colaborador.usuario_id})
+                                                 'usuario': archivo.usuario_id})
 
 
-def usuarios_cadena_aprobacion(archivo, usuario_colaborador):
+def usuarios_cadena_aprobacion(archivo, usuario):
     cadena = CadenaAprobacionDetalle.objects.filter(cadena_aprobacion=archivo.cadena_aprobacion).order_by('orden')
     siguiente = False
-    for usuario in cadena:
-        if usuario.colaborador == usuario_colaborador and usuario != cadena.last() and not siguiente:
+    for usuario_cadena in cadena:
+        if usuario_cadena.usuario == usuario and usuario_cadena != cadena.last() and not siguiente:
             siguiente = True
         elif siguiente:
-            return usuario
-        if usuario == cadena.last() and not siguiente:
+            return usuario_cadena
+        if usuario_cadena == cadena.last() and not siguiente:
             return False
 
 
 class SolicitudesAprobacionDocumentoView(AbstractEvaLoggedView):
     def get(self, request):
-        archivos = Archivo.objects.filter(colaborador=Colaborador.objects.get(usuario=request.user))\
+        archivos = Archivo.objects.filter(usuario=request.user)\
             .exclude(estado=EstadoArchivo.OBSOLETO)
 
         procesos = Proceso.objects.filter(empresa_id=get_id_empresa_global(request)).order_by('nombre')
@@ -278,14 +277,16 @@ def datos_xa_render(opcion: str, request, cadena_aprobacion: CadenaAprobacionEnc
     :return: Un diccionario con los datos.
     """
     procesos = Proceso.objects.filter(empresa_id=get_id_empresa_global(request)).order_by('nombre')
-    colaboradores = Colaborador.objects.get_xa_select_activos()
+    colaboradores = Colaborador.objects.filter(estado=True).values(id_usuario=F('usuario_id'),
+                                                                   nombre=F('usuario__first_name'),
+                                                                   apellido=F('usuario__last_name')).order_by('nombre')
     contador = 1
     selecciones = ''
     if opcion == 'editar':
         detalle = CadenaAprobacionDetalle.objects.filter(cadena_aprobacion=cadena_aprobacion)
         if not Archivo.objects.filter(cadena_aprobacion=cadena_aprobacion):
             contador = detalle.count()
-            selecciones = list(detalle.values('colaborador_id', 'orden'))
+            selecciones = list(detalle.values('usuario_id', 'orden'))
         else:
             messages.warning(request, 'Solo es posible editar nombre y estado '
                                       'porque esta cadena de aprobación ya se encuentra en uso.')

@@ -43,7 +43,7 @@
                                                     <tr>
                                                         <td>{{ archivo.archivo.documento.nombre }}</td>
                                                         <td>{{ archivo.archivo.version }}</td>
-                                                        <td>{{ archivo.archivo.usuario.nombre_completo }}</td>
+                                                        <td>{{ archivo.archivo.usuario.get_full_name }}</td>
                                                         <td>{{ archivo.archivo.notas }}</td>
                                                         <td>{{ archivo.archivo.fecha_documento|date:'Y-m-d' }}</td>
                                                         <td>

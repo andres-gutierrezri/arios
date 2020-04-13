@@ -13,7 +13,6 @@ from SGI.models import Documento, GrupoDocumento, Archivo
 from SGI.models.documentos import EstadoArchivo, CadenaAprobacionDetalle, ResultadosAprobacion, \
     CadenaAprobacionEncabezado
 from SGI.views.cadena_aprobacion import enviar_notificacion_cadena
-from TalentoHumano.models import Colaborador
 
 
 class IndexView(AbstractEvaLoggedView):
@@ -167,7 +166,7 @@ class ArchivoCargarView(AbstractEvaLoggedView):
         archivo.documento.grupo_documento_id = id_grupo
         documento = Documento.objects.get(id=id_documento)
         archivo.cadena_aprobacion = documento.cadena_aprobacion
-        archivo.colaborador = Colaborador.objects.get(usuario=request.user)
+        archivo.usuario = request.user
 
         archivo.archivo = request.FILES.get('archivo', None)
         archivo_db = Archivo.objects.filter(documento_id=id_documento, estado=EstadoArchivo.APROBADO)
@@ -199,7 +198,7 @@ class ArchivoCargarView(AbstractEvaLoggedView):
                 aprobacion_anterior = EstadoArchivo.APROBADO
             else:
                 aprobacion_anterior = EstadoArchivo.PENDIENTE
-            ResultadosAprobacion.objects.create(colaborador=usuario.colaborador, fecha=archivo.fecha_documento,
+            ResultadosAprobacion.objects.create(usuario=usuario.usuario, fecha=archivo.fecha_documento,
                                                 archivo=archivo, aprobacion_anterior=aprobacion_anterior,
                                                 estado_id=EstadoArchivo.PENDIENTE)
 

@@ -57,7 +57,7 @@
                                                                             <span class="badge bg-primary-300"><font style="vertical-align: inherit;">
                                                                                 <font style="vertical-align: inherit;">{{ detalle.orden }}</font></font>
                                                                             </span>
-                                                                            <font style="vertical-align: inherit;"><font style="vertical-align: inherit;">{{ detalle.colaborador.primer_nombre_apellido }}</font></font>
+                                                                            <font style="vertical-align: inherit;"><font style="vertical-align: inherit;">{{ detalle.usuario.get_full_name }}</font></font>
                                                                         </span>
                                                                     {% endif %}
                                                                 {% endfor %}
