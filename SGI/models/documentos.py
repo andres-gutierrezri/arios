@@ -56,14 +56,14 @@ class CadenaAprobacionEncabezado(models.Model):
 
 
 class CadenaAprobacionDetalle(models.Model):
-    colaborador = models.ForeignKey(Colaborador, on_delete=models.DO_NOTHING, verbose_name='Colaborador', null=True,
-                                    blank=False)
+    usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario', null=True,
+                                blank=False)
     orden = models.SmallIntegerField(verbose_name='Orden', null=False, blank=False)
     cadena_aprobacion = models.ForeignKey(CadenaAprobacionEncabezado, on_delete=models.DO_NOTHING,
                                           verbose_name='Cadena de Aprobación', null=False, blank=False)
 
     def __str__(self):
-        return self.colaborador.usuario.first_name
+        return self.usuario.first_name
 
     class Meta:
         verbose_name = 'Detalle de cadena de aprobación'
@@ -168,8 +168,8 @@ class Archivo(models.Model):
                                           verbose_name='Cadena de aprobación', null=True, blank=False)
     estado = models.ForeignKey(EstadoArchivo, on_delete=models.DO_NOTHING, verbose_name='Estado de Archivo', null=False,
                                blank=False)
-    colaborador = models.ForeignKey(Colaborador, on_delete=models.DO_NOTHING, verbose_name='Colaborador', null=False,
-                                    blank=False)
+    usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario', null=False,
+                                blank=False)
 
     def __str__(self):
         return self.documento.nombre
@@ -199,8 +199,8 @@ class Archivo(models.Model):
 
 
 class ResultadosAprobacion(models.Model):
-    colaborador = models.ForeignKey(Colaborador, on_delete=models.DO_NOTHING, verbose_name='Colaborador', null=True,
-                                    blank=False)
+    usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario', null=True,
+                                blank=False)
     estado = models.ForeignKey(EstadoArchivo, on_delete=models.DO_NOTHING, verbose_name='Estado', null=False,
                                blank=False)
     comentario = models.CharField(max_length=300, verbose_name='Comentario', null=True, blank=False)
@@ -209,7 +209,7 @@ class ResultadosAprobacion(models.Model):
     aprobacion_anterior = models.SmallIntegerField(verbose_name='Aprobación Anterior', null=True, blank=False)
 
     def __str__(self):
-        return self.colaborador.usuario.first_name
+        return self.usuario.first_name
 
     class Meta:
         verbose_name = 'Detalle de cadena de aprobación'
