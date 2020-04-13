@@ -1,58 +1,70 @@
-let valores_selectores = $('#valores_selectores').val() ? JSON.parse($('#valores_selectores').val()) : null;
+let contenedorValores = $('#valores_selectores');
+let valorSelectores = contenedorValores.val() ? JSON.parse(contenedorValores.val()) : null;
 let contenedor = $('#contenedor_selectores');
-let contador = valores_selectores ? valores_selectores['contador'] : null;
+let contador = valorSelectores ? valorSelectores['contador'] : null;
 let selecciones = [];
-let usuarios_seleccionados = $('#usuarios_seleccionados');
+let usuariosSeleccionados = $('#usuarios_seleccionados');
+
+function crear_id_compuesto(texto, numero){
+    $("#" + texto + '_' + (numero));
+}
 
 $(function () {
-    if (valores_selectores) {
+    if (valorSelectores) {
         let temp = contador;
-        if (valores_selectores.opcion === 'editar') {
-            let orden = 1, orden_anteior;
+        if (valorSelectores.opcion === 'editar') {
+            let orden = 1, orden_anterior;
             while (orden <= temp) {
-                $("#agregar_" + (orden - 1)).hide();
-                $("#eliminar_" + (orden - 1)).hide();
-                valores_selectores.selecciones.forEach(function (item) {
-                    (item.orden === orden ? contenedor.append(crearSelectores(item.orden, item.usuario_id))
-                        & selecciones.push(item.usuario_id) : null);
-                    (orden === 1 ? $("#eliminar_" + (orden)).hide() : null);
-                });
+                crear_id_compuesto('agregar', (orden-1)).hide();
+                crear_id_compuesto('eliminar', (orden-1)).hide();
+                 valorSelectores.selecciones.forEach(function (item) {
+                if (item.orden === orden){
+                    contenedor.append(crearSelectores(item.orden, item.usuario_id));
+                    selecciones.push(item.usuario_id);
+                }
+                if (orden === 1){
+                     crear_id_compuesto('eliminar', orden).hide();
+                }
+            });
                 orden++;
             }
             orden_anterior = orden - 1;
-            (orden > valores_selectores.colaboradores.length ? $("#agregar_" + (orden_anterior)).hide() : null);
-            $('#usuario_id_' + orden_anterior).removeAttr('disabled', true);
-            usuarios_seleccionados.val(selecciones.pop());
+            (orden > valorSelectores.colaboradores.length ? crear_id_compuesto('agregar', orden_anterior).hide() : null);
+            crear_id_compuesto('usuario_id', orden_anterior).removeAttr('disabled', true);
+            usuariosSeleccionados.val(selecciones.pop());
         } else {
             while (temp > 0) {
                 contenedor.append(crearSelectores(temp));
                 temp--;
             }
-            $("#eliminar_1").hide();
+            crear_id_compuesto('eliminar', 1).hide();
         }
     }
 });
 
 let agregar = function () {
-    let selector = $('#usuario_id_' + contador);
-    $("#agregar_" + (contador)).hide();
-    $("#eliminar_" + (contador)).hide();
+    let selector = crear_id_compuesto('usuario_id', contador);
+    crear_id_compuesto('agregar', contador).hide();
+    crear_id_compuesto('eliminar', contador).hide();
     selecciones.push(selector.val());
     selector.attr('disabled', true);
-    (valores_selectores.colaboradores.length > contador ? contador++ & contenedor.append(crearSelectores(contador)) : null);
-    (valores_selectores.colaboradores.length - contador === 0 ? $("#agregar_" + (contador)).hide() : null);
+   if (valorSelectores.colaboradores.length > contador){
+       contenedor.append(crearSelectores(contador));
+       contador++;
+   }
+    (valorSelectores.colaboradores.length - contador === 0 ? crear_id_compuesto('agregar', contador).hide() : null);
     $('.select2').select2();
-    usuarios_seleccionados.val(selecciones);
+    usuariosSeleccionados.val(selecciones);
 };
 
 let eliminar = function (id) {
     contador--;
     selecciones.pop();
-    $("#elemento_" + id).remove();
-    $("#agregar_" + (contador)).show();
-    (contador !== 1 ? $("#eliminar_" + (contador)).show() : null);
-    $('#usuario_id_' + contador).removeAttr('disabled', true);
-    usuarios_seleccionados.val(selecciones);
+    crear_id_compuesto('elemento', id).remove();
+    crear_id_compuesto('agregar', contador).show();
+    (contador !== 1 ?  crear_id_compuesto('eliminar', (contador)).show() : null);
+     crear_id_compuesto('usuario', contador).removeAttr('disabled', true);
+    usuariosSeleccionados.val(selecciones);
 };
 
 let crearSelectores = function (posicion, usuario_id) {
@@ -73,18 +85,19 @@ let crearSelectores = function (posicion, usuario_id) {
 };
 
 let crearOpciones = function (usuario_id) {
-    let opciones_colaborador = '';
-    if (valores_selectores) {
-        valores_selectores['colaboradores'].forEach(function (colaborador) {
+    let opcionesColaborador = '';
+    if (valorSelectores) {
+        valorSelectores['colaboradores'].forEach(function (colaborador) {
             let existe = false;
             selecciones.forEach(function (id) {
                 existe = colaborador['id_usuario'].toString() === id.toString() ? true : existe;
             });
-            (existe ? null :
-                opciones_colaborador += optionSelect((usuario_id === colaborador.id_usuario ? 'selected ' : ''),
-                    colaborador.id_usuario, colaborador.nombre + ' ' + colaborador.apellido));
+            if(existe){
+                opcionesColaborador += optionSelect((usuario_id === colaborador.id_usuario ? 'selected ' : ''),
+                    colaborador.id_usuario, colaborador.nombre + ' ' + colaborador.apellido)
+            }
         });
-        return opciones_colaborador;
+        return opcionesColaborador;
     } else {
         return '';
     }
