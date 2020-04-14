@@ -51,6 +51,7 @@ class EventoDesencadenador(models.Model):
     SUBEMPRESA = 7
     NOTIFICACION_CA = 8
     SOLICITUD_APROBACION = 9
+    APROBACION_DIRECTA_DOCUMENTO = 10
     # endregion
 
 

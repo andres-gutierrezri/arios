@@ -80,7 +80,7 @@ class Documento(models.Model, ModelDjangoExtensiones):
     version_actual = models.DecimalField(max_digits=4, decimal_places=1, verbose_name='Versión Actual',
                                          null=False, blank=False)
     cadena_aprobacion = models.ForeignKey(CadenaAprobacionEncabezado, on_delete=models.DO_NOTHING,
-                                          verbose_name='Cadena de aprobación', null=True, blank=False)
+                                          verbose_name='Cadena de aprobación', null=True, blank=True)
     grupo_documento = models.ForeignKey(GrupoDocumento, on_delete=models.DO_NOTHING,
                                         verbose_name='Grupo de documento', null=True, blank=False)
     proceso = models.ForeignKey(Proceso, on_delete=models.DO_NOTHING, verbose_name='Proceso', null=True, blank=False)
@@ -106,7 +106,7 @@ class Documento(models.Model, ModelDjangoExtensiones):
         documento.codigo = datos.get('codigo', '')
         documento.fecha_modificacion = datetime.now()
         documento.version_actual = datos.get('version_actual', '')
-        documento.cadena_aprobacion_id = datos.get('cadena_aprobacion_id', '')
+        documento.cadena_aprobacion_id = datos.get('cadena_aprobacion_id', None)
         documento.grupo_documento_id = datos.get('grupo_documento_id', '')
         documento.proceso_id = datos.get('proceso_id', '')
 
@@ -165,7 +165,7 @@ class Archivo(models.Model):
     archivo = models.FileField(upload_to=custom_upload_to, blank=True)
     hash = models.CharField(max_length=300, verbose_name='Hash', null=False, blank=False)
     cadena_aprobacion = models.ForeignKey(CadenaAprobacionEncabezado, on_delete=models.DO_NOTHING,
-                                          verbose_name='Cadena de aprobación', null=True, blank=False)
+                                          verbose_name='Cadena de aprobación', null=True, blank=True)
     estado = models.ForeignKey(EstadoArchivo, on_delete=models.DO_NOTHING, verbose_name='Estado de Archivo', null=False,
                                blank=False)
     usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario', null=False,

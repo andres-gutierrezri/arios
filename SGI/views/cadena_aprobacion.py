@@ -133,6 +133,7 @@ ACCION_NUEVO = 0
 ACCION_CADENA_APROBADO = 1
 ACCION_APROBADO = 2
 ACCION_RECHAZADO = 3
+ACCION_APROBACION_DIRECTA = 4
 # endregion
 
 
@@ -219,6 +220,12 @@ def crear_notificacion_cadena(archivo, accion, posicion: int = 0):
                                       contenido={'titulo': 'Documento Rechazado',
                                                  'mensaje': 'Tu solicitud para el documento '
                                                             + archivo.documento.nombre + ' ha sido rechazada',
+                                                 'usuario': archivo.usuario_id})
+    elif accion == ACCION_APROBACION_DIRECTA:
+        crear_notificacion_por_evento(EventoDesencadenador.APROBACION_DIRECTA_DOCUMENTO, archivo.id,
+                                      contenido={'titulo': 'Documento Aprobado',
+                                                 'mensaje': 'Tu solicitud para el documento '
+                                                            + archivo.documento.nombre + ' ha sido aprobada',
                                                  'usuario': archivo.usuario_id})
 
 

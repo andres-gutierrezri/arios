@@ -63,6 +63,12 @@ def agregar_eventos_desencadenadores(apps, schema_editor):
                                             fecha_creacion=datetime.datetime.today(),
                                             estado=True, modal=True)
 
+    eventos_desencadenadores.objects.create(id=10, nombre="Aprobación Directa de Documentos",
+                                            descripcion="Aprobación Directa de Documentos",
+                                            ruta="/sgi/solicitudes_aprobacion",
+                                            fecha_creacion=datetime.datetime.today(),
+                                            estado=True, modal=False)
+
 
 def textos_eventos_desencadenadores(apps, schema_editor):
 
