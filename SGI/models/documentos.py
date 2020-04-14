@@ -212,5 +212,5 @@ class ResultadosAprobacion(models.Model):
         return self.usuario.first_name
 
     class Meta:
-        verbose_name = 'Detalle de cadena de aprobación'
-        verbose_name_plural = 'Detalles de cadenas de aprobaciones'
+        verbose_name = 'Resultado de Aprobación'
+        verbose_name_plural = 'Resultados de Aprobaciones'
