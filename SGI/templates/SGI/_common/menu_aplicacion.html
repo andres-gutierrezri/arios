@@ -24,7 +24,7 @@
         </a>
     </li>
 {% endif %}
-{% if perms.SGI.view_resultadoaprobacion %}
+{% if perms.SGI.view_resultadosaprobacion %}
     <li {% if menu_actual == 'aprobacion_documentos' %} class="active" {% endif %}>
         <a href="{% url 'SGI:aprobacion-documentos-ver' %}" title="Aprobación de Documentos" data-filter-tags="aprobacion documentos">
             <i class="fal fa-check"></i>
