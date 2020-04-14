@@ -155,7 +155,7 @@ class AccionAprobacionDocumentosView(AbstractEvaLoggedView):
         resultado.save(update_fields=['estado', 'comentario'])
 
         if int(opcion) == EstadoArchivo.APROBADO:
-            usuario_cadena = detalle_cadena_aprobacion(resultado.archivo, request.user)
+            usuario_cadena = usuario_siguiente_cadena_aprobacion_detalle(resultado.archivo, request.user)
             if usuario_cadena:
                 usuario_siguiente = ResultadosAprobacion.objects.get(usuario=usuario_cadena.usuario,
                                                                      archivo_id=id)
@@ -230,7 +230,14 @@ def crear_notificacion_cadena(archivo, accion, posicion: int = 0):
                                                  'usuario': archivo.usuario_id})
 
 
-def detalle_cadena_aprobacion(archivo, usuario):
+def usuario_siguiente_cadena_aprobacion_detalle(archivo, usuario):
+    """
+    Retorna el detalle de la cadena de aprobacion del usuario siguiente con respecto al usuario actual.
+    :exception: Si no existe un usuario siguiente, retorna una instancia vacia del detalle de la cadena de aprobación.
+    :param archivo: Instancia del archivo que se está procesando
+    :param usuario: Usuario actual, el cual está realizando la acción
+    :return: Una instancia del detalle de la cadena de aprobación con el usuario siguiente.
+    """
     detalle_cadena = CadenaAprobacionDetalle.objects.filter(cadena_aprobacion=archivo.cadena_aprobacion)\
         .order_by('orden')
     siguiente = False
