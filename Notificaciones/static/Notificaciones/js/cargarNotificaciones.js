@@ -62,6 +62,25 @@ function fCargarNotificaciones() {
     });
 }
 
+function comprobarIcono() {
+     if (icono_not.is(':visible')) {
+        icono_not.hide();
+        } else {
+         if (icono_not.text()) {
+             icono_not.show();
+         } else {
+             icono_not.hide();
+         }
+     }
+}
+
 $('#btn_not').click(function () {
-     icono_not.hide();
+    comprobarIcono()
  });
+
+$(document).on('click', function (e) {
+    if(!icono_not.is(':visible')){
+       comprobarIcono()
+    }
+});
+
