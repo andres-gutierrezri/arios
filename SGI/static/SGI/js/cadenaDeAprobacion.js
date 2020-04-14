@@ -31,7 +31,8 @@ $(function () {
             orden_anterior = orden - 1;
             (orden > valorSelectores.colaboradores.length ? crear_id_compuesto('agregar', orden_anterior).hide() : null);
             crear_id_compuesto('usuario_id', orden_anterior).removeAttr('disabled', true);
-            usuariosSeleccionados.val(selecciones.pop());
+            selecciones.pop();
+            usuariosSeleccionados.val(selecciones);
         } else {
             while (temp > 0) {
                 contenedor.append(crearSelectores(temp));
