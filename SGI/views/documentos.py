@@ -210,7 +210,7 @@ class ArchivoCargarView(AbstractEvaLoggedView):
                 ResultadosAprobacion.objects.create(usuario=usuario.usuario, fecha=archivo.fecha_documento,
                                                     archivo=archivo, aprobacion_anterior=aprobacion_anterior,
                                                     estado_id=EstadoArchivo.PENDIENTE)
-                crear_notificacion_cadena(archivo, ACCION_NUEVO, posicion=1)
+            crear_notificacion_cadena(archivo, ACCION_NUEVO, posicion=1)
         else:
             crear_notificacion_cadena(archivo, ACCION_APROBACION_DIRECTA)
             archivos_anteriores = Archivo.objects.filter(documento=documento).exclude(id=archivo.id)
