@@ -179,14 +179,6 @@ class AccionAprobacionDocumentosView(AbstractEvaLoggedView):
                     anterior.estado_id = EstadoArchivo.OBSOLETO
                     anterior.save(update_fields=['estado'])
         else:
-            otros_usuarios = ResultadosAprobacion.objects.filter(archivo_id=id, estado_id=EstadoArchivo.PENDIENTE)
-            for otro_usuario in otros_usuarios:
-                otro_usuario = ResultadosAprobacion(id=otro_usuario.id)
-                otro_usuario.aprobacion_anterior = EstadoArchivo.RECHAZADO
-                otro_usuario.estado_id = EstadoArchivo.RECHAZADO
-                otro_usuario.comentario = 'Rechazado por el usuario {0}'.format(request.usuario.first_name)
-                otro_usuario.save(update_fields=['aprobacion_anterior', 'estado', 'comentario'])
-
             archivo = Archivo(id=id)
             archivo.estado_id = EstadoArchivo.RECHAZADO
             archivo.save(update_fields=['estado_id'])
@@ -266,6 +258,11 @@ class SolicitudesAprobacionDocumentoView(AbstractEvaLoggedView):
 class DetalleSolicitudAprobacionView(AbstractEvaLoggedView):
     def get(self, request, id):
         archivos = ResultadosAprobacion.objects.filter(archivo_id=id).order_by('id')
+
+        for archivo in archivos:
+            if archivo.estado_id == EstadoArchivo.RECHAZADO:
+                archivos = archivos.exclude(estado_id=EstadoArchivo.PENDIENTE)
+                break
 
         return render(request, 'SGI/AprobacionDocumentos/detalle_solicitud_aprobacion.html',
                       {'archivos': archivos})
