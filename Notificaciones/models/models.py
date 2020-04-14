@@ -31,7 +31,7 @@ class EventoDesencadenador(models.Model):
     ruta = models.TextField(max_length=300, verbose_name='Ruta', null=False, blank=False)
     fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False,
                                           blank=False)
-    modal = models.BooleanField(verbose_name='Modal', null=False, blank=False)
+    modal = models.BooleanField(verbose_name='Modal', null=False, blank=False, default=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
 
     def __str__(self):
