@@ -90,8 +90,9 @@ class CadenaAprobacionEditarView(AbstractEvaLoggedView):
             return render(request, 'SGI/CadenasAprobacion/crear-editar.html',
                           datos_xa_render(self.OPCION, request, cadena, errores))
 
-        if usuarios_seleccionados:
-            CadenaAprobacionDetalle.objects.filter(cadena_aprobacion=cadena).delete()
+        if not Documento.objects.filter(cadena_aprobacion_id=id):
+            if usuarios_seleccionados:
+                CadenaAprobacionDetalle.objects.filter(cadena_aprobacion=cadena).delete()
 
         cadena.save(update_fields=['nombre', 'estado'])
         orden = 1
