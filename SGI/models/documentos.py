@@ -30,7 +30,7 @@ class CadenaAprobacionEncabezado(models.Model):
     objects = ManagerGeneral()
     empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa', null=True, blank=False)
     nombre = models.CharField(max_length=100, unique=True, verbose_name='Nombre', null=False, blank=False)
-    fecha_creacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Creación', null=False, blank=False)
+    fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False, default=True)
 
     def __str__(self):
