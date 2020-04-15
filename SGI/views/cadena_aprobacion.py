@@ -216,10 +216,10 @@ def crear_notificacion_cadena(archivo, accion, posicion: int = 0):
                                                             + archivo.documento.nombre + ' ha sido rechazada',
                                                  'usuario': archivo.usuario_id})
     elif accion == ACCION_APROBACION_DIRECTA:
-        crear_notificacion_por_evento(EventoDesencadenador.APROBACION_DIRECTA_DOCUMENTO, archivo.id,
-                                      contenido={'titulo': 'Documento Aprobado',
-                                                 'mensaje': 'Tu solicitud para el documento '
-                                                            + archivo.documento.nombre + ' ha sido aprobada',
+        crear_notificacion_por_evento(EventoDesencadenador.APROBACION_DIRECTA_DOCUMENTO, archivo.documento.proceso.id,
+                                      contenido={'titulo': 'Documento Disponible',
+                                                 'mensaje': 'El documento ' + archivo.documento.nombre + ' '
+                                                            'ya se encuentra disponible.',
                                                  'usuario': archivo.usuario_id})
 
 
