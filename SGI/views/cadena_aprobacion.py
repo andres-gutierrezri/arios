@@ -246,7 +246,7 @@ def usuario_siguiente_cadena_aprobacion_detalle(archivo, usuario):
 class SolicitudesAprobacionDocumentoView(AbstractEvaLoggedView):
     def get(self, request):
         archivos = Archivo.objects.filter(usuario=request.user)\
-            .exclude(estado=EstadoArchivo.OBSOLETO)
+            .exclude(estado=EstadoArchivo.OBSOLETO).exclude(cadena_aprobacion_id=None)
 
         procesos = Proceso.objects.filter(empresa_id=get_id_empresa_global(request)).order_by('nombre')
         return render(request, 'SGI/AprobacionDocumentos/solicitudes_aprobacion.html',
