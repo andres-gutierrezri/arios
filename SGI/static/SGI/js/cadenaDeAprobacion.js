@@ -7,7 +7,7 @@ let contador = valorSelectores ? valorSelectores['contador'] : 0;
 let selecciones = [];
 let usuariosSeleccionados = $('#usuarios_seleccionados');
 
-function crearIdCompuesto(texto, numero){
+function crearIdCompuesto(texto, numero) {
     return $("#" + texto + '_' + (numero));
 }
 
@@ -17,22 +17,22 @@ $(function () {
         if (valorSelectores.opcion === 'editar') {
             let orden = 1, ordenAnterior;
             while (orden <= temp) {
-                crearIdCompuesto('agregar', (orden-1)).hide();
-                crearIdCompuesto('eliminar', (orden-1)).hide();
+                crearIdCompuesto('agregar', (orden - 1)).hide();
+                crearIdCompuesto('eliminar', (orden - 1)).hide();
                 valorSelectores.selecciones.forEach(function (item) {
-                    if (item.orden === orden){
+                    if (item.orden === orden) {
                         contenedor.append(crearSelectores(item.orden, item.usuario_id));
                         selecciones.push(item.usuario_id);
                     }
-                    if (orden === 1){
-                         crearIdCompuesto('eliminar', orden).hide();
+                    if (orden === 1) {
+                        crearIdCompuesto('eliminar', orden).hide();
                     }
                 });
                 orden++;
             }
             ordenAnterior = orden - 1;
 
-            if(orden > valorSelectores.colaboradores.length)
+            if (orden > valorSelectores.colaboradores.length)
                 crearIdCompuesto('agregar', ordenAnterior).hide();
 
             crearIdCompuesto('usuario_id', ordenAnterior).removeAttr('disabled', true);
@@ -61,7 +61,7 @@ let agregar = function () {
         contenedor.append(crearSelectores(contador));
     }
 
-    if(valorSelectores.colaboradores.length - contador === 0)
+    if (valorSelectores.colaboradores.length - contador === 0)
         crearIdCompuesto('agregar', contador).hide();
 
     $('.select2').select2();
@@ -73,10 +73,10 @@ let eliminar = function (id) {
     selecciones.pop();
     crearIdCompuesto('elemento', id).remove();
     crearIdCompuesto('agregar', contador).show();
-    if(contador !== 1)
+    if (contador !== 1)
         crearIdCompuesto('eliminar', (contador)).show();
 
-     crearIdCompuesto('usuario_id', contador).removeAttr('disabled', true);
+    crearIdCompuesto('usuario_id', contador).removeAttr('disabled', true);
     usuariosSeleccionados.val(selecciones);
 };
 
@@ -105,7 +105,7 @@ let crearOpciones = function (usuario_id) {
             selecciones.forEach(function (id) {
                 existe = colaborador['id_usuario'].toString() === id.toString() ? true : existe;
             });
-            if(!existe){
+            if (!existe) {
                 opcionesColaborador += optionSelect((usuario_id === colaborador.id_usuario ? 'selected ' : ''),
                     colaborador.id_usuario, colaborador.nombre + ' ' + colaborador.apellido)
             }
