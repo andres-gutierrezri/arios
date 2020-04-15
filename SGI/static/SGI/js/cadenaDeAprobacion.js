@@ -1,11 +1,13 @@
+'use strict';
+
 let contenedorSelectores = $('#valores_selectores');
 let valorSelectores = contenedorSelectores.val() ? JSON.parse(contenedorSelectores.val()) : null;
 let contenedor = $('#contenedor_selectores');
-let contador = valorSelectores ? valorSelectores['contador'] : null;
+let contador = valorSelectores ? valorSelectores['contador'] : 0;
 let selecciones = [];
 let usuariosSeleccionados = $('#usuarios_seleccionados');
 
-function crear_id_compuesto(texto, numero){
+function crearIdCompuesto(texto, numero){
     return $("#" + texto + '_' + (numero));
 }
 
@@ -13,24 +15,27 @@ $(function () {
     if (valorSelectores) {
         let temp = contador;
         if (valorSelectores.opcion === 'editar') {
-            let orden = 1, orden_anterior;
+            let orden = 1, ordenAnterior;
             while (orden <= temp) {
-                crear_id_compuesto('agregar', (orden-1)).hide();
-                crear_id_compuesto('eliminar', (orden-1)).hide();
+                crearIdCompuesto('agregar', (orden-1)).hide();
+                crearIdCompuesto('eliminar', (orden-1)).hide();
                 valorSelectores.selecciones.forEach(function (item) {
                     if (item.orden === orden){
                         contenedor.append(crearSelectores(item.orden, item.usuario_id));
                         selecciones.push(item.usuario_id);
                     }
                     if (orden === 1){
-                         crear_id_compuesto('eliminar', orden).hide();
+                         crearIdCompuesto('eliminar', orden).hide();
                     }
                 });
                 orden++;
             }
-            orden_anterior = orden - 1;
-            (orden > valorSelectores.colaboradores.length ? crear_id_compuesto('agregar', orden_anterior).hide() : null);
-            crear_id_compuesto('usuario_id', orden_anterior).removeAttr('disabled', true);
+            ordenAnterior = orden - 1;
+
+            if(orden > valorSelectores.colaboradores.length)
+                crearIdCompuesto('agregar', ordenAnterior).hide();
+
+            crearIdCompuesto('usuario_id', ordenAnterior).removeAttr('disabled', true);
             selecciones.pop();
             usuariosSeleccionados.val(selecciones);
         } else {
@@ -38,22 +43,27 @@ $(function () {
                 contenedor.append(crearSelectores(temp));
                 temp--;
             }
-            crear_id_compuesto('eliminar', 1).hide();
+            crearIdCompuesto('eliminar', 1).hide();
         }
     }
 });
 
 let agregar = function () {
-    let selector = crear_id_compuesto('usuario_id', contador);
-    crear_id_compuesto('agregar', contador).hide();
-    crear_id_compuesto('eliminar', contador).hide();
+    let selector = crearIdCompuesto('usuario_id', contador);
+
+    crearIdCompuesto('agregar', contador).hide();
+    crearIdCompuesto('eliminar', contador).hide();
     selecciones.push(selector.val());
     selector.attr('disabled', true);
-   if (valorSelectores.colaboradores.length > contador){
-       contador++;
-       contenedor.append(crearSelectores(contador));
-   }
-    (valorSelectores.colaboradores.length - contador === 0 ? crear_id_compuesto('agregar', contador).hide() : null);
+
+    if (valorSelectores.colaboradores.length > contador) {
+        contador++;
+        contenedor.append(crearSelectores(contador));
+    }
+
+    if(valorSelectores.colaboradores.length - contador === 0)
+        crearIdCompuesto('agregar', contador).hide();
+
     $('.select2').select2();
     usuariosSeleccionados.val(selecciones);
 };
@@ -61,10 +71,12 @@ let agregar = function () {
 let eliminar = function (id) {
     contador--;
     selecciones.pop();
-    crear_id_compuesto('elemento', id).remove();
-    crear_id_compuesto('agregar', contador).show();
-    (contador !== 1 ?  crear_id_compuesto('eliminar', (contador)).show() : null);
-     crear_id_compuesto('usuario_id', contador).removeAttr('disabled', true);
+    crearIdCompuesto('elemento', id).remove();
+    crearIdCompuesto('agregar', contador).show();
+    if(contador !== 1)
+        crearIdCompuesto('eliminar', (contador)).show();
+
+     crearIdCompuesto('usuario_id', contador).removeAttr('disabled', true);
     usuariosSeleccionados.val(selecciones);
 };
 
