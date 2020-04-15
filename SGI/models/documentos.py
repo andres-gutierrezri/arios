@@ -30,7 +30,7 @@ class CadenaAprobacionEncabezado(models.Model):
     objects = ManagerGeneral()
     empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa', null=True, blank=False)
     nombre = models.CharField(max_length=100, unique=True, verbose_name='Nombre', null=False, blank=False)
-    fecha_creacion = models.DateTimeField(verbose_name='Fecha de Creación', null=False, blank=False)
+    fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False, default=True)
 
     def __str__(self):
@@ -56,14 +56,14 @@ class CadenaAprobacionEncabezado(models.Model):
 
 
 class CadenaAprobacionDetalle(models.Model):
-    usuario = models.ForeignKey(Colaborador, on_delete=models.DO_NOTHING, verbose_name='Usuario', null=True,
+    usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario', null=True,
                                 blank=False)
     orden = models.SmallIntegerField(verbose_name='Orden', null=False, blank=False)
     cadena_aprobacion = models.ForeignKey(CadenaAprobacionEncabezado, on_delete=models.DO_NOTHING,
                                           verbose_name='Cadena de Aprobación', null=False, blank=False)
 
     def __str__(self):
-        return self.usuario.usuario.first_name
+        return self.usuario.first_name
 
     class Meta:
         verbose_name = 'Detalle de cadena de aprobación'
@@ -80,7 +80,7 @@ class Documento(models.Model, ModelDjangoExtensiones):
     version_actual = models.DecimalField(max_digits=4, decimal_places=1, verbose_name='Versión Actual',
                                          null=False, blank=False)
     cadena_aprobacion = models.ForeignKey(CadenaAprobacionEncabezado, on_delete=models.DO_NOTHING,
-                                          verbose_name='Cadena de aprobación', null=True, blank=False)
+                                          verbose_name='Cadena de aprobación', null=True, blank=True)
     grupo_documento = models.ForeignKey(GrupoDocumento, on_delete=models.DO_NOTHING,
                                         verbose_name='Grupo de documento', null=True, blank=False)
     proceso = models.ForeignKey(Proceso, on_delete=models.DO_NOTHING, verbose_name='Proceso', null=True, blank=False)
@@ -106,7 +106,7 @@ class Documento(models.Model, ModelDjangoExtensiones):
         documento.codigo = datos.get('codigo', '')
         documento.fecha_modificacion = datetime.now()
         documento.version_actual = datos.get('version_actual', '')
-        documento.cadena_aprobacion_id = datos.get('cadena_aprobacion_id', '')
+        documento.cadena_aprobacion_id = datos.get('cadena_aprobacion_id', None)
         documento.grupo_documento_id = datos.get('grupo_documento_id', '')
         documento.proceso_id = datos.get('proceso_id', '')
 
@@ -165,10 +165,11 @@ class Archivo(models.Model):
     archivo = models.FileField(upload_to=custom_upload_to, blank=True)
     hash = models.CharField(max_length=300, verbose_name='Hash', null=False, blank=False)
     cadena_aprobacion = models.ForeignKey(CadenaAprobacionEncabezado, on_delete=models.DO_NOTHING,
-                                          verbose_name='Cadena de aprobación', null=True, blank=False)
+                                          verbose_name='Cadena de aprobación', null=True, blank=True)
     estado = models.ForeignKey(EstadoArchivo, on_delete=models.DO_NOTHING, verbose_name='Estado de Archivo', null=False,
                                blank=False)
-    usuario = models.ForeignKey(Colaborador, on_delete=models.DO_NOTHING, verbose_name='Usuario', null=False, blank=False)
+    usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario', null=False,
+                                blank=False)
 
     def __str__(self):
         return self.documento.nombre
@@ -198,18 +199,18 @@ class Archivo(models.Model):
 
 
 class ResultadosAprobacion(models.Model):
-    usuario = models.ForeignKey(Colaborador, on_delete=models.DO_NOTHING, verbose_name='Usuario', null=True,
+    usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario', null=True,
                                 blank=False)
     estado = models.ForeignKey(EstadoArchivo, on_delete=models.DO_NOTHING, verbose_name='Estado', null=False,
                                blank=False)
     comentario = models.CharField(max_length=300, verbose_name='Comentario', null=True, blank=False)
     fecha = models.DateTimeField(verbose_name='Fecha', null=False, blank=False)
     archivo = models.ForeignKey(Archivo, on_delete=models.DO_NOTHING, verbose_name='Archivo', null=False, blank=False)
-    usuario_anterior = models.SmallIntegerField(verbose_name='Usuario Anterior', null=True, blank=False)
+    aprobacion_anterior = models.SmallIntegerField(verbose_name='Aprobación Anterior', null=True, blank=False)
 
     def __str__(self):
-        return self.usuario.usuario.first_name
+        return self.usuario.first_name
 
     class Meta:
-        verbose_name = 'Detalle de cadena de aprobación'
-        verbose_name_plural = 'Detalles de cadenas de aprobaciones'
+        verbose_name = 'Resultado de Aprobación'
+        verbose_name_plural = 'Resultados de Aprobaciones'

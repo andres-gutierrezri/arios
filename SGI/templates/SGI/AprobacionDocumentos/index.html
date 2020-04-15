@@ -14,7 +14,7 @@
     <div class="panel-container show">
         <div class="header">
              <h1 class="header-title">
-                <i class='far fa-handshake'></i> Aprobacion de Documentos <span class='fw-300'></span>
+                <i class='far fa-check'></i> Aprobación de Documentos <span class='fw-300'></span>
                  <br>
                  <br>
              </h1>
@@ -43,7 +43,7 @@
                                                     <tr>
                                                         <td>{{ archivo.archivo.documento.nombre }}</td>
                                                         <td>{{ archivo.archivo.version }}</td>
-                                                        <td>{{ archivo.archivo.usuario.nombre_completo }}</td>
+                                                        <td>{{ archivo.archivo.usuario.get_full_name }}</td>
                                                         <td>{{ archivo.archivo.notas }}</td>
                                                         <td>{{ archivo.archivo.fecha_documento|date:'Y-m-d' }}</td>
                                                         <td>
@@ -71,8 +71,6 @@
 {% endblock %}
 {% block scripts %}
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
-    <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
-    <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.export.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script>
     <script src="{% static 'SGI/js/modalAccionDocumento.js' %}"></script>

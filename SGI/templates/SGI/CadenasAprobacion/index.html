@@ -57,7 +57,13 @@
                                                                             <span class="badge bg-primary-300"><font style="vertical-align: inherit;">
                                                                                 <font style="vertical-align: inherit;">{{ detalle.orden }}</font></font>
                                                                             </span>
-                                                                            <font style="vertical-align: inherit;"><font style="vertical-align: inherit;">{{ detalle.usuario.primer_nombre_apellido }}</font></font>
+                                                                            <font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                                                                {% for col in colaboradores %}
+                                                                                    {% if col.usuario_id == detalle.usuario_id %}
+                                                                                        {{ col.primer_nombre_apellido }}
+                                                                                    {% endif %}
+                                                                                {% endfor %}
+                                                                            </font></font>
                                                                         </span>
                                                                     {% endif %}
                                                                 {% endfor %}
@@ -100,9 +106,8 @@
 {% endblock %}
 {% block scripts %}
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
-    <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
     <script src="{% static 'SGI/js/confirmarEliminarSGI.js' %}"></script>
-    <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.export.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script>
+    <script src="{% static 'SGI/js/dataTableSGI.js' %}"></script>
 {% endblock %}

@@ -37,7 +37,7 @@ def crear_destinatarios(notificacion, lista_usuarios):
 
     if notificacion.tipo_notificacion_id == TipoNotificacion.EVENTO_DEL_SISTEMA and \
             notificacion.evento_desencadenador_id != EventoDesencadenador.BIENVENIDA and \
-            lista_usuarios.__len__() == 0:
+            len(lista_usuarios) == 0:
         selecciones = SeleccionDeNotificacionARecibir.objects \
             .filter(evento_desencadenador=notificacion.evento_desencadenador, estado=True)
 

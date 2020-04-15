@@ -2,6 +2,7 @@ import json
 from datetime import datetime
 
 from django.db import IntegrityError
+from django.db.models import F
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -22,13 +23,24 @@ class CadenaAprobacionView(AbstractEvaLoggedView):
     def get(self, request):
         cadenas_aprobacion = CadenaAprobacionEncabezado.objects.all()
         detalles = CadenaAprobacionDetalle.objects.all()
-        fecha = datetime.now()
+        colaboradores = Colaborador.objects.all()
         procesos = Proceso.objects.filter(empresa_id=get_id_empresa_global(request)).order_by('nombre')
         return render(request, 'SGI/CadenasAprobacion/index.html', {'cadenas_aprobacion': cadenas_aprobacion,
                                                                     'detalles': detalles,
-                                                                    'fecha': fecha,
+                                                                    'fecha': datetime.now(),
+                                                                    'colaboradores': colaboradores,
                                                                     'menu_actual': 'cadenas_aprobacion',
                                                                     'procesos': procesos})
+
+
+def usuarios_seleccionados(request):
+    selecciones = request.POST.get('usuarios_seleccionados', '').split(',')
+    if selecciones[0]:
+        selecciones.append(request.POST.get('ultimo_usuario', '')[0])
+    else:
+        selecciones = request.POST.get('ultimo_usuario', '')
+
+    return selecciones
 
 
 class CadenaAprobacionCrearView(AbstractEvaLoggedView):
@@ -38,34 +50,22 @@ class CadenaAprobacionCrearView(AbstractEvaLoggedView):
         return render(request, 'SGI/CadenasAprobacion/crear-editar.html', datos_xa_render(self.OPCION, request))
 
     def post(self, request):
-        usuarios_seleccionados = request.POST.get('usuarios_seleccionados', '').split(',')
-        if usuarios_seleccionados[0]:
-            usuarios_seleccionados.append(request.POST.get('ultimo_usuario', '')[0])
-        else:
-            usuarios_seleccionados = request.POST.get('ultimo_usuario', '')
+        selecciones = usuarios_seleccionados(request)
 
         cadena = CadenaAprobacionEncabezado.from_dictionary(request.POST)
         cadena.empresa_id = get_id_empresa_global(request)
         cadena.estado = True
-        cadena.fecha_creacion = datetime.today()
 
         try:
             cadena.full_clean()
         except ValidationError as errores:
-            datos = datos_xa_render(self.OPCION, request, cadena)
-            datos['errores'] = errores.message_dict
-            if 'nombre' in errores.message_dict:
-                for mensaje in errores.message_dict['nombre']:
-                    if mensaje.startswith('Ya existe'):
-                        messages.warning(request,
-                                         'Ya existe una cadena de aprobación con ese nombre {0}'.format(cadena.nombre))
-                        break
-            return render(request, 'SGI/CadenasAprobacion/crear-editar.html', datos)
+            return render(request, 'SGI/CadenasAprobacion/crear-editar.html',
+                          datos_xa_render(self.OPCION, request, cadena, errores))
         cadena.save()
 
         orden = 1
-        for usuarios in usuarios_seleccionados:
-            CadenaAprobacionDetalle.objects.create(cadena_aprobacion=cadena, usuario_id=usuarios, orden=orden)
+        for usuario in selecciones:
+            CadenaAprobacionDetalle.objects.create(cadena_aprobacion=cadena, usuario_id=usuario, orden=orden)
             orden += 1
 
         messages.success(request, 'Se ha agregado la cadena de aprobación {0}'.format(cadena.nombre))
@@ -80,33 +80,23 @@ class CadenaAprobacionEditarView(AbstractEvaLoggedView):
         return render(request, 'SGI/CadenasAprobacion/crear-editar.html', datos_xa_render(self.OPCION, request, cadena))
 
     def post(self, request, id):
-        usuarios_seleccionados = request.POST.get('usuarios_seleccionados', '').split(',')
-        if usuarios_seleccionados[0]:
-            usuarios_seleccionados.append(request.POST.get('ultimo_usuario', '')[0])
-        else:
-            usuarios_seleccionados = request.POST.get('ultimo_usuario', '')
-
+        selecciones = usuarios_seleccionados(request)
         cadena = CadenaAprobacionEncabezado.from_dictionary(request.POST)
         cadena.id = id
 
         try:
-            cadena.full_clean(validate_unique=False, exclude=['empresa', 'fecha_creacion'])
+            cadena.full_clean(validate_unique=False, exclude=['empresa'])
         except ValidationError as errores:
-            datos = datos_xa_render(self.OPCION, request, cadena)
-            datos['errores'] = errores.message_dict
-            if 'nombre' in errores.message_dict:
-                for mensaje in errores.message_dict['nombre']:
-                    if mensaje.startswith('Ya existe'):
-                        messages.warning(request,
-                                         'Ya existe una cadena de aprobación con ese nombre {0}'.format(cadena.nombre))
-                        break
-            return render(request, 'SGI/CadenasAprobacion/crear-editar.html', datos)
-        if usuarios_seleccionados:
-            CadenaAprobacionDetalle.objects.filter(cadena_aprobacion=cadena).delete()
+            return render(request, 'SGI/CadenasAprobacion/crear-editar.html',
+                          datos_xa_render(self.OPCION, request, cadena, errores))
+
+        if not Documento.objects.filter(cadena_aprobacion_id=id):
+            if usuarios_seleccionados:
+                CadenaAprobacionDetalle.objects.filter(cadena_aprobacion=cadena).delete()
 
         cadena.save(update_fields=['nombre', 'estado'])
         orden = 1
-        for usuarios in usuarios_seleccionados:
+        for usuarios in selecciones:
             CadenaAprobacionDetalle.objects.create(cadena_aprobacion=cadena, usuario_id=usuarios, orden=orden)
             orden += 1
 
@@ -131,9 +121,8 @@ class CadenaAprobacionEliminarView(AbstractEvaLoggedView):
 
 class AprobacionDocumentoView(AbstractEvaLoggedView):
     def get(self, request):
-        usuario = Colaborador.objects.get(usuario=request.user)
-        archivos = ResultadosAprobacion.objects.filter(usuario=usuario, usuario_anterior=EstadoArchivo.APROBADO,
-                                                       estado_id=EstadoArchivo.PENDIENTE)
+        archivos = ResultadosAprobacion.objects.filter(usuario=request.user, estado_id=EstadoArchivo.PENDIENTE,
+                                                       aprobacion_anterior=EstadoArchivo.APROBADO)
         procesos = Proceso.objects.filter(empresa_id=get_id_empresa_global(request)).order_by('nombre')
         fecha = datetime.now()
         return render(request, 'SGI/AprobacionDocumentos/index.html', {'archivos': archivos,
@@ -142,14 +131,15 @@ class AprobacionDocumentoView(AbstractEvaLoggedView):
                                                                        'fecha': fecha})
 
 # region Constantes de Accion de Documento
-NUEVO = 0
-CADENA_APROBADO = 1
-APROBADO = 2
-RECHAZADO = 3
+ACCION_NUEVO = 0
+ACCION_CADENA_APROBADO = 1
+ACCION_APROBADO = 2
+ACCION_RECHAZADO = 3
+ACCION_APROBACION_DIRECTA = 4
 # endregion
 
 
-class AccionDocumentoView(AbstractEvaLoggedView):
+class AccionAprobacionDocumentosView(AbstractEvaLoggedView):
     def get(self, request, id):
         documento = Archivo.objects.get(resultadosaprobacion=id)
         opciones = [{'texto': 'Aprobado', 'valor': EstadoArchivo.APROBADO},
@@ -160,20 +150,20 @@ class AccionDocumentoView(AbstractEvaLoggedView):
     def post(self, request, id):
         comentario = request.POST.get('comentario', '')
         opcion = request.POST.get('opcion', '')
-        usuario_colaborador = Colaborador.objects.get(usuario=request.user)
-        resultado = ResultadosAprobacion.objects.get(archivo_id=id, usuario=usuario_colaborador)
+        resultado = ResultadosAprobacion.objects.get(archivo_id=id, usuario=request.user)
         resultado.estado_id = opcion
         resultado.comentario = comentario
         resultado.save(update_fields=['estado', 'comentario'])
 
         if int(opcion) == EstadoArchivo.APROBADO:
-            usuario_cadena = usuarios_cadena_aprobacion(resultado.archivo, usuario_colaborador)
+            usuario_cadena = usuario_siguiente_cadena_aprobacion_detalle(resultado.archivo, request.user)
             if usuario_cadena:
-                usuario_siguiente = ResultadosAprobacion.objects.get(usuario=usuario_cadena.usuario, archivo_id=id)
-                usuario_siguiente.usuario_anterior = EstadoArchivo.APROBADO
-                usuario_siguiente.save(update_fields=['usuario_anterior'])
-                enviar_notificacion_cadena(usuario_siguiente.archivo, CADENA_APROBADO)
-                enviar_notificacion_cadena(usuario_cadena, NUEVO, posicion=usuario_cadena.orden)
+                usuario_siguiente = ResultadosAprobacion.objects.get(usuario=usuario_cadena.usuario,
+                                                                     archivo_id=id)
+                usuario_siguiente.aprobacion_anterior = EstadoArchivo.APROBADO
+                usuario_siguiente.save(update_fields=['aprobacion_anterior'])
+                crear_notificacion_cadena(usuario_siguiente.archivo, ACCION_CADENA_APROBADO)
+                crear_notificacion_cadena(usuario_cadena, ACCION_NUEVO, posicion=usuario_cadena.orden)
             else:
                 archivo_nuevo = Archivo.objects.get(id=id)
                 archivo_nuevo.estado_id = EstadoArchivo.APROBADO
@@ -183,73 +173,79 @@ class AccionDocumentoView(AbstractEvaLoggedView):
                 documento.save(update_fields=['version_actual'])
                 archivo_anterior = Archivo.objects.filter(documento=archivo_nuevo.documento,
                                                           estado_id=EstadoArchivo.APROBADO).exclude(id=id)
-                enviar_notificacion_cadena(archivo_nuevo, APROBADO)
+                crear_notificacion_cadena(archivo_nuevo, ACCION_APROBADO)
 
                 if archivo_anterior:
                     anterior = Archivo(id=archivo_anterior.first().id)
                     anterior.estado_id = EstadoArchivo.OBSOLETO
                     anterior.save(update_fields=['estado'])
         else:
-            otros_usuarios = ResultadosAprobacion.objects.filter(archivo_id=id, estado_id=EstadoArchivo.PENDIENTE)
-            for otro_usuario in otros_usuarios:
-                otro_usuario = ResultadosAprobacion(id=otro_usuario.id)
-                otro_usuario.usuario_anterior = EstadoArchivo.RECHAZADO
-                otro_usuario.estado_id = EstadoArchivo.RECHAZADO
-                otro_usuario.comentario = 'Rechazado por el usuario {0}'.format(usuario_colaborador.usuario.first_name)
-                otro_usuario.save(update_fields=['usuario_anterior', 'estado', 'comentario'])
-
             archivo = Archivo(id=id)
             archivo.estado_id = EstadoArchivo.RECHAZADO
             archivo.save(update_fields=['estado_id'])
-            enviar_notificacion_cadena(Archivo.objects.get(id=id), RECHAZADO)
+            crear_notificacion_cadena(Archivo.objects.get(id=id), ACCION_RECHAZADO)
 
         messages.success(request, 'Se guardaron los datos correctamente')
         return redirect(reverse('SGI:aprobacion-documentos-ver'))
 
 
-def enviar_notificacion_cadena(archivo, accion, posicion: int = 0):
-    if accion == NUEVO:
+def crear_notificacion_cadena(archivo, accion, posicion: int = 0):
+    if accion == ACCION_NUEVO:
         usuario = CadenaAprobacionDetalle.objects.get(cadena_aprobacion=archivo.cadena_aprobacion, orden=posicion)
 
-        crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
+        crear_notificacion_por_evento(EventoDesencadenador.NOTIFICACION_CA, archivo.id,
                                       contenido={'titulo': 'Solicitud de Aprobación',
                                                  'mensaje': 'Tienes un documento pendiente para aprobación',
-                                                 'usuario': usuario.usuario.usuario_id})
-    if accion == APROBADO:
-        crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
+                                                 'usuario': usuario.usuario_id})
+    if accion == ACCION_APROBADO:
+        crear_notificacion_por_evento(EventoDesencadenador.SOLICITUD_APROBACION, archivo.id,
                                       contenido={'titulo': 'Documento Aprobado',
                                                  'mensaje': 'Tu solicitud para el documento '
                                                             + archivo.documento.nombre + ' ha sido aprobada',
-                                                 'usuario': archivo.usuario.usuario_id})
-    elif accion == CADENA_APROBADO:
-        crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
+                                                 'usuario': archivo.usuario_id})
+    elif accion == ACCION_CADENA_APROBADO:
+        crear_notificacion_por_evento(EventoDesencadenador.SOLICITUD_APROBACION, archivo.id,
                                       contenido={'titulo': 'Documento en aprobación',
                                                  'mensaje': 'Tu solicitud para el documento '
                                                             + archivo.documento.nombre + ' está avanzando',
-                                                 'usuario': archivo.usuario.usuario_id})
-    elif accion == RECHAZADO:
-        crear_notificacion_por_evento(EventoDesencadenador.CADENA_APROBACION, archivo.id,
+                                                 'usuario': archivo.usuario_id})
+    elif accion == ACCION_RECHAZADO:
+        crear_notificacion_por_evento(EventoDesencadenador.SOLICITUD_APROBACION, archivo.id,
                                       contenido={'titulo': 'Documento Rechazado',
                                                  'mensaje': 'Tu solicitud para el documento '
                                                             + archivo.documento.nombre + ' ha sido rechazada',
-                                                 'usuario': archivo.usuario.usuario_id})
+                                                 'usuario': archivo.usuario_id})
+    elif accion == ACCION_APROBACION_DIRECTA:
+        crear_notificacion_por_evento(EventoDesencadenador.APROBACION_DIRECTA_DOCUMENTO, archivo.id,
+                                      contenido={'titulo': 'Documento Aprobado',
+                                                 'mensaje': 'Tu solicitud para el documento '
+                                                            + archivo.documento.nombre + ' ha sido aprobada',
+                                                 'usuario': archivo.usuario_id})
 
 
-def usuarios_cadena_aprobacion(archivo, usuario_colaborador):
-    cadena = CadenaAprobacionDetalle.objects.filter(cadena_aprobacion=archivo.cadena_aprobacion).order_by('orden')
+def usuario_siguiente_cadena_aprobacion_detalle(archivo, usuario):
+    """
+    Retorna el detalle de la cadena de aprobacion del usuario siguiente con respecto al usuario actual.
+    :exception: Si no existe un usuario siguiente, retorna una instancia vacia del detalle de la cadena de aprobación.
+    :param archivo: Instancia del archivo que se está procesando
+    :param usuario: Usuario actual, el cual está realizando la acción
+    :return: Una instancia del detalle de la cadena de aprobación con el usuario siguiente.
+    """
+    detalle_cadena = CadenaAprobacionDetalle.objects.filter(cadena_aprobacion=archivo.cadena_aprobacion)\
+        .order_by('orden')
     siguiente = False
-    for usuario in cadena:
-        if usuario.usuario == usuario_colaborador and usuario != cadena.last() and not siguiente:
+    for usuario_cadena in detalle_cadena:
+        if usuario_cadena.usuario == usuario and usuario_cadena != detalle_cadena.last() and not siguiente:
             siguiente = True
         elif siguiente:
-            return usuario
-        if usuario == cadena.last() and not siguiente:
-            return False
+            return usuario_cadena
+        if usuario_cadena == detalle_cadena.last() and not siguiente:
+            return CadenaAprobacionDetalle.objects.none()
 
 
 class SolicitudesAprobacionDocumentoView(AbstractEvaLoggedView):
     def get(self, request):
-        archivos = Archivo.objects.filter(usuario=Colaborador.objects.get(usuario=request.user))\
+        archivos = Archivo.objects.filter(usuario=request.user)\
             .exclude(estado=EstadoArchivo.OBSOLETO)
 
         procesos = Proceso.objects.filter(empresa_id=get_id_empresa_global(request)).order_by('nombre')
@@ -264,13 +260,18 @@ class DetalleSolicitudAprobacionView(AbstractEvaLoggedView):
     def get(self, request, id):
         archivos = ResultadosAprobacion.objects.filter(archivo_id=id).order_by('id')
 
+        for archivo in archivos:
+            if archivo.estado_id == EstadoArchivo.RECHAZADO:
+                archivos = archivos.exclude(estado_id=EstadoArchivo.PENDIENTE)
+                break
+
         return render(request, 'SGI/AprobacionDocumentos/detalle_solicitud_aprobacion.html',
                       {'archivos': archivos})
 
 
 # region Métodos de ayuda
 
-def datos_xa_render(opcion: str, request, cadena_aprobacion: CadenaAprobacionEncabezado = None) -> dict:
+def datos_xa_render(opcion: str, request, cadena_aprobacion: CadenaAprobacionEncabezado = None, errores = None) -> dict:
     """
     Datos necesarios para la creación de los html de Cadena de aprobación.
     :param request: request del usuario
@@ -278,7 +279,9 @@ def datos_xa_render(opcion: str, request, cadena_aprobacion: CadenaAprobacionEnc
     :return: Un diccionario con los datos.
     """
     procesos = Proceso.objects.filter(empresa_id=get_id_empresa_global(request)).order_by('nombre')
-    colaboradores = Colaborador.objects.get_xa_select_activos()
+    colaboradores = Colaborador.objects.filter(estado=True).values(id_usuario=F('usuario_id'),
+                                                                   nombre=F('usuario__first_name'),
+                                                                   apellido=F('usuario__last_name')).order_by('nombre')
     contador = 1
     selecciones = ''
     if opcion == 'editar':
@@ -293,7 +296,14 @@ def datos_xa_render(opcion: str, request, cadena_aprobacion: CadenaAprobacionEnc
     datos = {'opcion': opcion, 'cadena': cadena_aprobacion, 'procesos': procesos,
              'valores_selectores': json.dumps({'colaboradores': list(colaboradores),
                                                'contador': contador, 'opcion': opcion, 'selecciones': selecciones})}
-
+    if errores:
+        datos['errores'] = errores.message_dict
+        if 'nombre' in errores.message_dict:
+            for mensaje in errores.message_dict['nombre']:
+                if mensaje.startswith('Ya existe'):
+                    messages.warning(request, 'Ya existe una cadena de aprobación con ese nombre')
+                    break
+        return datos
     if cadena_aprobacion:
         datos['cadena'] = cadena_aprobacion
     return datos

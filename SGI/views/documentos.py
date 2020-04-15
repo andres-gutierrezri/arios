@@ -12,8 +12,7 @@ from EVA.views.index import AbstractEvaLoggedView
 from SGI.models import Documento, GrupoDocumento, Archivo
 from SGI.models.documentos import EstadoArchivo, CadenaAprobacionDetalle, ResultadosAprobacion, \
     CadenaAprobacionEncabezado
-from SGI.views.cadena_aprobacion import enviar_notificacion_cadena
-from TalentoHumano.models import Colaborador
+from SGI.views.cadena_aprobacion import crear_notificacion_cadena
 
 
 class IndexView(AbstractEvaLoggedView):
@@ -142,6 +141,12 @@ class DocumentosEliminarView(AbstractEvaLoggedView):
                                                                "porque tiene archivos asociados"})
 
 
+# region Constantes Estados
+ACCION_NUEVO = 0
+ACCION_APROBACION_DIRECTA = 4
+# end region
+
+
 class ArchivoCargarView(AbstractEvaLoggedView):
     OPCION = 'cargar'
 
@@ -167,7 +172,9 @@ class ArchivoCargarView(AbstractEvaLoggedView):
         archivo.documento.grupo_documento_id = id_grupo
         documento = Documento.objects.get(id=id_documento)
         archivo.cadena_aprobacion = documento.cadena_aprobacion
-        archivo.usuario = Colaborador.objects.get(usuario=request.user)
+        if not archivo.cadena_aprobacion:
+            archivo.estado_id = EstadoArchivo.APROBADO
+        archivo.usuario = request.user
 
         archivo.archivo = request.FILES.get('archivo', None)
         archivo_db = Archivo.objects.filter(documento_id=id_documento, estado=EstadoArchivo.APROBADO)
@@ -191,18 +198,27 @@ class ArchivoCargarView(AbstractEvaLoggedView):
             return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
         archivo.save()
-        usuarios_cadena = CadenaAprobacionDetalle.objects.filter(cadena_aprobacion=archivo.cadena_aprobacion)\
-            .order_by('orden')
-        NUEVO = 0
-        for usuario in usuarios_cadena:
-            if usuario == usuarios_cadena.first():
-                usuario_anterior = EstadoArchivo.APROBADO
-            else:
-                usuario_anterior = EstadoArchivo.PENDIENTE
-            ResultadosAprobacion.objects.create(usuario=usuario.usuario, fecha=archivo.fecha_documento, archivo=archivo,
-                                                usuario_anterior=usuario_anterior, estado_id=EstadoArchivo.PENDIENTE)
+        if documento.cadena_aprobacion:
+            usuarios_cadena = CadenaAprobacionDetalle.objects.filter(cadena_aprobacion=archivo.cadena_aprobacion) \
+                .order_by('orden')
 
-        enviar_notificacion_cadena(archivo, NUEVO, posicion=1)
+            for usuario in usuarios_cadena:
+                if usuario == usuarios_cadena.first():
+                    aprobacion_anterior = EstadoArchivo.APROBADO
+                else:
+                    aprobacion_anterior = EstadoArchivo.PENDIENTE
+                ResultadosAprobacion.objects.create(usuario=usuario.usuario, fecha=archivo.fecha_documento,
+                                                    archivo=archivo, aprobacion_anterior=aprobacion_anterior,
+                                                    estado_id=EstadoArchivo.PENDIENTE)
+            crear_notificacion_cadena(archivo, ACCION_NUEVO, posicion=1)
+        else:
+            crear_notificacion_cadena(archivo, ACCION_APROBACION_DIRECTA)
+            archivos_anteriores = Archivo.objects.filter(documento=documento).exclude(id=archivo.id)
+            for archivo_anterior in archivos_anteriores:
+                anterior = Archivo(id=archivo_anterior.id)
+                anterior.estado_id = EstadoArchivo.OBSOLETO
+                anterior.save(update_fields=['estado_id'])
+
         messages.success(request, 'Se ha cargado un archivo al documento {0}'.format(archivo.documento.nombre))
         return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
