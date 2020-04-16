@@ -109,6 +109,7 @@ class CadenaAprobacionEliminarView(AbstractEvaLoggedView):
         error = "Esta cadena de aprobación no puede ser eliminada porque se encuentra en uso"
         try:
             if not Archivo.objects.filter(cadena_aprobacion_id=id):
+                CadenaAprobacionDetalle.objects.filter(cadena_aprobacion_id=id).delete()
                 cadena_encabezado = CadenaAprobacionEncabezado.objects.get(id=id)
                 cadena_encabezado.delete()
                 messages.success(request, 'Se ha eliminado la cadena de aprobación {0}'.format(cadena_encabezado.nombre))
