@@ -30,11 +30,21 @@ class IniciarSesionView(View):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                colaborador = Colaborador.objects.get(usuario=request.user)
-                request.session['colaborador'] = colaborador.foto_perfil.url
-                request.session['colaborador_id'] = colaborador.id
-                request.session['empresa'] = colaborador.empresa_to_dict()
-                messages.success(request, 'Ha iniciado sesión como {0}'.format(username))
+                try:
+                    colaborador = Colaborador.objects.get(usuario=request.user)
+                    request.session['colaborador'] = colaborador.foto_perfil.url
+                    request.session['colaborador_id'] = colaborador.id
+                    request.session['empresa'] = colaborador.empresa_to_dict()
+                    messages.success(request, 'Ha iniciado sesión como {0}'.format(username))
+                except Colaborador.DoesNotExist:
+                    if user.is_superuser:
+                        request.session['colaborador_id'] = 0
+                        messages.warning(request, f'Ha iniciado sesión como {username} pero no tiene un perfil')
+                    else:
+                        messages.error(request, f'Usuario sin perfil')
+                        logout(request)
+                        return render(request, 'Administracion/Autenticacion/iniciar-sesion.html')
+
                 if datos:
                     return render(request, 'EVA/index.html', {'datos': datos})
                 else:
