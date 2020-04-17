@@ -6,6 +6,8 @@ from django.urls import reverse
 from EVA.views.index import AbstractEvaLoggedView
 from Notificaciones.models.models import EventoDesencadenador, SeleccionDeNotificacionARecibir
 
+OPCION = 'asignacion'
+
 
 class AsignacionView(AbstractEvaLoggedView):
     def get(self, request, id):
@@ -22,7 +24,8 @@ class AsignacionView(AbstractEvaLoggedView):
         return render(request, 'Notificaciones/AsignacionNotificaciones/asignacion.html',
                       {"desencadenadores": lista_desencadenador,
                        "selecciones": selecciones,
-                       "colaborador": id})
+                       "colaborador": id,
+                       'opcion': OPCION})
 
     def post(self, request, id):
         selecciones = request.POST.getlist("desencadenadores", [])
