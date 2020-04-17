@@ -10,6 +10,7 @@
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/theme-demo.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
     <link rel="mask-icon" href="{% static 'EVA/Plantilla/img/favicon/safari-pinned-tab.svg' %}" color="#5bbad5">
+    <link rel="stylesheet" href="{% static 'Notificaciones/css/asignacion.css' %}">
 {% endblock styles %}
 
 {% block main %}
@@ -30,20 +31,19 @@
                             <small>
                                  <a class="far fa-3x far fa-arrow-circle-left"  href="{% url 'TalentoHumano:colaboradores-index' 0 %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Volver"></a>
                             </small>
-                            <small style="position: absolute; right: 0;">
+                            {% if  desencadenadores %}
+                            <small class="posicionar-guardar">
                                  <a class="far fa-3x far fa-save" href="javascript:(guardarAsignaciones())" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Guardar Cambios"></a>
                                  </a>
                             </small>
+                            {% endif %}
                         </div>
                         <div class="panel-container show">
                             <div class="panel-content p-t-0 p-b-0">
                                 <div class="panel-group">
                                     <div class="panel-body">
-                                        <div class="form-group">
-                                            <div class="form-row">
-                                            </div>
-                                        </div>
-                                        <div class="form-row">
+                                        {% if  desencadenadores %}
+                                        <div class="form-row p-t-10">
                                             <div class="col-xl-12">
                                                 <div class="border-faded bg-faded p-3 mb-g d-flex">
                                                     <input type="text" id="js-filter-contacts" name="filter-contacts" class="form-control shadow-inset-2 form-control-lg" placeholder="Filtrar Desencadenadores">
@@ -63,6 +63,9 @@
                                                 {% include 'Notificaciones/AsignacionNotificaciones/_tarjeta_desencadenador.html' with desencadenador=desencadenador %}
                                             {% endfor %}
                                         </div>
+                                        {% else %}
+                                            <div class="vacio"><a>Este usuario no tiene permiso a ningun módulo de la aplicación</a></div>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
