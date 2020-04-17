@@ -46,19 +46,19 @@
                                         <div class="form-row p-t-10">
                                             <div class="col-xl-12">
                                                 <div class="border-faded bg-faded p-3 mb-g d-flex">
-                                                    <input type="text" id="js-filter-contacts" name="filter-contacts" class="form-control shadow-inset-2 form-control-lg" placeholder="Filtrar Desencadenadores">
+                                                    <input type="text" id="js-filter-contacts" class="form-control shadow-inset-2 form-control-lg" placeholder="Filtrar Desencadenadores">
                                                     <div class="btn-group btn-group-lg btn-group-toggle hidden-lg-down ml-3" data-toggle="buttons">
                                                         <label class="btn btn-default active">
-                                                            <input type="radio" name="contactview" id="grid" checked="" value="grid"><i class="fas fa-table"></i>
+                                                            <input type="radio" name="filtro-general" id="grid" checked="" value="grid"><i class="fas fa-table"></i>
                                                         </label>
                                                         <label class="btn btn-default">
-                                                            <input type="radio" name="contactview" id="table" value="table"><i class="fas fa-th-list"></i>
+                                                            <input type="radio" name="filtro-general" id="table" value="table"><i class="fas fa-th-list"></i>
                                                         </label>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="row" id="js-contacts">
+                                        <div class="row" id="filtro-general">
                                             {% for desencadenador in desencadenadores %}
                                                 {% include 'Notificaciones/AsignacionNotificaciones/_tarjeta_desencadenador.html' with desencadenador=desencadenador %}
                                             {% endfor %}
@@ -83,6 +83,6 @@
     <script src="{% static 'TalentoHumano/js/confirmarEliminarTalentoHumano.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
-    <script src="{% static 'TalentoHumano/js/filtro_entidad.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/controlFiltro.js' %}"></script>
     <script src="{% static 'Notificaciones/js/asignacionNotificacion.js' %}"></script>
 {% endblock scripts%}
