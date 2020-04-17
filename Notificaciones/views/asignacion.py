@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -29,5 +30,5 @@ class AsignacionView(AbstractEvaLoggedView):
         for seleccion in selecciones:
             SeleccionDeNotificacionARecibir.objects.create(usuario_id=id, estado=True, envio_x_email=False,
                                                            evento_desencadenador_id=seleccion)
-
+        messages.success(request, 'Se han guardado las selecciones correctamente')
         return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
