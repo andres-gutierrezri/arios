@@ -1,7 +1,6 @@
 'use strict';
 let ver_todas = $('#ver_todas');
 let not_empty = $('#not_empty');
-let tab_notificaciones = $('#tab-messages');
 let icono_not = $('#icono_not');
 let texto_not = $('#texto_not');
 
@@ -20,7 +19,7 @@ function fCargarNotificaciones() {
                 texto_not.text('No tienes notificaciones nuevas');
             }else {
                 icono_not.text(response.datos.cantidad);
-                texto_not.text('Tienes nuevas notifcaciones');
+                texto_not.text('Tienes nuevas notificaciones');
                 icono_not.show()
             }
             let notificaciones = "";
@@ -48,8 +47,15 @@ function fCargarNotificaciones() {
                 not_empty.addClass('active');
                 ver_todas.attr('disabled')
             } else {
+                let tabActual;
+                let elementoActual = localStorage.getItem('lastTab');
+                if (elementoActual){
+                    tabActual = $("+ elementoActual +");
+                }else{
+                    tabActual = $('#tab-messages');
+                }
                 $('#cargar_notificaciones').html(notificaciones);
-                tab_notificaciones.addClass('active');
+                tabActual.addClass('active');
                 ver_todas.removeAttr('disabled')
             }
         }else{
