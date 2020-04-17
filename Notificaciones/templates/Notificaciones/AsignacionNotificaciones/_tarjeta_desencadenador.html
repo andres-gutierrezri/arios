@@ -10,7 +10,7 @@
                 <div class="col-md-2" style="">
                     <div class="custom-control custom-switch" style="float: right;">
                         <div class="custom-control custom-checkbox">
-                            <input type="checkbox" value="{{ desencadenador.id }}" id="{{ desencadenador.nombre }}_id" name="desencadenadores" class="custom-control-input form-control">
+                            <input type="checkbox" value="{{ desencadenador.id }}" id="{{ desencadenador.nombre }}_id" name="desencadenadores" {% for select in selecciones %}{% if select.evento_desencadenador_id == desencadenador.id %}checked{% endif %}{% endfor %} class="custom-control-input form-control">
                             <label for="{{ desencadenador.nombre }}_id" class="custom-control-label no-seleccionable"></label>
                         </div>
                     </div>
