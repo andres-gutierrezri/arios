@@ -57,13 +57,20 @@ input[type=checkbox] ~ label:before {
 }
 
 .p-t-0{
-    padding-top: 0; !important;
+    padding-top: 0 !important;
 }
 
 .p-l-0{
-    padding-left: 0; !important;
+    padding-left: 0 !important;
 }
 
 .campo_activo{
     background-color: rgba(233, 233, 233, 0.5); !important;
+}
+
+.no-seleccionable {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
