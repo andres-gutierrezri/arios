@@ -157,3 +157,5 @@ MEDIA_URL = '/media/'
 # Son 10800 segundos equivalentes a 3 horas.
 SESSION_COOKIE_AGE = 10800
 
+EVA_PUBLIC_MEDIA = 'publico'
+EVA_PRIVATE_MEDIA = 'privado'

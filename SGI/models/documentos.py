@@ -2,6 +2,8 @@ from decimal import Decimal
 
 from django.db import models
 from datetime import datetime
+
+from EVA import settings
 from EVA.General.conversiones import string_to_date
 from django.contrib.auth.models import User
 # Create your models here.
@@ -149,9 +151,9 @@ class EstadoArchivo(models.Model):
 
 
 def custom_upload_to(instance, filename):
-    return 'SGI/Documentos/{0:d}/{1:d}/{2} {3} v{4:.1f}.{5}'\
+    return '{6}/SGI/Documentos/{0:d}/{1:d}/{2} {3} v{4:.1f}.{5}'\
         .format(instance.documento.proceso.empresa.id, instance.documento.proceso.id, instance.documento.codigo,
-                instance.documento.nombre, instance.version, filename.split(".")[1])
+                instance.documento.nombre, instance.version, filename.split(".")[1], settings.EVA_PRIVATE_MEDIA)
 
 
 class Archivo(models.Model):
@@ -162,7 +164,7 @@ class Archivo(models.Model):
                                   null=False, blank=False)
     notas = models.CharField(max_length=100, verbose_name='Notas', null=False, blank=False)
     fecha_documento = models.DateField(verbose_name='Fecha del Documento', null=False, blank=False)
-    archivo = models.FileField(upload_to=custom_upload_to, blank=True)
+    archivo = models.FileField(upload_to=custom_upload_to, blank=True, max_length='250')
     hash = models.CharField(max_length=300, verbose_name='Hash', null=False, blank=False)
     cadena_aprobacion = models.ForeignKey(CadenaAprobacionEncabezado, on_delete=models.DO_NOTHING,
                                           verbose_name='Cadena de aprobación', null=True, blank=True)
