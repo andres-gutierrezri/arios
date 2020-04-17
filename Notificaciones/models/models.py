@@ -32,6 +32,7 @@ class EventoDesencadenador(models.Model):
     fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False,
                                           blank=False)
     modal = models.BooleanField(verbose_name='Modal', null=False, blank=False, default=False)
+    permiso = models.CharField(max_length=100, verbose_name='Permiso', null=True, blank=True)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
 
     def __str__(self):
