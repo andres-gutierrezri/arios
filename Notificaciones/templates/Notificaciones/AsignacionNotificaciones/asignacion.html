@@ -17,7 +17,7 @@
     <div class="panel-container show">
         <div class="header">
             <h1 class="header-title">
-                <i class='far fa-bell'></i> Asignación de Notificaciones <span class='fw-300'></span>
+                <i class='far fa-bell'></i> Asignar Notificaciones A:  {{ colaborador.nombre }} <span class='fw-300'></span>
                 <br>
                 <br>
             </h1>
@@ -25,7 +25,7 @@
         <div class="row">
             <div class="col-xl-12">
                 <div id="panel-1" class="panel">
-                    <form action="{% url 'Notificaciones:notificaciones-asignacion' colaborador %}" id="asignacion-notificaciones-form" method="post" class="needs-validation" novalidate>
+                    <form action="{% url 'Notificaciones:notificaciones-asignacion' colaborador.id %}" id="asignacion-notificaciones-form" method="post" class="needs-validation" novalidate>
                     {% csrf_token %}
                         <div class="panel-hdr">
                             <small>
@@ -64,7 +64,7 @@
                                             {% endfor %}
                                         </div>
                                         {% else %}
-                                            <div class="vacio"><a>Este usuario no tiene permiso a ningun módulo de la aplicación</a></div>
+                                            <div class="vacio"><a>Este usuario no tiene permisos a ningún módulo de la aplicación</a></div>
                                         {% endif %}
                                     </div>
                                 </div>

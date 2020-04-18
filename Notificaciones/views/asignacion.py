@@ -5,6 +5,7 @@ from django.urls import reverse
 
 from EVA.views.index import AbstractEvaLoggedView
 from Notificaciones.models.models import EventoDesencadenador, SeleccionDeNotificacionARecibir
+from TalentoHumano.models import Colaborador
 
 
 class AsignacionView(AbstractEvaLoggedView):
@@ -22,7 +23,8 @@ class AsignacionView(AbstractEvaLoggedView):
         return render(request, 'Notificaciones/AsignacionNotificaciones/asignacion.html',
                       {"desencadenadores": lista_desencadenador,
                        "selecciones": selecciones,
-                       "colaborador": id})
+                       "colaborador": {"id": id,
+                                       "nombre": Colaborador.objects.get(usuario_id=id).primer_nombre_apellido}})
 
     def post(self, request, id):
         selecciones = request.POST.getlist("desencadenadores", [])
