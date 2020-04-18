@@ -32,4 +32,4 @@ class SeleccionNotificacionEmailView(AbstractEvaLoggedView):
             SeleccionDeNotificacionARecibir.objects.filter(evento_desencadenador_id=seleccion, usuario_id=id)\
                 .update(envio_x_email=True)
         messages.success(request, 'Se han guardado las selecciones correctamente')
-        return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
+        return redirect(reverse('eva-index'))
