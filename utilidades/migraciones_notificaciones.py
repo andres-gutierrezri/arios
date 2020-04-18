@@ -20,37 +20,43 @@ def agregar_eventos_desencadenadores(apps, schema_editor):
                                             descripcion="Creación de Contratos",
                                             ruta="/proyectos/contratos",
                                             fecha_creacion=datetime.datetime.today(),
-                                            estado=True, modal=False)
+                                            estado=True, modal=False,
+                                            permiso='Proyectos.add_contrato')
 
     eventos_desencadenadores.objects.create(id=3, nombre="Creación de Tercero",
                                             descripcion="Creación de Tercero",
                                             ruta="/administracion/terceros",
                                             fecha_creacion=datetime.datetime.today(),
-                                            estado=True, modal=False)
+                                            estado=True, modal=False,
+                                            permiso='Administracion.add_tercero')
 
     eventos_desencadenadores.objects.create(id=4, nombre="Creación de Empresas",
                                             descripcion="Creación de Empresas",
                                             ruta="/administracion/empresas",
                                             fecha_creacion=datetime.datetime.today(),
-                                            estado=True, modal=False)
+                                            estado=True, modal=False,
+                                            permiso='Administracion.add_empresa')
 
     eventos_desencadenadores.objects.create(id=5, nombre="Creación Entidades CAFE",
                                             descripcion="Creación Entidades CAFE",
                                             ruta="/talento-humano/entidades-cafe/0/index",
                                             fecha_creacion=datetime.datetime.today(),
-                                            estado=True, modal=False)
+                                            estado=True, modal=False,
+                                            permiso='TalentoHumano.add_entidadcafe')
 
     eventos_desencadenadores.objects.create(id=6, nombre="Creación de Colaboradores",
                                             descripcion="Creación de Colaboradores",
                                             ruta="/talento-humano/colaboradores/contratos/0",
                                             fecha_creacion=datetime.datetime.today(),
-                                            estado=True, modal=False)
+                                            estado=True, modal=False,
+                                            permiso='TalentoHumano.add_colaborador')
 
     eventos_desencadenadores.objects.create(id=7, nombre="Creación de SubEmpresa",
                                             descripcion="Creación de SubEmpresa",
                                             ruta="/administracion/sub-empresas",
                                             fecha_creacion=datetime.datetime.today(),
-                                            estado=True, modal=False)
+                                            estado=True, modal=False,
+                                            permiso='Administracion.add_empresa')
 
     eventos_desencadenadores.objects.create(id=8, nombre="Cadenas de Aprobación",
                                             descripcion="Cadenas de Aprobación",
