@@ -21,7 +21,7 @@ class AsignacionView(AbstractEvaLoggedView):
                                              'nombre': desencadenador.nombre,
                                              'descripcion': desencadenador.descripcion})
 
-        return render(request, 'Notificaciones/AsignacionNotificaciones/asignacion.html',
+        return render(request, 'Notificaciones/AsignacionSeleccion/asignacion-seleccion.html',
                       {"desencadenadores": lista_desencadenador,
                        "selecciones": selecciones,
                        "colaborador": id,

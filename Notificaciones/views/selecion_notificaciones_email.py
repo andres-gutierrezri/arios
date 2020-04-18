@@ -19,7 +19,7 @@ class SeleccionNotificacionEmailView(AbstractEvaLoggedView):
                                          'descripcion': seleccion.evento_desencadenador.descripcion,
                                          'correo': seleccion.envio_x_email})
 
-        return render(request, 'Notificaciones/AsignacionNotificaciones/asignacion.html',
+        return render(request, 'Notificaciones/AsignacionSeleccion/asignacion-seleccion.html',
                       {"selecciones": selecciones,
                        "desencadenadores": lista_desencadenador,
                        "colaborador": id,
