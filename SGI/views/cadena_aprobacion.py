@@ -106,17 +106,24 @@ class CadenaAprobacionEditarView(AbstractEvaLoggedView):
 
 class CadenaAprobacionEliminarView(AbstractEvaLoggedView):
     def post(self, request, id):
+        error = "Esta cadena de aprobación no puede ser eliminada porque se encuentra en uso"
         try:
-            CadenaAprobacionDetalle.objects.filter(cadena_aprobacion_id=id).delete()
-            cadena_encabezado = CadenaAprobacionEncabezado.objects.get(id=id)
-            cadena_encabezado.delete()
-            messages.success(request, 'Se ha eliminado la cadena de aprobación {0}'.format(cadena_encabezado.nombre))
-            return JsonResponse({"estado": "OK"})
+            if not Archivo.objects.filter(cadena_aprobacion_id=id) and \
+                    not Documento.objects.filter(cadena_aprobacion_id=id):
+                CadenaAprobacionDetalle.objects.filter(cadena_aprobacion_id=id).delete()
+                cadena_encabezado = CadenaAprobacionEncabezado.objects.get(id=id)
+                cadena_encabezado.delete()
+                messages.success(request, 'Se ha eliminado la cadena de aprobación {0}'.format(cadena_encabezado.nombre))
+                return JsonResponse({"estado": "OK"})
+            else:
+                return JsonResponse(
+                    {"estado": "error",
+                     "error": error})
 
         except IntegrityError:
             return JsonResponse(
                 {"estado": "error",
-                 "error": "Esta cadena de aprobación no puede ser eliminada porque se encuentra en uso"})
+                 "error": error})
 
 
 class AprobacionDocumentoView(AbstractEvaLoggedView):
