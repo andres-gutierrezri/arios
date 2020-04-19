@@ -120,15 +120,15 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
             ruta = 'http://{0}/password-reset-confirm/{1}/{2}'.format(dominio, uidb64, token)
 
             mensaje = "<p>Hola " + colaborador.usuario.first_name + ", " \
-                      "Te estamos enviando este correo para que asignes una nueva contraseña a tu " \
-                                                                    "cuenta en Arios Ingeniería SAS.</p>" \
+                      "Te estamos enviando este correo para que asignes una contraseña a tu " \
+                                                                    "cuenta en EVA.</p>" \
                       "<p>Tu usuario es: " + colaborador.usuario.username + "</p>"\
-                      "<p>El siguiente enlace te redireccionará a la página donde puedes realizar el cambio:</p>"\
-                      "<a href=" + ruta + ">Ir a la página para asignación de nueva contraseña </a>"
+                      "<p>El siguiente enlace te llevará a EVA donde puedes realizar el cambio:</p>"\
+                      "<a href=" + ruta + ">Ir a EVA para asignación de la contraseña nueva</a>"
 
             enviar_correo({'nombre': colaborador.usuario.first_name,
                            'mensaje': mensaje,
-                           'asunto': 'Bienvenido a Arios Ingenieria SAS',
+                           'asunto': 'Bienvenido a EVA',
                            'token': False,
                            'lista_destinatarios': [colaborador.usuario.email]})
             return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))

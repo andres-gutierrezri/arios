@@ -49,16 +49,16 @@
                                     <img src="https://www.arios-ing.com/images/Logos_Arios/LOGO_HEAD.jpg" style="width: 30%">
                                 </div>
                                 <br>
-                                <p>Hola {{ nombre }}, te estamos enviando este correo para que asignes una nueva contraseña a tu cuenta en Arios Ingeniería SAS.</p>
+                                <p>Hola {{ nombre }}, te estamos enviando este correo para que asignes una nueva contraseña a tu cuenta en EVA.</p>
 
 
                                 <p>Tu usuario es: {{usuario}}</p>
 
-                                <p>El siguiente enlace te redireccionará a la página donde puedes realizar el cambio:</p>
+                                <p>El siguiente enlace te llevará a EVA donde puedes realizar el cambio:</p>
 
-                                <a href="http://{{dominio}}/password-reset-confirm/{{uidb64}}/{{token}}">Ir a la página para asignación de nueva contraseña</a>
+                                <a href="http://{{dominio}}/password-reset-confirm/{{uidb64}}/{{token}}">Ir a EVA para asignación de una contraseña nueva</a>
 
-                                <p>Si al hacer clic no funciona simplemente copia y pega la URL en tu navegador favorito.</p>
+                                <p>*** Si al hacer clic no no funciona, por favor, copia y pega la URL en tu navegador favorito.</p>
 
                             </div>
                         </div>
@@ -92,11 +92,11 @@
     {
 
         // Fetch form to apply custom Bootstrap validation
-        var form = $("#js-login")
+        let form = $("#js-login");
 
         if (form[0].checkValidity() === false)
         {
-            event.preventDefault()
+            event.preventDefault();
             event.stopPropagation()
         }
 
