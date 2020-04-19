@@ -8,6 +8,7 @@ from django.utils.crypto import get_random_string
 from django.core.mail import EmailMessage
 from django.views import View
 
+from EVA import settings
 from Notificaciones.models.models import DestinatarioNotificacion, TipoNotificacion, TokenRutaCorreo, \
     SeleccionDeNotificacionARecibir, EventoDesencadenador
 from Notificaciones.views.views import construir_notificaciones
@@ -52,6 +53,8 @@ def construir_y_enviar_notificacion_x_email(notificaciones):
 def enviar_correo(contenido):
 
     plantilla = get_template('Notificaciones/CorreoElectronico/correo.html')
+    contenido['eva_acceso_externo'] = settings.EVA_ACCESO_EXTERNO
+    contenido['eva_acceso_interno'] = settings.EVA_ACCESO_INTERNO
     email = EmailMessage(
         contenido['asunto'],
         plantilla.render(contenido),

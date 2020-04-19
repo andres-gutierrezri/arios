@@ -159,3 +159,7 @@ SESSION_COOKIE_AGE = 10800
 
 EVA_PUBLIC_MEDIA = 'publico'
 EVA_PRIVATE_MEDIA = 'privado'
+
+# Por defecto se dejan las ip para el entorno de desarrollo.
+EVA_ACCESO_EXTERNO = os.environ.get('eva_acceso_externo', '127.0.0.1:8000')
+EVA_ACCESO_INTERNO = os.environ.get('eva_acceso_interno', '127.0.0.1:8000')

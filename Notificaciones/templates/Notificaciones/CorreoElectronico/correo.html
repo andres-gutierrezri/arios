@@ -7,13 +7,13 @@ Estimado(a) usuario: {{ nombre }}
 {{ mensaje | safe }}
 <br>
 {% if token %}
-<br>
-Enlaces para acceder a la aplicación EVA:
-<br>
-<br>
-<a target="_blank" href='http://produccion.arios-ing.com:8002/notificaciones/token/{{ token }}'>Acceso Externo</a><br>
-<br>
-<a target="_blank" href='http://192.168.1.100:8002/notificaciones/token/{{ token }}'>Acceso Local</a><br>
+    <br>
+    Enlaces para acceder a la aplicación EVA:
+    <br>
+    <br>
+    <a target="_blank" href='http://{{ eva_acceso_externo }}/notificaciones/token/{{ token }}'>Acceso Externo</a><br>
+    <br>
+    <a target="_blank" href='http://{{ eva_acceso_interno }}/notificaciones/token/{{ token }}'>Acceso Local</a><br>
 {% endif %}
 </div>
 <br>
