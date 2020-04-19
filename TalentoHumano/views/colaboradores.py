@@ -12,6 +12,7 @@ from django.utils.http import urlsafe_base64_encode
 
 from Administracion.models import Cargo, Proceso, TipoContrato, CentroPoblado, Rango, Municipio, Departamento, \
     TipoIdentificacion
+from EVA import settings
 from Notificaciones.views.correo_electronico import enviar_correo
 from EVA.General.validacionpermisos import tiene_permisos
 from TalentoHumano.models.colaboradores import ColaboradorContrato
