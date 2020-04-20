@@ -155,14 +155,14 @@ class Persona(models.Model):
 
     identificacion = models.CharField(max_length=20, verbose_name='Identificación', null=False, blank=False,
                                       unique=True)
-    fecha_expedicion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Expedición', null=False,
+    fecha_expedicion = models.DateTimeField(verbose_name='Fecha de Expedición', null=False,
                                             blank=False)
-    fecha_nacimiento = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Nacimiento', null=True,
+    fecha_nacimiento = models.DateTimeField(verbose_name='Fecha de Nacimiento', null=True,
                                             blank=False)
     telefono = models.CharField(max_length=20, verbose_name='Teléfono', null=False, blank=False)
     fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False,
                                           blank=False)
-    fecha_modificacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Modificación', null=False,
+    fecha_modificacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Modificación', null=False,
                                               blank=False)
     genero = models.CharField(max_length=1, verbose_name='Género', null=False, blank=False)
     tipo_identificacion = models.ForeignKey(TipoIdentificacion, on_delete=models.DO_NOTHING,
