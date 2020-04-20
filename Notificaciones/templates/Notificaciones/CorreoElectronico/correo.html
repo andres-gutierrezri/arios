@@ -7,17 +7,17 @@ Estimado(a) usuario: {{ nombre }}
 {{ mensaje | safe }}
 <br>
 {% if token %}
-<br>
-Enlaces para acceder a la aplicación EVA:
-<br>
-<br>
-<a target="_blank" href='http://produccion.arios-ing.com:8002/notificaciones/token/{{ token }}'>Acceso Externo</a><br>
-<br>
-<a target="_blank" href='http://192.168.1.100:8002/notificaciones/token/{{ token }}'>Acceso Local</a><br>
+    <br>
+    Enlaces para acceder a la aplicación EVA:
+    <br>
+    <br>
+    <a target="_blank" href='http://{{ eva_acceso_externo }}/notificaciones/token/{{ token }}'>Acceso Externo</a><br>
+    <br>
+    <a target="_blank" href='http://{{ eva_acceso_interno }}/notificaciones/token/{{ token }}'>Acceso Local</a><br>
 {% endif %}
 </div>
 <br>
-<i>*** Si al hacer clic no se abre el enlace, por favor, cópielo y péguelo en su navegador favorito.
+<i>*** Si al hacer clic no no funciona, por favor, copia y pega la URL en tu navegador favorito.
     <br><br>
     <div style="background-color: #f9f9f9; text-align:center; font-family:'Lato','Helvetica Neue',Helvetica,Arial,sans-serif; padding:10px 5px; font-size:12px; line-height:1.2; color:#666666">
     &nbsp;Por favor no responda este correo. Este buzón de mensajes no esta monitoreado y no recibirá ninguna respuesta. </div>

@@ -23,7 +23,7 @@ class FacturasView(AbstractEvaLoggedView):
         empresa_id = get_id_empresa_global(request)
         facturas = FacturaEncabezado.objects.filter(empresa_id=empresa_id).exclude(estado=0).order_by('-fecha_creacion')
         borradores = FacturaEncabezado.objects.filter(estado=0, empresa_id=empresa_id).order_by('-fecha_creacion')
-        return render(request, 'Financiero/Facturacion/facturas/index.html', {'facturas': facturas,
+        return render(request, 'Financiero/Facturacion/Facturas/index.html', {'facturas': facturas,
                                                                               'borradores': borradores,
                                                                               'menu_actual': 'facturas'})
 

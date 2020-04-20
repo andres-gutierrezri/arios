@@ -12,6 +12,7 @@ from django.utils.http import urlsafe_base64_encode
 
 from Administracion.models import Cargo, Proceso, TipoContrato, CentroPoblado, Rango, Municipio, Departamento, \
     TipoIdentificacion
+from EVA import settings
 from Notificaciones.views.correo_electronico import enviar_correo
 from EVA.General.validacionpermisos import tiene_permisos
 from TalentoHumano.models.colaboradores import ColaboradorContrato
@@ -61,6 +62,7 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
 
     def post(self, request):
         colaborador = Colaborador.from_dictionary(request.POST)
+        colaborador.usuario_crea = request.user
         contratos = request.POST.getlist('contrato_id[]', None)
 
         colaborador.foto_perfil = request.FILES.get('foto_perfil', None)
@@ -104,8 +106,10 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
             colaborador.usuario_id = colaborador.usuario.id
             colaborador.empresa_sesion_id = Contrato.objects.get(id=contratos[0]).empresa_id
             colaborador.save()
-            crear_notificacion_por_evento(EventoDesencadenador.BIENVENIDA, colaborador.id, colaborador.nombre_completo)
-            crear_notificacion_por_evento(EventoDesencadenador.COLABORADOR, colaborador.id, colaborador.nombre_completo)
+            crear_notificacion_por_evento(EventoDesencadenador.BIENVENIDA, colaborador.usuario_id,
+                                          colaborador.nombre_completo)
+            crear_notificacion_por_evento(EventoDesencadenador.COLABORADOR, colaborador.usuario_id,
+                                          colaborador.nombre_completo)
 
             for contrato in contratos:
                 ColaboradorContrato.objects.create(contrato_id=contrato, colaborador=colaborador)
@@ -118,15 +122,15 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
             ruta = 'http://{0}/password-reset-confirm/{1}/{2}'.format(dominio, uidb64, token)
 
             mensaje = "<p>Hola " + colaborador.usuario.first_name + ", " \
-                      "Te estamos enviando este correo para que asignes una nueva contraseña a tu " \
-                                                                    "cuenta en Arios Ingeniería SAS.</p>" \
+                      "Te estamos enviando este correo para que asignes una contraseña a tu " \
+                                                                    "cuenta en EVA.</p>" \
                       "<p>Tu usuario es: " + colaborador.usuario.username + "</p>"\
-                      "<p>El siguiente enlace te redireccionará a la página donde puedes realizar el cambio:</p>"\
-                      "<a href=" + ruta + ">Ir a la página para asignación de nueva contraseña </a>"
+                      "<p>El siguiente enlace te llevará a EVA donde puedes realizar el cambio:</p>"\
+                      "<a href=" + ruta + ">Ir a EVA para asignación de la contraseña nueva</a>"
 
             enviar_correo({'nombre': colaborador.usuario.first_name,
                            'mensaje': mensaje,
-                           'asunto': 'Bienvenido a Arios Ingenieria SAS',
+                           'asunto': 'Bienvenido a EVA',
                            'token': False,
                            'lista_destinatarios': [colaborador.usuario.email]})
             return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
@@ -147,9 +151,11 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
                          'fecha_dotacion', 'salario', 'jefe_inmediato_id', 'cargo_id', 'proceso_id',
                          'tipo_contrato_id', 'lugar_nacimiento_id', 'rango_id', 'fecha_nacimiento',
                          'identificacion', 'tipo_identificacion_id', 'fecha_expedicion', 'genero', 'telefono',
-                         'estado', 'nombre_contacto', 'grupo_sanguineo', 'telefono_contacto', 'parentesco']
+                         'estado', 'nombre_contacto', 'grupo_sanguineo', 'telefono_contacto', 'parentesco',
+                         'fecha_modificacion', 'usuario_actualiza']
 
         colaborador = Colaborador.from_dictionary(request.POST)
+        colaborador.usuario_actualiza = request.user
         contratos = request.POST.getlist('contrato_id[]', None)
 
         colaborador.id = int(id)
@@ -203,7 +209,8 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
                     if clb.contrato.id == int(ctr):
                         cont += 1
 
-        if colaborador_db.comparar(colaborador, excluir=['foto_perfil', 'empresa_sesion']) and \
+        if colaborador_db.comparar(colaborador, excluir=['foto_perfil', 'empresa_sesion', 'usuario_actualiza',
+                                                         'usuario_crea']) and \
                 len(cambios_usuario) <= 0 and not colaborador.foto_perfil and cont == cant:
             messages.success(request, 'No se hicieron cambios en el colaborador {0}'
                              .format(colaborador.nombre_completo))
