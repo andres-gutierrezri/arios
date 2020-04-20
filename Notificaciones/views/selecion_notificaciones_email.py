@@ -22,8 +22,8 @@ class SeleccionNotificacionEmailView(AbstractEvaLoggedView):
         return render(request, 'Notificaciones/AsignacionSeleccion/asignacion-seleccion.html',
                       {"selecciones": selecciones,
                        "desencadenadores": lista_desencadenador,
-                       "colaborador": id,
-                       "opcion": OPCION})
+                       "opcion": OPCION,
+                       "colaborador": {"id": id}})
 
     def post(self, request, id):
         selecciones = request.POST.getlist("desencadenadores", [])
