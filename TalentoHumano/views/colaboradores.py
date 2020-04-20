@@ -62,6 +62,7 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
 
     def post(self, request):
         colaborador = Colaborador.from_dictionary(request.POST)
+        colaborador.usuario_crea = request.user
         contratos = request.POST.getlist('contrato_id[]', None)
 
         colaborador.foto_perfil = request.FILES.get('foto_perfil', None)
@@ -150,9 +151,11 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
                          'fecha_dotacion', 'salario', 'jefe_inmediato_id', 'cargo_id', 'proceso_id',
                          'tipo_contrato_id', 'lugar_nacimiento_id', 'rango_id', 'fecha_nacimiento',
                          'identificacion', 'tipo_identificacion_id', 'fecha_expedicion', 'genero', 'telefono',
-                         'estado', 'nombre_contacto', 'grupo_sanguineo', 'telefono_contacto', 'parentesco']
+                         'estado', 'nombre_contacto', 'grupo_sanguineo', 'telefono_contacto', 'parentesco',
+                         'fecha_modificacion', 'usuario_actualiza']
 
         colaborador = Colaborador.from_dictionary(request.POST)
+        colaborador.usuario_actualiza = request.user
         contratos = request.POST.getlist('contrato_id[]', None)
 
         colaborador.id = int(id)
@@ -206,7 +209,8 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
                     if clb.contrato.id == int(ctr):
                         cont += 1
 
-        if colaborador_db.comparar(colaborador, excluir=['foto_perfil', 'empresa_sesion']) and \
+        if colaborador_db.comparar(colaborador, excluir=['foto_perfil', 'empresa_sesion', 'usuario_actualiza',
+                                                         'usuario_crea']) and \
                 len(cambios_usuario) <= 0 and not colaborador.foto_perfil and cont == cant:
             messages.success(request, 'No se hicieron cambios en el colaborador {0}'
                              .format(colaborador.nombre_completo))
