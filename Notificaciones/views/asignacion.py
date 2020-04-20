@@ -33,7 +33,7 @@ class AsignacionView(AbstractEvaLoggedView):
         selecciones = request.POST.getlist("desencadenadores", [])
         SeleccionDeNotificacionARecibir.objects.filter(usuario_id=id).delete()
         for seleccion in selecciones:
-            SeleccionDeNotificacionARecibir.objects.create(usuario_id=id, estado=True, envio_x_email=False,
+            SeleccionDeNotificacionARecibir.objects.create(usuario_id=id, estado=True, envio_x_email=True,
                                                            evento_desencadenador_id=seleccion)
         messages.success(request, 'Se han guardado las selecciones correctamente')
         return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
