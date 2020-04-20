@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import QuerySet, F, Value, CharField
 from django.db.models.functions import Concat
-
+from EVA import settings
 from EVA.General.modeljson import ModelDjangoExtensiones
 from EVA.General.modelmanagers import ManagerGeneral
 
@@ -11,7 +11,7 @@ class Empresa(models.Model, ModelDjangoExtensiones):
     objects = ManagerGeneral()
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     nit = models.TextField(max_length=20, verbose_name='NIT', null=False, blank=False, unique=True)
-    logo = models.ImageField(upload_to='logos-empresas', verbose_name='Logo', null=False, blank=False)
+    logo = models.ImageField(upload_to=f'{settings.EVA_PUBLIC_MEDIA}/logos-empresas', verbose_name='Logo', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
     subempresa = models.BooleanField(verbose_name='Subempresa', null=False, blank=False)
     empresa_ppal = models.ForeignKey('self', on_delete=models.DO_NOTHING, verbose_name='Empresa Ppal', null=True

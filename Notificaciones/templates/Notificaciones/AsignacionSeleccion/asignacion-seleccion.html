@@ -6,10 +6,6 @@
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-brands.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-solid.css' %}">
-    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/sweetalert2/sweetalert2.bundle.css' %}">
-    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/theme-demo.css' %}">
-    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
-    <link rel="mask-icon" href="{% static 'EVA/Plantilla/img/favicon/safari-pinned-tab.svg' %}" color="#5bbad5">
     <link rel="stylesheet" href="{% static 'Notificaciones/css/asignacion.css' %}">
 {% endblock styles %}
 
@@ -18,7 +14,7 @@
         <div class="header">
             <h1 class="header-title">
                 {% if opcion == 'asignacion' %}
-                    <i class='far fa-bell'></i> Asignación de Notificaciones <span class='fw-300'></span>
+                    <i class='far fa-bell'></i> Asignar Notificaciones A:  {{ colaborador.nombre }} <span class='fw-300'></span>
                 {% else %}
                     <i class='far fa-bell'></i> Selección de Notificaciones Por Correo Electrónico <span class='fw-300'></span>
                 {% endif %}
@@ -30,12 +26,12 @@
             <div class="col-xl-12">
                 <div id="panel-1" class="panel">
                     {% if opcion == 'asignacion' %}
-                    <form action="{% url 'Notificaciones:notificaciones-asignacion' colaborador %}" id="asignacion-notificaciones-form" method="post" class="needs-validation" novalidate>
+                    <form action="{% url 'Notificaciones:notificaciones-asignacion' colaborador.id %}" id="asignacion-notificaciones-form" method="post" class="needs-validation" novalidate>
                     {% else %}
-                    <form action="{% url 'Notificaciones:notificaciones-seleccion-email' colaborador %}" id="asignacion-notificaciones-form" method="post" class="needs-validation" novalidate>
+                    <form action="{% url 'Notificaciones:notificaciones-seleccion-email' colaborador.id %}" id="asignacion-notificaciones-form" method="post" class="needs-validation" novalidate>
                     {% endif %}
                     {% csrf_token %}
-                    <div class="panel-hdr">
+                        <div class="panel-hdr">
                             <small>
                                 {% if opcion == 'asignacion' %}
                                  <a class="far fa-3x far fa-arrow-circle-left"  href="{% url 'TalentoHumano:colaboradores-index' 0 %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Volver"></a>
@@ -77,7 +73,7 @@
                                         </div>
                                         {% else %}
                                             {% if opcion == 'asignacion' %}
-                                            <div class="vacio"><a>Este usuario no tiene permiso a ningun módulo de la aplicación</a></div>
+                                            <div class="vacio"><a>Este usuario no tiene permisos a ningún módulo de la aplicación</a></div>
                                             {% else %}
                                             <div class="vacio"><a>No tienes notificaciones asignadas</a></div>
                                             {% endif %}
@@ -91,14 +87,9 @@
             </div>
         </div>
     </div>
-    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='talento-humano/colaboradores' %}
 {% endblock main%}
 
 {% block scripts %}
-    <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
-    <script src="{% static 'TalentoHumano/js/confirmarEliminarTalentoHumano.js' %}"></script>
-    <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
-    <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/controlFiltro.js' %}"></script>
     <script src="{% static 'Notificaciones/js/asignacionNotificacion.js' %}"></script>
 {% endblock scripts%}

@@ -418,12 +418,12 @@ html body {
     z-index: -100;
     -webkit-transform: translateX(50%) translateY(-50%);
             transform: translateX(50%) translateY(-50%);
-    background: url("../img/clouds.png") no-repeat;
+    background: url("../img/backgrounds/clouds.png") no-repeat;
     background-size: cover;
     -webkit-transition: 1s opacity;
     transition: 1s opacity; }
   @media screen and (max-device-width: 800px) {
     html body html {
-      background: url("../img/clouds.png") #FFF no-repeat center center fixed; }
+      background: url("../img/backgrounds/clouds.png") #FFF no-repeat center center fixed; }
     html body #bgvid {
       display: none; } }

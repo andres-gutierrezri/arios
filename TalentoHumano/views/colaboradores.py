@@ -65,7 +65,8 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
 
         colaborador.foto_perfil = request.FILES.get('foto_perfil', None)
         if not colaborador.foto_perfil:
-            colaborador.foto_perfil = 'foto_perfil/profile-none.png'
+            foto_nombre = 'profile-none-m.svg' if colaborador.genero == 'M' else 'profile-none-f.svg'
+            colaborador.foto_perfil = f'{settings.EVA_PUBLIC_MEDIA}/foto_perfil/{foto_nombre}'
 
         try:
             # Se excluye el usuario debido a que el id no es asignado  después de ser guardado en la BD.
