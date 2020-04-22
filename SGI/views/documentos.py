@@ -212,6 +212,10 @@ class ArchivoCargarView(AbstractEvaLoggedView):
                                                     estado_id=EstadoArchivo.PENDIENTE)
             crear_notificacion_cadena(archivo, ACCION_NUEVO, posicion=1)
         else:
+            documento = Documento(id=archivo.documento.id)
+            documento.version_actual = archivo.version
+            documento.save(update_fields=['version_actual'])
+
             crear_notificacion_cadena(archivo, ACCION_APROBACION_DIRECTA)
             archivos_anteriores = Archivo.objects.filter(documento=documento).exclude(id=archivo.id)
             for archivo_anterior in archivos_anteriores:
