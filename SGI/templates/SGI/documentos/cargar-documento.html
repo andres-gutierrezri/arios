@@ -17,7 +17,7 @@
                 {% csrf_token %}
                 <div class="form-group">
                     <div class="m-b-10">
-                        {% input_file_tag 'archivo' 'Archivo' placeholder="Seleccione un archivo" required="" modal=True invalido=errores.logo accept=".docx, .pptx, .xlsx, .pdf" mensaje_validacion='Por favor seleccione un archivo'%}
+                        {% input_file_tag 'archivo' 'Archivo' placeholder="Seleccione un archivo" required="" modal=True invalido=errores.logo accept=".docx, .pptx, .xlsx, .xlsm, .pdf" mensaje_validacion='Por favor seleccione un archivo'%}
                     </div>
                     <div class="m-b-10">
                         {% input_date_tag 'fecha_documento' 'Fecha del Documento' placeholder="Seleccione una fecha"   required="" modal=True value=archivo.fecha_documento autocomplete="off"  mensaje_validacion='Por favor seleccione una fecha.' invalido=errores.fecha_documento %}

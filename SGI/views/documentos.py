@@ -232,15 +232,12 @@ class VerDocumentoView(AbstractEvaLoggedView):
 
         archivo = Archivo.objects.get(id=id)
         extension = os.path.splitext(archivo.archivo.url)[1]
+        mime_types = {'.docx': 'application/msword', '.xlsx': 'application/vnd.ms-excel',
+                      '.pptx': 'application/vnd.ms-powerpoint',
+                      '.xlsm': 'application/vnd.ms-excel.sheet.macroenabled.12',
+                      }
 
-        if extension == '.docx':
-            mime_type = 'application/msword'
-        elif extension == '.xlsx':
-            mime_type = 'application/vnd.ms-excel'
-        elif extension == '.pptx':
-            mime_type = 'application/vnd.ms-powerpoint'
-        else:
-            mime_type = 'application/pdf'
+        mime_type = mime_types.get(extension, 'application/pdf')
 
         response = HttpResponse(archivo.archivo, content_type=mime_type)
         response['Content-Disposition'] = 'inline; filename="{0} {1} v{2:.1f}{3}"'\
