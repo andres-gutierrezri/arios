@@ -153,7 +153,7 @@ class EstadoArchivo(models.Model):
 def custom_upload_to(instance, filename):
     return '{6}/SGI/Documentos/{0:d}/{1:d}/{2} {3} v{4:.1f}.{5}'\
         .format(instance.documento.proceso.empresa.id, instance.documento.proceso.id, instance.documento.codigo,
-                instance.documento.nombre, instance.version, filename.split(".")[1], settings.EVA_PRIVATE_MEDIA)
+                instance.documento.nombre, instance.version, filename.split(".")[-1], settings.EVA_PRIVATE_MEDIA)
 
 
 class Archivo(models.Model):
