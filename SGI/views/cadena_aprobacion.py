@@ -34,11 +34,18 @@ class CadenaAprobacionView(AbstractEvaLoggedView):
 
 
 def usuarios_seleccionados(request):
+    """
+    Retorna las selecciones de los usuarios en el formulario de crear-editar cadena de aprobación.
+    Las selecciones se dividen en dos grupos, el primer grupo se construye con JS y se almacenan en el input
+    usuarios_seleccionados, y el segundo grupo se extrae del input ultimo_usuario.
+    :exception: Si no existen valores en el grupo construido por el js, selecciones será igual al unico usuario
+    seleccionado.
+    """
     selecciones = request.POST.get('usuarios_seleccionados', '').split(',')
     if selecciones[0]:
         selecciones.append(request.POST.get('ultimo_usuario', '')[0])
     else:
-        selecciones = request.POST.get('ultimo_usuario', '')
+        selecciones = [request.POST.get('ultimo_usuario', '')]
 
     return selecciones
 
