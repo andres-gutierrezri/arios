@@ -179,3 +179,8 @@ var mytreebranch = $('.tree').find('li:has(ul)').addClass('parent_li').attr('rol
 $('.tree').treeView({
 	element: $('.tree > ul')
 });
+
+function arbolDocumentos(id) {
+    let children = $("#"+id);
+    (children.is(':visible') ? children.hide('fast') : children.show('fast'));
+}
