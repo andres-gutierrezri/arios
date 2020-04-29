@@ -50,9 +50,9 @@
                                                                                     <div class="col-md-8">
                                                                                     {{ documento }}
                                                                                     </div>
-                                                                                    <div class="col-md-4" style="padding: 0">
+                                                                                    <div class="col-md-4 p-r-10" style="text-align: end">
                                                                                         {%  if perms.SGI.view_archivo %}
-                                                                                        <a class="far fa-custom fa-eye p-l-10" style="text-decoration: none !important;" {% for archivo in archivos %}{% if documento == archivo.documento %}href="{% url 'sgi:documentos-ver' archivo.id  %}" target="_blank" data-original-title="Ver" {% endif %}{% endfor %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
+                                                                                        <a class="far fa-custom fa-eye" style="text-decoration: none !important;" {% for archivo in archivos %}{% if documento == archivo.documento %}href="{% url 'sgi:documentos-ver' archivo.id  %}" target="_blank" data-original-title="Ver" {% endif %}{% endfor %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
                                                                                         {% endif %}
                                                                                         {% if perms.TalentoHumano.view_historial %}
                                                                                         <a class="far fa-custom fa-list-alt p-l-10" {% for hst in historial %}{% if hst.documento == documento %} href="javascript:arbolDocumentos('doc_{{ documento.id }}')" data-original-title="Historial"{% endif %}{% endfor %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
@@ -88,7 +88,7 @@
                                                                                                         <div class="col-md-10">
                                                                                                             {{ documento.codigo }} {{ documento.nombre }}  v{{ hst.version }} <span class="badge border border-primary text-primary" style="font-size: 70%">{{ hst.estado }}</span>
                                                                                                         </div>
-                                                                                                        <div class="col-md-2">
+                                                                                                        <div class="col-md-2 p-r-10" style="text-align: end">
                                                                                                             {%  if perms.TalentoHumano.view_archivo_historial %}
                                                                                                             <a class="far fa-custom fa-eye p-l-10" style="text-decoration: none !important;" href="{% url 'sgi:documentos-ver' hst.id  %}" target="_blank" data-original-title="Ver" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
                                                                                                             {% endif %}
