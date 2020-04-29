@@ -78,3 +78,18 @@ input[type=checkbox] ~ label:before {
     -ms-user-select: none;
     user-select: none;
 }
+.p-l-10{
+    padding-left: 10px;
+}
+
+.p-l-11{
+    padding-left: 11px;
+}
+
+.p-l-12{
+    padding-left: 12px;
+}
+
+.w-500{
+    width: 500px
+}
