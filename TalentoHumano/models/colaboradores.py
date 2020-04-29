@@ -76,6 +76,7 @@ class Colaborador(Persona, ModelDjangoExtensiones):
                        ("can_menu_talentohumano", "Can access menu talento humano"),
                        ("can_menu_sgi", "Can access menu sgi"),
                        ("can_menu_financiero", "Can access menu financiero"),
+                       ("view_archivo_historial", "Can view archivo historial"),
                        )
 
     def empresa_to_dict(self):
