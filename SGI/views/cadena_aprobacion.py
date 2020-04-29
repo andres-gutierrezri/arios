@@ -43,7 +43,7 @@ def usuarios_seleccionados(request):
     """
     selecciones = request.POST.get('usuarios_seleccionados', '').split(',')
     if selecciones[0]:
-        selecciones.append(request.POST.get('ultimo_usuario', '')[0])
+        selecciones.append(request.POST.get('ultimo_usuario', ''))
     else:
         selecciones = [request.POST.get('ultimo_usuario', '')]
 
