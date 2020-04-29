@@ -73,80 +73,82 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        <ul id="doc_{{ documento.id }}" class="p-l-11" style="display: none;">
-                                                            {% for hst in historial %}
-                                                                {% if hst.documento == documento %}
-                                                                    <li>
-                                                                        <div class="row p-l-12">
-                                                                            <div class="w-500">
-                                                                                <div>
-                                                                                    <div id="panel-1" class="panel" style="display: table-header-group;">
-                                                                                        <div class="panel-container show w-500">
-                                                                                            <div class="panel-content">
-                                                                                                 <div class="row">
-                                                                                                    <div class="col-md-10">
-                                                                                                        {{ documento.codigo }} {{ documento.nombre }}  v{{ hst.version }} <span class="badge border border-primary text-primary" style="font-size: 70%">{{ hst.estado }}</span>
-                                                                                                    </div>
-                                                                                                    <div class="col-md-2">
-                                                                                                        <a class="far fa-custom fa-eye p-l-10" style="text-decoration: none !important;" href="{% url 'sgi:documentos-ver' hst.id  %}" target="_blank" data-original-title="Ver" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
-                                                                                                        <a class="far fa-custom fa-caret-square-down p-l-10" href="javascript:arbolDocumentos('arc_{{ hst.id }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Detalles"></a>
-                                                                                                    </div>
-                                                                                                 </div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    <ul id="arc_{{ hst.id }}" class="p-l-11" style="display: none;">
+                                                            {%  if perms.SGI.change_documento %}
+                                                            <ul id="doc_{{ documento.id }}" class="p-l-11" style="display: none;">
+                                                                {% for hst in historial %}
+                                                                    {% if hst.documento == documento %}
                                                                         <li>
                                                                             <div class="row p-l-12">
                                                                                 <div class="w-500">
-                                                                                    <div id="panel-1" class="panel">
-                                                                                        <div class="panel-container show w-500">
-                                                                                            <div class="panel-content">
-                                                                                                <h5>
-                                                                                                    <small class="mt-0 mb-1 text-muted">
-                                                                                                        <b>Fecha del Documento: </b> {{ hst.fecha_documento }}
-                                                                                                    </small>
-                                                                                                    <small class="mt-0 mb-1 text-muted">
-                                                                                                        <b>Versión: </b> {{ hst.version }}
-                                                                                                    </small>
-                                                                                                    <small class="mt-0 mb-1 text-muted">
-                                                                                                        <b>Estado del Documento: </b> {{ hst.estado }}
-                                                                                                    </small>
-                                                                                                </h5>
-                                                                                                {% if hst.cadena_aprobacion %}
-                                                                                                <br>
-                                                                                                <h4>Resultados de Aprobación</h4>
-                                                                                                    {% for res in resultados %}
-                                                                                                        {% if res.archivo.id == hst.id %}
-                                                                                                            <h5 class="p-l-10">
-                                                                                                                <small class="mt-0 mb-1 text-muted">
-                                                                                                                    <b>Aprobación: </b> {{ res.usuario.get_full_name }}
-                                                                                                                </small>
-                                                                                                                <small class="mt-0 mb-1 text-muted">
-                                                                                                                    <b>Estado: </b> {{ res.estado }}
-                                                                                                                </small>
-                                                                                                                <small class="mt-0 mb-1 text-muted">
-                                                                                                                    <b>Comentarios: </b> {{ res.comentario }}
-                                                                                                                </small>
-                                                                                                            </h5>
-                                                                                                            <br>
-                                                                                                        {% endif %}
-                                                                                                    {% endfor %}
-                                                                                                {% endif %}
+                                                                                    <div>
+                                                                                        <div id="panel-1" class="panel" style="display: table-header-group;">
+                                                                                            <div class="panel-container show w-500">
+                                                                                                <div class="panel-content">
+                                                                                                     <div class="row">
+                                                                                                        <div class="col-md-10">
+                                                                                                            {{ documento.codigo }} {{ documento.nombre }}  v{{ hst.version }} <span class="badge border border-primary text-primary" style="font-size: 70%">{{ hst.estado }}</span>
+                                                                                                        </div>
+                                                                                                        <div class="col-md-2">
+                                                                                                            <a class="far fa-custom fa-eye p-l-10" style="text-decoration: none !important;" href="{% url 'sgi:documentos-ver' hst.id  %}" target="_blank" data-original-title="Ver" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
+                                                                                                            <a class="far fa-custom fa-caret-square-down p-l-10" href="javascript:arbolDocumentos('arc_{{ hst.id }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Detalles"></a>
+                                                                                                        </div>
+                                                                                                     </div>
+                                                                                                </div>
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
+                                                                        <ul id="arc_{{ hst.id }}" class="p-l-11" style="display: none;">
+                                                                            <li>
+                                                                                <div class="row p-l-12">
+                                                                                    <div class="w-500">
+                                                                                        <div id="panel-1" class="panel">
+                                                                                            <div class="panel-container show w-500">
+                                                                                                <div class="panel-content">
+                                                                                                    <h5>
+                                                                                                        <small class="mt-0 mb-1 text-muted">
+                                                                                                            <b>Fecha del Documento: </b> {{ hst.fecha_documento }}
+                                                                                                        </small>
+                                                                                                        <small class="mt-0 mb-1 text-muted">
+                                                                                                            <b>Versión: </b> {{ hst.version }}
+                                                                                                        </small>
+                                                                                                        <small class="mt-0 mb-1 text-muted">
+                                                                                                            <b>Estado del Documento: </b> {{ hst.estado }}
+                                                                                                        </small>
+                                                                                                    </h5>
+                                                                                                    {% if hst.cadena_aprobacion %}
+                                                                                                    <br>
+                                                                                                    <h4>Resultados de Aprobación</h4>
+                                                                                                        {% for res in resultados %}
+                                                                                                            {% if res.archivo.id == hst.id %}
+                                                                                                                <h5 class="p-l-10">
+                                                                                                                    <small class="mt-0 mb-1 text-muted">
+                                                                                                                        <b>Aprobación: </b> {{ res.usuario.get_full_name }}
+                                                                                                                    </small>
+                                                                                                                    <small class="mt-0 mb-1 text-muted">
+                                                                                                                        <b>Estado: </b> {{ res.estado }}
+                                                                                                                    </small>
+                                                                                                                    <small class="mt-0 mb-1 text-muted">
+                                                                                                                        <b>Comentarios: </b> {{ res.comentario }}
+                                                                                                                    </small>
+                                                                                                                </h5>
+                                                                                                                <br>
+                                                                                                            {% endif %}
+                                                                                                        {% endfor %}
+                                                                                                    {% endif %}
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </li>
+                                                                        </ul>
                                                                         </li>
-                                                                    </ul>
-                                                                    </li>
-                                                                {% endif %}
-                                                            {% endfor %}
-                                                        </ul>
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            </ul>
+                                                            {% endif %}
                                                         </li>
                                                     {% endif %}
                                                 {% endfor %}
