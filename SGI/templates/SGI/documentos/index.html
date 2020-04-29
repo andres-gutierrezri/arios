@@ -85,11 +85,12 @@
                                                                                         <div class="panel-container show" style="width: 500px">
                                                                                             <div class="panel-content">
                                                                                                  <div class="row">
-                                                                                                    <div class="col-md-11">
-                                                                                                        {{ documento.codigo }} {{ documento.nombre }}  v{{ hst.version }}
+                                                                                                    <div class="col-md-10">
+                                                                                                        {{ documento.codigo }} {{ documento.nombre }}  v{{ hst.version }} <span class="badge border border-primary text-primary" style="font-size: 70%">{{ hst.estado }}</span>
                                                                                                     </div>
-                                                                                                    <div class="col-md-1">
-                                                                                                        <a class="far fa-custom fa-caret-square-down" href="javascript:arbolDocumentos('arc_{{ hst.id }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Detalles"></a>
+                                                                                                    <div class="col-md-2">
+                                                                                                        <a class="far fa-custom fa-eye" style="padding-left: 10px; text-decoration: none !important;" href="{% url 'sgi:documentos-ver' hst.id  %}" target="_blank" data-original-title="Ver" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
+                                                                                                        <a class="far fa-custom fa-caret-square-down" style="padding-left: 10px;" href="javascript:arbolDocumentos('arc_{{ hst.id }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Detalles"></a>
                                                                                                     </div>
                                                                                                  </div>
                                                                                             </div>
@@ -116,24 +117,26 @@
                                                                                                         <b>Estado del Documento: </b> {{ hst.estado }}
                                                                                                     </small>
                                                                                                 </h5>
+                                                                                                {% if hst.cadena_aprobacion %}
                                                                                                 <br>
                                                                                                 <h4>Resultados de Aprobación</h4>
-                                                                                                {% for res in resultados %}
-                                                                                                    {% if res.archivo.id == hst.id %}
-                                                                                                        <h5 style="padding-left: 10px">
-                                                                                                            <small class="mt-0 mb-1 text-muted">
-                                                                                                                <b>Aprobación: </b> {{ res.usuario.get_full_name }}
-                                                                                                            </small>
-                                                                                                            <small class="mt-0 mb-1 text-muted">
-                                                                                                                <b>Estado: </b> {{ res.estado }}
-                                                                                                            </small>
-                                                                                                            <small class="mt-0 mb-1 text-muted">
-                                                                                                                <b>Comentarios: </b> {{ res.comentario }}
-                                                                                                            </small>
-                                                                                                        </h5>
-                                                                                                        <br>
-                                                                                                    {% endif %}
-                                                                                                {% endfor %}
+                                                                                                    {% for res in resultados %}
+                                                                                                        {% if res.archivo.id == hst.id %}
+                                                                                                            <h5 style="padding-left: 10px">
+                                                                                                                <small class="mt-0 mb-1 text-muted">
+                                                                                                                    <b>Aprobación: </b> {{ res.usuario.get_full_name }}
+                                                                                                                </small>
+                                                                                                                <small class="mt-0 mb-1 text-muted">
+                                                                                                                    <b>Estado: </b> {{ res.estado }}
+                                                                                                                </small>
+                                                                                                                <small class="mt-0 mb-1 text-muted">
+                                                                                                                    <b>Comentarios: </b> {{ res.comentario }}
+                                                                                                                </small>
+                                                                                                            </h5>
+                                                                                                            <br>
+                                                                                                        {% endif %}
+                                                                                                    {% endfor %}
+                                                                                                {% endif %}
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
