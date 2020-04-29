@@ -100,10 +100,10 @@ class CadenaAprobacionEditarView(AbstractEvaLoggedView):
         if not Archivo.objects.filter(cadena_aprobacion_id=id) and \
                 not Documento.objects.filter(cadena_aprobacion_id=id):
             if usuarios_seleccionados:
-                CadenaAprobacionDetalle.objects.filter(cadena_aprobacion=cadena).delete()
+                CadenaAprobacionDetalle.objects.filter(cadena_aprobacion_id=id).delete()
             orden = 1
             for usuarios in selecciones:
-                CadenaAprobacionDetalle.objects.create(cadena_aprobacion=cadena, usuario_id=usuarios, orden=orden)
+                CadenaAprobacionDetalle.objects.create(cadena_aprobacion_id=id, usuario_id=usuarios, orden=orden)
                 orden += 1
 
         cadena.save(update_fields=['nombre', 'estado'])
