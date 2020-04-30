@@ -29,7 +29,7 @@
                         {% input_file_tag 'archivo' 'Archivo' placeholder="Seleccione un archivo" required="" modal=True invalido=errores.logo accept=".docx, .pptx, .xlsx, .xlsm, .pdf" mensaje_validacion='Por favor seleccione un archivo'%}
                     </div>
                     <div class="m-b-10 div_enlace" style="display:none;">
-                        {% input_text_tag 'enlace' 'Enlace' placeholder="Ingrese el enlace" maxlength="300" modal=True value=documento.enlace mensaje_validacion='Por favor digite ingrese el enlace' invalido=errores.enlace %}
+                        {% input_text_tag 'enlace' 'Enlace' placeholder="Ingrese un enlace" maxlength="300" modal=True value=documento.enlace mensaje_validacion='Por favor ingrese un enlace' invalido=errores.enlace %}
                     </div>
                     <div class="m-b-10">
                         {% input_date_tag 'fecha_documento' 'Fecha del Documento' placeholder="Seleccione una fecha"   required="" modal=True value=archivo.fecha_documento autocomplete="off"  mensaje_validacion='Por favor seleccione una fecha.' invalido=errores.fecha_documento %}
