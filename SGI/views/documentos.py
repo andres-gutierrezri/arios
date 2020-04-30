@@ -222,11 +222,8 @@ class ArchivoCargarView(AbstractEvaLoggedView):
             documento.save(update_fields=['version_actual'])
 
             crear_notificacion_cadena(archivo, ACCION_APROBACION_DIRECTA)
-            archivos_anteriores = Archivo.objects.filter(documento=documento).exclude(id=archivo.id)
-            for archivo_anterior in archivos_anteriores:
-                anterior = Archivo(id=archivo_anterior.id)
-                anterior.estado_id = EstadoArchivo.OBSOLETO
-                anterior.save(update_fields=['estado_id'])
+            Archivo.objects.filter(documento=documento, estado_id=EstadoArchivo.APROBADO) \
+                .exclude(id=archivo.id).update(estado_id=EstadoArchivo.OBSOLETO)
 
         messages.success(request, 'Se ha cargado un archivo al documento {0}'.format(archivo.documento.nombre))
         return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
