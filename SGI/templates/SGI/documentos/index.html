@@ -86,7 +86,7 @@
                                                                                                 <div class="panel-content">
                                                                                                      <div class="row">
                                                                                                         <div class="col-md-10">
-                                                                                                            {{ documento.codigo }} {{ documento.nombre }}  v{{ hst.version }} <span class="badge border border-primary text-primary" style="font-size: 70%">{{ hst.estado }}</span>
+                                                                                                             {{ documento.codigo }} {{ documento.nombre }}  v{{ hst.version }} <span class="{% if hst.estado.nombre == 'APROBADO' %}badge badge-primary {% elif hst.estado.nombre == 'RECHAZADO' %} badge border border-danger text-danger {% else %} badge border border-primary text-primary {% endif %}" style="font-size: 70%">{{ hst.estado }}</span>
                                                                                                         </div>
                                                                                                         <div class="col-md-2 p-r-10" style="text-align: end">
                                                                                                             {%  if perms.TalentoHumano.view_archivo_historial %}
