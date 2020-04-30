@@ -4,9 +4,9 @@ function arbolDocumentos(id, id_accionador) {
 
     if(children.is(':visible')) {
         children.hide('fast');
-        accionador.removeClass('color-primary-50')
+        accionador.removeClass('color-warning-300')
     }else{
         children.show('fast');
-        accionador.addClass('color-primary-50')
+        accionador.addClass('color-warning-300')
     }
 }
