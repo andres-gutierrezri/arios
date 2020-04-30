@@ -179,13 +179,13 @@ class ArchivoCargarView(AbstractEvaLoggedView):
         tipo_archivo = request.POST.get('tipo_archivo', '')
         if tipo_archivo == 'archivo':
             archivo.archivo = request.FILES.get('archivo', None)
-            archivo.vinculo = None
+            archivo.enlace = None
 
-        elif tipo_archivo == 'vinculo':
-            archivo.vinculo = request.POST.get('vinculo', '')
+        elif tipo_archivo == 'enlace':
+            archivo.enlace = request.POST.get('enlace', '')
             archivo.archivo = None
-            if archivo.vinculo.find('http://') < 0 or archivo.vinculo.find('https://') < 0:
-                messages.error(request, 'El vínculo que ha ingresado, no tiene el formato correcto. <br>'
+            if archivo.enlace.find('http://') < 0 or archivo.enlace.find('https://') < 0:
+                messages.error(request, 'El enlace que ha ingresado, no tiene el formato correcto. <br>'
                                         'Ejemplo: https://www.arios-ing.com')
                 return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
@@ -261,7 +261,7 @@ class VerDocumentoView(AbstractEvaLoggedView):
                 .format(archivo.documento.codigo, archivo.documento.nombre,
                         archivo.documento.version_actual, extension)
         else:
-            response = redirect(archivo.vinculo)
+            response = redirect(archivo.enlace)
 
         return response
 

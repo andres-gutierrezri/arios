@@ -33,19 +33,19 @@ function abrir_modal_cargar(url) {
 
 function cambioCheck(dato) {
     let archivoDiv = $('.div_archivo');
-    let vinculoDiv = $('.div_vinculo');
-    let archivo_id = $('#archivo_id');
-    let vinculo_id = $('#vinculo_id');
+    let enlaceDiv = $('.div_enlace');
+    let archivoId = $('#archivo_id');
+    let enlaceId = $('#enlace_id');
 
     if(dato === 'archivo'){
         archivoDiv.show();
-        archivo_id.attr('required', true);
-        vinculo_id.removeAttr('required', true);
-        vinculoDiv.hide();
-    }else if(dato === 'vinculo'){
-        vinculoDiv.show();
-        vinculo_id.attr('required', true);
-        archivo_id.removeAttr('required', true);
+        archivoId.attr('required', true);
+        enlaceId.removeAttr('required', true);
+        enlaceDiv.hide();
+    }else if(dato === 'enlace'){
+        enlaceDiv.show();
+        enlaceId.attr('required', true);
+        archivoId.removeAttr('required', true);
         archivoDiv.hide();
 
 
