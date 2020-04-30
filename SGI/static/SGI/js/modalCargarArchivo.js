@@ -31,15 +31,23 @@ function abrir_modal_cargar(url) {
     });
 }
 
-let div_archivo = $('#div_archivo');
-let div_vinculo = $('#div_vinculo');
-
 function cambioCheck(dato) {
+    let archivoDiv = $('.div_archivo');
+    let vinculoDiv = $('.div_vinculo');
+    let archivo_id = $('#archivo_id');
+    let vinculo_id = $('#vinculo_id');
+
     if(dato === 'archivo'){
-        div_archivo.show();
-        div_vinculo.hide();
+        archivoDiv.show();
+        archivo_id.attr('required', true);
+        vinculo_id.removeAttr('required', true);
+        vinculoDiv.hide();
     }else if(dato === 'vinculo'){
-        div_vinculo.show();
-        div_archivo.hide();
+        vinculoDiv.show();
+        vinculo_id.attr('required', true);
+        archivo_id.removeAttr('required', true);
+        archivoDiv.hide();
+
+
     }
 }
