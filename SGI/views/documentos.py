@@ -1,4 +1,4 @@
-
+from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, reverse
 from django.core.exceptions import ValidationError
@@ -24,10 +24,15 @@ class IndexView(AbstractEvaLoggedView):
             archivos = Archivo.objects.filter(documento__proceso_id=id, estado_id=EstadoArchivo.APROBADO)
             proceso = procesos.get(id=id)
             grupo_documentos = GrupoDocumento.objects.filter(empresa_id=empresa_id).order_by('nombre')
+            historial = Archivo.objects.filter(documento__proceso_id=id).order_by('-version')
+            resultados = ResultadosAprobacion.objects.exclude(estado_id=EstadoArchivo.PENDIENTE)
+
             return render(request, 'SGI/documentos/index.html', {'documentos': documentos, 'procesos': procesos,
                                                                  'grupo_documentos': grupo_documentos,
                                                                  'proceso': proceso,
-                                                                 'archivos': archivos
+                                                                 'archivos': archivos,
+                                                                 'historial': historial,
+                                                                 'resultados': resultados
                                                                  })
         else:
             return redirect(reverse('SGI:index'))
