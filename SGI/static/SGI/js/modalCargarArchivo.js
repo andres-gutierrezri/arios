@@ -30,3 +30,16 @@ function abrir_modal_cargar(url) {
         }
     });
 }
+
+let div_archivo = $('#div_archivo');
+let div_vinculo = $('#div_vinculo');
+
+function cambioCheck(dato) {
+    if(dato === 'archivo'){
+        div_archivo.show();
+        div_vinculo.hide();
+    }else if(dato === 'vinculo'){
+        div_vinculo.show();
+        div_archivo.hide();
+    }
+}
