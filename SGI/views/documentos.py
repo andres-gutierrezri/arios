@@ -247,18 +247,21 @@ class VerDocumentoView(AbstractEvaLoggedView):
     def get(self, request, id):
 
         archivo = Archivo.objects.get(id=id)
-        extension = os.path.splitext(archivo.archivo.url)[1]
-        mime_types = {'.docx': 'application/msword', '.xlsx': 'application/vnd.ms-excel',
-                      '.pptx': 'application/vnd.ms-powerpoint',
-                      '.xlsm': 'application/vnd.ms-excel.sheet.macroenabled.12',
-                      }
+        if archivo.archivo:
+            extension = os.path.splitext(archivo.archivo.url)[1]
+            mime_types = {'.docx': 'application/msword', '.xlsx': 'application/vnd.ms-excel',
+                          '.pptx': 'application/vnd.ms-powerpoint',
+                          '.xlsm': 'application/vnd.ms-excel.sheet.macroenabled.12',
+                          }
 
-        mime_type = mime_types.get(extension, 'application/pdf')
+            mime_type = mime_types.get(extension, 'application/pdf')
 
-        response = HttpResponse(archivo.archivo, content_type=mime_type)
-        response['Content-Disposition'] = 'inline; filename="{0} {1} v{2:.1f}{3}"'\
-            .format(archivo.documento.codigo, archivo.documento.nombre,
-                    archivo.documento.version_actual, extension)
+            response = HttpResponse(archivo.archivo, content_type=mime_type)
+            response['Content-Disposition'] = 'inline; filename="{0} {1} v{2:.1f}{3}"'\
+                .format(archivo.documento.codigo, archivo.documento.nombre,
+                        archivo.documento.version_actual, extension)
+        else:
+            response = redirect(archivo.vinculo)
 
         return response
 
