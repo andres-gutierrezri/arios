@@ -184,7 +184,7 @@ class ArchivoCargarView(AbstractEvaLoggedView):
         elif tipo_archivo == 'vinculo':
             archivo.vinculo = request.POST.get('vinculo', '')
             archivo.archivo = None
-            if archivo.vinculo.find('http://') > 0 or archivo.vinculo.find('https://') > 0:
+            if archivo.vinculo.find('http://') < 0 or archivo.vinculo.find('https://') < 0:
                 messages.error(request, 'El vínculo que ha ingresado, no tiene el formato correcto. <br>'
                                         'Ejemplo: https://www.arios-ing.com')
                 return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
