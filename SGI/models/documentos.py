@@ -165,6 +165,7 @@ class Archivo(models.Model):
     notas = models.CharField(max_length=100, verbose_name='Notas', null=False, blank=False)
     fecha_documento = models.DateField(verbose_name='Fecha del Documento', null=False, blank=False)
     archivo = models.FileField(upload_to=custom_upload_to, blank=True, max_length=250)
+    vinculo = models.CharField(max_length=300, verbose_name='vinculo', null=True, blank=True)
     hash = models.CharField(max_length=300, verbose_name='Hash', null=False, blank=False)
     cadena_aprobacion = models.ForeignKey(CadenaAprobacionEncabezado, on_delete=models.DO_NOTHING,
                                           verbose_name='Cadena de aprobación', null=True, blank=True)
@@ -193,6 +194,7 @@ class Archivo(models.Model):
         archivo.notas = datos.get('notas', '')
         archivo.fecha_documento = datos.get('fecha_documento', '')
         archivo.archivo = datos.get('archivo', None)
+        archivo.vinculo = datos.get('vinculo', '')
         archivo.hash = datos.get('hash', '')
         archivo.cadena_aprobacion_id = datos.get('cadena_aprobacion_id', '')
         archivo.estado_id = datos.get('estado_id', '')
