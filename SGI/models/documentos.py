@@ -199,6 +199,12 @@ class Archivo(models.Model):
 
         return archivo
 
+    @property
+    def nombre_documento(self):
+        return '{0} {1}'.format(self.documento.codigo, self.documento.nombre) + \
+               (' v{:.1f}'.format(self.version) if self.version != 0 else '')
+
+
 
 class ResultadosAprobacion(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario', null=True,
