@@ -25,7 +25,8 @@ class IndexView(AbstractEvaLoggedView):
             proceso = procesos.get(id=id)
             grupo_documentos = GrupoDocumento.objects.filter(empresa_id=empresa_id).order_by('nombre')
             historial = Archivo.objects.filter(documento__proceso_id=id).order_by('-version')
-            resultados = ResultadosAprobacion.objects.exclude(estado_id=EstadoArchivo.PENDIENTE)
+            resultados = ResultadosAprobacion.objects.exclude(estado_id=EstadoArchivo.PENDIENTE,
+                                                              archivo__documento__proceso_id=id)
 
             return render(request, 'SGI/documentos/index.html', {'documentos': documentos, 'procesos': procesos,
                                                                  'grupo_documentos': grupo_documentos,
