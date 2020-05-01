@@ -1,4 +1,4 @@
-
+from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, reverse
 from django.core.exceptions import ValidationError
@@ -24,10 +24,16 @@ class IndexView(AbstractEvaLoggedView):
             archivos = Archivo.objects.filter(documento__proceso_id=id, estado_id=EstadoArchivo.APROBADO)
             proceso = procesos.get(id=id)
             grupo_documentos = GrupoDocumento.objects.filter(empresa_id=empresa_id).order_by('nombre')
+            historial = Archivo.objects.filter(documento__proceso_id=id).order_by('-version')
+            resultados = ResultadosAprobacion.objects.exclude(estado_id=EstadoArchivo.PENDIENTE,
+                                                              archivo__documento__proceso_id=id)
+
             return render(request, 'SGI/documentos/index.html', {'documentos': documentos, 'procesos': procesos,
                                                                  'grupo_documentos': grupo_documentos,
                                                                  'proceso': proceso,
-                                                                 'archivos': archivos
+                                                                 'archivos': archivos,
+                                                                 'historial': historial,
+                                                                 'resultados': resultados
                                                                  })
         else:
             return redirect(reverse('SGI:index'))
@@ -176,7 +182,23 @@ class ArchivoCargarView(AbstractEvaLoggedView):
             archivo.estado_id = EstadoArchivo.APROBADO
         archivo.usuario = request.user
 
-        archivo.archivo = request.FILES.get('archivo', None)
+        tipo_archivo = request.POST.get('tipo_archivo', '')
+        if tipo_archivo == 'archivo':
+            archivo.archivo = request.FILES.get('archivo', None)
+            archivo.enlace = None
+
+        elif tipo_archivo == 'enlace':
+            archivo.enlace = request.POST.get('enlace', '')
+            archivo.archivo = None
+            if not archivo.enlace.startswith('http://') and not archivo.enlace.startswith('https://'):
+                messages.error(request, 'El enlace que ha ingresado, no tiene el formato correcto. <br>'
+                                        'Ejemplo: https://www.arios-ing.com')
+                return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
+
+        else:
+            messages.error(request, 'No se han ingresado los datos correctamente')
+            return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
+
         archivo_db = Archivo.objects.filter(documento_id=id_documento, estado=EstadoArchivo.APROBADO)
         if archivo_db:
             if float(archivo.version) <= documento.version_actual:
@@ -217,11 +239,8 @@ class ArchivoCargarView(AbstractEvaLoggedView):
             documento.save(update_fields=['version_actual'])
 
             crear_notificacion_cadena(archivo, ACCION_APROBACION_DIRECTA)
-            archivos_anteriores = Archivo.objects.filter(documento=documento).exclude(id=archivo.id)
-            for archivo_anterior in archivos_anteriores:
-                anterior = Archivo(id=archivo_anterior.id)
-                anterior.estado_id = EstadoArchivo.OBSOLETO
-                anterior.save(update_fields=['estado_id'])
+            Archivo.objects.filter(documento=documento, estado_id=EstadoArchivo.APROBADO) \
+                .exclude(id=archivo.id).update(estado_id=EstadoArchivo.OBSOLETO)
 
         messages.success(request, 'Se ha cargado un archivo al documento {0}'.format(archivo.documento.nombre))
         return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
@@ -231,18 +250,21 @@ class VerDocumentoView(AbstractEvaLoggedView):
     def get(self, request, id):
 
         archivo = Archivo.objects.get(id=id)
-        extension = os.path.splitext(archivo.archivo.url)[1]
-        mime_types = {'.docx': 'application/msword', '.xlsx': 'application/vnd.ms-excel',
-                      '.pptx': 'application/vnd.ms-powerpoint',
-                      '.xlsm': 'application/vnd.ms-excel.sheet.macroenabled.12',
-                      }
+        if archivo.archivo:
+            extension = os.path.splitext(archivo.archivo.url)[1]
+            mime_types = {'.docx': 'application/msword', '.xlsx': 'application/vnd.ms-excel',
+                          '.pptx': 'application/vnd.ms-powerpoint',
+                          '.xlsm': 'application/vnd.ms-excel.sheet.macroenabled.12',
+                          }
 
-        mime_type = mime_types.get(extension, 'application/pdf')
+            mime_type = mime_types.get(extension, 'application/pdf')
 
-        response = HttpResponse(archivo.archivo, content_type=mime_type)
-        response['Content-Disposition'] = 'inline; filename="{0} {1} v{2:.1f}{3}"'\
-            .format(archivo.documento.codigo, archivo.documento.nombre,
-                    archivo.documento.version_actual, extension)
+            response = HttpResponse(archivo.archivo, content_type=mime_type)
+            response['Content-Disposition'] = 'inline; filename="{0} {1} v{2:.1f}{3}"'\
+                .format(archivo.documento.codigo, archivo.documento.nombre,
+                        archivo.documento.version_actual, extension)
+        else:
+            response = redirect(archivo.enlace)
 
         return response
 

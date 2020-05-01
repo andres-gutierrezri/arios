@@ -30,3 +30,24 @@ function abrir_modal_cargar(url) {
         }
     });
 }
+
+function cambioCheck(dato) {
+    let archivoDiv = $('.div_archivo');
+    let enlaceDiv = $('.div_enlace');
+    let archivoId = $('#archivo_id');
+    let enlaceId = $('#enlace_id');
+
+    if(dato === 'archivo'){
+        archivoDiv.show();
+        archivoId.attr('required', true);
+        enlaceId.removeAttr('required', true);
+        enlaceDiv.hide();
+    }else if(dato === 'enlace'){
+        enlaceDiv.show();
+        enlaceId.attr('required', true);
+        archivoId.removeAttr('required', true);
+        archivoDiv.hide();
+
+
+    }
+}
