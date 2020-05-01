@@ -182,7 +182,23 @@ class ArchivoCargarView(AbstractEvaLoggedView):
             archivo.estado_id = EstadoArchivo.APROBADO
         archivo.usuario = request.user
 
-        archivo.archivo = request.FILES.get('archivo', None)
+        tipo_archivo = request.POST.get('tipo_archivo', '')
+        if tipo_archivo == 'archivo':
+            archivo.archivo = request.FILES.get('archivo', None)
+            archivo.enlace = None
+
+        elif tipo_archivo == 'enlace':
+            archivo.enlace = request.POST.get('enlace', '')
+            archivo.archivo = None
+            if not archivo.enlace.startswith('http://') and not archivo.enlace.startswith('https://'):
+                messages.error(request, 'El enlace que ha ingresado, no tiene el formato correcto. <br>'
+                                        'Ejemplo: https://www.arios-ing.com')
+                return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
+
+        else:
+            messages.error(request, 'No se han ingresado los datos correctamente')
+            return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
+
         archivo_db = Archivo.objects.filter(documento_id=id_documento, estado=EstadoArchivo.APROBADO)
         if archivo_db:
             if float(archivo.version) <= documento.version_actual:
@@ -234,18 +250,21 @@ class VerDocumentoView(AbstractEvaLoggedView):
     def get(self, request, id):
 
         archivo = Archivo.objects.get(id=id)
-        extension = os.path.splitext(archivo.archivo.url)[1]
-        mime_types = {'.docx': 'application/msword', '.xlsx': 'application/vnd.ms-excel',
-                      '.pptx': 'application/vnd.ms-powerpoint',
-                      '.xlsm': 'application/vnd.ms-excel.sheet.macroenabled.12',
-                      }
+        if archivo.archivo:
+            extension = os.path.splitext(archivo.archivo.url)[1]
+            mime_types = {'.docx': 'application/msword', '.xlsx': 'application/vnd.ms-excel',
+                          '.pptx': 'application/vnd.ms-powerpoint',
+                          '.xlsm': 'application/vnd.ms-excel.sheet.macroenabled.12',
+                          }
 
-        mime_type = mime_types.get(extension, 'application/pdf')
+            mime_type = mime_types.get(extension, 'application/pdf')
 
-        response = HttpResponse(archivo.archivo, content_type=mime_type)
-        response['Content-Disposition'] = 'inline; filename="{0} {1} v{2:.1f}{3}"'\
-            .format(archivo.documento.codigo, archivo.documento.nombre,
-                    archivo.documento.version_actual, extension)
+            response = HttpResponse(archivo.archivo, content_type=mime_type)
+            response['Content-Disposition'] = 'inline; filename="{0} {1} v{2:.1f}{3}"'\
+                .format(archivo.documento.codigo, archivo.documento.nombre,
+                        archivo.documento.version_actual, extension)
+        else:
+            response = redirect(archivo.enlace)
 
         return response
 
