@@ -56,7 +56,7 @@
                                         <div class="form-group">
                                             <div class="form-row">
                                                 <div class="col-md-6">
-                                                {% input_number_tag 'telefono_contacto' 'Teléfono del contacto' placeholder="Ingrese el número telefónico del contacto" required="" maxlength="100" value=entidad_cafe.telefono_contacto mensaje_validacion='Por favor digite el número telefónico del contacto.' invalido=errores.telefono_contacto %}
+                                                {% input_text_tag 'telefono_contacto' 'Teléfono del contacto' placeholder="Ingrese el número telefónico del contacto" required="" maxlength="30" value=entidad_cafe.telefono_contacto mensaje_validacion='Por favor digite el número telefónico del contacto.' invalido=errores.telefono_contacto %}
                                                 </div>
                                                  <div class="col-md-6">
                                                  {% input_email_tag 'correo' 'Correo electrónico de la entidad' placeholder="Ingrese el correo electrónico" required="" maxlength="100" value=entidad_cafe.correo mensaje_validacion='Por favor digite el correo electrónico.' invalido=errores.correo %}
