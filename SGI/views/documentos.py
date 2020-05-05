@@ -33,7 +33,8 @@ class IndexView(AbstractEvaLoggedView):
                                                                  'proceso': proceso,
                                                                  'archivos': archivos,
                                                                  'historial': historial,
-                                                                 'resultados': resultados
+                                                                 'resultados': resultados,
+                                                                 'estado': EstadoArchivo
                                                                  })
         else:
             return redirect(reverse('SGI:index'))
