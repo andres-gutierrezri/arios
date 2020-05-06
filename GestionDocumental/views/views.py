@@ -1,3 +1,8 @@
 from django.shortcuts import render
 
-# Create your views here.
+from EVA.views.index import AbstractEvaLoggedView
+
+
+class PrincipalView(AbstractEvaLoggedView):
+    def get(self, request):
+        return render(request, 'Administracion/index.html')
