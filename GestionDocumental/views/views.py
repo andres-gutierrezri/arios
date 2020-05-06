@@ -5,4 +5,4 @@ from EVA.views.index import AbstractEvaLoggedView
 
 class PrincipalView(AbstractEvaLoggedView):
     def get(self, request):
-        return render(request, 'Administracion/index.html')
+        return render(request, 'GestionDocumental/index.html')

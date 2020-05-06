@@ -20,5 +20,5 @@ from GestionDocumental.views import views
 app_name = 'GestionDocumental'
 
 urlpatterns = [
-    path('/', views.PrincipalView.as_view(), name='index'),
+    path('index/', views.PrincipalView.as_view(), name='index'),
 ]
