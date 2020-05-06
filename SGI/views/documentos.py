@@ -24,7 +24,8 @@ class IndexView(AbstractEvaLoggedView):
             archivos = Archivo.objects.filter(documento__proceso_id=id, estado_id=EstadoArchivo.APROBADO)
             proceso = procesos.get(id=id)
             grupo_documentos = GrupoDocumento.objects.filter(empresa_id=empresa_id).order_by('nombre')
-            historial = Archivo.objects.filter(documento__proceso_id=id).order_by('-version')
+            historial = Archivo.objects.filter(documento__proceso_id=id).order_by('-version')\
+                .exclude(estado_id=EstadoArchivo.PENDIENTE)
             resultados = ResultadosAprobacion.objects.exclude(estado_id=EstadoArchivo.PENDIENTE,
                                                               archivo__documento__proceso_id=id)
 
@@ -33,7 +34,8 @@ class IndexView(AbstractEvaLoggedView):
                                                                  'proceso': proceso,
                                                                  'archivos': archivos,
                                                                  'historial': historial,
-                                                                 'resultados': resultados
+                                                                 'resultados': resultados,
+                                                                 'estado': EstadoArchivo
                                                                  })
         else:
             return redirect(reverse('SGI:index'))
