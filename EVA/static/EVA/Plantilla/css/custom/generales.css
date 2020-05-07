@@ -97,3 +97,13 @@ input[type=checkbox] ~ label:before {
 .w-500{
     width: 500px
 }
+
+.app-list-name{
+position: absolute;
+left: 0;
+right: 0;
+}
+
+.app-list-item{
+position: relative;
+}
