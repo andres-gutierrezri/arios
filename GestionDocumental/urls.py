@@ -15,10 +15,12 @@ Including another URLconf
 """
 
 from django.urls import path
-from GestionDocumental.views import views
+from GestionDocumental.views import views, consecutivo_documento
 
 app_name = 'GestionDocumental'
 
 urlpatterns = [
     path('index/', views.PrincipalView.as_view(), name='index'),
+    path('consecutivo-documento/<int:id>/index', consecutivo_documento.ConsecutivoDocumentoView.as_view(),
+         name='consecutivo-documento-ver'),
 ]
