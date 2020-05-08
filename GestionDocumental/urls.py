@@ -23,4 +23,6 @@ urlpatterns = [
     path('index/', views.PrincipalView.as_view(), name='index'),
     path('consecutivo-documento/<int:id>/index', consecutivo_documento.ConsecutivoDocumentoView.as_view(),
          name='consecutivo-documento-index'),
+    path('consecutivo-documento/add', consecutivo_documento.ConsecutivoDocumentoCrearView.as_view(),
+         name='consecutivo-documento-crear'),
 ]
