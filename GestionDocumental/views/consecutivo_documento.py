@@ -19,6 +19,6 @@ class ConsecutivoDocumentoView(AbstractEvaLoggedView):
         return render(request, 'GestionDocumental/ConsecutivoDocumento/index.html', {'consecutivos': consecutivos,
                                                                                      'opciones_filtro': opciones_filtro,
                                                                                      'fecha': datetime.datetime.now(),
-                                                                                     'menu_actual': 'contratos',
+                                                                                     'menu_actual': 'consecutivos',
                                                                                      'id_filtro': id})
 
