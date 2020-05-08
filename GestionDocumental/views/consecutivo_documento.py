@@ -13,7 +13,9 @@ class ConsecutivoDocumentoView(AbstractEvaLoggedView):
     def get(self, request, id):
         if id == 0:
             consecutivos = ConsecutivoDocumento.objects.all()
+            colaborador = Colaborador.objects.values('usuario_id', 'proceso__sigla')
         else:
+            colaborador = Colaborador.objects.filter(usuario=request.user).values('usuario_id', 'proceso__sigla')
             consecutivos = ConsecutivoDocumento.objects.filter(usuario_id=request.user.id)
 
         opciones_filtro = [{'campo_valor': 0, 'campo_texto': 'Todos'},
@@ -21,6 +23,7 @@ class ConsecutivoDocumentoView(AbstractEvaLoggedView):
 
         return render(request, 'GestionDocumental/ConsecutivoDocumento/index.html', {'consecutivos': consecutivos,
                                                                                      'opciones_filtro': opciones_filtro,
+                                                                                     'colaborador': colaborador,
                                                                                      'fecha': datetime.datetime.now(),
                                                                                      'menu_actual': 'consecutivos',
                                                                                      'id_filtro': id})
