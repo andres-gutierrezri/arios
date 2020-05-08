@@ -1,6 +1,6 @@
 {% if perms.GestionDocumental.view_consecutivodocumento %}
 <li {% if menu_actual == 'consecutivo_documento' %} class="active" {% endif %}>
-    <a href="{% url 'GestionDocumental:consecutivo-documento-ver' 0 %}" title="Consecutivo de Documento" data-filter-tags="consecutivo documento">
+    <a href="{% url 'GestionDocumental:consecutivo-documento-index' 0 %}" title="Consecutivo de Documento" data-filter-tags="consecutivo documento">
         <i class="far fa-file-alt"></i>
         <span class="nav-link-text" data-i18n="nav.gestion_documental_consecutivo_documento">Consecutivo de Documentos</span>
     </a>
