@@ -41,7 +41,10 @@ class ConsecutivoDocumentoCrearView(AbstractEvaLoggedView):
         consecutivo.usuario = request.user
         anterior_consecutivo = ConsecutivoDocumento.objects.last()
         if anterior_consecutivo:
-            consecutivo.consecutivo = anterior_consecutivo.consecutivo
+            if anterior_consecutivo.fecha.year < datetime.datetime.now().year:
+                consecutivo.consecutivo = 1
+            else:
+                consecutivo.consecutivo = int(anterior_consecutivo.consecutivo) + 1
         else:
             consecutivo.consecutivo = 1
 
@@ -49,13 +52,11 @@ class ConsecutivoDocumentoCrearView(AbstractEvaLoggedView):
 
         if not consecutivo.contrato_id:
             contrato = colaborador.proceso.sigla
-            anho = datetime.datetime.now().year
         else:
             contrato = consecutivo.contrato.numero_contrato
-            anho = consecutivo.contrato.anho
 
         consecutivo.codigo = '{0}-{1}-{2}-{3}'.format(colaborador.proceso.sigla, consecutivo.consecutivo,
-                                                      contrato, anho).upper()
+                                                      contrato, datetime.datetime.now().year).upper()
 
         consecutivo.save()
         return redirect(reverse('GestionDocumental:consecutivo-documento-index', args=[1]))
