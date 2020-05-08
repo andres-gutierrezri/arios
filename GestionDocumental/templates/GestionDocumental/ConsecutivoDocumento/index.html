@@ -54,7 +54,7 @@
                                                         {% for consecutivo in consecutivos %}
                                                             <tr>
                                                                 <td>{{ consecutivo.codigo}}</td>
-                                                                <td>{{ consecutivo.fecha }}</td>
+                                                                <td>{{ consecutivo.fecha | date:'Y-m-d H:m'}}</td>
                                                                 <td>{% if consecutivo.contrato %}{{ consecutivo.contrato}}{% else %}{{ consecutivo.usuario }}{% endif %}</td>
                                                                 <td>{{ consecutivo.detalle}}</td>
                                                                 <td>{{ consecutivo.destinatario }}</td>
