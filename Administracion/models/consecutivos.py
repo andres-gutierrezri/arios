@@ -55,3 +55,21 @@ class ConsecutivoDocumento (models.Model):
             consecutivo.save()
 
         return consecutivo.consecutivo
+
+    @staticmethod
+    def get_consecutivo_por_anho(tipo_documento_id, empresa_id):
+
+        consecutivo_anho = ConsecutivoDocumento.objects.filter(tipo_documento_id=tipo_documento_id,
+                                                               empresa_id=empresa_id,
+                                                               fecha__year=datetime.datetime.now().year).first()
+        if consecutivo_anho:
+            consecutivo_anho.consecutivo = F('consecutivo') + 1
+            consecutivo_anho.save(update_fields=['consecutivo'])
+            consecutivo_anho.refresh_from_db(fields=['consecutivo'])
+        else:
+            consecutivo_anho = ConsecutivoDocumento(tipo_documento_id=tipo_documento_id,
+                                                    empresa_id=empresa_id, estado=True)
+            consecutivo_anho.consecutivo = 1
+            consecutivo_anho.save()
+
+        return consecutivo_anho.consecutivo
