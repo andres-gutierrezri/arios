@@ -31,9 +31,14 @@ class ConsecutivoOficiosView(AbstractEvaLoggedView):
 
 class ConsecutivoOficiosCrearView(AbstractEvaLoggedView):
     def get(self, request):
-        contratos = Contrato.objects.get_xa_select_activos()
+        contratos = Contrato.objects.values('id', 'numero_contrato', 'cliente__nombre')
+        lista_contratos = []
+        for contrato in contratos:
+            lista_contratos.append({'campo_valor': contrato['id'], 'campo_texto': '{0} - {1}'
+                                   .format(contrato['numero_contrato'], contrato['cliente__nombre'])})
+
         return render(request, 'GestionDocumental/ConsecutivoOficios/crear.html', {'fecha': datetime.datetime.now(),
-                                                                                   'contratos': contratos,
+                                                                                   'contratos': lista_contratos,
                                                                                    'menu_actual': 'consecutivos'})
 
     def post(self, request):
