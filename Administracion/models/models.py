@@ -86,7 +86,7 @@ class Cargo(models.Model):
 class Proceso(models.Model):
     objects = ManagerGeneral()
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
-    sigla = models.CharField(max_length=10, verbose_name='Sigla', null=False, blank=False, default='')
+    sigla = models.CharField(max_length=5, verbose_name='Sigla', null=False, blank=False, default='')
     objeto = models.CharField(max_length=100, verbose_name='Objeto', null=False, blank=False)
     empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa', null=True, blank=False)
 
