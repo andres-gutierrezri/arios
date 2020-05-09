@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 from django.db.models import F
 
@@ -18,6 +20,7 @@ class TipoDocumento (models.Model):
 
     # Tipos Fijos
     FACTURA = 1
+    OFICIOS = 2
 
 
 class ConsecutivoDocumento (models.Model):
@@ -25,6 +28,9 @@ class ConsecutivoDocumento (models.Model):
     tipo_documento = models.ForeignKey(TipoDocumento, on_delete=models.DO_NOTHING, verbose_name='Tipo de Documento',
                                        null=False, blank=False)
     consecutivo = models.PositiveIntegerField(verbose_name='Consecutivo', null=False, blank=False)
+    fecha = models.DateTimeField(auto_now_add=True, verbose_name='Fecha', null=False, blank=False)
+    fecha_modificacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Modificacion', null=False,
+                                              blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
 
     def __str__(self):
