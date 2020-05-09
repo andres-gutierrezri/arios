@@ -21,8 +21,8 @@ app_name = 'GestionDocumental'
 
 urlpatterns = [
     path('index/', views.PrincipalView.as_view(), name='index'),
-    path('consecutivo-documento/<int:id>/index', consecutivo_documento.ConsecutivoDocumentoView.as_view(),
-         name='consecutivo-documento-index'),
-    path('consecutivo-documento/add', consecutivo_documento.ConsecutivoDocumentoCrearView.as_view(),
-         name='consecutivo-documento-crear'),
+    path('consecutivo-oficios/<int:id>/index', consecutivo_documento.ConsecutivoOficiosView.as_view(),
+         name='consecutivo-oficios-index'),
+    path('consecutivo-oficios/add', consecutivo_documento.ConsecutivoOficiosCrearView.as_view(),
+         name='consecutivo-oficios-crear'),
 ]

@@ -25,7 +25,7 @@
                         <div class="panel-content">
                             <div class="panel-group">
                                 <div class="panel-body">
-                                    <form action="{% url 'GestionDocumental:consecutivo-documento-crear' %}" id="consecutivo_documento_form" method="post" class="needs-validation" novalidate>
+                                    <form action="{% url 'GestionDocumental:consecutivo-oficios-crear' %}" id="consecutivo_oficios_form" method="post" class="needs-validation" novalidate>
                                         {% csrf_token %}
                                         <div class="form-group">
                                             <div class="form-row">
@@ -45,7 +45,7 @@
                                                 <button id="agregar" class="btn btn-primary btn-block"> Agregar</button>
                                             </div>
                                             <div style="padding-left: 15px">
-                                                <a href="{% url 'GestionDocumental:consecutivo-documento-index' 1 %}" class="btn btn-danger btn-block">Cancelar</a>
+                                                <a href="{% url 'GestionDocumental:consecutivo-oficios-index' 1 %}" class="btn btn-danger btn-block">Cancelar</a>
                                             </div>
                                         </div>
                                     </form>

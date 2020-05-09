@@ -1,1 +1,1 @@
-from .models import ConsecutivoDocumento
+from .models import ConsecutivoOficio
