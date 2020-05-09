@@ -86,6 +86,20 @@
                         </a>
                     </li>
                     {% endif %}
+                    {% if perms.TalentoHumano.can_menu_gestiondocumental %}
+                    <li>
+                        <a href="{% url 'GestionDocumental:index' %}" class="app-list-item text-white border-0 m-0">
+                            <div class="icon-stack">
+                                <i class="base base-7 icon-stack-3x opacity-100 color-primary-500 "></i>
+                                <i class="base base-7 icon-stack-2x opacity-100 color-primary-300 "></i>
+                                <i class="fal fa-archive icon-stack-1x opacity-100 color-white"></i>
+                            </div>
+                            <span class="app-list-name">
+                                Gestión<br>Documental
+                            </span>
+                        </a>
+                    </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
