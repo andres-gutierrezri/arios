@@ -44,7 +44,7 @@ class ConsecutivoDocumentoCrearView(AbstractEvaLoggedView):
             if anterior_consecutivo.fecha.year < datetime.datetime.now().year:
                 consecutivo.consecutivo = 1
             else:
-                consecutivo.consecutivo = int(anterior_consecutivo.consecutivo) + 1
+                consecutivo.consecutivo = anterior_consecutivo.consecutivo + 1
         else:
             consecutivo.consecutivo = 1
 

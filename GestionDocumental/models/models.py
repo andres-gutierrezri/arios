@@ -7,7 +7,7 @@ from Proyectos.models import Contrato
 
 class ConsecutivoDocumento(models.Model):
     objects = ManagerGeneral()
-    consecutivo = models.CharField(max_length=50, verbose_name='Consecutivo', null=False, blank=False)
+    consecutivo = models.IntegerField(verbose_name='Consecutivo', null=False, blank=False)
     fecha = models.DateTimeField(auto_now_add=True, verbose_name='Fecha', null=False, blank=False)
     contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato', null=True, blank=True)
     detalle = models.CharField(max_length=100, verbose_name='Detalle', null=False, blank=False)
