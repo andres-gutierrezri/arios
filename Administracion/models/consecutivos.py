@@ -28,7 +28,7 @@ class ConsecutivoDocumento (models.Model):
     tipo_documento = models.ForeignKey(TipoDocumento, on_delete=models.DO_NOTHING, verbose_name='Tipo de Documento',
                                        null=False, blank=False)
     consecutivo = models.PositiveIntegerField(verbose_name='Consecutivo', null=False, blank=False)
-    fecha = models.DateTimeField(auto_now_add=True, verbose_name='Fecha', null=False, blank=False)
+    anho = models.IntegerField(verbose_name='Año', null=False, blank=False)
     fecha_modificacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Modificacion', null=False,
                                               blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
@@ -39,7 +39,7 @@ class ConsecutivoDocumento (models.Model):
     class Meta:
         verbose_name = 'Consecutivo Documento'
         verbose_name_plural = 'Consecutivos Documento'
-        unique_together = ('empresa', 'tipo_documento')
+        unique_together = ('empresa', 'tipo_documento', 'anho')
 
     @staticmethod
     def get_consecutivo_documento(tipo_documento_id, empresa_id):
@@ -61,7 +61,7 @@ class ConsecutivoDocumento (models.Model):
 
         consecutivo_anho = ConsecutivoDocumento.objects.filter(tipo_documento_id=tipo_documento_id,
                                                                empresa_id=empresa_id,
-                                                               fecha__year=datetime.datetime.now().year).first()
+                                                               anho=datetime.date.today().year).first()
         if consecutivo_anho:
             consecutivo_anho.consecutivo = F('consecutivo') + 1
             consecutivo_anho.save(update_fields=['consecutivo'])
@@ -70,6 +70,7 @@ class ConsecutivoDocumento (models.Model):
             consecutivo_anho = ConsecutivoDocumento(tipo_documento_id=tipo_documento_id,
                                                     empresa_id=empresa_id, estado=True)
             consecutivo_anho.consecutivo = 1
+            consecutivo_anho.anho = datetime.date.today().year
             consecutivo_anho.save()
 
         return consecutivo_anho.consecutivo
