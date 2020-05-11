@@ -3,6 +3,8 @@ import datetime
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
+from Administracion.models import ConsecutivoDocumento, TipoDocumento
+from Administracion.utils import get_id_empresa_global
 from EVA.views.index import AbstractEvaLoggedView
 from GestionDocumental.models import ConsecutivoOficio
 from Proyectos.models import Contrato
@@ -44,14 +46,9 @@ class ConsecutivoOficiosCrearView(AbstractEvaLoggedView):
     def post(self, request):
         consecutivo = ConsecutivoOficio.from_dictionary(request.POST)
         consecutivo.usuario = request.user
-        anterior_consecutivo = ConsecutivoOficio.objects.last()
-        if anterior_consecutivo:
-            if anterior_consecutivo.fecha.year < datetime.datetime.now().year:
-                consecutivo.consecutivo = 1
-            else:
-                consecutivo.consecutivo = anterior_consecutivo.consecutivo + 1
-        else:
-            consecutivo.consecutivo = 1
+        consecutivo.consecutivo = ConsecutivoDocumento\
+            .get_consecutivo_por_anho(tipo_documento_id=TipoDocumento.OFICIOS,
+                                      empresa_id=get_id_empresa_global(request))
 
         colaborador = Colaborador.objects.get(usuario=request.user)
 
