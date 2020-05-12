@@ -261,6 +261,27 @@ class ColaboradorEliminarView(AbstractEvaLoggedView):
                                                                                           colaborador.identificacion)})
 
 
+class ColaboradorCambiarFotoPerfilView(AbstractEvaLoggedView):
+    def get(self, request, id):
+        colaborador = Colaborador.objects.get(id=id)
+        return render(request, 'TalentoHumano/_elements/_modal_cambiar_foto_perfil.html',
+                      {'colaborador': colaborador, 'menu_actual': 'colaboradores'})
+
+    def post(self, request, id):
+        foto_nueva = request.FILES.get('cambio_foto_perfil', None)
+        if foto_nueva:
+            colaborador = Colaborador.objects.get(id=id)
+            colaborador.foto_perfil = foto_nueva
+            colaborador.save(update_fields=['foto_perfil'])
+            if colaborador.usuario_id == request.user.id:
+                request.session['colaborador'] = colaborador.foto_perfil.url
+            messages.success(request, 'La foto de perfil se actualizó correctamente.')
+            return redirect(reverse('TalentoHumano:colaboradores-perfil', args=[id]))
+        else:
+            messages.success(request, 'No se realizaron cambios en la foto de perfil.')
+            return redirect(reverse('TalentoHumano:colaboradores-perfil', args=[id]))
+
+
 # region Métodos de ayuda
 
 
