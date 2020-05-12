@@ -8,3 +8,11 @@
     display:block;
     margin:auto;
 }
+
+.foto_perfil_acual{
+  transition: background-color .5s;
+}
+
+.foto_perfil_acual:hover {
+  background-color: #b19dce;
+}
