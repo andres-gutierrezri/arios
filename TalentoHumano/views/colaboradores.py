@@ -265,25 +265,29 @@ class ColaboradorEliminarView(AbstractEvaLoggedView):
 class ColaboradorCambiarFotoPerfilView(AbstractEvaLoggedView):
     def get(self, request, id):
         colaborador = Colaborador.objects.get(id=id)
-        return render(request, 'TalentoHumano/_elements/_modal_cambiar_foto_perfil.html',
-                      {'colaborador': colaborador, 'menu_actual': 'colaboradores'})
+        if request.user == colaborador.usuario or tiene_permisos(request, 'TalentoHumano', ['change_colaborador'], []):
+            return render(request, 'TalentoHumano/_elements/_modal_cambiar_foto_perfil.html',
+                          {'colaborador': colaborador, 'menu_actual': 'colaboradores'})
+        else:
+            return redirect(reverse('TalentoHumano:colaboradores-perfil', args=[id]))
 
     def post(self, request, id):
-        foto_nueva = request.FILES.get('cambio_foto_perfil', None)
-        if foto_nueva:
-            if validar_formato_imagen(foto_nueva):
-                colaborador = Colaborador.objects.get(id=id)
-                colaborador.foto_perfil = foto_nueva
-                colaborador.save(update_fields=['foto_perfil'])
-                messages.success(request, 'La foto de perfil se actualizó correctamente.')
+        colaborador = Colaborador.objects.get(id=id)
+        if request.user == colaborador.usuario or tiene_permisos(request, 'TalentoHumano', ['change_colaborador'], []):
+            foto_nueva = request.FILES.get('cambio_foto_perfil', None)
+            if foto_nueva:
+                if validar_formato_imagen(foto_nueva):
+                    colaborador.foto_perfil = foto_nueva
+                    colaborador.save(update_fields=['foto_perfil'])
+                    messages.success(request, 'La foto de perfil se actualizó correctamente.')
 
-                if colaborador.usuario == request.user:
-                    request.session['colaborador'] = colaborador.foto_perfil.url
+                    if colaborador.usuario == request.user:
+                        request.session['colaborador'] = colaborador.foto_perfil.url
+                else:
+                    messages.error(request, 'La foto cargada no tiene un formato correcto. <br>'
+                                            'Formatos Aceptados: JPG, JPEG, PNG')
             else:
-                messages.error(request, 'La foto cargada no tiene un formato correcto. <br>'
-                                        'Formatos Aceptados: JPG, JPEG, PNG')
-        else:
-            messages.success(request, 'No se realizaron cambios en la foto de perfil.')
+                messages.success(request, 'No se realizaron cambios en la foto de perfil.')
 
         return redirect(reverse('TalentoHumano:colaboradores-perfil', args=[id]))
 
