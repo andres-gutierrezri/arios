@@ -47,7 +47,13 @@
                                                     <div class="row no-gutters row-grid">
                                                         <div class="col-12">
                                                             <div class="d-flex flex-column align-items-center justify-content-center p-4">
-                                                                <a href="javascript: cambiarFotoPerfil({{ colaborador.id }})" title="Cambiar Foto de Perfil"><img src="{{ colaborador.foto_perfil.url }}" class="rounded-circle shadow-2 img-thumbnail foto_perfil_acual" alt=""></a>
+                                                                {% if request.user == colaborador.usuario or perms.TalentoHumano.change_colaborador %}
+                                                                <a href="javascript: cambiarFotoPerfil({{ colaborador.id }})" title="Cambiar Foto de Perfil">
+                                                                    <img src="{{ colaborador.foto_perfil.url }}" class="rounded-circle shadow-2 img-thumbnail foto_perfil_acual" alt="">
+                                                                </a>
+                                                                {% else %}
+                                                                    <img src="{{ colaborador.foto_perfil.url }}" class="rounded-circle shadow-2 img-thumbnail" alt="">
+                                                                {% endif %}
                                                                 <h5 class="mb-0 fw-700 text-center mt-3">
                                                                     {{ colaborador.nombre_completo }}
                                                                     <small class="text-muted mb-0">{{ colaborador.cargo }}</small>
