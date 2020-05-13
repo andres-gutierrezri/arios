@@ -13,6 +13,7 @@ from django.utils.http import urlsafe_base64_encode
 from Administracion.models import Cargo, Proceso, TipoContrato, CentroPoblado, Rango, Municipio, Departamento, \
     TipoIdentificacion
 from EVA import settings
+from EVA.General.utilidades import validar_formato_imagen
 from Notificaciones.views.correo_electronico import enviar_correo
 from EVA.General.validacionpermisos import tiene_permisos
 from TalentoHumano.models.colaboradores import ColaboradorContrato
@@ -270,16 +271,21 @@ class ColaboradorCambiarFotoPerfilView(AbstractEvaLoggedView):
     def post(self, request, id):
         foto_nueva = request.FILES.get('cambio_foto_perfil', None)
         if foto_nueva:
-            colaborador = Colaborador.objects.get(id=id)
-            colaborador.foto_perfil = foto_nueva
-            colaborador.save(update_fields=['foto_perfil'])
-            if colaborador.usuario_id == request.user.id:
-                request.session['colaborador'] = colaborador.foto_perfil.url
-            messages.success(request, 'La foto de perfil se actualizó correctamente.')
-            return redirect(reverse('TalentoHumano:colaboradores-perfil', args=[id]))
+            if validar_formato_imagen(foto_nueva):
+                colaborador = Colaborador.objects.get(id=id)
+                colaborador.foto_perfil = foto_nueva
+                colaborador.save(update_fields=['foto_perfil'])
+                messages.success(request, 'La foto de perfil se actualizó correctamente.')
+
+                if colaborador.usuario == request.user:
+                    request.session['colaborador'] = colaborador.foto_perfil.url
+            else:
+                messages.error(request, 'La foto cargada no tiene un formato correcto. <br>'
+                                        'Formatos Aceptados: JPG, JPEG, PNG')
         else:
             messages.success(request, 'No se realizaron cambios en la foto de perfil.')
-            return redirect(reverse('TalentoHumano:colaboradores-perfil', args=[id]))
+
+        return redirect(reverse('TalentoHumano:colaboradores-perfil', args=[id]))
 
 
 # region Métodos de ayuda
