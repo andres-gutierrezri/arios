@@ -6,7 +6,7 @@ function iniciarTablaExportarConsecutivos(columnasExportar)
 {
     $('#dataTableConsecutivos').dataTable(
     {
-        "order": [[ 0, "desc" ]],
+        "order": [[ 1, "desc" ]],
         responsive: true,
         lengthChange: false,
         dom:
