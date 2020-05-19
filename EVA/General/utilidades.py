@@ -25,3 +25,11 @@ def validar_extension_de_archivo(archivo):
         return True
     else:
         return False
+
+
+def validar_formato_imagen(archivo) -> bool:
+    extension = str(archivo).split('.')[-1].lower()
+    if extension == 'jpg' or extension == 'jpeg' or extension == 'png':
+        return True
+    else:
+        return False
