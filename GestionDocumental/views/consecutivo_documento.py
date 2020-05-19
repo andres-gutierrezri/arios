@@ -57,7 +57,7 @@ class ConsecutivoOficiosCrearView(AbstractEvaLoggedView):
         else:
             contrato = consecutivo.contrato.numero_contrato
 
-        consecutivo.codigo = '{0}-{1}-{2}-{3}'.format(colaborador.proceso.sigla, consecutivo.consecutivo,
+        consecutivo.codigo = '{0}-{1}-{2}-{3}'.format(colaborador.proceso.sigla, ('%03d' % consecutivo.consecutivo),
                                                       contrato, datetime.datetime.now().year).upper()
 
         consecutivo.save()
