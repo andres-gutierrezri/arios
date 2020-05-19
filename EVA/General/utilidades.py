@@ -17,3 +17,11 @@ def app_datetime_now() -> datetime:
     :return: la fecha y hora actual UTC.
     """
     return datetime.now(pytz.utc)
+
+
+def validar_extension_de_archivo(archivo):
+    nombre = archivo.split(".")[-1]
+    if nombre == 'pdf' or nombre == 'xlsx' or nombre == 'docx' or nombre == 'pptx':
+        return True
+    else:
+        return False
