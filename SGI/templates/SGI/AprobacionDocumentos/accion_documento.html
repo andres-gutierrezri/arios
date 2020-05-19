@@ -17,7 +17,7 @@
                 {% csrf_token %}
                 <div class="form-group">
                     <div class="m-b-10">
-                        {% input_textarea_tag 'comentario' 'Comentarios' placeholder="Describa la razon por la cual va a tomar la acción" required="" modal=True  mensaje_validacion='Por favor escriba un comentario' invalido=errores.comentario %}
+                        {% input_textarea_tag 'comentario' 'Comentarios' maxlength="300" placeholder="Describa la razon por la cual va a tomar la acción" required="" modal=True  mensaje_validacion='Por favor escriba un comentario' invalido=errores.comentario %}
                     </div>
                     <div class="m-b-10">
                         <div class="frame-wrap">
