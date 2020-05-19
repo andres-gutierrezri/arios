@@ -1,8 +1,8 @@
-{% if perms.GestionDocumental.view_consecutivodocumento %}
-<li {% if menu_actual == 'consecutivo_documento' %} class="active" {% endif %}>
-    <a href="{% url 'GestionDocumental:consecutivo-documento-index' 0 %}" title="Consecutivo de Documento" data-filter-tags="consecutivo documento">
+{% if perms.GestionDocumental.view_consecutivooficio %}
+<li {% if menu_actual == 'consecutivos' %} class="active" {% endif %}>
+    <a href="{% url 'GestionDocumental:consecutivo-oficios-index' 0 %}" title="Consecutivo de Oficios" data-filter-tags="consecutivo oficios">
         <i class="far fa-file-alt"></i>
-        <span class="nav-link-text" data-i18n="nav.gestion_documental_consecutivo_documento">Consecutivo de Documentos</span>
+        <span class="nav-link-text" data-i18n="nav.gestion_documental_consecutivo_oficios">Consecutivo de Oficios</span>
     </a>
 </li>
 {% endif %}

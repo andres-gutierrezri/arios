@@ -5,9 +5,9 @@ from EVA.General.modelmanagers import ManagerGeneral
 from Proyectos.models import Contrato
 
 
-class ConsecutivoDocumento(models.Model):
+class ConsecutivoOficio(models.Model):
     objects = ManagerGeneral()
-    consecutivo = models.CharField(max_length=50, verbose_name='Consecutivo', null=False, blank=False)
+    consecutivo = models.IntegerField(verbose_name='Consecutivo', null=False, blank=False)
     fecha = models.DateTimeField(auto_now_add=True, verbose_name='Fecha', null=False, blank=False)
     contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato', null=True, blank=True)
     detalle = models.CharField(max_length=100, verbose_name='Detalle', null=False, blank=False)
@@ -19,17 +19,17 @@ class ConsecutivoDocumento(models.Model):
         return self.codigo
 
     class Meta:
-        verbose_name = 'Consecutivo Documento'
-        verbose_name_plural = 'Consecutivos Documentos'
+        verbose_name = 'Consecutivo Oficio'
+        verbose_name_plural = 'Consecutivos Oficios'
 
     @staticmethod
-    def from_dictionary(datos: dict) -> 'ConsecutivoDocumento':
+    def from_dictionary(datos: dict) -> 'ConsecutivoOficio':
         """
-        Crea una instancia de ConsecutivoDocumento con los datos pasados en el diccionario.
-        :param datos: Diccionario con los datos para crear el Consecutivo de Documento.
-        :return: Instacia de consecutivo de documento con la información especificada en el diccionario.
+        Crea una instancia de ConsecutivoOficio con los datos pasados en el diccionario.
+        :param datos: Diccionario con los datos para crear el Consecutivo de Oficios.
+        :return: Instacia de consecutivo de oficios con la información especificada en el diccionario.
         """
-        consecutivo = ConsecutivoDocumento()
+        consecutivo = ConsecutivoOficio()
         consecutivo.contrato_id = datos.get('contrato_id', None)
         consecutivo.detalle = datos.get('detalle', '')
         consecutivo.destinatario = datos.get('destinatario', '')
