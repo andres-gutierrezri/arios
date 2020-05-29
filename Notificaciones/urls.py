@@ -16,6 +16,7 @@ Including another URLconf
 
 from django.urls import path
 from Notificaciones.views import views, correo_electronico, asignacion, selecion_notificaciones_email
+from Notificaciones.views.correo_electronico import enviar_correo_colaboradores_x_query
 
 app_name = 'Notificaciones'
 
@@ -29,4 +30,6 @@ urlpatterns = [
     path('asignacion/<int:id>', asignacion.AsignacionView.as_view(), name='notificaciones-asignacion'),
     path('seleccion-email/<int:id>', selecion_notificaciones_email.SeleccionNotificacionEmailView.as_view(),
          name='notificaciones-seleccion-email'),
+    path('enviar_correo_colaboradores_x_query', enviar_correo_colaboradores_x_query,
+         name='enviar_correo_colaboradores_x_query')
 ]
