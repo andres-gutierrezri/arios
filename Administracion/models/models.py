@@ -143,6 +143,7 @@ class TipoContrato(models.Model):
     descripcion = models.TextField(max_length=300, verbose_name='Descripción', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
     laboral = models.BooleanField(verbose_name='Estado', null=False, blank=False)
+    sigla = models.CharField(max_length=5, verbose_name='Sigla', null=False, blank=False, default='')
 
     def __str__(self):
         return self.nombre
