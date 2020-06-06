@@ -21,6 +21,7 @@ class TipoDocumento (models.Model):
     # Tipos Fijos
     FACTURA = 1
     OFICIOS = 2
+    CONTRATOS = 3
 
 
 class ConsecutivoDocumento (models.Model):
