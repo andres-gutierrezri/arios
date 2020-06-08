@@ -1,4 +1,5 @@
 import datetime
+import json
 
 from django.contrib import messages
 from django.shortcuts import render, redirect
@@ -44,20 +45,20 @@ class ConsecutivoContratoCrearView(AbstractEvaLoggedView):
 
 
 def datos_xa_render(request) -> dict:
-    tipo_contratos = TipoContrato.objects.get_xa_select_activos().exclude(id=0)
+    tipo_contratos = TipoContrato.objects
     colaboradores = Colaborador.objects.get_xa_select_usuarios_activos()
     terceros = Tercero.objects.get_xa_select_activos()
-    tipos_terminacion = [{'campo_valor': 1, 'campo_texto': 'Contrato Laboral a Terminación Definida'},
-                         {'campo_valor': 2, 'campo_texto': 'Contrato Laboral a Terminación Indefinida'},
-                         {'campo_valor': 3, 'campo_texto': 'Contrato con Entidad a Terminación Definida'},
-                         {'campo_valor': 4, 'campo_texto': 'Contrato con Entidad a Terminación Indefinida'}]
+    extra_tipos_contrato = []
+    for tipo_contrato in tipo_contratos.all():
+        extra_tipos_contrato.append({'id': tipo_contrato.id, 'laboral': tipo_contrato.laboral,
+                                     'fecha_fin': tipo_contrato.fecha_fin})
 
     datos = {'fecha': datetime.datetime.now(),
              'tipo_terminacion': request.POST.get('tipo_terminacion', ''),
              'colaboradores': colaboradores,
              'terceros': terceros,
-             'tipo_contratos': tipo_contratos,
-             'tipos_terminacion': tipos_terminacion,
+             'tipo_contratos': tipo_contratos.get_xa_select_activos().exclude(id=0),
+             'extra_tipos_contrato': json.dumps(extra_tipos_contrato),
              'menu_actual': 'consecutivos-contrato'}
 
     return datos
