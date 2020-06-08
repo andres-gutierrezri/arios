@@ -1,5 +1,6 @@
 import datetime
 
+from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
@@ -35,6 +36,7 @@ class ConsecutivoContratoCrearView(AbstractEvaLoggedView):
         consecutivo.codigo = 'CTO_{0}_{1}'.format(consecutivo.numero_contrato, sigla)
 
         consecutivo.save()
+        messages.success(request, 'Se ha creado el consecutivo {0}'.format(consecutivo.codigo))
         return redirect(reverse('GestionDocumental:consecutivo-contratos-index', args=[0]))
 
 
