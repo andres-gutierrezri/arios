@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
-from Administracion.models import TipoContrato, TipoDocumento, ConsecutivoDocumento
+from Administracion.models import TipoContrato, TipoDocumento, ConsecutivoDocumento, Tercero
 from Administracion.utils import get_id_empresa_global
 from EVA.views.index import AbstractEvaLoggedView
 from GestionDocumental.models.models import ConsecutivoContrato
@@ -47,6 +47,7 @@ class ConsecutivoContratoCrearView(AbstractEvaLoggedView):
 def datos_xa_render(request) -> dict:
     tipo_contratos = TipoContrato.objects.get_xa_select_activos().exclude(id=0)
     colaboradores = Colaborador.objects.get_xa_select_usuarios_activos()
+    terceros = Tercero.objects.get_xa_select_activos()
     tipos_terminacion = [{'campo_valor': 1, 'campo_texto': 'Contrato Laboral a Terminación Definida'},
                          {'campo_valor': 2, 'campo_texto': 'Contrato Laboral a Terminación Indefinida'},
                          {'campo_valor': 3, 'campo_texto': 'Contrato con Entidad a Terminación Definida'},
@@ -55,6 +56,7 @@ def datos_xa_render(request) -> dict:
     datos = {'fecha': datetime.datetime.now(),
              'tipo_terminacion': request.POST.get('tipo_terminacion', ''),
              'colaboradores': colaboradores,
+             'terceros': terceros,
              'tipo_contratos': tipo_contratos,
              'tipos_terminacion': tipos_terminacion,
              'menu_actual': 'consecutivos-contrato'}
