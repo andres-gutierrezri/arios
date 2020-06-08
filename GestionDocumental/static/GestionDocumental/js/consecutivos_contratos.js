@@ -6,6 +6,8 @@ let fechaFinal = $('#fecha_final_mostrar');
 let fechaInicioID = $('#fecha_inicio_id');
 let fechaFinalID = $('#fecha_final_id');
 let tipoTerminacionSelect = $("#tipo_terminacion_select_id");
+let colaboradorSelectID = $('#colaborador_select_id');
+let terceroSelectID = $('#tercero_select_id');
 
 $(document).ready(function () {
     $('.select2').select2();
@@ -23,30 +25,39 @@ $(document).ready(function () {
 
 function mostrarXTipoContrato() {
     if(tipoTerminacionSelect.val() === '1'){
-        colaboradorSelect.show();
-        terceroSelect.hide();
+        mostrarOcultarColaboradorTercero('colaborador');
         fechaFinal.show();
         fechaFinalID.attr("required", true);
     }else if(tipoTerminacionSelect.val() === '2'){
-        colaboradorSelect.show();
-        terceroSelect.hide();
+        mostrarOcultarColaboradorTercero('colaborador');
         fechaFinal.hide();
         fechaFinalID.removeAttr('required', true);
     }else if(tipoTerminacionSelect.val() === '3'){
-        colaboradorSelect.hide();
-        terceroSelect.show();
+        mostrarOcultarColaboradorTercero('tercero');
         fechaFinal.show();
         fechaFinalID.attr("required", true);
     }else if(tipoTerminacionSelect.val() === '4'){
-        colaboradorSelect.hide();
-        terceroSelect.show();
+        mostrarOcultarColaboradorTercero('tercero');
         fechaFinal.hide();
         fechaFinalID.removeAttr('required', true);
     }else{
-       colaboradorSelect.show();
-        terceroSelect.hide();
+        mostrarOcultarColaboradorTercero('ninguno');
         fechaFinal.show();
         fechaFinalID.attr("required", true);
+    }
+}
+
+function mostrarOcultarColaboradorTercero(tipo) {
+    if (tipo === 'tercero'){
+        terceroSelect.show();
+        terceroSelectID.attr("required", true);
+        colaboradorSelect.hide();
+        colaboradorSelectID.removeAttr('required', true);
+    }else{
+        colaboradorSelect.show();
+        colaboradorSelectID.attr("required", true);
+        terceroSelect.hide();
+        terceroSelectID.removeAttr('required', true);
     }
 }
 
