@@ -45,7 +45,7 @@ class ConsecutivoContratoCrearView(AbstractEvaLoggedView):
 
 
 def datos_xa_render(request) -> dict:
-    tipo_contratos = TipoContrato.objects.get_xa_select_activos()
+    tipo_contratos = TipoContrato.objects.get_xa_select_activos().exclude(id=0)
     colaboradores = Colaborador.objects.get_xa_select_usuarios_activos()
     tipos_terminacion = [{'campo_valor': 1, 'campo_texto': 'Contrato Laboral a Terminación Definida'},
                          {'campo_valor': 2, 'campo_texto': 'Contrato Laboral a Terminación Indefinida'},
