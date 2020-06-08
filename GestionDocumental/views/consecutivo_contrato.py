@@ -13,7 +13,11 @@ from TalentoHumano.models import Colaborador
 
 class ConsecutivoContratoView(AbstractEvaLoggedView):
     def get(self, request, id):
-        consecutivos = ConsecutivoContrato.objects.all()
+        if id == 0:
+            consecutivos = ConsecutivoContrato.objects.all()
+        else:
+            consecutivos = ConsecutivoContrato.objects.filter(tipo_contrato_id=id)
+
         tipo_contratos = TipoContrato.objects.get_xa_select_activos()
         return render(request, 'GestionDocumental/ConsecutivoContratos/index.html',
                       {'consecutivos': consecutivos,
