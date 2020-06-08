@@ -26,17 +26,11 @@
                                 <div class="panel-body">
                                     <form action="{% url 'GestionDocumental:consecutivo-contratos-crear' %}" id="consecutivo_contrato_form" method="post" class="needs-validation" novalidate>
                                         {% csrf_token %}
+                                        <input id="extra_tipos_contrato" value="{{ extra_tipos_contrato }}" style="display: none">
                                         <div class="form-group">
                                             <div class="form-row">
                                                 <div class="col-md-6">
                                                     {% select_tag tipo_contratos 'tipo_contrato' 'Seleccione un tipo de contrato' texto_label="Tipo de contrato" required="" mensaje_validacion='Por favor seleccione un tipo de contrato'  %}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="form-row">
-                                                <div class="col-md-6">
-                                                    {% select_tag tipos_terminacion 'tipo_terminacion' 'Seleccione un tipo de terminación' texto_label="Tipo de terminación" required="" mensaje_validacion='Por favor seleccione un tipo de terminación' %}
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div id="colaborador_mostrar_id">
