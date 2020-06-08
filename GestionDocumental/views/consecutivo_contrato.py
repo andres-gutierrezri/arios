@@ -18,10 +18,9 @@ class ConsecutivoContratoView(AbstractEvaLoggedView):
         else:
             consecutivos = ConsecutivoContrato.objects.filter(tipo_contrato_id=id)
 
-        tipo_contratos = TipoContrato.objects.get_xa_select_activos()
         return render(request, 'GestionDocumental/ConsecutivoContratos/index.html',
                       {'consecutivos': consecutivos,
-                       'tipo_contratos': tipo_contratos,
+                       'tipo_contratos': tipos_contrato_filtro,
                        'id_tipo_contrato': id,
                        'fecha': datetime.datetime.now(),
                        'menu_actual': 'consecutivos-contrato'})
@@ -62,3 +61,11 @@ def datos_xa_render(request) -> dict:
              'menu_actual': 'consecutivos-contrato'}
 
     return datos
+
+
+def tipos_contrato_filtro():
+    tipo_contratos = TipoContrato.objects.filter(estado=True)
+    lista_tipo_contratos = [{'campo_valor': 0, 'campo_texto': 'Todos'}]
+    for tipo_contrato in tipo_contratos:
+        lista_tipo_contratos.append({'campo_valor': tipo_contrato.id, 'campo_texto': tipo_contrato.nombre})
+    return lista_tipo_contratos
