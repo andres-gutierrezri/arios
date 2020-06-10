@@ -38,7 +38,7 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            {% input_text_tag 'detalle' 'Descripción del Documento' placeholder="Ingrese el una descripción" required="" maxlength="100" value=consecutivo.supervisor_nombre mensaje_validacion='Por favor digite una descripción.' invalido=errores.descripcion %}
+                                            {% input_textarea_tag 'detalle' 'Descripción del Documento' placeholder="Ingrese el una descripción" required="" maxlength="300" value=consecutivo.supervisor_nombre mensaje_validacion='Por favor digite una descripción.' invalido=errores.descripcion %}
                                         </div>
                                         <div class="form-row">
                                             <div>
