@@ -165,7 +165,9 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
             request.session['colaborador'] = Colaborador.objects.get(usuario=request.user).foto_perfil.url
 
         try:
-            colaborador.full_clean(validate_unique=False, exclude=['empresa_sesion'])
+            # Se excluye el usuario debido a que el full clean valida el id del usuario existente y no tiene en cuenta
+            # los nuevos datos de usuario.
+            colaborador.full_clean(validate_unique=False, exclude=['usuario', 'empresa_sesion'])
         except ValidationError as errores:
             datos = datos_xa_render(self.OPCION, colaborador)
             datos['errores'] = errores.message_dict
