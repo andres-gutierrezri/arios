@@ -15,15 +15,11 @@ from TalentoHumano.models import EntidadesCAFE, TipoEntidadesCAFE
 class EntidadCAFEIndexView(AbstractEvaLoggedView):
     def get(self, request, id_entidad):
         id_entidad = int(id_entidad)
-
         entidades_cafe = EntidadesCAFE.objects.all() if id_entidad == 0 else \
             EntidadesCAFE.objects.filter(tipo_entidad_id=id_entidad)
-
-        tipos_entidades = TipoEntidadesCAFE.objects.get_xa_select_activos()
-        fecha = datetime.now()
         return render(request, 'TalentoHumano/Entidades_CAFE/index.html', {'entidades_cafe': entidades_cafe,
-                                                                           'fecha': fecha,
-                                                                           'tipos_entidades': tipos_entidades,
+                                                                           'fecha': datetime.now(),
+                                                                           'tipos_entidades': tipos_entidades_filtro,
                                                                            'id_entidad': id_entidad,
                                                                            'menu_actual': 'entidades-cafe'})
 
@@ -134,3 +130,12 @@ def datos_xa_render(opcion: str, entidad: EntidadesCAFE = None) -> dict:
 
     return datos
 # endregion
+
+
+def tipos_entidades_filtro():
+    tipo_entidades = TipoEntidadesCAFE.objects.filter(estado=True)
+    lista_tipo_entidades = [{'campo_valor': 0, 'campo_texto': 'Todos'}]
+    for tipo_entidad in tipo_entidades:
+        lista_tipo_entidades.append({'campo_valor': tipo_entidad.id, 'campo_texto': tipo_entidad.nombre})
+
+    return lista_tipo_entidades
