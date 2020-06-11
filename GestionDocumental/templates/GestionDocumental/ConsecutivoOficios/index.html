@@ -55,8 +55,8 @@
                                                 </thead>
                                                 <tbody>
                                                     {% for consecutivo in consecutivos %}
-                                                        <tr {% if consecutivo.fecha.date == fecha.date and consecutivo == consecutivos.last and id_filtro == 1 %}style="background: #fffaee;"{% endif %}>
-                                                            <td>{{ consecutivo.codigo}}</td>
+                                                        <tr {% if consecutivo == consecutivos.last and id_filtro == 1 and consecutivo.usuario == request.user %}style="background: #fffaee;"{% endif %}>
+                                                            <td>{{ consecutivo.codigo}} {{  request.user }}</td>
                                                             <td>{{ consecutivo.fecha | date:'Y-m-d H:m'}}</td>
                                                             <td>{% if consecutivo.contrato %}
                                                                     {{ consecutivo.contrato}}
