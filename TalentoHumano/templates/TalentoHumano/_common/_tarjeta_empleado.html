@@ -22,6 +22,9 @@
                         {% if perms.Notificaciones.add_eventodesencadenador %}
                         <a class="dropdown-item" href="{% url 'Notificaciones:notificaciones-asignacion' colaborador.usuario_id %}">Asignar Notificaciones</a>
                         {% endif %}
+                        {% if perms.auth.change_permission %}
+                        <a class="dropdown-item" href="{% url 'TalentoHumano:colaboradores-permisos' colaborador.usuario_id %}">Gestionar Permisos</a>
+                        {% endif %}
                         {% if perms.TalentoHumano.delete_colaborador %}
                         <a class="dropdown-item" href="javascript:void(0);" id="eliminar_{{ id_tarjeta }}"   onclick="fConfirmarEliminar({{ id_tarjeta }})">Eliminar</a>
                         {% endif %}
