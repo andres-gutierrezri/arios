@@ -27,7 +27,7 @@ class ConsecutivoOficiosView(AbstractEvaLoggedView):
                                                                                    'opciones_filtro': opciones_filtro,
                                                                                    'colaborador': colaborador,
                                                                                    'fecha': datetime.datetime.now(),
-                                                                                   'menu_actual': 'consecutivos',
+                                                                                   'menu_actual': 'consecutivos-oficios',
                                                                                    'id_filtro': id})
 
 
@@ -41,7 +41,7 @@ class ConsecutivoOficiosCrearView(AbstractEvaLoggedView):
 
         return render(request, 'GestionDocumental/ConsecutivoOficios/crear.html', {'fecha': datetime.datetime.now(),
                                                                                    'contratos': lista_contratos,
-                                                                                   'menu_actual': 'consecutivos'})
+                                                                                   'menu_actual': 'consecutivos-oficios'})
 
     def post(self, request):
         consecutivo = ConsecutivoOficio.from_dictionary(request.POST)
