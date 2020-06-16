@@ -1,4 +1,4 @@
-{% extends 'Proyectos/_common/base_proyectos.html' %}
+{% extends 'GestionDocumental/_common/base_gestion_documental.html' %}
 {% load static %}
 {% load eva_tags %}
 <title>{% block titulo %} Crear Consecutivo {% endblock %}</title>
@@ -38,7 +38,11 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            {% input_text_tag 'detalle' 'Descripción del Documento' placeholder="Ingrese el una descripción" required="" maxlength="100" value=consecutivo.supervisor_nombre mensaje_validacion='Por favor digite una descripción.' invalido=errores.descripcion %}
+                                            <div class="form-row">
+                                                <div class="col-md-12">
+                                                    {% input_textarea_tag 'detalle' 'Descripción del Documento' placeholder="Ingrese el una descripción" required="" maxlength="300" value=consecutivo.supervisor_nombre mensaje_validacion='Por favor digite una descripción.' invalido=errores.descripcion %}
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="form-row">
                                             <div>

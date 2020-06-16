@@ -59,7 +59,7 @@
                                                             <td>{{ consecutivo.codigo}}</td>
                                                             <td>{{ consecutivo.fecha | date:'Y-m-d H:m'}}</td>
                                                             <td>{% if consecutivo.contrato %}
-                                                                    {{ consecutivo.contrato}}
+                                                                    {{ consecutivo.contrato}} - {{ consecutivo.contrato.cliente }}
                                                                 {% else %}
                                                                     {% for col in colaborador %}
                                                                         {% if col.usuario_id == consecutivo.usuario.id %}
