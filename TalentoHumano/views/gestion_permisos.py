@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 
 from EVA.views.index import AbstractEvaLoggedView
-from TalentoHumano.models import PermisosFuncionalidad, Colaborador
+from TalentoHumano.models import PermisosFuncionalidad
 
 VER = 1
 CREAR = 2
@@ -16,18 +16,40 @@ ELIMINAR = 4
 
 class AsignacionPermisosView(AbstractEvaLoggedView):
     def get(self, request, id):
-        colaborador = Colaborador.objects.get(id=id)
-        permisos = PermisosFuncionalidad.objects.all()
-        permisos_json = []
-        for prm in permisos:
-            permisos_json.append({'id': prm.content_type_id})
-        acciones_permisos = [{'id': 1, 'nombre': 'Puede Ver'}, {'id': 2, 'nombre': 'Puede Crear'},
-                             {'id': 3, 'nombre': 'Puede Editar'}, {'id': 4, 'nombre': 'Puede Borrar'}]
+        usuario = User.objects.get(id=id)
+        permisos_usuario = usuario.user_permissions.all()
+        per_funcionalidad = PermisosFuncionalidad.objects.filter(estado=True)
+        permisos_db = Permission.objects.all()
+        funcionalidades = request.user.user_permissions.order_by('content_type_id').distinct('content_type_id')
+
+        lista_completa = []
+
+        if request.user.is_superuser:
+            for pf in per_funcionalidad:
+                lista_permisos = []
+                for perm in permisos_db:
+                    if pf.content_type == perm.content_type:
+                        lista_permisos.append({'id': perm.id, 'nombre': perm.codename})
+                lista_completa.append(construir_lista_notificaciones(pf, lista_permisos))
+
+        else:
+            permisos_asignados = request.user.user_permissions.all()
+
+            for mod in funcionalidades:
+                lista_permisos = []
+                for perm in permisos_asignados:
+                    if mod.content_type == perm.content_type:
+                        lista_permisos.append({'id': perm.id, 'nombre': perm.codename})
+
+                for pf in per_funcionalidad:
+                    if mod.content_type == pf.content_type:
+                        lista_completa.append(construir_lista_notificaciones(pf, lista_permisos))
+
         return render(request, 'TalentoHumano/GestionPermisos/asignacion_permisos.html',
-                      {'permisos': permisos,
-                       'id_permisos': json.dumps(permisos_json),
-                       'colaborador': colaborador,
-                       'acciones_permisos': acciones_permisos})
+                      {'permisos': lista_completa,
+                       'permisos_usuario': permisos_usuario,
+                       'usuario': usuario,
+                       'funcionalidades': funcionalidades})
 
     def post(self, request, id):
         datos_permisos = json.loads(request.POST.get('valores_permisos', ''))
@@ -72,3 +94,19 @@ def limpiar_permisos(usuario):
 def consultar_permiso(funcionalidad, accion):
     return Permission.objects.get(content_type_id=funcionalidad.content_type_id,
                                   codename=accion + '_' + funcionalidad.content_type.model)
+
+
+def construir_lista_notificaciones(objeto, permisos):
+    nueva_lista = []
+    for perm in permisos:
+        if 'view' in perm['nombre']:
+            nueva_lista.append({'orden': 1, 'id': perm['id'], 'nombre': 'Puede Ver'})
+        elif 'add' in perm['nombre']:
+            nueva_lista.append({'orden': 2, 'id': perm['id'], 'nombre': 'Puede Crear'})
+        elif 'change' in perm['nombre']:
+            nueva_lista.append({'orden': 3, 'id': perm['id'], 'nombre': 'Puede Editar'})
+        elif 'delete' in perm['nombre']:
+            nueva_lista.append({'orden': 4, 'id': perm['id'], 'nombre': 'Puede Eliminar'})
+
+    return {'funcionalidad': objeto.id, 'nombre': objeto.nombre, 'descripcion': objeto.descripcion,
+            'permisos': sorted(nueva_lista, key=lambda p: p['orden'])}
