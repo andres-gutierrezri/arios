@@ -33,7 +33,7 @@ class AsignacionPermisosView(AbstractEvaLoggedView):
 
         for func in funcionalidades:
             for datos in datos_permisos:
-                if func.id == datos['funcionalidad']:
+                if func.content_type_id == datos['funcionalidad']:
                     for perm in datos['permiso']:
                         if perm == 1:
                             permiso = Permission.objects.get(content_type_id=func.content_type_id,
