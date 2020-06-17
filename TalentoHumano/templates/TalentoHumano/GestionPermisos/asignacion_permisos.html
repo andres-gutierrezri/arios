@@ -13,7 +13,7 @@
     <div class="panel-container show">
         <div class="header">
             <h1 class="header-title">
-                <i class='far fa-bell'></i> Asignar Permisos A:  {{ colaborador.nombre_completo }} <span class='fw-300'></span>
+                <i class='far fa-bell'></i> Asignar Permisos A:  {{ usuario.get_full_name }} <span class='fw-300'></span>
                 <br>
                 <br>
             </h1>
@@ -21,7 +21,7 @@
         <div class="row">
             <div class="col-xl-12">
                 <div id="panel-1" class="panel">
-                    <form action="{% url 'TalentoHumano:colaboradores-permisos' colaborador.id %}" id="asignacion-permisos-form" method="post" class="needs-validation" novalidate>
+                    <form action="{% url 'TalentoHumano:colaboradores-permisos' usuario.id %}" id="asignacion-permisos-form" method="post" class="needs-validation" novalidate>
                     {% csrf_token %}
                         <input id="id_permisos" value="{{ id_permisos }}" style="display: none">
                         <input id="valores_permisos" name="valores_permisos" style="display: none">

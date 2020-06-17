@@ -10,8 +10,10 @@
                 <div class="col-md-2" style="">
                     <div class="custom-control custom-switch" style="float: right;">
                         <div class="custom-control custom-checkbox">
-                            <input type="checkbox" value="{{ permiso.content_type_id }}" id="permiso_{{ permiso.content_type_id }}_id" onclick="activarFuncionalidad('permiso_' + {{ permiso.content_type_id }} + '_id')" name="permisos" class="custom-control-input form-control">
-                            <label for="permiso_{{ permiso.content_type_id }}_id" class="custom-control-label no-seleccionable"></label>
+                            {% for func in funcionalidades %}
+                                <input type="checkbox" value="{{ permiso.funcionalidad }}" id="permiso_{{ permiso.funcionalidad }}_id" onclick="activarFuncionalidad('permiso_' + {{ permiso.funcionalidad }} + '_id')" {% if func.content_type_id == permiso.funcionalidad %} checked {% endif %}name="permisos" class="custom-control-input form-control">
+                            {% endfor %}
+                            <label for="permiso_{{ permiso.funcionalidad }}_id" class="custom-control-label no-seleccionable"></label>
                         </div>
                     </div>
                 </div>
@@ -21,17 +23,19 @@
             <div class="p-2">
                 <a  class="mt-1 d-block fs-sm fw-400 text-dark">
                    <strong>Descripción:</strong>
-                    <i class="text-muted"></i>  {{ permiso.descripcion}}
-                    {% for accion in acciones_permisos %}
+                    <i class="text-muted"></i>  {{ permiso.descripcion }}
+                    {% for perm in permiso.permisos %}
                     <div class="form-row">
                         <div class="col-md-10">
-                            <a href="javascript:void(0);"><strong>{{ accion.nombre }}</strong></a>
+                            <a href="javascript:void(0);"><strong>{{ perm.nombre }}</strong></a>
                         </div>
                         <div class="col-md-2" style="">
                             <div class="custom-control custom-switch" style="float: right;">
                                 <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" value="{{ accion.id }}" id="accion_{{ accion.id }}_permiso_{{ permiso.content_type_id }}_id" name="permisos" class="custom-control-input form-control">
-                                    <label for="accion_{{ accion.id }}_permiso_{{ permiso.content_type_id }}_id" class="custom-control-label no-seleccionable"></label>
+                                    {% for permiso_usuario in permisos_usuario %}
+                                        <input type="checkbox" value="{{ perm.id }}" id="accion_{{ perm.id }}_permiso_{{ permiso.funcionalidad }}_id" {% if permiso_usuario.id == perm.id %} checked {% endif %} name="permisos" class="custom-control-input form-control">
+                                    {% endfor %}
+                                    <label for="accion_{{ perm.id }}_permiso_{{ permiso.funcionalidad }}_id" class="custom-control-label no-seleccionable"></label>
                                 </div>
                             </div>
                         </div>
