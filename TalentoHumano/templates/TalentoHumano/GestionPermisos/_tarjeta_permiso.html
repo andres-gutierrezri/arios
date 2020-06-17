@@ -10,8 +10,8 @@
                 <div class="col-md-2" style="">
                     <div class="custom-control custom-switch" style="float: right;">
                         <div class="custom-control custom-checkbox">
-                            <input type="checkbox" value="{{ permiso.id }}" id="permiso_{{ permiso.id }}_id" onclick="activarFuncionalidad('permiso_' + {{ permiso.id }} + '_id')" name="permisos" class="custom-control-input form-control">
-                            <label for="permiso_{{ permiso.id }}_id" class="custom-control-label no-seleccionable"></label>
+                            <input type="checkbox" value="{{ permiso.content_type_id }}" id="permiso_{{ permiso.content_type_id }}_id" onclick="activarFuncionalidad('permiso_' + {{ permiso.content_type_id }} + '_id')" name="permisos" class="custom-control-input form-control">
+                            <label for="permiso_{{ permiso.content_type_id }}_id" class="custom-control-label no-seleccionable"></label>
                         </div>
                     </div>
                 </div>
@@ -30,8 +30,8 @@
                         <div class="col-md-2" style="">
                             <div class="custom-control custom-switch" style="float: right;">
                                 <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" value="{{ accion.id }}" id="accion_{{ accion.id }}_permiso_{{ permiso.id }}_id" name="permisos" class="custom-control-input form-control">
-                                    <label for="accion_{{ accion.id }}_permiso_{{ permiso.id }}_id" class="custom-control-label no-seleccionable"></label>
+                                    <input type="checkbox" value="{{ accion.id }}" id="accion_{{ accion.id }}_permiso_{{ permiso.content_type_id }}_id" name="permisos" class="custom-control-input form-control">
+                                    <label for="accion_{{ accion.id }}_permiso_{{ permiso.content_type_id }}_id" class="custom-control-label no-seleccionable"></label>
                                 </div>
                             </div>
                         </div>
