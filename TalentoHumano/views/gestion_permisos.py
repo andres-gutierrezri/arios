@@ -91,9 +91,15 @@ def limpiar_permisos(usuario):
         usuario.user_permissions.remove(perm)
 
 
-def consultar_permiso(funcionalidad, accion):
-    return Permission.objects.get(content_type_id=funcionalidad.content_type_id,
-                                  codename=accion + '_' + funcionalidad.content_type.model)
+def consultar_permiso(funcionalidad, accion, datos_permisos):
+    permiso = ''
+    for func in datos_permisos:
+        if func['funcionalidad'] == funcionalidad.content_type_id:
+            for perm in func['permisos']:
+                if perm['orden'] == accion:
+                    permiso = Permission.objects.get(id=perm['id'])
+                    break
+    return permiso
 
 
 def construir_lista_notificaciones(objeto, permisos):
