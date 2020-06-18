@@ -2,9 +2,10 @@ function guardarAsignacionesPermisos() {
     let valoresPermisos = $('#valores_permisos');
     let listaPermisos = [];
 
-    let idPermisos = JSON.parse($('#id_permisos').val());
-    idPermisos.forEach( function(valor) {
-        let idFuncionalidad = 'permiso_'+ valor.id + '_id';
+    let datosPermisos = JSON.parse($('#datos_permisos').val());
+
+    datosPermisos.forEach( function(valor) {
+        let idFuncionalidad = 'permiso_'+ valor.funcionalidad + '_id';
 
         if ($('#' + idFuncionalidad).prop('checked')){
             let permisos = [];
@@ -16,7 +17,7 @@ function guardarAsignacionesPermisos() {
                 }
                 pos += 1;
             }
-            listaPermisos.push({'funcionalidad': valor.id, 'permiso': permisos});
+            listaPermisos.push({'funcionalidad': valor.funcionalidad, 'permiso': permisos});
         }
     });
     valoresPermisos.val(JSON.stringify(listaPermisos));
