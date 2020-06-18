@@ -49,7 +49,8 @@ class AsignacionPermisosView(AbstractEvaLoggedView):
                       {'permisos': lista_completa,
                        'permisos_usuario': permisos_usuario,
                        'usuario': usuario,
-                       'funcionalidades': funcionalidades})
+                       'funcionalidades': funcionalidades,
+                       'datos_permisos': json.dumps(lista_completa)})
 
     def post(self, request, id):
         datos_permisos = json.loads(request.POST.get('valores_permisos', ''))
