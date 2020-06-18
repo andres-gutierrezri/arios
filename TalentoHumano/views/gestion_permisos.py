@@ -75,7 +75,7 @@ class AsignacionPermisosView(AbstractEvaLoggedView):
         else:
             limpiar_permisos(usuario)
 
-        messages.success(request, 'Se han guardado las selecciones correctamente')
+        messages.success(request, 'Se actualizado los permisos para {0} correctamente'.format(usuario.get_full_name()))
         return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
 
 
