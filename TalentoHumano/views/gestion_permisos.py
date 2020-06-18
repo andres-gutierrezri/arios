@@ -61,17 +61,21 @@ class AsignacionPermisosView(AbstractEvaLoggedView):
             limpiar_permisos(usuario)
 
             for func in funcionalidades:
+                coincidencias = False
                 for datos in valores_permisos:
                     if func.content_type_id == datos['funcionalidad']:
+                        coincidencias = True
                         for perm in datos['permiso']:
                             if perm == VER:
-                                usuario.user_permissions.add(consultar_permiso(func, VER, datos_permisos))
+                                consultar_permiso(func, VER, datos_permisos, usuario)
                             elif perm == CREAR:
-                                usuario.user_permissions.add(consultar_permiso(func, CREAR, datos_permisos))
+                                consultar_permiso(func, CREAR, datos_permisos, usuario)
                             elif perm == EDITAR:
-                                usuario.user_permissions.add(consultar_permiso(func, EDITAR, datos_permisos))
+                                consultar_permiso(func, EDITAR, datos_permisos, usuario)
                             elif perm == ELIMINAR:
-                                usuario.user_permissions.add(consultar_permiso(func, ELIMINAR, datos_permisos))
+                                consultar_permiso(func, ELIMINAR, datos_permisos, usuario)
+                if not coincidencias:
+                    limpiar_permisos(usuario, modulo=func.content_type.app_label)
         else:
             limpiar_permisos(usuario)
 
@@ -88,12 +92,16 @@ def obtener_permisos(user, obj=None):
     return permissions
 
 
-def limpiar_permisos(usuario):
-    for perm in usuario.user_permissions.all():
-        usuario.user_permissions.remove(perm)
+def limpiar_permisos(usuario, modulo=None):
+    if modulo:
+        poner_quitar_permiso_menu(usuario, modulo, quitar=True)
+    else:
+        for perm in usuario.user_permissions.all():
+            usuario.user_permissions.remove(perm)
 
 
-def consultar_permiso(funcionalidad, accion, datos_permisos):
+def consultar_permiso(funcionalidad, accion, datos_permisos, usuario):
+    poner_quitar_permiso_menu(usuario, funcionalidad.content_type.app_label, poner=True)
     permiso = ''
     for func in datos_permisos:
         if func['funcionalidad'] == funcionalidad.content_type_id:
@@ -101,7 +109,7 @@ def consultar_permiso(funcionalidad, accion, datos_permisos):
                 if perm['orden'] == accion:
                     permiso = Permission.objects.get(id=perm['id'])
                     break
-    return permiso
+    usuario.user_permissions.add(permiso)
 
 
 def construir_lista_notificaciones(objeto, permisos):
@@ -118,3 +126,13 @@ def construir_lista_notificaciones(objeto, permisos):
 
     return {'funcionalidad': objeto.content_type_id, 'nombre': objeto.nombre, 'descripcion': objeto.descripcion,
             'permisos': sorted(nueva_lista, key=lambda p: p['orden'])}
+
+
+def poner_quitar_permiso_menu(usuario, modulo, poner=False, quitar=False):
+    permiso_menu = 'can_menu_{0}'.format(modulo.lower())
+    if usuario.has_perm('TalentoHumano.{0}'.format(permiso_menu)):
+        if quitar:
+            usuario.user_permissions.remove(Permission.objects.get(codename=permiso_menu))
+    else:
+        if poner:
+            usuario.user_permissions.add(Permission.objects.get(codename=permiso_menu))
