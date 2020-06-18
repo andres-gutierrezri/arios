@@ -58,7 +58,9 @@
                                                                     {{ colaborador.nombre_completo }}
                                                                     <small class="text-muted mb-0">{{ colaborador.cargo }}</small>
                                                                 </h5>
-                                                                <div class="mt-4 text-center demo">
+                                                                <a class="mt-1 d-block fs-sm fw-400 text-muted mt-2">
+                                                                    <i class="fas fa-user text-muted mr-2"></i>{{ colaborador.usuario.username }}</a>
+                                                                <div class="mt-2 text-center demo">
                                                                     <a href="tel: {{ telefono }}" class="fs-xl">
                                                                         <i class="fas fa-mobile-alt text-muted mr-2"></i></a>
                                                                     <a href="mailto: {{ colaborador.usuario.email }}" class="fs-xl" >
