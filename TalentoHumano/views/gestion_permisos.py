@@ -118,13 +118,13 @@ def construir_lista_notificaciones(objeto, permisos):
     nueva_lista = []
     for perm in permisos:
         if 'view' in perm['nombre']:
-            nueva_lista.append({'orden': 1, 'id': perm['id'], 'nombre': 'Puede Ver'})
+            nueva_lista.append({'orden': 1, 'id': perm['id'], 'nombre': 'Ver'})
         elif 'add' in perm['nombre']:
-            nueva_lista.append({'orden': 2, 'id': perm['id'], 'nombre': 'Puede Crear'})
+            nueva_lista.append({'orden': 2, 'id': perm['id'], 'nombre': 'Crear'})
         elif 'change' in perm['nombre']:
-            nueva_lista.append({'orden': 3, 'id': perm['id'], 'nombre': 'Puede Editar'})
+            nueva_lista.append({'orden': 3, 'id': perm['id'], 'nombre': 'Editar'})
         elif 'delete' in perm['nombre']:
-            nueva_lista.append({'orden': 4, 'id': perm['id'], 'nombre': 'Puede Eliminar'})
+            nueva_lista.append({'orden': 4, 'id': perm['id'], 'nombre': 'Eliminar'})
 
     return {'funcionalidad': objeto.content_type_id, 'nombre': objeto.nombre, 'descripcion': objeto.descripcion,
             'permisos': sorted(nueva_lista, key=lambda p: p['orden'])}
