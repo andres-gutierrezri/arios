@@ -23,7 +23,7 @@
                 <div id="panel-1" class="panel">
                     <form action="{% url 'TalentoHumano:colaboradores-permisos' usuario.id %}" id="asignacion-permisos-form" method="post" class="needs-validation" novalidate>
                     {% csrf_token %}
-                        <input id="id_permisos" value="{{ id_permisos }}" style="display: none">
+                        <input id="datos_permisos" name="datos_permisos" value="{{ datos_permisos }}" style="display: none">
                         <input id="valores_permisos" name="valores_permisos" style="display: none">
                     </form>
                     <div class="panel-hdr">
