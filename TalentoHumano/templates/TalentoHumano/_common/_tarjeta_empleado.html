@@ -22,7 +22,7 @@
                         {% if perms.Notificaciones.add_eventodesencadenador %}
                         <a class="dropdown-item" href="{% url 'Notificaciones:notificaciones-asignacion' colaborador.usuario_id %}">Asignar Notificaciones</a>
                         {% endif %}
-                        {% if perms.auth.change_permission %}
+                        {% if perms.auth.change_permission and request.user.id != colaborador.usuario_id%}
                         <a class="dropdown-item" href="{% url 'TalentoHumano:colaboradores-permisos' colaborador.usuario_id %}">Gestionar Permisos</a>
                         {% endif %}
                         {% if perms.TalentoHumano.delete_colaborador %}
