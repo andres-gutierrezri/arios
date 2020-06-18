@@ -3,11 +3,9 @@ function cambiarFotoPerfil(id) {
     $('#mCambiarFotoPerfil').load(ruta, function () {
         try {
             $(this).modal('show');
-            $(document).ready(function () {
-                 $('#cambio_foto_perfil_id').change(function (e) {
-                 $('.custom-file-label').html(e.target.files[0].name);
-                 visualizarFoto(this);
-                })
+             $('#cambio_foto_perfil_id').change(function (e) {
+             $('.custom-file-label').html(e.target.files[0].name);
+             visualizarFoto(this);
             });
             agregarValidacionFormularios();
         } catch (err) {

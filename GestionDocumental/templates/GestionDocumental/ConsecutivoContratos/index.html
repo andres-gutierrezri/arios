@@ -1,7 +1,7 @@
 {% extends 'GestionDocumental/_common/base_gestion_documental.html' %}
 {% load static %}
 {% load eva_tags %}
-<title>{% block titulo %}Consecutivo de Oficios{% endblock %}</title>
+<title>{% block titulo %}Consecutivo de Contratos{% endblock %}</title>
 {% block styles %}
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/datagrid/datatables/datatables.bundle.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
@@ -14,7 +14,7 @@
     <div class="panel-container show">
             <div class="header">
                  <h1 class="header-title">
-                    <i class='far fa-file-alt'></i> Consecutivo de Oficios <span class='fw-300'></span>
+                    <i class='far fa-file-alt'></i> Consecutivo de Contratos <span class='fw-300'></span>
                      <br>
                      <br>
                  </h1>
@@ -24,17 +24,17 @@
                     <div id="panel-1" class="panel">
 
                         <div class="panel-hdr">
-                            {% if perms.GestionDocumental.add_consecutivooficio %}
+                            {% if perms.GestionDocumental.add_consecutivocontrato %}
                             <div class="col-md-10">
                                 <small>
-                                     <a class="far fa-3x far fa-plus-circle"  href="{% url 'GestionDocumental:consecutivo-oficios-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar consecutivo de oficio"></a>
+                                     <a class="far fa-3x far fa-plus-circle"  href="{% url 'GestionDocumental:consecutivo-contratos-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar consecutivo de contrato"></a>
                                 </small>
                             </div>
                             {% else %}
                             <div class="col-md-10"></div>
                             {% endif %}
                             <div class="col-md-2" style="float: right" >
-                                {% select_tag opciones_filtro 'filtro_consecutivos' '' value=id_filtro  %}
+                                {% select_tag tipo_contratos 'tipo_consecutivos' '' value=id_tipo_contrato  %}
                             </div>
                         </div>
                         <div class="panel-container show">
@@ -45,32 +45,28 @@
                                             <table class="table table-bordered w-100" id="dataTableConsecutivos">
                                                 <thead>
                                                     <tr>
-                                                        <th>Código</th>
-                                                        <th>Fecha</th>
-                                                        <th>Contrato</th>
-                                                        <th>Detalle</th>
-                                                        <th>Destinatario</th>
-                                                        <th>Usuario</th>
+                                                        <th>Consecutivo</th>
+                                                        <th>Nombre</th>
+                                                        <th>Fecha de Inicio</th>
+                                                        <th>Fecha Final</th>
+                                                        <th>Tipo de Contrato</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     {% for consecutivo in consecutivos %}
-                                                        <tr {% if consecutivo.fecha.date == fecha.date and consecutivo == consecutivos.last and id_filtro == 1 %}style="background: #fffaee;"{% endif %}>
-                                                            <td>{{ consecutivo.codigo}}</td>
-                                                            <td>{{ consecutivo.fecha | date:'Y-m-d H:m'}}</td>
-                                                            <td>{% if consecutivo.contrato %}
-                                                                    {{ consecutivo.contrato}} - {{ consecutivo.contrato.cliente }}
+                                                        <tr>
+                                                            <td>{{ consecutivo.codigo }}</td>
+                                                            <td>{% if consecutivo.usuario %}
+                                                                    {{ consecutivo.usuario.get_full_name }}
                                                                 {% else %}
-                                                                    {% for col in colaborador %}
-                                                                        {% if col.usuario_id == consecutivo.usuario.id %}
-                                                                            {{ col.proceso__sigla }}
-                                                                        {% endif %}
-                                                                    {% endfor %}
+                                                                    {{ consecutivo.tercero }}
                                                                 {% endif %}
                                                             </td>
-                                                            <td>{{ consecutivo.detalle}}</td>
-                                                            <td>{{ consecutivo.destinatario }}</td>
-                                                            <td>{{ consecutivo.usuario }}</td>
+                                                            <td>{{ consecutivo.fecha_inicio | date:'Y-m-d'}}</td>
+                                                            <td>{% if consecutivo.fecha_final %}
+                                                                    {{ consecutivo.fecha_final | date:'Y-m-d'}}
+                                                                {% else %} N/A {% endif %}</td>
+                                                            <td>{{ consecutivo.tipo_contrato }}</td>
                                                         </tr>
                                                     {% endfor %}
                                                 </tbody>
@@ -94,10 +90,5 @@
     <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script>
     <script src="{% static 'GestionDocumental/js/exportar_tabla.js' %}"></script>
-    <script src="{% static 'GestionDocumental/js/filtro_consecutivos.js' %}"></script>
-    <script>
-		$(document).ready(function () {
-		    $('.select2').select2();
-		});
-	</script>
+    <script src="{% static 'GestionDocumental/js/consecutivos_contratos.js' %}"></script>
 {% endblock %}

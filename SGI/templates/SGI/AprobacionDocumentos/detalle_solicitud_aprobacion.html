@@ -14,24 +14,22 @@
         </div>
         <div class="modal-body p-b-0">
         {% for archivo in archivos %}
-            <div class="col-lg-6 col-xl-12">
-                <div class="card mb-g">
-                    <div class="row row-grid no-gutters">
-                        <div class="p-3">
-                            <h5>
-                                <small class="mt-0 mb-1">
-                                    <b>Colaborador: </b> {{ archivo.usuario.get_full_name }}
-                                </small>
-                                <small class="mt-0 mb-1 text-muted">
-                                    <b>Estado: </b> {{ archivo.estado }}
-                                </small>
-                                {% if archivo.estado.id != 0 %}
-                                <small class="mt-0 mb-1 text-muted">
-                                    <b>Comentarios: </b> {{ archivo.comentario }}
-                                </small>
-                                {% endif %}
-                            </h5>
-                        </div>
+            <div class="card border shadow-0 mb-g shadow-sm-hover">
+                <div class="card-body p-0 collapse show">
+                    <div class="p-3">
+                        <h5>
+                            <small class="mt-0 mb-1">
+                                <b>Colaborador: </b> {{ archivo.usuario.get_full_name }}
+                            </small>
+                            <small class="mt-0 mb-1 text-muted">
+                                <b>Estado: </b> {{ archivo.estado }}
+                            </small>
+                            {% if archivo.estado.id != 0 %}
+                            <small class="mt-0 mb-1 text-muted">
+                                <b>Comentarios: </b> {{ archivo.comentario }}
+                            </small>
+                            {% endif %}
+                        </h5>
                     </div>
                 </div>
             </div>

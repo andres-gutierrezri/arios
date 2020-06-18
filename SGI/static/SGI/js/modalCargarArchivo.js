@@ -21,7 +21,20 @@ function abrir_modal_cargar(url) {
                 autoclose: true
             });
             $('#archivo_id').change(function (e) {
-                $('.custom-file-label').html(e.target.files[0].name);
+                let label_input = $('.custom-file-label');
+                let extension = e.target.files[0].name.split('.').pop();
+                if (extension === 'pdf' || extension === 'xlsx' || extension === 'docx' || extension === 'pptx'){
+                    label_input.html(e.target.files[0].name);
+                }else{
+                    label_input.html('Seleccione un archivo');
+                    e.target.value = '';
+                    EVANotificacion.toast.error('El archivo ingresado no tiene un formato compatible. ' +
+                                                '(Formatos Aceptados: PDF, Documento de Word, Documento de Excel, ' +
+                                                'Presentacion de Power Point');
+                    return false;
+                }
+
+
             });
             agregarValidacionFormularios();
         } catch (err) {

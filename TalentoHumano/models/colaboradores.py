@@ -30,6 +30,12 @@ class ColaboradorManger(ManagerGeneral):
         else:
             return super().get_queryset().filter(**filtro)
 
+    def get_xa_select_usuarios_activos(self) -> QuerySet:
+        return super().get_queryset().filter(estado=True).values(campo_valor=F('usuario_id'))\
+            .annotate(campo_texto=Concat('usuario__first_name', Value(' '), 'usuario__last_name',
+                                         output_field=CharField()))\
+            .order_by('usuario__first_name', 'usuario__last_name')
+
 
 class Colaborador(Persona, ModelDjangoExtensiones):
     objects = ColaboradorManger()

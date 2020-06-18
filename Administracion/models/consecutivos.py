@@ -21,6 +21,7 @@ class TipoDocumento (models.Model):
     # Tipos Fijos
     FACTURA = 1
     OFICIOS = 2
+    CONTRATOS = 3
 
 
 class ConsecutivoDocumento (models.Model):
@@ -61,7 +62,7 @@ class ConsecutivoDocumento (models.Model):
 
         consecutivo_anho = ConsecutivoDocumento.objects.filter(tipo_documento_id=tipo_documento_id,
                                                                empresa_id=empresa_id,
-                                                               anho=datetime.date.today().year).first()
+                                                               anho=datetime.datetime.today().year).first()
         if consecutivo_anho:
             consecutivo_anho.consecutivo = F('consecutivo') + 1
             consecutivo_anho.save(update_fields=['consecutivo'])
@@ -70,7 +71,7 @@ class ConsecutivoDocumento (models.Model):
             consecutivo_anho = ConsecutivoDocumento(tipo_documento_id=tipo_documento_id,
                                                     empresa_id=empresa_id, estado=True)
             consecutivo_anho.consecutivo = 1
-            consecutivo_anho.anho = datetime.date.today().year
+            consecutivo_anho.anho = datetime.datetime.today().year
             consecutivo_anho.save()
 
         return consecutivo_anho.consecutivo
