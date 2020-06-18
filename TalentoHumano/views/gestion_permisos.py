@@ -29,7 +29,8 @@ class AsignacionPermisosView(AbstractEvaLoggedView):
                 lista_permisos = []
                 for perm in permisos_db:
                     if pf.content_type == perm.content_type:
-                        lista_permisos.append({'id': perm.id, 'nombre': perm.codename})
+                        if perm.codename.split('_')[1] == perm.content_type.model:
+                            lista_permisos.append({'id': perm.id, 'nombre': perm.codename})
                 lista_completa.append(construir_lista_notificaciones(pf, lista_permisos))
 
         else:
@@ -39,7 +40,8 @@ class AsignacionPermisosView(AbstractEvaLoggedView):
                 lista_permisos = []
                 for perm in permisos_asignados:
                     if mod.content_type == perm.content_type:
-                        lista_permisos.append({'id': perm.id, 'nombre': perm.codename})
+                        if perm.codename.split('_')[1] == perm.content_type.model:
+                            lista_permisos.append({'id': perm.id, 'nombre': perm.codename})
 
                 for pf in per_funcionalidad:
                     if mod.content_type == pf.content_type:
