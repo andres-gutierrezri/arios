@@ -53,24 +53,25 @@ class AsignacionPermisosView(AbstractEvaLoggedView):
                        'datos_permisos': json.dumps(lista_completa)})
 
     def post(self, request, id):
-        datos_permisos = json.loads(request.POST.get('valores_permisos', ''))
+        valores_permisos = json.loads(request.POST.get('valores_permisos', ''))
+        datos_permisos = json.loads(request.POST.get('datos_permisos', ''))
         usuario = User.objects.get(id=id)
-        if datos_permisos:
+        if valores_permisos:
             funcionalidades = PermisosFuncionalidad.objects.filter(estado=True)
             limpiar_permisos(usuario)
 
             for func in funcionalidades:
-                for datos in datos_permisos:
+                for datos in valores_permisos:
                     if func.content_type_id == datos['funcionalidad']:
                         for perm in datos['permiso']:
                             if perm == VER:
-                                usuario.user_permissions.add(consultar_permiso(func, 'view'))
+                                usuario.user_permissions.add(consultar_permiso(func, VER, datos_permisos))
                             elif perm == CREAR:
-                                usuario.user_permissions.add(consultar_permiso(func, 'add'))
+                                usuario.user_permissions.add(consultar_permiso(func, CREAR, datos_permisos))
                             elif perm == EDITAR:
-                                usuario.user_permissions.add(consultar_permiso(func, 'change'))
+                                usuario.user_permissions.add(consultar_permiso(func, EDITAR, datos_permisos))
                             elif perm == ELIMINAR:
-                                usuario.user_permissions.add(consultar_permiso(func, 'delete'))
+                                usuario.user_permissions.add(consultar_permiso(func, ELIMINAR, datos_permisos))
         else:
             limpiar_permisos(usuario)
 
@@ -115,5 +116,5 @@ def construir_lista_notificaciones(objeto, permisos):
         elif 'delete' in perm['nombre']:
             nueva_lista.append({'orden': 4, 'id': perm['id'], 'nombre': 'Puede Eliminar'})
 
-    return {'funcionalidad': objeto.id, 'nombre': objeto.nombre, 'descripcion': objeto.descripcion,
+    return {'funcionalidad': objeto.content_type_id, 'nombre': objeto.nombre, 'descripcion': objeto.descripcion,
             'permisos': sorted(nueva_lista, key=lambda p: p['orden'])}
