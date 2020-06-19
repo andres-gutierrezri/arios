@@ -37,7 +37,7 @@ class ConsecutivoContratoCrearView(AbstractEvaLoggedView):
             .get_consecutivo_por_anho(tipo_documento_id=TipoDocumento.CONTRATOS,
                                       empresa_id=get_id_empresa_global(request))
         sigla = TipoContrato.objects.get(id=consecutivo.tipo_contrato_id).sigla
-        consecutivo.codigo = 'CTO_{0}_{1}'.format(consecutivo.numero_contrato, sigla)
+        consecutivo.codigo = 'CTO_{0:03d}_{1}'.format(consecutivo.numero_contrato, sigla)
 
         consecutivo.save()
         messages.success(request, 'Se ha creado el consecutivo {0}'.format(consecutivo.codigo))
