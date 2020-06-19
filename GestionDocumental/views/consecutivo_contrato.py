@@ -51,7 +51,7 @@ def datos_xa_render(request) -> dict:
     extra_tipos_contrato = []
     for tipo_contrato in tipo_contratos.all():
         extra_tipos_contrato.append({'id': tipo_contrato.id, 'laboral': tipo_contrato.laboral,
-                                     'fecha_fin': tipo_contrato.fecha_fin})
+                                     'fecha_fin': tipo_contrato.fecha_finalizacion})
 
     datos = {'fecha': datetime.datetime.now(),
              'tipo_terminacion': request.POST.get('tipo_terminacion', ''),
