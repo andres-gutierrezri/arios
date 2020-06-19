@@ -16,9 +16,9 @@ $(document).ready(function () {
         $.each(jQuery.parseJSON(extraTiposContrato.val()), function(key, value) {
             if(actual == value.id){
               if (value.laboral){
-                  mostrarOcultarColaboradorTercero("laboral")
+                  mostrarOcultarColaboradorTerceroTipoContrato(true)
               }else{
-                  mostrarOcultarColaboradorTercero("no_laboral")
+                  mostrarOcultarColaboradorTerceroTipoContrato(false)
               }
               if(value.fecha_fin){
                   fechaFinal.show();
@@ -55,8 +55,8 @@ fechaFinalID.change(function () {
     }
 });
 
-function mostrarOcultarColaboradorTercero(tipo) {
-    if (tipo === 'no_laboral'){
+function mostrarOcultarColaboradorTerceroTipoContrato(laboral) {
+    if (laboral){
         terceroSelect.show();
         terceroSelectID.attr("required", true);
         colaboradorSelect.hide();
