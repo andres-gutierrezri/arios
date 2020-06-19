@@ -57,15 +57,15 @@ fechaFinalID.change(function () {
 
 function mostrarOcultarColaboradorTerceroTipoContrato(laboral) {
     if (laboral){
-        terceroSelect.show();
-        terceroSelectID.attr("required", true);
-        colaboradorSelect.hide();
-        colaboradorSelectID.removeAttr('required', true);
-    }else{
         colaboradorSelect.show();
         colaboradorSelectID.attr("required", true);
         terceroSelect.hide();
         terceroSelectID.removeAttr('required', true);
+    }else{
+        terceroSelect.show();
+        terceroSelectID.attr("required", true);
+        colaboradorSelect.hide();
+        colaboradorSelectID.removeAttr('required', true);
     }
 }
 
