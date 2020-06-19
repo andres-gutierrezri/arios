@@ -1,5 +1,5 @@
 'use strict';
-let extra_tipos_contrato = $('#extra_tipos_contrato');
+let extraTiposContrato = $('#extra_tipos_contrato');
 let fechaInicioID = $('#fecha_inicio_id');
 let fechaFinalID = $('#fecha_final_id');
 let colaboradorSelect = $('#colaborador_mostrar_id');
@@ -13,7 +13,7 @@ $(document).ready(function () {
     $('.select2').select2();
     $('#tipo_contrato_select_id').change(function () {
         let actual = this.value;
-        $.each(jQuery.parseJSON(extra_tipos_contrato.val()), function(key, value) {
+        $.each(jQuery.parseJSON(extraTiposContrato.val()), function(key, value) {
             if(actual == value.id){
               if (value.laboral){
                   mostrarOcultarColaboradorTercero("laboral")
