@@ -60,9 +60,9 @@ class ConsecutivoContrato(models.Model):
     @staticmethod
     def from_dictionary(datos: dict) -> 'ConsecutivoContrato':
         """
-        Crea una instancia de ConsecutivoOficio con los datos pasados en el diccionario.
-        :param datos: Diccionario con los datos para crear el Consecutivo de Oficios.
-        :return: Instacia de consecutivo de oficios con la información especificada en el diccionario.
+        Crea una instancia de ConsecutivoContrato con los datos pasados en el diccionario.
+        :param datos: Diccionario con los datos para crear el Consecutivo de Contrato.
+        :return: Instacia de consecutivo de contratos con la información especificada en el diccionario.
         """
         consecutivo = ConsecutivoContrato()
         consecutivo.usuario_id = datos.get('colaborador', '')
