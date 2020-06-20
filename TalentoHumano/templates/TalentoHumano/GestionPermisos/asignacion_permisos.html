@@ -38,7 +38,6 @@
                         {% if  permisos %}
                         <small class="posicionar-guardar">
                              <a class="far fa-3x far fa-save" href="javascript:(guardarAsignacionesPermisos())" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Guardar Cambios"></a>
-                             </a>
                         </small>
                         {% endif %}
                     </div>
@@ -61,12 +60,30 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row" id="filtro-general">
-                                        {% for permiso in permisos %}
+                                {% for ct in lista_content_type %}
+                                <nav class="navbar navbar-expand-lg navbar-dark bg-primary bg-primary-gradient">
+                                    <a class="navbar-brand d-flex align-items-center fw-500" style="color: white">{{ ct.campo_texto }}</a>
+                                </nav>
+                                <br>
+                                <div class="row">
+                                    {% for permiso in permisos %}
+                                        {% if ct.campo_texto == permiso.app_label %}
                                             {% include 'TalentoHumano/GestionPermisos/_tarjeta_permiso.html' with permiso=permiso %}
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                {% endfor %}
+                                {% if lista_grupos %}
+                                    <nav class="navbar navbar-expand-lg navbar-dark bg-primary bg-primary-gradient">
+                                        <a class="navbar-brand d-flex align-items-center fw-500" style="color: white">Grupos de Permisos</a>
+                                    </nav>
+                                    <br>
+                                    <div class="row">
+                                        {% for grupo in lista_grupos %}
+                                            {% include 'TalentoHumano/GestionPermisos/_tarjeta_grupo.html' with permiso=grupo %}
                                         {% endfor %}
                                     </div>
-                                </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
