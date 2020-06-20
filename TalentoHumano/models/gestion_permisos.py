@@ -1,3 +1,4 @@
+from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
@@ -9,7 +10,9 @@ class PermisosFuncionalidad(models.Model, ModelDjangoExtensiones):
     descripcion = models.CharField(max_length=100, verbose_name='Descripción', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
     content_type = models.ForeignKey(ContentType, on_delete=models.DO_NOTHING, verbose_name='Content Type',
-                                     null=False, blank=False)
+                                     null=True, blank=True)
+    grupo = models.ForeignKey(Group, on_delete=models.DO_NOTHING, verbose_name='Grupo', null=True, blank=True)
+    solo_admin = models.BooleanField(verbose_name='Solo Administrador', null=False, blank=False)
 
     def __str__(self):
         return self.nombre
