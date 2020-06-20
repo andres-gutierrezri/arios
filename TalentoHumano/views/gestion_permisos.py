@@ -15,7 +15,7 @@ ELIMINAR = 4
 
 
 class AsignacionPermisosView(AbstractEvaLoggedView):
-    def get(self, request, id):
+    def get(self, request, id, id_filtro):
         usuario = User.objects.get(id=id)
         permisos_usuario = usuario.user_permissions.all()
         per_funcionalidad = PermisosFuncionalidad.objects.filter(estado=True)

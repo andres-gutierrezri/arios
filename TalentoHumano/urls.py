@@ -35,6 +35,6 @@ urlpatterns = [
          name='colaboradores-eliminar'),
     path('colaboradores/<int:id>/perfil', colaboradores.ColaboradoresPerfilView.as_view(),
          name='colaboradores-perfil'),
-    path('colaboradores/<int:id>/permisos', gestion_permisos.AsignacionPermisosView.as_view(),
+    path('colaboradores/<int:id>/permisos/<int:id_filtro>', gestion_permisos.AsignacionPermisosView.as_view(),
          name='colaboradores-permisos'),
 ]
