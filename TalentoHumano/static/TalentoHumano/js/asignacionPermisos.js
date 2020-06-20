@@ -1,3 +1,12 @@
+$(document).ready(function () {
+    $('.select2').select2();
+
+    $('#filtro_ct_select_id').change(function () {
+        let id_usuario = $('#id_usuario').val();
+        window.location = '/talento-humano/colaboradores/' + id_usuario + '/permisos/' + this.value;
+    })
+});
+
 function guardarAsignacionesPermisos() {
     let valoresPermisos = $('#valores_permisos');
     let listaPermisos = [];
@@ -5,19 +14,26 @@ function guardarAsignacionesPermisos() {
     let datosPermisos = JSON.parse($('#datos_permisos').val());
 
     datosPermisos.forEach( function(valor) {
-        let idFuncionalidad = 'permiso_'+ valor.funcionalidad + '_id';
+        if (valor.tipo_funcionalidad === true) {
+            let idFuncionalidad = 'permiso_'+ valor.funcionalidad + '_id';
+            if ($('#' + idFuncionalidad).prop('checked')){
 
-        if ($('#' + idFuncionalidad).prop('checked')){
-            let permisos = [];
-            let pos = 1;
+                    let permisos = [];
+                    let pos = 1;
 
-            while (pos <= 4) {
-                if ($('#accion_' + pos + '_' + idFuncionalidad).prop('checked')) {
-                    permisos.push(pos)
-                }
-                pos += 1;
+                    while (pos <= 4) {
+                        if ($('#accion_' + pos + '_' + idFuncionalidad).prop('checked')) {
+                            permisos.push(pos)
+                        }
+                        pos += 1;
+                    }
+                    listaPermisos.push({'tipo_funcionalidad': true,'funcionalidad': valor.funcionalidad, 'permiso': permisos});
             }
-            listaPermisos.push({'funcionalidad': valor.funcionalidad, 'permiso': permisos});
+        }else{
+            let idFuncionalidad = 'permiso_'+ valor.grupo + '_id';
+            if ($('#' + idFuncionalidad).prop('checked')) {
+                listaPermisos.push({'tipo_funcionalidad': false, 'grupo': valor.grupo});
+            }
         }
     });
     valoresPermisos.val(JSON.stringify(listaPermisos));
