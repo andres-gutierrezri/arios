@@ -1,7 +1,7 @@
 import json
 
 from django.contrib import messages, auth
-from django.contrib.auth.models import User, Permission
+from django.contrib.auth.models import User, Permission, Group
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
@@ -27,10 +27,17 @@ class AsignacionPermisosView(AbstractEvaLoggedView):
         per_funcionalidad = PermisosFuncionalidad.objects.filter(estado=True, grupo=None)
         per_grupos = PermisosFuncionalidad.objects.filter(estado=True, content_type=None)
 
+        if id_filtro != 0:
+            temp = PermisosFuncionalidad.objects.filter(content_type_id=id_filtro).first()
+            if temp:
+                per_funcionalidad = per_funcionalidad.filter(content_type__app_label=temp.content_type.app_label)
+
         permisos_db = Permission.objects.all()
         funcionalidades = request.user.user_permissions.order_by('content_type_id').distinct('content_type_id')
 
+        lista_content_type = obtener_content_type(request, per_funcionalidad.distinct('content_type__app_label'))
         lista_completa = []
+        lista_grupos = []
 
         if request.user.is_superuser:
             for pf in per_funcionalidad:
@@ -206,3 +213,17 @@ def poner_quitar_permiso_menu(usuario, modulo, poner=False, quitar=False):
     else:
         if poner:
             usuario.user_permissions.add(Permission.objects.get(codename=permiso_menu))
+
+
+def obtener_content_type(request, funcionalidades):
+    lista = []
+    if request.user.is_superuser:
+        for fun in funcionalidades:
+            lista.append({'campo_valor': fun.content_type.id, 'campo_texto': fun.content_type.app_label})
+    else:
+        permisos_asignados = request.user.user_permissions.distinct('content_type__app_label')
+        for pa in permisos_asignados:
+            for fun in funcionalidades:
+                if pa.content_type == fun.content_type:
+                    lista.append({'campo_valor': fun.content_type.id, 'campo_texto': fun.content_type.app_label})
+    return lista
