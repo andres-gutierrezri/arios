@@ -17,6 +17,10 @@ ELIMINAR = 4
 class AsignacionPermisosView(AbstractEvaLoggedView):
     def get(self, request, id, id_filtro):
         usuario = User.objects.get(id=id)
+        if usuario.is_superuser or usuario == request.user:
+            messages.error(request, 'No tiene permisos para acceder a esta funcionalidad.')
+            return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
+
         permisos_usuario = usuario.user_permissions.all()
         per_funcionalidad = PermisosFuncionalidad.objects.filter(estado=True)
         permisos_db = Permission.objects.all()
