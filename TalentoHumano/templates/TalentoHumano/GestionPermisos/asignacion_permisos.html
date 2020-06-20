@@ -6,6 +6,7 @@
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-brands.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-solid.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
     <link rel="stylesheet" href="{% static 'Notificaciones/css/asignacion.css' %}">
 {% endblock styles %}
 
@@ -25,11 +26,15 @@
                     {% csrf_token %}
                         <input id="datos_permisos" name="datos_permisos" value="{{ datos_permisos }}" style="display: none">
                         <input id="valores_permisos" name="valores_permisos" style="display: none">
+                        <input id="id_usuario" value="{{ usuario.id }}" style="display: none">
                     </form>
                     <div class="panel-hdr">
                         <small>
                              <a class="far fa-3x far fa-arrow-circle-left"  href="{% url 'TalentoHumano:colaboradores-index' 0 %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Volver"></a>
                         </small>
+                        <div style="padding-left: 10px; width: 300px;">
+                            {% select_tag funcionalidad_selecciones 'filtro_ct' 'Todos los permisos' value=id_filtro primer_valor=True %}
+                        </div>
                         {% if  permisos %}
                         <small class="posicionar-guardar">
                              <a class="far fa-3x far fa-save" href="javascript:(guardarAsignacionesPermisos())" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Guardar Cambios"></a>
@@ -74,4 +79,5 @@
 {% block scripts %}
     <script src="{% static 'EVA/Plantilla/js/custom/controlFiltro.js' %}"></script>
     <script src="{% static 'TalentoHumano/js/asignacionPermisos.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
 {% endblock scripts%}
