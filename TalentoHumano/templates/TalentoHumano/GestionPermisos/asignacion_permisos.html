@@ -64,12 +64,12 @@
                                     {% if id_filtro != 1 %}
                                         {% for ct in lista_content_type %}
                                         <nav class="navbar navbar-expand-lg navbar-dark bg-primary bg-primary-gradient label-funcionalidad">
-                                            <a class="navbar-brand d-flex align-items-center fw-500" style="color: white">{{ ct }}</a>
+                                            <a class="navbar-brand d-flex align-items-center fw-500" style="color: white">{{ ct.nombre }}</a>
                                         </nav>
                                         <br class="label-funcionalidad">
                                         <div class="row" id="js-general">
                                             {% for permiso in permisos %}
-                                                {% if ct == permiso.app_label %}
+                                                {% if ct.label == permiso.app_label %}
                                                     {% include 'TalentoHumano/GestionPermisos/_tarjeta_permiso.html' with permiso=permiso %}
                                                 {% endif %}
                                             {% endfor %}

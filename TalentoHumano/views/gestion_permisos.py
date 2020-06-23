@@ -232,18 +232,18 @@ def obtener_content_type(request, funcionalidades, xa_select=None):
     if request.user.is_superuser:
         for fun in funcionalidades:
             if xa_select:
-                lista.append({'campo_valor': fun.content_type.id, 'campo_texto': fun.content_type.app_label})
+                lista.append({'campo_valor': fun.content_type.id, 'campo_texto': fun.nombre})
             else:
-                lista.append(fun.content_type.app_label)
+                lista.append({'label': fun.content_type.app_label, 'nombre': fun.nombre})
     else:
         permisos_asignados = request.user.user_permissions.distinct('content_type__app_label')
         for pa in permisos_asignados:
             for fun in funcionalidades:
                 if pa.content_type == fun.content_type:
                     if xa_select:
-                        lista.append({'campo_valor': fun.content_type.id, 'campo_texto': fun.content_type.app_label})
+                        lista.append({'campo_valor': fun.content_type.id, 'campo_texto': fun.nombre})
                     else:
-                        lista.append(fun.content_type.app_label)
+                        lista.append({'label': fun.content_type.app_label, 'nombre': fun.nombre})
     return lista
 
 
