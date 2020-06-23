@@ -253,5 +253,4 @@ def consultar_permisos_usuario(usuario):
     for perm in permisos:
         if not perm.codename.startswith('can_menu'):
             lista.append({'id': perm.id, 'content_type_id': perm.content_type_id})
-
     return lista

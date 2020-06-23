@@ -4,6 +4,20 @@ $(document).ready(function () {
     $('#filtro_ct_select_id').change(function () {
         let id_usuario = $('#id_usuario').val();
         window.location = '/talento-humano/colaboradores/' + id_usuario + '/permisos/' + this.value;
+    });
+
+    let input_filtro = $('#js-filter-permisos');
+    let lista_filtrar = $('#js-permisos');
+    let labels_funcionalidad = $('.label-funcionalidad');
+
+    initApp.listFilter(lista_filtrar, input_filtro);
+
+    input_filtro.change(function () {
+        if (input_filtro.val() !== ''){
+            labels_funcionalidad.hide();
+        }else{
+            labels_funcionalidad.show();
+        }
     })
 });
 
