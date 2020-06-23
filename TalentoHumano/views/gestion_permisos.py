@@ -12,6 +12,8 @@ VER = 1
 CREAR = 2
 EDITAR = 3
 ELIMINAR = 4
+TODOS = 0
+GRUPOS = 1
 
 
 class AsignacionPermisosView(AbstractEvaLoggedView):
@@ -21,13 +23,13 @@ class AsignacionPermisosView(AbstractEvaLoggedView):
             messages.error(request, 'No tiene permisos para acceder a esta funcionalidad.')
             return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
 
-        permisos_usuario = usuario.user_permissions.all()
+        permisos_usuario = consultar_permisos_usuario(usuario)
         grupos_usuario = usuario.groups.all()
 
         per_funcionalidad = PermisosFuncionalidad.objects.filter(estado=True, grupo=None)
         per_grupos = PermisosFuncionalidad.objects.filter(estado=True, content_type=None)
 
-        if id_filtro != 0:
+        if id_filtro != TODOS:
             temp = PermisosFuncionalidad.objects.filter(content_type_id=id_filtro).first()
             if temp:
                 per_funcionalidad = per_funcionalidad.filter(content_type__app_label=temp.content_type.app_label)
@@ -47,7 +49,7 @@ class AsignacionPermisosView(AbstractEvaLoggedView):
                         if perm.codename.split('_')[1] == perm.content_type.model:
                             lista_permisos.append({'id': perm.id, 'nombre': perm.codename})
                 lista_completa.append(construir_lista_notificaciones(pf, lista_permisos))
-            if per_grupos:
+            if per_grupos and id_filtro == TODOS or id_filtro == GRUPOS:
                 for grp in per_grupos:
                     lista = {'tipo_funcionalidad': False, 'grupo': grp.id, 'id_grupo': grp.grupo_id,
                              'nombre': grp.nombre, 'descripcion': grp.descripcion}
@@ -69,7 +71,7 @@ class AsignacionPermisosView(AbstractEvaLoggedView):
                         lista_completa.append(construir_lista_notificaciones(pf, lista_permisos))
 
             per_grupos = per_grupos.exclude(solo_admin=True)
-            if per_grupos and grupos_asignados:
+            if per_grupos and grupos_asignados and id_filtro == TODOS or id_filtro == GRUPOS:
                 for grp_asignado in grupos_asignados:
                     for grp in per_grupos:
                         if grp_asignado == grp.grupo:
@@ -226,4 +228,14 @@ def obtener_content_type(request, funcionalidades):
             for fun in funcionalidades:
                 if pa.content_type == fun.content_type:
                     lista.append({'campo_valor': fun.content_type.id, 'campo_texto': fun.content_type.app_label})
+    return lista
+
+
+def consultar_permisos_usuario(usuario):
+    lista = []
+    permisos = usuario.user_permissions.all()
+    for perm in permisos:
+        if not perm.codename.startswith('can_menu'):
+            lista.append({'id': perm.id, 'content_type_id': perm.content_type_id})
+
     return lista
