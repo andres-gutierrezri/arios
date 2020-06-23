@@ -1,4 +1,5 @@
 import json
+import re
 
 from django.contrib import messages, auth
 from django.contrib.auth.models import User, Permission, Group
@@ -231,19 +232,21 @@ def obtener_content_type(request, funcionalidades, xa_select=None):
         lista.append({'campo_valor': 1, 'campo_texto': 'Grupos'})
     if request.user.is_superuser:
         for fun in funcionalidades:
+            nombre = construir_nombre_funcionalidad(fun.content_type.app_label)
             if xa_select:
-                lista.append({'campo_valor': fun.content_type.id, 'campo_texto': fun.nombre})
+                lista.append({'campo_valor': fun.content_type.id, 'campo_texto': nombre})
             else:
-                lista.append({'label': fun.content_type.app_label, 'nombre': fun.nombre})
+                lista.append({'label': fun.content_type.app_label, 'nombre': nombre})
     else:
         permisos_asignados = request.user.user_permissions.distinct('content_type__app_label')
         for pa in permisos_asignados:
             for fun in funcionalidades:
+                nombre = construir_nombre_funcionalidad(fun.content_type.app_label)
                 if pa.content_type == fun.content_type:
                     if xa_select:
-                        lista.append({'campo_valor': fun.content_type.id, 'campo_texto': fun.nombre})
+                        lista.append({'campo_valor': fun.content_type.id, 'campo_texto': nombre})
                     else:
-                        lista.append({'label': fun.content_type.app_label, 'nombre': fun.nombre})
+                        lista.append({'label': fun.content_type.app_label, 'nombre': nombre})
     return lista
 
 
@@ -254,3 +257,14 @@ def consultar_permisos_usuario(usuario):
         if not perm.codename.startswith('can_menu'):
             lista.append({'id': perm.id, 'content_type_id': perm.content_type_id})
     return lista
+
+
+def construir_nombre_funcionalidad(nombre):
+    nombre = re.findall('[A-Z][^A-Z]*', nombre)
+    nombre_final = ''
+    contador = 0
+
+    while len(nombre) != contador:
+        nombre_final = '{0} {1}'.format(nombre_final, nombre[contador])
+        contador += 1
+    return nombre_final
