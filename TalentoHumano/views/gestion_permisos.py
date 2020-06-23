@@ -2,6 +2,7 @@ import json
 
 from django.contrib import messages, auth
 from django.contrib.auth.models import User, Permission, Group
+from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
@@ -28,6 +29,7 @@ class AsignacionPermisosView(AbstractEvaLoggedView):
 
         per_funcionalidad = PermisosFuncionalidad.objects.filter(estado=True, grupo=None)
         per_grupos = PermisosFuncionalidad.objects.filter(estado=True, content_type=None)
+        funcionalidades_selecciones = per_funcionalidad.distinct('content_type__app_label')
 
         if id_filtro != TODOS:
             temp = PermisosFuncionalidad.objects.filter(content_type_id=id_filtro).first()
@@ -89,9 +91,10 @@ class AsignacionPermisosView(AbstractEvaLoggedView):
                        'id_filtro': id_filtro,
                        'funcionalidades': funcionalidades,
                        'lista_content_type': lista_content_type,
+                       'funcionalidad_selecciones': obtener_content_type(request, funcionalidades_selecciones, True),
                        'datos_permisos': json.dumps(lista_completa)})
 
-    def post(self, request, id):
+    def post(self, request, id, id_filtro):
         valores_permisos = json.loads(request.POST.get('valores_permisos', ''))
         datos_permisos = json.loads(request.POST.get('datos_permisos', ''))
         valores_funcionalidades = []
@@ -112,7 +115,7 @@ class AsignacionPermisosView(AbstractEvaLoggedView):
         usuario = User.objects.get(id=id)
         if valores_funcionalidades:
             funcionalidades = PermisosFuncionalidad.objects.filter(estado=True, grupo=None)
-            limpiar_permisos(usuario)
+            limpiar_permisos(usuario, id_filtro)
 
             for func in funcionalidades:
                 coincidencias = False
@@ -129,9 +132,9 @@ class AsignacionPermisosView(AbstractEvaLoggedView):
                             elif perm == ELIMINAR:
                                 consultar_permiso(func, ELIMINAR, datos_funcionalidades, usuario)
                 if not coincidencias:
-                    limpiar_permisos(usuario, modulo=func.content_type.app_label)
+                    limpiar_permisos(usuario, id_filtro, modulo=func.content_type.app_label)
         else:
-            limpiar_permisos(usuario)
+            limpiar_permisos(usuario, id_filtro)
 
         if valores_grupos:
             grupos = PermisosFuncionalidad.objects.filter(estado=True, content_type=None)
@@ -170,11 +173,16 @@ def limpiar_grupos(usuario, grupo=None):
             usuario.groups.remove(grp)
 
 
-def limpiar_permisos(usuario, modulo=None):
-    if modulo:
-        poner_quitar_permiso_menu(usuario, modulo, quitar=True)
+def limpiar_permisos(usuario, id_filtro, modulo=None):
+    if id_filtro == TODOS:
+        if modulo:
+            poner_quitar_permiso_menu(usuario, modulo, quitar=True)
+        else:
+            for perm in usuario.user_permissions.all():
+                usuario.user_permissions.remove(perm)
     else:
-        for perm in usuario.user_permissions.all():
+        ct = ContentType.objects.get(id=id_filtro)
+        for perm in usuario.user_permissions.filter(content_type__app_label=ct.app_label):
             usuario.user_permissions.remove(perm)
 
 
@@ -217,17 +225,25 @@ def poner_quitar_permiso_menu(usuario, modulo, poner=False, quitar=False):
             usuario.user_permissions.add(Permission.objects.get(codename=permiso_menu))
 
 
-def obtener_content_type(request, funcionalidades):
+def obtener_content_type(request, funcionalidades, xa_select=None):
     lista = []
+    if xa_select:
+        lista.append({'campo_valor': 1, 'campo_texto': 'Grupos'})
     if request.user.is_superuser:
         for fun in funcionalidades:
-            lista.append({'campo_valor': fun.content_type.id, 'campo_texto': fun.content_type.app_label})
+            if xa_select:
+                lista.append({'campo_valor': fun.content_type.id, 'campo_texto': fun.content_type.app_label})
+            else:
+                lista.append(fun.content_type.app_label)
     else:
         permisos_asignados = request.user.user_permissions.distinct('content_type__app_label')
         for pa in permisos_asignados:
             for fun in funcionalidades:
                 if pa.content_type == fun.content_type:
-                    lista.append({'campo_valor': fun.content_type.id, 'campo_texto': fun.content_type.app_label})
+                    if xa_select:
+                        lista.append({'campo_valor': fun.content_type.id, 'campo_texto': fun.content_type.app_label})
+                    else:
+                        lista.append(fun.content_type.app_label)
     return lista
 
 
