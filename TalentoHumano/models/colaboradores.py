@@ -131,7 +131,8 @@ class Colaborador(Persona, ModelDjangoExtensiones):
         colaborador.foto_perfil = datos.get('foto_perfil', None)
         colaborador.usuario_id = datos.get('usuario_id', None)
         usuario_creado = Colaborador.crear_usuario(datos.get('nombre', ''), datos.get('apellido', ''),
-                                                   datos.get('correo', ''),  colaborador.usuario_id)
+                                                   datos.get('correo', ''),  int(colaborador.usuario_id)
+                                                   if colaborador.usuario else colaborador.usuario)
         colaborador.usuario = usuario_creado
         colaborador.nombre_contacto = datos.get('nombre_contacto', '')
         colaborador.telefono_contacto = datos.get('telefono_contacto', '')
