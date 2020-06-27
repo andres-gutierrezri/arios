@@ -86,6 +86,7 @@ class Cargo(models.Model):
 class Proceso(models.Model):
     objects = ManagerGeneral()
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
+    sigla = models.CharField(max_length=5, verbose_name='Sigla', null=False, blank=False, default='')
     objeto = models.CharField(max_length=100, verbose_name='Objeto', null=False, blank=False)
     empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa', null=True, blank=False)
 
@@ -142,6 +143,8 @@ class TipoContrato(models.Model):
     descripcion = models.TextField(max_length=300, verbose_name='Descripción', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
     laboral = models.BooleanField(verbose_name='Estado', null=False, blank=False)
+    sigla = models.CharField(max_length=5, verbose_name='Sigla', null=False, blank=False, default='')
+    fecha_finalizacion = models.BooleanField(verbose_name='Fecha de Finalización', null=False, blank=False, default=True)
 
     def __str__(self):
         return self.nombre
@@ -155,14 +158,14 @@ class Persona(models.Model):
 
     identificacion = models.CharField(max_length=20, verbose_name='Identificación', null=False, blank=False,
                                       unique=True)
-    fecha_expedicion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Expedición', null=False,
+    fecha_expedicion = models.DateTimeField(verbose_name='Fecha de Expedición', null=False,
                                             blank=False)
-    fecha_nacimiento = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Nacimiento', null=True,
+    fecha_nacimiento = models.DateTimeField(verbose_name='Fecha de Nacimiento', null=True,
                                             blank=False)
     telefono = models.CharField(max_length=20, verbose_name='Teléfono', null=False, blank=False)
     fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False,
                                           blank=False)
-    fecha_modificacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Modificación', null=False,
+    fecha_modificacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Modificación', null=False,
                                               blank=False)
     genero = models.CharField(max_length=1, verbose_name='Género', null=False, blank=False)
     tipo_identificacion = models.ForeignKey(TipoIdentificacion, on_delete=models.DO_NOTHING,

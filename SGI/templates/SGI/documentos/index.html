@@ -7,7 +7,6 @@
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-brands.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-solid.css' %}">
-    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/sweetalert2/sweetalert2.bundle.css'%}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/theme-demo.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
     <link rel="mask-icon" href="{% static 'EVA/Plantilla/img/favicon/safari-pinned-tab.svg' %}" color="#5bbad5">
@@ -36,38 +35,125 @@
                                         <li>
                                             <span class="col-md-4"><i class="fa fa-lg fa-file-alt"></i> {{ grupo_documento }}</span>
                                             {% if perms.SGI.add_documento %}
-                                            <a class="far fa-custom fa-file-plus" style="padding-left: 10px"   href="{% url 'SGI:documentos-crear' proceso.id  grupo_documento.id%}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear documento"></a>
+                                            <a class="far fa-custom fa-file-plus p-l-10" href="{% url 'SGI:documentos-crear' proceso.id  grupo_documento.id%}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear documento"></a>
                                             {% endif %}
                                             <ul>
                                                 {% for documento in documentos %}
                                                     {% if documento.grupo_documento_id == grupo_documento.id %}
                                                         <li style="display: none">
-                                                            <div class="row" style="padding-left: 12px">
-                                                                <div class="">
-                                                                    <div id="panel-1" class="panel">
-                                                                        <div class="panel-container show">
+                                                            <div class="row p-l-12">
+                                                                <div>
+                                                                    <div id="panel-1" class="panel" style="display: table-header-group;">
+                                                                        <div class="panel-container show w-500">
                                                                             <div class="panel-content">
-                                                                                {{ documento }}
-                                                                                {%  if perms.SGI.view_archivo %}
-                                                                                <a class="far fa-custom fa-eye" style="padding-left: 10px; text-decoration: none !important;" {% for archivo in archivos %}{% if documento == archivo.documento %}href="{% url 'sgi:documentos-ver' archivo.id  %}" target="_blank" data-original-title="Ver" {% else %}data-original-title="No hay archivos"{% endif %}{% endfor %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
-                                                                                {% endif %}
-                                                                                {%  if perms.SGI.view_documento %}
-                                                                                <a class="far fa-custom fa-list-alt" style="padding-left: 10px"  data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Historial (Funcionalidad en Desarrollo)"></a>
-                                                                                {% endif %}
-                                                                                {% if perms.SGI.add_archivo %}
-                                                                                <a class="far fa-custom fa-long-arrow-alt-up" style="padding-left: 10px"  href="javascript:abrir_modal_cargar('{% url 'sgi:documentos-cargar' proceso.id  grupo_documento.id documento.id %}');" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Cargar"></a>
-                                                                                {% endif %}
-                                                                                {% if perms.SGI.change_documento %}
-                                                                                <a class="far fa-custom fa-edit" style="padding-left: 10px"  href="{% url 'sgi:documentos-editar' proceso.id  grupo_documento.id documento.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
-                                                                                {% endif %}
-                                                                                {% if perms.SGI.delete_documento %}
-                                                                                <a class="far fa-custom fa-trash-alt color-danger-900" style="padding-left: 10px"  id="eliminar_{{ documento.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ documento.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
-                                                                                {% endif %}
+                                                                                <div class="row">
+                                                                                    <div class="col-md-8">
+                                                                                    {{ documento }}
+                                                                                    </div>
+                                                                                    <div class="col-md-4 p-r-10" style="text-align: end">
+                                                                                        {%  if perms.SGI.view_archivo %}
+                                                                                        <a class="far fa-custom fa-eye" style="text-decoration: none !important;" {% for archivo in archivos %}{% if documento == archivo.documento %}href="{% url 'sgi:documentos-ver' archivo.id  %}" target="_blank" data-original-title="Ver" {% endif %}{% endfor %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
+                                                                                        {% endif %}
+                                                                                        {% if perms.TalentoHumano.view_historial %}
+                                                                                        <a class="far fa-custom fa-list-alt p-l-10" {% for hst in historial %}{% if hst.documento == documento %} id="hst_{{ documento.id }}" href="javascript:arbolDocumentos('doc_{{ documento.id }}', 'hst_{{ documento.id }}')" data-original-title="Historial"{% endif %}{% endfor %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
+                                                                                        {% endif %}
+                                                                                        {% if perms.SGI.add_archivo %}
+                                                                                        <a class="far fa-custom fa-long-arrow-alt-up p-l-10" href="javascript:abrir_modal_cargar('{% url 'sgi:documentos-cargar' proceso.id  grupo_documento.id documento.id %}');" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Cargar"></a>
+                                                                                        {% endif %}
+                                                                                        {% if perms.SGI.change_documento %}
+                                                                                        <a class="far fa-custom fa-edit p-l-10" href="{% url 'sgi:documentos-editar' proceso.id  grupo_documento.id documento.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                                                        {% endif %}
+                                                                                        {% if perms.SGI.delete_documento %}
+                                                                                        <a class="far fa-custom fa-trash-alt color-danger-900 p-l-10" id="eliminar_{{ documento.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ documento.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+                                                                                        {% endif %}
+                                                                                    </div>
+                                                                                </div>
                                                                             </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
+                                                            {% if perms.TalentoHumano.view_historial %}
+                                                            <ul id="doc_{{ documento.id }}" class="p-l-11" style="display: none;">
+                                                                {% for hst in historial %}
+                                                                    {% if hst.documento == documento %}
+                                                                        <li>
+                                                                            <div class="row p-l-12">
+                                                                                <div class="w-500">
+                                                                                    <div>
+                                                                                        <div id="panel-1" class="panel" style="display: table-header-group;">
+                                                                                            <div class="panel-container show w-500">
+                                                                                                <div class="panel-content">
+                                                                                                     <div class="row">
+                                                                                                        <div class="col-md-10">
+                                                                                                             {{ hst.nombre_documento }} <span class="{% if hst.estado.id == estado.APROBADO %}badge badge-primary {% elif hst.estado.id == estado.RECHAZADO %} badge border border-danger text-danger {% else %} badge border border-primary text-primary {% endif %}" style="font-size: 70%">{{ hst.estado }}</span>
+                                                                                                        </div>
+                                                                                                        <div class="col-md-2 p-r-10" style="text-align: end">
+                                                                                                            {%  if perms.TalentoHumano.view_archivo_historial %}
+                                                                                                            <a class="far fa-custom fa-eye p-l-10" style="text-decoration: none !important;" href="{% url 'sgi:documentos-ver' hst.id  %}" target="_blank" data-original-title="Ver" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
+                                                                                                            {% endif %}
+                                                                                                            <a class="far fa-custom fa-caret-square-down p-l-10" id="det_{{ hst.id }}" href="javascript:arbolDocumentos('arc_{{ hst.id }}', 'det_{{ hst.id }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Detalles"></a>
+                                                                                                        </div>
+                                                                                                     </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        <ul id="arc_{{ hst.id }}" class="p-l-11" style="display: none;">
+                                                                            <li>
+                                                                                <div class="row p-l-12">
+                                                                                    <div class="w-500">
+                                                                                        <div id="panel-1" class="panel">
+                                                                                            <div class="panel-container show w-500">
+                                                                                                <div class="panel-content">
+                                                                                                    <h5>
+                                                                                                        <small class="mt-0 mb-1 text-muted">
+                                                                                                            <b>Fecha del Documento: </b> {{ hst.fecha_documento }}
+                                                                                                        </small>
+                                                                                                        <small class="mt-0 mb-1 text-muted">
+                                                                                                            <b>Versión: </b> {{ hst.version }}
+                                                                                                        </small>
+                                                                                                        <small class="mt-0 mb-1 text-muted">
+                                                                                                            <b>Notas: </b> {{ hst.notas }}
+                                                                                                        </small>
+                                                                                                        <small class="mt-0 mb-1 text-muted">
+                                                                                                            <b>Estado del Documento: </b> {{ hst.estado }}
+                                                                                                        </small>
+                                                                                                    </h5>
+                                                                                                    {% if hst.cadena_aprobacion %}
+                                                                                                    <br>
+                                                                                                    <h4>Resultados de Aprobación</h4>
+                                                                                                        {% for res in resultados %}
+                                                                                                            {% if res.archivo.id == hst.id %}
+                                                                                                                <h5 class="p-l-10">
+                                                                                                                    <small class="mt-0 mb-1 text-muted">
+                                                                                                                        <b>Colaborador: </b> {{ res.usuario.get_full_name }}
+                                                                                                                    </small>
+                                                                                                                    <small class="mt-0 mb-1 text-muted">
+                                                                                                                        <b>Estado: </b> {{ res.estado }}
+                                                                                                                    </small>
+                                                                                                                    <small class="mt-0 mb-1 text-muted">
+                                                                                                                        <b>Comentarios: </b> {{ res.comentario }}
+                                                                                                                    </small>
+                                                                                                                </h5>
+                                                                                                                <br>
+                                                                                                            {% endif %}
+                                                                                                        {% endfor %}
+                                                                                                    {% endif %}
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </li>
+                                                                        </ul>
+                                                                        </li>
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            </ul>
+                                                            {% endif %}
                                                         </li>
                                                     {% endif %}
                                                 {% endfor %}
@@ -95,4 +181,5 @@
     <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js'%}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
     <script src="{% static 'SGI/js/modalCargarArchivo.js' %}"></script>
+    <script src="{% static 'SGI/js/arbolDocumentos.js' %}"></script>
 {% endblock scripts%}

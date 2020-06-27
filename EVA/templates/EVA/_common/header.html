@@ -58,6 +58,9 @@
                     <li class="nav-item">
                         <a class="nav-link px-4 fs-md js-waves-on fw-500" data-toggle="tab" href="#tab-messages" data-i18n="dropdown.messages">Notificaciones</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-4 fs-md js-waves-on fw-500" data-toggle="tab" href="#tab-settings" data-i18n="dropdown.settings">Configuraciones</a>
+                    </li>
                 </ul>
                 <div class="tab-content tab-notification">
                     <div id="not_empty" class="tab-pane p-3 text-center">
@@ -76,6 +79,21 @@
                             <ul class="notification" id="cargar_notificaciones">
 
                             </ul>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="tab-settings" role="tabpanel">
+                        <div class="custom-scroll h-100">
+                            <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 100%;">
+                                <ul class="notification" style="overflow: hidden; width: auto; height: 100%;">
+                                    <li>
+                                        <div class="d-flex align-items-center ">
+                                            <span class="d-flex flex-column flex-1">
+                                                <a class="dropdown-item" href="{% url 'Notificaciones:notificaciones-seleccion-email' request.user.id %}"><strong style="size: 20px">Seleccionar notificaciones por correo</strong></a>
+                                            </span>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>

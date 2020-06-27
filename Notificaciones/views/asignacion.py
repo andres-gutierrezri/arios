@@ -7,6 +7,8 @@ from EVA.views.index import AbstractEvaLoggedView
 from Notificaciones.models.models import EventoDesencadenador, SeleccionDeNotificacionARecibir
 from TalentoHumano.models import Colaborador
 
+OPCION = 'asignacion'
+
 
 class AsignacionView(AbstractEvaLoggedView):
     def get(self, request, id):
@@ -20,9 +22,10 @@ class AsignacionView(AbstractEvaLoggedView):
                                              'nombre': desencadenador.nombre,
                                              'descripcion': desencadenador.descripcion})
 
-        return render(request, 'Notificaciones/AsignacionNotificaciones/asignacion.html',
+        return render(request, 'Notificaciones/AsignacionSeleccion/asignacion-seleccion.html',
                       {"desencadenadores": lista_desencadenador,
                        "selecciones": selecciones,
+                       "opcion": OPCION,
                        "colaborador": {"id": id,
                                        "nombre": Colaborador.objects.get(usuario_id=id).primer_nombre_apellido}})
 
@@ -30,7 +33,7 @@ class AsignacionView(AbstractEvaLoggedView):
         selecciones = request.POST.getlist("desencadenadores", [])
         SeleccionDeNotificacionARecibir.objects.filter(usuario_id=id).delete()
         for seleccion in selecciones:
-            SeleccionDeNotificacionARecibir.objects.create(usuario_id=id, estado=True, envio_x_email=False,
+            SeleccionDeNotificacionARecibir.objects.create(usuario_id=id, estado=True, envio_x_email=True,
                                                            evento_desencadenador_id=seleccion)
         messages.success(request, 'Se han guardado las selecciones correctamente')
         return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))

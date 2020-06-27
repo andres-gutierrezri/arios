@@ -1,0 +1,71 @@
+{% extends 'GestionDocumental/_common/base_gestion_documental.html' %}
+{% load static %}
+{% load eva_tags %}
+<title>{% block titulo %} Crear Consecutivo {% endblock %}</title>
+{% block styles %}
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/bootstrap-datepicker/bootstrap-datepicker.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
+	<link rel="stylesheet" media="screen, print" href="{%static 'EVA/Plantilla/css/fa-brands.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
+{% endblock styles%}
+
+{% block main %}
+    <div class="panel-container show">
+        <div class="header">
+             <h1 class="header-title">
+                <i class='far fa-file-alt'></i> Consecutivos: <span class='fw-300'> Crear</span>
+                 <br>
+                 <br>
+             </h1>
+        </div>
+        <div class="row">
+            <div class="col-xl-12">
+                <div id="panel-1" class="panel">
+                    <div class="panel-container show">
+                        <div class="panel-content">
+                            <div class="panel-group">
+                                <div class="panel-body">
+                                    <form action="{% url 'GestionDocumental:consecutivo-oficios-crear' %}" id="consecutivo_oficios_form" method="post" class="needs-validation" novalidate>
+                                        {% csrf_token %}
+                                        <div class="form-group">
+                                            <div class="form-row">
+                                                 <div class="col-md-6">
+                                                    {% select_tag contratos 'contrato_id' 'Seleccione un contrato' texto_label="Contrato (Opcional)" value=consecutivo.contrato invalido=errores.contrato %}
+                                                  </div>
+                                                <div class="col-md-6">
+                                                    {% input_text_tag 'destinatario' 'Destinatario' placeholder="Ingrese un destinatario" required="" maxlength="100" value=consecutivo.destinatario mensaje_validacion='Por favor digite un destinatario' invalido=errores.destinatario %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="form-row">
+                                                <div class="col-md-12">
+                                                    {% input_textarea_tag 'detalle' 'Descripción del Documento' placeholder="Ingrese una descripción" required="" maxlength="300" value=consecutivo.supervisor_nombre mensaje_validacion='Por favor digite una descripción.' invalido=errores.descripcion %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div>
+                                                <button id="agregar" class="btn btn-primary btn-block"> Agregar</button>
+                                            </div>
+                                            <div style="padding-left: 15px">
+                                                <a href="{% url 'GestionDocumental:consecutivo-oficios-index' 1 %}" class="btn btn-danger btn-block">Cancelar</a>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock main %}
+
+{% block scripts %}
+    <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
+{% endblock scripts %}

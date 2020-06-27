@@ -30,6 +30,12 @@ class ColaboradorManger(ManagerGeneral):
         else:
             return super().get_queryset().filter(**filtro)
 
+    def get_xa_select_usuarios_activos(self) -> QuerySet:
+        return super().get_queryset().filter(estado=True).values(campo_valor=F('usuario_id'))\
+            .annotate(campo_texto=Concat('usuario__first_name', Value(' '), 'usuario__last_name',
+                                         output_field=CharField()))\
+            .order_by('usuario__first_name', 'usuario__last_name')
+
 
 class Colaborador(Persona, ModelDjangoExtensiones):
     objects = ColaboradorManger()
@@ -76,6 +82,9 @@ class Colaborador(Persona, ModelDjangoExtensiones):
                        ("can_menu_talentohumano", "Can access menu talento humano"),
                        ("can_menu_sgi", "Can access menu sgi"),
                        ("can_menu_financiero", "Can access menu financiero"),
+                       ("can_menu_gestiondocumental", "Can access menu gestion documental"),
+                       ("view_historial", "Can view historial"),
+                       ("view_archivo_historial", "Can view archivo historial"),
                        )
 
     def empresa_to_dict(self):
@@ -122,7 +131,8 @@ class Colaborador(Persona, ModelDjangoExtensiones):
         colaborador.foto_perfil = datos.get('foto_perfil', None)
         colaborador.usuario_id = datos.get('usuario_id', None)
         usuario_creado = Colaborador.crear_usuario(datos.get('nombre', ''), datos.get('apellido', ''),
-                                                   datos.get('correo', ''),  colaborador.usuario_id)
+                                                   datos.get('correo', ''),  int(colaborador.usuario_id)
+                                                   if colaborador.usuario else colaborador.usuario)
         colaborador.usuario = usuario_creado
         colaborador.nombre_contacto = datos.get('nombre_contacto', '')
         colaborador.telefono_contacto = datos.get('telefono_contacto', '')

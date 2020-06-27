@@ -5,9 +5,9 @@
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-brands.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-solid.css' %}">
-    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/sweetalert2/sweetalert2.bundle.css'%}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/theme-demo.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'TalentoHumano/css/cambiarFotoPerfil.css' %}">
     <link rel="mask-icon" href="{% static 'EVA/Plantilla/img/favicon/safari-pinned-tab.svg' %}" color="#5bbad5">
 {% endblock styles %}
 
@@ -47,12 +47,20 @@
                                                     <div class="row no-gutters row-grid">
                                                         <div class="col-12">
                                                             <div class="d-flex flex-column align-items-center justify-content-center p-4">
-                                                                <img src="{{ colaborador.foto_perfil.url }}" class="rounded-circle shadow-2 img-thumbnail" alt="">
+                                                                {% if request.user == colaborador.usuario or perms.TalentoHumano.change_colaborador %}
+                                                                <a href="javascript: cambiarFotoPerfil({{ colaborador.id }})" title="Cambiar Foto de Perfil">
+                                                                    <img src="{{ colaborador.foto_perfil.url }}" class="rounded-circle shadow-2 img-thumbnail foto_perfil_acual" alt="">
+                                                                </a>
+                                                                {% else %}
+                                                                    <img src="{{ colaborador.foto_perfil.url }}" class="rounded-circle shadow-2 img-thumbnail" alt="">
+                                                                {% endif %}
                                                                 <h5 class="mb-0 fw-700 text-center mt-3">
                                                                     {{ colaborador.nombre_completo }}
                                                                     <small class="text-muted mb-0">{{ colaborador.cargo }}</small>
                                                                 </h5>
-                                                                <div class="mt-4 text-center demo">
+                                                                <a class="mt-1 d-block fs-sm fw-400 text-muted mt-2">
+                                                                    <i class="fas fa-user text-muted mr-2"></i>{{ colaborador.usuario.username }}</a>
+                                                                <div class="mt-2 text-center demo">
                                                                     <a href="tel: {{ telefono }}" class="fs-xl">
                                                                         <i class="fas fa-mobile-alt text-muted mr-2"></i></a>
                                                                     <a href="mailto: {{ colaborador.usuario.email }}" class="fs-xl" >
@@ -348,41 +356,14 @@
             </div>
         </div>
     </div>
+    <div class="modal fade"  tabindex="-1" id="mCambiarFotoPerfil" role="dialog"></div>
+
 {% endblock main%}
 
 {% block scripts %}
-    <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
-
     <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
-
-    <script>
-        $(document).ready(function()
-        {
-
-            $('input[type=radio][name=contactview]').change(function()
-            {
-                if (this.value == 'grid')
-                {
-                    $('#js-contacts .card').removeClassPrefix('mb-').addClass('mb-g');
-                    $('#js-contacts .col-xl-12').removeClassPrefix('col-xl-').addClass('col-xl-4');
-                    $('#js-contacts .js-expand-btn').addClass('d-none');
-                    $('#js-contacts .card-body + .card-body').addClass('show');
-
-                }
-                else if (this.value == 'table')
-                {
-                    $('#js-contacts .card').removeClassPrefix('mb-').addClass('mb-1');
-                    $('#js-contacts .col-xl-4').removeClassPrefix('col-xl-').addClass('col-xl-12');
-                    $('#js-contacts .js-expand-btn').removeClass('d-none');
-                    $('#js-contacts .card-body + .card-body').removeClass('show');
-                }
-
-            });
-
-            //initialize filter
-            initApp.listFilter($('#js-contacts'), $('#js-filter-contacts'));
-        });
-
-    </script>
+    <script src="{% static 'TalentoHumano/js/cambioVisusalizacionTabla.js' %}"></script>
+    <script src="{% static 'TalentoHumano/js/cambiarFotoPerfil.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
 {% endblock scripts%}
