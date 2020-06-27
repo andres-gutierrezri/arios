@@ -264,6 +264,7 @@ class VerDocumentoView(AbstractEvaLoggedView):
             mime_types = {'.docx': 'application/msword', '.xlsx': 'application/vnd.ms-excel',
                           '.pptx': 'application/vnd.ms-powerpoint',
                           '.xlsm': 'application/vnd.ms-excel.sheet.macroenabled.12',
+                          '.dwg': 'application/octet-stream'
                           }
 
             mime_type = mime_types.get(extension, 'application/pdf')

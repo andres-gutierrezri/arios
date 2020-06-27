@@ -1,5 +1,6 @@
 import datetime
 
+from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
@@ -57,8 +58,9 @@ class ConsecutivoOficiosCrearView(AbstractEvaLoggedView):
         else:
             contrato = consecutivo.contrato.numero_contrato
 
-        consecutivo.codigo = '{0}-{1}-{2}-{3}'.format(colaborador.proceso.sigla, ('%03d' % consecutivo.consecutivo),
-                                                      contrato, datetime.datetime.now().year).upper()
+        consecutivo.codigo = '{0}-{1:03d}-{2}-{3}'.format(colaborador.proceso.sigla, consecutivo.consecutivo,
+                                                          contrato, datetime.datetime.now().year).upper()
 
         consecutivo.save()
+        messages.success(request, 'Se ha creado el consecutivo <br> {0}'.format(consecutivo.codigo))
         return redirect(reverse('GestionDocumental:consecutivo-oficios-index', args=[1]))

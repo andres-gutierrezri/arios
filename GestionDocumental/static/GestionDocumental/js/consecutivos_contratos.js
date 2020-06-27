@@ -1,5 +1,5 @@
 'use strict';
-let extra_tipos_contrato = $('#extra_tipos_contrato');
+let extraTiposContrato = $('#extra_tipos_contrato');
 let fechaInicioID = $('#fecha_inicio_id');
 let fechaFinalID = $('#fecha_final_id');
 let colaboradorSelect = $('#colaborador_mostrar_id');
@@ -13,12 +13,12 @@ $(document).ready(function () {
     $('.select2').select2();
     $('#tipo_contrato_select_id').change(function () {
         let actual = this.value;
-        $.each(jQuery.parseJSON(extra_tipos_contrato.val()), function(key, value) {
+        $.each(jQuery.parseJSON(extraTiposContrato.val()), function(key, value) {
             if(actual == value.id){
               if (value.laboral){
-                  mostrarOcultarColaboradorTercero("laboral")
+                  mostrarOcultarColaboradorTerceroTipoContrato(true)
               }else{
-                  mostrarOcultarColaboradorTercero("no_laboral")
+                  mostrarOcultarColaboradorTerceroTipoContrato(false)
               }
               if(value.fecha_fin){
                   fechaFinal.show();
@@ -55,17 +55,17 @@ fechaFinalID.change(function () {
     }
 });
 
-function mostrarOcultarColaboradorTercero(tipo) {
-    if (tipo === 'no_laboral'){
-        terceroSelect.show();
-        terceroSelectID.attr("required", true);
-        colaboradorSelect.hide();
-        colaboradorSelectID.removeAttr('required', true);
-    }else{
+function mostrarOcultarColaboradorTerceroTipoContrato(laboral) {
+    if (laboral){
         colaboradorSelect.show();
         colaboradorSelectID.attr("required", true);
         terceroSelect.hide();
         terceroSelectID.removeAttr('required', true);
+    }else{
+        terceroSelect.show();
+        terceroSelectID.attr("required", true);
+        colaboradorSelect.hide();
+        colaboradorSelectID.removeAttr('required', true);
     }
 }
 

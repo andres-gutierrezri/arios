@@ -48,6 +48,7 @@ class ConsecutivoContrato(models.Model):
     fecha_inicio = models.DateTimeField(verbose_name='Fecha de Inicio', null=False, blank=False)
     fecha_final = models.DateTimeField(verbose_name='Fecha Final', null=True, blank=True)
     codigo = models.CharField(max_length=50, verbose_name='Código', null=False, blank=False)
+    fecha_crea = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False, blank=False)
 
     def __str__(self):
         return self.codigo
@@ -59,9 +60,9 @@ class ConsecutivoContrato(models.Model):
     @staticmethod
     def from_dictionary(datos: dict) -> 'ConsecutivoContrato':
         """
-        Crea una instancia de ConsecutivoOficio con los datos pasados en el diccionario.
-        :param datos: Diccionario con los datos para crear el Consecutivo de Oficios.
-        :return: Instacia de consecutivo de oficios con la información especificada en el diccionario.
+        Crea una instancia de ConsecutivoContrato con los datos pasados en el diccionario.
+        :param datos: Diccionario con los datos para crear el Consecutivo de Contrato.
+        :return: Instacia de consecutivo de contratos con la información especificada en el diccionario.
         """
         consecutivo = ConsecutivoContrato()
         consecutivo.usuario_id = datos.get('colaborador', '')

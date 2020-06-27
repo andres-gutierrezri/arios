@@ -1,9 +1,8 @@
-import datetime
-
 from django.db import models
 from django.db.models import F
 
 from Administracion.models import Empresa
+from EVA.General import app_datetime_now
 
 
 class TipoDocumento (models.Model):
@@ -62,7 +61,7 @@ class ConsecutivoDocumento (models.Model):
 
         consecutivo_anho = ConsecutivoDocumento.objects.filter(tipo_documento_id=tipo_documento_id,
                                                                empresa_id=empresa_id,
-                                                               anho=datetime.datetime.today().year).first()
+                                                               anho=app_datetime_now().year).first()
         if consecutivo_anho:
             consecutivo_anho.consecutivo = F('consecutivo') + 1
             consecutivo_anho.save(update_fields=['consecutivo'])
@@ -71,7 +70,7 @@ class ConsecutivoDocumento (models.Model):
             consecutivo_anho = ConsecutivoDocumento(tipo_documento_id=tipo_documento_id,
                                                     empresa_id=empresa_id, estado=True)
             consecutivo_anho.consecutivo = 1
-            consecutivo_anho.anho = datetime.datetime.today().year
+            consecutivo_anho.anho = app_datetime_now().year
             consecutivo_anho.save()
 
         return consecutivo_anho.consecutivo
