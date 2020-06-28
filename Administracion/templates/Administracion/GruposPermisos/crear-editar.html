@@ -1,0 +1,105 @@
+{% extends 'Administracion/_common/base_administracion.html' %}
+{% load static %}
+{% load eva_tags %}
+<title>{% block titulo %}{% if OPCION == 'por_contratos' %} Colaboradores vinculados al contrato {{ colaborador.contrato }}{% else %} Grupos de Permisos{% endif %}{% endblock %}</title>
+{% block styles %}
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-brands.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-solid.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
+    <link rel="stylesheet" href="{% static 'Notificaciones/css/asignacion.css' %}">
+{% endblock styles %}
+
+{% block main %}
+    <div class="panel-container show">
+        <div class="header">
+            <h1 class="header-title">
+                <i class='far fa-bell'></i> Crear Grupo de Permisos <span class='fw-300'></span>
+                <br>
+                <br>
+            </h1>
+        </div>
+        <div class="row">
+            <div class="col-xl-12">
+                <div id="panel-1" class="panel">
+                    <div class="panel-container show">
+                        <div class="panel-content p-t-0 p-b-0">
+                            <div class="panel-group">
+                                <div class="panel-body">
+
+                                    <form {% if opcion == 'crear' %} action="{% url 'Administracion:grupos-permisos-crear' %}" {% else %} action="{% url 'Administracion:grupos-permisos-editar' id_grupo %}" {% endif %} id="asignacion-permisos-form" method="post" class="needs-validation" novalidate style="padding-top: 10px; padding-bottom: 10px">
+                                    {% csrf_token %}
+                                        <input id="datos_permisos" name="datos_permisos" value="{{ datos_permisos }}" style="display: none">
+                                        <input id="valores_permisos" name="valores_permisos" style="display: none">
+                                        <div class="form-group">
+                                            <div class="form-row">
+                                                <div class="col-md-6">
+                                                    {% input_text_tag 'nombre' 'Nombre' placeholder="Ingrese el nombre" required="" maxlength="100" value=grupo.nombre mensaje_validacion='Por favor digite el nombre.' invalido=errores.nombre %}
+                                                </div>
+                                                <div class="col-md-1">
+                                                    <button id="guardar" onclick="guardarAsignacionesPermisos()" type="button" class="btn btn-primary btn-block">{% if opcion == 'editar' %} Actualizar {% else %} Agregar {% endif %}</button>
+                                                </div>
+                                                <div class="col-md-1">
+                                                    <a href="{% url 'Administracion:grupos-permisos' %}" class="btn btn-danger btn-block">Cancelar</a>
+                                                </div>
+                                                <div class="col-md-12" style="padding-top: 10px">
+                                                    {% input_textarea_tag 'descripcion' 'Descripción' placeholder="Ingrese la descripción del grupo de producto"  maxlength="300" required="" value=grupo.descripcion mensaje_validacion='Por favor digite la descrición del grupo de producto.' invalido=errores.descripcions %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <div class="form-row p-t-10">
+                                        <div class="col-xl-12">
+                                            <div class="border-faded bg-faded p-3 mb-g d-flex">
+                                                <input type="text" id="js-filter-permisos" class="form-control shadow-inset-2 form-control-lg" placeholder="Filtrar Permisos">
+                                                <div class="btn-group btn-group-lg btn-group-toggle hidden-lg-down ml-3" data-toggle="buttons">
+                                                    <label class="btn btn-default active">
+                                                        <input type="radio" name="filtro-general" id="grid" checked="" value="grid"><i class="fas fa-table"></i>
+                                                    </label>
+                                                    <label class="btn btn-default">
+                                                        <input type="radio" name="filtro-general" id="table" value="table"><i class="fas fa-th-list"></i>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <div id="js-permisos">
+                                    {% for ct in lista_content_type %}
+                                    <nav class="navbar navbar-expand-lg navbar-dark bg-primary bg-primary-gradient label-funcionalidad">
+                                        <a class="navbar-brand d-flex align-items-center fw-500" style="color: white">{{ ct.nombre }}</a>
+                                    </nav>
+                                    <br class="label-funcionalidad">
+                                    <div class="row" id="js-general">
+                                        {% for permiso in permisos %}
+                                            {% if ct.label == permiso.app_label %}
+                                                {% include 'TalentoHumano/GestionPermisos/_tarjeta_permiso.html' with permiso=permiso %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    {% endfor %}
+                                    {% if lista_grupos %}
+                                        <nav class="navbar navbar-expand-lg navbar-dark bg-primary bg-primary-gradient label-funcionalidad">
+                                            <a class="navbar-brand d-flex align-items-center fw-500" style="color: white">Grupos de Permisos</a>
+                                        </nav>
+                                        <br class="label-funcionalidad">
+                                        <div class="row">
+                                            {% for grupo in lista_grupos %}
+                                                {% include 'TalentoHumano/GestionPermisos/_tarjeta_grupo.html' with permiso=grupo %}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock main%}
+
+{% block scripts %}
+    <script src="{% static 'EVA/Plantilla/js/custom/controlFiltro.js' %}"></script>
+    <script src="{% static 'TalentoHumano/js/asignacionPermisos.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
+{% endblock scripts%}
