@@ -211,14 +211,18 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
                     if clb.contrato.id == int(ctr):
                         cont += 1
 
-        if grupos:
+        cambios_grupos = False
+        if obtener_lista_grupos(colaborador, 'str') != grupos:
+            cambios_grupos = True
+
+        if cambios_grupos:
             for grp_col in colaborador.usuario.groups.all():
                 colaborador.usuario.groups.remove(grp_col)
             for grp in grupos:
                 colaborador.usuario.groups.add(Group.objects.get(id=grp))
 
         if colaborador_db.comparar(colaborador, excluir=['foto_perfil', 'empresa_sesion']) and \
-                len(cambios_usuario) <= 0 and not colaborador.foto_perfil and cont == cant:
+                len(cambios_usuario) <= 0 and not colaborador.foto_perfil and cont == cant and not cambios_grupos:
             messages.success(request, 'No se hicieron cambios en el colaborador {0}'
                              .format(colaborador.nombre_completo))
             return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
@@ -339,6 +343,10 @@ def obtener_lista_grupos(colaborador, opcion):
         grupos = colaborador.usuario.groups.all()
         for grp in grupos:
             lista.append(grp.id)
+    elif opcion == 'str':
+        grupos = colaborador.usuario.groups.all()
+        for grp in grupos:
+            lista.append(str(grp.id))
     return lista
 # endregion
 
