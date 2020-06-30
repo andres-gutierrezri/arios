@@ -49,7 +49,11 @@
                                                             <tr>
                                                                 <td>{{ grupo.nombre }}</td>
                                                                 <td>{{ grupo.descripcion }}</td>
-                                                                <td>{{ grupo.permisos }}</td>
+                                                                <td>
+                                                                    {% for prm in grupo.permisos %}
+                                                                        {{ prm }}<br>
+                                                                    {% endfor %}
+                                                                </td>
                                                                 <td>{% if grupo.estado == True %}
                                                                     <span class="badge badge-primary">Activo</span>
                                                                     {% else %}

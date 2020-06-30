@@ -16,7 +16,26 @@ from TalentoHumano.views.gestion_permisos import construir_permisos
 class GruposPermisosView(AbstractEvaLoggedView):
     def get(self, request):
         grupos = PermisosFuncionalidad.objects.filter(estado=True, grupo__isnull=False, solo_admin=False)
-        return render(request, 'Administracion/GruposPermisos/index.html', {'grupos': grupos,
+        lista_grupos = []
+        for grp in grupos:
+            permisos = []
+            for perm in grp.grupo.permissions.all():
+                if perm.codename.startswith('view'):
+                    permisos.append('{0} - {1} - {2}'.format(perm.content_type.app_label,
+                                                             perm.content_type.model.capitalize(), 'Ver'))
+                elif perm.codename.startswith('add'):
+                    permisos.append('{0} - {1} - {2}'.format(perm.content_type.app_label,
+                                                             perm.content_type.model.capitalize(), 'Crear'))
+                elif perm.codename.startswith('change'):
+                    permisos.append('{0} - {1} - {2}'.format(perm.content_type.app_label,
+                                                             perm.content_type.model.capitalize(), 'Editar'))
+                elif perm.codename.startswith('delete'):
+                    permisos.append('{0} - {1} - {2}'.format(perm.content_type.app_label,
+                                                             perm.content_type.model.capitalize(), 'Eliminar'))
+            lista_grupos.append({'grupo_id': grp.grupo_id, 'nombre': grp.nombre, 'descripcion': grp.descripcion,
+                                 'permisos': permisos, 'estado': grp.estado})
+
+        return render(request, 'Administracion/GruposPermisos/index.html', {'grupos': lista_grupos,
                                                                             'fecha': app_datetime_now(),
                                                                             'menu_actual': 'grupos-permisos'})
 
