@@ -15,7 +15,7 @@ from TalentoHumano.views.gestion_permisos import construir_permisos
 
 class GruposPermisosView(AbstractEvaLoggedView):
     def get(self, request):
-        grupos = PermisosFuncionalidad.objects.filter(estado=True, grupo__isnull=False)
+        grupos = PermisosFuncionalidad.objects.filter(estado=True, grupo__isnull=False, solo_admin=False)
         return render(request, 'Administracion/GruposPermisos/index.html', {'grupos': grupos,
                                                                             'fecha': app_datetime_now(),
                                                                             'menu_actual': 'grupos-permisos'})
