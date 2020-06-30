@@ -154,7 +154,7 @@ class AsignacionPermisosView(AbstractEvaLoggedView):
             limpiar_grupos(usuario)
 
         messages.success(request, 'Se actualizado los permisos para {0} correctamente'.format(usuario.get_full_name()))
-        return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
+        return redirect(reverse('TalentoHumano:colaboradores-permisos', args=[id, id_filtro]))
 
 
 def obtener_permisos(user, obj=None):
