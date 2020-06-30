@@ -1,7 +1,7 @@
 {% extends 'Administracion/_common/base_administracion.html' %}
 {% load static %}
 {% load eva_tags %}
-<title>{% block titulo %}{% if OPCION == 'por_contratos' %} Colaboradores vinculados al contrato {{ colaborador.contrato }}{% else %} Grupos de Permisos{% endif %}{% endblock %}</title>
+<title> Grupos de Permisos </title>
 {% block styles %}
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-brands.css' %}">
@@ -14,7 +14,11 @@
     <div class="panel-container show">
         <div class="header">
             <h1 class="header-title">
-                <i class='far fa-bell'></i> Crear Grupo de Permisos <span class='fw-300'></span>
+                {% if opcion == 'crear' %}
+                    <i class='far fa-bell'></i> Crear Grupo de Permisos <span class='fw-300'></span>
+                {% else %}
+                    <i class='far fa-bell'></i> Editar Grupo de Permisos <span class='fw-300'></span>
+                {% endif %}
                 <br>
                 <br>
             </h1>
@@ -36,10 +40,10 @@
                                                 <div class="col-md-6">
                                                     {% input_text_tag 'nombre' 'Nombre' placeholder="Ingrese el nombre" required="" maxlength="100" value=grupo.nombre mensaje_validacion='Por favor digite el nombre.' invalido=errores.nombre %}
                                                 </div>
-                                                <div class="col-md-1">
+                                                <div class="col-lg-2 col-md-3 col-sm-6" style="padding-top: 24px">
                                                     <button id="guardar" onclick="guardarAsignacionesPermisos()" type="button" class="btn btn-primary btn-block">{% if opcion == 'editar' %} Actualizar {% else %} Agregar {% endif %}</button>
                                                 </div>
-                                                <div class="col-md-1">
+                                                <div class="col-lg-2 col-md-3 col-sm-6" style="padding-top: 24px">
                                                     <a href="{% url 'Administracion:grupos-permisos' %}" class="btn btn-danger btn-block">Cancelar</a>
                                                 </div>
                                                 <div class="col-md-12" style="padding-top: 10px">
