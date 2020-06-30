@@ -1,0 +1,77 @@
+$(document).ready(function () {
+    $('.select2').select2();
+
+    $('#filtro_ct_select_id').change(function () {
+        let id_usuario = $('#id_usuario').val();
+        window.location = '/talento-humano/colaboradores/' + id_usuario + '/permisos/' + this.value;
+    });
+
+    let input_filtro = $('#js-filter-permisos');
+    let lista_filtrar = $('#js-permisos');
+    let labels_funcionalidad = $('.label-funcionalidad');
+
+    initApp.listFilter(lista_filtrar, input_filtro);
+
+    input_filtro.change(function () {
+        if (input_filtro.val() !== ''){
+            labels_funcionalidad.hide();
+        }else{
+            labels_funcionalidad.show();
+        }
+    })
+});
+
+function guardarAsignacionesPermisos() {
+    let valoresPermisos = $('#valores_permisos');
+    let listaPermisos = [];
+
+    let datosPermisos = JSON.parse($('#datos_permisos').val());
+
+    datosPermisos.forEach( function(valor) {
+        if (valor.tipo_funcionalidad === true) {
+            let idFuncionalidad = 'permiso_'+ valor.funcionalidad + '_id';
+            if ($('#' + idFuncionalidad).prop('checked')){
+
+                    let permisos = [];
+                    let pos = 1;
+
+                    while (pos <= 4) {
+                        if ($('#accion_' + pos + '_' + idFuncionalidad).prop('checked')) {
+                            permisos.push(pos)
+                        }
+                        pos += 1;
+                    }
+                    listaPermisos.push({'tipo_funcionalidad': true,'funcionalidad': valor.funcionalidad, 'permiso': permisos});
+            }
+        }else{
+            let idFuncionalidad = 'permiso_'+ valor.grupo + '_id';
+            if ($('#' + idFuncionalidad).prop('checked')) {
+                listaPermisos.push({'tipo_funcionalidad': false, 'grupo': valor.grupo});
+            }
+        }
+    });
+    valoresPermisos.val(JSON.stringify(listaPermisos));
+    $("#asignacion-permisos-form").submit();
+}
+
+function activarFuncionalidad(id) {
+    let funcionalidad = $('#' + id);
+
+    if (funcionalidad.prop('checked')){
+        let x = 1;
+        while (x <= 4) {
+            let item = $('#accion_' + x + '_' + id);
+            item.prop("checked", true);
+            item.prop("disabled", false);
+            x += 1;
+        }
+    }else {
+        let x = 1;
+        while (x <= 4) {
+            let item = $('#accion_' + x + '_' + id);
+            item.prop("checked", false);
+            item.prop("disabled", true);
+            x += 1;
+        }
+    }
+}
