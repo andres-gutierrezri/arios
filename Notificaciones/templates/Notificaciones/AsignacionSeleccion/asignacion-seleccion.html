@@ -1,7 +1,7 @@
 {% extends 'TalentoHumano/_common/base_talento_humano.html' %}
 {% load static %}
 {% load eva_tags %}
-<title>{% block titulo %}{% if OPCION == 'por_contratos' %} Colaboradores vinculados al contrato {{ colaborador.contrato }}{% else %} Colaboradores{% endif %}{% endblock %}</title>
+<title>{% block titulo %}{% if OPCION == 'asgnacion' %} Asignación de Notificaciones {{ colaborador.contrato }}{% else %} Selección de Notificaciones Por Correo Electrónico{% endif %}{% endblock %}</title>
 {% block styles %}
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-brands.css' %}">
@@ -13,7 +13,11 @@
     <div class="panel-container show">
         <div class="header">
             <h1 class="header-title">
-                <i class='far fa-bell'></i> Asignar Notificaciones A:  {{ colaborador.nombre }} <span class='fw-300'></span>
+                {% if opcion == 'asignacion' %}
+                    <i class='far fa-bell'></i> Asignar Notificaciones A:  {{ colaborador.nombre }} <span class='fw-300'></span>
+                {% else %}
+                    <i class='far fa-bell'></i> Selección de Notificaciones por Correo Electrónico <span class='fw-300'></span>
+                {% endif %}
                 <br>
                 <br>
             </h1>
@@ -21,11 +25,19 @@
         <div class="row">
             <div class="col-xl-12">
                 <div id="panel-1" class="panel">
+                    {% if opcion == 'asignacion' %}
                     <form action="{% url 'Notificaciones:notificaciones-asignacion' colaborador.id %}" id="asignacion-notificaciones-form" method="post" class="needs-validation" novalidate>
+                    {% else %}
+                    <form action="{% url 'Notificaciones:notificaciones-seleccion-email' colaborador.id %}" id="asignacion-notificaciones-form" method="post" class="needs-validation" novalidate>
+                    {% endif %}
                     {% csrf_token %}
                         <div class="panel-hdr">
                             <small>
+                                {% if opcion == 'asignacion' %}
                                  <a class="far fa-3x far fa-arrow-circle-left"  href="{% url 'TalentoHumano:colaboradores-index' 0 %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Volver"></a>
+                                {% else %}
+                                    <a class="far fa-3x far fa-times-circle"  href="{% url 'eva-index'%}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Cancelar"></a>
+                                {% endif %}
                             </small>
                             {% if  desencadenadores %}
                             <small class="posicionar-guardar">
@@ -42,7 +54,7 @@
                                         <div class="form-row p-t-10">
                                             <div class="col-xl-12">
                                                 <div class="border-faded bg-faded p-3 mb-g d-flex">
-                                                    <input type="text" id="js-filter-general" class="form-control shadow-inset-2 form-control-lg" placeholder="Filtrar Desencadenadores">
+                                                    <input type="text" id="js-filter-general" class="form-control shadow-inset-2 form-control-lg" placeholder="Filtrar Notificadores">
                                                     <div class="btn-group btn-group-lg btn-group-toggle hidden-lg-down ml-3" data-toggle="buttons">
                                                         <label class="btn btn-default active">
                                                             <input type="radio" name="filtro-general" id="grid" checked="" value="grid"><i class="fas fa-table"></i>
@@ -56,11 +68,15 @@
                                         </div>
                                         <div class="row" id="filtro-general">
                                             {% for desencadenador in desencadenadores %}
-                                                {% include 'Notificaciones/AsignacionNotificaciones/_tarjeta_desencadenador.html' with desencadenador=desencadenador %}
+                                                {% include 'Notificaciones/AsignacionSeleccion/_tarjeta_desencadenador.html' with desencadenador=desencadenador opcion=opcion %}
                                             {% endfor %}
                                         </div>
                                         {% else %}
+                                            {% if opcion == 'asignacion' %}
                                             <div class="vacio"><a>Este usuario no tiene permisos a ningún módulo de la aplicación</a></div>
+                                            {% else %}
+                                            <div class="vacio"><a>No tienes notificaciones asignadas</a></div>
+                                            {% endif %}
                                         {% endif %}
                                     </div>
                                 </div>

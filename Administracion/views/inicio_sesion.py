@@ -25,9 +25,9 @@ class IniciarSesionView(View):
             return redirect(reverse('eva-index'))
         else:
             datos = request.POST.get('datos')
-            username = request.POST.get('username', '')
+            username: str = request.POST.get('username', '')
             password = request.POST.get('password', '')
-            user = authenticate(username=username, password=password)
+            user = authenticate(username=username.lower(), password=password)
             if user is not None:
                 login(request, user)
                 try:

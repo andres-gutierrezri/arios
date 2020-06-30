@@ -13,6 +13,7 @@ from django.utils.http import urlsafe_base64_encode
 from Administracion.models import Cargo, Proceso, TipoContrato, CentroPoblado, Rango, Municipio, Departamento, \
     TipoIdentificacion
 from EVA import settings
+from EVA.General.utilidades import validar_formato_imagen
 from Notificaciones.views.correo_electronico import enviar_correo
 from EVA.General.validacionpermisos import tiene_permisos
 from TalentoHumano.models.colaboradores import ColaboradorContrato
@@ -62,6 +63,7 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
 
     def post(self, request):
         colaborador = Colaborador.from_dictionary(request.POST)
+        colaborador.usuario_crea = request.user
         contratos = request.POST.getlist('contrato_id[]', None)
         grupos = request.POST.getlist('grupo_id[]', None)
 
@@ -154,9 +156,11 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
                          'fecha_dotacion', 'salario', 'jefe_inmediato_id', 'cargo_id', 'proceso_id',
                          'tipo_contrato_id', 'lugar_nacimiento_id', 'rango_id', 'fecha_nacimiento',
                          'identificacion', 'tipo_identificacion_id', 'fecha_expedicion', 'genero', 'telefono',
-                         'estado', 'nombre_contacto', 'grupo_sanguineo', 'telefono_contacto', 'parentesco']
+                         'estado', 'nombre_contacto', 'grupo_sanguineo', 'telefono_contacto', 'parentesco',
+                         'fecha_modificacion', 'usuario_actualiza']
 
         colaborador = Colaborador.from_dictionary(request.POST)
+        colaborador.usuario_actualiza = request.user
         contratos = request.POST.getlist('contrato_id[]', None)
         grupos = request.POST.getlist('grupo_id[]', None)
 
@@ -167,7 +171,9 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
             request.session['colaborador'] = Colaborador.objects.get(usuario=request.user).foto_perfil.url
 
         try:
-            colaborador.full_clean(validate_unique=False, exclude=['empresa_sesion'])
+            # Se excluye el usuario debido a que el full clean valida el id del usuario existente y no tiene en cuenta
+            # los nuevos datos de usuario.
+            colaborador.full_clean(validate_unique=False, exclude=['usuario', 'empresa_sesion'])
         except ValidationError as errores:
             datos = datos_xa_render(self.OPCION, colaborador)
             datos['errores'] = errores.message_dict
@@ -221,7 +227,8 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
             for grp in grupos:
                 colaborador.usuario.groups.add(Group.objects.get(id=grp))
 
-        if colaborador_db.comparar(colaborador, excluir=['foto_perfil', 'empresa_sesion']) and \
+        if colaborador_db.comparar(colaborador, excluir=['foto_perfil', 'empresa_sesion', 'usuario_actualiza',
+                                                         'usuario_crea']) and \
                 len(cambios_usuario) <= 0 and not colaborador.foto_perfil and cont == cant and not cambios_grupos:
             messages.success(request, 'No se hicieron cambios en el colaborador {0}'
                              .format(colaborador.nombre_completo))
@@ -270,6 +277,36 @@ class ColaboradorEliminarView(AbstractEvaLoggedView):
                                  "mensaje": "No se puede eliminar el colaborador {0} con identificación {1} porque ya"
                                             " se encuentra asociado a otro módulo".format(colaborador.nombre_completo,
                                                                                           colaborador.identificacion)})
+
+
+class ColaboradorCambiarFotoPerfilView(AbstractEvaLoggedView):
+    def get(self, request, id):
+        colaborador = Colaborador.objects.get(id=id)
+        if request.user == colaborador.usuario or tiene_permisos(request, 'TalentoHumano', ['change_colaborador'], []):
+            return render(request, 'TalentoHumano/_elements/_modal_cambiar_foto_perfil.html',
+                          {'colaborador': colaborador, 'menu_actual': 'colaboradores'})
+        else:
+            return redirect(reverse('TalentoHumano:colaboradores-perfil', args=[id]))
+
+    def post(self, request, id):
+        colaborador = Colaborador.objects.get(id=id)
+        if request.user == colaborador.usuario or tiene_permisos(request, 'TalentoHumano', ['change_colaborador'], []):
+            foto_nueva = request.FILES.get('cambio_foto_perfil', None)
+            if foto_nueva:
+                if validar_formato_imagen(foto_nueva):
+                    colaborador.foto_perfil = foto_nueva
+                    colaborador.save(update_fields=['foto_perfil'])
+                    messages.success(request, 'La foto de perfil se actualizó correctamente.')
+
+                    if colaborador.usuario == request.user:
+                        request.session['colaborador'] = colaborador.foto_perfil.url
+                else:
+                    messages.error(request, 'La foto cargada no tiene un formato correcto. <br>'
+                                            'Formatos Aceptados: JPG, JPEG, PNG')
+            else:
+                messages.success(request, 'No se realizaron cambios en la foto de perfil.')
+
+        return redirect(reverse('TalentoHumano:colaboradores-perfil', args=[id]))
 
 
 # region Métodos de ayuda

@@ -7,7 +7,7 @@ from reportlab.graphics.shapes import Rect, Drawing, Line
 from reportlab.lib import colors
 from reportlab.lib.colors import red, green, HexColor
 from reportlab.lib.pagesizes import letter
-from reportlab.lib.units import cm
+from reportlab.lib.units import cm, pica
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.platypus import Image, Paragraph, SimpleDocTemplate, Table, Frame, Spacer
 from reportlab.lib.styles import ParagraphStyle
@@ -59,6 +59,10 @@ class FacturaPdf:
         descripcion_detalle_style = ParagraphStyle(name='descripcion_detalle', fontName=letra_factura, fontSize=10)
         total_letras_style = ParagraphStyle(name='total_letras', fontName=letra_factura + 'B', fontSize=10)
         nombre_legal_style = ParagraphStyle(name='nombre_legal', fontName=letra_factura + 'B', fontSize=10)
+        nombre_cliente_style = ParagraphStyle(name='descripcion_detalle', fontName=letra_factura, fontSize=10)
+        estilos_cliente = [ParagraphStyle(name='descripcion_detalle', fontName=letra_factura, fontSize=10),
+                           ParagraphStyle(name='descripcion_detalle', fontName=letra_factura, fontSize=9),
+                           ParagraphStyle(name='descripcion_detalle', fontName=letra_factura, fontSize=8)]
 
         elements.append(Spacer(1, 5.4 * cm))
 
@@ -73,15 +77,30 @@ class FacturaPdf:
         # endregion
 
         elements.append(Spacer(1, 0.2 * cm))
-
         # region Info cliente.
         cliente = factura.tercero
+
+        alto_cliente_span = 0.6 * cm
+        alto_cliente_max = 2 * pica
+        span_cliente = False
+
+        parrafo_cliente = None
+
+        for estilo in estilos_cliente:
+            parrafo_cliente = Paragraph(cliente.nombre, estilo)
+            ancho, alto = parrafo_cliente.wrap(10.5 * cm, 0.6 * cm)
+            if alto > alto_cliente_span:
+                span_cliente = True
+            if alto <= alto_cliente_max:
+                break
+
         data = [['', 'Cliente', '', ''],
-                ["Nombre:", cliente.nombre, cliente.tipo_identificacion.sigla + ':', cliente.identificacion],
+                ["Nombre:", parrafo_cliente, cliente.tipo_identificacion.sigla + ':', cliente.identificacion],
                 ['', '', "Tel:", cliente.telefono],
                 ['Dirección:', cliente.direccion, 'Fax:', cliente.fax],
                 ]
-        t = Table(data, style=[('FACE', (1, 0), (1, 0), letra_factura + 'B'),
+
+        style_tabla_cliente = [('FACE', (1, 0), (1, 0), letra_factura + 'B'),
                                ('FACE', (0, 1), (-1, -1), letra_factura),
                                ('SIZE', (0, 0), (-1, -1), 10),
                                ('VALIGN', (2, 0), (-1, -1), 'MIDDLE'),
@@ -89,7 +108,12 @@ class FacturaPdf:
                                ('ALIGN', (2, 0), (2, -1), 'RIGHT'),
                                ('LINEBELOW', (1, 1), (1, -1), 0.5, colors.black),
                                ('LINEBELOW', (3, 1), (3, -1), 0.5, colors.black),
-                               ],
+                               ]
+        if span_cliente:
+            style_tabla_cliente.append(('SPAN', (1, 1), (1, 2)))
+            style_tabla_cliente.append(('VALIGN', (1, 1), (1, 2), 'TOP'))
+
+        t = Table(data, style=style_tabla_cliente,
                   colWidths=[1.8 * cm, 10.5 * cm, 1 * cm, 3.8 * cm],
                   rowHeights=0.6 * cm)
 

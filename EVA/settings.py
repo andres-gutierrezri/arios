@@ -36,7 +36,7 @@ SECRET_KEY = 'a1e+7^&ozbdlfhmkdmg@ic9-%*brp1khg%b_#1v-bksm#=-ehw'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = not IS_DEPLOYED
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.1.102', 'produccion.arios-ing.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.1.102', 'eva.arios-ing.com']
 
 
 # Application definition
@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'Financiero.apps.FinancieroConfig',
     'SGI.apps.SgiConfig',
     'Notificaciones.apps.NotificacionesConfig',
+    'GestionDocumental.apps.GestiondocumentalConfig',
 ]
 
 MIDDLEWARE = [
@@ -149,6 +150,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'Financiero', 'static', 'Financiero'),
     os.path.join(BASE_DIR, 'SGI', 'static', 'SGI'),
     os.path.join(BASE_DIR, 'Notificaciones', 'static', 'Notificaciones'),
+    os.path.join(BASE_DIR, 'GestionDocumental', 'static', 'GestionDocumental'),
 )
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
