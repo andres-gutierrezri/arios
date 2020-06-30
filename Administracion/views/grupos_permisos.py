@@ -70,7 +70,9 @@ class GruposPermisosEditarView(AbstractEvaLoggedView):
             perm_fun.descripcion = descripcion
             perm_fun.save(update_fields=['nombre', 'descripcion'])
 
-            grupo.permissions.all().delete()
+            for grp in grupo.permissions.all():
+                grupo.permissions.remove(grp)
+
             guardar_selecciones_permisos(grupo, valores_permisos, permisos)
             messages.success(request, 'Se ha editado el grupo de producto {0} correctamente.'.format(nombre))
         else:
