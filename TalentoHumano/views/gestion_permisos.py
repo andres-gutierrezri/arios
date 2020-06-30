@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 
 from EVA.views.index import AbstractEvaLoggedView
-from TalentoHumano.models import PermisosFuncionalidad
+from Administracion.models import PermisosFuncionalidad
 
 VER = 1
 CREAR = 2
