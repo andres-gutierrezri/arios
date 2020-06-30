@@ -9,7 +9,7 @@ from EVA.General import app_datetime_now
 from EVA.views.index import AbstractEvaLoggedView
 from django.shortcuts import render, redirect
 
-from TalentoHumano.models import PermisosFuncionalidad
+from Administracion.models import PermisosFuncionalidad
 from TalentoHumano.views.gestion_permisos import construir_permisos
 
 

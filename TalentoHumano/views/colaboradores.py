@@ -2,11 +2,9 @@ from django.contrib.auth.models import User, Group
 from django.contrib.auth.tokens import default_token_generator
 from django.core.exceptions import ValidationError
 from django.contrib import messages
-from django.core.mail import EmailMultiAlternatives
 from django.shortcuts import render, redirect, reverse
 from django.db import IntegrityError
 from django.http import JsonResponse
-from django.template.loader import get_template
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
@@ -21,7 +19,8 @@ from EVA.views.index import AbstractEvaLoggedView
 from Notificaciones.models.models import EventoDesencadenador
 from Notificaciones.views.views import crear_notificacion_por_evento
 from Proyectos.models import Contrato
-from TalentoHumano.models import Colaborador, EntidadesCAFE, PermisosFuncionalidad
+from TalentoHumano.models import Colaborador, EntidadesCAFE
+from Administracion.models import PermisosFuncionalidad
 
 
 class ColaboradoresIndexView(AbstractEvaLoggedView):
