@@ -145,7 +145,7 @@ def construir_lista_notificaciones(objeto, permisos):
             nueva_lista.append({'orden': 4, 'id': perm['id'], 'nombre': 'Eliminar'})
 
     return {'funcionalidad': objeto.content_type_id, 'nombre': objeto.nombre, 'descripcion': objeto.descripcion,
-            'permisos': sorted(nueva_lista, key=lambda p: p['orden']), 'tipo_funcionalidad': True,
+            'permisos': sorted(nueva_lista, key=lambda p: p['orden']), 'tipo_funcionalidad': True, 'id': objeto.id,
             'app_label': objeto.content_type.app_label}
 
 
@@ -163,7 +163,7 @@ def obtener_content_type(request, funcionalidades, xa_select=None):
     lista = []
     if xa_select:
         lista.append({'campo_valor': 1, 'campo_texto': 'Grupos'})
-    if request.user.is_superuser:
+    if request.user.has_perms(['auth.add_group', 'auth.change_group']):
         for fun in funcionalidades:
             nombre = construir_nombre_funcionalidad(fun.content_type.app_label)
             if xa_select:
