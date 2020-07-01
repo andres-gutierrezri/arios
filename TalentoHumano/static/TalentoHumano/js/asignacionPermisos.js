@@ -2,21 +2,21 @@ $(document).ready(function () {
     $('.select2').select2();
 
     $('#filtro_ct_select_id').change(function () {
-        let id_usuario = $('#id_usuario').val();
-        window.location = '/talento-humano/colaboradores/' + id_usuario + '/permisos/' + this.value;
+        let idUsuario = $('#id_usuario').val();
+        window.location = '/talento-humano/colaboradores/' + idUsuario + '/permisos/' + this.value;
     });
 
-    let input_filtro = $('#js-filter-permisos');
-    let lista_filtrar = $('#js-permisos');
-    let labels_funcionalidad = $('.label-funcionalidad');
+    let inputFiltro = $('#js-filter-permisos');
+    let listaFiltrar = $('#js-permisos');
+    let labelsFuncionalidad = $('.label-funcionalidad');
 
-    initApp.listFilter(lista_filtrar, input_filtro);
+    initApp.listFilter(listaFiltrar, inputFiltro);
 
-    input_filtro.change(function () {
-        if (input_filtro.val() !== ''){
-            labels_funcionalidad.hide();
+    inputFiltro.change(function () {
+        if (inputFiltro.val() !== ''){
+            labelsFuncionalidad.hide();
         }else{
-            labels_funcionalidad.show();
+            labelsFuncionalidad.show();
         }
     })
 });
