@@ -119,10 +119,8 @@ class AsignacionPermisosView(AbstractEvaLoggedView):
             limpiar_permisos(usuario, id_filtro)
 
             for func in funcionalidades:
-                coincidencias = False
                 for datos in valores_funcionalidades:
                     if func.content_type_id == datos['funcionalidad']:
-                        coincidencias = True
                         for perm in datos['permiso']:
                             if perm == VER:
                                 consultar_permiso(func, VER, datos_funcionalidades, usuario)
@@ -132,8 +130,6 @@ class AsignacionPermisosView(AbstractEvaLoggedView):
                                 consultar_permiso(func, EDITAR, datos_funcionalidades, usuario)
                             elif perm == ELIMINAR:
                                 consultar_permiso(func, ELIMINAR, datos_funcionalidades, usuario)
-                if not coincidencias:
-                    limpiar_permisos(usuario, id_filtro, modulo=func.content_type.app_label)
         else:
             limpiar_permisos(usuario, id_filtro)
 
@@ -185,6 +181,8 @@ def limpiar_permisos(usuario, id_filtro, modulo=None):
         ct = ContentType.objects.get(id=id_filtro)
         for perm in usuario.user_permissions.filter(content_type__app_label=ct.app_label):
             usuario.user_permissions.remove(perm)
+        if not usuario.user_permissions.filter(content_type__app_label=ct.app_label):
+            poner_quitar_permiso_menu(usuario, ct.app_label, quitar=True)
 
 
 def consultar_permiso(funcionalidad, accion, datos_permisos, usuario):
