@@ -44,7 +44,7 @@ function guardarAsignacionesPermisos() {
                     listaPermisos.push({'tipo_funcionalidad': true,'funcionalidad': valor.funcionalidad, 'permiso': permisos});
             }
         }else{
-            let idFuncionalidad = 'permiso_'+ valor.grupo + '_id';
+            let idFuncionalidad = 'grupo_'+ valor.grupo + '_id';
             if ($('#' + idFuncionalidad).prop('checked')) {
                 listaPermisos.push({'tipo_funcionalidad': false, 'grupo': valor.grupo});
             }
