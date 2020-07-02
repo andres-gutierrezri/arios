@@ -138,14 +138,9 @@ class AsignacionPermisosView(AbstractEvaLoggedView):
             limpiar_grupos(usuario)
 
             for grp in grupos:
-                coincidencias = False
                 for datos in valores_grupos:
                     if grp.id == datos['grupo']:
-                        coincidencias = True
                         usuario.groups.add(grp.grupo)
-
-                if not coincidencias:
-                    limpiar_grupos(usuario, grp.grupo)
         else:
             limpiar_grupos(usuario)
 
