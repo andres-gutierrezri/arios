@@ -79,7 +79,7 @@ class AsignacionPermisosView(AbstractEvaLoggedView):
                     for grp in per_grupos:
                         if grp_asignado == grp.grupo:
                             lista = {'tipo_funcionalidad': False,  'grupo': grp.id, 'nombre': grp.nombre,
-                                     'descripcion': grp.descripcion}
+                                     'descripcion': grp.descripcion, 'id_grupo': grp.grupo_id}
                             lista_completa.append(lista)
                             lista_grupos.append(lista)
 
