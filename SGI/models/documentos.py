@@ -86,7 +86,7 @@ class Documento(models.Model, ModelDjangoExtensiones):
                                           verbose_name='Cadena de aprobación', null=True, blank=True)
     grupo_documento = models.ForeignKey(GrupoDocumento, on_delete=models.DO_NOTHING,
                                         verbose_name='Grupo de documento', null=True, blank=False)
-    proceso = models.ForeignKey(Proceso, on_delete=models.DO_NOTHING, verbose_name='Proceso', null=True, blank=False)
+    proceso = models.ForeignKey(Proceso, on_delete=models.DO_NOTHING, verbose_name='Proceso', null=True, blank=True)
 
     def __str__(self):
         return '{0} {1}'.format(self.codigo, self.nombre) +\
