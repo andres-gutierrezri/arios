@@ -67,7 +67,10 @@ class DocumentosCrearView(AbstractEvaLoggedView):
         proceso = Proceso.objects.get(id=id_proceso)
         grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
         documento.grupo_documento_id = id_grupo
-        documento.proceso_id = id_proceso
+        if grupo_documento.es_general:
+            documento.proceso = None
+        else:
+            documento.proceso_id = id_proceso
         documento.version_actual = 0.00
 
         try:
