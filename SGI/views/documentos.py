@@ -190,7 +190,7 @@ class ArchivoCargarView(AbstractEvaLoggedView):
         archivo = Archivo.from_dictionary(request.POST)
         archivo.estado_id = EstadoArchivo.PENDIENTE
         archivo.documento_id = id_documento
-        archivo.documento.proceso.id = id_proceso
+        archivo.documento.proceso_id = id_proceso
         archivo.documento.grupo_documento_id = id_grupo
         documento = Documento.objects.get(id=id_documento)
         archivo.cadena_aprobacion = documento.cadena_aprobacion
