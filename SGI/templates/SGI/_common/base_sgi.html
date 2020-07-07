@@ -2,3 +2,7 @@
 {% block menu_aplicacion %}
     {% include 'SGI/_common/menu_aplicacion.html' %}
 {% endblock %}
+{% load static %}
+{% block scripts %}
+    <script src="{% static 'SGI/js/busquedaDocumentos.js' %}"></script>
+{% endblock %}
