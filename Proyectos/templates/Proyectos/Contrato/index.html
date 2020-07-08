@@ -1,5 +1,6 @@
 {% extends 'Proyectos/_common/base_proyectos.html' %}
 {% load static %}
+{% load humanize %}
 <title>{% block titulo %}Contrato{% endblock %}</title>
 {% block styles %}
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/datagrid/datatables/datatables.bundle.css' %}">
@@ -67,7 +68,7 @@
                                                                 <td>{{ contrato.fecha_suscripcion|date:'Y-m-d' }}</td>
                                                                 <td>{{ contrato.fecha_inicio|date:'Y-m-d' }}</td>
                                                                 <td>{{ contrato.fecha_terminacion|date:'Y-m-d' }}</td>
-                                                                <td>{{ contrato.valor }}</td>
+                                                                <td>{{ contrato.valor|intcomma }}</td>
                                                                 <td>{{ contrato.tiempo }}</td>
                                                                 <td>{{ contrato.tipo_contrato }}</td>
                                                                 {% if perms.Proyectos.change_contrato or perms.Proyectos.delete_contrato %}
