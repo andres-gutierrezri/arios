@@ -8,7 +8,7 @@
             <li {% if menu_actual == 'busqueda' %} class="active" {% endif %}>
                 <a href="#" title="Ingrese su Búsqueda">
                     <div>
-                        <form action="{% url 'SGI:buscar-documentos' %}" method="post" id="form_busqueda">
+                        <form action="{% url 'SGI:documentos-buscar' %}" method="post" id="form_busqueda">
                             {% csrf_token %}
                             <div class="input-group">
                                 <input type="search" class="form-control form-control-md shadow-inset-2" placeholder="Buscar" name="texto_busqueda" id="texto_busqueda" value="{{ texto_busqueda }}">
