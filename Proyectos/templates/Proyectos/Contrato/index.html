@@ -46,10 +46,8 @@
                                                             <th>Fecha de inicio</th>
                                                             <th>Fecha de terminación</th>
                                                             <th>Valor</th>
-                                                            <th>Periodicidad de informes</th>
-                                                            <th>Tiempo</th>
+                                                            <th>Tiempo de ejecucición</th>
                                                             <th>Tipo de contrato</th>
-                                                            <th>Empresa</th>
                                                             {% if perms.Proyectos.change_contrato or perms.Proyectos.delete_contrato %}
                                                                 <th>Acción</th>
                                                             {% endif %}
@@ -68,10 +66,8 @@
                                                                 <td>{{ contrato.fecha_inicio|date:'Y-m-d' }}</td>
                                                                 <td>{{ contrato.fecha_terminacion|date:'Y-m-d' }}</td>
                                                                 <td>{{ contrato.valor }}</td>
-                                                                <td>{{ contrato.periodicidad_informes }}</td>
                                                                 <td>{{ contrato.tiempo }}</td>
                                                                 <td>{{ contrato.tipo_contrato }}</td>
-                                                                <td>{{ contrato.empresa }}</td>
                                                                 {% if perms.Proyectos.change_contrato or perms.Proyectos.delete_contrato %}
                                                                 <td>
                                                                     {% if perms.Proyectos.change_contrato %}
