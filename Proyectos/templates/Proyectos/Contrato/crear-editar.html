@@ -74,10 +74,10 @@
                                         <div class="form-group">
                                             <div class="form-row">
                                                 <div class="col-md-6">
-                                                    {% select_tag residentes 'residente_id' 'Seleccione un residente' texto_label="Residente (Opcional)" value=contrato.residente mensaje_validacion='Por favor seleccione un residente.' invalido=errores.residente %}
+                                                    {% select_tag residentes 'residente_id' 'Seleccione un residente' texto_label="Residente (Opcional)" value=contrato.residente_id mensaje_validacion='Por favor seleccione un residente.' invalido=errores.residente %}
                                                 </div>
                                                 <div class="col-md-6">
-                                                    {% select_tag procesos 'proceso_id' 'Seleccione un proceso' texto_label="Proceso a Cargo" value=contrato.residente required="" mensaje_validacion='Por favor seleccione un residente.' invalido=errores.residente %}
+                                                    {% select_tag procesos 'proceso_id' 'Seleccione un proceso' texto_label="Proceso a Cargo" value=contrato.proceso_a_cargo_id required="" mensaje_validacion='Por favor seleccione un proceso.' invalido=errores.proceso_a_cargo_id %}
                                                 </div>
                                             </div>
                                         </div>
