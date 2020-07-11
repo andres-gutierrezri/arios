@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models import F
 
 from Administracion.models import Empresa
+from EVA.General import app_datetime_now
 
 
 class TipoDocumento (models.Model):
@@ -18,6 +19,8 @@ class TipoDocumento (models.Model):
 
     # Tipos Fijos
     FACTURA = 1
+    OFICIOS = 2
+    CONTRATOS = 3
 
 
 class ConsecutivoDocumento (models.Model):
@@ -25,6 +28,9 @@ class ConsecutivoDocumento (models.Model):
     tipo_documento = models.ForeignKey(TipoDocumento, on_delete=models.DO_NOTHING, verbose_name='Tipo de Documento',
                                        null=False, blank=False)
     consecutivo = models.PositiveIntegerField(verbose_name='Consecutivo', null=False, blank=False)
+    anho = models.IntegerField(verbose_name='Año', null=False, blank=False)
+    fecha_modificacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Modificacion', null=False,
+                                              blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
 
     def __str__(self):
@@ -33,7 +39,7 @@ class ConsecutivoDocumento (models.Model):
     class Meta:
         verbose_name = 'Consecutivo Documento'
         verbose_name_plural = 'Consecutivos Documento'
-        unique_together = ('empresa', 'tipo_documento')
+        unique_together = ('empresa', 'tipo_documento', 'anho')
 
     @staticmethod
     def get_consecutivo_documento(tipo_documento_id, empresa_id):
@@ -49,3 +55,22 @@ class ConsecutivoDocumento (models.Model):
             consecutivo.save()
 
         return consecutivo.consecutivo
+
+    @staticmethod
+    def get_consecutivo_por_anho(tipo_documento_id, empresa_id):
+
+        consecutivo_anho = ConsecutivoDocumento.objects.filter(tipo_documento_id=tipo_documento_id,
+                                                               empresa_id=empresa_id,
+                                                               anho=app_datetime_now().year).first()
+        if consecutivo_anho:
+            consecutivo_anho.consecutivo = F('consecutivo') + 1
+            consecutivo_anho.save(update_fields=['consecutivo'])
+            consecutivo_anho.refresh_from_db(fields=['consecutivo'])
+        else:
+            consecutivo_anho = ConsecutivoDocumento(tipo_documento_id=tipo_documento_id,
+                                                    empresa_id=empresa_id, estado=True)
+            consecutivo_anho.consecutivo = 1
+            consecutivo_anho.anho = app_datetime_now().year
+            consecutivo_anho.save()
+
+        return consecutivo_anho.consecutivo

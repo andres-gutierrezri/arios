@@ -8,6 +8,7 @@ import os.path
 
 from Administracion.models import Proceso
 from Administracion.utils import get_id_empresa_global
+from EVA.General.utilidades import validar_extension_de_archivo
 from EVA.views.index import AbstractEvaLoggedView
 from SGI.models import Documento, GrupoDocumento, Archivo
 from SGI.models.documentos import EstadoArchivo, CadenaAprobacionDetalle, ResultadosAprobacion, \
@@ -202,6 +203,12 @@ class ArchivoCargarView(AbstractEvaLoggedView):
         if tipo_archivo == 'archivo':
             archivo.archivo = request.FILES.get('archivo', None)
             archivo.enlace = None
+
+            if not validar_extension_de_archivo(archivo.archivo.name):
+                messages.error(request, 'El archivo ingresado no tiene un formato compatible. '
+                                        '(Formatos Aceptados: PDF, Documento de Word, Documento de Excel, '
+                                        'Presentacion de Power Point')
+                return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
         elif tipo_archivo == 'enlace':
             archivo.enlace = request.POST.get('enlace', '')

@@ -1,0 +1,34 @@
+{% load eva_tags %}
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title text-center">Cambiar Foto de Perfil para {{ colaborador.primer_nombre_apellido }}</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+       <form action="{% url 'TalentoHumano:colaboradores-foto-perfil' colaborador.id %}" id="cambiar-foto-perfil-form" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+            {% csrf_token %}
+            <div class="form-group" style="padding: 10px">
+                <div class="form-row">
+                    <div id="visualizador_imagen" class="col-md-5">
+                         <img src="{{ colaborador.foto_perfil.url }}" class="shadow-2 cambio_foto_perfil" style="border-radius: 50% !important;" alt="">
+                    </div>
+                    <div class="col-md-7">
+                        {% input_file_tag 'cambio_foto_perfil' 'Foto de perfil' placeholder="Seleccione la foto de perfil" required="" modal=True invalido=errores.logo accept=".jpg, .png, .jpeg" mensaje_validacion='Por favor seleccione un archivo' %}
+                        <br>
+                        <br>
+                        <div class="form-row">
+                            <div class="col-md-6">
+                                <button id="guardar" class="btn btn-primary btn-block">Guardar</button>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="javascript: cerrarModalCambiarFoto()" class="btn btn-danger btn-block">Cancelar</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+       </form>
+    </div>
+</div>

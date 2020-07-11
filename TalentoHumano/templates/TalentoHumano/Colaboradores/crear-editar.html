@@ -279,16 +279,6 @@
     <script src="{% static 'TalentoHumano/js/date_picker.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/smartwizard/smartwizard.js' %}"></script>
     <script src="{% static 'TalentoHumano/js/wizard.js' %}"></script>
-
-    <script>
-        $(document).ready(function () {
-            $('.select2').select2();
-             $('#contrato_id').select2(
-                    {
-                        placeholder: "Seleccione un contrato"
-                    });
-             $('#contrato_id').next().find("input").css("min-width","200px");
-             $('#contrato_id').val(JSON.parse($('#multiple').val())).trigger("change");
-        });
-    </script>
+    <script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
+    <script src="{% static 'TalentoHumano/js/selectMultipleContratos.js' %}"></script>
 {% endblock scripts%}

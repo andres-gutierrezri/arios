@@ -36,10 +36,10 @@
                                     <div class="form-group">
                                         <div class="form-row">
                                             <div class="col-md-6">
-                                                {% input_text_tag 'nombre' 'Nombre' placeholder="Ingrese el nombre" required="" maxlength="100" value=documento.nombre mensaje_validacion='Por favor digite el nombre' invalido=errores.nombre %}
+                                                {% input_text_tag 'nombre' 'Nombre' placeholder="Ingrese el nombre" required="" maxlength="100" value=documento.nombre mensaje_validacion='Por favor digite el nombre' invalido=errores.nombre onkeypress="return validarCE(event)" %}
                                             </div>
                                             <div class="col-md-6">
-                                                {% input_text_tag 'codigo' 'Código' placeholder="Ingrese el código" required="" maxlength="100" value=documento.codigo mensaje_validacion='Por favor digite el código' invalido=errores.codigo %}
+                                                {% input_text_tag 'codigo' 'Código' placeholder="Ingrese el código" required="" maxlength="100" value=documento.codigo mensaje_validacion='Por favor digite el código' invalido=errores.codigo onkeypress="return validarCE(event)" %}
                                             </div>
                                         </div>
                                     </div>
@@ -74,9 +74,6 @@
     <script src="{% static 'Administracion/js/select_divipol.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js' %}"></script>
-    <script>
-        $(document).ready(function () {
-            $('.select2').select2();
-        });
-    </script>
+    <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validarCaracteresPermitidos.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
 {% endblock scripts%}
