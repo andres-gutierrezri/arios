@@ -45,4 +45,5 @@ urlpatterns = [
          name='solicitudes-aprobacion'),
     path('solicitudes_aprobacion/detalle/<int:id>', cadena_aprobacion.DetalleSolicitudAprobacionView.as_view(),
          name='detalle-solicitud-aprobacion'),
+    path('documentos/buscar', sgi.BuscarDocumentos.as_view(), name='documentos-buscar'),
 ]

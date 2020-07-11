@@ -19,6 +19,7 @@ class GrupoDocumento(models.Model):
     descripcion = models.CharField(max_length=100, verbose_name='Descripción', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
     empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa', null=True, blank=False)
+    es_general = models.BooleanField(verbose_name='Es General', null=False, blank=False, default=False)
 
     def __str__(self):
         return self.nombre
@@ -85,7 +86,7 @@ class Documento(models.Model, ModelDjangoExtensiones):
                                           verbose_name='Cadena de aprobación', null=True, blank=True)
     grupo_documento = models.ForeignKey(GrupoDocumento, on_delete=models.DO_NOTHING,
                                         verbose_name='Grupo de documento', null=True, blank=False)
-    proceso = models.ForeignKey(Proceso, on_delete=models.DO_NOTHING, verbose_name='Proceso', null=True, blank=False)
+    proceso = models.ForeignKey(Proceso, on_delete=models.DO_NOTHING, verbose_name='Proceso', null=True, blank=True)
 
     def __str__(self):
         return '{0} {1}'.format(self.codigo, self.nombre) +\
@@ -205,7 +206,6 @@ class Archivo(models.Model):
     def nombre_documento(self):
         return '{0} {1}'.format(self.documento.codigo, self.documento.nombre) + \
                (' v{:.1f}'.format(self.version) if self.version != 0 else '')
-
 
 
 class ResultadosAprobacion(models.Model):

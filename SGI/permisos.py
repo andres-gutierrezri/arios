@@ -15,4 +15,5 @@ permisos = [Permiso('index', None),
             Permiso('cadenas-aprobacion-eliminar', ['SGI.delete_cadenaaprobacionencabezado']),
             Permiso('aprobacion-documentos-ver', ['SGI.view_resultadosaprobacion']),
             Permiso('solicitudes-aprobacion', ['SGI.add_archivo']),
+            Permiso('documentos-buscar', ['SGI.view_documento']),
             ]
