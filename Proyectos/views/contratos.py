@@ -33,7 +33,6 @@ class ContratoCrearView(AbstractEvaLoggedView):
     def post(self, request):
         contrato = Contrato.from_dictionary(request.POST)
         contrato.empresa_id = get_id_empresa_global(request)
-        contrato.residente = Colaborador.objects.get(id=contrato.residente_id).usuario
         try:
             contrato.full_clean()
         except ValidationError as errores:
@@ -65,7 +64,6 @@ class ContratoEditarView(AbstractEvaLoggedView):
 
         contrato = Contrato.from_dictionary(request.POST)
         contrato.empresa_id = get_id_empresa_global(request)
-        contrato.residente = Colaborador.objects.get(id=contrato.residente_id).usuario
         contrato.id = int(id)
 
         try:
@@ -114,7 +112,7 @@ def datos_xa_render(opcion: str, contrato: Contrato = None) -> dict:
 
     tipo_contratos = TipoContrato.objects.tipos_comerciales(True, True)
     procesos = Proceso.objects.get_xa_select_activos()
-    residentes = Colaborador.objects.get_xa_select_activos()
+    residentes = Colaborador.objects.get_xa_select_usuarios_activos()
     empresas = Empresa.objects.filter(estado=True).values(campo_valor=F('id'), campo_texto=F('nombre')) \
         .order_by('nombre')
     terceros = Tercero.objects.clientes_xa_select()
