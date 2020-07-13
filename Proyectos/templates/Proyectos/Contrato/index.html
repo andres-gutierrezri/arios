@@ -64,7 +64,7 @@
                                                                 <td>{{ contrato.supervisor_nombre }}</td>
                                                                 <td>{{ contrato.supervisor_telefono }}</td>
                                                                 <td>{{ contrato.supervisor_correo }}</td>
-                                                                <td>{{ contrato.residente }}</td>
+                                                                <td>{% if contrato.residente %}{{ contrato.residente }}{% endif %}</td>
                                                                 <td>{{ contrato.fecha_suscripcion|date:'Y-m-d' }}</td>
                                                                 <td>{{ contrato.fecha_inicio|date:'Y-m-d' }}</td>
                                                                 <td>{{ contrato.fecha_terminacion|date:'Y-m-d' }}</td>
