@@ -17,8 +17,8 @@ class Contrato(models.Model, ModelDjangoExtensiones):
     supervisor_telefono = models.TextField(max_length=15, verbose_name='Teléfono', null=False, blank=False)
     supervisor_correo = models.EmailField(max_length=100, verbose_name='Correo del supervisor', null=False, blank=False,
                                           error_messages={'invalid': "Ingrese una dirección de correo válida"})
-    residente = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Residente', null=False,
-                                  blank=False)
+    residente = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Residente', null=True,
+                                  blank=True)
     fecha_inicio = models.DateTimeField(verbose_name='Fecha de inicio', null=True, blank=True)
     fecha_terminacion = models.DateTimeField(verbose_name='Fecha de terminación', null=True, blank=True)
     fecha_suscripcion = models.DateTimeField(verbose_name='Fecha de suscripción', null=True, blank=False)
