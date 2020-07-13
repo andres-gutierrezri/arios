@@ -65,6 +65,8 @@ class ContratoEditarView(AbstractEvaLoggedView):
         contrato = Contrato.from_dictionary(request.POST)
         contrato.empresa_id = get_id_empresa_global(request)
         contrato.id = int(id)
+        if not contrato.residente_id:
+            contrato.residente_id = None
 
         try:
             contrato.full_clean(validate_unique=False)
