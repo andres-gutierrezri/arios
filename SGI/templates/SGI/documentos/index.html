@@ -47,15 +47,18 @@
                                                                         <div class="panel-container show w-500">
                                                                             <div class="panel-content">
                                                                                 <div class="row">
-                                                                                    <div class="col-md-8">
+                                                                                    <div class="col-md-7">
                                                                                     {{ documento }}
                                                                                     </div>
-                                                                                    <div class="col-md-4 p-r-10" style="text-align: end">
+                                                                                    <div class="col-md-5 p-r-10" style="text-align: end">
                                                                                         {%  if perms.SGI.view_archivo %}
                                                                                         <a class="far fa-custom fa-eye" style="text-decoration: none !important;" {% for archivo in archivos %}{% if documento == archivo.documento %}href="{% url 'sgi:documentos-ver' archivo.id  %}" target="_blank" data-original-title="Ver" {% endif %}{% endfor %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
                                                                                         {% endif %}
                                                                                         {% if perms.TalentoHumano.view_historial %}
                                                                                         <a class="far fa-custom fa-list-alt p-l-10" {% for hst in historial %}{% if hst.documento == documento %} id="hst_{{ documento.id }}" href="javascript:arbolDocumentos('doc_{{ documento.id }}', 'hst_{{ documento.id }}')" data-original-title="Historial"{% endif %}{% endfor %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
+                                                                                        {% endif %}
+                                                                                        {% if perms.SGI.view_cadenaaprobacionencabezado %}
+                                                                                        <a class="far fa-custom fa-link p-l-10" id="cadena_{{ documento.id }}" {% if documento.cadena_aprobacion %}href="javascript:abrir_modal_detalle_cadena_aprobacion('{% url 'sgi:cadenas-aprobacion-detalle' 1 %}')" {% endif %} data-original-title="Ver Cadena de Aprobación" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
                                                                                         {% endif %}
                                                                                         {% if grupo_documento.solo_proceso == True  or perms.TalentoHumano.can_gestioncompletasgi or grupo_documento.solo_proceso == False and proceso == colaborador.proceso %}
                                                                                             {% for pro in grupo_documento.proceso %}
@@ -177,9 +180,9 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" tabindex="-1" id="cargar" role="dialog">
+    <div class="modal fade" tabindex="-1" id="cargar" role="dialog"></div>
+    <div class="modal fade" tabindex="-1" id="detalle_cadena_aprobacion" role="dialog"></div>
 
-    </div>
     {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='sgi/documentos' %}
 {% endblock main%}
 
@@ -191,4 +194,5 @@
     <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
     <script src="{% static 'SGI/js/modalCargarArchivo.js' %}"></script>
     <script src="{% static 'SGI/js/arbolDocumentos.js' %}"></script>
+    <script src="{% static 'SGI/js/modalDetalleCadenaAprobacion.js' %}"></script>
 {% endblock scripts%}
