@@ -223,3 +223,16 @@ class ResultadosAprobacion(models.Model):
     class Meta:
         verbose_name = 'Resultado de Aprobación'
         verbose_name_plural = 'Resultados de Aprobaciones'
+
+
+class GruposDocumentosProcesos(models.Model):
+    grupo_documento = models.ForeignKey(GrupoDocumento, on_delete=models.DO_NOTHING, verbose_name='Grupo de Documento',
+                                        null=True, blank=False)
+    proceso = models.ForeignKey(Proceso, on_delete=models.DO_NOTHING, verbose_name='Proceso', null=True, blank=False)
+
+    def __str__(self):
+        return 'Grupo Documento {0} - Proceso {1}'.format(self.grupo_documento, self.proceso)
+
+    class Meta:
+        verbose_name = 'Grupo de Documento Proceso'
+        verbose_name_plural = 'Grupos de Documentos Procesos'
