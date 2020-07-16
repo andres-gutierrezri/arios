@@ -33,7 +33,7 @@
                                 <ul>
                                     {% for grupo_documento in grupo_documentos %}
                                         <li>
-                                            <span class="col-md-4"><i class="fa fa-lg fa-file-alt"></i> {{ grupo_documento }}</span>
+                                            <span class="col-md-4"><i class="fa fa-lg fa-file-alt"></i> {{ grupo_documento.nombre }}</span>
                                             {% if perms.SGI.add_documento %}
                                             <a class="far fa-custom fa-file-plus p-l-10" href="{% url 'SGI:documentos-crear' proceso.id  grupo_documento.id%}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear documento"></a>
                                             {% endif %}
@@ -57,14 +57,16 @@
                                                                                         {% if perms.TalentoHumano.view_historial %}
                                                                                         <a class="far fa-custom fa-list-alt p-l-10" {% for hst in historial %}{% if hst.documento == documento %} id="hst_{{ documento.id }}" href="javascript:arbolDocumentos('doc_{{ documento.id }}', 'hst_{{ documento.id }}')" data-original-title="Historial"{% endif %}{% endfor %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
                                                                                         {% endif %}
-                                                                                        {% if perms.SGI.add_archivo and proceso == colaborador.proceso or perms.TalentoHumano.can_gestioncompletasgi %}
-                                                                                        <a class="far fa-custom fa-long-arrow-alt-up p-l-10" href="javascript:abrir_modal_cargar('{% url 'sgi:documentos-cargar' proceso.id  grupo_documento.id documento.id %}');" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Cargar"></a>
-                                                                                        {% endif %}
-                                                                                        {% if perms.SGI.change_documento and proceso == colaborador.proceso or perms.TalentoHumano.can_gestioncompletasgi %}
-                                                                                        <a class="far fa-custom fa-edit p-l-10" href="{% url 'sgi:documentos-editar' proceso.id  grupo_documento.id documento.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
-                                                                                        {% endif %}
-                                                                                        {% if perms.SGI.delete_documento and proceso == colaborador.proceso or perms.TalentoHumano.can_gestioncompletasgi %}
-                                                                                        <a class="far fa-custom fa-trash-alt color-danger-900 p-l-10" id="eliminar_{{ documento.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ documento.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+                                                                                        {% if grupo_documento.solo_proceso == True and grupo_documento.proceso == colaborador.proceso or perms.TalentoHumano.can_gestioncompletasgi or grupo_documento.solo_proceso == False and proceso == colaborador.proceso %}
+                                                                                            {% if perms.SGI.add_archivo %}
+                                                                                            <a class="far fa-custom fa-long-arrow-alt-up p-l-10" href="javascript:abrir_modal_cargar('{% url 'sgi:documentos-cargar' proceso.id  grupo_documento.id documento.id %}');" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Cargar"></a>
+                                                                                            {% endif %}
+                                                                                            {% if perms.SGI.change_documento %}
+                                                                                            <a class="far fa-custom fa-edit p-l-10" href="{% url 'sgi:documentos-editar' proceso.id  grupo_documento.id documento.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                                                            {% endif %}
+                                                                                            {% if perms.SGI.delete_documento %}
+                                                                                            <a class="far fa-custom fa-trash-alt color-danger-900 p-l-10" id="eliminar_{{ documento.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ documento.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+                                                                                            {% endif %}
                                                                                         {% endif %}
                                                                                     </div>
                                                                                 </div>
@@ -89,11 +91,14 @@
                                                                                                              {{ hst.nombre_documento }} <span class="{% if hst.estado.id == estado.APROBADO %}badge badge-primary {% elif hst.estado.id == estado.RECHAZADO %} badge border border-danger text-danger {% else %} badge border border-primary text-primary {% endif %}" style="font-size: 70%">{{ hst.estado }}</span>
                                                                                                         </div>
                                                                                                         <div class="col-md-2 p-r-10" style="text-align: end">
-                                                                                                            {%  if perms.TalentoHumano.view_archivo_historial and proceso == colaborador.proceso or perms.TalentoHumano.can_gestioncompletasgi %}
-                                                                                                            <a class="far fa-custom fa-eye p-l-10" style="text-decoration: none !important;" href="{% url 'sgi:documentos-ver' hst.id  %}" target="_blank" data-original-title="Ver" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
+                                                                                                            {% if grupo_documento.solo_proceso == True and grupo_documento.proceso == colaborador.proceso or perms.TalentoHumano.can_gestioncompletasgi or grupo_documento.solo_proceso == False and proceso == colaborador.proceso %}
+                                                                                                                {% if perms.TalentoHumano.view_archivo_historial %}
+                                                                                                                <a class="far fa-custom fa-eye p-l-10" style="text-decoration: none !important;" href="{% url 'sgi:documentos-ver' hst.id  %}" target="_blank" data-original-title="Ver" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
+                                                                                                                {% endif %}
                                                                                                             {% endif %}
                                                                                                             <a class="far fa-custom fa-caret-square-down p-l-10" id="det_{{ hst.id }}" href="javascript:arbolDocumentos('arc_{{ hst.id }}', 'det_{{ hst.id }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Detalles"></a>
                                                                                                         </div>
+
                                                                                                      </div>
                                                                                                 </div>
                                                                                             </div>
