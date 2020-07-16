@@ -35,13 +35,14 @@ class IndexView(AbstractEvaLoggedView):
 
             lista_grupos = []
             for grp_doc in grupo_documentos:
-                coincidencia = False
+                lista_procesos = []
                 for gdp in grps_docs_pros:
                     if grp_doc == gdp.grupo_documento:
-                        coincidencia = True
-                        lista_grupos.append({'id': grp_doc.id, 'nombre': grp_doc.nombre, 'solo_proceso': True,
-                                             'proceso': gdp.proceso})
-                if not coincidencia:
+                        lista_procesos.append(gdp.proceso)
+                if lista_procesos:
+                    lista_grupos.append({'id': grp_doc.id, 'nombre': grp_doc.nombre, 'solo_proceso': True,
+                                         'proceso': lista_procesos})
+                else:
                     lista_grupos.append({'id': grp_doc.id, 'nombre': grp_doc.nombre, 'solo_proceso': False})
             return render(request, 'SGI/documentos/index.html', {'documentos': documentos, 'procesos': procesos,
                                                                  'grupo_documentos': lista_grupos,
