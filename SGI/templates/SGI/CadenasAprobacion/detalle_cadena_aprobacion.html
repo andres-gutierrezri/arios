@@ -1,0 +1,35 @@
+{% load eva_tags %}
+{% load static %}
+
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header p-b-0">
+            <h4 class="modal-title">
+                Cadena de Aprobación: {{ cadena_aprobacion.nombre }}
+            </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"><i class="fal fa-times"></i></span>
+            </button>
+        </div>
+        <div class="modal-body p-b-0">
+        {% for cadena in cadena_aprobacion.cadenaaprobaciondetalle_set.all %}
+            <div class="card border shadow-0 mb-g shadow-sm-hover">
+                <div class="card-body p-0 collapse show">
+                    <div class="p-3">
+                        <h5>
+                            <small class="mt-0 mb-1">
+                                <b>Colaborador {{ cadena.orden }}: </b> {{ cadena.usuario.get_full_name }}
+                            </small>
+                        </h5>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+        <div class="modal-footer p-t-0" style="align-items: end">
+            <div style="padding-left: 15px">
+                <button data-dismiss="modal" class="btn btn-danger btn-block">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
