@@ -12,8 +12,9 @@ from EVA.General.utilidades import validar_extension_de_archivo
 from EVA.views.index import AbstractEvaLoggedView
 from SGI.models import Documento, GrupoDocumento, Archivo
 from SGI.models.documentos import EstadoArchivo, CadenaAprobacionDetalle, ResultadosAprobacion, \
-    CadenaAprobacionEncabezado
+    CadenaAprobacionEncabezado, GruposDocumentosProcesos
 from SGI.views.cadena_aprobacion import crear_notificacion_cadena
+from TalentoHumano.models import Colaborador
 
 
 class IndexView(AbstractEvaLoggedView):
@@ -29,10 +30,23 @@ class IndexView(AbstractEvaLoggedView):
                 .exclude(estado_id=EstadoArchivo.PENDIENTE)
             resultados = ResultadosAprobacion.objects.exclude(estado_id=EstadoArchivo.PENDIENTE,
                                                               archivo__documento__proceso_id=id)
+            colaborador = Colaborador.objects.get(usuario=request.user)
+            grps_docs_pros = GruposDocumentosProcesos.objects.all()
 
+            lista_grupos = []
+            for grp_doc in grupo_documentos:
+                coincidencia = False
+                for gdp in grps_docs_pros:
+                    if grp_doc == gdp.grupo_documento:
+                        coincidencia = True
+                        lista_grupos.append({'id': grp_doc.id, 'nombre': grp_doc.nombre, 'solo_proceso': True,
+                                             'proceso': gdp.proceso})
+                if not coincidencia:
+                    lista_grupos.append({'id': grp_doc.id, 'nombre': grp_doc.nombre, 'solo_proceso': False})
             return render(request, 'SGI/documentos/index.html', {'documentos': documentos, 'procesos': procesos,
-                                                                 'grupo_documentos': grupo_documentos,
+                                                                 'grupo_documentos': lista_grupos,
                                                                  'proceso': proceso,
+                                                                 'colaborador': colaborador,
                                                                  'archivos': archivos,
                                                                  'historial': historial,
                                                                  'resultados': resultados,
