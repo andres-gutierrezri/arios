@@ -13,6 +13,7 @@ permisos = [Permiso('index', None),
             Permiso('cadenas-aprobacion-crear', ['SGI.add_cadenaaprobacionencabezado']),
             Permiso('cadenas-aprobacion-editar', ['SGI.change_cadenaaprobacionencabezado']),
             Permiso('cadenas-aprobacion-eliminar', ['SGI.delete_cadenaaprobacionencabezado']),
+            Permiso('cadenas-aprobacion-detalle', ['SGI.view_cadenaaprobacionencabezado']),
             Permiso('aprobacion-documentos-ver', ['SGI.view_resultadosaprobacion']),
             Permiso('solicitudes-aprobacion', ['SGI.add_archivo']),
             ]
