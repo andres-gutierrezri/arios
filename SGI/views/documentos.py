@@ -157,13 +157,18 @@ class DocumentosEliminarView(AbstractEvaLoggedView):
     def post(self, request, id):
         try:
             documento = Documento.objects.get(id=id)
-            documento.delete()
+            if documento.archivo_set.exclude(estado_id=EstadoArchivo.ELIMINADO):
+                documento.delete()
+            else:
+                documento.estado = False
+                documento.save(update_fields=['estado'])
+
             messages.success(request, 'Se ha eliminado el documento {0}'.format(documento.nombre))
             return JsonResponse({"estado": "OK"})
 
         except IntegrityError:
-            return JsonResponse({"estado": "error", "mensaje": "Este documento no puede ser eliminado "
-                                                               "porque tiene archivos asociados"})
+            return JsonResponse({"estado": "error", "error": "Este documento no puede ser eliminado "
+                                                             "porque tiene archivos asociados"})
 
 
 class ArchivosEliminarView(AbstractEvaLoggedView):
