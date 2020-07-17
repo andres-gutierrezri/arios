@@ -22,12 +22,13 @@ class IndexView(AbstractEvaLoggedView):
         empresa_id = get_id_empresa_global(request)
         procesos = Proceso.objects.filter(empresa_id=empresa_id).order_by('nombre')
         if procesos.filter(id=id):
-            documentos = Documento.objects.filter(proceso_id=id, proceso__empresa_id=empresa_id).order_by('codigo')
+            documentos = Documento.objects.filter(proceso_id=id, proceso__empresa_id=empresa_id, estado=True)\
+                .order_by('codigo')
             archivos = Archivo.objects.filter(documento__proceso_id=id, estado_id=EstadoArchivo.APROBADO)
             proceso = procesos.get(id=id)
             grupo_documentos = GrupoDocumento.objects.filter(empresa_id=empresa_id).order_by('nombre')
             historial = Archivo.objects.filter(documento__proceso_id=id).order_by('-version')\
-                .exclude(estado_id=EstadoArchivo.PENDIENTE)
+                .exclude(estado_id=EstadoArchivo.PENDIENTE).exclude(estado_id=EstadoArchivo.ELIMINADO)
             resultados = ResultadosAprobacion.objects.exclude(estado_id=EstadoArchivo.PENDIENTE,
                                                               archivo__documento__proceso_id=id)
             colaborador = Colaborador.objects.get(usuario=request.user)
