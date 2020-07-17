@@ -30,6 +30,7 @@ urlpatterns = [
     path('procesos/<int:id_proceso>/grupos-documentos/<int:id_grupo>/documentos/<int:id_documento>',
          documentos.DocumentosEditarView.as_view(), name='documentos-editar'),
     path('documentos/<int:id>/delete', documentos.DocumentosEliminarView.as_view(), name='documentos-eliminar'),
+    path('documentos/archivo/<int:id>/delete', documentos.ArchivosEliminarView.as_view(), name='archivos-eliminar'),
     path('cadenas_aprobacion', cadena_aprobacion.CadenaAprobacionView.as_view(), name='cadenas-aprobacion-ver'),
     path('cadenas_aprobacion/add', cadena_aprobacion.CadenaAprobacionCrearView.as_view(),
          name='cadenas-aprobacion-crear'),

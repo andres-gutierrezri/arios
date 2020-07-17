@@ -165,6 +165,19 @@ class DocumentosEliminarView(AbstractEvaLoggedView):
                                                                "porque tiene archivos asociados"})
 
 
+class ArchivosEliminarView(AbstractEvaLoggedView):
+    def post(self, request, id):
+        try:
+            archivo = Archivo.objects.get(id=id)
+            archivo.estado_id = EstadoArchivo.ELIMINADO
+            archivo.save(update_fields=['estado'])
+            messages.success(request, 'Se ha eliminado el archivo {0}'.format(archivo.documento.nombre))
+            return JsonResponse({"estado": "OK"})
+
+        except IntegrityError:
+            return JsonResponse({"estado": "error", "mensaje": "Ha ocurrido un error eliminando el archivo"})
+
+
 # region Constantes Estados
 ACCION_NUEVO = 0
 ACCION_APROBACION_DIRECTA = 4
