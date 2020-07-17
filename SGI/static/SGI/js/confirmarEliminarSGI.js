@@ -2,11 +2,10 @@
 
 const URLDomain = document.location.origin + "/";
 let idBorrar = 0;
-let urlFinal;
-const rutaBorrado = $('#rutaBorrado').val();
+let rutaBorrar;
 
-function fConfirmarEliminar(idElemento) {
-
+function fConfirmarEliminar(idElemento, ruta) {
+    rutaBorrar = ruta;
     fSweetAlert();
     idBorrar = idElemento;
 }
@@ -23,7 +22,7 @@ function fSweetAlert() {
 
         if (result.value) {
             $.ajax({
-                url: URLDomain + rutaBorrado + "/" + idBorrar + "/delete",
+                url: URLDomain + rutaBorrar + "/" + idBorrar + "/delete",
                 type: 'POST',
                 context: document.body,
                 success: function (data) {
