@@ -20,6 +20,14 @@
     </a>
 </li>
 {% endif %}
+{% if perms.auth.view_group %}
+<li {% if menu_actual == 'grupos-permisos' %} class="active" {% endif %}>
+    <a href="{% url 'Administracion:grupos-permisos' %}" title="Grupos de Permisos" data-filter-tags="grupos permisos">
+        <i class="fal fa-tasks"></i>
+        <span class="nav-link-text" data-i18n="nav.administracion_grupos_permisos">Grupos de Permisos</span>
+    </a>
+</li>
+{% endif %}
 
 
 

@@ -219,6 +219,10 @@
                                                                     <div class="col-md-6">
                                                                         {% select_tag rango 'rango_id' 'Seleccione un rango' texto_label="Rango" value=colaborador.rango_id required="" mensaje_validacion='Por favor seleccione un rango' invalido=errores.rango %}
                                                                     </div>
+                                                                    <input id="multiple_grupos"  hidden value="{{ grupos_colaborador }}">
+                                                                    <div class="col-md-6">
+                                                                        {% select_multiple_tag grupos 'grupo_id[]' 'grupo_id' 'Seleccione un grupo' placeholder="Seleccione un grupo de permisos" texto_label="Grupo de Permisos" value="" required="" mensaje_validacion='Por favor seleccione un grupo de permisos' multiple='multiple' invalido=errores.grupo %}
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -281,4 +285,5 @@
     <script src="{% static 'TalentoHumano/js/wizard.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
     <script src="{% static 'TalentoHumano/js/selectMultipleContratos.js' %}"></script>
+    <script src="{% static 'TalentoHumano/js/selectMultipleGruposPermisos.js' %}"></script>
 {% endblock scripts%}
