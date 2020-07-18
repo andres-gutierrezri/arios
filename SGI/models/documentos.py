@@ -19,6 +19,7 @@ class GrupoDocumento(models.Model):
     descripcion = models.CharField(max_length=100, verbose_name='Descripción', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
     empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa', null=True, blank=False)
+    es_general = models.BooleanField(verbose_name='Es General', null=False, blank=False, default=False)
 
     def __str__(self):
         return self.nombre

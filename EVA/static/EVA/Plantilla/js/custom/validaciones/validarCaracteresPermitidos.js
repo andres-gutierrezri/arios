@@ -6,7 +6,7 @@ function validarCE(e) {
     }
 
     // Permite el ingreso de la tecla para restar
-    if (tecla === 8 || tecla === 95) {
+    if (tecla === 8 || tecla === 95 || tecla === 32) {
         return true;
     }
 

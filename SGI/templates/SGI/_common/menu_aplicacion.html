@@ -1,4 +1,29 @@
 {%  if perms.SGI.view_documento %}
+    <li {% if menu_actual == 'busqueda' %} class="active" {% endif %}>
+        <a href="#" title="Realizar Búsqueda" data-filter-tags="busqueda">
+            <i class="fal fa-search"></i>
+            <span class="nav-link-text" data-i18n="nav.sgi_busqueda_documentos">Buscar Documento</span>
+        </a>
+        <ul>
+            <li {% if menu_actual == 'busqueda' %} class="active" {% endif %}>
+                <a href="#" title="Ingrese su Búsqueda">
+                    <div>
+                        <form action="{% url 'SGI:documentos-buscar' %}" method="post" id="form_busqueda">
+                            {% csrf_token %}
+                            <div class="input-group">
+                                <input type="search" class="form-control form-control-md shadow-inset-2" placeholder="Buscar" name="texto_busqueda" id="texto_busqueda" value="{{ texto_busqueda }}">
+                                <div class="input-group-append">
+                                    <div class="input-group-text" id="id_buscar">
+                                        <i class="fal fa-search fs-xl" ></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </a>
+            </li>
+        </ul>
+    </li>
     {% for proc in procesos %}
         <li {% if proc.id == proceso.id %} class="active open" {% endif %}>
             <a href="#" title="{{ proc.nombre }}" data-filter-tags="{{ proc.nombre | lower }}">

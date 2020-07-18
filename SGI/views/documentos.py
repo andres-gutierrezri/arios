@@ -22,15 +22,28 @@ class IndexView(AbstractEvaLoggedView):
         empresa_id = get_id_empresa_global(request)
         procesos = Proceso.objects.filter(empresa_id=empresa_id).order_by('nombre')
         if procesos.filter(id=id):
-            documentos = Documento.objects.filter(proceso_id=id, proceso__empresa_id=empresa_id, estado=True)\
+            documentos = Documento.objects.filter(proceso_id=id, grupo_documento__empresa_id=empresa_id, estado=True)\
                 .order_by('codigo')
             archivos = Archivo.objects.filter(documento__proceso_id=id, estado_id=EstadoArchivo.APROBADO)
             proceso = procesos.get(id=id)
-            grupo_documentos = GrupoDocumento.objects.filter(empresa_id=empresa_id).order_by('nombre')
+            grupo_documentos = GrupoDocumento.objects.filter(empresa_id=empresa_id, es_general=False).order_by('nombre')
             historial = Archivo.objects.filter(documento__proceso_id=id).order_by('-version')\
                 .exclude(estado_id=EstadoArchivo.PENDIENTE).exclude(estado_id=EstadoArchivo.ELIMINADO)
             resultados = ResultadosAprobacion.objects.exclude(estado_id=EstadoArchivo.PENDIENTE,
                                                               archivo__documento__proceso_id=id)
+
+            # Union de documentos de grupos de documento generales.
+
+            grupo_documentos |= GrupoDocumento.objects.filter(es_general=True, empresa_id=empresa_id).order_by('nombre')
+            documentos |= Documento.objects.filter(grupo_documento__es_general=True,
+                                                   grupo_documento__empresa_id=empresa_id)
+            archivos |= Archivo.objects.filter(documento__grupo_documento__es_general=True,
+                                               documento__grupo_documento__empresa_id=empresa_id,
+                                               estado_id=EstadoArchivo.APROBADO)
+            historial |= Archivo.objects.filter(documento__grupo_documento__es_general=True,
+                                                documento__grupo_documento__empresa_id=empresa_id).order_by('-version') \
+                .exclude(estado_id=EstadoArchivo.PENDIENTE)
+
             colaborador = Colaborador.objects.get(usuario=request.user)
             grps_docs_pros = GruposDocumentosProcesos.objects.all()
 
@@ -73,7 +86,10 @@ class DocumentosCrearView(AbstractEvaLoggedView):
         proceso = Proceso.objects.get(id=id_proceso)
         grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
         documento.grupo_documento_id = id_grupo
-        documento.proceso_id = id_proceso
+        if grupo_documento.es_general:
+            documento.proceso = None
+        else:
+            documento.proceso_id = id_proceso
         documento.version_actual = 0.00
 
         try:
@@ -211,7 +227,7 @@ class ArchivoCargarView(AbstractEvaLoggedView):
         archivo = Archivo.from_dictionary(request.POST)
         archivo.estado_id = EstadoArchivo.PENDIENTE
         archivo.documento_id = id_documento
-        archivo.documento.proceso.id = id_proceso
+        archivo.documento.proceso_id = id_proceso
         archivo.documento.grupo_documento_id = id_grupo
         documento = Documento.objects.get(id=id_documento)
         archivo.cadena_aprobacion = documento.cadena_aprobacion

@@ -25,75 +25,8 @@ class AsignacionPermisosView(AbstractEvaLoggedView):
             messages.error(request, 'No tiene permisos para acceder a esta funcionalidad.')
             return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
 
-        permisos_usuario = consultar_permisos_usuario(usuario)
-        grupos_usuario = usuario.groups.all()
-
-        per_funcionalidad = PermisosFuncionalidad.objects.filter(estado=True, grupo=None)
-        per_grupos = PermisosFuncionalidad.objects.filter(estado=True, content_type=None)
-        funcionalidades_selecciones = per_funcionalidad.distinct('content_type__app_label')
-
-        if id_filtro != TODOS:
-            temp = PermisosFuncionalidad.objects.filter(content_type_id=id_filtro).first()
-            if temp:
-                per_funcionalidad = per_funcionalidad.filter(content_type__app_label=temp.content_type.app_label)
-
-        permisos_db = Permission.objects.all()
-        funcionalidades = request.user.user_permissions.order_by('content_type_id').distinct('content_type_id')
-
-        lista_content_type = obtener_content_type(request, per_funcionalidad.distinct('content_type__app_label'))
-        lista_completa = []
-        lista_grupos = []
-
-        if request.user.is_superuser:
-            for pf in per_funcionalidad:
-                lista_permisos = []
-                for perm in permisos_db:
-                    if pf.content_type == perm.content_type:
-                        if perm.codename.split('_')[1] == perm.content_type.model:
-                            lista_permisos.append({'id': perm.id, 'nombre': perm.codename})
-                lista_completa.append(construir_lista_notificaciones(pf, lista_permisos))
-            if per_grupos and id_filtro == TODOS or id_filtro == GRUPOS:
-                for grp in per_grupos:
-                    lista = {'tipo_funcionalidad': False, 'grupo': grp.id, 'id_grupo': grp.grupo_id,
-                             'nombre': grp.nombre, 'descripcion': grp.descripcion}
-                    lista_completa.append(lista)
-                    lista_grupos.append(lista)
-        else:
-            permisos_asignados = request.user.user_permissions.all()
-            grupos_asignados = request.user.groups.all()
-
-            for mod in funcionalidades:
-                lista_permisos = []
-                for perm in permisos_asignados:
-                    if mod.content_type == perm.content_type:
-                        if perm.codename.split('_')[1] == perm.content_type.model:
-                            lista_permisos.append({'id': perm.id, 'nombre': perm.codename})
-
-                for pf in per_funcionalidad:
-                    if mod.content_type == pf.content_type:
-                        lista_completa.append(construir_lista_notificaciones(pf, lista_permisos))
-
-            per_grupos = per_grupos.exclude(solo_admin=True)
-            if per_grupos and grupos_asignados and id_filtro == TODOS or id_filtro == GRUPOS:
-                for grp_asignado in grupos_asignados:
-                    for grp in per_grupos:
-                        if grp_asignado == grp.grupo:
-                            lista = {'tipo_funcionalidad': False,  'grupo': grp.id, 'nombre': grp.nombre,
-                                     'descripcion': grp.descripcion}
-                            lista_completa.append(lista)
-                            lista_grupos.append(lista)
-
         return render(request, 'TalentoHumano/GestionPermisos/asignacion_permisos.html',
-                      {'permisos': lista_completa,
-                       'lista_grupos': lista_grupos,
-                       'permisos_usuario': permisos_usuario,
-                       'grupos_usuario': grupos_usuario,
-                       'usuario': usuario,
-                       'id_filtro': id_filtro,
-                       'funcionalidades': funcionalidades,
-                       'lista_content_type': lista_content_type,
-                       'funcionalidad_selecciones': obtener_content_type(request, funcionalidades_selecciones, True),
-                       'datos_permisos': json.dumps(lista_completa)})
+                      construir_permisos(request, usuario=usuario, id_filtro=id_filtro))
 
     def post(self, request, id, id_filtro):
         valores_permisos = json.loads(request.POST.get('valores_permisos', ''))
@@ -119,10 +52,8 @@ class AsignacionPermisosView(AbstractEvaLoggedView):
             limpiar_permisos(usuario, id_filtro)
 
             for func in funcionalidades:
-                coincidencias = False
                 for datos in valores_funcionalidades:
                     if func.content_type_id == datos['funcionalidad']:
-                        coincidencias = True
                         for perm in datos['permiso']:
                             if perm == VER:
                                 consultar_permiso(func, VER, datos_funcionalidades, usuario)
@@ -132,8 +63,6 @@ class AsignacionPermisosView(AbstractEvaLoggedView):
                                 consultar_permiso(func, EDITAR, datos_funcionalidades, usuario)
                             elif perm == ELIMINAR:
                                 consultar_permiso(func, ELIMINAR, datos_funcionalidades, usuario)
-                if not coincidencias:
-                    limpiar_permisos(usuario, id_filtro, modulo=func.content_type.app_label)
         else:
             limpiar_permisos(usuario, id_filtro)
 
@@ -142,14 +71,9 @@ class AsignacionPermisosView(AbstractEvaLoggedView):
             limpiar_grupos(usuario)
 
             for grp in grupos:
-                coincidencias = False
                 for datos in valores_grupos:
                     if grp.id == datos['grupo']:
-                        coincidencias = True
                         usuario.groups.add(grp.grupo)
-
-                if not coincidencias:
-                    limpiar_grupos(usuario, grp.grupo)
         else:
             limpiar_grupos(usuario)
 
@@ -185,6 +109,8 @@ def limpiar_permisos(usuario, id_filtro, modulo=None):
         ct = ContentType.objects.get(id=id_filtro)
         for perm in usuario.user_permissions.filter(content_type__app_label=ct.app_label):
             usuario.user_permissions.remove(perm)
+        if not usuario.user_permissions.filter(content_type__app_label=ct.app_label):
+            poner_quitar_permiso_menu(usuario, ct.app_label, quitar=True)
 
 
 def consultar_permiso(funcionalidad, accion, datos_permisos, usuario):
@@ -212,7 +138,7 @@ def construir_lista_notificaciones(objeto, permisos):
             nueva_lista.append({'orden': 4, 'id': perm['id'], 'nombre': 'Eliminar'})
 
     return {'funcionalidad': objeto.content_type_id, 'nombre': objeto.nombre, 'descripcion': objeto.descripcion,
-            'permisos': sorted(nueva_lista, key=lambda p: p['orden']), 'tipo_funcionalidad': True,
+            'permisos': sorted(nueva_lista, key=lambda p: p['orden']), 'tipo_funcionalidad': True, 'id': objeto.id,
             'app_label': objeto.content_type.app_label}
 
 
@@ -230,7 +156,7 @@ def obtener_content_type(request, funcionalidades, xa_select=None):
     lista = []
     if xa_select:
         lista.append({'campo_valor': 1, 'campo_texto': 'Grupos'})
-    if request.user.is_superuser:
+    if request.user.has_perms(['auth.add_group', 'auth.change_group']):
         for fun in funcionalidades:
             nombre = construir_nombre_funcionalidad(fun.content_type.app_label)
             if xa_select:
@@ -250,9 +176,15 @@ def obtener_content_type(request, funcionalidades, xa_select=None):
     return lista
 
 
-def consultar_permisos_usuario(usuario):
+def consultar_permisos_usuario(usuario, grupo_permiso):
     lista = []
-    permisos = usuario.user_permissions.all()
+    if grupo_permiso:
+        permisos = Group.objects.get(id=grupo_permiso).permissions.all()
+    elif usuario:
+        permisos = usuario.user_permissions.all()
+    else:
+        permisos = Permission.objects.none()
+
     for perm in permisos:
         if not perm.codename.startswith('can_menu'):
             lista.append({'id': perm.id, 'content_type_id': perm.content_type_id})
@@ -268,3 +200,77 @@ def construir_nombre_funcionalidad(nombre):
         nombre_final = '{0} {1}'.format(nombre_final, nombre[contador])
         contador += 1
     return nombre_final
+
+
+def construir_permisos(request, id_filtro, usuario=None, grupo_permiso=None, ):
+    permisos_usuario = consultar_permisos_usuario(usuario, grupo_permiso)
+    if usuario:
+        grupos_usuario = usuario.groups.all()
+    else:
+        grupos_usuario = Group.objects.none()
+
+    per_funcionalidad = PermisosFuncionalidad.objects.filter(estado=True, grupo=None)
+    per_grupos = PermisosFuncionalidad.objects.filter(estado=True, content_type=None)
+    funcionalidades_selecciones = per_funcionalidad.distinct('content_type__app_label')
+
+    if id_filtro and id_filtro != TODOS:
+        temp = PermisosFuncionalidad.objects.filter(content_type_id=id_filtro).first()
+        if temp:
+            per_funcionalidad = per_funcionalidad.filter(content_type__app_label=temp.content_type.app_label)
+
+    permisos_db = Permission.objects.all()
+    funcionalidades = request.user.user_permissions.order_by('content_type_id').distinct('content_type_id')
+
+    lista_content_type = obtener_content_type(request, per_funcionalidad.distinct('content_type__app_label'))
+    lista_completa = []
+    lista_grupos = []
+
+    if not usuario or request.user.is_superuser:
+        for pf in per_funcionalidad:
+            lista_permisos = []
+            for perm in permisos_db:
+                if pf.content_type == perm.content_type:
+                    if perm.codename.split('_')[1] == perm.content_type.model:
+                        lista_permisos.append({'id': perm.id, 'nombre': perm.codename})
+            lista_completa.append(construir_lista_notificaciones(pf, lista_permisos))
+        if per_grupos and id_filtro == TODOS or id_filtro == GRUPOS:
+            for grp in per_grupos:
+                lista = {'tipo_funcionalidad': False, 'grupo': grp.id, 'id_grupo': grp.grupo_id,
+                         'nombre': grp.nombre, 'descripcion': grp.descripcion}
+                lista_completa.append(lista)
+                lista_grupos.append(lista)
+    else:
+        permisos_asignados = request.user.user_permissions.all()
+        grupos_asignados = request.user.groups.all()
+
+        for mod in funcionalidades:
+            lista_permisos = []
+            for perm in permisos_asignados:
+                if mod.content_type == perm.content_type:
+                    if perm.codename.split('_')[1] == perm.content_type.model:
+                        lista_permisos.append({'id': perm.id, 'nombre': perm.codename})
+
+            for pf in per_funcionalidad:
+                if mod.content_type == pf.content_type:
+                    lista_completa.append(construir_lista_notificaciones(pf, lista_permisos))
+
+        per_grupos = per_grupos.exclude(solo_admin=True)
+        if per_grupos and grupos_asignados and id_filtro == TODOS or id_filtro == GRUPOS:
+            for grp_asignado in grupos_asignados:
+                for grp in per_grupos:
+                    if grp_asignado == grp.grupo:
+                        lista = {'tipo_funcionalidad': False, 'grupo': grp.id, 'nombre': grp.nombre,
+                                 'descripcion': grp.descripcion}
+                        lista_completa.append(lista)
+                        lista_grupos.append(lista)
+
+    return {'permisos': lista_completa,
+            'lista_grupos': lista_grupos,
+            'permisos_usuario': permisos_usuario,
+            'grupos_usuario': grupos_usuario,
+            'usuario': usuario,
+            'id_filtro': id_filtro,
+            'funcionalidades': funcionalidades,
+            'lista_content_type': lista_content_type,
+            'funcionalidad_selecciones': obtener_content_type(request, funcionalidades_selecciones, True),
+            'datos_permisos': json.dumps(lista_completa)}
