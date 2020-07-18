@@ -2,21 +2,21 @@ $(document).ready(function () {
     $('.select2').select2();
 
     $('#filtro_ct_select_id').change(function () {
-        let id_usuario = $('#id_usuario').val();
-        window.location = '/talento-humano/colaboradores/' + id_usuario + '/permisos/' + this.value;
+        let idUsuario = $('#id_usuario').val();
+        window.location = '/talento-humano/colaboradores/' + idUsuario + '/permisos/' + this.value;
     });
 
-    let input_filtro = $('#js-filter-permisos');
-    let lista_filtrar = $('#js-permisos');
-    let labels_funcionalidad = $('.label-funcionalidad');
+    let inputFiltro = $('#js-filter-permisos');
+    let listaFiltrar = $('#js-permisos');
+    let labelsFuncionalidad = $('.label-funcionalidad');
 
-    initApp.listFilter(lista_filtrar, input_filtro);
+    initApp.listFilter(listaFiltrar, inputFiltro);
 
-    input_filtro.change(function () {
-        if (input_filtro.val() !== ''){
-            labels_funcionalidad.hide();
+    inputFiltro.change(function () {
+        if (inputFiltro.val() !== ''){
+            labelsFuncionalidad.hide();
         }else{
-            labels_funcionalidad.show();
+            labelsFuncionalidad.show();
         }
     })
 });
@@ -44,7 +44,7 @@ function guardarAsignacionesPermisos() {
                     listaPermisos.push({'tipo_funcionalidad': true,'funcionalidad': valor.funcionalidad, 'permiso': permisos});
             }
         }else{
-            let idFuncionalidad = 'permiso_'+ valor.grupo + '_id';
+            let idFuncionalidad = 'grupo_'+ valor.grupo + '_id';
             if ($('#' + idFuncionalidad).prop('checked')) {
                 listaPermisos.push({'tipo_funcionalidad': false, 'grupo': valor.grupo});
             }
