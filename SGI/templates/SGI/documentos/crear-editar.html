@@ -15,7 +15,7 @@
     <div class="panel-container show">
         <div class="header">
             <h1 class="header-title">
-                <i class='far fa-file-alt'></i> {{proceso}} / {{ grupo_documento }} / Documentos: <span class='fw-300'>{% if opcion == 'editar' %} Editar {% else%} Crear {% endif %}</span>
+                <i class='far fa-file-alt'></i>{% if grupo_documento.es_general %} General /{% else %} {{proceso}} /{% endif %} {{ grupo_documento }} / Documentos: <span class='fw-300'>{% if opcion == 'editar' %} Editar {% else%} Crear {% endif %}</span>
                 <br>
                 <br>
             </h1>
