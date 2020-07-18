@@ -86,6 +86,7 @@ class Cargo(models.Model):
 class Proceso(models.Model):
     objects = ManagerGeneral()
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
+    sigla = models.CharField(max_length=5, verbose_name='Sigla', null=False, blank=False, default='')
     objeto = models.CharField(max_length=100, verbose_name='Objeto', null=False, blank=False)
     empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa', null=True, blank=False)
 
@@ -142,6 +143,9 @@ class TipoContrato(models.Model):
     descripcion = models.TextField(max_length=300, verbose_name='Descripción', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
     laboral = models.BooleanField(verbose_name='Estado', null=False, blank=False)
+    sigla = models.CharField(max_length=5, verbose_name='Sigla', null=False, blank=False, default='')
+    tiene_fecha_fin = models.BooleanField(verbose_name='Tiene Fecha de Finalización', null=False, blank=False,
+                                          default=True)
 
     def __str__(self):
         return self.nombre

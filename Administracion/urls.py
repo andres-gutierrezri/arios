@@ -15,7 +15,7 @@ Including another URLconf
 """
 
 from django.urls import path
-from Administracion.views import terceros, administracion, inicio_sesion, empresas
+from Administracion.views import terceros, administracion, inicio_sesion, empresas, grupos_permisos
 from Administracion.views.seleccion_empresa import SeleccionEmpresaModalView
 
 app_name = 'Administracion'
@@ -43,4 +43,9 @@ urlpatterns = [
     path('sub-empresas/add', empresas.SubempresaCrearView.as_view(), name='sub-empresas-crear'),
     path('sub-empresas/<int:id>/', empresas.SubempresaEditarView.as_view(), name='sub-empresas-editar'),
     path('sub-empresas/<int:id>/delete', empresas.SubEmpresaEliminarView.as_view(), name='sub-empresas-eliminar'),
+    path('grupos-permisos/', grupos_permisos.GruposPermisosView.as_view(), name='grupos-permisos'),
+    path('grupos-permisos/add', grupos_permisos.GruposPermisosCrearView.as_view(), name='grupos-permisos-crear'),
+    path('grupos-permisos/<int:id>/', grupos_permisos.GruposPermisosEditarView.as_view(), name='grupos-permisos-editar'),
+    path('grupos-permisos/<int:id>/delete', grupos_permisos.GruposPermisosEliminarView.as_view(),
+         name='grupos-permisos-eliminar'),
 ]

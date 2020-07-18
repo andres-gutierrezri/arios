@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'Financiero.apps.FinancieroConfig',
     'SGI.apps.SgiConfig',
     'Notificaciones.apps.NotificacionesConfig',
+    'GestionDocumental.apps.GestiondocumentalConfig',
 ]
 
 MIDDLEWARE = [
@@ -149,6 +150,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'Financiero', 'static', 'Financiero'),
     os.path.join(BASE_DIR, 'SGI', 'static', 'SGI'),
     os.path.join(BASE_DIR, 'Notificaciones', 'static', 'Notificaciones'),
+    os.path.join(BASE_DIR, 'GestionDocumental', 'static', 'GestionDocumental'),
 )
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

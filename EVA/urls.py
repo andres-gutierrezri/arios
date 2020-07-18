@@ -36,4 +36,5 @@ urlpatterns = [
          auth_views.PasswordResetConfirmView.as_view(template_name='Administracion/Autenticacion/password_reset_confirm.html'),
          name="password_reset_confirm"),
     path('financiero/', include('Financiero.urls', namespace='financiero')),
+    path('gestion-documental/', include('GestionDocumental.urls', namespace='gestion-documental')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

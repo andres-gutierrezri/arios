@@ -1,0 +1,26 @@
+{%  if perms.Administracion.view_consecutivodocumento %}
+<li {% if menu_actual|first in 'consecutivos' %} class="active open" {% endif %}>
+    <a href="#" title="consecutivos" data-filter-tags="consecutivos">
+        <i class="fal fa-list-alt"></i>
+        <span class="nav-link-text" >Consecutivos</span>
+    </a>
+    <ul>
+        {% if perms.GestionDocumental.view_consecutivooficio %}
+        <li {% if menu_actual == 'consecutivos-oficios' %} class="active" {% endif %}>
+            <a href="{% url 'GestionDocumental:consecutivo-oficios-index' 0 %}" title="Consecutivo de Oficios" data-filter-tags="consecutivo oficios">
+                <i class="far fa-file-alt"></i>
+                <span class="nav-link-text" data-i18n="nav.gestion_documental_consecutivo_oficios">Consecutivo de Oficios</span>
+            </a>
+        </li>
+        {% endif %}
+        {% if perms.GestionDocumental.view_consecutivocontrato %}
+        <li {% if menu_actual == 'consecutivos-contrato' %} class="active" {% endif %}>
+            <a href="{% url 'GestionDocumental:consecutivo-contratos-index' 0 %}" title="Consecutivo de Contratos" data-filter-tags="consecutivo contratos">
+                <i class="far fa-file-alt"></i>
+                <span class="nav-link-text" data-i18n="nav.gestion_documental_consecutivo_contratos">Consecutivo de Contratos</span>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</li>
+{% endif %}

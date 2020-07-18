@@ -1,0 +1,29 @@
+{% load static %}
+{% load eva_tags %}
+<div class="col-xl-3">
+    <div id="div_{{ permiso.id }}" class="card border shadow-0 mb-g shadow-sm-hover" data-filter-tags="{{ permiso.nombre | lower }}">
+        <div class="card-body border-faded border-top-0 border-left-0 border-right-0 rounded-top">
+            <div class="form-row">
+                <div class="col-md-10">
+                    <a href="javascript:void(0);" class="card-title"><strong>{{ permiso.nombre }}</strong></a>
+                </div>
+                <div class="col-md-2" style="">
+                    <div class="custom-control custom-switch" style="float: right;">
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" value="{{ permiso.grupo }}" id="grupo_{{ permiso.grupo }}_id" {% for grp in grupos_usuario %}{% if grp.id == permiso.id_grupo %} checked {% endif %}{% endfor %} name="grupos" class="custom-control-input form-control">
+                            <label for="grupo_{{ permiso.grupo }}_id" class="custom-control-label no-seleccionable"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0 collapse show" style="min-height: 140px">
+            <div class="p-2">
+                <a  class="mt-1 d-block fs-sm fw-400 text-dark">
+                   <strong>Descripción:</strong>
+                    <i class="text-muted"></i>  {{ permiso.descripcion }}
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
