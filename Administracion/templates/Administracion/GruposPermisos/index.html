@@ -1,0 +1,100 @@
+{% extends 'Administracion/_common/base_administracion.html' %}
+{% load static %}
+<title>{% block titulo %}Gupos de Permisos{% endblock %}</title>
+{% block styles %}
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/datagrid/datatables/datatables.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/sweetalert2/sweetalert2.bundle.css'%}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/theme-demo.css' %}">
+{% endblock styles %}
+
+{% block main %}
+    <div class="panel-container show">
+            <div class="header">
+                 <h1 class="header-title">
+                    <i class='far fa-briefcase'></i> Gupos de Permisos <span class='fw-300'></span>
+                     <br>
+                     <br>
+                 </h1>
+            </div>
+            <div class="row">
+                <div class="col-xl-12">
+                    <div id="panel-1" class="panel">
+                        {% if perms.auth.add_group %}
+                            <div class="panel-hdr">
+                                <small>
+                                     <a class="far fa-3x far fa-plus-circle"  href="{% url 'Administracion:grupos-permisos-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar empresa"></a>
+                                </small>
+                            </div>
+                        {% endif %}
+                        <div class="panel-container show">
+                            <div class="panel-content">
+                                    <div class="panel-group">
+                                        <div class="panel-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered w-100" id="dataTable">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Nombre</th>
+                                                            <th>Descripción</th>
+                                                            <th style="min-width: 300px">Permisos</th>
+                                                            <th>Estado</th>
+                                                            {% if perms.auth.change_group or perms.auth.delete_group %}
+                                                                <th>Acción</th>
+                                                            {% endif %}
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for grupo in grupos %}
+                                                            <tr>
+                                                                <td>{{ grupo.nombre }}</td>
+                                                                <td>{{ grupo.descripcion }}</td>
+                                                                <td>
+                                                                    {% for prm in grupo.permisos %}
+                                                                        {{ prm }}<br>
+                                                                    {% endfor %}
+                                                                </td>
+                                                                <td>{% if grupo.estado == True %}
+                                                                    <span class="badge badge-primary">Activo</span>
+                                                                    {% else %}
+                                                                    <span class="badge badge-secondary">Inactivo</span>
+                                                                    {% endif %}
+                                                                </td>
+                                                                {% if perms.auth.change_group or perms.auth.delete_group %}
+                                                                    <td>
+                                                                        {% if perms.auth.change_group %}
+                                                                          <a class="far fa-2x fa-edit"  href="{% url 'Administracion:grupos-permisos-editar' grupo.grupo_id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                                        {% endif %}
+                                                                        {% if perms.auth.delete_group %}
+                                                                          <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ grupo.grupo_id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ grupo.grupo_id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+                                                                        {% endif %}
+                                                                    </td>
+                                                                {% endif %}
+                                                            </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer small text-muted">Actualizado: {{ fecha }}</div>
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+
+    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='administracion/grupos-permisos' %}
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
+    <script src="{% static 'Administracion/js/confirmarEliminar.js' %}"></script>
+    <script src="{% static 'Administracion/js/select_divipol.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.export.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script>
+    <script src="{% static 'Administracion/js/Empresas/exportar_tabla.js' %}"></script>
+{% endblock %}
