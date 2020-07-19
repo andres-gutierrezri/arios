@@ -1,0 +1,6 @@
+{% if perms.TalentoHumano.view_archivo_historial %}
+<a class="far fa-custom fa-eye p-l-10" style="text-decoration: none !important;" href="{% url 'sgi:documentos-ver' hst.id  %}" target="_blank" data-original-title="Ver" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
+{% endif %}
+{% if perms.SGI.delete_archivo %}
+<a class="far fa-custom fa-trash-alt color-danger-900 p-l-10" id="eliminar_archivo_{{ hst.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ hst.id }}, 'sgi/documentos/archivo')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+{% endif %}

@@ -33,10 +33,22 @@
                                 <ul>
                                     {% for grupo_documento in grupo_documentos %}
                                         <li>
-                                            <span class="col-md-4"><i class="fa fa-lg fa-file-alt"></i> {{ grupo_documento }}</span>
-                                            {% if perms.SGI.add_documento %}
-                                            <a class="far fa-custom fa-file-plus p-l-10" href="{% url 'SGI:documentos-crear' proceso.id  grupo_documento.id%}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear documento"></a>
+                                            <span class="col-md-4"><i class="fa fa-lg fa-file-alt"></i> {{ grupo_documento.nombre }}</span>
+                                            {% if grupo_documento.solo_proceso or perms.TalentoHumano.can_gestioncompletasgi or not grupo_documento.solo_proceso and proceso == colaborador.proceso %}
+                                                {% if not perms.TalentoHumano.can_gestioncompletasgi %}
+                                                    {% for pro in grupo_documento.proceso %}
+                                                        {% if pro == colaborador.proceso %}
+                                                            {% include 'SGI/documentos/BotonesGestion/botonCrearDocumento.html' %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% else %}
+                                                    {% include 'SGI/documentos/BotonesGestion/botonCrearDocumento.html' %}
+                                                {% endif %}
+                                                {% if not grupo_documento.solo_proceso and proceso == colaborador.proceso and not perms.TalentoHumano.can_gestioncompletasgi %}
+                                                    {% include 'SGI/documentos/BotonesGestion/botonCrearDocumento.html' %}
+                                                {% endif %}
                                             {% endif %}
+
                                             <ul>
                                                 {% for documento in documentos %}
                                                     {% if documento.grupo_documento_id == grupo_documento.id %}
@@ -47,24 +59,32 @@
                                                                         <div class="panel-container show w-500">
                                                                             <div class="panel-content">
                                                                                 <div class="row">
-                                                                                    <div class="col-md-8">
+                                                                                    <div class="col-md-7">
                                                                                     {{ documento }}
                                                                                     </div>
-                                                                                    <div class="col-md-4 p-r-10" style="text-align: end">
+                                                                                    <div class="col-md-5 p-r-10" style="text-align: end">
                                                                                         {%  if perms.SGI.view_archivo %}
                                                                                         <a class="far fa-custom fa-eye" style="text-decoration: none !important;" {% for archivo in archivos %}{% if documento == archivo.documento %}href="{% url 'sgi:documentos-ver' archivo.id  %}" target="_blank" data-original-title="Ver" {% endif %}{% endfor %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
                                                                                         {% endif %}
                                                                                         {% if perms.TalentoHumano.view_historial %}
                                                                                         <a class="far fa-custom fa-list-alt p-l-10" {% for hst in historial %}{% if hst.documento == documento %} id="hst_{{ documento.id }}" href="javascript:arbolDocumentos('doc_{{ documento.id }}', 'hst_{{ documento.id }}')" data-original-title="Historial"{% endif %}{% endfor %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
                                                                                         {% endif %}
-                                                                                        {% if perms.SGI.add_archivo %}
-                                                                                        <a class="far fa-custom fa-long-arrow-alt-up p-l-10" href="javascript:abrir_modal_cargar('{% url 'sgi:documentos-cargar' proceso.id  grupo_documento.id documento.id %}');" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Cargar"></a>
+                                                                                        {% if perms.SGI.view_cadenaaprobacionencabezado %}
+                                                                                        <a class="far fa-custom fa-link p-l-10" id="cadena_{{ documento.id }}" {% if documento.cadena_aprobacion %}href="javascript:abrir_modal_detalle_cadena_aprobacion('{% url 'sgi:cadenas-aprobacion-detalle' documento.cadena_aprobacion_id %}')" {% endif %} data-original-title="Ver Cadena de Aprobación" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
                                                                                         {% endif %}
-                                                                                        {% if perms.SGI.change_documento %}
-                                                                                        <a class="far fa-custom fa-edit p-l-10" href="{% url 'sgi:documentos-editar' proceso.id  grupo_documento.id documento.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
-                                                                                        {% endif %}
-                                                                                        {% if perms.SGI.delete_documento %}
-                                                                                        <a class="far fa-custom fa-trash-alt color-danger-900 p-l-10" id="eliminar_{{ documento.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ documento.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+                                                                                        {% if grupo_documento.solo_proceso or perms.TalentoHumano.can_gestioncompletasgi or not grupo_documento.solo_proceso and proceso == colaborador.proceso %}
+                                                                                            {% if not perms.TalentoHumano.can_gestioncompletasgi %}
+                                                                                                {% for pro in grupo_documento.proceso %}
+                                                                                                    {% if pro == colaborador.proceso %}
+                                                                                                        {% include 'SGI/documentos/BotonesGestion/botonesGestionSGI.html' %}
+                                                                                                    {% endif %}
+                                                                                                {% endfor %}
+                                                                                            {% else %}
+                                                                                                {% include 'SGI/documentos/BotonesGestion/botonesGestionSGI.html' %}
+                                                                                            {% endif %}
+                                                                                            {% if not grupo_documento.solo_proceso and proceso == colaborador.proceso and not perms.TalentoHumano.can_gestioncompletasgi %}
+                                                                                                {% include 'SGI/documentos/BotonesGestion/botonesGestionSGI.html' %}
+                                                                                            {% endif %}
                                                                                         {% endif %}
                                                                                     </div>
                                                                                 </div>
@@ -85,13 +105,24 @@
                                                                                             <div class="panel-container show w-500">
                                                                                                 <div class="panel-content">
                                                                                                      <div class="row">
-                                                                                                        <div class="col-md-10">
+                                                                                                        <div class="col-md-9">
                                                                                                              {{ hst.nombre_documento }} <span class="{% if hst.estado.id == estado.APROBADO %}badge badge-primary {% elif hst.estado.id == estado.RECHAZADO %} badge border border-danger text-danger {% else %} badge border border-primary text-primary {% endif %}" style="font-size: 70%">{{ hst.estado }}</span>
                                                                                                         </div>
-                                                                                                        <div class="col-md-2 p-r-10" style="text-align: end">
-                                                                                                            {%  if perms.TalentoHumano.view_archivo_historial %}
-                                                                                                            <a class="far fa-custom fa-eye p-l-10" style="text-decoration: none !important;" href="{% url 'sgi:documentos-ver' hst.id  %}" target="_blank" data-original-title="Ver" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
-                                                                                                            {% endif %}
+                                                                                                        <div class="col-md-3 p-r-10" style="text-align: end">
+                                                                                                           {% if grupo_documento.solo_proceso or perms.TalentoHumano.can_gestioncompletasgi or not grupo_documento.solo_proceso and proceso == colaborador.proceso %}
+                                                                                                                {% if not perms.TalentoHumano.can_gestioncompletasgi %}
+                                                                                                                    {% for pro in grupo_documento.proceso %}
+                                                                                                                        {% if pro == colaborador.proceso %}
+                                                                                                                            {% include 'SGI/documentos/BotonesGestion/botonesArchivoEliminar.html' %}
+                                                                                                                        {% endif %}
+                                                                                                                    {% endfor %}
+                                                                                                                {% else %}
+                                                                                                                    {% include 'SGI/documentos/BotonesGestion/botonesArchivoEliminar.html' %}
+                                                                                                                {% endif %}
+                                                                                                                {% if not grupo_documento.solo_proceso and proceso == colaborador.proceso and not perms.TalentoHumano.can_gestioncompletasgi %}
+                                                                                                                    {% include 'SGI/documentos/BotonesGestion/botonesArchivoEliminar.html' %}
+                                                                                                                {% endif %}
+                                                                                                           {% endif %}
                                                                                                             <a class="far fa-custom fa-caret-square-down p-l-10" id="det_{{ hst.id }}" href="javascript:arbolDocumentos('arc_{{ hst.id }}', 'det_{{ hst.id }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Detalles"></a>
                                                                                                         </div>
                                                                                                      </div>
@@ -171,10 +202,10 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" tabindex="-1" id="cargar" role="dialog">
+    <div class="modal fade" tabindex="-1" id="cargar" role="dialog"></div>
+    <div class="modal fade" tabindex="-1" id="detalle_cadena_aprobacion" role="dialog"></div>
 
-    </div>
-    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='sgi/documentos' %}
+    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' %}
 {% endblock main%}
 
 {% block scripts %}
@@ -185,4 +216,5 @@
     <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
     <script src="{% static 'SGI/js/modalCargarArchivo.js' %}"></script>
     <script src="{% static 'SGI/js/arbolDocumentos.js' %}"></script>
+    <script src="{% static 'SGI/js/modalDetalleCadenaAprobacion.js' %}"></script>
 {% endblock scripts%}
