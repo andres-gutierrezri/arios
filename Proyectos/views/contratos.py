@@ -7,16 +7,18 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.db.models import F
 
+from Administracion.utils import get_id_empresa_global
 from EVA.views.index import AbstractEvaLoggedView
 from Notificaciones.models.models import EventoDesencadenador
 from Notificaciones.views.views import crear_notificacion_por_evento
 from Proyectos.models.contratos import Contrato
-from Administracion.models import Tercero, Empresa, TipoContrato
+from Administracion.models import Tercero, Empresa, TipoContrato, Proceso
+from TalentoHumano.models import Colaborador
 
 
 class ContratoView(AbstractEvaLoggedView):
     def get(self, request):
-        contratos = Contrato.objects.all()
+        contratos = Contrato.objects.filter(empresa_id=get_id_empresa_global(request))
         fecha = datetime.now()
         return render(request, 'Proyectos/Contrato/index.html', {'contratos': contratos, 'fecha': fecha,
                                                                  'menu_actual': 'contratos'})
@@ -30,6 +32,7 @@ class ContratoCrearView(AbstractEvaLoggedView):
 
     def post(self, request):
         contrato = Contrato.from_dictionary(request.POST)
+        contrato.empresa_id = get_id_empresa_global(request)
         try:
             contrato.full_clean()
         except ValidationError as errores:
@@ -39,10 +42,6 @@ class ContratoCrearView(AbstractEvaLoggedView):
 
         if Contrato.objects.filter(numero_contrato=contrato.numero_contrato).exists():
             messages.warning(request, 'Ya existe un contrato con número {0}'.format(contrato.numero_contrato))
-            return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.OPCION, contrato))
-
-        if contrato.fecha_inicio > contrato.fecha_terminacion:
-            messages.warning(request, 'La fecha de inicio debe ser menor o igual a la fecha de terminación')
             return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.OPCION, contrato))
 
         contrato.save()
@@ -64,7 +63,10 @@ class ContratoEditarView(AbstractEvaLoggedView):
                          'periodicidad_informes', 'tiempo', 'tipo_contrato_id', 'empresa_id']
 
         contrato = Contrato.from_dictionary(request.POST)
+        contrato.empresa_id = get_id_empresa_global(request)
         contrato.id = int(id)
+        if not contrato.residente_id:
+            contrato.residente_id = None
 
         try:
             contrato.full_clean(validate_unique=False)
@@ -75,10 +77,6 @@ class ContratoEditarView(AbstractEvaLoggedView):
 
         if Contrato.objects.filter(numero_contrato=contrato.numero_contrato).exclude(id=id).exists():
             messages.warning(request, 'Ya existe un contrato con número {0}'.format(contrato.numero_contrato))
-            return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.OPCION, contrato))
-
-        if contrato.fecha_inicio > contrato.fecha_terminacion:
-            messages.warning(request, 'La fecha de inicio debe ser menor o igual a la fecha de terminación')
             return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.OPCION, contrato))
 
         contrato_db = Contrato.objects.get(id=id)
@@ -115,12 +113,16 @@ def datos_xa_render(opcion: str, contrato: Contrato = None) -> dict:
     """
 
     tipo_contratos = TipoContrato.objects.tipos_comerciales(True, True)
+    procesos = Proceso.objects.get_xa_select_activos()
+    residentes = Colaborador.objects.get_xa_select_usuarios_activos()
     empresas = Empresa.objects.filter(estado=True).values(campo_valor=F('id'), campo_texto=F('nombre')) \
         .order_by('nombre')
     terceros = Tercero.objects.clientes_xa_select()
     rango_anho = [{'campo_valor': anho, 'campo_texto': str(anho)} for anho in range(2000, 2051)]
 
     datos = {'tipo_contratos': tipo_contratos,
+             'procesos': procesos,
+             'residentes': residentes,
              'empresas': empresas,
              'terceros': terceros,
              'rango_anho': rango_anho,
