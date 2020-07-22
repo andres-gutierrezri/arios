@@ -83,10 +83,11 @@ class Documento(models.Model, ModelDjangoExtensiones):
     version_actual = models.DecimalField(max_digits=4, decimal_places=1, verbose_name='Versión Actual',
                                          null=False, blank=False)
     cadena_aprobacion = models.ForeignKey(CadenaAprobacionEncabezado, on_delete=models.DO_NOTHING,
-                                          verbose_name='Cadena de aprobación', null=True, blank=True)
+                                          verbose_name='Cadena de aprobación', null=True, blank=False)
     grupo_documento = models.ForeignKey(GrupoDocumento, on_delete=models.DO_NOTHING,
                                         verbose_name='Grupo de documento', null=True, blank=False)
-    proceso = models.ForeignKey(Proceso, on_delete=models.DO_NOTHING, verbose_name='Proceso', null=True, blank=True)
+    proceso = models.ForeignKey(Proceso, on_delete=models.DO_NOTHING, verbose_name='Proceso', null=True, blank=False)
+    estado = models.BooleanField(verbose_name='Estado', null=False, blank=False, default=True)
 
     def __str__(self):
         return '{0} {1}'.format(self.codigo, self.nombre) +\
@@ -149,6 +150,7 @@ class EstadoArchivo(models.Model):
     APROBADO = 1
     OBSOLETO = 2
     RECHAZADO = 3
+    ELIMINADO = 4
 
 
 def custom_upload_to(instance, filename):
@@ -224,3 +226,16 @@ class ResultadosAprobacion(models.Model):
     class Meta:
         verbose_name = 'Resultado de Aprobación'
         verbose_name_plural = 'Resultados de Aprobaciones'
+
+
+class GruposDocumentosProcesos(models.Model):
+    grupo_documento = models.ForeignKey(GrupoDocumento, on_delete=models.DO_NOTHING, verbose_name='Grupo de Documento',
+                                        null=True, blank=False)
+    proceso = models.ForeignKey(Proceso, on_delete=models.DO_NOTHING, verbose_name='Proceso', null=True, blank=False)
+
+    def __str__(self):
+        return 'Grupo Documento {0} - Proceso {1}'.format(self.grupo_documento, self.proceso)
+
+    class Meta:
+        verbose_name = 'Grupo de Documento Proceso'
+        verbose_name_plural = 'Grupos de Documentos Procesos'

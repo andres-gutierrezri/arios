@@ -12,8 +12,9 @@ from EVA.General.utilidades import validar_extension_de_archivo
 from EVA.views.index import AbstractEvaLoggedView
 from SGI.models import Documento, GrupoDocumento, Archivo
 from SGI.models.documentos import EstadoArchivo, CadenaAprobacionDetalle, ResultadosAprobacion, \
-    CadenaAprobacionEncabezado
+    CadenaAprobacionEncabezado, GruposDocumentosProcesos
 from SGI.views.cadena_aprobacion import crear_notificacion_cadena
+from TalentoHumano.models import Colaborador
 
 
 class IndexView(AbstractEvaLoggedView):
@@ -21,13 +22,15 @@ class IndexView(AbstractEvaLoggedView):
         empresa_id = get_id_empresa_global(request)
         procesos = Proceso.objects.filter(empresa_id=empresa_id).order_by('nombre')
         if procesos.filter(id=id):
-            documentos = Documento.objects.filter(proceso_id=id, grupo_documento__empresa_id=empresa_id).order_by('codigo')
+            documentos = Documento.objects.filter(proceso_id=id, grupo_documento__empresa_id=empresa_id, estado=True)\
+                .order_by('codigo')
             archivos = Archivo.objects.filter(documento__proceso_id=id, estado_id=EstadoArchivo.APROBADO)
             proceso = procesos.get(id=id)
             grupo_documentos = GrupoDocumento.objects.filter(empresa_id=empresa_id, es_general=False).order_by('nombre')
             historial = Archivo.objects.filter(documento__proceso_id=id).order_by('-version')\
-                .exclude(estado_id=EstadoArchivo.PENDIENTE)
-            resultados = ResultadosAprobacion.objects.exclude(estado_id=EstadoArchivo.PENDIENTE)
+                .exclude(estado_id=EstadoArchivo.PENDIENTE).exclude(estado_id=EstadoArchivo.ELIMINADO)
+            resultados = ResultadosAprobacion.objects.exclude(estado_id=EstadoArchivo.PENDIENTE,
+                                                              archivo__documento__proceso_id=id)
 
             # Union de documentos de grupos de documento generales.
 
@@ -38,12 +41,27 @@ class IndexView(AbstractEvaLoggedView):
                                                documento__grupo_documento__empresa_id=empresa_id,
                                                estado_id=EstadoArchivo.APROBADO)
             historial |= Archivo.objects.filter(documento__grupo_documento__es_general=True,
-                                                documento__grupo_documento__empresa_id=empresa_id).order_by('-version')\
+                                                documento__grupo_documento__empresa_id=empresa_id).order_by('-version') \
                 .exclude(estado_id=EstadoArchivo.PENDIENTE)
 
+            colaborador = Colaborador.objects.get(usuario=request.user)
+            grps_docs_pros = GruposDocumentosProcesos.objects.all()
+
+            lista_grupos = []
+            for grp_doc in grupo_documentos:
+                lista_procesos = []
+                for gdp in grps_docs_pros:
+                    if grp_doc == gdp.grupo_documento:
+                        lista_procesos.append(gdp.proceso)
+                if lista_procesos:
+                    lista_grupos.append({'id': grp_doc.id, 'nombre': grp_doc.nombre, 'solo_proceso': True,
+                                         'proceso': lista_procesos})
+                else:
+                    lista_grupos.append({'id': grp_doc.id, 'nombre': grp_doc.nombre, 'solo_proceso': False})
             return render(request, 'SGI/documentos/index.html', {'documentos': documentos, 'procesos': procesos,
-                                                                 'grupo_documentos': grupo_documentos,
+                                                                 'grupo_documentos': lista_grupos,
                                                                  'proceso': proceso,
+                                                                 'colaborador': colaborador,
                                                                  'archivos': archivos,
                                                                  'historial': historial,
                                                                  'resultados': resultados,
@@ -155,13 +173,31 @@ class DocumentosEliminarView(AbstractEvaLoggedView):
     def post(self, request, id):
         try:
             documento = Documento.objects.get(id=id)
-            documento.delete()
+            if documento.archivo_set.exclude(estado_id=EstadoArchivo.ELIMINADO):
+                documento.delete()
+            else:
+                documento.estado = False
+                documento.save(update_fields=['estado'])
+
             messages.success(request, 'Se ha eliminado el documento {0}'.format(documento.nombre))
             return JsonResponse({"estado": "OK"})
 
         except IntegrityError:
             return JsonResponse({"estado": "error", "mensaje": "Este documento no puede ser eliminado "
                                                                "porque tiene archivos asociados"})
+
+
+class ArchivosEliminarView(AbstractEvaLoggedView):
+    def post(self, request, id):
+        try:
+            archivo = Archivo.objects.get(id=id)
+            archivo.estado_id = EstadoArchivo.ELIMINADO
+            archivo.save(update_fields=['estado'])
+            messages.success(request, 'Se ha eliminado el archivo {0}'.format(archivo.documento.nombre))
+            return JsonResponse({"estado": "OK"})
+
+        except IntegrityError:
+            return JsonResponse({"estado": "error", "mensaje": "Ha ocurrido un error eliminando el archivo"})
 
 
 # region Constantes Estados

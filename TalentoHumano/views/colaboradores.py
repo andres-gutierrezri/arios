@@ -1,12 +1,10 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.auth.tokens import default_token_generator
 from django.core.exceptions import ValidationError
 from django.contrib import messages
-from django.core.mail import EmailMultiAlternatives
 from django.shortcuts import render, redirect, reverse
 from django.db import IntegrityError
 from django.http import JsonResponse
-from django.template.loader import get_template
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
@@ -22,6 +20,7 @@ from Notificaciones.models.models import EventoDesencadenador
 from Notificaciones.views.views import crear_notificacion_por_evento
 from Proyectos.models import Contrato
 from TalentoHumano.models import Colaborador, EntidadesCAFE
+from Administracion.models import PermisosFuncionalidad
 
 
 class ColaboradoresIndexView(AbstractEvaLoggedView):
@@ -65,6 +64,7 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
         colaborador = Colaborador.from_dictionary(request.POST)
         colaborador.usuario_crea = request.user
         contratos = request.POST.getlist('contrato_id[]', None)
+        grupos = request.POST.getlist('grupo_id[]', None)
 
         colaborador.foto_perfil = request.FILES.get('foto_perfil', None)
         if not colaborador.foto_perfil:
@@ -115,6 +115,9 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
             for contrato in contratos:
                 ColaboradorContrato.objects.create(contrato_id=contrato, colaborador=colaborador)
 
+            for grp in grupos:
+                colaborador.usuario.groups.add(Group.objects.get(id=grp))
+
             messages.success(request, 'Se ha agregado el colaborador  {0}'.format(colaborador.nombre_completo))
 
             dominio = request.get_host()
@@ -158,6 +161,7 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
         colaborador = Colaborador.from_dictionary(request.POST)
         colaborador.usuario_actualiza = request.user
         contratos = request.POST.getlist('contrato_id[]', None)
+        grupos = request.POST.getlist('grupo_id[]', None)
 
         colaborador.id = int(id)
         colaborador.foto_perfil = request.FILES.get('foto_perfil', None)
@@ -212,9 +216,19 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
                     if clb.contrato.id == int(ctr):
                         cont += 1
 
+        cambios_grupos = False
+        if obtener_lista_grupos(colaborador, 'str') != grupos:
+            cambios_grupos = True
+
+        if cambios_grupos:
+            for grp_col in colaborador.usuario.groups.all():
+                colaborador.usuario.groups.remove(grp_col)
+            for grp in grupos:
+                colaborador.usuario.groups.add(Group.objects.get(id=grp))
+
         if colaborador_db.comparar(colaborador, excluir=['foto_perfil', 'empresa_sesion', 'usuario_actualiza',
                                                          'usuario_crea']) and \
-                len(cambios_usuario) <= 0 and not colaborador.foto_perfil and cont == cant:
+                len(cambios_usuario) <= 0 and not colaborador.foto_perfil and cont == cant and not cambios_grupos:
             messages.success(request, 'No se hicieron cambios en el colaborador {0}'
                              .format(colaborador.nombre_completo))
             return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
@@ -311,6 +325,8 @@ def datos_xa_render(opcion: str = None, colaborador: Colaborador = None) -> dict
     caja_compensacion = EntidadesCAFE.objects.caja_compensacion_xa_select()
     jefe_inmediato = Colaborador.objects.get_xa_select()
     contrato = Contrato.objects.get_xa_select_activos()
+    grupos = construir_grupos_xa_select()
+    grupos_colaborador = obtener_lista_grupos(colaborador, opcion)
     contratos_colaborador = ColaboradorContrato.objects.get_ids_contratos_list(colaborador)
     cargo = Cargo.objects.get_xa_select_activos()
     proceso = Proceso.objects.get_xa_select_activos()
@@ -335,7 +351,7 @@ def datos_xa_render(opcion: str = None, colaborador: Colaborador = None) -> dict
              'talla_camisa': talla_camisa, 'talla_zapatos': talla_zapatos, 'talla_pantalon': talla_pantalon,
              'tipo_identificacion': tipo_identificacion, 'opcion': opcion, 'genero': genero,
              'contratos_colaborador': contratos_colaborador, 'grupo_sanguineo': grupo_sanguineo,
-             'menu_actual': 'colaboradores'}
+             'menu_actual': 'colaboradores', 'grupos': grupos, 'grupos_colaborador': grupos_colaborador}
 
     if colaborador:
         municipios = Municipio.objects.get_xa_select_activos() \
@@ -348,5 +364,25 @@ def datos_xa_render(opcion: str = None, colaborador: Colaborador = None) -> dict
 
     return datos
 
+
+def construir_grupos_xa_select():
+    lista = []
+    grupos = PermisosFuncionalidad.objects.filter(estado=True, grupo__isnull=False, solo_admin=False)
+    for grp in grupos:
+        lista.append({'campo_valor': grp.grupo.id, 'campo_texto': grp.nombre})
+    return lista
+
+
+def obtener_lista_grupos(colaborador, opcion):
+    lista = []
+    if opcion == 'editar':
+        grupos = colaborador.usuario.groups.all()
+        for grp in grupos:
+            lista.append(grp.id)
+    elif opcion == 'str':
+        grupos = colaborador.usuario.groups.all()
+        for grp in grupos:
+            lista.append(str(grp.id))
+    return lista
 # endregion
 

@@ -85,6 +85,7 @@ class Colaborador(Persona, ModelDjangoExtensiones):
                        ("can_menu_gestiondocumental", "Can access menu gestion documental"),
                        ("view_historial", "Can view historial"),
                        ("view_archivo_historial", "Can view archivo historial"),
+                       ("can_gestioncompletasgi", "Can gestion completa SGI"),
                        )
 
     def empresa_to_dict(self):

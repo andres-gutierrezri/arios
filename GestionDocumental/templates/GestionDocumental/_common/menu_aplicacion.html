@@ -1,4 +1,4 @@
-{%  if perms.Administracion.view_consecutivodocumento %}
+{%  if perms.GestionDocumental.view_consecutivooficio or perms.GestionDocumental.view_consecutivocontrato %}
 <li {% if menu_actual|first in 'consecutivos' %} class="active open" {% endif %}>
     <a href="#" title="consecutivos" data-filter-tags="consecutivos">
         <i class="fal fa-list-alt"></i>

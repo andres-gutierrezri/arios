@@ -283,6 +283,13 @@ class DetalleSolicitudAprobacionView(AbstractEvaLoggedView):
                       {'archivos': archivos})
 
 
+class CadenaAprobacionDetalleView(AbstractEvaLoggedView):
+    def get(self, request, id):
+        cadena_aprobacion = CadenaAprobacionEncabezado.objects.get(id=id)
+        return render(request, 'SGI/CadenasAprobacion/detalle_cadena_aprobacion.html',
+                      {'cadena_aprobacion': cadena_aprobacion})
+
+
 # region Métodos de ayuda
 
 def datos_xa_render(opcion: str, request, cadena_aprobacion: CadenaAprobacionEncabezado = None, errores = None) -> dict:

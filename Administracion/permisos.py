@@ -15,4 +15,8 @@ permisos = [Permiso('index', None),
             Permiso('sub-empresas-crear', ['Administracion.add_empresa']),
             Permiso('sub-empresas-editar', ['Administracion.change_empresa']),
             Permiso('sub-empresas-eliminar', ['Administracion.delete_empresa']),
+            Permiso('grupos-permisos', ['auth.view_group']),
+            Permiso('grupos-permisos-crear', ['auth.add_group']),
+            Permiso('grupos-permisos-editar', ['auth.change_group']),
+            Permiso('grupos-permisos-eliminar', ['auth.delete_group']),
             ]
