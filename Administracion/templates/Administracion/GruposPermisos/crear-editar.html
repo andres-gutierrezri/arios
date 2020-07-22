@@ -1,7 +1,7 @@
 {% extends 'Administracion/_common/base_administracion.html' %}
 {% load static %}
 {% load eva_tags %}
-<title> Grupos de Permisos </title>
+<title>{% block titulo %}Gupos de Permisos{% endblock %}</title>
 {% block styles %}
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-brands.css' %}">
