@@ -61,7 +61,7 @@
                                                                                                         {% if perms.SGI.view_cadenaaprobacionencabezado %}
                                                                                                         <a class="far fa-custom fa-link p-l-10" id="cadena_{{ doc.documento.id }}" {% if doc.documento.cadena_aprobacion %}href="javascript:abrirModalDetalleCadenaAprobacion('{% url 'sgi:cadenas-aprobacion-detalle' doc.documento.cadena_aprobacion_id %}')" {% endif %} data-original-title="Ver Cadena de Aprobación" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
                                                                                                         {% endif %}
-                                                                                                        {% if gru.solo_proceso or perms.TalentoHumano.can_gestioncompletasgi or not gru.solo_proceso and proceso == colaborador.proceso %}
+                                                                                                        {% if gru.solo_proceso or perms.TalentoHumano.can_gestioncompletasgi or not gru.solo_proceso and pgd.proceso == colaborador.proceso %}
                                                                                                             {% if not perms.TalentoHumano.can_gestioncompletasgi %}
                                                                                                                 {% for pro in gru.proceso %}
                                                                                                                     {% if pro == colaborador.proceso %}
@@ -71,7 +71,7 @@
                                                                                                             {% else %}
                                                                                                                 {% include 'SGI/documentos/BotonesGestion/botonesGestionSGI.html' with proceso=pgd.proceso grupo_documento=gru.grupo documento=doc.documento %}
                                                                                                             {% endif %}
-                                                                                                            {% if not gru.solo_proceso and proceso == colaborador.proceso and not perms.TalentoHumano.can_gestioncompletasgi %}
+                                                                                                            {% if not gru.solo_proceso and pgd.proceso == colaborador.proceso and not perms.TalentoHumano.can_gestioncompletasgi %}
                                                                                                                 {% include 'SGI/documentos/BotonesGestion/botonesGestionSGI.html' with proceso=pgd.proceso grupo_documento=gru.grupo documento=doc.documento %}
                                                                                                             {% endif %}
                                                                                                         {% endif %}

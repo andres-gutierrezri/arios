@@ -53,11 +53,6 @@ class BuscarDocumentos(AbstractEvaLoggedView):
 def armar_documentos(documentos, grupos_documentos, proceso: None):
     lista_grupos = []
     for gru in grupos_documentos:
-        lista_procesos = []
-        for gdp in GruposDocumentosProcesos.objects.all():
-            if gru == gdp.grupo_documento:
-                lista_procesos.append(gdp.proceso)
-
         lista_documentos = []
         for doc in documentos:
             if proceso == doc.proceso and gru == doc.grupo_documento:
@@ -65,9 +60,14 @@ def armar_documentos(documentos, grupos_documentos, proceso: None):
             elif gru == doc.grupo_documento and not proceso:
                 lista_documentos.append({'documento': doc})
         if lista_documentos:
-            if lista_procesos:
+            grupos_procesos = GruposDocumentosProcesos.objects.filter(grupo_documento=gru)
+            if grupos_procesos:
+                lista_procesos = []
+                for gdp in grupos_procesos:
+                    lista_procesos.append(gdp.proceso)
+
                 lista_grupos.append({'grupo': gru, 'documentos': lista_documentos, 'solo_proceso': True,
                                      'proceso': lista_procesos})
             else:
-                lista_grupos.append({'grupo': gru, 'documentos': lista_documentos, 'solo_proceso': True})
+                lista_grupos.append({'grupo': gru, 'documentos': lista_documentos, 'solo_proceso': False})
     return lista_grupos
