@@ -1,4 +1,6 @@
-function abrir_modal_detalle_cadena_aprobacion(url) {
+'use strict';
+
+function abrirModalDetalleCadenaAprobacion(url) {
     $('#detalle_cadena_aprobacion').load(url, function (responseText) {
         try {
             if (responseText.includes("<!DOCTYPE html>")) {
