@@ -20,7 +20,7 @@ class GruposPermisosView(AbstractEvaLoggedView):
         for grp in grupos:
             permisos = []
             for perm in grp.grupo.permissions.all():
-                if perm.codename.startswith('view'):
+                if perm.codename.startswith('view') and perm.content_type.model in perm.codename:
                     permisos.append('{0} - {1} - {2}'.format(perm.content_type.app_label,
                                                              perm.content_type.model.capitalize(), 'Ver'))
                 elif perm.codename.startswith('add'):
