@@ -139,6 +139,7 @@ def guardar_selecciones_permisos(grupo, valores_permisos, permisos):
                 for dato in valor['permiso']:
                     if dato == VER and permiso.codename.startswith('view'):
                         grupo.permissions.add(permiso)
+                        grupo.permissions.add(get_permiso_menu(permiso))
                     elif dato == CREAR and permiso.codename.startswith('add'):
                         grupo.permissions.add(permiso)
                     elif dato == EDITAR and permiso.codename.startswith('change'):
@@ -146,6 +147,11 @@ def guardar_selecciones_permisos(grupo, valores_permisos, permisos):
                     elif dato == ELIMINAR and permiso.codename.startswith('delete'):
                         grupo.permissions.add(permiso)
     return
+
+
+def get_permiso_menu(modulo):
+    permiso_menu = 'can_menu_{0}'.format(modulo.content_type.app_label.lower())
+    return Permission.objects.get(codename=permiso_menu)
 
 
 def datos_xa_render(OPCION, permisos, id_grupo=None) -> dict:
