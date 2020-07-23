@@ -35,6 +35,7 @@
                                     {% csrf_token %}
                                         <input id="datos_permisos" name="datos_permisos" value="{{ datos_permisos }}" style="display: none">
                                         <input id="valores_permisos" name="valores_permisos" style="display: none">
+                                        <button id="btn_enviar" type="submit" style="display: none"></button>
                                         <div class="form-group">
                                             <div class="form-row">
                                                 <div class="col-md-6">
@@ -104,6 +105,7 @@
 
 {% block scripts %}
     <script src="{% static 'EVA/Plantilla/js/custom/controlFiltro.js' %}"></script>
-    <script src="{% static 'TalentoHumano/js/asignacionPermisos.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
+    <script src="{% static 'TalentoHumano/js/asignacionPermisos.js' %}"></script>
 {% endblock scripts%}

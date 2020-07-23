@@ -1,3 +1,5 @@
+'use strict';
+
 $(document).ready(function () {
     $('.select2').select2();
 
@@ -50,8 +52,14 @@ function guardarAsignacionesPermisos() {
             }
         }
     });
+    let enviar_form = $('#btn_enviar');
+    let id_usuario = $('#id_usuario');
+    if (listaPermisos.length === 0 && id_usuario.val() === undefined){
+        EVANotificacion.toast.error('No se han seleccionado permisos');
+        return false;
+    }
     valoresPermisos.val(JSON.stringify(listaPermisos));
-    $("#asignacion-permisos-form").submit();
+    enviar_form.click();
 }
 
 function activarFuncionalidad(id) {
