@@ -1,5 +1,7 @@
-function validarCE(e) {
-    tecla = (document.all) ? e.keyCode : e.which;
+'use strict';
+
+function validarCaracteresPermitidos(e) {
+    let tecla = (document.all) ? e.keyCode : e.which;
      //Validar el ingreso de + - * . ,
     if (tecla <= 46 && tecla >=42){
         return true;
@@ -10,7 +12,7 @@ function validarCE(e) {
         return true;
     }
 
-    patron = /[A-Za-z0-9]/;
-    tecla_final = String.fromCharCode(tecla);
-    return patron.test(tecla_final);
+    let patron = /[A-Za-z0-9]/;
+    let teclaFinal = String.fromCharCode(tecla);
+    return patron.test(teclaFinal);
 }
