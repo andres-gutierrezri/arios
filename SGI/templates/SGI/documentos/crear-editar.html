@@ -36,17 +36,17 @@
                                     <div class="form-group">
                                         <div class="form-row">
                                             <div class="col-md-6">
-                                                {% input_text_tag 'nombre' 'Nombre' placeholder="Ingrese el nombre" required="" maxlength="100" value=documento.nombre mensaje_validacion='Por favor digite el nombre' invalido=errores.nombre onkeypress="return validarCE(event)" %}
+                                                {% input_text_tag 'nombre' 'Nombre' placeholder="Ingrese el nombre" required="" maxlength="100" value=documento.nombre mensaje_validacion='Por favor digite el nombre' invalido=errores.nombre onkeypress="return validarCaracteresPermitidos(event)" %}
                                             </div>
                                             <div class="col-md-6">
-                                                {% input_text_tag 'codigo' 'Código' placeholder="Ingrese el código" required="" maxlength="100" value=documento.codigo mensaje_validacion='Por favor digite el código' invalido=errores.codigo onkeypress="return validarCE(event)" %}
+                                                {% input_text_tag 'codigo' 'Código' placeholder="Ingrese el código" required="" maxlength="100" value=documento.codigo mensaje_validacion='Por favor digite el código' invalido=errores.codigo onkeypress="return validarCaracteresPermitidos(event)" %}
                                             </div>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <div class="form-row">
                                             <div class="col-md-6">
-                                                    {% select_tag cadenas_aprobacion 'cadena_aprobacion_id' 'Seleccione una cadena de aprobación' texto_label="Cadena de Aprobación (Opcional)" required="" value=documento.cadena_aprobacion_id mensaje_validacion='Por favor seleccione una cadena de aprobación' invalido=errores.cadena_aprobacion %}
+                                                    {% select_tag cadenas_aprobacion 'cadena_aprobacion_id' 'Seleccione una cadena de aprobación' texto_label="Cadena de Aprobación" required="" value=documento.cadena_aprobacion_id mensaje_validacion='Por favor seleccione una cadena de aprobación' invalido=errores.cadena_aprobacion %}
                                             </div>
                                         </div>
                                     </div>

@@ -6,7 +6,7 @@ from EVA.General.modeljson import ModelDjangoExtensiones
 
 
 class PermisosFuncionalidad(models.Model, ModelDjangoExtensiones):
-    nombre = models.CharField(max_length=50, verbose_name='Nombre', null=False, blank=False)
+    nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     descripcion = models.CharField(max_length=300, verbose_name='Descripción', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
     content_type = models.ForeignKey(ContentType, on_delete=models.DO_NOTHING, verbose_name='Content Type',
