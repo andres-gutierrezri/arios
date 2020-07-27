@@ -1,0 +1,70 @@
+{% load eva_tags %}
+{% load static %}
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header p-b-0">
+            <h4 class="modal-title">
+                {% if opcion == 'editar' %}Editar Sub-Tipo de Movimiento{% else %}Crear Sub-Tipo de Movimiento{% endif %}{{ sub_mov }}
+            </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"><i class="fal fa-times"></i></span>
+            </button>
+        </div>
+        <div class="modal-body p-b-0">
+            {% if opcion == 'editar' %}
+                <form action="{% url 'Financiero:subtipo-movimiento-editar' sub_mov.id %}" id="subtipos-movimientos-form" method="post" class="needs-validation" novalidate>
+            {% else %}
+                <form action="{% url 'Financiero:subtipo-movimiento-crear' %}" id="subtipos-movimientos-form" method="post" class="needs-validation" novalidate>
+            {% endif %}
+            {% csrf_token %}
+            <div class="form-group">
+                <div>
+                    {% input_text_tag 'nombre' 'Nombre' placeholder="Ingrese el nombre" required="" modal=True maxlength="100" value=sub_mov.nombre mensaje_validacion='Por favor digite el nombre.' invalido=errores.nombre %}
+                </div>
+                <br>
+                <div>
+                    {% input_textarea_tag 'descripcion' 'Descripción' placeholder="Ingrese una descripción" required="" modal=True maxlength="100" value=sub_mov.descripcion mensaje_validacion='Por favor digite una descripción.' invalido=errores.descripcion %}
+                </div>
+                <br>
+                <div>
+                    {% select_tag tipos_movimientos 'tipo_movimiento_id' 'Seleccione un tipo de movimiento' texto_label="Tipo de Movimiento" value=sub_mov.tipo_movimiento_id required="" modal=True mensaje_validacion='Por favor seleccione un tipo de movimiento.' invalido=errores.tipo_movimiento %}
+                </div>
+                <br>
+                <div class="form-row">
+                    <div class="col-md-6">
+                        {% input_checkbox_tag 'protegido' 'Protegido' value=sub_mov.protegido  %}
+                    </div>
+                    {% if opcion == 'editar' %}
+                    <div class="col-md-6">
+                        {% input_checkbox_tag 'estado' 'Estado' value=sub_mov.estado  %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="modal-footer p-t-0" style="padding-left: 280px">
+                    <div>
+                        <button id="guardar" type="submit" class="btn btn-primary btn-block">{% if opcion == 'editar' %} Actualizar {% else %} Agregar {% endif %}</button>
+                    </div>
+                    <div>
+                        <button data-dismiss="modal" class="btn btn-danger btn-block">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    $('#tipo_movimiento_id_select_id').select2({
+        dropdownParent: $('#crear_editar'),
+        language: {
+            noResults: function() {
+              return "No se encontraron coincidencias";
+            },
+            searching: function() {
+              return "Buscando...";
+            }
+      }
+    });
+</script>
