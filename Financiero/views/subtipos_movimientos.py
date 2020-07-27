@@ -45,6 +45,7 @@ class SubtipoMovimientoEditarView(AbstractEvaLoggedView):
         sub_mov.id = id
         sub_mov.estado = request.POST.get('estado', 'False') == 'True'
         sub_mov.save(update_fields=update_fields)
+        messages.success(request, 'Se ha editado el subtipo de movimiento {0}'.format(sub_mov.nombre))
         return redirect(reverse('Financiero:subtipo-movimiento-index'))
 
 
