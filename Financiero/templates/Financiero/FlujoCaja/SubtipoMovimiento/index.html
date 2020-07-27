@@ -42,7 +42,7 @@
                                                         <th>Tipo de Movimiento</th>
                                                         <th>Protegido</th>
                                                         <th>Estado</th>
-                                                        {% if perms.Financiero.change_subtipomovimiento or perms.Proyectos.delete_subtipomovimiento %}
+                                                        {% if perms.Financiero.change_subtipomovimiento or perms.Financiero.delete_subtipomovimiento %}
                                                             <th>Acción</th>
                                                         {% endif %}
                                                     </tr>
@@ -59,12 +59,12 @@
                                                             <td>
                                                                 <span class="badge badge-primary">{% if sub_mov.estado %}Activo{% else %}Inactivo{% endif %}</span>
                                                             </td>
-                                                            {% if perms.Financiero.change_subtipomovimiento or perms.Proyectos.delete_subtipomovimiento %}
+                                                            {% if perms.Financiero.change_subtipomovimiento or perms.Financiero.delete_subtipomovimiento %}
                                                             <td>
                                                                 {% if perms.Financiero.change_subtipomovimiento %}
                                                                 <a class="far fa-2x fa-edit" href="javascript:abrirModalCrearEditarSubtipoMovimiento('{% url 'Financiero:subtipo-movimiento-editar' sub_mov.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
                                                                 {% endif %}
-                                                                {% if perms.Proyectos.delete_subtipomovimiento %}
+                                                                {% if perms.Financiero.delete_subtipomovimiento %}
                                                                 <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ sub_mov.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ sub_mov.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
                                                                 {% endif %}
                                                             </td>
