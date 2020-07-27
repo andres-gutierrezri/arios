@@ -6,3 +6,11 @@
     </a>
 </li>
 {% endif %}
+{%  if perms.Financiero.view_subtipomovimiento %}
+<li {% if menu_actual == 'subtip_movimientos' %} class="active" {% endif %}>
+    <a href="{% url 'Financiero:subtipo-movimiento-index' %}" title="Subtipos de Movimientos" data-filter-tags="subtipos movimientos">
+        <i class="fal fa-window-restore"></i>
+        <span class="nav-link-text" data-i18n="nav.Financiero_subtipos_movimientos">Subtipos de Movimientos</span>
+    </a>
+</li>
+{% endif %}
