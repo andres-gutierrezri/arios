@@ -9,6 +9,18 @@ function abrirModalCrearEditarSubtipoMovimiento(url) {
                 return false;
             }
             $(this).modal('show');
+            agregarValidacionFormularios();
+            $('#tipo_movimiento_id_select_id').select2({
+                dropdownParent: $('#crear_editar'),
+                language: {
+                    noResults: function() {
+                      return "No se encontraron coincidencias";
+                    },
+                    searching: function() {
+                      return "Buscando...";
+                    }
+              }
+            });
         } catch (err) {
             console.log(err);
             EVANotificacion.toast.error('Ha ocurrido un error interno');
