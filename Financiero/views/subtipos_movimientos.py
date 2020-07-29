@@ -14,7 +14,7 @@ class SubtiposMovimientosView(AbstractEvaLoggedView):
         subtip_movimientos = SubTipoMovimiento.objects.all()
         return render(request, 'Financiero/FlujoCaja/SubtipoMovimiento/index.html',
                       {'subtip_movimientos': subtip_movimientos, 'fecha': datetime.now(),
-                       'menu_actual': 'subtip_movimientos'})
+                       'menu_actual': ['flujo_caja', 'subtip_movimientos']})
 
 
 class SubtipoMovimientoCrearView(AbstractEvaLoggedView):

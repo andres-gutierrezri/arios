@@ -7,10 +7,20 @@
 </li>
 {% endif %}
 {%  if perms.Financiero.view_subtipomovimiento %}
-<li {% if menu_actual == 'subtip_movimientos' %} class="active" {% endif %}>
-    <a href="{% url 'Financiero:subtipo-movimiento-index' %}" title="Subtipos de Movimientos" data-filter-tags="subtipos movimientos">
-        <i class="fal fa-window-restore"></i>
-        <span class="nav-link-text" data-i18n="nav.Financiero_subtipos_movimientos">Subtipos de Movimientos</span>
+<li {% if menu_actual|first == 'flujo_caja' %} class="active open"{% endif %}>
+    <a href="#" title="Flujo de Caja" data-filter-tags="flujo caja">
+        <i class="fal fa-usd-square"></i>
+        <span class="nav-link-text" > Flujo de Caja</span>
     </a>
+    <ul>
+        {%  if perms.Financiero.view_subtipomovimiento %}
+        <li {% if menu_actual|last == 'subtip_movimientos' %} class="active" {% endif %}>
+            <a href="{% url 'Financiero:subtipo-movimiento-index' %}" title="Subtipos de Movimientos" data-filter-tags="subtipos movimientos">
+                <i class="fal fa-window-restore"></i>
+                <span class="nav-link-text" data-i18n="nav.Financiero_subtipos_movimientos">Subtipos de Movimientos</span>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
 </li>
 {% endif %}
