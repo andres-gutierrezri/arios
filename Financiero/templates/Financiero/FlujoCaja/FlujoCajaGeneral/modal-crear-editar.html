@@ -12,7 +12,7 @@
         </div>
         <div class="modal-body p-b-0">
             {% if opcion == 'editar' %}
-                <form action="{% url 'Financiero:flujo-caja-contratos-editar' contrato.id tipo flujo_detalle.id %}" id="flujo-caja-contratos-form" method="post" class="needs-validation" novalidate>
+                <form action="{% url 'Financiero:flujo-caja-contratos-editar' flujo_detalle.id %}" id="flujo-caja-contratos-form" method="post" class="needs-validation" novalidate>
             {% else %}
                 <form action="{% url 'Financiero:flujo-caja-contratos-crear' contrato.id tipo %}" id="flujo-caja-contratos-form" method="post" class="needs-validation" novalidate>
             {% endif %}
