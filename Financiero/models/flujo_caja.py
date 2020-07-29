@@ -20,6 +20,7 @@ class TipoMovimiento(models.Model):
 
 
 class SubTipoMovimiento(models.Model):
+    objects = ManagerGeneral()
     nombre = models.CharField(verbose_name='Nombre', max_length=30, null=False, blank=False)
     descripcion = models.CharField(verbose_name='Descripción', max_length=100, null=False, blank=False)
     tipo_movimiento = models.ForeignKey(TipoMovimiento, on_delete=models.DO_NOTHING, verbose_name='Tipo de Movimiento',
@@ -61,15 +62,21 @@ class EstadoFC(models.Model):
         verbose_name = 'Estado de Flujo de Caja'
         verbose_name_plural = 'Estados de Flujos de Cajas'
 
+    # Estados Fijos
+    NUEVO = 0
+    ALIMENTACION = 1
+    EJECUCION = 2
+
 
 class FlujoCajaEncabezado(models.Model):
     proceso = models.ForeignKey(Proceso, on_delete=models.CASCADE, verbose_name='Proceso',
                                 null=True, blank=False)
     contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato',
                                  null=True, blank=False)
-    estado = models.ForeignKey(EstadoFC, on_delete=models.DO_NOTHING, verbose_name='Estado', max_length=100,
+    estado = models.ForeignKey(EstadoFC, on_delete=models.DO_NOTHING, verbose_name='Estado',
                                null=False, blank=False)
     fecha_crea = models.DateTimeField(verbose_name='Fecha de Creación', null=False, blank=False)
+    finalizado_fecha_corte = models.BooleanField(verbose_name='Finalizado por Fecha de Corte', blank=False, null=False)
 
     def __str__(self):
         return '{0} - {1}'.format(self.proceso, self.contrato)
