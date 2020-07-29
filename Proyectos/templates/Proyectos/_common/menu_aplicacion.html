@@ -6,3 +6,11 @@
     </a>
 </li>
 {% endif %}
+{% if perms.Financiero.view_flujocajaencabezado %}
+<li {% if menu_actual == 'fc_contratos' %} class="active" {% endif %}>
+    <a href="{% url 'Financiero:flujo-caja-contratos' %}" title="Flujo de Caja" data-filter-tags="flujo de caja">
+        <i class="far fa-file-alt"></i>
+        <span class="nav-link-text" data-i18n="nav.flujo_caja_contratos">Flujo de Caja</span>
+    </a>
+</li>
+{% endif %}
