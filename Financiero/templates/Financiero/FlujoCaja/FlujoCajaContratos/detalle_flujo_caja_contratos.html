@@ -1,0 +1,85 @@
+{% extends 'Proyectos/_common/base_proyectos.html' %}
+{% load static %}
+{% load humanize %}
+<title>{% block titulo %}Flujo de Caja del Contrato {{ contrato }}{% endblock %}</title>
+{% block styles %}
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/datagrid/datatables/datatables.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/theme-demo.css' %}">
+{% endblock styles %}
+
+{% block main %}
+
+    <div class="panel-container show">
+        <div class="header">
+             <h1 class="header-title">
+                <i class='far fa-file-alt'></i> Flujo de Caja por Contratos <span class='fw-300'></span>
+                 <br>
+                 <br>
+             </h1>
+        </div>
+        <div class="row">
+            <div class="col-xl-12">
+                <div id="panel-1" class="panel">
+                    <div class="panel-container show">
+                        <div class="panel-content">
+                                <div class="panel-group">
+                                    <div class="panel-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered w-100" id="dataTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Fecha</th>
+                                                        <th>Tipo de Movimiento</th>
+                                                        <th>Precio</th>
+                                                        <th>Fecha de Creación</th>
+                                                        <th>Fecha de Modificación</th>
+                                                        <th>Acción</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for flujo_caja in flujos_cajas %}
+                                                        <tr>
+                                                            <td>{{ flujo_caja.fecha_movimiento|date:'Y-m-d' }}</td>
+                                                            <td>{{ flujo_caja.subtipo_movimiento }}</td>
+                                                            <td>{{ flujo_caja.valor }}</td>
+                                                            <td>{{ flujo_caja.fecha_crea|date:'Y-m-d' }}</td>
+                                                            <td>{{ flujo_caja.fecha_modifica|date:'Y-m-d' }}</td>
+                                                            {% if perms.Financiero.change_flujocajaencabezado or perms.Financiero.delete_flujocajaencabezado %}
+                                                            <td>
+                                                                {% if perms.Financiero.change_flujocajaencabezado %}
+                                                                <a class="far fa-2x fa-edit"   href="{% url 'Proyectos:contratos-editar' contrato.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                                {% endif %}
+                                                                {% if perms.Proyectos.delete_contrato %}
+                                                                <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ contrato.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminarContrato({{ contrato.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+                                                                {% endif %}
+                                                            </td>
+                                                            {% endif %}
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer small text-muted">Actualizado: {{ fecha }}</div>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" tabindex="-1" id="crear_editar" role="dialog"></div>
+
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.export.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script>
+    <script src="{% static 'Financiero/js/FlujoCaja/crearEditarSubtipoMovimiento.js' %}"></script>
+    <script src="{% static 'Financiero/js/FlujoCaja/exportarTablasSubtiposMovimientos.js' %}"></script>
+{% endblock %}
