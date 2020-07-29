@@ -20,5 +20,5 @@ class FlujoCajaContratosDetalleView(AbstractEvaLoggedView):
         contrato = Contrato.objects.get(id=id)
         flujos_cajas = FlujoCajaDetalle.objects.filter(flujo_caja_enc__contrato=contrato, tipo_registro=tipo)
         return render(request, 'Financiero/FlujoCaja/FlujoCajaContratos/detalle_flujo_caja_contratos.html',
-                      {'flujos_cajas': flujos_cajas, 'fecha': datetime.now(),
+                      {'flujos_cajas': flujos_cajas, 'fecha': datetime.now(), 'contrato': contrato, 'tipo': tipo,
                        'menu_actual': 'fc_contratos'})
