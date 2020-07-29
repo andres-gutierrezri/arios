@@ -1,10 +1,11 @@
 {% extends 'Proyectos/_common/base_proyectos.html' %}
 {% load static %}
 {% load humanize %}
-<title>{% block titulo %}Flujo de Caja del Contrato {{ contrato }}{% endblock %}</title>
+<title>{% block titulo %}Flujo de Caja del Contrato{% endblock %}</title>
 {% block styles %}
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/datagrid/datatables/datatables.bundle.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/bootstrap-datepicker/bootstrap-datepicker.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/theme-demo.css' %}">
 {% endblock styles %}
@@ -14,7 +15,7 @@
     <div class="panel-container show">
         <div class="header">
              <h1 class="header-title">
-                <i class='far fa-file-alt'></i> Flujo de Caja por Contratos <span class='fw-300'></span>
+                <i class='far fa-file-alt'></i> Contrato {{ contrato }} - Flujo de Caja: {% if tipo == 0 %}Real{% else %}Proyección{% endif %} <span class='fw-300'></span>
                  <br>
                  <br>
              </h1>
@@ -22,6 +23,11 @@
         <div class="row">
             <div class="col-xl-12">
                 <div id="panel-1" class="panel">
+                    <div class="panel-hdr">
+                        <small>
+                             <a class="far fa-3x far fa-plus-circle" href="javascript:abrirModalCrearEditarFlujoDeCaja('{% url 'Financiero:flujo-caja-contratos-crear' contrato.id tipo %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear"></a>
+                        </small>
+                    </div>
                     <div class="panel-container show">
                         <div class="panel-content">
                                 <div class="panel-group">
@@ -30,12 +36,14 @@
                                             <table class="table table-bordered w-100" id="dataTable">
                                                 <thead>
                                                     <tr>
-                                                        <th>Fecha</th>
+                                                        <th>Fecha del Movimiento</th>
                                                         <th>Tipo de Movimiento</th>
                                                         <th>Precio</th>
                                                         <th>Fecha de Creación</th>
                                                         <th>Fecha de Modificación</th>
-                                                        <th>Acción</th>
+                                                        {% if perms.Financiero.change_flujocajaencabezado or perms.Financiero.delete_flujocajaencabezado %}
+                                                            <th>Acción</th>
+                                                        {% endif %}
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -43,16 +51,16 @@
                                                         <tr>
                                                             <td>{{ flujo_caja.fecha_movimiento|date:'Y-m-d' }}</td>
                                                             <td>{{ flujo_caja.subtipo_movimiento }}</td>
-                                                            <td>{{ flujo_caja.valor }}</td>
+                                                            <td>{{ flujo_caja.valor|intcomma }}</td>
                                                             <td>{{ flujo_caja.fecha_crea|date:'Y-m-d' }}</td>
                                                             <td>{{ flujo_caja.fecha_modifica|date:'Y-m-d' }}</td>
                                                             {% if perms.Financiero.change_flujocajaencabezado or perms.Financiero.delete_flujocajaencabezado %}
                                                             <td>
-                                                                {% if perms.Financiero.change_flujocajaencabezado %}
-                                                                <a class="far fa-2x fa-edit"   href="{% url 'Proyectos:contratos-editar' contrato.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                                {% if perms.Financiero.change_flujocajaencadetalle %}
+                                                                <a class="far fa-2x fa-edit" {% if not flujo_caja.flujo_caja_enc.finalizado_fecha_corte %} href="javascript:abrirModalCrearEditarFlujoDeCaja('{% url 'Financiero:flujo-caja-contratos-editar' flujo_caja.id %}')" {% else %}style="color: grey" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
                                                                 {% endif %}
-                                                                {% if perms.Proyectos.delete_contrato %}
-                                                                <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ contrato.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminarContrato({{ contrato.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+                                                                {% if perms.Financiero.delete_flujocajaencadetalle %}
+                                                                <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ flujo_caja.id }}"  {% if not flujo_caja.flujo_caja_enc.finalizado_fecha_corte %} href="javascript:void(0);"  onclick="fConfirmarEliminar({{ flujo_caja.id }})" {% else %}style="color: grey" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
                                                                 {% endif %}
                                                             </td>
                                                             {% endif %}
@@ -70,7 +78,9 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" tabindex="-1" id="crear_editar" role="dialog"></div>
+    <div class="modal fade" tabindex="-1" id="crear_editar_flujo_caja" role="dialog"></div>
+
+    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='financiero/flujo-caja/contratos' %}
 
 {% endblock %}
 {% block scripts %}
@@ -82,4 +92,7 @@
     <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script>
     <script src="{% static 'Financiero/js/FlujoCaja/crearEditarSubtipoMovimiento.js' %}"></script>
     <script src="{% static 'Financiero/js/FlujoCaja/exportarTablasSubtiposMovimientos.js' %}"></script>
+    <script src="{% static 'Financiero/js/FlujoCaja/crearEditarFlujoDeCaja.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js'%}"></script>
+    <script src="{% static 'Financiero/js/FlujoCaja/confirmarEliminar.js' %}"></script>
 {% endblock %}
