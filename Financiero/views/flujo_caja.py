@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django.contrib import messages
 from django.db import IntegrityError
+from django.db.models import F
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -10,11 +11,15 @@ from EVA.General import app_datetime_now
 from EVA.views.index import AbstractEvaLoggedView
 from Financiero.models import FlujoCajaDetalle, SubTipoMovimiento, FlujoCajaEncabezado, EstadoFC
 from Proyectos.models import Contrato
+from TalentoHumano.models.colaboradores import ColaboradorContrato
 
 
 class FlujoCajaContratosView(AbstractEvaLoggedView):
     def get(self, request):
         contratos = Contrato.objects.all()
+        if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
+            contratos = contratos.filter(colaboradorcontrato__colaborador__usuario=request.user)
+
         return render(request, 'Financiero/FlujoCaja/FlujoCajaContratos/index.html',
                       {'contratos': contratos, 'fecha': datetime.now(),
                        'menu_actual': 'fc_contratos'})
@@ -32,7 +37,7 @@ class FlujoCajaContratosDetalleView(AbstractEvaLoggedView):
                 .annotate(activo=F('flujo_caja_enc__finalizado_fecha_corte'))
 
         return render(request, 'Financiero/FlujoCaja/FlujoCajaContratos/detalle_flujo_caja_contratos.html',
-                      {'flujos_cajas': flujos_cajas, 'fecha': datetime.now(), 'contrato': contrato, 'tipo': tipo,
+                      {'movimientos': movimientos, 'fecha': datetime.now(), 'contrato': contrato, 'tipo': tipo,
                        'menu_actual': 'fc_contratos'})
 
 
@@ -48,12 +53,8 @@ class FlujoCajaContratosCrearView(AbstractEvaLoggedView):
         fecha_movimiento = request.POST.get('fecha_movimiento', '')
         subtipo_movimiento_id = request.POST.get('subtipo_movimiento_id', '')
         valor = request.POST.get('valor', '')
-
-        primer_dia_mes_actual = '{2}-{1}-{0}'.format(1, datetime.now().month, datetime.now().year)
-
         flujos_encabezados = FlujoCajaEncabezado.objects\
-            .filter(contrato_id=id_contrato, finalizado_fecha_corte=False,
-                    fecha_crea__range=[primer_dia_mes_actual, datetime.now()])
+            .filter(contrato_id=id_contrato, finalizado_fecha_corte=False)
         if flujos_encabezados:
             flujo_encabezado = flujos_encabezados.first()
         else:
