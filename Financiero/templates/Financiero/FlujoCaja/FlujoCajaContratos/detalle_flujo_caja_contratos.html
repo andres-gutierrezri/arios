@@ -41,26 +41,26 @@
                                                         <th>Precio</th>
                                                         <th>Fecha de Creación</th>
                                                         <th>Fecha de Modificación</th>
-                                                        {% if perms.Financiero.change_flujocajaencabezado or perms.Financiero.delete_flujocajaencabezado %}
+                                                        {% if perms.Financiero.change_flujocajadetalle or perms.Financiero.delete_flujocajadetalle %}
                                                             <th>Acción</th>
                                                         {% endif %}
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {% for flujo_caja in flujos_cajas %}
+                                                    {% for movimiento in movimientos %}
                                                         <tr>
-                                                            <td>{{ flujo_caja.fecha_movimiento|date:'Y-m-d' }}</td>
-                                                            <td>{{ flujo_caja.subtipo_movimiento }}</td>
-                                                            <td>{{ flujo_caja.valor|intcomma }}</td>
-                                                            <td>{{ flujo_caja.fecha_crea|date:'Y-m-d' }}</td>
-                                                            <td>{{ flujo_caja.fecha_modifica|date:'Y-m-d' }}</td>
-                                                            {% if perms.Financiero.change_flujocajaencabezado or perms.Financiero.delete_flujocajaencabezado %}
+                                                            <td>{{ movimiento.fecha_movimiento|date:'Y-m-d' }}</td>
+                                                            <td>{{ movimiento.subtipo_movimiento }}</td>
+                                                            <td>{{ movimiento.valor|intcomma }}</td>
+                                                            <td>{{ movimiento.fecha_crea|date:'Y-m-d' }}</td>
+                                                            <td>{{ movimiento.fecha_modifica|date:'Y-m-d' }}</td>
+                                                            {% if perms.Financiero.change_flujocajadetalle or perms.Financiero.delete_flujocajadetalle %}
                                                             <td>
-                                                                {% if perms.Financiero.change_flujocajaencadetalle %}
-                                                                <a class="far fa-2x fa-edit" {% if not flujo_caja.flujo_caja_enc.finalizado_fecha_corte %} href="javascript:abrirModalCrearEditarFlujoDeCaja('{% url 'Financiero:flujo-caja-contratos-editar' flujo_caja.id %}')" {% else %}style="color: grey" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                                {% if perms.Financiero.change_flujocajadetalle %}
+                                                                <a class="far fa-2x fa-edit" {% if not movimiento.activo %} href="javascript:abrirModalCrearEditarFlujoDeCaja('{% url 'Financiero:flujo-caja-contratos-editar' movimiento.id %}')" {% else %}style="color: grey" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
                                                                 {% endif %}
-                                                                {% if perms.Financiero.delete_flujocajaencadetalle %}
-                                                                <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ flujo_caja.id }}"  {% if not flujo_caja.flujo_caja_enc.finalizado_fecha_corte %} href="javascript:void(0);"  onclick="fConfirmarEliminar({{ flujo_caja.id }})" {% else %}style="color: grey" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+                                                                {% if perms.Financiero.delete_flujocajadetalle %}
+                                                                <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ movimiento.id }}"  {% if not movimiento.activo %} href="javascript:void(0);"  onclick="fConfirmarEliminar({{ movimiento.id }})" {% else %}style="color: grey" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
                                                                 {% endif %}
                                                             </td>
                                                             {% endif %}
