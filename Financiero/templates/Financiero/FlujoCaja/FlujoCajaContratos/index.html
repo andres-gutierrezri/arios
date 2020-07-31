@@ -38,6 +38,7 @@
                                                         <th>Fecha de terminación</th>
                                                         <th>Valor</th>
                                                         <th>Tipo de contrato</th>
+                                                        <th>Estado</th>
                                                         <th>Ver Flujo de Caja</th>
                                                     </tr>
                                                 </thead>
@@ -52,6 +53,7 @@
                                                             <td>{{ contrato.fecha_terminacion|date:'Y-m-d' }}</td>
                                                             <td>{{ contrato.valor|intcomma }}</td>
                                                             <td>{{ contrato.tipo_contrato }}</td>
+                                                            <td>{{ contrato.flujocajaencabezado_set.first.estado }}</td>
                                                             <td>
                                                                 <a href="{% url 'Financiero:flujo-caja-contratos-detalle' contrato.id 0 %}"><span class="badge badge-primary fw-300 ml-auto">Real</span><br></a>
                                                                 <a href="{% url 'Financiero:flujo-caja-contratos-detalle' contrato.id 1 %}"><span class="badge badge-primary fw-300 ml-auto">Proyección</span></a>
