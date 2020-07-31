@@ -1,4 +1,5 @@
 from datetime import datetime
+import pytz
 
 from django.contrib import messages
 from django.db import IntegrityError
@@ -9,9 +10,10 @@ from django.urls import reverse
 
 from EVA.General import app_datetime_now
 from EVA.views.index import AbstractEvaLoggedView
-from Financiero.models import FlujoCajaDetalle, SubTipoMovimiento, FlujoCajaEncabezado, EstadoFC
+from Financiero.models import FlujoCajaDetalle, SubTipoMovimiento, FlujoCajaEncabezado, EstadoFC, CorteFlujoCaja
 from Proyectos.models import Contrato
 from TalentoHumano.models.colaboradores import ColaboradorContrato
+utc = pytz.UTC
 
 
 class FlujoCajaContratosView(AbstractEvaLoggedView):
@@ -29,16 +31,22 @@ class FlujoCajaContratosDetalleView(AbstractEvaLoggedView):
     def get(self, request, id, tipo):
         contrato = Contrato.objects.get(id=id)
         validar_permisos_de_acceso(request, contrato.id)
-        movimientos = FlujoCajaDetalle.objects.filter(flujo_caja_enc__contrato=contrato, tipo_registro=tipo) \
-            .annotate(activo=F('flujo_caja_enc__finalizado_fecha_corte'))
+        fecha_corte = CorteFlujoCaja.objects.get(flujo_caja_enc__contrato=contrato).fecha_corte
+
+        if datetime.strptime('2020-08-10', "%Y-%m-%d").date() <= fecha_corte.date():
+            fecha_minima_mes = '{0}-{1}-1'.format(fecha_corte.year, fecha_corte.month - 1)
+        else:
+            fecha_minima_mes = '{0}-{1}-1'.format(fecha_corte.year, fecha_corte.month)
+        fecha_minima_mes = datetime.strptime(fecha_minima_mes, "%Y-%m-%d").date()
+
+        movimientos = FlujoCajaDetalle.objects.filter(flujo_caja_enc__contrato=contrato, tipo_registro=tipo)\
+            .annotate(estado=F('flujo_caja_enc__estado'), fecha_corte=F('flujo_caja_enc__corteflujocaja__fecha_corte'))
 
         if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
-            movimientos = movimientos.filter(subtipo_movimiento__protegido=False)\
-                .annotate(activo=F('flujo_caja_enc__finalizado_fecha_corte'))
-
+            movimientos = movimientos.filter(subtipo_movimiento__protegido=False)
         return render(request, 'Financiero/FlujoCaja/FlujoCajaContratos/detalle_flujo_caja_contratos.html',
                       {'movimientos': movimientos, 'fecha': datetime.now(), 'contrato': contrato, 'tipo': tipo,
-                       'menu_actual': 'fc_contratos'})
+                       'menu_actual': 'fc_contratos', 'fecha_minima_mes': fecha_minima_mes})
 
 
 class FlujoCajaContratosCrearView(AbstractEvaLoggedView):
