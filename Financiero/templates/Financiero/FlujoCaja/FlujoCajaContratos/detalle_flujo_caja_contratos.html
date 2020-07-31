@@ -38,7 +38,6 @@
                                             <table class="table table-bordered w-100" id="dataTableFlujoCaja">
                                                 <thead>
                                                     <tr>
-                                                        <th style="display:none;">id</th>
                                                         <th>Fecha del Movimiento</th>
                                                         <th>Tipo de Movimiento</th>
                                                         <th>Precio</th>
@@ -54,7 +53,6 @@
                                                 <tbody>
                                                     {% for movimiento in movimientos %}
                                                         <tr>
-                                                            <td style="display:none;">{{ movimiento.id }}</td>
                                                             <td>{{ movimiento.fecha_movimiento|date:'Y-m-d' }}</td>
                                                             <td>{{ movimiento.subtipo_movimiento }}</td>
                                                             <td>{{ movimiento.valor|intcomma }}</td>

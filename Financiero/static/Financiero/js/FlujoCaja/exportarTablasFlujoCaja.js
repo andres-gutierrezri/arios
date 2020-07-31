@@ -5,7 +5,7 @@ $(document).ready(function() {
     let columnasExportar = [1, 2, 3, 4, 5];
     $('#dataTableFlujoCaja').dataTable({
        "iDisplayLength": -1,
-       "aaSorting": [[ 0, "desc" ]],
+       "aaSorting": [[ 3, "desc" ]],
         responsive: true,
         lengthChange: false,
         dom:
