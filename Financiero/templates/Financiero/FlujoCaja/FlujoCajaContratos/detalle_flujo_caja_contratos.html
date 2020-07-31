@@ -25,7 +25,7 @@
                 <div id="panel-1" class="panel">
                     <div class="panel-hdr">
                         <small>
-                             <a class="far fa-3x far fa-plus-circle" href="javascript:abrirModalCrearEditarFlujoDeCaja('{% url 'Financiero:flujo-caja-contratos-crear' contrato.id tipo %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear"></a>
+                             <a class="far fa-3x far fa-plus-circle" href="javascript:abrirModalCrearEditarFlujoDeCaja('{% url 'Financiero:flujo-caja-contratos-crear' contrato.id tipo %}', '{{ fecha_minima_mes|date:'Y-m-d' }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear"></a>
                         </small>
                     </div>
                     <div class="panel-container show">
