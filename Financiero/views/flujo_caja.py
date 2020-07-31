@@ -30,14 +30,11 @@ class FlujoCajaContratosView(AbstractEvaLoggedView):
 class FlujoCajaContratosDetalleView(AbstractEvaLoggedView):
     def get(self, request, id, tipo):
         contrato = Contrato.objects.get(id=id)
-        validar_permisos_de_acceso(request, contrato.id)
-        fecha_corte = CorteFlujoCaja.objects.get(flujo_caja_enc__contrato=contrato).fecha_corte
+        if not tiene_permisos_de_acceso(request, contrato.id):
+            messages.error(request, 'No tiene permisos para acceder a este flujo de caja.')
+            return redirect(reverse('financiero:flujo-caja-contratos'))
 
-        if datetime.strptime('2020-08-10', "%Y-%m-%d").date() <= fecha_corte.date():
-            fecha_minima_mes = '{0}-{1}-1'.format(fecha_corte.year, fecha_corte.month - 1)
-        else:
-            fecha_minima_mes = '{0}-{1}-1'.format(fecha_corte.year, fecha_corte.month)
-        fecha_minima_mes = datetime.strptime(fecha_minima_mes, "%Y-%m-%d").date()
+        fecha_minima_mes = obtener_fecha_minima_mes(contrato.id)
 
         movimientos = FlujoCajaDetalle.objects.filter(flujo_caja_enc__contrato=contrato, tipo_registro=tipo)\
             .annotate(estado=F('flujo_caja_enc__estado'), fecha_corte=F('flujo_caja_enc__corteflujocaja__fecha_corte'))
@@ -52,23 +49,22 @@ class FlujoCajaContratosDetalleView(AbstractEvaLoggedView):
 class FlujoCajaContratosCrearView(AbstractEvaLoggedView):
     def get(self, request, id_contrato, tipo):
         OPCION = 'crear'
-        validar_permisos_de_acceso(request, id_contrato)
+        if not tiene_permisos_de_acceso(request, id_contrato):
+            messages.error(request, 'No tiene permisos para acceder a este flujo de caja.')
+            return redirect(reverse('financiero:flujo-caja-contratos'))
+        fecha_minima_mes = obtener_fecha_minima_mes(id_contrato)
         return render(request, 'Financiero/FlujoCaja/FlujoCajaGeneral/modal-crear-editar.html',
-                      datos_xa_render(OPCION, id_contrato, tipo))
+                      datos_xa_render(request, OPCION, id_contrato, tipo, fecha_minima_mes))
 
     def post(self, request, id_contrato, tipo):
-        validar_permisos_de_acceso(request, id_contrato)
+        if not tiene_permisos_de_acceso(request, id_contrato):
+            messages.error(request, 'No tiene permisos para acceder a este flujo de caja.')
+            return redirect(reverse('financiero:flujo-caja-contratos'))
+
         fecha_movimiento = request.POST.get('fecha_movimiento', '')
         subtipo_movimiento_id = request.POST.get('subtipo_movimiento_id', '')
         valor = request.POST.get('valor', '')
-        flujos_encabezados = FlujoCajaEncabezado.objects\
-            .filter(contrato_id=id_contrato, finalizado_fecha_corte=False)
-        if flujos_encabezados:
-            flujo_encabezado = flujos_encabezados.first()
-        else:
-            flujo_encabezado = FlujoCajaEncabezado.objects.create(contrato_id=id_contrato, estado_id=EstadoFC.NUEVO,
-                                                                  fecha_crea=app_datetime_now(),
-                                                                  finalizado_fecha_corte=False)
+        flujo_encabezado = FlujoCajaEncabezado.objects.get(contrato_id=id_contrato)
         FlujoCajaDetalle.objects\
             .create(fecha_movimiento=fecha_movimiento, subtipo_movimiento_id=subtipo_movimiento_id,
                     valor=valor, tipo_registro=tipo, usuario_crea=request.user, usuario_modifica=request.user,
@@ -82,16 +78,24 @@ class FlujoCajaContratosEditarView(AbstractEvaLoggedView):
     def get(self, request, id_flujo_caja):
         OPCION = 'editar'
         flujo_detalle = FlujoCajaDetalle.objects.get(id=id_flujo_caja)
-        validar_permisos_de_acceso(request, flujo_detalle.flujo_caja_enc.contrato_id)
-        validar_gestion_registro(request, flujo_detalle)
+
+        if not tiene_permisos_de_acceso(request, flujo_detalle.flujo_caja_enc.contrato_id) or \
+                not validar_gestion_registro(request, flujo_detalle):
+            messages.error(request, 'No tiene permisos para acceder a este flujo de caja.')
+            return redirect(reverse('financiero:flujo-caja-contratos'))
+        fecha_minima_mes = obtener_fecha_minima_mes(flujo_detalle.flujo_caja_enc.contrato_id)
         return render(request, 'Financiero/FlujoCaja/FlujoCajaGeneral/modal-crear-editar.html',
-                      datos_xa_render(OPCION, flujo_detalle.flujo_caja_enc.contrato_id, flujo_detalle.tipo_registro,
-                                      flujo_detalle=flujo_detalle))
+                      datos_xa_render(request, OPCION, flujo_detalle.flujo_caja_enc.contrato_id,
+                                      flujo_detalle.tipo_registro, fecha_minima_mes, flujo_detalle=flujo_detalle))
 
     def post(self, request, id_flujo_caja):
         flujo_detalle = FlujoCajaDetalle.objects.get(id=id_flujo_caja)
-        validar_permisos_de_acceso(request, flujo_detalle.flujo_caja_enc.contrato_id)
-        validar_gestion_registro(request, flujo_detalle)
+
+        if not tiene_permisos_de_acceso(request, flujo_detalle.flujo_caja_enc.contrato_id) or \
+                not validar_gestion_registro(request, flujo_detalle):
+            messages.error(request, 'No tiene permisos para acceder a este flujo de caja.')
+            return redirect(reverse('financiero:flujo-caja-contratos'))
+
         flujo_detalle.fecha_movimiento = request.POST.get('fecha_movimiento', '')
         flujo_detalle.subtipo_movimiento_id = request.POST.get('subtipo_movimiento_id', '')
         flujo_detalle.valor = request.POST.get('valor', '')
@@ -107,8 +111,12 @@ class FlujoCajaContratosEliminarView(AbstractEvaLoggedView):
     def post(self, request, id):
         try:
             flujo_detalle = FlujoCajaDetalle.objects.get(id=id)
-            validar_permisos_de_acceso(request, flujo_detalle.flujo_caja_enc.contrato_id)
-            validar_gestion_registro(request, flujo_detalle)
+
+            if not tiene_permisos_de_acceso(request, flujo_detalle.flujo_caja_enc.contrato_id) or \
+                    not validar_gestion_registro(request, flujo_detalle):
+                messages.error(request, 'No tiene permisos para acceder a este flujo de caja.')
+                return redirect(reverse('financiero:flujo-caja-contratos'))
+
             flujo_detalle.delete()
             messages.success(request, 'Se ha eliminado el movimiento correctamente')
             return JsonResponse({"estado": "OK"})
@@ -119,39 +127,40 @@ class FlujoCajaContratosEliminarView(AbstractEvaLoggedView):
 
 
 # region Métodos de ayuda
-def datos_xa_render(opcion: str, id_contrato, tipo, flujo_detalle: FlujoCajaDetalle = None) -> dict:
+def datos_xa_render(request, opcion: str, id_contrato, tipo, fecha_minima_mes,
+                    flujo_detalle: FlujoCajaDetalle = None, ) -> dict:
     """
     Datos necesarios para la creación de los html de los Subtipos de Movimientos.
+    :param request: request para poder consultar los datos del usuario de sesión.
     :param opcion: valor de la acción a realizar 'crea' o 'editar'
-    :param sub_mov: Es opcional si se requiere pre cargar datos.
+    :param id_contrato: Necesario para poder identificar el contrato y el flujo de caja.
+    :param tipo: Especifica si es el flujo de caja real o proyectado.
+    :param fecha_minima_mes: Dato para validar la fecha minima permitida.
+    :param flujo_detalle: Es opcional, se usa para cargar los datos al editar..
     :return: Un diccionario con los datos.
     """
     contrato = Contrato.objects.get(id=id_contrato)
-    subtipos_movimientos = SubTipoMovimiento.objects.get_xa_select_activos()
+    subtipos_movimientos = valores_select_subtipos_movimientos(request)
     datos = {'opcion': opcion, 'contrato': contrato, 'subtipos_movimientos': subtipos_movimientos, 'tipo': tipo,
-             'fecha': app_datetime_now(), 'menu_actual': 'fc_contratos'}
+             'fecha': app_datetime_now(), 'menu_actual': 'fc_contratos', 'fecha_minima_mes': fecha_minima_mes}
     if flujo_detalle:
         datos['flujo_detalle'] = flujo_detalle
-
     return datos
 # endregion
 
 
-def validar_permisos_de_acceso(request, id_contrato):
+def tiene_permisos_de_acceso(request, id_contrato):
     if not ColaboradorContrato.objects\
             .filter(contrato_id=id_contrato, colaborador__usuario=request.user):
         if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
-            messages.error(request, 'No tiene permisos para acceder a este flujo de caja.')
-            return redirect(reverse('financiero:flujo-caja-contratos'))
+            return False
     return True
 
 
 def validar_gestion_registro(request, flujo_detalle):
     if flujo_detalle.subtipo_movimiento.protegido:
         if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
-            messages.error(request, 'No tiene permisos para acceder a este flujo de caja.')
-            return redirect(reverse('financiero:flujo-caja-contratos'))
-
+            return False
     return True
 
 
