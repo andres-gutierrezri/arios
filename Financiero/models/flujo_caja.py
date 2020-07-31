@@ -63,7 +63,6 @@ class EstadoFC(models.Model):
         verbose_name_plural = 'Estados de Flujos de Cajas'
 
     # Estados Fijos
-    NUEVO = 0
     ALIMENTACION = 1
     EJECUCION = 2
 

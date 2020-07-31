@@ -30,6 +30,7 @@ class FlujoCajaContratosView(AbstractEvaLoggedView):
 class FlujoCajaContratosDetalleView(AbstractEvaLoggedView):
     def get(self, request, id, tipo):
         contrato = Contrato.objects.get(id=id)
+        flujo_caja_enc = FlujoCajaEncabezado.objects.get(contrato=contrato)
         if not tiene_permisos_de_acceso(request, contrato.id):
             messages.error(request, 'No tiene permisos para acceder a este flujo de caja.')
             return redirect(reverse('financiero:flujo-caja-contratos'))
@@ -43,7 +44,8 @@ class FlujoCajaContratosDetalleView(AbstractEvaLoggedView):
             movimientos = movimientos.filter(subtipo_movimiento__protegido=False)
         return render(request, 'Financiero/FlujoCaja/FlujoCajaContratos/detalle_flujo_caja_contratos.html',
                       {'movimientos': movimientos, 'fecha': datetime.now(), 'contrato': contrato, 'tipo': tipo,
-                       'menu_actual': 'fc_contratos', 'fecha_minima_mes': fecha_minima_mes})
+                       'menu_actual': 'fc_contratos', 'fecha_minima_mes': fecha_minima_mes,
+                       'flujo_caja_enc': flujo_caja_enc})
 
 
 class FlujoCajaContratosCrearView(AbstractEvaLoggedView):
@@ -52,6 +54,11 @@ class FlujoCajaContratosCrearView(AbstractEvaLoggedView):
         if not tiene_permisos_de_acceso(request, id_contrato):
             messages.error(request, 'No tiene permisos para acceder a este flujo de caja.')
             return redirect(reverse('financiero:flujo-caja-contratos'))
+
+        if not validar_estado_planeacion_ejecucion(id_contrato, tipo):
+            messages.error(request, 'No se puede crear un movimiento porque ya se encuentra en ejecución')
+            return redirect(reverse('financiero:flujo-caja-contratos'))
+
         fecha_minima_mes = obtener_fecha_minima_mes(id_contrato)
         return render(request, 'Financiero/FlujoCaja/FlujoCajaGeneral/modal-crear-editar.html',
                       datos_xa_render(request, OPCION, id_contrato, tipo, fecha_minima_mes))
@@ -59,6 +66,10 @@ class FlujoCajaContratosCrearView(AbstractEvaLoggedView):
     def post(self, request, id_contrato, tipo):
         if not tiene_permisos_de_acceso(request, id_contrato):
             messages.error(request, 'No tiene permisos para acceder a este flujo de caja.')
+            return redirect(reverse('financiero:flujo-caja-contratos'))
+
+        if not validar_estado_planeacion_ejecucion(id_contrato, tipo):
+            messages.error(request, 'No se puede crear un movimiento porque ya se encuentra en ejecución')
             return redirect(reverse('financiero:flujo-caja-contratos'))
 
         fecha_movimiento = request.POST.get('fecha_movimiento', '')
@@ -83,6 +94,11 @@ class FlujoCajaContratosEditarView(AbstractEvaLoggedView):
                 not validar_gestion_registro(request, flujo_detalle):
             messages.error(request, 'No tiene permisos para acceder a este flujo de caja.')
             return redirect(reverse('financiero:flujo-caja-contratos'))
+
+        if not validar_estado_planeacion_ejecucion(flujo_detalle.flujo_caja_enc.contrato_id, flujo_detalle.tipo_registro):
+            messages.error(request, 'No se puede crear un movimiento porque ya se encuentra en ejecución')
+            return redirect(reverse('financiero:flujo-caja-contratos'))
+
         fecha_minima_mes = obtener_fecha_minima_mes(flujo_detalle.flujo_caja_enc.contrato_id)
         return render(request, 'Financiero/FlujoCaja/FlujoCajaGeneral/modal-crear-editar.html',
                       datos_xa_render(request, OPCION, flujo_detalle.flujo_caja_enc.contrato_id,
@@ -94,6 +110,10 @@ class FlujoCajaContratosEditarView(AbstractEvaLoggedView):
         if not tiene_permisos_de_acceso(request, flujo_detalle.flujo_caja_enc.contrato_id) or \
                 not validar_gestion_registro(request, flujo_detalle):
             messages.error(request, 'No tiene permisos para acceder a este flujo de caja.')
+            return redirect(reverse('financiero:flujo-caja-contratos'))
+
+        if not validar_estado_planeacion_ejecucion(flujo_detalle.flujo_caja_enc.contrato_id, flujo_detalle.tipo_registro):
+            messages.error(request, 'No se puede crear un movimiento porque ya se encuentra en ejecución')
             return redirect(reverse('financiero:flujo-caja-contratos'))
 
         flujo_detalle.fecha_movimiento = request.POST.get('fecha_movimiento', '')
@@ -115,6 +135,11 @@ class FlujoCajaContratosEliminarView(AbstractEvaLoggedView):
             if not tiene_permisos_de_acceso(request, flujo_detalle.flujo_caja_enc.contrato_id) or \
                     not validar_gestion_registro(request, flujo_detalle):
                 messages.error(request, 'No tiene permisos para acceder a este flujo de caja.')
+                return redirect(reverse('financiero:flujo-caja-contratos'))
+
+            if not validar_estado_planeacion_ejecucion(flujo_detalle.flujo_caja_enc.contrato_id,
+                                                       flujo_detalle.tipo_registro):
+                messages.error(request, 'No se puede crear un movimiento porque ya se encuentra en ejecución')
                 return redirect(reverse('financiero:flujo-caja-contratos'))
 
             flujo_detalle.delete()
@@ -181,3 +206,15 @@ def obtener_fecha_minima_mes(contrato):
     fecha_minima_mes = datetime.strptime(fecha_minima_mes, "%Y-%m-%d").date()
 
     return fecha_minima_mes
+
+
+REAL = 0
+PROYECCION = 1
+
+
+def validar_estado_planeacion_ejecucion(contrato_id, tipo):
+    flujo_enc = FlujoCajaEncabezado.objects.get(contrato_id=contrato_id)
+    if tipo == REAL and flujo_enc.estado_id == EstadoFC.EJECUCION or \
+            tipo == PROYECCION and flujo_enc.estado_id == EstadoFC.ALIMENTACION:
+        return True
+    return False

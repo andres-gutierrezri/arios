@@ -23,11 +23,13 @@
         <div class="row">
             <div class="col-xl-12">
                 <div id="panel-1" class="panel">
+                    {% if tipo == 0 and flujo_caja_enc.estado_id == 2 or tipo == 1 and flujo_caja_enc.estado_id == 1 %}
                     <div class="panel-hdr">
                         <small>
                              <a class="far fa-3x far fa-plus-circle" href="javascript:abrirModalCrearEditarFlujoDeCaja('{% url 'Financiero:flujo-caja-contratos-crear' contrato.id tipo %}', '{{ fecha_minima_mes|date:'Y-m-d' }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear"></a>
                         </small>
                     </div>
+                    {% endif %}
                     <div class="panel-container show">
                         <div class="panel-content">
                                 <div class="panel-group">
@@ -42,7 +44,9 @@
                                                         <th>Fecha de Creación</th>
                                                         <th>Fecha de Modificación</th>
                                                         {% if perms.Financiero.change_flujocajadetalle or perms.Financiero.delete_flujocajadetalle %}
-                                                            <th>Acción</th>
+                                                            {% if tipo == 0 and flujo_caja_enc.estado_id == 2 or tipo == 1 and flujo_caja_enc.estado_id == 1 %}
+                                                                <th>Acción</th>
+                                                            {% endif %}
                                                         {% endif %}
                                                     </tr>
                                                 </thead>
@@ -55,14 +59,16 @@
                                                             <td>{{ movimiento.fecha_crea|date:'Y-m-d' }}</td>
                                                             <td>{{ movimiento.fecha_modifica|date:'Y-m-d' }}</td>
                                                             {% if perms.Financiero.change_flujocajadetalle or perms.Financiero.delete_flujocajadetalle %}
-                                                            <td>
-                                                                {% if perms.Financiero.change_flujocajadetalle %}
-                                                                <a class="far fa-2x fa-edit" {% if fecha_minima_mes|date:"Y-m-d" <= movimiento.fecha_movimiento|date:"Y-m-d" %} href="javascript:abrirModalCrearEditarFlujoDeCaja('{% url 'Financiero:flujo-caja-contratos-editar' movimiento.id %}', '{{ fecha_minima_mes|date:'Y-m-d' }}')" {% else %}style="color: grey" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                                {% if tipo == 0 and flujo_caja_enc.estado_id == 2 or tipo == 1 and flujo_caja_enc.estado_id == 1 %}
+                                                                <td>
+                                                                    {% if perms.Financiero.change_flujocajadetalle %}
+                                                                    <a class="far fa-2x fa-edit" {% if fecha_minima_mes|date:"Y-m-d" <= movimiento.fecha_movimiento|date:"Y-m-d" %} href="javascript:abrirModalCrearEditarFlujoDeCaja('{% url 'Financiero:flujo-caja-contratos-editar' movimiento.id %}', '{{ fecha_minima_mes|date:'Y-m-d' }}')" {% else %}style="color: grey" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                                    {% endif %}
+                                                                    {% if perms.Financiero.delete_flujocajadetalle %}
+                                                                    <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ movimiento.id }}"  {% if fecha_minima_mes|date:"Y-m-d" <= movimiento.fecha_movimiento|date:"Y-m-d" %} href="javascript:void(0);"  onclick="fConfirmarEliminar({{ movimiento.id }})" {% else %}style="color: grey" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+                                                                    {% endif %}
+                                                                </td>
                                                                 {% endif %}
-                                                                {% if perms.Financiero.delete_flujocajadetalle %}
-                                                                <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ movimiento.id }}"  {% if fecha_minima_mes|date:"Y-m-d" <= movimiento.fecha_movimiento|date:"Y-m-d" %} href="javascript:void(0);"  onclick="fConfirmarEliminar({{ movimiento.id }})" {% else %}style="color: grey" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
-                                                                {% endif %}
-                                                            </td>
                                                             {% endif %}
                                                         </tr>
                                                     {% endfor %}
