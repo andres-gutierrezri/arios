@@ -153,3 +153,22 @@ def validar_gestion_registro(request, flujo_detalle):
             return redirect(reverse('financiero:flujo-caja-contratos'))
 
     return True
+
+
+def valores_select_subtipos_movimientos(request):
+    subtipos = SubTipoMovimiento.objects.filter(estado=True)
+    if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
+        subtipos = subtipos.filter(protegido=False)
+    return subtipos.values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
+
+
+def obtener_fecha_minima_mes(contrato):
+    fecha_corte = CorteFlujoCaja.objects.get(flujo_caja_enc__contrato_id=contrato).fecha_corte
+
+    if datetime.strptime('2020-08-10', "%Y-%m-%d").date() <= fecha_corte.date():
+        fecha_minima_mes = '{0}-{1}-1'.format(fecha_corte.year, fecha_corte.month - 1)
+    else:
+        fecha_minima_mes = '{0}-{1}-1'.format(fecha_corte.year, fecha_corte.month)
+    fecha_minima_mes = datetime.strptime(fecha_minima_mes, "%Y-%m-%d").date()
+
+    return fecha_minima_mes
