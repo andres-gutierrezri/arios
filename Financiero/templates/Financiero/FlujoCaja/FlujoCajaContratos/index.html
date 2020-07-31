@@ -14,7 +14,7 @@
     <div class="panel-container show">
         <div class="header">
              <h1 class="header-title">
-                <i class='far fa-file-alt'></i> Flujo de Caja por Contratos <span class='fw-300'></span>
+                <i class="fal fa-usd-square"></i> Flujo de Caja por Contratos <span class='fw-300'></span>
                  <br>
                  <br>
              </h1>
@@ -53,7 +53,7 @@
                                                             <td>{{ contrato.fecha_terminacion|date:'Y-m-d' }}</td>
                                                             <td>{{ contrato.valor|intcomma }}</td>
                                                             <td>{{ contrato.tipo_contrato }}</td>
-                                                            <td>{{ contrato.flujocajaencabezado_set.first.estado }}</td>
+                                                            <td><span class="badge badge-primary">{{ contrato.flujocajaencabezado_set.first.estado }}</span></td>
                                                             <td>
                                                                 <a href="{% url 'Financiero:flujo-caja-contratos-detalle' contrato.id 0 %}"><span class="badge badge-primary fw-300 ml-auto">Real</span><br></a>
                                                                 <a href="{% url 'Financiero:flujo-caja-contratos-detalle' contrato.id 1 %}"><span class="badge badge-primary fw-300 ml-auto">Proyección</span></a>
