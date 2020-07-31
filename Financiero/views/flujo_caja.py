@@ -197,12 +197,15 @@ def valores_select_subtipos_movimientos(request):
 
 
 def obtener_fecha_minima_mes(contrato):
-    fecha_corte = CorteFlujoCaja.objects.get(flujo_caja_enc__contrato_id=contrato).fecha_corte
-
-    if datetime.strptime('2020-08-10', "%Y-%m-%d").date() <= fecha_corte.date():
-        fecha_minima_mes = '{0}-{1}-1'.format(fecha_corte.year, fecha_corte.month - 1)
+    corte_fc = CorteFlujoCaja.objects.get(flujo_caja_enc__contrato_id=contrato)
+    if corte_fc.flujo_caja_enc.estado_id == EstadoFC.ALIMENTACION:
+        fecha_minima_mes = '{0}-{1}-1'.format(corte_fc.fecha_corte.year, corte_fc.fecha_corte.month)
     else:
-        fecha_minima_mes = '{0}-{1}-1'.format(fecha_corte.year, fecha_corte.month)
+        if datetime.strptime('2020-08-10', "%Y-%m-%d").date() <= corte_fc.fecha_corte.date():
+            fecha_minima_mes = '{0}-{1}-1'.format(corte_fc.fecha_corte.year, corte_fc.fecha_corte.month - 1)
+        else:
+            fecha_minima_mes = '{0}-{1}-1'.format(corte_fc.fecha_corte.year, corte_fc.fecha_corte.month)
+
     fecha_minima_mes = datetime.strptime(fecha_minima_mes, "%Y-%m-%d").date()
 
     return fecha_minima_mes
