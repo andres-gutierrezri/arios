@@ -1,5 +1,4 @@
 from datetime import datetime
-import pytz
 
 from django.contrib import messages
 from django.db import IntegrityError
@@ -13,7 +12,6 @@ from EVA.views.index import AbstractEvaLoggedView
 from Financiero.models import FlujoCajaDetalle, SubTipoMovimiento, FlujoCajaEncabezado, EstadoFC, CorteFlujoCaja
 from Proyectos.models import Contrato
 from TalentoHumano.models.colaboradores import ColaboradorContrato
-utc = pytz.UTC
 
 
 class FlujoCajaContratosView(AbstractEvaLoggedView):
@@ -30,7 +28,13 @@ class FlujoCajaContratosView(AbstractEvaLoggedView):
 class FlujoCajaContratosDetalleView(AbstractEvaLoggedView):
     def get(self, request, id, tipo):
         contrato = Contrato.objects.get(id=id)
-        flujo_caja_enc = FlujoCajaEncabezado.objects.get(contrato=contrato)
+        flujo_caja_enc = FlujoCajaEncabezado.objects.filter(contrato=contrato)
+        if flujo_caja_enc:
+            flujo_caja_enc = flujo_caja_enc.first()
+        else:
+            flujo_caja_enc = FlujoCajaEncabezado.objects.create(fecha_crea=datetime.now(), contrato=contrato,
+                                                                estado_id=EstadoFC.ALIMENTACION)
+            CorteFlujoCaja.objects.create(flujo_caja_enc=flujo_caja_enc)
         if not tiene_permisos_de_acceso(request, contrato.id):
             messages.error(request, 'No tiene permisos para acceder a este flujo de caja.')
             return redirect(reverse('financiero:flujo-caja-contratos'))
@@ -201,7 +205,7 @@ def obtener_fecha_minima_mes(contrato):
     if corte_fc.flujo_caja_enc.estado_id == EstadoFC.ALIMENTACION:
         fecha_minima_mes = '{0}-{1}-1'.format(corte_fc.fecha_corte.year, corte_fc.fecha_corte.month)
     else:
-        if datetime.strptime('2020-08-10', "%Y-%m-%d").date() <= corte_fc.fecha_corte.date():
+        if datetime.strptime('2020-08-10', "%Y-%m-%d").date() <= corte_fc.fecha_corte:
             fecha_minima_mes = '{0}-{1}-1'.format(corte_fc.fecha_corte.year, corte_fc.fecha_corte.month - 1)
         else:
             fecha_minima_mes = '{0}-{1}-1'.format(corte_fc.fecha_corte.year, corte_fc.fecha_corte.month)
