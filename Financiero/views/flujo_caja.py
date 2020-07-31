@@ -205,7 +205,7 @@ def obtener_fecha_minima_mes(contrato):
     if corte_fc.flujo_caja_enc.estado_id == EstadoFC.ALIMENTACION:
         fecha_minima_mes = '{0}-{1}-1'.format(corte_fc.fecha_corte.year, corte_fc.fecha_corte.month)
     else:
-        if datetime.strptime('2020-08-10', "%Y-%m-%d").date() <= corte_fc.fecha_corte:
+        if datetime.now().date() <= corte_fc.fecha_corte:
             fecha_minima_mes = '{0}-{1}-1'.format(corte_fc.fecha_corte.year, corte_fc.fecha_corte.month - 1)
         else:
             fecha_minima_mes = '{0}-{1}-1'.format(corte_fc.fecha_corte.year, corte_fc.fecha_corte.month)
