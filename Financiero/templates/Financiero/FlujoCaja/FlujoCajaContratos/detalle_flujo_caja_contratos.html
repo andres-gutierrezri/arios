@@ -35,9 +35,10 @@
                                 <div class="panel-group">
                                     <div class="panel-body">
                                         <div class="table-responsive">
-                                            <table class="table table-bordered w-100" id="dataTable">
+                                            <table class="table table-bordered w-100" id="dataTableFlujoCaja">
                                                 <thead>
                                                     <tr>
+                                                        <th style="display:none;">id</th>
                                                         <th>Fecha del Movimiento</th>
                                                         <th>Tipo de Movimiento</th>
                                                         <th>Precio</th>
@@ -53,6 +54,7 @@
                                                 <tbody>
                                                     {% for movimiento in movimientos %}
                                                         <tr>
+                                                            <td style="display:none;">{{ movimiento.id }}</td>
                                                             <td>{{ movimiento.fecha_movimiento|date:'Y-m-d' }}</td>
                                                             <td>{{ movimiento.subtipo_movimiento }}</td>
                                                             <td>{{ movimiento.valor|intcomma }}</td>
@@ -96,8 +98,7 @@
     <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.export.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script>
-    <script src="{% static 'Financiero/js/FlujoCaja/crearEditarSubtipoMovimiento.js' %}"></script>
-    <script src="{% static 'Financiero/js/FlujoCaja/exportarTablasSubtiposMovimientos.js' %}"></script>
+    <script src="{% static 'Financiero/js/FlujoCaja/exportarTablasFlujoCaja.js' %}"></script>
     <script src="{% static 'Financiero/js/FlujoCaja/crearEditarFlujoDeCaja.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js'%}"></script>
     <script src="{% static 'Financiero/js/FlujoCaja/confirmarEliminar.js' %}"></script>
