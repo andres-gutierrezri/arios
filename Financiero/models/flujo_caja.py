@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -107,10 +109,15 @@ class FlujoCajaDetalle(models.Model):
         verbose_name_plural = 'Flujos de Cajas Detalles'
 
 
+def fecha_corte_default():
+    return datetime.strptime('{0}-{1}-10'.format(datetime.now().year, datetime.now().month + 1), "%Y-%m-%d")
+
+
 class CorteFlujoCaja(models.Model):
     flujo_caja_enc = models.ForeignKey(FlujoCajaEncabezado, on_delete=models.CASCADE,
                                        verbose_name='Flujo de Caja Encabezado', null=False, blank=False)
-    fecha_corte = models.DateTimeField(verbose_name='Fecha de Corte', null=False, blank=False)
+    fecha_corte = models.DateField(verbose_name='Fecha de Corte', null=False, blank=False,
+                                   default=fecha_corte_default)
 
     def __str__(self):
         return '{0} - Fecha de Corte: {1}'.format(self.flujo_caja_enc, self.fecha_corte)
