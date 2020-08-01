@@ -77,6 +77,7 @@ class SubTipoMovimiento(models.Model):
         subtipo_movimiento.nombre = datos.get('nombre', '')
         subtipo_movimiento.descripcion = datos.get('descripcion', '')
         subtipo_movimiento.tipo_movimiento_id = datos.get('tipo_movimiento_id', '')
+        subtipo_movimiento.categoria_movimiento_id = datos.get('categoria_movimiento_id', '')
         subtipo_movimiento.protegido = datos.get('protegido', 'False') == 'True'
 
         return subtipo_movimiento
