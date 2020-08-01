@@ -18,7 +18,7 @@ from django.urls import path
 
 from Financiero.views import PrincipalView, FacturaCrearView, FacturasView, FacturaEditarView, FacturaDetalleView, \
     FacturaImprimirView
-from Financiero.views import subtipos_movimientos, categorias_movimientos
+from Financiero.views import subtipos_movimientos, flujo_caja, categorias_movimientos
 
 app_name = 'Financiero'
 
@@ -37,6 +37,15 @@ urlpatterns = [
          name='subtipo-movimiento-editar'),
     path('subtipos-movimientos/<int:id>/delete', subtipos_movimientos.SubtipoMovimientoEliminarView.as_view(),
          name='subtipo-movimiento-eliminar'),
+    path('flujo-caja/contratos', flujo_caja.FlujoCajaContratosView.as_view(), name='flujo-caja-contratos'),
+    path('flujo-caja/contratos/<int:id>/detalle/<int:tipo>', flujo_caja.FlujoCajaContratosDetalleView.as_view(),
+         name='flujo-caja-contratos-detalle'),
+    path('flujo-caja/contratos/<int:id_contrato>/add/<int:tipo>', flujo_caja.FlujoCajaContratosCrearView.as_view(),
+         name='flujo-caja-contratos-crear'),
+    path('flujo-caja/contratos/<int:id_flujo_caja>', flujo_caja.FlujoCajaContratosEditarView.as_view(),
+         name='flujo-caja-contratos-editar'),
+    path('flujo-caja/contratos/<int:id>/delete', flujo_caja.FlujoCajaContratosEliminarView.as_view(),
+         name='subtipo-movimiento-eliminar'),
     path('categorias-movimientos/', categorias_movimientos.CategoriasMovimientosView.as_view(),
          name='categoria-movimiento-index'),
     path('categorias-movimientos/add', categorias_movimientos.CategoriaMovimientoCrearView.as_view(),
@@ -46,3 +55,4 @@ urlpatterns = [
     path('categorias-movimientos/<int:id>/delete', categorias_movimientos.CategoriaMovimientoEliminarView.as_view(),
          name='categoria-movimiento-eliminar'),
 ]
+
