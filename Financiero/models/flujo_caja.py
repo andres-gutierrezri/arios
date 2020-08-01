@@ -19,6 +19,20 @@ class TipoMovimiento(models.Model):
         verbose_name_plural = 'Tipos de Movimientos'
 
 
+class CategoriaMovimiento(models.Model):
+    objects = ManagerGeneral()
+    nombre = models.CharField(verbose_name='Nombre', max_length=30, null=False, blank=False)
+    descripcion = models.CharField(verbose_name='Descripción', max_length=100, null=False, blank=False)
+    estado = models.BooleanField(verbose_name='Estado', blank=False, null=False, default=True)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name = 'Categoria de Movimiento'
+        verbose_name_plural = 'Categorias de Movimientos'
+
+
 class SubTipoMovimiento(models.Model):
     nombre = models.CharField(verbose_name='Nombre', max_length=30, null=False, blank=False)
     descripcion = models.CharField(verbose_name='Descripción', max_length=100, null=False, blank=False)
