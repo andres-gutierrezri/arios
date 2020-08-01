@@ -1,7 +1,7 @@
 
 'use strict';
 
-function abrirModalCrearEditarSubtipoMovimiento(url) {
+function abrirModalCrearEditar(url) {
     $('#crear_editar').load(url, function (responseText) {
         try {
             if (responseText.includes("<!DOCTYPE html>")) {

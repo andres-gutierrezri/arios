@@ -14,7 +14,7 @@
     <div class="panel-container show">
         <div class="header">
              <h1 class="header-title">
-                <i class='far fa-file-alt'></i> Subtipos de Movimientos <span class='fw-300'></span>
+                <i class='fal fa-window-restore'></i> Subtipos de Movimientos <span class='fw-300'></span>
                  <br>
                  <br>
              </h1>
@@ -25,7 +25,7 @@
                     {% if perms.Financiero.add_subtipomovimiento %}
                     <div class="panel-hdr">
                         <small>
-                             <a class="far fa-3x far fa-plus-circle"  href="javascript:abrirModalCrearEditarSubtipoMovimiento('{% url 'Financiero:subtipo-movimiento-crear' %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar contrato"></a>
+                             <a class="far fa-3x far fa-plus-circle"  href="javascript:abrirModalCrearEditar('{% url 'Financiero:subtipo-movimiento-crear' %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar contrato"></a>
                         </small>
                     </div>
                     {% endif %}
@@ -63,9 +63,9 @@
                                                             <td>
                                                                 {% if perms.Financiero.change_subtipomovimiento %}
                                                                     {% if sub_mov.protegido %}
-                                                                        <a class="far fa-2x fa-edit" {% if perms.TalentoHumano.can_access_usuarioespecial %} href="javascript:abrirModalCrearEditarSubtipoMovimiento('{% url 'Financiero:subtipo-movimiento-editar' sub_mov.id %}')" {% else %}style="color: grey" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                                        <a class="far fa-2x fa-edit" {% if perms.TalentoHumano.can_access_usuarioespecial %} href="javascript:abrirModalCrearEditar('{% url 'Financiero:subtipo-movimiento-editar' sub_mov.id %}')" {% else %}style="color: grey" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
                                                                     {% else %}
-                                                                        <a class="far fa-2x fa-edit" href="javascript:abrirModalCrearEditarSubtipoMovimiento('{% url 'Financiero:subtipo-movimiento-editar' sub_mov.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                                        <a class="far fa-2x fa-edit" href="javascript:abrirModalCrearEditar('{% url 'Financiero:subtipo-movimiento-editar' sub_mov.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
                                                                     {% endif %}
                                                                 {% endif %}
                                                                 {% if perms.Financiero.delete_subtipomovimiento %}
@@ -102,7 +102,7 @@
     <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.export.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script>
-    <script src="{% static 'Financiero/js/FlujoCaja/crearEditarSubtipoMovimiento.js' %}"></script>
+    <script src="{% static 'Financiero/js/FlujoCaja/modalCrearEditar.js' %}"></script>
     <script src="{% static 'Financiero/js/FlujoCaja/confirmarEliminar.js' %}"></script>
     <script src="{% static 'Financiero/js/FlujoCaja/exportarTablasSubtiposMovimientos.js' %}"></script>
 {% endblock %}
