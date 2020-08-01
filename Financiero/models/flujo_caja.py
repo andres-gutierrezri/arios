@@ -32,6 +32,19 @@ class CategoriaMovimiento(models.Model):
         verbose_name = 'Categoria de Movimiento'
         verbose_name_plural = 'Categorias de Movimientos'
 
+    @staticmethod
+    def from_dictionary(datos: dict) -> 'CategoriaMovimiento':
+        """
+        Crea una instancia de Categoria de Movimiento con los datos pasados en el diccionario.
+        :param datos: Diccionario con los datos para crear El Categoria de Movimiento.
+        :return: Instacia de entidad Categoria de Movimiento con la información especificada en el diccionario.
+        """
+        categoria_movimiento = CategoriaMovimiento()
+        categoria_movimiento.nombre = datos.get('nombre', '')
+        categoria_movimiento.descripcion = datos.get('descripcion', '')
+
+        return categoria_movimiento
+
 
 class SubTipoMovimiento(models.Model):
     nombre = models.CharField(verbose_name='Nombre', max_length=30, null=False, blank=False)
