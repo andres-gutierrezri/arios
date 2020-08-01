@@ -10,8 +10,20 @@ function abrirModalCrearEditar(url) {
             }
             $(this).modal('show');
             agregarValidacionFormularios();
+            let modalSubtipoMovimiento = $('#crear_editar');
             $('#tipo_movimiento_id_select_id').select2({
-                dropdownParent: $('#crear_editar'),
+                dropdownParent: modalSubtipoMovimiento,
+                language: {
+                    noResults: function() {
+                      return "No se encontraron coincidencias";
+                    },
+                    searching: function() {
+                      return "Buscando...";
+                    }
+              }
+            });
+            $('#categoria_movimiento_id_select_id').select2({
+                dropdownParent: modalSubtipoMovimiento,
                 language: {
                     noResults: function() {
                       return "No se encontraron coincidencias";
