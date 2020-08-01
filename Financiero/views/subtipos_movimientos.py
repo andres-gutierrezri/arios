@@ -7,6 +7,7 @@ from django.http import JsonResponse
 
 from EVA.views.index import AbstractEvaLoggedView
 from Financiero.models import SubTipoMovimiento, TipoMovimiento
+from Financiero.models.flujo_caja import CategoriaMovimiento
 
 
 class SubtiposMovimientosView(AbstractEvaLoggedView):
@@ -71,8 +72,9 @@ def datos_xa_render(opcion: str, sub_mov: SubTipoMovimiento = None) -> dict:
     :return: Un diccionario con los datos.
     """
     tipos_movimientos = TipoMovimiento.objects.get_xa_select_activos()
+    categorias_movimientos = CategoriaMovimiento.objects.get_xa_select_activos()
     datos = {'opcion': opcion, 'tipos_movimientos': tipos_movimientos,
-             'menu_actual': 'subtip_movimientos'}
+             'menu_actual': 'subtip_movimientos', 'categorias_movimientos': categorias_movimientos}
     if sub_mov:
         datos['sub_mov'] = sub_mov
 
