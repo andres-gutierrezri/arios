@@ -40,6 +40,7 @@
                                                         <th>Nombre</th>
                                                         <th>Descripción</th>
                                                         <th>Tipo de Movimiento</th>
+                                                        <th>Categoria de Movimiento</th>
                                                         <th>Protegido</th>
                                                         <th>Estado</th>
                                                         {% if perms.Financiero.change_subtipomovimiento or perms.Financiero.delete_subtipomovimiento %}
@@ -53,6 +54,7 @@
                                                             <td>{{ sub_mov.nombre}}</td>
                                                             <td>{{ sub_mov.descripcion }}</td>
                                                             <td>{{ sub_mov.tipo_movimiento }}</td>
+                                                            <td>{{ sub_mov.categoria_movimiento }}</td>
                                                             <td>
                                                                 <span class="badge badge-primary">{% if sub_mov.protegido %}Protegido{% else %}No Protegido{% endif %}</span>
                                                             </td>

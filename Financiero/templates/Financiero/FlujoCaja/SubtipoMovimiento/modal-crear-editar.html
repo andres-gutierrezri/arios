@@ -30,6 +30,10 @@
                     {% select_tag tipos_movimientos 'tipo_movimiento_id' 'Seleccione un tipo de movimiento' texto_label="Tipo de Movimiento" value=sub_mov.tipo_movimiento_id required="" modal=True mensaje_validacion='Por favor seleccione un tipo de movimiento.' invalido=errores.tipo_movimiento %}
                 </div>
                 <br>
+                <div>
+                    {% select_tag categorias_movimientos 'categoria_movimiento_id' 'Seleccione una categoria de movimiento' texto_label="Categoria de Movimiento" value=sub_mov.categoria_movimiento_id required="" modal=True mensaje_validacion='Por favor seleccione una categoria de movimiento.' invalido=errores.categoria_movimiento %}
+                </div>
+                <br>
                 <div class="form-row">
                     <div class="col-md-6">
                         {% input_checkbox_tag 'protegido' 'Protegido' value=sub_mov.protegido  %}
