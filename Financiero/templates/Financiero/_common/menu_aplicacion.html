@@ -21,8 +21,6 @@
             </a>
         </li>
         {% endif %}
-    </ul>
-    <ul>
         {%  if perms.Financiero.view_categoriamovimiento %}
         <li {% if menu_actual|last == 'categorias_movimientos' %} class="active" {% endif %}>
             <a href="{% url 'Financiero:categoria-movimiento-index' %}" title="Categorias de Movimientos" data-filter-tags="categoria movimientos">
