@@ -38,6 +38,8 @@ class SubTipoMovimiento(models.Model):
     descripcion = models.CharField(verbose_name='Descripción', max_length=100, null=False, blank=False)
     tipo_movimiento = models.ForeignKey(TipoMovimiento, on_delete=models.DO_NOTHING, verbose_name='Tipo de Movimiento',
                                         null=False, blank=False)
+    categoria_movimiento = models.ForeignKey(CategoriaMovimiento, on_delete=models.DO_NOTHING, null=False, blank=False,
+                                             verbose_name='Categoria de Movimiento')
     protegido = models.BooleanField(verbose_name='Protegido', blank=False, null=False)
     estado = models.BooleanField(verbose_name='Estado', blank=False, null=False, default=True)
 
