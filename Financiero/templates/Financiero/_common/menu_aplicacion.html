@@ -22,5 +22,15 @@
         </li>
         {% endif %}
     </ul>
+    <ul>
+        {%  if perms.Financiero.view_categoriamovimiento %}
+        <li {% if menu_actual|last == 'categorias_movimientos' %} class="active" {% endif %}>
+            <a href="{% url 'Financiero:categoria-movimiento-index' %}" title="Categorias de Movimientos" data-filter-tags="categoria movimientos">
+                <i class="fal fa-window-restore"></i>
+                <span class="nav-link-text" data-i18n="nav.Financiero_categorias_movimientos">Categorias de Movimientos</span>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
 </li>
 {% endif %}
