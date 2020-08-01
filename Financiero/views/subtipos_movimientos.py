@@ -41,7 +41,7 @@ class SubtipoMovimientoEditarView(AbstractEvaLoggedView):
                       datos_xa_render(self.OPCION, sub_mov))
 
     def post(self, request, id):
-        update_fields = ['nombre', 'descripcion', 'tipo_movimiento', 'protegido', 'estado']
+        update_fields = ['nombre', 'descripcion', 'tipo_movimiento', 'categoria_movimiento', 'protegido', 'estado']
         sub_mov = SubTipoMovimiento.from_dictionary(request.POST)
         sub_mov.id = id
         sub_mov.estado = request.POST.get('estado', 'False') == 'True'
