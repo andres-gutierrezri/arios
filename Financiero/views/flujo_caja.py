@@ -43,7 +43,11 @@ class FlujoCajaContratosDetalleView(AbstractEvaLoggedView):
         fecha_minima_mes = obtener_fecha_minima_mes(contrato.id)
 
         movimientos = FlujoCajaDetalle.objects.filter(flujo_caja_enc__contrato=contrato, tipo_registro=tipo)\
-            .annotate(estado=F('flujo_caja_enc__estado'), fecha_corte=F('flujo_caja_enc__corteflujocaja__fecha_corte'))
+            .annotate(fecha_corte=F('flujo_caja_enc__corteflujocaja__fecha_corte'))\
+            .exclude(estado_id=EstadoFCDetalle.OBSOLETO)
+
+        if not request.user.has_perms('Financiero.can_access_usuarioespecial'):
+            movimientos.exclude(estado_id=EstadoFCDetalle.ELIMINADO)
 
         if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
             movimientos = movimientos.filter(subtipo_movimiento__protegido=False)
