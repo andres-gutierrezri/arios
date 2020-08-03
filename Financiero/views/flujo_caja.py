@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from django.contrib import messages
-from django.db import IntegrityError
 from django.db.models import F
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
@@ -88,7 +87,8 @@ class FlujoCajaContratosCrearView(AbstractEvaLoggedView):
         FlujoCajaDetalle.objects\
             .create(fecha_movimiento=fecha_movimiento, subtipo_movimiento_id=subtipo_movimiento_id,
                     valor=valor, tipo_registro=tipo, usuario_crea=request.user, usuario_modifica=request.user,
-                    flujo_caja_enc=flujo_encabezado, fecha_crea=app_datetime_now(), fecha_modifica=app_datetime_now())
+                    flujo_caja_enc=flujo_encabezado, fecha_crea=app_datetime_now(), fecha_modifica=app_datetime_now(),
+                    estado_id=EstadoFCDetalle.VIGENTE)
 
         messages.success(request, 'Se ha agregado el movimiento correctamente')
         return redirect(reverse('financiero:flujo-caja-contratos-detalle', args=[id_contrato, tipo]))
