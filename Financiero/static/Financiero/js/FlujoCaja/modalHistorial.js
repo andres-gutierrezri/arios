@@ -11,7 +11,7 @@ function abrirModalHistorial(url) {
             $(this).modal('show');
             $('#dataTableHistorial').dataTable({
                 "iDisplayLength": -1,
-               "aaSorting": [[ 3, "desc" ]],
+               "aaSorting": [[ 0, "asc" ]],
                 responsive: true,
                 lengthChange: false,
                 language: {
