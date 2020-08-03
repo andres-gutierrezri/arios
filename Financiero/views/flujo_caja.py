@@ -167,7 +167,8 @@ class FlujoCajaContratosEliminarView(AbstractEvaLoggedView):
 class FlujoCajaContratosHistorialView(AbstractEvaLoggedView):
     def get(self, request, id):
         flujo_detalle = FlujoCajaDetalle.objects.filter(id=id)
-        if not tiene_permisos_de_acceso(request, flujo_detalle.first().flujo_caja_enc.contrato_id):
+        if not tiene_permisos_de_acceso(request, flujo_detalle.first().flujo_caja_enc.contrato_id,
+                                        permisos=['TalentoHumano.view_historial_flujocajadetalle']):
             messages.error(request, 'No tiene permisos para acceder a este historial de flujo de caja.')
             return redirect(reverse('financiero:flujo-caja-contratos'))
 
@@ -200,9 +201,12 @@ def datos_xa_render(request, opcion: str, id_contrato, tipo, fecha_minima_mes,
 # endregion
 
 
-def tiene_permisos_de_acceso(request, id_contrato):
+def tiene_permisos_de_acceso(request, id_contrato, permisos=None):
     if not ColaboradorContrato.objects\
             .filter(contrato_id=id_contrato, colaborador__usuario=request.user):
+        if permisos:
+            if request.user.has_perms(permisos):
+                return True
         if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
             return False
     return True
