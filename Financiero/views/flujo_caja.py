@@ -165,12 +165,13 @@ class FlujoCajaContratosEliminarView(AbstractEvaLoggedView):
 
 class FlujoCajaContratosHistorialView(AbstractEvaLoggedView):
     def get(self, request, id):
-        flujo_detalle = FlujoCajaDetalle.objects.get(id=id)
-        if not tiene_permisos_de_acceso(request, flujo_detalle.flujo_caja_enc.contrato_id):
+        flujo_detalle = FlujoCajaDetalle.objects.filter(id=id)
+        if not tiene_permisos_de_acceso(request, flujo_detalle.first().flujo_caja_enc.contrato_id):
             messages.error(request, 'No tiene permisos para acceder a este historial de flujo de caja.')
             return redirect(reverse('financiero:flujo-caja-contratos'))
 
-        historial = FlujoCajaDetalle.objects.filter(flujo_detalle=flujo_detalle)
+        historial = FlujoCajaDetalle.objects.filter(flujo_detalle=flujo_detalle.first())
+        historial |= flujo_detalle
         return render(request, 'Financiero/FlujoCaja/FlujoCajaGeneral/modal-historial.html',
                       {'historial': historial})
 
