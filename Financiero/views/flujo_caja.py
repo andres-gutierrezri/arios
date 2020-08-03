@@ -157,7 +157,8 @@ class FlujoCajaContratosEliminarView(AbstractEvaLoggedView):
 
         flujo_detalle.estado_id = EstadoFCDetalle.ELIMINADO
         flujo_detalle.comentarios = request.POST['comentarios']
-        flujo_detalle.save(update_fields=['comentarios', 'estado'])
+        flujo_detalle.fecha_modifica = app_datetime_now()
+        flujo_detalle.save(update_fields=['comentarios', 'estado', 'fecha_modifica'])
 
         messages.success(request, 'Se ha eliminado el movimiento correctamente')
         return JsonResponse({"estado": "OK"})
