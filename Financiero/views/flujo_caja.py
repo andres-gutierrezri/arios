@@ -10,6 +10,7 @@ from django.urls import reverse
 from EVA.General import app_datetime_now
 from EVA.views.index import AbstractEvaLoggedView
 from Financiero.models import FlujoCajaDetalle, SubTipoMovimiento, FlujoCajaEncabezado, EstadoFC, CorteFlujoCaja
+from Financiero.models.flujo_caja import EstadoFCDetalle
 from Proyectos.models import Contrato
 from TalentoHumano.models.colaboradores import ColaboradorContrato
 
@@ -133,26 +134,23 @@ class FlujoCajaContratosEditarView(AbstractEvaLoggedView):
 
 class FlujoCajaContratosEliminarView(AbstractEvaLoggedView):
     def post(self, request, id):
-        try:
-            flujo_detalle = FlujoCajaDetalle.objects.get(id=id)
 
-            if not tiene_permisos_de_acceso(request, flujo_detalle.flujo_caja_enc.contrato_id) or \
-                    not validar_gestion_registro(request, flujo_detalle):
-                messages.error(request, 'No tiene permisos para acceder a este flujo de caja.')
-                return redirect(reverse('financiero:flujo-caja-contratos'))
+        flujo_detalle = FlujoCajaDetalle.objects.get(id=id)
 
-            if not validar_estado_planeacion_ejecucion(flujo_detalle.flujo_caja_enc.contrato_id,
-                                                       flujo_detalle.tipo_registro):
-                messages.error(request, 'No se puede crear un movimiento porque ya se encuentra en ejecución')
-                return redirect(reverse('financiero:flujo-caja-contratos'))
+        if not tiene_permisos_de_acceso(request, flujo_detalle.flujo_caja_enc.contrato_id) or \
+                not validar_gestion_registro(request, flujo_detalle):
+            return JsonResponse({"estado": "error", "mensaje": "No tiene permisos para acceder a este flujo de caja."})
 
-            flujo_detalle.delete()
-            messages.success(request, 'Se ha eliminado el movimiento correctamente')
-            return JsonResponse({"estado": "OK"})
+        if not validar_estado_planeacion_ejecucion(flujo_detalle.flujo_caja_enc.contrato_id, flujo_detalle.tipo_registro):
+            return JsonResponse({"estado": "error",
+                                 "mensaje": "No se puede crear un movimiento porque ya se encuentra en ejecución"})
 
-        except IntegrityError:
-            return JsonResponse({"estado": "error", "mensaje": "Este movimiento no puede ser eliminado"
-                                                               "porque ya fue el flujo de caja ya fue cerrado."})
+        flujo_detalle.estado_id = EstadoFCDetalle.ELIMINADO
+        flujo_detalle.comentarios = request.POST['comentarios']
+        flujo_detalle.save(update_fields=['comentarios', 'estado'])
+
+        messages.success(request, 'Se ha eliminado el movimiento correctamente')
+        return JsonResponse({"estado": "OK"})
 
 
 # region Métodos de ayuda
