@@ -125,12 +125,12 @@ class FlujoCajaContratosEditarView(AbstractEvaLoggedView):
             messages.error(request, 'No se puede crear un movimiento porque ya se encuentra en ejecución')
             return redirect(reverse('financiero:flujo-caja-contratos'))
 
-        crear_registro_historial(flujo_detalle, EstadoFCDetalle.OBSOLETO)
+        comentarios = request.POST.get('comentarios', '')
+        crear_registro_historial(flujo_detalle, comentarios, EstadoFCDetalle.OBSOLETO)
 
         update_fields = ['fecha_movimiento', 'subtipo_movimiento', 'valor', 'fecha_modifica', 'comentarios', 'estado']
         flujo_detalle.fecha_movimiento = request.POST.get('fecha_movimiento', '')
         flujo_detalle.subtipo_movimiento_id = request.POST.get('subtipo_movimiento_id', '')
-        flujo_detalle.comentarios = request.POST.get('comentarios', '')
         flujo_detalle.valor = request.POST.get('valor', '')
         flujo_detalle.fecha_modifica = app_datetime_now()
         flujo_detalle.estado_id = EstadoFCDetalle.EDITADO
@@ -246,7 +246,7 @@ def validar_estado_planeacion_ejecucion(contrato_id, tipo):
     return False
 
 
-def crear_registro_historial(flujo_detalle, estado):
+def crear_registro_historial(flujo_detalle, comentarios, estado):
     FlujoCajaDetalle.objects \
         .create(fecha_movimiento=flujo_detalle.fecha_movimiento,
                 subtipo_movimiento_id=flujo_detalle.subtipo_movimiento_id,
@@ -254,4 +254,4 @@ def crear_registro_historial(flujo_detalle, estado):
                 usuario_crea=flujo_detalle.usuario_crea, usuario_modifica=flujo_detalle.usuario_modifica,
                 flujo_caja_enc=flujo_detalle.flujo_caja_enc, fecha_crea=flujo_detalle.fecha_crea,
                 fecha_modifica=app_datetime_now(), flujo_detalle=flujo_detalle,
-                estado_id=estado)
+                estado_id=estado, comentarios=comentarios)
