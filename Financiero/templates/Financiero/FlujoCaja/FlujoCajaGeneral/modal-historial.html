@@ -16,21 +16,27 @@
                 <table class="table table-bordered w-100" id="dataTableHistorial">
                     <thead>
                         <tr>
+                            <th hidden>id</th>
                             <th>Fecha del Movimiento</th>
                             <th>Tipo de Movimiento</th>
                             <th>Precio</th>
                             <th>Fecha de Creación</th>
                             <th>Fecha de Modificación</th>
+                            <th>Comentarios</th>
+                            <th>Estado</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for movimiento in historial %}
                             <tr>
+                                <td hidden>{{ movimiento.id }}</td>
                                 <td>{{ movimiento.fecha_movimiento|date:'Y-m-d' }}</td>
                                 <td>{{ movimiento.subtipo_movimiento }}</td>
                                 <td>{{ movimiento.valor|intcomma }}</td>
                                 <td>{{ movimiento.fecha_crea|date:'Y-m-d' }}</td>
                                 <td>{{ movimiento.fecha_modifica|date:'Y-m-d' }}</td>
+                                <td>{% if movimiento.comentarios %}{{ movimiento.comentarios }}{% else %}{% endif %}</td>
+                                <td><span class="badge {% if movimiento.estado_id == ELIMINADO %} badge-danger {% else %} badge-primary {% endif %} fw-300 ml-auto">{{ movimiento.estado }}</span></td>
                             </tr>
                         {% endfor %}
                     </tbody>
