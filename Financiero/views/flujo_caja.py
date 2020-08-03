@@ -125,11 +125,16 @@ class FlujoCajaContratosEditarView(AbstractEvaLoggedView):
             messages.error(request, 'No se puede crear un movimiento porque ya se encuentra en ejecución')
             return redirect(reverse('financiero:flujo-caja-contratos'))
 
+        crear_registro_historial(flujo_detalle, EstadoFCDetalle.OBSOLETO)
+
+        update_fields = ['fecha_movimiento', 'subtipo_movimiento', 'valor', 'fecha_modifica', 'comentarios', 'estado']
         flujo_detalle.fecha_movimiento = request.POST.get('fecha_movimiento', '')
         flujo_detalle.subtipo_movimiento_id = request.POST.get('subtipo_movimiento_id', '')
+        flujo_detalle.comentarios = request.POST.get('comentarios', '')
         flujo_detalle.valor = request.POST.get('valor', '')
         flujo_detalle.fecha_modifica = app_datetime_now()
-        flujo_detalle.save(update_fields=['fecha_movimiento', 'subtipo_movimiento', 'valor', 'fecha_modifica'])
+        flujo_detalle.estado_id = EstadoFCDetalle.EDITADO
+        flujo_detalle.save(update_fields=update_fields)
 
         messages.success(request, 'Se ha editado el movimiento correctamente')
         return redirect(reverse('financiero:flujo-caja-contratos-detalle',
@@ -227,3 +232,14 @@ def validar_estado_planeacion_ejecucion(contrato_id, tipo):
             tipo == PROYECCION and flujo_enc.estado_id == EstadoFC.ALIMENTACION:
         return True
     return False
+
+
+def crear_registro_historial(flujo_detalle, estado):
+    FlujoCajaDetalle.objects \
+        .create(fecha_movimiento=flujo_detalle.fecha_movimiento,
+                subtipo_movimiento_id=flujo_detalle.subtipo_movimiento_id,
+                valor=flujo_detalle.valor, tipo_registro=flujo_detalle.tipo_registro,
+                usuario_crea=flujo_detalle.usuario_crea, usuario_modifica=flujo_detalle.usuario_modifica,
+                flujo_caja_enc=flujo_detalle.flujo_caja_enc, fecha_crea=flujo_detalle.fecha_crea,
+                fecha_modifica=app_datetime_now(), flujo_detalle=flujo_detalle,
+                estado_id=estado)
