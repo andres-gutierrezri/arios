@@ -116,6 +116,18 @@ class FlujoCajaEncabezado(models.Model):
         verbose_name_plural = 'Flujos de Cajas Encabezados'
 
 
+class EstadoFCDetalle(models.Model):
+    nombre = models.CharField(verbose_name='Nombre', max_length=30, null=False, blank=False)
+    descripcion = models.CharField(verbose_name='Descripción', max_length=100, null=False, blank=False)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name = 'Estado de Flujo de Caja Detalle'
+        verbose_name_plural = 'Estados de Flujos de Cajas Detalles'
+
+
 class FlujoCajaDetalle(models.Model):
     fecha_movimiento = models.DateTimeField(verbose_name='Fecha de Creación', max_length=100, null=False, blank=False)
     subtipo_movimiento = models.ForeignKey(SubTipoMovimiento, on_delete=models.CASCADE,
