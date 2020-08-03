@@ -29,6 +29,12 @@
                 <div>
                     {% select_tag subtipos_movimientos 'subtipo_movimiento_id' 'Seleccione un subtipo de movimiento' texto_label="Subtipo de Movimiento" value=flujo_detalle.subtipo_movimiento_id required="" modal=True mensaje_validacion='Por favor seleccione un subtipo de movimiento.' invalido=errores.subtipo_movimiento %}
                 </div>
+                {% if opcion == 'editar' %}
+                    <br>
+                    <div>
+                        {% input_textarea_tag 'comentarios' 'Comentarios' placeholder="Ingrese los comentarios" maxlength="100" required="" modal=True mensaje_validacion='Por favor ingrese los comentarios.' invalido=errores.comentarios %}
+                    </div>
+                {% endif %}
             </div>
             <div class="form-row">
                 <div class="modal-footer p-t-0" style="padding-left: 280px">
