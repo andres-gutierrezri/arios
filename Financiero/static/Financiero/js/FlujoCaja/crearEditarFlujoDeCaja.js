@@ -9,8 +9,9 @@ const controls = {
 function abrirModalCrearEditarFlujoDeCaja(url, fecha_minima_mes) {
     $('#crear_editar_flujo_caja').load(url, function (responseText) {
         try {
-            if (responseText.includes("<!DOCTYPE html>")) {
-                EVANotificacion.toast.error('No tiene permisos para acceder a esta funcionalidad');
+            if (responseText.includes("error")) {
+                let error = JSON.parse(responseText);
+                EVANotificacion.toast.error(error.mensaje);
                 return false;
             }
             $(this).modal('show');
