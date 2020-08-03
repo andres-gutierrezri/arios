@@ -25,7 +25,11 @@ function fSweetAlert() {
             } else {
                 return undefined;
             }
+        },
+        inputAttributes: {
+            maxlength: 100
         }
+
     }).then(result => {
 
         if (result.value) {
