@@ -74,7 +74,7 @@
                                                                     <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ movimiento.id }}"  {% if fecha_minima_mes|date:"Y-m-d" <= movimiento.fecha_movimiento|date:"Y-m-d" and movimiento.estado_id == VIGENTE or movimiento.estado_id == EDITADO %} href="javascript:void(0);"  onclick="fConfirmarEliminar({{ movimiento.id }})" {% else %}style="color: grey" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
                                                                     {% endif %}
                                                                     {% if perms.TalentoHumano.can_access_usuarioespecial and movimiento.estado_id == EDITADO %}
-                                                                    <a class="far fa-2x fa-custom fa-list-alt color-danger-900" id="eliminar_{{ movimiento.id }}"  {% if fecha_minima_mes|date:"Y-m-d" <= movimiento.fecha_movimiento|date:"Y-m-d" %} href="javascript:void(0);"  onclick="fConfirmarEliminar({{ movimiento.id }})" {% else %}style="color: grey" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Historial"></a>
+                                                                    <a class="far fa-2x fa-custom fa-list-alt color-danger-900" id="eliminar_{{ movimiento.id }}"  {% if fecha_minima_mes|date:"Y-m-d" <= movimiento.fecha_movimiento|date:"Y-m-d" %} href="javascript:void(0);"  onclick="abrirModalHistorial('{% url 'Financiero:flujo-caja-detalle-historial' movimiento.id %}')" {% else %}style="color: grey" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Historial"></a>
                                                                     {% endif %}
                                                                 </td>
                                                                 {% endif %}
@@ -94,6 +94,7 @@
         </div>
     </div>
     <div class="modal fade" tabindex="-1" id="crear_editar_flujo_caja" role="dialog"></div>
+    <div class="modal fade" tabindex="-1" id="historial" role="dialog"></div>
 
     {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='financiero/flujo-caja/contratos' %}
 {% endwith %}
@@ -107,6 +108,7 @@
     <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script>
     <script src="{% static 'Financiero/js/FlujoCaja/exportarTablasFlujoCaja.js' %}"></script>
     <script src="{% static 'Financiero/js/FlujoCaja/crearEditarFlujoDeCaja.js' %}"></script>
+    <script src="{% static 'Financiero/js/FlujoCaja/modalHistorial.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js'%}"></script>
     <script src="{% static 'Financiero/js/FlujoCaja/confirmarEliminar.js' %}"></script>
 {% endblock %}
