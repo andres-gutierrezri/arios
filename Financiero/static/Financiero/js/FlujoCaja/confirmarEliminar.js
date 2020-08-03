@@ -14,9 +14,18 @@ function fSweetAlert() {
         title: '¿Está seguro de eliminar este registro?',
         text: "Esta acción no se podrá revertir",
         type: 'warning',
+        input: "text",
         showCancelButton: true,
         confirmButtonText: '¡Sí, eliminarlo!',
-        cancelButtonText: 'Cancelar'
+        cancelButtonText: 'Cancelar',
+        inputPlaceholder: "Ingrese un comentario",
+        inputValidator: comentarios => {
+            if (!comentarios) {
+                return "Por favor ingresa un comentario";
+            } else {
+                return undefined;
+            }
+        }
     }).then(result => {
 
         if (result.value) {
@@ -24,6 +33,7 @@ function fSweetAlert() {
                 url: URLDomain + rutaBorrado + "/" + idBorrar + "/delete",
                 type: 'POST',
                 context: document.body,
+                data: {'comentarios': result.value},
                 success: function (data) {
                     if(data.estado === "OK") {
                         location.reload();
