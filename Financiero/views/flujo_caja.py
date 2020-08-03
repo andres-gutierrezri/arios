@@ -101,12 +101,13 @@ class FlujoCajaContratosEditarView(AbstractEvaLoggedView):
 
         if not tiene_permisos_de_acceso(request, flujo_detalle.flujo_caja_enc.contrato_id) or \
                 not validar_gestion_registro(request, flujo_detalle):
-            messages.error(request, 'No tiene permisos para acceder a este flujo de caja.')
-            return redirect(reverse('financiero:flujo-caja-contratos'))
+            return JsonResponse({"estado": "error",
+                                 "mensaje": "No tiene permisos para acceder a este flujo de caja."})
 
         if not validar_estado_planeacion_ejecucion(flujo_detalle.flujo_caja_enc.contrato_id, flujo_detalle.tipo_registro):
-            messages.error(request, 'No se puede crear un movimiento porque ya se encuentra en ejecución')
-            return redirect(reverse('financiero:flujo-caja-contratos'))
+            return JsonResponse({"estado": "error",
+                                 "mensaje": "No se puede crear un movimiento porque el flujo de caja"
+                                            " se encuentra en ejecución."})
 
         fecha_minima_mes = obtener_fecha_minima_mes(flujo_detalle.flujo_caja_enc.contrato_id)
         return render(request, 'Financiero/FlujoCaja/FlujoCajaGeneral/modal-crear-editar.html',
