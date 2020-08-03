@@ -43,7 +43,7 @@
                                                         <th>Precio</th>
                                                         <th>Fecha de Creación</th>
                                                         <th>Fecha de Modificación</th>
-                                                        {% if perms.TalentoHumano.can_access_usuarioespecial %}
+                                                        {% if perms.TalentoHumano.can_access_usuarioespecial or perms.TalentoHumano.view_historial_flujocajadetalle%}
                                                             <th>Estado</th>
                                                         {% endif %}
                                                         {% if perms.Financiero.change_flujocajadetalle or perms.Financiero.delete_flujocajadetalle %}
@@ -61,7 +61,7 @@
                                                             <td>{{ movimiento.valor|intcomma }}</td>
                                                             <td>{{ movimiento.fecha_crea|date:'Y-m-d' }}</td>
                                                             <td>{{ movimiento.fecha_modifica|date:'Y-m-d' }}</td>
-                                                            {% if perms.TalentoHumano.can_access_usuarioespecial %}
+                                                            {% if perms.TalentoHumano.can_access_usuarioespecial or perms.TalentoHumano.view_historial_flujocajadetalle %}
                                                                 <td><span class="badge {% if movimiento.estado_id == ELIMINADO %} badge-danger {% else %} badge-primary {% endif %} fw-300 ml-auto">{{ movimiento.estado }}</span></td>
                                                             {% endif %}
                                                             {% if perms.Financiero.change_flujocajadetalle or perms.Financiero.delete_flujocajadetalle %}
@@ -73,11 +73,11 @@
                                                                     {% if perms.Financiero.delete_flujocajadetalle %}
                                                                     <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ movimiento.id }}"  {% if fecha_minima_mes|date:"Y-m-d" <= movimiento.fecha_movimiento|date:"Y-m-d" and movimiento.estado_id == VIGENTE or movimiento.estado_id == EDITADO %} href="javascript:void(0);"  onclick="fConfirmarEliminar({{ movimiento.id }})" {% else %}style="color: grey" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
                                                                     {% endif %}
-                                                                    {% if perms.TalentoHumano.can_access_usuarioespecial and movimiento.estado_id == EDITADO or movimiento.estado_id == ELIMINADO %}
+                                                                    {% if perms.TalentoHumano.can_access_usuarioespecial or perms.TalentoHumano.view_historial_flujocajadetalle and movimiento.estado_id == EDITADO or movimiento.estado_id == ELIMINADO %}
                                                                     <a class="far fa-2x fa-custom fa-list-alt" id="eliminar_{{ movimiento.id }}"  {% if fecha_minima_mes|date:"Y-m-d" <= movimiento.fecha_movimiento|date:"Y-m-d" %} href="javascript:void(0);"  onclick="abrirModalHistorial('{% url 'Financiero:flujo-caja-detalle-historial' movimiento.id %}')" {% else %}style="color: grey" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Historial"></a>
                                                                     {% endif %}
                                                                 </td>
-                                                                {% elif perms.TalentoHumano.can_access_usuarioespecial %}
+                                                                {% elif perms.TalentoHumano.can_access_usuarioespecial or perms.TalentoHumano.view_historial_flujocajadetalle%}
                                                                     <td>
                                                                     {% if perms.TalentoHumano.can_access_usuarioespecial and movimiento.estado_id == EDITADO or movimiento.estado_id == ELIMINADO %}
                                                                     <a class="far fa-2x fa-custom fa-list-alt" id="eliminar_{{ movimiento.id }}"  {% if fecha_minima_mes|date:"Y-m-d" <= movimiento.fecha_movimiento|date:"Y-m-d" %} href="javascript:void(0);"  onclick="abrirModalHistorial('{% url 'Financiero:flujo-caja-detalle-historial' movimiento.id %}')" {% else %}style="color: grey" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Historial"></a>
