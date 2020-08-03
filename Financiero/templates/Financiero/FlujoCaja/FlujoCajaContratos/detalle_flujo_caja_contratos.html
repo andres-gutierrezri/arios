@@ -11,11 +11,11 @@
 {% endblock styles %}
 
 {% block main %}
-
+    {% with ALIMENTACION=1 EJECUCION=2 REAL=0 PROYECCION=1 VIGENTE=1 EDITADO=2 ELIMINADO=4 %}
     <div class="panel-container show">
         <div class="header">
              <h1 class="header-title">
-                <i class='far fa-file-alt'></i> Contrato {{ contrato }} - Flujo de Caja: {% if tipo == 0 %}Real{% else %}Proyección{% endif %} <span class='fw-300'></span>
+                <i class='far fa-file-alt'></i> Contrato {{ contrato }} - Flujo de Caja: {% if tipo == REAL %}Real{% else %}Proyección{% endif %} <span class='fw-300'></span>
                  <br>
                  <br>
              </h1>
@@ -23,7 +23,7 @@
         <div class="row">
             <div class="col-xl-12">
                 <div id="panel-1" class="panel">
-                    {% if tipo == 0 and flujo_caja_enc.estado_id == 2 or tipo == 1 and flujo_caja_enc.estado_id == 1 %}
+                    {% if tipo == REAL and flujo_caja_enc.estado_id == EJECUCION or tipo == PROYECCION and flujo_caja_enc.estado_id == ALIMENTACION %}
                     <div class="panel-hdr">
                         <small>
                              <a class="far fa-3x far fa-plus-circle" href="javascript:abrirModalCrearEditarFlujoDeCaja('{% url 'Financiero:flujo-caja-contratos-crear' contrato.id tipo %}', '{{ fecha_minima_mes|date:'Y-m-d' }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear"></a>
@@ -44,7 +44,7 @@
                                                         <th>Fecha de Creación</th>
                                                         <th>Fecha de Modificación</th>
                                                         {% if perms.Financiero.change_flujocajadetalle or perms.Financiero.delete_flujocajadetalle %}
-                                                            {% if tipo == 0 and flujo_caja_enc.estado_id == 2 or tipo == 1 and flujo_caja_enc.estado_id == 1 %}
+                                                            {% if tipo == REAL and flujo_caja_enc.estado_id == EJECUCION or tipo == PROYECCION and flujo_caja_enc.estado_id == ALIMENTACION %}
                                                                 <th>Acción</th>
                                                             {% endif %}
                                                         {% endif %}
@@ -87,7 +87,7 @@
     <div class="modal fade" tabindex="-1" id="crear_editar_flujo_caja" role="dialog"></div>
 
     {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='financiero/flujo-caja/contratos' %}
-
+{% endwith %}
 {% endblock %}
 {% block scripts %}
     <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
