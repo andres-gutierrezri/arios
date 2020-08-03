@@ -127,6 +127,12 @@ class EstadoFCDetalle(models.Model):
         verbose_name = 'Estado de Flujo de Caja Detalle'
         verbose_name_plural = 'Estados de Flujos de Cajas Detalles'
 
+    # Estados Fijos
+    VIGENTE = 1
+    EDITADO = 2
+    OBSOLETO = 3
+    ELIMINADO = 4
+
 
 class FlujoCajaDetalle(models.Model):
     fecha_movimiento = models.DateTimeField(verbose_name='Fecha de Creación', max_length=100, null=False, blank=False)
