@@ -46,7 +46,7 @@ class FlujoCajaContratosDetalleView(AbstractEvaLoggedView):
             .exclude(estado_id=EstadoFCDetalle.OBSOLETO)
 
         if not request.user.has_perms('Financiero.can_access_usuarioespecial'):
-            movimientos.exclude(estado_id=EstadoFCDetalle.ELIMINADO)
+            movimientos = movimientos.exclude(estado_id=EstadoFCDetalle.ELIMINADO)
 
         if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
             movimientos = movimientos.filter(subtipo_movimiento__protegido=False)
