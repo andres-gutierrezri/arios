@@ -31,6 +31,7 @@
                                                     <tr>
                                                         <th>Proceso</th>
                                                         <th>Descipción</th>
+                                                        <th>Estado</th>
                                                         <th>Ver Flujo de Caja</th>
                                                     </tr>
                                                 </thead>
@@ -39,6 +40,7 @@
                                                         <tr>
                                                             <td>{{ proceso.nombre }}</td>
                                                             <td>{{ proceso.objeto }}</td>
+                                                            <td><span class="badge badge-primary">{{ proceso.flujocajaencabezado_set.first.estado }}</span></td>
                                                             <td>
                                                                 <a href="{% url 'Financiero:flujo-caja-procesos-detalle' proceso.id REAL %}"><span class="badge badge-primary fw-300 ml-auto">Real</span><br></a>
                                                                 <a href="{% url 'Financiero:flujo-caja-procesos-detalle' proceso.id PROYECCION %}"><span class="badge badge-primary fw-300 ml-auto">Proyección</span></a>
