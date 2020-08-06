@@ -11,10 +11,18 @@
             </button>
         </div>
         <div class="modal-body p-b-0">
-            {% if opcion == 'editar' %}
-                <form action="{% url 'Financiero:flujo-caja-contratos-editar' flujo_detalle.id %}" id="flujo-caja-contratos-form" method="post" class="needs-validation" novalidate>
+            {% if contrato %}
+                {% if opcion == 'editar' %}
+                    <form action="{% url 'Financiero:flujo-caja-movimiento-editar' flujo_detalle.id %}" id="flujo-caja-contratos-form" method="post" class="needs-validation" novalidate>
+                {% else %}
+                    <form action="{% url 'Financiero:flujo-caja-contratos-crear' contrato.id tipo %}" id="flujo-caja-contratos-form" method="post" class="needs-validation" novalidate>
+                {% endif %}
             {% else %}
-                <form action="{% url 'Financiero:flujo-caja-contratos-crear' contrato.id tipo %}" id="flujo-caja-contratos-form" method="post" class="needs-validation" novalidate>
+                {% if opcion == 'editar' %}
+                    <form action="{% url 'Financiero:flujo-caja-movimiento-editar' flujo_detalle.id %}" id="flujo-caja-procesos-form" method="post" class="needs-validation" novalidate>
+                {% else %}
+                    <form action="{% url 'Financiero:flujo-caja-procesos-crear' proceso.id tipo %}" id="flujo-caja-procesos-form" method="post" class="needs-validation" novalidate>
+                {% endif %}
             {% endif %}
             {% csrf_token %}
             <div class="form-group">
