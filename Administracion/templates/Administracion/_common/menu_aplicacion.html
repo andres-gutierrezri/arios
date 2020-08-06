@@ -29,5 +29,13 @@
 </li>
 {% endif %}
 
+{% if perms.Financiero.view_flujocajaencabezado %}
+<li {% if menu_actual == 'fc_procesos' %} class="active" {% endif %}>
+    <a href="{% url 'Financiero:flujo-caja-procesos' %}" title="Flujo de Caja" data-filter-tags="flujo caja">
+        <i class="fal fa-usd-square"></i>
+        <span class="nav-link-text" data-i18n="nav.financiero_flujo_caja_procesos">Flujo de Caja</span>
+    </a>
+</li>
+{% endif %}
 
 
