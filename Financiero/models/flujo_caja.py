@@ -161,6 +161,20 @@ class FlujoCajaDetalle(models.Model):
         verbose_name = 'Flujo de Caja Detalle'
         verbose_name_plural = 'Flujos de Cajas Detalles'
 
+    @staticmethod
+    def from_dictionary(datos: dict) -> 'FlujoCajaDetalle':
+        """
+        Crea una instancia de Flujo de Caja Detalle con los datos pasados en el diccionario.
+        :param datos: Diccionario con los datos para crear el registro de Flujo de Caja Detalle.
+        :return: Instacia de entidad Flujo de Caja Detalle con la información especificada en el diccionario.
+        """
+        flujo_caja_detalle = FlujoCajaDetalle()
+        flujo_caja_detalle.fecha_movimiento = datos.get('fecha_movimiento', '')
+        flujo_caja_detalle.subtipo_movimiento_id = datos.get('subtipo_movimiento_id', '')
+        flujo_caja_detalle.valor = datos.get('valor', '')
+
+        return flujo_caja_detalle
+
 
 def fecha_corte_default():
     return datetime.strptime('{0}-{1}-10'.format(datetime.now().year, datetime.now().month + 1), "%Y-%m-%d")
