@@ -31,7 +31,7 @@
                 </div>
                 <br>
                 <div>
-                    {% input_number_tag 'valor' 'Valor' placeholder="Ingrese una Valor" required="" modal=True min="0" value=flujo_detalle.valor mensaje_validacion='Por favor ingrese un valor.' invalido=errores.descripcion %}
+                    {% input_number_tag 'valor' 'Valor' placeholder="Ingrese una Valor" required="" modal=True min="0" max="2147483647" value=flujo_detalle.valor mensaje_validacion='Por favor ingrese un valor.' invalido=errores.descripcion %}
                 </div>
                 <br>
                 <div>
