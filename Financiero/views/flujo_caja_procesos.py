@@ -16,7 +16,7 @@ class FlujoCajaProcesosView(AbstractEvaLoggedView):
             procesos = procesos.filter(id=colaborador.proceso_id)
         return render(request, 'Financiero/FlujoCaja/FlujoCajaProcesos/index.html',
                       {'procesos': procesos, 'fecha': datetime.now(),
-                       'menu_actual': 'fc_contratos'})
+                       'menu_actual': 'fc_procesos'})
 
 
 class FlujoCajaProcesosDetalleView(AbstractEvaLoggedView):

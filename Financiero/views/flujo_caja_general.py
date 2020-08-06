@@ -38,6 +38,7 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None):
     if proceso:
         ruta_reversa = 'financiero:flujo-caja-procesos'
         base_template = 'Administracion/_common/base_administracion.html'
+        menu_actual = 'fc_procesos'
         proceso = Proceso.objects.get(id=proceso)
         flujo_caja_enc = FlujoCajaEncabezado.objects.filter(proceso=proceso)
         movimientos = FlujoCajaDetalle.objects.filter(flujo_caja_enc__proceso=proceso, tipo_registro=tipo) \
@@ -46,6 +47,7 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None):
     else:
         ruta_reversa = 'financiero:flujo-caja-contratos'
         base_template = 'Proyectos/_common/base_proyectos.html'
+        menu_actual = 'fc_contratos'
         contrato = Contrato.objects.get(id=contrato)
         flujo_caja_enc = FlujoCajaEncabezado.objects.filter(contrato=contrato)
         movimientos = FlujoCajaDetalle.objects.filter(flujo_caja_enc__contrato=contrato, tipo_registro=tipo) \
@@ -72,7 +74,7 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None):
 
     return render(request, 'Financiero/FlujoCaja/FlujoCajaGeneral/detalle_flujo_caja.html',
                   {'movimientos': movimientos, 'fecha': datetime.now(), 'contrato': contrato, 'proceso': proceso,
-                   'menu_actual': 'fc_contratos', 'fecha_minima_mes': fecha_minima_mes, 'tipo': tipo,
+                   'menu_actual': menu_actual, 'fecha_minima_mes': fecha_minima_mes, 'tipo': tipo,
                    'flujo_caja_enc': flujo_caja_enc, 'base_template': base_template})
 
 
@@ -207,11 +209,14 @@ def datos_xa_render(request, opcion: str, tipo, fecha_minima_mes, flujo_detalle:
     """
     if contrato:
         contrato = Contrato.objects.get(id=contrato)
+        menu_actual = 'fc_contratos'
     else:
         proceso = Proceso.objects.get(id=proceso)
+        menu_actual = 'fc_procesos'
+
     subtipos_movimientos = valores_select_subtipos_movimientos(request)
     datos = {'opcion': opcion, 'contrato': contrato, 'proceso': proceso, 'subtipos_movimientos': subtipos_movimientos,
-             'fecha': app_datetime_now(), 'menu_actual': 'fc_contratos', 'fecha_minima_mes': fecha_minima_mes,
+             'fecha': app_datetime_now(), 'menu_actual': menu_actual, 'fecha_minima_mes': fecha_minima_mes,
              'tipo': tipo}
     if flujo_detalle:
         datos['flujo_detalle'] = flujo_detalle
