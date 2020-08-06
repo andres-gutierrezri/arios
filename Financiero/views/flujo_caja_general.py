@@ -1,0 +1,296 @@
+from datetime import datetime
+
+from django.contrib import messages
+from django.db.models import F
+from django.http import JsonResponse
+from django.shortcuts import render, redirect
+from django.urls import reverse
+
+from Administracion.models import Proceso
+from EVA.General import app_datetime_now
+from EVA.views.index import AbstractEvaLoggedView
+from Financiero.models import FlujoCajaDetalle, SubTipoMovimiento, FlujoCajaEncabezado, EstadoFC, CorteFlujoCaja
+from Financiero.models.flujo_caja import EstadoFCDetalle
+from Proyectos.models import Contrato
+from TalentoHumano.models.colaboradores import ColaboradorContrato, Colaborador
+
+
+class FlujoCajaMovimientoEditarView(AbstractEvaLoggedView):
+    def get(self, request, id_movimiento):
+        OPCION = 'editar'
+        return cargar_modal_crear_editar(request, OPCION, movimiento=id_movimiento)
+
+    def post(self, request, id_movimiento):
+        return guardar_movimiento(request, movimiento=id_movimiento)
+
+
+class FlujoCajaMovimientoEliminarView(AbstractEvaLoggedView):
+    def post(self, request, id_movimiento):
+        return eliminar_movimiento(request, flujo_detalle=id_movimiento)
+
+
+class FlujoCajaMovimientoHistorialView(AbstractEvaLoggedView):
+    def get(self, request, id_movimiento):
+        return historial_movimiento(request, id_movimiento)
+
+
+def flujo_caja_detalle(request, tipo, contrato=None, proceso=None):
+    if proceso:
+        ruta_reversa = 'financiero:flujo-caja-procesos'
+        base_template = 'Administracion/_common/base_administracion.html'
+        proceso = Proceso.objects.get(id=proceso)
+        flujo_caja_enc = FlujoCajaEncabezado.objects.filter(proceso=proceso)
+        movimientos = FlujoCajaDetalle.objects.filter(flujo_caja_enc__proceso=proceso, tipo_registro=tipo) \
+            .annotate(fecha_corte=F('flujo_caja_enc__corteflujocaja__fecha_corte')) \
+            .exclude(estado_id=EstadoFCDetalle.OBSOLETO)
+    else:
+        ruta_reversa = 'financiero:flujo-caja-contratos'
+        base_template = 'Proyectos/_common/base_proyectos.html'
+        contrato = Contrato.objects.get(id=contrato)
+        flujo_caja_enc = FlujoCajaEncabezado.objects.filter(contrato=contrato)
+        movimientos = FlujoCajaDetalle.objects.filter(flujo_caja_enc__contrato=contrato, tipo_registro=tipo) \
+            .annotate(fecha_corte=F('flujo_caja_enc__corteflujocaja__fecha_corte')) \
+            .exclude(estado_id=EstadoFCDetalle.OBSOLETO)
+
+    if flujo_caja_enc:
+        flujo_caja_enc = flujo_caja_enc.first()
+    else:
+        flujo_caja_enc = FlujoCajaEncabezado.objects.create(fecha_crea=datetime.now(), proceso=proceso,
+                                                            estado_id=EstadoFC.ALIMENTACION)
+        CorteFlujoCaja.objects.create(flujo_caja_enc=flujo_caja_enc)
+    if not tiene_permisos_de_acceso(request, contrato=contrato, proceso=proceso):
+        messages.error(request, 'No tiene permisos para acceder a este flujo de caja.')
+        return redirect(reverse(ruta_reversa))
+
+    fecha_minima_mes = obtener_fecha_minima_mes(contrato=contrato, proceso=proceso)
+
+    if not request.user.has_perms('Financiero.can_access_usuarioespecial'):
+        movimientos = movimientos.exclude(estado_id=EstadoFCDetalle.ELIMINADO)
+
+    if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
+        movimientos = movimientos.filter(subtipo_movimiento__protegido=False)
+
+    return render(request, 'Financiero/FlujoCaja/FlujoCajaGeneral/detalle_flujo_caja.html',
+                  {'movimientos': movimientos, 'fecha': datetime.now(), 'contrato': contrato, 'proceso': proceso,
+                   'menu_actual': 'fc_contratos', 'fecha_minima_mes': fecha_minima_mes, 'tipo': tipo,
+                   'flujo_caja_enc': flujo_caja_enc, 'base_template': base_template})
+
+
+def cargar_modal_crear_editar(request,  opcion, tipo=None, contrato=None, proceso=None, movimiento=None):
+    if movimiento:
+        flujo_detalle = FlujoCajaDetalle.objects.get(id=movimiento)
+        contrato = flujo_detalle.flujo_caja_enc.contrato_id
+        proceso = flujo_detalle.flujo_caja_enc.proceso_id
+        tipo = flujo_detalle.tipo_registro
+    else:
+        flujo_detalle = None
+    if not tiene_permisos_de_acceso(request, contrato=contrato, proceso=proceso):
+        return JsonResponse({"estado": "error",
+                             "mensaje": "No tiene permisos para acceder a este flujo de caja."})
+
+    if not validar_estado_planeacion_ejecucion(tipo, contrato=contrato, proceso=proceso):
+        return JsonResponse({"estado": "error",
+                             "mensaje": "No se puede crear un movimiento porque ya se encuentra en ejecución"})
+
+    fecha_minima_mes = obtener_fecha_minima_mes(contrato=contrato, proceso=proceso)
+    return render(request, 'Financiero/FlujoCaja/FlujoCajaGeneral/modal-crear-editar.html',
+                  datos_xa_render(request, opcion, tipo, fecha_minima_mes, flujo_detalle=flujo_detalle,
+                                  contrato=contrato, proceso=proceso))
+
+
+def guardar_movimiento(request, tipo=None, contrato=None, proceso=None, movimiento=None):
+    if movimiento:
+        flujo_detalle = FlujoCajaDetalle.objects.get(id=movimiento)
+        contrato = flujo_detalle.flujo_caja_enc.contrato_id
+        proceso = flujo_detalle.flujo_caja_enc.proceso_id
+        tipo = flujo_detalle.tipo_registro
+    else:
+        flujo_detalle = None
+    if contrato:
+        ruta_reversa = 'financiero:flujo-caja-contratos'
+        ruta_detalle = 'financiero:flujo-caja-contratos-detalle'
+        objeto = contrato
+        flujo_encabezado = FlujoCajaEncabezado.objects.get(contrato_id=contrato)
+    else:
+        ruta_reversa = 'financiero:flujo-caja-procesos'
+        ruta_detalle = 'financiero:flujo-caja-procesos-detalle'
+        objeto = proceso
+        flujo_encabezado = FlujoCajaEncabezado.objects.get(proceso_id=proceso)
+
+    if not tiene_permisos_de_acceso(request, contrato=contrato, proceso=proceso):
+        messages.error(request, 'No tiene permisos para acceder a este flujo de caja.')
+        return redirect(reverse(ruta_reversa))
+
+    if not validar_estado_planeacion_ejecucion(tipo, contrato=contrato, proceso=proceso):
+        messages.error(request, 'No se puede gestionar un movimiento porque ya se encuentra en ejecución')
+        return redirect(reverse(ruta_reversa))
+
+    fl_det = FlujoCajaDetalle.from_dictionary(request.POST)
+    fl_det.usuario_modifica = request.user
+    fl_det.fecha_modifica = app_datetime_now()
+
+    if flujo_detalle:
+        update_fields = ['fecha_movimiento', 'subtipo_movimiento', 'valor', 'usuario_modifica',
+                         'fecha_modifica', 'comentarios', 'estado']
+
+        comentarios = request.POST.get('comentarios', '')
+        crear_registro_historial(flujo_detalle, comentarios, EstadoFCDetalle.OBSOLETO)
+
+        fl_det.id = flujo_detalle.id
+        fl_det.estado_id = EstadoFCDetalle.EDITADO
+        fl_det.save(update_fields=update_fields)
+        messages.success(request, 'Se ha editado el movimiento correctamente')
+    else:
+        fl_det.tipo_registro = tipo
+        fl_det.usuario_crea = request.user
+        fl_det.fecha_crea = app_datetime_now()
+        fl_det.estado_id = EstadoFCDetalle.VIGENTE
+        fl_det.flujo_caja_enc = flujo_encabezado
+        fl_det.save()
+        messages.success(request, 'Se ha agregado el movimiento correctamente')
+
+    return redirect(reverse(ruta_detalle, args=[objeto, tipo]))
+
+
+def eliminar_movimiento(request, flujo_detalle):
+    flujo_detalle = FlujoCajaDetalle.objects.get(id=flujo_detalle)
+    contrato = flujo_detalle.flujo_caja_enc.contrato_id
+    proceso = flujo_detalle.flujo_caja_enc.proceso_id
+    tipo = flujo_detalle.tipo_registro
+
+    if not tiene_permisos_de_acceso(request, contrato=contrato, proceso=proceso) or \
+            not validar_gestion_registro(request, flujo_detalle):
+        return JsonResponse({"estado": "error", "mensaje": "No tiene permisos para acceder a este flujo de caja."})
+
+    if not validar_estado_planeacion_ejecucion(contrato=contrato, proceso=proceso, tipo=tipo):
+        return JsonResponse({"estado": "error",
+                             "mensaje": "No se puede crear un movimiento porque ya se encuentra en ejecución"})
+
+    flujo_detalle.estado_id = EstadoFCDetalle.ELIMINADO
+    flujo_detalle.comentarios = request.POST['comentarios']
+    flujo_detalle.fecha_modifica = app_datetime_now()
+    flujo_detalle.save(update_fields=['comentarios', 'estado', 'fecha_modifica'])
+
+    messages.success(request, 'Se ha eliminado el movimiento correctamente')
+    return JsonResponse({"estado": "OK"})
+
+
+def historial_movimiento(request, movimiento):
+    flujo_detalle = FlujoCajaDetalle.objects.filter(id=movimiento)
+    contrato = flujo_detalle.first().flujo_caja_enc.contrato_id
+    proceso = flujo_detalle.first().flujo_caja_enc.proceso_id
+
+    if not tiene_permisos_de_acceso(request, contrato=contrato, proceso=proceso,
+                                    permisos=['TalentoHumano.view_historial_flujocajadetalle']):
+        messages.error(request, 'No tiene permisos para acceder a este historial de flujo de caja.')
+        return redirect(reverse('financiero:flujo-caja-movimiento'))
+
+    historial = FlujoCajaDetalle.objects.filter(flujo_detalle=flujo_detalle.first())
+    historial |= flujo_detalle
+    return render(request, 'Financiero/FlujoCaja/FlujoCajaGeneral/modal-historial.html',
+                  {'historial': historial})
+
+
+# region Métodos de ayuda
+def datos_xa_render(request, opcion: str, tipo, fecha_minima_mes, flujo_detalle: FlujoCajaDetalle = None,
+                    contrato=None, proceso=None) -> dict:
+    """
+    Datos necesarios para la creación de los html de los Subtipos de Movimientos.
+    :param request: request para poder consultar los datos del usuario de sesión.
+    :param opcion: valor de la acción a realizar 'crea' o 'editar'
+    :param tipo: Especifica si es el flujo de caja real o proyectado.
+    :param fecha_minima_mes: Dato para validar la fecha minima permitida.
+    :param flujo_detalle: Es opcional, se usa para cargar los datos al editar.
+    :param contrato: Necesario para poder identificar el contrato y el flujo de caja.
+    :param proceso: Necesario para poder identificar el proceso y el flujo de caja.
+    :return: Un diccionario con los datos.
+    """
+    if contrato:
+        contrato = Contrato.objects.get(id=contrato)
+    else:
+        proceso = Proceso.objects.get(id=proceso)
+    subtipos_movimientos = valores_select_subtipos_movimientos(request)
+    datos = {'opcion': opcion, 'contrato': contrato, 'proceso': proceso, 'subtipos_movimientos': subtipos_movimientos,
+             'fecha': app_datetime_now(), 'menu_actual': 'fc_contratos', 'fecha_minima_mes': fecha_minima_mes,
+             'tipo': tipo}
+    if flujo_detalle:
+        datos['flujo_detalle'] = flujo_detalle
+    return datos
+# endregion
+
+
+def tiene_permisos_de_acceso(request, contrato=None, proceso=None, permisos=None):
+    if contrato:
+        if not ColaboradorContrato.objects\
+                .filter(contrato_id=contrato, colaborador__usuario=request.user):
+            if permisos:
+                if request.user.has_perms(permisos):
+                    return True
+            if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
+                return False
+    else:
+        if not Colaborador.objects.filter(proceso_id=proceso, usuario=request.user):
+            if permisos:
+                if request.user.has_perms(permisos):
+                    return True
+            if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
+                return False
+    return True
+
+
+def validar_gestion_registro(request, flujo_detalle):
+    if flujo_detalle.subtipo_movimiento.protegido:
+        if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
+            return False
+    return True
+
+
+def valores_select_subtipos_movimientos(request):
+    subtipos = SubTipoMovimiento.objects.filter(estado=True)
+    if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
+        subtipos = subtipos.filter(protegido=False)
+    return subtipos.values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
+
+
+def obtener_fecha_minima_mes(contrato=None, proceso=None):
+    if contrato:
+        corte_fc = CorteFlujoCaja.objects.get(flujo_caja_enc__contrato_id=contrato)
+    else:
+        corte_fc = CorteFlujoCaja.objects.get(flujo_caja_enc__proceso_id=proceso)
+    if corte_fc.flujo_caja_enc.estado_id == EstadoFC.ALIMENTACION:
+        fecha_minima_mes = '{0}-{1}-1'.format(corte_fc.fecha_corte.year, corte_fc.fecha_corte.month)
+    else:
+        if datetime.now().date() <= corte_fc.fecha_corte:
+            fecha_minima_mes = '{0}-{1}-1'.format(corte_fc.fecha_corte.year, corte_fc.fecha_corte.month - 1)
+        else:
+            fecha_minima_mes = '{0}-{1}-1'.format(corte_fc.fecha_corte.year, corte_fc.fecha_corte.month)
+
+    fecha_minima_mes = datetime.strptime(fecha_minima_mes, "%Y-%m-%d").date()
+
+    return fecha_minima_mes
+
+
+REAL = 0
+PROYECCION = 1
+
+
+def validar_estado_planeacion_ejecucion(tipo, contrato=None, proceso=None):
+    if contrato:
+        flujo_enc = FlujoCajaEncabezado.objects.get(contrato_id=contrato)
+    else:
+        flujo_enc = FlujoCajaEncabezado.objects.get(proceso_id=proceso)
+    if tipo == REAL and flujo_enc.estado_id == EstadoFC.EJECUCION or \
+            tipo == PROYECCION and flujo_enc.estado_id == EstadoFC.ALIMENTACION:
+        return True
+    return False
+
+
+def crear_registro_historial(flujo_detalle, comentarios, estado):
+    FlujoCajaDetalle.objects \
+        .create(fecha_movimiento=flujo_detalle.fecha_movimiento,
+                subtipo_movimiento_id=flujo_detalle.subtipo_movimiento_id,
+                valor=flujo_detalle.valor, tipo_registro=flujo_detalle.tipo_registro,
+                usuario_crea=flujo_detalle.usuario_crea, usuario_modifica=flujo_detalle.usuario_modifica,
+                flujo_caja_enc=flujo_detalle.flujo_caja_enc, fecha_crea=flujo_detalle.fecha_crea,
+                fecha_modifica=app_datetime_now(), flujo_detalle=flujo_detalle,
+                estado_id=estado, comentarios=comentarios)
