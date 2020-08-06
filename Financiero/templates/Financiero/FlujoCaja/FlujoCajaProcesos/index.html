@@ -1,0 +1,69 @@
+{% extends 'Administracion/_common/base_administracion.html' %}
+{% load static %}
+<title>{% block titulo %}Flujo de Caja por Procesos{% endblock %}</title>
+{% block styles %}
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/datagrid/datatables/datatables.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/theme-demo.css' %}">
+{% endblock styles %}
+
+{% block main %}
+    {% with REAL=0 PROYECCION=1 %}
+    <div class="panel-container show">
+        <div class="header">
+             <h1 class="header-title">
+                <i class="fal fa-usd-square"></i> Flujo de Caja por Procesos <span class='fw-300'></span>
+                 <br>
+                 <br>
+             </h1>
+        </div>
+        <div class="row">
+            <div class="col-xl-12">
+                <div id="panel-1" class="panel">
+                    <div class="panel-container show">
+                        <div class="panel-content">
+                                <div class="panel-group">
+                                    <div class="panel-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered w-100" id="dataTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Proceso</th>
+                                                        <th>Descipción</th>
+                                                        <th>Ver Flujo de Caja</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for proceso in procesos %}
+                                                        <tr>
+                                                            <td>{{ proceso.nombre }}</td>
+                                                            <td>{{ proceso.objeto }}</td>
+                                                            <td>
+                                                                <a href="{% url 'Financiero:flujo-caja-procesos-detalle' proceso.id REAL %}"><span class="badge badge-primary fw-300 ml-auto">Real</span><br></a>
+                                                                <a href="{% url 'Financiero:flujo-caja-procesos-detalle' proceso.id PROYECCION %}"><span class="badge badge-primary fw-300 ml-auto">Proyección</span></a>
+                                                            </td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer small text-muted">Actualizado: {{ fecha }}</div>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endwith %}
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.export.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script>
+{% endblock %}
