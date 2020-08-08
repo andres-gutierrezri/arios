@@ -88,6 +88,7 @@ class Colaborador(Persona, ModelDjangoExtensiones):
                        ("can_gestioncompletasgi", "Can gestion completa SGI"),
                        ("can_access_usuarioespecial", "Can access like usuario especial"),
                        ("view_historial_flujocajadetalle", "Can view historial flujo de caja detalle"),
+                       ("view_flujos_de_caja", "Can view flujos de caja"),
                        )
 
     def empresa_to_dict(self):
