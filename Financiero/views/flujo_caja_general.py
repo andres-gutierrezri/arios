@@ -15,6 +15,28 @@ from Proyectos.models import Contrato
 from TalentoHumano.models.colaboradores import ColaboradorContrato, Colaborador
 
 
+class FlujosDeCajaView(AbstractEvaLoggedView):
+    def get(self, request, opcion):
+        opciones = [{'campo_valor': 0, 'campo_texto': 'Contratos'}, {'campo_valor': 1, 'campo_texto': 'Procesos'}]
+        if opcion == 0:
+            contratos = Contrato.objects.all()
+            if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
+                contratos = contratos.filter(colaboradorcontrato__colaborador__usuario=request.user)
+            return render(request, 'Financiero/FlujoCaja/FlujoCajaContratos/index.html',
+                          {'contratos': contratos, 'fecha': datetime.now(), 'opciones': opciones, 'opcion': opcion,
+                           'menu_extendido': 'Financiero/_common/base_financiero.html',
+                           'menu_actual': 'flujos_de_caja'})
+        else:
+            procesos = Proceso.objects.all()
+            if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
+                colaborador = Colaborador.objects.get(usuario=request.user)
+                procesos = procesos.filter(id=colaborador.proceso_id)
+            return render(request, 'Financiero/FlujoCaja/FlujoCajaProcesos/index.html',
+                          {'procesos': procesos, 'fecha': datetime.now(), 'opciones': opciones, 'opcion': opcion,
+                           'menu_extendido': 'Financiero/_common/base_financiero.html',
+                           'menu_actual': 'flujos_de_caja'})
+
+
 class FlujoCajaMovimientoEditarView(AbstractEvaLoggedView):
     def get(self, request, id_movimiento):
         OPCION = 'editar'
