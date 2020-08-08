@@ -19,18 +19,22 @@ class FlujosDeCajaView(AbstractEvaLoggedView):
     def get(self, request, opcion):
         opciones = [{'campo_valor': 0, 'campo_texto': 'Contratos'}, {'campo_valor': 1, 'campo_texto': 'Procesos'}]
         if opcion == 0:
-            contratos = Contrato.objects.all()
-            if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
-                contratos = contratos.filter(colaboradorcontrato__colaborador__usuario=request.user)
+            if request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']) or \
+                    request.user.has_perms(['TalentoHumano.view_flujos_de_caja']):
+                contratos = Contrato.objects.all()
+            else:
+                contratos = Contrato.objects.filter(colaboradorcontrato__colaborador__usuario=request.user)
             return render(request, 'Financiero/FlujoCaja/FlujoCajaContratos/index.html',
                           {'contratos': contratos, 'fecha': datetime.now(), 'opciones': opciones, 'opcion': opcion,
                            'menu_extendido': 'Financiero/_common/base_financiero.html',
                            'menu_actual': 'flujos_de_caja'})
         else:
-            procesos = Proceso.objects.all()
-            if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
+            if request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']) or \
+                    request.user.has_perms(['TalentoHumano.view_flujos_de_caja']):
+                procesos = Proceso.objects.all()
+            else:
                 colaborador = Colaborador.objects.get(usuario=request.user)
-                procesos = procesos.filter(id=colaborador.proceso_id)
+                procesos = Proceso.objects.filter(id=colaborador.proceso_id)
             return render(request, 'Financiero/FlujoCaja/FlujoCajaProcesos/index.html',
                           {'procesos': procesos, 'fecha': datetime.now(), 'opciones': opciones, 'opcion': opcion,
                            'menu_extendido': 'Financiero/_common/base_financiero.html',
