@@ -27,7 +27,7 @@ class FlujosDeCajaView(AbstractEvaLoggedView):
             return render(request, 'Financiero/FlujoCaja/FlujoCajaContratos/index.html',
                           {'contratos': contratos, 'fecha': datetime.now(), 'opciones': opciones, 'opcion': opcion,
                            'menu_extendido': 'Financiero/_common/base_financiero.html',
-                           'menu_actual': 'flujos_de_caja'})
+                           'menu_actual': ['flujo_caja', 'flujos_de_caja']})
         else:
             if request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']) or \
                     request.user.has_perms(['TalentoHumano.view_flujos_de_caja']):
@@ -38,7 +38,7 @@ class FlujosDeCajaView(AbstractEvaLoggedView):
             return render(request, 'Financiero/FlujoCaja/FlujoCajaProcesos/index.html',
                           {'procesos': procesos, 'fecha': datetime.now(), 'opciones': opciones, 'opcion': opcion,
                            'menu_extendido': 'Financiero/_common/base_financiero.html',
-                           'menu_actual': 'flujos_de_caja'})
+                           'menu_actual': ['flujo_caja', 'flujos_de_caja']})
 
 
 class FlujoCajaMovimientoEditarView(AbstractEvaLoggedView):
