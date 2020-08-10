@@ -212,7 +212,7 @@ def historial_movimiento(request, movimiento):
     proceso = flujo_detalle.first().flujo_caja_enc.proceso_id
 
     if not tiene_permisos_de_acceso(request, contrato=contrato, proceso=proceso) or \
-            not validar_gestion_registro(request, flujo_detalle):
+            not validar_gestion_registro(request, flujo_detalle.first()):
         messages.error(request, 'No tiene permisos para acceder a este historial de flujo de caja.')
         return redirect(reverse('financiero:flujo-caja-movimiento'))
 
@@ -271,7 +271,7 @@ def tiene_permisos_de_acceso(request, contrato=None, proceso=None):
 
 
 def validar_gestion_registro(request, flujo_detalle):
-    if flujo_detalle.subtipo_movimiento.protegido:
+    if flujo_detalle and flujo_detalle.subtipo_movimiento.protegido:
         if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
             return False
     return True
