@@ -51,8 +51,8 @@
                                                             <td>{{ proceso.objeto }}</td>
                                                             <td><span class="badge badge-primary">{{ proceso.flujocajaencabezado_set.first.estado }}</span></td>
                                                             <td>
-                                                                <a href="{% url 'Financiero:flujo-caja-procesos-detalle' proceso.id REAL %}"><span class="badge badge-primary fw-300 ml-auto">Real</span><br></a>
-                                                                <a href="{% url 'Financiero:flujo-caja-procesos-detalle' proceso.id PROYECCION %}"><span class="badge badge-primary fw-300 ml-auto">Proyección</span></a>
+                                                                <a href="#" onclick="guardarRutaLocal('{% url 'Financiero:flujo-caja-procesos-detalle' proceso.id REAL %}')"><span class="badge badge-primary fw-300 ml-auto">Real</span><br></a>
+                                                                <a href="#" onclick="guardarRutaLocal('{% url 'Financiero:flujo-caja-procesos-detalle' proceso.id PROYECCION %}')"><span class="badge badge-primary fw-300 ml-auto">Proyección</span></a>
                                                             </td>
                                                         </tr>
                                                     {% endfor %}
@@ -80,4 +80,5 @@
     <script src="{% static 'Financiero/js/FlujoCaja/exportarTablas/exportarTablasFlujoCajaProcesos.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
     <script src="{% static 'Financiero/js/FlujoCaja/filtroFlujoCajaFinanciero.js' %}"></script>
+    <script src="{% static 'Financiero/js/FlujoCaja/volverAtras.js' %}"></script>
 {% endblock %}

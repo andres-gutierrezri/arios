@@ -16,7 +16,7 @@
         <div class="header p-b-10">
             <h1 class="header-title">
                 <i class='far fa-file-alt'></i>  {% if contrato %}Contrato: {{ contrato }}{% else %}Proceso: {{ proceso }}{% endif %} - Flujo de Caja: {% if tipo == REAL %}Real{% else %}Proyección{% endif %} <span class='fw-300'></span>
-                <a class="far far fa-times-circle"  href="javascript:history.back()" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Volver"></a>
+                <a class="far far fa-times-circle" href="#" onclick="volverAtras()" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Volver"></a>
             </h1>
         </div>
         <div class="row">
@@ -124,4 +124,5 @@
     <script src="{% static 'Financiero/js/FlujoCaja/modalHistorial.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js'%}"></script>
     <script src="{% static 'Financiero/js/FlujoCaja/confirmarEliminarFlujoCajaDetalle.js' %}"></script>
+    <script src="{% static 'Financiero/js/FlujoCaja/volverAtras.js' %}"></script>
 {% endblock %}
