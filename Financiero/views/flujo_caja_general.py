@@ -17,6 +17,8 @@ from TalentoHumano.models.colaboradores import ColaboradorContrato, Colaborador
 
 class FlujosDeCajaView(AbstractEvaLoggedView):
     def get(self, request, opcion):
+        if not validar_permisos(request, 'view_flujos_de_caja'):
+            return redirect(reverse('eva-index'))
         opciones = [{'campo_valor': 0, 'campo_texto': 'Contratos'}, {'campo_valor': 1, 'campo_texto': 'Procesos'}]
         if opcion == 0:
             if request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']) or \
@@ -44,19 +46,27 @@ class FlujosDeCajaView(AbstractEvaLoggedView):
 class FlujoCajaMovimientoEditarView(AbstractEvaLoggedView):
     def get(self, request, id_movimiento):
         OPCION = 'editar'
+        if not validar_permisos(request, 'change_flujocajadetalle'):
+            return redirect(reverse('eva-index'))
         return cargar_modal_crear_editar(request, OPCION, movimiento=id_movimiento)
 
     def post(self, request, id_movimiento):
+        if not validar_permisos(request, 'change_flujocajadetalle'):
+            return redirect(reverse('eva-index'))
         return guardar_movimiento(request, movimiento=id_movimiento)
 
 
 class FlujoCajaMovimientoEliminarView(AbstractEvaLoggedView):
     def post(self, request, id_movimiento):
+        if not validar_permisos(request, 'delete_flujocajadetalle'):
+            return redirect(reverse('eva-index'))
         return eliminar_movimiento(request, flujo_detalle=id_movimiento)
 
 
 class FlujoCajaMovimientoHistorialView(AbstractEvaLoggedView):
     def get(self, request, id_movimiento):
+        if not validar_permisos(request, 'view_flujos_de_caja'):
+            return redirect(reverse('eva-index'))
         return historial_movimiento(request, id_movimiento)
 
 
@@ -326,3 +336,15 @@ def crear_registro_historial(flujo_detalle, comentarios, estado):
                 flujo_caja_enc=flujo_detalle.flujo_caja_enc, fecha_crea=flujo_detalle.fecha_crea,
                 fecha_modifica=app_datetime_now(), flujo_detalle=flujo_detalle,
                 estado_id=estado, comentarios=comentarios)
+
+
+def validar_permisos(request, permiso):
+    if permiso == 'view_flujos_de_caja':
+        permiso = 'TalentoHumano.view_flujos_de_caja'
+    else:
+        permiso = 'Financiero.{0}'.format(permiso)
+    if not request.user.has_perm(permiso):
+        messages.error(request, 'No tiene permisos para acceder a esta funcionalidad')
+        return False
+    else:
+        return True
