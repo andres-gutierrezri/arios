@@ -273,9 +273,11 @@ def tiene_permisos_de_acceso(request, contrato=None, proceso=None):
         if not Colaborador.objects.filter(proceso_id=proceso, usuario=request.user):
             validacion_adicional = True
     if validacion_adicional:
-        if not request.user.has_perms(['TalentoHumano.view_flujos_de_caja']):
-            return False
-        if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
+        if request.user.has_perms(['TalentoHumano.view_flujos_de_caja']):
+            return True
+        elif request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
+            return True
+        else:
             return False
     return True
 
