@@ -118,11 +118,14 @@ fechaDesde.change(function () {
     }
     if (fechaHasta.val() !== ''){
         if (new Date(fechaHasta.val()) < new Date(fechaDesde.val())) {
-            fechaDesde.val('');
+            fechaHasta.val('');
+            borrarFechaHasta.hide();
             EVANotificacion.toast.error('La fecha desde no puede ser mayor a la fecha hasta seleccionada.');
         }
     }else{
-        validarFechaMaxMin(fechaDesde)
+        if (!validarFechaMaxMin(fechaDesde)){
+            borrarFechaDesde.hide();
+        }
     }
 });
 
@@ -135,10 +138,13 @@ fechaHasta.change(function () {
     if (fechaDesde.val() !== ''){
         if (new Date(fechaDesde.val()) > new Date(fechaHasta.val())) {
             fechaDesde.val('');
+            borrarFechaDesde.hide();
             EVANotificacion.toast.error('La fecha hasta no puede ser inferior a la fecha desde seleccionada.');
         }
     }else{
-        validarFechaMaxMin(fechaHasta)
+        if (!validarFechaMaxMin(fechaHasta)){
+            borrarFechaHasta.hide();
+        }
     }
 });
 
@@ -147,9 +153,11 @@ function validarFechaMaxMin(fecha) {
     if (new Date(fechaMinima) > new Date(fecha.val())){
         EVANotificacion.toast.error('Los movimientos mas antiguos van desde ' + fechaMinima);
         fecha.val('');
+        return false;
     }else if (new Date(fechaMaxima) < new Date(fecha.val())){
         EVANotificacion.toast.error('Los movimientos mas nuevos están hasta ' + fechaMaxima);
         fecha.val('');
+        return false;
     }
 }
 
