@@ -32,7 +32,7 @@ class Contrato(models.Model, ModelDjangoExtensiones):
                                         null=False, blank=False)
 
     def __str__(self):
-        return self.numero_contrato
+        return '{0} - {1}'.format(self.numero_contrato, self.cliente)
 
     class Meta:
         verbose_name = 'Contrato'
