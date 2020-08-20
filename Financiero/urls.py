@@ -18,7 +18,8 @@ from django.urls import path
 
 from Financiero.views import PrincipalView, FacturaCrearView, FacturasView, FacturaEditarView, FacturaDetalleView, \
     FacturaImprimirView, flujo_caja_general
-from Financiero.views import subtipos_movimientos, flujo_caja_contratos, categorias_movimientos, flujo_caja_procesos
+from Financiero.views import subtipos_movimientos, flujo_caja_contratos, categorias_movimientos, flujo_caja_procesos, \
+    flujo_caja_consolidado
 
 app_name = 'Financiero'
 
@@ -62,5 +63,7 @@ urlpatterns = [
     path('flujo-caja/movimiento/detalle/<int:id_movimiento>/historial',
          flujo_caja_general.FlujoCajaMovimientoHistorialView.as_view(), name='flujo-caja-movimiento-historial'),
     path('flujos-de-caja/<int:opcion>', flujo_caja_general.FlujosDeCajaView.as_view(), name='flujos-de-caja'),
+    path('flujo-caja/consolidado', flujo_caja_consolidado.FlujoCajaConsolidadoView.as_view(),
+         name='flujo-caja-consolidado'),
 ]
 
