@@ -20,6 +20,7 @@
                             <th>Fecha del Movimiento</th>
                             <th>Tipo de Movimiento</th>
                             <th>Precio</th>
+                            <th>Usuario</th>
                             <th>Fecha de Creación</th>
                             <th>Fecha de Modificación</th>
                             <th>Comentarios</th>
@@ -33,6 +34,7 @@
                                 <td>{{ movimiento.fecha_movimiento|date:'Y-m-d' }}</td>
                                 <td>{{ movimiento.subtipo_movimiento }}</td>
                                 <td>{{ movimiento.valor|intcomma }}</td>
+                                <td>{{ movimiento.usuario_modifica }}</td>
                                 <td>{{ movimiento.fecha_crea|date:'Y-m-d' }}</td>
                                 <td>{{ movimiento.fecha_modifica|date:'Y-m-d' }}</td>
                                 <td>{% if movimiento.comentarios %}{{ movimiento.comentarios }}{% else %}{% endif %}</td>
