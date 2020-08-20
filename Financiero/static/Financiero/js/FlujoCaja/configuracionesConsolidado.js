@@ -23,7 +23,7 @@ $('.select2').select2({
 
 $(document).ready(function() {
     // Exportar resultado de la busqueda del consolidado
-    iniciarTablaExportar([0, 1, 2, 3, 4]);
+    iniciarTablaExportar([0, 1, 2, 3, 4, 5]);
 
     idContratoProceso.select2({
         placeholder: "Seleccione una opción",

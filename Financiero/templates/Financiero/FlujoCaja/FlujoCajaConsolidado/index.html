@@ -112,6 +112,7 @@
                                                     <th>Precio</th>
                                                     <th>Proyectado/Real</th>
                                                     <th>Proceso/Contrato</th>
+                                                    <th>Estado</th>
                                                     <th>Historial</th>
                                                 </tr>
                                             </thead>
@@ -128,6 +129,7 @@
                                                                 {{ movimiento.flujo_caja_enc.contrato }}
                                                             {% endif %}
                                                         </td>
+                                                        <td><span class="badge {% if movimiento.estado_id == ELIMINADO %} badge-danger {% else %} badge-primary {% endif %} fw-300 ml-auto">{{ movimiento.estado }}</span></td>
                                                         <td>
                                                             {% if movimiento.estado_id == EDITADO or movimiento.estado_id == ELIMINADO %}
                                                                 <a class="far fa-2x fa-custom fa-list-alt" id="historial_{{ movimiento.id }}" href="javascript:void(0);"  onclick="abrirModalHistorial('{% url 'Financiero:flujo-caja-movimiento-historial' movimiento.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Historial"></a>
