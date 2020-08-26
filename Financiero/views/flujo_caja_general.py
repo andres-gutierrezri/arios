@@ -93,7 +93,7 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None):
     if flujo_caja_enc:
         flujo_caja_enc = flujo_caja_enc.first()
     else:
-        flujo_caja_enc = FlujoCajaEncabezado.objects.create(fecha_crea=datetime.now(), proceso=proceso,
+        flujo_caja_enc = FlujoCajaEncabezado.objects.create(fecha_crea=datetime.now(), proceso=proceso, contrato=contrato,
                                                             estado_id=EstadoFC.ALIMENTACION)
         CorteFlujoCaja.objects.create(flujo_caja_enc=flujo_caja_enc)
     if not tiene_permisos_de_acceso(request, contrato=contrato, proceso=proceso):
