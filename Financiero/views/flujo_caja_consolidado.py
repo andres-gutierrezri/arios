@@ -1,6 +1,7 @@
 import json
 from datetime import datetime
 
+from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
@@ -79,6 +80,9 @@ class FlujoCajaConsolidadoView(AbstractEvaLoggedView):
                 comparacion.append({'datos_real': datos_real,
                                     'datos_proyectado': datos_proyectado})
                 x += 1
+
+        if not movimientos or not comparacion:
+            messages.warning(request, 'No se encontraron concidencias')
         return render(request, 'Financiero/FlujoCaja/FlujoCajaConsolidado/index.html',
                       datos_xa_render(datos, movimientos, comparacion))
 
