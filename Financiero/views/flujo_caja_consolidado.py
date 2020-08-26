@@ -89,9 +89,15 @@ class FlujoCajaConsolidadoView(AbstractEvaLoggedView):
 
 def datos_xa_render(datos_formulario=None, movimientos=None, comparacion=None):
     procesos_contratos = FlujoCajaDetalle.objects.all().order_by('fecha_crea')
+    if procesos_contratos:
+        fecha_min = movimientos.first().fecha_movimiento
+        fecha_max = movimientos.last().fecha_movimiento
+    else:
+        fecha_min = ''
+        fecha_max = ''
 
-    fecha_min_max = json.dumps({'fecha_min': str(procesos_contratos.first().fecha_movimiento),
-                                'fecha_max': str(procesos_contratos.last().fecha_movimiento)})
+    fecha_min_max = json.dumps({'fecha_min': str(fecha_min),
+                                'fecha_max': str(fecha_max)})
 
     contratos_procesos = []
     for pro_con in FlujoCajaEncabezado.objects.all():
@@ -171,7 +177,13 @@ def datos_formulario_consolidado(request):
         tipos_flujos_caja = int(tipos_flujos_caja)
 
     movimientos = FlujoCajaDetalle.objects.all().order_by('fecha_crea')
+    if movimientos:
+        fecha_min = movimientos.first().fecha_movimiento
+        fecha_max = movimientos.last().fecha_movimiento
+    else:
+        fecha_min = ''
+        fecha_max = ''
 
     return {'lista_procesos_contratos': lista_con_pro, 'fecha_desde': fecha_desde, 'fecha_hasta': fecha_hasta,
             'subtipos': lista_subtipos, 'tipos_flujos_caja': tipos_flujos_caja, 'estados': lista_estados,
-            'fecha_min': movimientos.first().fecha_movimiento, 'fecha_max': movimientos.last().fecha_movimiento}
+            'fecha_min': fecha_min, 'fecha_max': fecha_max}
