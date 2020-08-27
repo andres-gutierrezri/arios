@@ -7,7 +7,7 @@ from django.urls import reverse
 
 from EVA.views.index import AbstractEvaLoggedView
 from Financiero.models import FlujoCajaEncabezado
-from Financiero.models.flujo_caja import SubTipoMovimiento, FlujoCajaDetalle, EstadoFCDetalle
+from Financiero.models.flujo_caja import SubTipoMovimiento, FlujoCajaDetalle, EstadoFCDetalle, CategoriaMovimiento
 
 
 class FlujoCajaConsolidadoView(AbstractEvaLoggedView):
@@ -107,6 +107,11 @@ def datos_xa_render(datos_formulario=None, movimientos=None, comparacion=None):
             contratos_procesos.append({'campo_valor': pro_con.id, 'campo_texto': pro_con.proceso.nombre})
 
     subtipos = SubTipoMovimiento.objects.get_xa_select_activos()
+    categorias = CategoriaMovimiento.objects.get_xa_select_activos()
+    subtipos_categorias = []
+    for sub in SubTipoMovimiento.objects.all():
+        subtipos_categorias.append({'id': sub.id, 'nombre': sub.nombre, 'categoria_id': sub.categoria_movimiento_id})
+
     tipos_flujos = [{'campo_valor': 0, 'campo_texto': 'Real'},
                     {'campo_valor': 1, 'campo_texto': 'Proyectado'},
                     {'campo_valor': 2, 'campo_texto': 'Comparativo'}]
@@ -116,12 +121,14 @@ def datos_xa_render(datos_formulario=None, movimientos=None, comparacion=None):
                {'campo_valor': 4, 'campo_texto': 'Eliminado'}]
 
     datos = {'contratos_procesos': contratos_procesos, 'subtipos': subtipos, 'fecha_min_max': fecha_min_max,
-             'tipos_flujos': tipos_flujos, 'estados': estados, 'fecha_actual': datetime.today()}
+             'tipos_flujos': tipos_flujos, 'estados': estados, 'categorias': categorias,
+             'fecha_actual': datetime.today(), 'subtipos_categorias': json.dumps(subtipos_categorias)}
 
     quitar_selecciones = {'texto': 'Quitar Selecciones', 'icono': 'fa-times'}
     seleccionar_todos = {'texto': 'Seleccionar Todos', 'icono': 'fa-check'}
     datos['textos_pro_con'] = seleccionar_todos
     datos['textos_subtipos'] = seleccionar_todos
+    datos['textos_categorias'] = seleccionar_todos
 
     if datos_formulario:
         datos['valor'] = datos_formulario
