@@ -1,7 +1,7 @@
 {% extends menu_extendido %}
 {% load eva_tags %}
 {% load static %}
-<title>{% block titulo %}Flujo de Caja por Procesos{% endblock %}</title>
+<title>{% block titulo %}Procesos{% endblock %}</title>
 {% block styles %}
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/datagrid/datatables/datatables.bundle.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
@@ -14,7 +14,7 @@
     <div class="panel-container show">
         <div class="header">
              <h1 class="header-title">
-                <i class="fal fa-usd-square"></i> Flujo de Caja por Procesos <span class='fw-300'></span>
+                <i class="fal fa-usd-square"></i> Procesos <span class='fw-300'></span>
                  <br>
                  <br>
              </h1>
@@ -40,7 +40,7 @@
                                                     <tr>
                                                         <th>Proceso</th>
                                                         <th>Descipción</th>
-                                                        <th>Estado</th>
+                                                        <th>Estado del Flujo de Caja</th>
                                                         <th>Ver Flujo de Caja</th>
                                                     </tr>
                                                 </thead>
