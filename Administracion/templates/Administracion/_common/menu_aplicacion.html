@@ -29,11 +29,11 @@
 </li>
 {% endif %}
 
-{% if perms.Financiero.view_flujocajaencabezado %}
-<li {% if menu_actual == 'fc_procesos' %} class="active" {% endif %}>
-    <a href="{% url 'Financiero:flujo-caja-procesos' %}" title="Flujo de Caja" data-filter-tags="flujo caja">
+{% if perms.Administracion.view_procesos %}
+<li {% if menu_actual == 'procesos' %} class="active" {% endif %}>
+    <a href="{% url 'Administracion:procesos' %}" title="Procesos" data-filter-tags="procesos">
         <i class="fal fa-usd-square"></i>
-        <span class="nav-link-text" data-i18n="nav.financiero_flujo_caja_procesos">Flujo de Caja</span>
+        <span class="nav-link-text" data-i18n="nav.administracion_procesos">Procesos</span>
     </a>
 </li>
 {% endif %}
