@@ -90,8 +90,8 @@ class FlujoCajaConsolidadoView(AbstractEvaLoggedView):
 def datos_xa_render(datos_formulario=None, movimientos=None, comparacion=None):
     procesos_contratos = FlujoCajaDetalle.objects.all().order_by('fecha_crea')
     if procesos_contratos:
-        fecha_min = movimientos.first().fecha_movimiento
-        fecha_max = movimientos.last().fecha_movimiento
+        fecha_min = procesos_contratos.first().fecha_movimiento
+        fecha_max = procesos_contratos.last().fecha_movimiento
     else:
         fecha_min = ''
         fecha_max = ''
