@@ -9,6 +9,7 @@
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/bootstrap-datepicker/bootstrap-datepicker.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/theme-demo.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/custom/generales.css' %}">
 {% endblock styles %}
 
 {% block main %}
@@ -64,6 +65,7 @@
                                                 <button type="button" onclick="borrarFecha('fecha_desde')" title="Borrar Selección" class="btn btn-outline-primary waves-effect waves-themed">X</button>
                                             </div>
                                         </div>
+                                        <div class="validaciones" id="validar_fecha_desde" style="display:none;"></div>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
@@ -75,6 +77,7 @@
                                                 <button type="button" onclick="borrarFecha('fecha_hasta')" title="Borrar Selección" class="btn btn-outline-primary waves-effect waves-themed">X</button>
                                             </div>
                                         </div>
+                                        <div class="validaciones" id="validar_fecha_hasta" style="display:none;"></div>
                                     </div>
                                 </div>
                                 <input id="valores_estados" hidden value="{{ valor.estados }}">

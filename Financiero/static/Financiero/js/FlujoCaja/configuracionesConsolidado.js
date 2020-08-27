@@ -109,6 +109,8 @@ let fechaMinima = fecha_min_max.fecha_min.split(" ")[0];
 let fechaMaxima = fecha_min_max.fecha_max.split(" ")[0];
 let borrarFechaDesde = $('#borrarFechaDesde');
 let borrarFechaHasta = $('#borrarFechaHasta');
+let validarFechaDesde = $('#validar_fecha_desde');
+let validarFechaHasta = $('#validar_fecha_hasta');
 
 fechaDesde.change(function () {
     if (fechaDesde.val() !== ''){
@@ -119,12 +121,22 @@ fechaDesde.change(function () {
     if (fechaHasta.val() !== ''){
         if (new Date(fechaHasta.val()) < new Date(fechaDesde.val())) {
             fechaHasta.val('');
+            fechaDesde.val('');
             borrarFechaHasta.hide();
-            EVANotificacion.toast.error('La fecha desde no puede ser mayor a la fecha hasta seleccionada.');
+            validarFechaDesde.html('La fecha desde no puede ser mayor a la fecha hasta seleccionada.');
+            validarFechaDesde.show();
+            borrarFechaDesde.hide();
+            setTimeout(function() {
+                validarFechaDesde.fadeOut(1000);
+            }, 5000);
+        }else{
+            validarFechaDesde.hide();
         }
     }else{
-        if (!validarFechaMaxMin(fechaDesde)){
+        if (!validarFechaMaxMin(fechaDesde, validarFechaDesde)){
             borrarFechaDesde.hide();
+        }else{
+            validarFechaDesde.hide();
         }
     }
 });
@@ -138,27 +150,46 @@ fechaHasta.change(function () {
     if (fechaDesde.val() !== ''){
         if (new Date(fechaDesde.val()) > new Date(fechaHasta.val())) {
             fechaDesde.val('');
+            fechaHasta.val('');
             borrarFechaDesde.hide();
-            EVANotificacion.toast.error('La fecha hasta no puede ser inferior a la fecha desde seleccionada.');
+            validarFechaHasta.html('La fecha hasta no puede ser inferior a la fecha desde seleccionada.');
+            validarFechaHasta.show();
+            borrarFechaHasta.hide();
+            setTimeout(function() {
+                validarFechaHasta.fadeOut(1000);
+            }, 5000);
+        }else{
+            validarFechaHasta.hide();
         }
     }else{
-        if (!validarFechaMaxMin(fechaHasta)){
+        if (!validarFechaMaxMin(fechaHasta, validarFechaHasta)){
             borrarFechaHasta.hide();
+        }else{
+            validarFechaHasta.hide();
         }
     }
 });
 
-function validarFechaMaxMin(fecha) {
+function validarFechaMaxMin(fecha, validador) {
 
     if (new Date(fechaMinima) > new Date(fecha.val())){
-        EVANotificacion.toast.error('Los movimientos mas antiguos van desde ' + fechaMinima);
+        validador.html('Los movimientos mas antiguos van desde ' + fechaMinima);
+        validador.show();
+         setTimeout(function() {
+                validador.fadeOut(1000);
+            }, 5000);
         fecha.val('');
         return false;
     }else if (new Date(fechaMaxima) < new Date(fecha.val())){
-        EVANotificacion.toast.error('Los movimientos mas nuevos están hasta ' + fechaMaxima);
+        validador.html('Los movimientos mas nuevos están hasta ' + fechaMaxima);
+        validador.show();
+         setTimeout(function() {
+                validador.fadeOut(1000);
+            }, 5000);
         fecha.val('');
         return false;
     }
+    return true;
 }
 
 function borrarFecha(input) {
