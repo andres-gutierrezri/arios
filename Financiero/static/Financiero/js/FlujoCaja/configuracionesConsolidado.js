@@ -6,9 +6,11 @@ const controls = {
     rightArrow: '<i class="fal fa-angle-right" style="font-size: 1.25rem"></i>'
 };
 
+let idCategorias = $('#categorias_id');
 let idContratoProceso = $('#contrato_proceso_id');
 let idEstados = $('#estados_id');
 let idSubtipos = $('#subtipos_id');
+let subtiposCategorias = JSON.parse($('#subtipos_categorias').val());
 
 $('.select2').select2({
     language: {
@@ -24,6 +26,23 @@ $('.select2').select2({
 $(document).ready(function() {
     // Exportar resultado de la busqueda del consolidado
     iniciarTablaExportar([0, 1, 2, 3, 4, 5]);
+
+    idCategorias.select2({
+        placeholder: "Seleccione una opción",
+        "language": {
+            noResults: function () {
+                return 'No se encontraron coincidencias';
+            },
+            searching: function () {
+                return 'Buscando…';
+            },
+        },
+    });
+    let valoresCategorias = $('#valores_categorias').val();
+    idCategorias.next().find("input").css("min-width", "200px");
+    if (valoresCategorias){
+        idCategorias.val(JSON.parse(valoresCategorias)).trigger("change");
+    }
 
     idContratoProceso.select2({
         placeholder: "Seleccione una opción",
@@ -201,3 +220,24 @@ function borrarFecha(input) {
         borrarFechaHasta.hide();
     }
 }
+
+idCategorias.change(function () {
+        let selecciones = [];
+        $('#categorias_id option:selected').each(function() {
+            selecciones.push($(this).val());
+        });
+        if (selecciones.length > 0) {
+            idSubtipos.empty();
+            for (let sel = 0; sel < selecciones.length; sel ++){
+                for (let sub = 0; sub < subtiposCategorias.length; sub++) {
+                    if (parseInt(selecciones[sel]) === subtiposCategorias[sub].categoria_id){
+                        idSubtipos.append('<option value="' + subtiposCategorias[sub].id + '">' + subtiposCategorias[sub].nombre + '</option>');
+                    }
+                }
+            }
+        }else {
+            for (let j = 0; j < subtiposCategorias.length; j++) {
+                idSubtipos.append('<option value="' + subtiposCategorias[j].id + '">' + subtiposCategorias[j].nombre + '</option>');
+            }
+        }
+    });
