@@ -43,20 +43,6 @@
                         </div>
                         <div class="form-group">
                             <div class="form-row">
-                                <input id="valores_con_pro" hidden value="{{ valor.lista_procesos_contratos }}">
-                                <div class="col-md-10">
-                                    {% select_multiple_tag contratos_procesos 'contrato_proceso[]' 'contrato_proceso_id' 'Seleccion una opción' texto_label="Contratos/Procesos" multiple='multiple' %}
-                                </div>
-                                <div class="col-md-2" style="padding-top: 25px">
-                                    <a href="javascript:seleccionarTodos('contrato_proceso');" id="btn_all_contrato_proceso" class="btn btn-default btn-icon waves-effect waves-themed" title="{{ textos_pro_con.texto }}">
-                                        <i id="ic_all_contrato_proceso" class="fal {{ textos_pro_con.icono }}"></i>
-                                    </a>
-                                    &nbsp;&nbsp;<b id="txt_all_contrato_proceso">{{ textos_pro_con.texto }}</b>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="form-row">
                                 <input id="valores_subtipos" hidden value="{{ valor.subtipos }}">
                                 <div class="col-md-10">
                                     {% select_multiple_tag subtipos 'subtipos[]' 'subtipos_id' 'Seleccion una opción' texto_label="Subtipo de Movimiento" multiple='multiple' %}
@@ -66,6 +52,20 @@
                                         <i id="ic_all_subtipos" class="fal {{ textos_subtipos.icono }}"></i>
                                     </a>
                                     &nbsp;&nbsp;<b id="txt_all_subtipos">{{ textos_subtipos.texto }}</b>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-row">
+                                <input id="valores_con_pro" hidden value="{{ valor.lista_procesos_contratos }}">
+                                <div class="col-md-10">
+                                    {% select_multiple_tag contratos_procesos 'contrato_proceso[]' 'contrato_proceso_id' 'Seleccion una opción' texto_label="Contratos/Procesos" multiple='multiple' %}
+                                </div>
+                                <div class="col-md-2" style="padding-top: 25px">
+                                    <a href="javascript:seleccionarTodos('contrato_proceso');" id="btn_all_contrato_proceso" class="btn btn-default btn-icon waves-effect waves-themed" title="{{ textos_pro_con.texto }}">
+                                        <i id="ic_all_contrato_proceso" class="fal {{ textos_pro_con.icono }}"></i>
+                                    </a>
+                                    &nbsp;&nbsp;<b id="txt_all_contrato_proceso">{{ textos_pro_con.texto }}</b>
                                 </div>
                             </div>
                         </div>
