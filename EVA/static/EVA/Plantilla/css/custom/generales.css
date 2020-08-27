@@ -115,3 +115,17 @@ right: 0;
 .app-list-item{
 position: relative;
 }
+
+.validaciones {
+    position: absolute;
+    top: 100%;
+    z-index: 5;
+    max-width: 100%;
+    padding: 0.3rem 0.6rem;
+    margin-top: .1rem;
+    font-size: 0.75rem;
+    line-height: 0.9;
+    color: #fff;
+    background-color: #fd395e;
+    border-radius: 5px;
+}
