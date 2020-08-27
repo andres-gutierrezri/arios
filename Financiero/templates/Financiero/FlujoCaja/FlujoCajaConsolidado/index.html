@@ -28,6 +28,21 @@
                         <input hidden id="fecha_min_max" value="{{ fecha_min_max }}">
                         <div class="form-group">
                             <div class="form-row">
+                                <input id="valores_categorias" hidden value="{{ valor.lista_categorias }}">
+                                <input id="subtipos_categorias" hidden value="{{ subtipos_categorias }}">
+                                <div class="col-md-10">
+                                    {% select_multiple_tag categorias 'categorias[]' 'categorias_id' 'Seleccion una opción' texto_label="Categorias" multiple='multiple' %}
+                                </div>
+                                <div class="col-md-2" style="padding-top: 25px">
+                                    <a href="javascript:seleccionarTodos('categorias');" id="btn_all_categorias" class="btn btn-default btn-icon waves-effect waves-themed" title="{{ textos_categorias.texto }}">
+                                        <i id="ic_all_categorias" class="fal {{ textos_categorias.icono }}"></i>
+                                    </a>
+                                    &nbsp;&nbsp;<b id="txt_all_categorias">{{ textos_categorias.texto }}</b>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-row">
                                 <input id="valores_con_pro" hidden value="{{ valor.lista_procesos_contratos }}">
                                 <div class="col-md-10">
                                     {% select_multiple_tag contratos_procesos 'contrato_proceso[]' 'contrato_proceso_id' 'Seleccion una opción' texto_label="Contratos/Procesos" multiple='multiple' %}
