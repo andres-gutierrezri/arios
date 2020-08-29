@@ -59,7 +59,7 @@ class CategoriaMovimientoEliminarView(AbstractEvaLoggedView):
             return JsonResponse({"estado": "OK"})
 
         except IntegrityError:
-            return JsonResponse({"estado": "error", "mensaje": "Esta categoria de movimiento no puede ser eliminado"
+            return JsonResponse({"estado": "error", "mensaje": "Esta categoria de movimiento no puede ser eliminado "
                                                                "porque ya se encuentra en uso."})
 
 
