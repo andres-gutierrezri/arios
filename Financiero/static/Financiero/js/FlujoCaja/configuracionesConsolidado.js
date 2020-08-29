@@ -256,3 +256,11 @@ function desplegarDetalle(origen, idObjeto) {
         boton.addClass('fa-minus-circle');
     }
 }
+
+function Imprimir() {
+     let printContents = $('#consolidado').html();
+     let originalContents = document.body.innerHTML;
+     document.body.innerHTML = printContents;
+     window.print();
+     document.body.innerHTML = originalContents;
+}
