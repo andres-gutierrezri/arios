@@ -28,7 +28,7 @@
                         <input hidden id="fecha_min_max" value="{{ fecha_min_max }}">
                         <div class="form-group">
                             <div class="form-row">
-                                <input id="valores_categorias" hidden value="{{ valor.lista_categorias }}">
+                                <input id="valores_categorias" hidden value="{{ valor.categorias }}">
                                 <input id="subtipos_categorias" hidden value="{{ subtipos_categorias }}">
                                 <div class="col-md-10">
                                     {% select_multiple_tag categorias 'categorias[]' 'categorias_id' 'Seleccion una opción' texto_label="Categorias" multiple='multiple' %}
@@ -104,7 +104,7 @@
                         <div class="form-group">
                             <div class="form-row">
                                 <div class="col-md-4">
-                                    {% select_tag tipos_flujos 'tipos_flujos_caja_id' 'Seleccione una opción' texto_label="Proyectado/Real" value=valor.tipos_flujos_caja %}
+                                    {% select_tag tipos_flujos 'tipos_flujos_caja_id' 'Real' primer_valor=True texto_label="Proyectado/Real" value=valor.tipos_flujos_caja %}
                                 </div>
                                 <div class="col-md-4" style="padding-top: 25px">
                                     <button class="btn buttons-html5 btn-outline-primary btn-sm mr-1"><span>Buscar</span></button>
@@ -122,36 +122,96 @@
                             <div class="panel-group">
                                 <div class="panel-body">
                                     <div class="table-responsive">
-                                        <table class="table table-bordered w-100" id="dataTable">
+                                        <table class="table table-bordered w-100" id="dataTableCategoria">
                                             <thead>
                                                 <tr>
-                                                    <th>Fecha del Movimiento</th>
-                                                    <th>Tipo de Movimiento</th>
-                                                    <th>Valor</th>
-                                                    <th>Proyectado/Real</th>
-                                                    <th>Proceso/Contrato</th>
-                                                    <th>Estado</th>
-                                                    <th>Historial</th>
+                                                    <th></th>
+                                                    <th>Categorias</th>
+                                                    {% if comparativo %}
+                                                        <th>Valor Real</th>
+                                                        <th>Valor Proyectado</th>
+                                                    {% else %}
+                                                        <th>Valor</th>
+                                                    {% endif %}
+
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {% for movimiento in movimientos %}
+                                                {% for mov in movimientos %}
                                                     <tr>
-                                                        <td>{{ movimiento.fecha_movimiento|date:'Y-m-d' }}</td>
-                                                        <td>{{ movimiento.subtipo_movimiento }}</td>
-                                                        <td>{{ movimiento.valor|intcomma }}</td>
-                                                        <td>{% if movimiento.tipo_registro == 0 %} Real {% else %} Proyectado {% endif %}</td>
-                                                        <td>{% if movimiento.flujo_caja_enc.proceso %}
-                                                                {{ movimiento.flujo_caja_enc.proceso }}
-                                                            {% else %}
-                                                                {{ movimiento.flujo_caja_enc.contrato }}
-                                                            {% endif %}
+                                                        <td style="width: 10px">
+                                                            <a class="far fa-2x far fa-plus-circle" id="boton_categoria_{{ mov.id }}" href="javascript:desplegarDetalle('categoria', {{ mov.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip"></a>
                                                         </td>
-                                                        <td><span class="badge {% if movimiento.estado_id == ELIMINADO %} badge-danger {% else %} badge-primary {% endif %} fw-300 ml-auto">{{ movimiento.estado }}</span></td>
-                                                        <td>
-                                                            {% if movimiento.estado_id == EDITADO or movimiento.estado_id == ELIMINADO %}
-                                                                <a class="far fa-2x fa-custom fa-list-alt" id="historial_{{ movimiento.id }}" href="javascript:void(0);"  onclick="abrirModalHistorial('{% url 'Financiero:flujo-caja-movimiento-historial' movimiento.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Historial"></a>
-                                                            {% endif %}
+                                                        <td>{{ mov.nombre }}</td>
+                                                        {% if comparativo %}
+                                                            <td class="t-a-e">{{ mov.valor_real|intcomma }}</td>
+                                                            <td class="t-a-e">{{ mov.valor_proyectado|intcomma }}</td>
+                                                        {% else %}
+                                                            <td class="t-a-e">{{ mov.valor|intcomma }}</td>
+                                                        {% endif %}
+                                                    </tr>
+                                                    <tr id="mas_categoria_{{ mov.id }}" style="display: none">
+                                                        <td colspan="4">
+                                                             <table class="table table-bordered w-100" id="dataTableSubtipo">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th></th>
+                                                                        <th>Subtipos</th>
+                                                                        {% if comparativo %}
+                                                                            <th>Valor Real</th>
+                                                                            <th>Valor Proyectado</th>
+                                                                        {% else %}
+                                                                            <th>Valor</th>
+                                                                        {% endif %}
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {% for sub in mov.subtipos %}
+                                                                        <tr>
+                                                                            <td style="width: 10px">
+                                                                                <a class="far fa-2x far fa-plus-circle" id="boton_subtipo_{{ sub.id }}" href="javascript:desplegarDetalle('subtipo', {{ sub.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip"></a>
+                                                                            </td>
+                                                                            <td>{{ sub.nombre }}</td>
+                                                                            {% if comparativo %}
+                                                                                <td class="t-a-e">{{ sub.valor_real|intcomma }}</td>
+                                                                                <td class="t-a-e">{{ sub.valor_proyectado|intcomma }}</td>
+                                                                            {% else %}
+                                                                                <td class="t-a-e">{{ sub.valor|intcomma }}</td>
+                                                                            {% endif %}
+                                                                        </tr>
+                                                                        <tr id="mas_subtipo_{{ sub.id }}" style="display: none">
+                                                                            <td colspan="4">
+                                                                                 <table class="table table-bordered w-100" id="dataTableProCon">
+                                                                                    <thead>
+                                                                                        <tr>
+                                                                                            <th>Procesos / Contratos</th>
+                                                                                            {% if comparativo %}
+                                                                                                <th>Valor Real</th>
+                                                                                                <th>Valor Proyectado</th>
+                                                                                            {% else %}
+                                                                                                <th>Valor</th>
+                                                                                            {% endif %}
+                                                                                        </tr>
+                                                                                    </thead>
+                                                                                    <tbody>
+                                                                                        {% for cp in sub.con_pro %}
+                                                                                            <tr>
+                                                                                                <td>{{ cp.nombre }}</td>
+                                                                                                {% if comparativo %}
+                                                                                                    <td class="t-a-e">{{ cp.valor_real|intcomma }}</td>
+                                                                                                    <td class="t-a-e">{{ cp.valor_proyectado|intcomma }}</td>
+                                                                                                {% else %}
+                                                                                                    <td class="t-a-e">{{ cp.valor|intcomma }}</td>
+                                                                                                {% endif %}
+                                                                                            </tr>
+                                                                                        {% endfor %}
+                                                                                    </tbody>
+                                                                                </table>
+                                                                            </td>
+                                                                        </tr>
+                                                                    {% endfor %}
+                                                                </tbody>
+                                                            </table>
                                                         </td>
                                                     </tr>
                                                 {% endfor %}
@@ -159,79 +219,14 @@
                                         </table>
                                     </div>
                                 </div>
-                                <div class="card-footer small text-muted">Actualizado: {{ fecha_actual }}</div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            {% endif %}
-            {% if comparacion %}
-            <div class="col-xl-12">
-                <div id="panel-1" class="panel">
-                    <div class="panel-container show">
-                        <div class="panel-content">
-                            <div class="panel-group">
-                                <div class="panel-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered w-100" id="dataTableComparativo">
-                                            <thead>
-                                                <tr>
-                                                    <th>Real</th>
-                                                    <th>Fecha del Movimiento</th>
-                                                    <th>Tipo de Movimiento</th>
-                                                    <th>Precio</th>
-                                                    <th>Proceso/Contrato</th>
-                                                    <th>Estado</th>
-                                                    <th>Proyectado</th>
-                                                    <th>Fecha del Movimiento</th>
-                                                    <th>Tipo de Movimiento</th>
-                                                    <th>Precio</th>
-                                                    <th>Proceso/Contrato</th>
-                                                    <th>Estado</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {% for comp in comparacion %}
-                                                    <tr>
-                                                        <td><b>{% if comp.datos_real.tipo_registro == 0 %}Real {% elif comp.datos_real.tipo_registro == 1 %} Proyectado {% endif %}</b></td>
-                                                        <td>{{ comp.datos_real.fecha_movimiento|date:'Y-m-d' }}</td>
-                                                        <td>{{ comp.datos_real.subtipo_movimiento }}</td>
-                                                        <td>{{ comp.datos_real.valor|intcomma }}</td>
-                                                        <td>{% if comp.datos_real.flujo_caja_enc.proceso %}
-                                                                {{ comp.datos_real.flujo_caja_enc.proceso }}
-                                                            {% else %}
-                                                                {{ comp.datos_real.flujo_caja_enc.contrato }}
-                                                            {% endif %}
-                                                        </td>
-                                                        <td><span class="badge {% if comp.datos_real.estado_id == ELIMINADO %} badge-danger {% else %} badge-primary {% endif %} fw-300 ml-auto">{{ comp.datos_real.estado }}</span></td>
-                                                        <td><b>{% if comp.datos_proyectado.tipo_registro == 0 %} Real {% elif comp.datos_proyectado.tipo_registro == 1 %} Proyectado {% endif %}</b></td>
-                                                        <td>{{ comp.datos_proyectado.fecha_movimiento|date:'Y-m-d' }}</td>
-                                                        <td>{{ comp.datos_proyectado.subtipo_movimiento }}</td>
-                                                        <td>{{ comp.datos_proyectado.valor|intcomma }}</td>
-                                                        <td>{% if comp.datos_proyectado.flujo_caja_enc.proceso %}
-                                                                {{ comp.datos_proyectado.flujo_caja_enc.proceso }}
-                                                            {% else %}
-                                                                {{ comp.datos_proyectado.flujo_caja_enc.contrato }}
-                                                            {% endif %}
-                                                        </td>
-                                                        <td><span class="badge {% if comp.datos_proyectado.estado_id == ELIMINADO %} badge-danger {% else %} badge-primary {% endif %} fw-300 ml-auto">{{ comp.datos_proyectado.estado }}</span></td>
-                                                    </tr>
-                                                {% endfor %}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                                <div class="card-footer small text-muted">Actualizado: {{ fecha_actual }}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
+        {% endif %}
         </div>
     </div>
-    <div class="modal fade" tabindex="-1" id="historial" role="dialog"></div>
 {% endwith %}
 {% endblock %}
 {% block scripts %}
@@ -240,7 +235,5 @@
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.export.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js'%}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script>
-    <script src="{% static 'Financiero/js/FlujoCaja/exportarTablas/exportatTablasConsolidadoComparativo.js' %}"></script>
-    <script src="{% static 'Financiero/js/FlujoCaja/modalHistorial.js' %}"></script>
     <script src="{% static 'Financiero/js/FlujoCaja/configuracionesConsolidado.js' %}"></script>
 {% endblock %}
