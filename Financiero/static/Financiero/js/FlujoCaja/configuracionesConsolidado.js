@@ -236,6 +236,7 @@ idCategorias.change(function () {
                 }
             }
         }else {
+            idSubtipos.empty();
             for (let j = 0; j < subtiposCategorias.length; j++) {
                 idSubtipos.append('<option value="' + subtiposCategorias[j].id + '">' + subtiposCategorias[j].nombre + '</option>');
             }
