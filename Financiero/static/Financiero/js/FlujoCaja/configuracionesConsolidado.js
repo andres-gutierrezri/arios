@@ -242,3 +242,17 @@ idCategorias.change(function () {
             }
         }
     });
+
+function desplegarDetalle(origen, idObjeto) {
+    let mas = $('#mas_'+ origen +'_' + idObjeto);
+    let boton =  $('#boton_'+ origen +'_' + idObjeto);
+    if (mas.is(':visible')) {
+        mas.hide();
+        boton.removeClass('fa-minus-circle');
+        boton.addClass('fa-plus-circle');
+    } else {
+        mas.show();
+        boton.removeClass('fa-plus-circle');
+        boton.addClass('fa-minus-circle');
+    }
+}
