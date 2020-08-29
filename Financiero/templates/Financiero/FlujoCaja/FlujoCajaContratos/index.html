@@ -60,7 +60,7 @@
                                                             <td>{{ contrato.fecha_suscripcion|date:'Y-m-d' }}</td>
                                                             <td>{{ contrato.fecha_inicio|date:'Y-m-d' }}</td>
                                                             <td>{{ contrato.fecha_terminacion|date:'Y-m-d' }}</td>
-                                                            <td>{{ contrato.valor|intcomma }}</td>
+                                                            <td class="t-a-e">{{ contrato.valor|intcomma }}</td>
                                                             <td>{{ contrato.tipo_contrato }}</td>
                                                             <td><span class="badge badge-primary">{{ contrato.flujocajaencabezado_set.first.estado }}</span></td>
                                                             <td>
