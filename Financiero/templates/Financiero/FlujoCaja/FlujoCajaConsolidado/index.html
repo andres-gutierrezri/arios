@@ -121,7 +121,19 @@
                         <div class="panel-content">
                             <div class="panel-group">
                                 <div class="panel-body">
-                                    <div class="table-responsive">
+                                    <div class="row mb-3">
+                                        <div class="col-sm-12 col-md-6 d-flex align-items-center justify-content-start">
+                                            <h1 class="header-title">Resultados de la Búsqueda</h1>
+                                        </div>
+                                        <div class="col-sm-12 col-md-6 d-flex align-items-center justify-content-end">
+                                            <div class="dt-buttons">
+                                                <button class="btn buttons-print btn-outline-primary btn-sm"
+                                                        tabindex="0" aria-controls="dataTableFlujoCaja" type="button" onclick="Imprimir()">
+                                                    <span>Imprimir</span></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="consolidado" class="table-responsive">
                                         <table class="table table-bordered w-100" id="dataTableCategoria">
                                             <thead>
                                                 <tr>
