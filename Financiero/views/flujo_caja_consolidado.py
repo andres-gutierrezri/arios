@@ -2,12 +2,16 @@ import json
 from datetime import datetime
 
 from django.contrib import messages
+from django.db.models import F
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
 from EVA.views.index import AbstractEvaLoggedView
 from Financiero.models import FlujoCajaEncabezado
 from Financiero.models.flujo_caja import SubTipoMovimiento, FlujoCajaDetalle, EstadoFCDetalle, CategoriaMovimiento
+
+COMPARATIVO = 2
+REAL = 0
 
 
 class FlujoCajaConsolidadoView(AbstractEvaLoggedView):
@@ -45,49 +49,32 @@ class FlujoCajaConsolidadoView(AbstractEvaLoggedView):
         else:
             subtipos = SubTipoMovimiento.objects.all()
 
-        if datos['lista_procesos_contratos']:
-            movimientos = FlujoCajaDetalle.objects\
-                .filter(estado_id__in=estados, flujo_caja_enc__in=datos['lista_procesos_contratos'],
-                        fecha_movimiento__range=[fecha_desde, fecha_hasta], tipo_registro__in=tipos_flujos_caja,
-                        subtipo_movimiento_id__in=subtipos)\
-                .exclude(estado_id=EstadoFCDetalle.OBSOLETO)
+        if datos['categorias']:
+            categorias = datos['categorias']
         else:
-            movimientos = []
+            categorias = CategoriaMovimiento.objects.all()
 
-        comparacion = []
-        if datos['tipos_flujos_caja'] == 2:
-            real = movimientos.filter(tipo_registro=0)
-            proyectado = movimientos.filter(tipo_registro=1)
-            cant_real = real.count()
-            cant_proyeccion = proyectado.count()
+        con_pro = []
+        if datos['lista_procesos_contratos']:
+            con_pro = datos['lista_procesos_contratos']
+        else:
+            for c_p in FlujoCajaEncabezado.objects.all():
+                con_pro.append(c_p.id)
 
-            if cant_real > cant_proyeccion:
-                referencia = cant_real
-            else:
-                referencia = cant_proyeccion
+        movimientos = FlujoCajaDetalle.objects\
+            .filter(estado_id__in=estados, flujo_caja_enc__in=con_pro,
+                    fecha_movimiento__range=[fecha_desde, fecha_hasta], tipo_registro__in=tipos_flujos_caja,
+                    subtipo_movimiento_id__in=subtipos,
+                    subtipo_movimiento__categoria_movimiento__in=categorias)\
+            .exclude(estado_id=EstadoFCDetalle.OBSOLETO)
 
-            x = 0
-            while x < referencia:
-                if cant_real > x:
-                    datos_real = real[x]
-                else:
-                    datos_real = ''
-
-                if cant_proyeccion > x:
-                    datos_proyectado = proyectado[x]
-                else:
-                    datos_proyectado = ''
-                comparacion.append({'datos_real': datos_real,
-                                    'datos_proyectado': datos_proyectado})
-                x += 1
-
-        if not movimientos or not comparacion:
+        if not movimientos:
             messages.warning(request, 'No se encontraron concidencias')
         return render(request, 'Financiero/FlujoCaja/FlujoCajaConsolidado/index.html',
-                      datos_xa_render(datos, movimientos, comparacion))
+                      datos_xa_render(datos, movimientos))
 
 
-def datos_xa_render(datos_formulario=None, movimientos=None, comparacion=None):
+def datos_xa_render(datos_formulario=None, movimientos=None):
     procesos_contratos = FlujoCajaDetalle.objects.all().order_by('fecha_crea')
     if procesos_contratos:
         fecha_min = procesos_contratos.first().fecha_movimiento
@@ -112,8 +99,7 @@ def datos_xa_render(datos_formulario=None, movimientos=None, comparacion=None):
     for sub in SubTipoMovimiento.objects.all():
         subtipos_categorias.append({'id': sub.id, 'nombre': sub.nombre, 'categoria_id': sub.categoria_movimiento_id})
 
-    tipos_flujos = [{'campo_valor': 0, 'campo_texto': 'Real'},
-                    {'campo_valor': 1, 'campo_texto': 'Proyectado'},
+    tipos_flujos = [{'campo_valor': 1, 'campo_texto': 'Proyectado'},
                     {'campo_valor': 2, 'campo_texto': 'Comparativo'}]
 
     estados = [{'campo_valor': 1, 'campo_texto': 'Vigente'},
@@ -139,15 +125,17 @@ def datos_xa_render(datos_formulario=None, movimientos=None, comparacion=None):
         if datos_formulario['subtipos']:
             datos['textos_subtipos'] = quitar_selecciones
 
+        if datos_formulario['categorias']:
+            datos['textos_categorias'] = quitar_selecciones
+
+        if datos_formulario['tipos_flujos_caja'] == COMPARATIVO:
+            datos['comparativo'] = True
+
     else:
         datos['valor'] = {'estados': [1, 2]}
 
     if movimientos:
-        datos['movimientos'] = movimientos
-
-    if comparacion:
-        datos['movimientos'] = ''
-        datos['comparacion'] = comparacion
+        datos['movimientos'] = construir_consolidado(movimientos)
 
     return datos
 
@@ -161,7 +149,8 @@ def datos_formulario_consolidado(request):
     if fecha_hasta:
         fecha_hasta = datetime.strptime(fecha_hasta, "%Y-%m-%d")
 
-    subtipos = request.POST.getlist('subtipos[]', '')
+    categorias = request.POST.getlist('categorias[]', [])
+    subtipos = request.POST.getlist('subtipos[]', [])
     tipos_flujos_caja = request.POST.get('tipos_flujos_caja_id', '')
     estados = request.POST.getlist('estados[]', [])
 
@@ -180,6 +169,10 @@ def datos_formulario_consolidado(request):
     for z in subtipos:
         lista_subtipos.append(int(z))
 
+    lista_categorias = []
+    for cat in categorias:
+        lista_categorias.append(int(cat))
+
     if tipos_flujos_caja:
         tipos_flujos_caja = int(tipos_flujos_caja)
 
@@ -193,4 +186,88 @@ def datos_formulario_consolidado(request):
 
     return {'lista_procesos_contratos': lista_con_pro, 'fecha_desde': fecha_desde, 'fecha_hasta': fecha_hasta,
             'subtipos': lista_subtipos, 'tipos_flujos_caja': tipos_flujos_caja, 'estados': lista_estados,
-            'fecha_min': fecha_min, 'fecha_max': fecha_max}
+            'fecha_min': fecha_min, 'fecha_max': fecha_max, 'categorias': lista_categorias}
+
+
+def construir_consolidado(objeto):
+
+    categorias = objeto.distinct('subtipo_movimiento__categoria_movimiento')\
+        .values(id_categoria=F('subtipo_movimiento__categoria_movimiento_id'),
+                nombre=F('subtipo_movimiento__categoria_movimiento__nombre'))
+    subtipos = objeto.distinct('subtipo_movimiento')\
+        .values(id_subtipo=F('subtipo_movimiento_id'),
+                id_categoria=F('subtipo_movimiento__categoria_movimiento_id'),
+                nombre=F('subtipo_movimiento__nombre'))
+    procesos = objeto.filter(flujo_caja_enc__contrato__isnull=True).distinct('flujo_caja_enc__proceso')\
+        .values(contrato=F('flujo_caja_enc__contrato__numero_contrato'),
+                proceso=F('flujo_caja_enc__proceso__nombre'),
+                id_flujo_caja=F('flujo_caja_enc_id'),
+                id_subtipo=F('subtipo_movimiento__id'))
+    contratos = objeto.filter(flujo_caja_enc__proceso__isnull=True).distinct('flujo_caja_enc__contrato') \
+        .values(contrato=F('flujo_caja_enc__contrato__numero_contrato'),
+                proceso=F('flujo_caja_enc__proceso__nombre'),
+                id_flujo_caja=F('flujo_caja_enc_id'),
+                id_subtipo=F('subtipo_movimiento__id'))
+
+    lista_procesos_contratos = []
+
+    for pro in procesos:
+        lista_procesos_contratos.append(pro)
+
+    for con in contratos:
+        lista_procesos_contratos.append(con)
+
+    lista_categorias = []
+
+    for cat in categorias:
+        valor_total = 0
+        valor_total_real = 0
+        valor_total_proyectado = 0
+
+        lista_subtipos = []
+        for sub in subtipos:
+            valor_subtipos = 0
+            valor_subtipos_real = 0
+            valor_subtipos_proyectado = 0
+
+            if sub['id_categoria'] == cat['id_categoria']:
+
+                lista_con_pro = []
+                for con_pro in lista_procesos_contratos:
+                    valor_con_pro = 0
+                    valor_con_pro_real = 0
+                    valor_con_pro_proyectado = 0
+
+                    for x in objeto.filter(flujo_caja_enc=con_pro['id_flujo_caja'],
+                                           subtipo_movimiento_id=sub['id_subtipo']):
+                        if x.tipo_registro == REAL:
+                            valor_con_pro_real += x.valor
+                        else:
+                            valor_con_pro_proyectado += x.valor
+                        valor_con_pro += x.valor
+
+                    valor_subtipos += valor_con_pro
+                    valor_subtipos_real += valor_con_pro_real
+                    valor_subtipos_proyectado += valor_con_pro_proyectado
+
+                    if con_pro['contrato']:
+                        nombre = con_pro['contrato']
+                    else:
+                        nombre = con_pro['proceso']
+                    if valor_con_pro > 0:
+                        lista_con_pro.append({'nombre': nombre, 'valor': valor_con_pro, 'valor_real': valor_con_pro_real,
+                                              'valor_proyectado': valor_con_pro_proyectado})
+
+                valor_total += valor_subtipos
+                valor_total_real += valor_subtipos_real
+                valor_total_proyectado += valor_subtipos_proyectado
+
+                lista_subtipos.append({'id': sub['id_subtipo'], 'nombre': sub['nombre'], 'con_pro': lista_con_pro,
+                                       'valor': valor_subtipos, 'valor_real': valor_subtipos_real,
+                                       'valor_proyectado': valor_subtipos_proyectado})
+
+        lista_categorias.append({'id': cat['id_categoria'], 'nombre': cat['nombre'], 'subtipos': lista_subtipos,
+                                 'valor': valor_total, 'valor_real': valor_total_real,
+                                 'valor_proyectado': valor_total_proyectado})
+
+    return lista_categorias
