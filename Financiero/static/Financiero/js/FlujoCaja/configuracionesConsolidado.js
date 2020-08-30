@@ -149,6 +149,10 @@ fechaDesde.change(function () {
                 validarFechaDesde.fadeOut(1000);
             }, 5000);
         }else{
+            if (!validarFechaMaxMin(fechaDesde, validarFechaDesde)){
+            borrarFechaDesde.hide();
+            return false;
+        }
             validarFechaDesde.hide();
         }
     }else{
@@ -178,6 +182,10 @@ fechaHasta.change(function () {
                 validarFechaHasta.fadeOut(1000);
             }, 5000);
         }else{
+            if (!validarFechaMaxMin(fechaDesde, validarFechaDesde)) {
+                borrarFechaDesde.hide();
+                return
+            }
             validarFechaHasta.hide();
         }
     }else{
