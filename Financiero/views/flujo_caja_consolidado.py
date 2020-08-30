@@ -176,14 +176,13 @@ def datos_formulario_consolidado(request):
     if tipos_flujos_caja:
         tipos_flujos_caja = int(tipos_flujos_caja)
 
-    movimientos = FlujoCajaDetalle.objects.all().order_by('fecha_crea')
+    movimientos = FlujoCajaDetalle.objects.all().order_by('fecha_movimiento')
     if movimientos:
         fecha_min = movimientos.first().fecha_movimiento
         fecha_max = movimientos.last().fecha_movimiento
     else:
-        fecha_min = ''
-        fecha_max = ''
-
+        fecha_min = datetime.now()
+        fecha_max = datetime.now()
     return {'lista_procesos_contratos': lista_con_pro, 'fecha_desde': fecha_desde, 'fecha_hasta': fecha_hasta,
             'subtipos': lista_subtipos, 'tipos_flujos_caja': tipos_flujos_caja, 'estados': lista_estados,
             'fecha_min': fecha_min, 'fecha_max': fecha_max, 'categorias': lista_categorias}
