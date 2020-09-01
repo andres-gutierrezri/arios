@@ -20,6 +20,11 @@ class TipoMovimiento(models.Model):
         verbose_name = 'Tipo de Movimiento'
         verbose_name_plural = 'Tipos de Movimientos'
 
+    # Estados Fijos
+    COSTOS = 1
+    GASTOS = 2
+    INGRESOS = 3
+
 
 class CategoriaMovimiento(models.Model):
     objects = ManagerGeneral()
