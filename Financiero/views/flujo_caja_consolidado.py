@@ -8,7 +8,8 @@ from django.urls import reverse
 
 from EVA.views.index import AbstractEvaLoggedView
 from Financiero.models import FlujoCajaEncabezado
-from Financiero.models.flujo_caja import SubTipoMovimiento, FlujoCajaDetalle, EstadoFCDetalle, CategoriaMovimiento
+from Financiero.models.flujo_caja import SubTipoMovimiento, FlujoCajaDetalle, EstadoFCDetalle, CategoriaMovimiento, \
+    TipoMovimiento
 
 COMPARATIVO = 2
 REAL = 0
@@ -135,7 +136,9 @@ def datos_xa_render(datos_formulario=None, movimientos=None):
         datos['valor'] = {'estados': [1, 2]}
 
     if movimientos:
-        datos['movimientos'] = construir_consolidado(movimientos)
+        consolidado = construir_consolidado(movimientos)
+        datos['movimientos'] = consolidado['lista_categorias']
+        datos['totales'] = consolidado['totales']
 
     return datos
 
@@ -217,56 +220,91 @@ def construir_consolidado(objeto):
         lista_procesos_contratos.append(con)
 
     lista_categorias = []
+    total_ingresos_real = 0
+    total_ingresos_proyectado = 0
+    total_egresos_real = 0
+    total_egresos_proyectado = 0
+    consolidado = {}
 
     for cat in categorias:
-        valor_total = 0
-        valor_total_real = 0
-        valor_total_proyectado = 0
+        valor_cat_ingresos_real = 0
+        valor_cat_ingresos_proyectado = 0
+        valor_cat_egresos_real = 0
+        valor_cat_egresos_proyectado = 0
 
         lista_subtipos = []
         for sub in subtipos:
-            valor_subtipos = 0
-            valor_subtipos_real = 0
-            valor_subtipos_proyectado = 0
+            valor_subtipos_ingresos_real = 0
+            valor_subtipos_ingresos_proyectado = 0
+            valor_subtipos_egresos_real = 0
+            valor_subtipos_egresos_proyectado = 0
 
             if sub['id_categoria'] == cat['id_categoria']:
 
                 lista_con_pro = []
                 for con_pro in lista_procesos_contratos:
                     valor_con_pro = 0
-                    valor_con_pro_real = 0
-                    valor_con_pro_proyectado = 0
-
+                    valor_con_pro_ingresos_real = 0
+                    valor_con_pro_ingresos_proyectado = 0
+                    valor_con_pro_egresos_real = 0
+                    valor_con_pro_egresos_proyectado = 0
                     for x in objeto.filter(flujo_caja_enc=con_pro['id_flujo_caja'],
                                            subtipo_movimiento_id=sub['id_subtipo']):
                         if x.tipo_registro == REAL:
-                            valor_con_pro_real += x.valor
+                            if x.subtipo_movimiento.tipo_movimiento_id == TipoMovimiento.INGRESOS:
+                                valor_con_pro_ingresos_real += x.valor
+                            else:
+                                valor_con_pro_egresos_real += x.valor
                         else:
-                            valor_con_pro_proyectado += x.valor
+                            if x.subtipo_movimiento.tipo_movimiento_id == TipoMovimiento.INGRESOS:
+                                valor_con_pro_ingresos_proyectado += x.valor
+                            else:
+                                valor_con_pro_egresos_proyectado += x.valor
+
                         valor_con_pro += x.valor
 
-                    valor_subtipos += valor_con_pro
-                    valor_subtipos_real += valor_con_pro_real
-                    valor_subtipos_proyectado += valor_con_pro_proyectado
+                    valor_subtipos_ingresos_real += valor_con_pro_ingresos_real
+                    valor_subtipos_ingresos_proyectado += valor_con_pro_ingresos_proyectado
+                    valor_subtipos_egresos_real += valor_con_pro_egresos_real
+                    valor_subtipos_egresos_proyectado += valor_con_pro_egresos_proyectado
 
                     if con_pro['contrato']:
                         nombre = con_pro['contrato']
                     else:
                         nombre = con_pro['proceso']
                     if valor_con_pro > 0:
-                        lista_con_pro.append({'nombre': nombre, 'valor': valor_con_pro, 'valor_real': valor_con_pro_real,
-                                              'valor_proyectado': valor_con_pro_proyectado})
+                        lista_con_pro.append({'nombre': nombre,
+                                              'valor_ingresos_real': valor_con_pro_ingresos_real,
+                                              'valor_ingresos_proyectado': valor_con_pro_ingresos_proyectado,
+                                              'valor_egresos_real': valor_con_pro_egresos_real,
+                                              'valor_egresos_proyectado': valor_con_pro_egresos_proyectado})
 
-                valor_total += valor_subtipos
-                valor_total_real += valor_subtipos_real
-                valor_total_proyectado += valor_subtipos_proyectado
+                valor_cat_ingresos_real += valor_subtipos_ingresos_real
+                valor_cat_ingresos_proyectado += valor_subtipos_ingresos_proyectado
+                valor_cat_egresos_real += valor_subtipos_egresos_real
+                valor_cat_egresos_proyectado += valor_subtipos_egresos_proyectado
 
                 lista_subtipos.append({'id': sub['id_subtipo'], 'nombre': sub['nombre'], 'con_pro': lista_con_pro,
-                                       'valor': valor_subtipos, 'valor_real': valor_subtipos_real,
-                                       'valor_proyectado': valor_subtipos_proyectado})
+                                       'valor_ingresos_real': valor_subtipos_ingresos_real,
+                                       'valor_ingresos_proyectado': valor_subtipos_ingresos_proyectado,
+                                       'valor_egresos_real': valor_subtipos_egresos_real,
+                                       'valor_egresos_proyectado': valor_subtipos_egresos_proyectado})
 
         lista_categorias.append({'id': cat['id_categoria'], 'nombre': cat['nombre'], 'subtipos': lista_subtipos,
-                                 'valor': valor_total, 'valor_real': valor_total_real,
-                                 'valor_proyectado': valor_total_proyectado})
+                                 'valor_ingresos_real': valor_cat_ingresos_real,
+                                 'valor_ingresos_proyectado': valor_cat_ingresos_proyectado,
+                                 'valor_egresos_real': valor_cat_egresos_real,
+                                 'valor_egresos_proyectado': valor_cat_egresos_proyectado})
 
-    return lista_categorias
+        total_ingresos_real += valor_cat_ingresos_real
+        total_ingresos_proyectado += valor_cat_ingresos_proyectado
+        total_egresos_real += valor_cat_egresos_real
+        total_egresos_proyectado += valor_cat_egresos_proyectado
+
+    consolidado['lista_categorias'] = lista_categorias
+    consolidado['totales'] = {'total_ingresos_real': total_ingresos_real,
+                              'total_ingresos_proyectado': total_ingresos_proyectado,
+                              'total_egresos_real': total_egresos_real,
+                              'total_egresos_proyectado': total_egresos_proyectado}
+
+    return consolidado
