@@ -140,12 +140,14 @@
                                                     <th></th>
                                                     <th>Categorias</th>
                                                     {% if comparativo %}
-                                                        <th>Valor Real</th>
-                                                        <th>Valor Proyectado</th>
+                                                        <th>Valor de Ingresos Real</th>
+                                                        <th>Valor de Egresos Real</th>
+                                                        <th>Valor de Ingresos Proyectado</th>
+                                                        <th>Valor de Egresos Proyectado</th>
                                                     {% else %}
-                                                        <th>Valor</th>
+                                                        <th>Valor de Ingresos</th>
+                                                        <th>Valor de Egresos</th>
                                                     {% endif %}
-
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -156,24 +158,35 @@
                                                         </td>
                                                         <td>{{ mov.nombre }}</td>
                                                         {% if comparativo %}
-                                                            <td class="t-a-e">{{ mov.valor_real|intcomma }}</td>
-                                                            <td class="t-a-e">{{ mov.valor_proyectado|intcomma }}</td>
+                                                            <td class="t-a-e">{{ mov.valor_ingresos_real|intcomma }}</td>
+                                                            <td class="t-a-e">{{ mov.valor_egresos_real|intcomma }}</td>
+                                                            <td class="t-a-e">{{ mov.valor_ingresos_proyectado|intcomma }}</td>
+                                                            <td class="t-a-e">{{ mov.valor_egresos_proyectado|intcomma }}</td>
                                                         {% else %}
-                                                            <td class="t-a-e">{{ mov.valor|intcomma }}</td>
+                                                            {% if valor.tipos_flujos_caja == 0 %}
+                                                                <td class="t-a-e">{{ mov.valor_ingresos_real|intcomma }}</td>
+                                                                <td class="t-a-e">{{ mov.valor_egresos_real|intcomma }}</td>
+                                                            {% else %}
+                                                                <td class="t-a-e">{{ mov.valor_ingresos_proyectado|intcomma }}</td>
+                                                                <td class="t-a-e">{{ mov.valor_egresos_proyectado|intcomma }}</td>
+                                                            {% endif %}
                                                         {% endif %}
                                                     </tr>
                                                     <tr id="mas_categoria_{{ mov.id }}" style="display: none">
-                                                        <td colspan="4">
+                                                        <td colspan="6">
                                                              <table class="table table-bordered w-100" id="dataTableSubtipo">
                                                                 <thead class="bg-info-400">
                                                                     <tr>
                                                                         <th></th>
                                                                         <th>Subtipos</th>
                                                                         {% if comparativo %}
-                                                                            <th>Valor Real</th>
-                                                                            <th>Valor Proyectado</th>
+                                                                            <th>Valor de Ingresos Real</th>
+                                                                            <th>Valor de Egresos Real</th>
+                                                                            <th>Valor de Ingresos Proyectado</th>
+                                                                            <th>Valor de Egresos Proyectado</th>
                                                                         {% else %}
-                                                                            <th>Valor</th>
+                                                                            <th>Valor de Ingresos</th>
+                                                                            <th>Valor de Egresos</th>
                                                                         {% endif %}
                                                                     </tr>
                                                                 </thead>
@@ -185,23 +198,34 @@
                                                                             </td>
                                                                             <td>{{ sub.nombre }}</td>
                                                                             {% if comparativo %}
-                                                                                <td class="t-a-e">{{ sub.valor_real|intcomma }}</td>
-                                                                                <td class="t-a-e">{{ sub.valor_proyectado|intcomma }}</td>
+                                                                                <td class="t-a-e">{{ sub.valor_ingresos_real|intcomma }}</td>
+                                                                                <td class="t-a-e">{{ sub.valor_egresos_real|intcomma }}</td>
+                                                                                <td class="t-a-e">{{ sub.valor_ingresos_proyectado|intcomma }}</td>
+                                                                                <td class="t-a-e">{{ sub.valor_egresos_proyectado|intcomma }}</td>
                                                                             {% else %}
-                                                                                <td class="t-a-e">{{ sub.valor|intcomma }}</td>
+                                                                                {% if valor.tipos_flujos_caja == 0 %}
+                                                                                    <td class="t-a-e">{{ sub.valor_ingresos_real|intcomma }}</td>
+                                                                                    <td class="t-a-e">{{ sub.valor_egresos_real|intcomma }}</td>
+                                                                                {% else %}
+                                                                                    <td class="t-a-e">{{ sub.valor_ingresos_proyectado|intcomma }}</td>
+                                                                                    <td class="t-a-e">{{ sub.valor_egresos_proyectado|intcomma }}</td>
+                                                                                {% endif %}
                                                                             {% endif %}
                                                                         </tr>
                                                                         <tr id="mas_subtipo_{{ sub.id }}" style="display: none">
-                                                                            <td colspan="4">
+                                                                            <td colspan="6">
                                                                                  <table class="table table-bordered w-100" id="dataTableProCon">
                                                                                     <thead class="bg-success-100">
                                                                                         <tr>
                                                                                             <th>Procesos / Contratos</th>
                                                                                             {% if comparativo %}
-                                                                                                <th>Valor Real</th>
-                                                                                                <th>Valor Proyectado</th>
+                                                                                                <th>Valor de Ingresos Real</th>
+                                                                                                <th>Valor de Egresos Real</th>
+                                                                                                <th>Valor de Ingresos Proyectado</th>
+                                                                                                <th>Valor de Egresos Proyectado</th>
                                                                                             {% else %}
-                                                                                                <th>Valor</th>
+                                                                                                <th>Valor de Ingresos</th>
+                                                                                                <th>Valor de Egresos</th>
                                                                                             {% endif %}
                                                                                         </tr>
                                                                                     </thead>
@@ -210,10 +234,18 @@
                                                                                             <tr>
                                                                                                 <td>{{ cp.nombre }}</td>
                                                                                                 {% if comparativo %}
-                                                                                                    <td class="t-a-e">{{ cp.valor_real|intcomma }}</td>
-                                                                                                    <td class="t-a-e">{{ cp.valor_proyectado|intcomma }}</td>
+                                                                                                    <td class="t-a-e">{{ cp.valor_ingresos_real|intcomma }}</td>
+                                                                                                    <td class="t-a-e">{{ cp.valor_egresos_real|intcomma }}</td>
+                                                                                                    <td class="t-a-e">{{ cp.valor_ingresos_proyectado|intcomma }}</td>
+                                                                                                    <td class="t-a-e">{{ cp.valor_egresos_proyectado|intcomma }}</td>
                                                                                                 {% else %}
-                                                                                                    <td class="t-a-e">{{ cp.valor|intcomma }}</td>
+                                                                                                    {% if valor.tipos_flujos_caja == 0 %}
+                                                                                                        <td class="t-a-e">{{ cp.valor_ingresos_real|intcomma }}</td>
+                                                                                                        <td class="t-a-e">{{ cp.valor_egresos_real|intcomma }}</td>
+                                                                                                    {% else %}
+                                                                                                        <td class="t-a-e">{{ cp.valor_ingresos_proyectado|intcomma }}</td>
+                                                                                                        <td class="t-a-e">{{ cp.valor_egresos_proyectado|intcomma }}</td>
+                                                                                                    {% endif %}
                                                                                                 {% endif %}
                                                                                             </tr>
                                                                                         {% endfor %}
