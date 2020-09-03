@@ -13,23 +13,30 @@ class Contrato(models.Model, ModelDjangoExtensiones):
     numero_contrato = models.CharField(max_length=20, verbose_name='Número de contrato', null=False, blank=False)
     cliente = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, verbose_name='Cliente', null=True, blank=False)
     anho = models.IntegerField(verbose_name='Año', null=False, blank=False)
-    supervisor_nombre = models.CharField(max_length=100, verbose_name='Nombre del supervisor', null=False, blank=False)
-    supervisor_telefono = models.TextField(max_length=15, verbose_name='Teléfono', null=False, blank=False)
-    supervisor_correo = models.EmailField(max_length=100, verbose_name='Correo del supervisor', null=False, blank=False,
-                                          error_messages={'invalid': "Ingrese una dirección de correo válida"})
     residente = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Residente', null=True,
                                   blank=True)
-    fecha_inicio = models.DateTimeField(verbose_name='Fecha de inicio', null=True, blank=True)
-    fecha_terminacion = models.DateTimeField(verbose_name='Fecha de terminación', null=True, blank=True)
     fecha_suscripcion = models.DateTimeField(verbose_name='Fecha de suscripción', null=True, blank=False)
     valor = models.BigIntegerField(verbose_name="Valor", null=True, blank=False)
+    valor_con_iva = models.BigIntegerField(verbose_name="Valor con IVA", null=True, blank=False)
+    valor_sin_iva = models.BigIntegerField(verbose_name="Valor con IVA", null=True, blank=False)
+    porcentaje_a = models.DecimalField(verbose_name='Porcentaje A', null=True, blank=True)
+    porcentaje_i = models.DecimalField(verbose_name='Porcentaje I', null=True, blank=True)
+    porcentaje_u = models.DecimalField(verbose_name='Porcentaje U', null=True, blank=True)
     periodicidad_informes = models.IntegerField(verbose_name='Periodicidad de informes', null=True, blank=True)
-    tiempo = models.IntegerField(verbose_name='Tiempo', null=False, blank=False)
+    plazo_ejecucion = models.IntegerField(verbose_name='Plazo de ejecución', null=False, blank=False)
     tipo_contrato = models.ForeignKey(TipoContrato, on_delete=models.DO_NOTHING, verbose_name='Tipo de contrato',
                                       null=True, blank=False)
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, verbose_name='Empresa', null=True, blank=False)
     proceso_a_cargo = models.ForeignKey(Proceso, on_delete=models.DO_NOTHING, verbose_name='Proceso a cargo',
                                         null=False, blank=False)
+    objeto_del_contrato = models.CharField(max_length=150, verbose_name='Objeto de contrato', null=False, blank=False)
+    fecha_registro_presupuestal = models.DateTimeField(verbose_name='Fecha de registro presupuestal', null=False,
+                                                       blank=False)
+    numero_registro_presupuestal = models.CharField(max_length=50, verbose_name='Número de registro presupuestal',
+                                                    null=False, blank=False)
+    recursos_propios = models.BooleanField(verbose_name='Recursos propios', null=False, blank=False)
+    origen_de_recursos = models.CharField(max_length=50, verbose_name='Origen de los recursos',
+                                          null=False, blank=False)
 
     def __str__(self):
         return self.numero_contrato
