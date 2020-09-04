@@ -11,24 +11,27 @@ from EVA.General.modelmanagers import ManagerGeneral
 class Contrato(models.Model, ModelDjangoExtensiones):
     objects = ManagerGeneral(campo_texto='numero_contrato')
     numero_contrato = models.CharField(max_length=20, verbose_name='Número de contrato', null=False, blank=False)
-    cliente = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, verbose_name='Cliente', null=True, blank=False)
+    cliente = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, verbose_name='Cliente', null=False, blank=False)
     anho = models.IntegerField(verbose_name='Año', null=False, blank=False)
     residente = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Residente', null=True,
                                   blank=True)
     fecha_suscripcion = models.DateTimeField(verbose_name='Fecha de suscripción', null=True, blank=False)
-    valor = models.BigIntegerField(verbose_name="Valor", null=True, blank=False)
-    valor_con_iva = models.BigIntegerField(verbose_name="Valor con IVA", null=True, blank=False)
-    valor_sin_iva = models.BigIntegerField(verbose_name="Valor con IVA", null=True, blank=False)
-    porcentaje_a = models.DecimalField(verbose_name='Porcentaje A', null=True, blank=True)
-    porcentaje_i = models.DecimalField(verbose_name='Porcentaje I', null=True, blank=True)
-    porcentaje_u = models.DecimalField(verbose_name='Porcentaje U', null=True, blank=True)
-    periodicidad_informes = models.IntegerField(verbose_name='Periodicidad de informes', null=True, blank=True)
+    valor = models.BigIntegerField(verbose_name="Valor", null=False, blank=False)
+    valor_con_iva = models.BigIntegerField(verbose_name="Valor con IVA", null=False, blank=False)
+    valor_sin_iva = models.BigIntegerField(verbose_name="Valor con IVA", null=False, blank=False)
+    porcentaje_a = models.DecimalField(verbose_name='Porcentaje A', decimal_places="2", max_digits="50", null=True,
+                                       blank=True)
+    porcentaje_i = models.DecimalField(verbose_name='Porcentaje I', decimal_places="2", max_digits="50", null=True,
+                                       blank=True)
+    porcentaje_u = models.DecimalField(verbose_name='Porcentaje U', decimal_places="2", max_digits="50", null=True,
+                                       blank=True)
+    periodicidad_informes = models.IntegerField(verbose_name='Periodicidad de informes', null=False, blank=False)
     plazo_ejecucion = models.IntegerField(verbose_name='Plazo de ejecución', null=False, blank=False)
     tipo_contrato = models.ForeignKey(TipoContrato, on_delete=models.DO_NOTHING, verbose_name='Tipo de contrato',
-                                      null=True, blank=False)
-    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, verbose_name='Empresa', null=True, blank=False)
+                                      null=False, blank=False)
+    empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa', null=False, blank=False)
     proceso_a_cargo = models.ForeignKey(Proceso, on_delete=models.DO_NOTHING, verbose_name='Proceso a cargo',
-                                        null=False, blank=False)
+                                        null=True, blank=True)
     objeto_del_contrato = models.CharField(max_length=150, verbose_name='Objeto de contrato', null=False, blank=False)
     fecha_registro_presupuestal = models.DateTimeField(verbose_name='Fecha de registro presupuestal', null=False,
                                                        blank=False)
@@ -36,7 +39,7 @@ class Contrato(models.Model, ModelDjangoExtensiones):
                                                     null=False, blank=False)
     recursos_propios = models.BooleanField(verbose_name='Recursos propios', null=False, blank=False)
     origen_de_recursos = models.CharField(max_length=50, verbose_name='Origen de los recursos',
-                                          null=False, blank=False)
+                                          null=True, blank=True)
 
     def __str__(self):
         return self.numero_contrato
