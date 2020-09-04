@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
-from Administracion.models import Tercero, TipoContrato, Empresa, Proceso
+from Administracion.models import Tercero, TipoContrato, Empresa, Proceso, Municipio
 
 # Create your models here.
 from EVA.General.conversiones import string_to_date
@@ -67,10 +67,111 @@ class Contrato(models.Model, ModelDjangoExtensiones):
         contrato.fecha_terminacion = string_to_date(datos.get('fecha_terminacion', ''))
         contrato.fecha_suscripcion = string_to_date(datos.get('fecha_suscripcion', ''))
         contrato.valor = datos.get('valor', '')
+        contrato.valor_con_iva = datos.get('valor_con_iva', '')
+        contrato.valor_sin_iva = datos.get('valor_sin_iva', '')
+        contrato.porcentaje_a = datos.get('porcentaje_a', '')
+        contrato.porcentaje_i = datos.get('porcentaje_i', '')
+        contrato.porcentaje_u = datos.get('porcentaje_u', '')
         contrato.periodicidad_informes = datos.get('periodicidad_informes', None)
         contrato.tiempo = datos.get('tiempo', '')
         contrato.tipo_contrato_id = datos.get('tipo_contrato_id', '')
         contrato.empresa_id = datos.get('empresa_id', '')
         contrato.proceso_a_cargo_id = datos.get('proceso_id', '')
+        contrato.objeto_del_contrato = datos.get('objeto_del_contrato', '')
+        contrato.fecha_registro_presupuestal = datos.get('fecha_registro_presupuestal', '')
+        contrato.numero_registro_presupuestal = datos.get('numero_registro_presupuestal', '')
+        contrato.recursos_propios = datos.get('recursos_propios', '')
+        contrato.origen_de_recursos = datos.get('origen_de_recursos', '')
 
         return contrato
+
+
+class FormasPago(models.Model, ModelDjangoExtensiones):
+    contrato = models.ForeignKey(Contrato, on_delete=models.DO_NOTHING, verbose_name='Contrato', null=False, blank=False)
+    anticipo = models.DecimalField(verbose_name='Anticipo', decimal_places="2", max_digits="50", blank=True, null=True)
+    actas_parciales = models.DecimalField(verbose_name='Actas parciales', decimal_places="2", max_digits="50",
+                                          blank=True, null=True)
+    liquidacion = models.DecimalField(verbose_name='Liquidación', decimal_places="2", max_digits="50",
+                                      blank=True, null=True)
+    contraentrega_satisfaccion = models.IntegerField(verbose_name='Contraentrega y Satisfacción', blank=True, null=True)
+    estado = models.BooleanField(verbose_name="Estado", blank=False, null=False)
+
+    def __str__(self):
+        return 'Forma de Pago para el contrato: {0}'.format(self.contrato)
+
+    class Meta:
+        verbose_name = 'Forma de Pago'
+        verbose_name_plural = 'Formas de Pago'
+
+
+class ContratoMunicipio(models.Model, ModelDjangoExtensiones):
+    contrato = models.ForeignKey(Contrato, on_delete=models.DO_NOTHING, verbose_name='Contrato',
+                                 null=False, blank=False)
+    municipio = models.ForeignKey(Municipio, on_delete=models.DO_NOTHING, verbose_name='Municipio',
+                                  null=False, blank=False)
+
+    def __str__(self):
+        return 'Contrato: {0} - Municipio: {1}'.format(self.contrato, self.municipio)
+
+    class Meta:
+        verbose_name = 'Contrato Municipio'
+        verbose_name_plural = 'Contratos Municipios'
+
+
+class ContratoVigencia(models.Model, ModelDjangoExtensiones):
+    contrato = models.ForeignKey(Contrato, on_delete=models.DO_NOTHING, verbose_name='Contrato',
+                                 null=False, blank=False)
+    anho = models.IntegerField(verbose_name='Año', null=False, blank=False)
+    valor = models.DecimalField(verbose_name='Valor', decimal_places="2", max_digits="50", null=False, blank=False)
+
+    def __str__(self):
+        return 'Vigencia del contrato {0}'.format(self.contrato)
+
+    class Meta:
+        verbose_name = 'Contrato Vigencia'
+        verbose_name_plural = 'Contratos Vigencias'
+
+
+class ContratoIterventoriaSupervisor(models.Model, ModelDjangoExtensiones):
+    contrato = models.ForeignKey(Contrato, on_delete=models.DO_NOTHING, verbose_name='Contrato',
+                                 null=False, blank=False)
+    tercero = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, verbose_name='Tercero',
+                                null=False, blank=False)
+
+    def __str__(self):
+        return 'Interventor/Supervisor del contrato {0}: {1}'.format(self.contrato, self.tercero)
+
+    class Meta:
+        verbose_name = 'Contrato Interventoria Supervisor'
+        verbose_name_plural = 'Contratos Interventorias Supervisores'
+
+
+class TipoGarantia(models.Model, ModelDjangoExtensiones):
+    objects = ManagerGeneral()
+    nombre = models.CharField(verbose_name="Nombre", max_length=50, blank=False, null=False)
+    descripcion = models.CharField(verbose_name="Descripción", max_length=50, blank=False, null=False)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name = 'Tipo de Garantía'
+        verbose_name_plural = 'Tipos de Garantías'
+
+
+class Garantia(models.Model, ModelDjangoExtensiones):
+    tipo_garantia = models.ForeignKey(TipoGarantia, on_delete=models.DO_NOTHING, verbose_name="Tipo de garantía",
+                                      blank=False, null=False)
+    contrato = models.ForeignKey(Contrato, on_delete=models.DO_NOTHING, verbose_name='Contrato',
+                                 null=False, blank=False)
+    porcentaje_asegurado = models.DecimalField(verbose_name='Porcentaje asegurado', decimal_places="2", max_digits="50",
+                                               null=True, blank=True)
+    vigencia = models.IntegerField(verbose_name="Vigencia", blank=False, null=False)
+    estensivas = models.BooleanField(verbose_name="Estensivas", blank=False, null=False)
+
+    def __str__(self):
+        return 'Garantía del contrato: {0}'.format(self.contrato)
+
+    class Meta:
+        verbose_name = 'Garantía'
+        verbose_name_plural = 'Garantías'
