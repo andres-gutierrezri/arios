@@ -40,13 +40,8 @@
                                                             <th>Cliente</th>
                                                             <th>Número de contrato</th>
                                                             <th>Año</th>
-                                                            <th>Nombre del supervisor</th>
-                                                            <th>Teléfono del supervisor</th>
-                                                            <th>Correo del supervisor</th>
-                                                            <th>Nombre del residente</th>
+                                                            <th>Residente</th>
                                                             <th>Fecha de suscripción</th>
-                                                            <th>Fecha de inicio</th>
-                                                            <th>Fecha de terminación</th>
                                                             <th>Valor</th>
                                                             <th>Tiempo de ejecucición</th>
                                                             <th>Tipo de contrato</th>
@@ -61,15 +56,10 @@
                                                                 <td>{{ contrato.cliente}}</td>
                                                                 <td>{{ contrato.numero_contrato }}</td>
                                                                 <td>{{ contrato.anho}}</td>
-                                                                <td>{{ contrato.supervisor_nombre }}</td>
-                                                                <td>{{ contrato.supervisor_telefono }}</td>
-                                                                <td>{{ contrato.supervisor_correo }}</td>
-                                                                <td>{% if contrato.residente %}{{ contrato.residente }}{% endif %}</td>
+                                                                <td>{{ contrato.residente }}</td>
                                                                 <td>{{ contrato.fecha_suscripcion|date:'Y-m-d' }}</td>
-                                                                <td>{{ contrato.fecha_inicio|date:'Y-m-d' }}</td>
-                                                                <td>{{ contrato.fecha_terminacion|date:'Y-m-d' }}</td>
                                                                 <td>{{ contrato.valor|intcomma }}</td>
-                                                                <td>{{ contrato.tiempo }}</td>
+                                                                <td>{{ contrato.plazo_ejecucion }}</td>
                                                                 <td>{{ contrato.tipo_contrato }}</td>
                                                                 {% if perms.Proyectos.change_contrato or perms.Proyectos.delete_contrato %}
                                                                 <td>
