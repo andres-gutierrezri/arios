@@ -151,7 +151,6 @@ $(document).ready(function () {
     let divLiquidacion = $('#div_liquidacion');
     let inputAnticipo = $('#anticipo_id');
     let inputActasParciales = $('#actas_parciales_id');
-    let inputLiquidacion = $('#liquidacion_id');
 
     $('#forma_de_pago_id_select_id').change(function () {
         if(this.value === '1'){
