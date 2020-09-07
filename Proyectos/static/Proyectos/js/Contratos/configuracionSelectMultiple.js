@@ -18,8 +18,11 @@ $(document).ready(function () {
                 }
             },
         });
-    idSelectSupervisor.next().find("input").css("min-width","200px");
-    idSelectSupervisor.val(JSON.parse($('#multiple').val())).trigger("change");
+   let valoresSupervisores = $('#valores_supervisores').val();
+   idSelectSupervisor.next().find("input").css("min-width", "200px");
+   if (valoresSupervisores){
+       idSelectSupervisor.val(JSON.parse(valoresSupervisores)).trigger("change");
+   }
 });
 
 let idSelectInterventor = $('#interventor_id');
@@ -40,6 +43,10 @@ $(document).ready(function () {
                 }
             },
         });
-    idSelectInterventor.next().find("input").css("min-width","200px");
-    idSelectInterventor.val(JSON.parse($('#multiple').val())).trigger("change");
+
+   let valoresInterventores = $('#valores_interventores').val();
+   idSelectInterventor.next().find("input").css("min-width", "200px");
+   if (valoresInterventores){
+       idSelectInterventor.val(JSON.parse(valoresInterventores)).trigger("change");
+   }
 });

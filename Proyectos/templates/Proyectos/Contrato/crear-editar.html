@@ -192,9 +192,11 @@
                                                     </div>
                                                     <div id="step-3" class="">
                                                         <div id="form-step-2" data-toggle="validator">
+                                                            <input hidden id="valores_supervisores" value="">
                                                             <div class="form-group">
                                                                 {% select_multiple_tag supervisores 'supervisor_id[]' 'supervisor_id' 'Seleccione un supervisor' texto_label="Supervisores" value=""  mensaje_validacion='Por favor seleccione un supervisor' multiple='multiple' %}
                                                             </div>
+                                                            <input hidden id="valores_interventores" value="">
                                                             <div class="form-group">
                                                                 {% select_multiple_tag interventores 'interventor_id[]' 'interventor_id' 'Seleccione un interventor' texto_label="Interventores" value=""  mensaje_validacion='Por favor seleccione un interventor' multiple='multiple' %}
                                                             </div>
