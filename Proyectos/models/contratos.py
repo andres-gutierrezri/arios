@@ -15,15 +15,15 @@ class Contrato(models.Model, ModelDjangoExtensiones):
     anho = models.IntegerField(verbose_name='Año', null=False, blank=False)
     residente = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Residente', null=True,
                                   blank=True)
-    fecha_suscripcion = models.DateTimeField(verbose_name='Fecha de suscripción', null=True, blank=False)
+    fecha_suscripcion = models.DateTimeField(verbose_name='Fecha de suscripción', null=False, blank=False)
     valor = models.BigIntegerField(verbose_name="Valor", null=False, blank=False)
     valor_con_iva = models.BigIntegerField(verbose_name="Valor con IVA", null=False, blank=False)
     valor_sin_iva = models.BigIntegerField(verbose_name="Valor con IVA", null=False, blank=False)
-    porcentaje_a = models.DecimalField(verbose_name='Porcentaje A', decimal_places="2", max_digits="50", null=True,
+    porcentaje_a = models.DecimalField(verbose_name='Porcentaje A', decimal_places=2, max_digits=5, null=True,
                                        blank=True)
-    porcentaje_i = models.DecimalField(verbose_name='Porcentaje I', decimal_places="2", max_digits="50", null=True,
+    porcentaje_i = models.DecimalField(verbose_name='Porcentaje I', decimal_places=2, max_digits=5, null=True,
                                        blank=True)
-    porcentaje_u = models.DecimalField(verbose_name='Porcentaje U', decimal_places="2", max_digits="50", null=True,
+    porcentaje_u = models.DecimalField(verbose_name='Porcentaje U', decimal_places=2, max_digits=5, null=True,
                                        blank=True)
     periodicidad_informes = models.IntegerField(verbose_name='Periodicidad de informes', null=False, blank=False)
     plazo_ejecucion = models.IntegerField(verbose_name='Plazo de ejecución', null=False, blank=False)
@@ -57,35 +57,33 @@ class Contrato(models.Model, ModelDjangoExtensiones):
         """
         contrato = Contrato()
         contrato.numero_contrato = datos.get('numero_contrato', '')
-        contrato.cliente_id = datos.get('cliente', '')
+        contrato.cliente_id = datos.get('cliente_id', '')
         contrato.anho = datos.get('anho', '')
+        contrato.residente_id = datos.get('residente_id', '')
         contrato.fecha_suscripcion = string_to_date(datos.get('fecha_suscripcion', ''))
         contrato.valor = datos.get('valor', '')
-        contrato.tipo_contrato_id = datos.get('tipo_contrato_id', '')
-        contrato.objeto_del_contrato = datos.get('objeto_del_contrato', '')
-        contrato.plazo_ejecucion = datos.get('plazo_ejecucion', '')
-        contrato.fecha_registro_presupuestal = datos.get('fecha_registro_presupuestal', '')
-        contrato.numero_registro_presupuestal = datos.get('numero_registro_presupuestal', '')
         contrato.valor_con_iva = datos.get('valor_con_iva', '')
         contrato.valor_sin_iva = datos.get('valor_sin_iva', '')
         contrato.porcentaje_a = datos.get('porcentaje_a', '')
         contrato.porcentaje_i = datos.get('porcentaje_i', '')
         contrato.porcentaje_u = datos.get('porcentaje_u', '')
-
-        contrato.periodicidad_informes = datos.get('periodicidad_informes', None)
-        contrato.empresa_id = datos.get('empresa_id', '')
+        contrato.periodicidad_informes = datos.get('periodicidad_informes', '')
+        contrato.plazo_ejecucion = datos.get('plazo_ejecucion', '')
+        contrato.tipo_contrato_id = datos.get('tipo_contrato_id', '')
         contrato.proceso_a_cargo_id = datos.get('proceso_id', '')
-        contrato.residente_id = datos.get('residente_id', '')
+        contrato.objeto_del_contrato = datos.get('objeto_del_contrato', '')
+        contrato.fecha_registro_presupuestal = datos.get('fecha_registro_presupuestal', '')
+        contrato.numero_registro_presupuestal = datos.get('numero_registro_presupuestal', '')
 
         return contrato
 
 
 class FormasPago(models.Model, ModelDjangoExtensiones):
     contrato = models.ForeignKey(Contrato, on_delete=models.DO_NOTHING, verbose_name='Contrato', null=False, blank=False)
-    anticipo = models.DecimalField(verbose_name='Anticipo', decimal_places="2", max_digits="50", blank=True, null=True)
-    actas_parciales = models.DecimalField(verbose_name='Actas parciales', decimal_places="2", max_digits="50",
+    anticipo = models.DecimalField(verbose_name='Anticipo', decimal_places=2, max_digits=5, blank=True, null=True)
+    actas_parciales = models.DecimalField(verbose_name='Actas parciales', decimal_places=2, max_digits=5,
                                           blank=True, null=True)
-    liquidacion = models.DecimalField(verbose_name='Liquidación', decimal_places="2", max_digits="50",
+    liquidacion = models.DecimalField(verbose_name='Liquidación', decimal_places=2, max_digits=5,
                                       blank=True, null=True)
     contraentrega_satisfaccion = models.IntegerField(verbose_name='Contraentrega y Satisfacción', blank=True, null=True)
     estado = models.BooleanField(verbose_name="Estado", blank=False, null=False)
@@ -158,7 +156,7 @@ class Garantia(models.Model, ModelDjangoExtensiones):
                                       blank=False, null=False)
     contrato = models.ForeignKey(Contrato, on_delete=models.DO_NOTHING, verbose_name='Contrato',
                                  null=False, blank=False)
-    porcentaje_asegurado = models.DecimalField(verbose_name='Porcentaje asegurado', decimal_places="2", max_digits="50",
+    porcentaje_asegurado = models.DecimalField(verbose_name='Porcentaje asegurado', decimal_places=2, max_digits=5,
                                                null=True, blank=True)
     vigencia = models.IntegerField(verbose_name="Vigencia", blank=False, null=False)
     estensivas = models.BooleanField(verbose_name="Estensivas", blank=False, null=False)
