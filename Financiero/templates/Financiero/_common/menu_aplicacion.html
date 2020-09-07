@@ -37,6 +37,14 @@
             </a>
         </li>
         {% endif %}
+        {% if perms.TalentoHumano.can_access_usuarioespecial %}
+        <li {% if menu_actual|last == 'consolidado' %} class="active" {% endif %}>
+            <a href="{% url 'Financiero:flujo-caja-consolidado' %}" title="Consolidado" data-filter-tags="consolidado">
+                <i class="fal fa-window-restore"></i>
+                <span class="nav-link-text" data-i18n="nav.Financiero_consolidado">Consolidado</span>
+            </a>
+        </li>
+        {% endif %}
     </ul>
 </li>
 {% endif %}
