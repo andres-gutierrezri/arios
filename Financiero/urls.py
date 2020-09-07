@@ -18,6 +18,7 @@ from django.urls import path
 
 from Financiero.views import PrincipalView, FacturaCrearView, FacturasView, FacturaEditarView, FacturaDetalleView, \
     FacturaImprimirView
+from Financiero.views import subtipos_movimientos
 
 app_name = 'Financiero'
 
@@ -28,4 +29,12 @@ urlpatterns = [
     path('facturas/<int:id_factura>', FacturaEditarView.as_view(), name='factura-editar'),
     path('facturas/<int:id_factura>/json', FacturaDetalleView.as_view(), name='factura-detalle'),
     path('facturas/<int:id_factura>/imprimir', FacturaImprimirView.as_view(), name='factura-imprimir'),
+    path('subtipos-movimientos/', subtipos_movimientos.SubtiposMovimientosView.as_view(),
+         name='subtipo-movimiento-index'),
+    path('subtipos-movimientos/add', subtipos_movimientos.SubtipoMovimientoCrearView.as_view(),
+         name='subtipo-movimiento-crear'),
+    path('subtipos-movimientos/<int:id>', subtipos_movimientos.SubtipoMovimientoEditarView.as_view(),
+         name='subtipo-movimiento-editar'),
+    path('subtipos-movimientos/<int:id>/delete', subtipos_movimientos.SubtipoMovimientoEliminarView.as_view(),
+         name='subtipo-movimiento-eliminar'),
 ]

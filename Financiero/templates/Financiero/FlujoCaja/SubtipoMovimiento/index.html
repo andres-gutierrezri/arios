@@ -1,0 +1,108 @@
+{% extends 'Financiero/_common/base_financiero.html' %}
+{% load static %}
+{% load humanize %}
+<title>{% block titulo %}Subtipos de Movimientos{% endblock %}</title>
+{% block styles %}
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/datagrid/datatables/datatables.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/theme-demo.css' %}">
+{% endblock styles %}
+
+{% block main %}
+
+    <div class="panel-container show">
+        <div class="header">
+             <h1 class="header-title">
+                <i class='far fa-file-alt'></i> Subtipos de Movimientos <span class='fw-300'></span>
+                 <br>
+                 <br>
+             </h1>
+        </div>
+        <div class="row">
+            <div class="col-xl-12">
+                <div id="panel-1" class="panel">
+                    {% if perms.Financiero.add_subtipomovimiento %}
+                    <div class="panel-hdr">
+                        <small>
+                             <a class="far fa-3x far fa-plus-circle"  href="javascript:abrirModalCrearEditarSubtipoMovimiento('{% url 'Financiero:subtipo-movimiento-crear' %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar contrato"></a>
+                        </small>
+                    </div>
+                    {% endif %}
+                    <div class="panel-container show">
+                        <div class="panel-content">
+                                <div class="panel-group">
+                                    <div class="panel-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered w-100" id="dataTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Nombre</th>
+                                                        <th>Descripción</th>
+                                                        <th>Tipo de Movimiento</th>
+                                                        <th>Protegido</th>
+                                                        <th>Estado</th>
+                                                        {% if perms.Financiero.change_subtipomovimiento or perms.Financiero.delete_subtipomovimiento %}
+                                                            <th>Acción</th>
+                                                        {% endif %}
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for sub_mov in subtip_movimientos %}
+                                                        <tr>
+                                                            <td>{{ sub_mov.nombre}}</td>
+                                                            <td>{{ sub_mov.descripcion }}</td>
+                                                            <td>{{ sub_mov.tipo_movimiento }}</td>
+                                                            <td>
+                                                                <span class="badge badge-primary">{% if sub_mov.protegido %}Protegido{% else %}No Protegido{% endif %}</span>
+                                                            </td>
+                                                            <td>
+                                                                <span class="badge badge-primary">{% if sub_mov.estado %}Activo{% else %}Inactivo{% endif %}</span>
+                                                            </td>
+                                                            {% if perms.Financiero.change_subtipomovimiento or perms.Financiero.delete_subtipomovimiento %}
+                                                            <td>
+                                                                {% if perms.Financiero.change_subtipomovimiento %}
+                                                                    {% if sub_mov.protegido %}
+                                                                        <a class="far fa-2x fa-edit" {% if perms.TalentoHumano.can_access_usuarioespecial %} href="javascript:abrirModalCrearEditarSubtipoMovimiento('{% url 'Financiero:subtipo-movimiento-editar' sub_mov.id %}')" {% else %}style="color: grey" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                                    {% else %}
+                                                                        <a class="far fa-2x fa-edit" href="javascript:abrirModalCrearEditarSubtipoMovimiento('{% url 'Financiero:subtipo-movimiento-editar' sub_mov.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                                    {% endif %}
+                                                                {% endif %}
+                                                                {% if perms.Financiero.delete_subtipomovimiento %}
+                                                                    {% if sub_mov.protegido %}
+                                                                        <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ sub_mov.id }}" {% if perms.TalentoHumano.can_access_usuarioespecial %} href="javascript:void(0);"  onclick="fConfirmarEliminar({{ sub_mov.id }})" {% else %}style="color: grey"{% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+                                                                    {% else %}
+                                                                        <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ sub_mov.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ sub_mov.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+                                                                    {% endif %}
+                                                                {% endif %}
+                                                            </td>
+                                                            {% endif %}
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer small text-muted">Actualizado: {{ fecha }}</div>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" tabindex="-1" id="crear_editar" role="dialog"></div>
+
+    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='financiero/subtipos-movimientos' %}
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.export.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script>
+    <script src="{% static 'Financiero/js/FlujoCaja/crearEditarSubtipoMovimiento.js' %}"></script>
+    <script src="{% static 'Financiero/js/FlujoCaja/confirmarEliminar.js' %}"></script>
+    <script src="{% static 'Financiero/js/FlujoCaja/exportarTablasSubtiposMovimientos.js' %}"></script>
+{% endblock %}
