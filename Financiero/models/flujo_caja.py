@@ -116,6 +116,24 @@ class FlujoCajaEncabezado(models.Model):
         verbose_name_plural = 'Flujos de Cajas Encabezados'
 
 
+class EstadoFCDetalle(models.Model):
+    nombre = models.CharField(verbose_name='Nombre', max_length=30, null=False, blank=False)
+    descripcion = models.CharField(verbose_name='Descripción', max_length=100, null=False, blank=False)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name = 'Estado de Flujo de Caja Detalle'
+        verbose_name_plural = 'Estados de Flujos de Cajas Detalles'
+
+    # Estados Fijos
+    VIGENTE = 1
+    EDITADO = 2
+    OBSOLETO = 3
+    ELIMINADO = 4
+
+
 class FlujoCajaDetalle(models.Model):
     fecha_movimiento = models.DateTimeField(verbose_name='Fecha de Creación', max_length=100, null=False, blank=False)
     subtipo_movimiento = models.ForeignKey(SubTipoMovimiento, on_delete=models.CASCADE,
@@ -130,6 +148,11 @@ class FlujoCajaDetalle(models.Model):
                                        verbose_name='Fluja de Caja Encabezado', null=False, blank=False)
     fecha_crea = models.DateTimeField(verbose_name='Fecha de Creación', null=False, blank=False)
     fecha_modifica = models.DateTimeField(verbose_name='Fecha de Modificación', null=False, blank=False)
+    flujo_detalle = models.ForeignKey('self', on_delete=models.DO_NOTHING, verbose_name='Flujo Detalle',
+                                      null=True, blank=True)
+    estado = models.ForeignKey(EstadoFCDetalle, on_delete=models.DO_NOTHING, verbose_name='Estado',
+                               null=False, blank=False)
+    comentarios = models.CharField(verbose_name='Comentarios', max_length=100, null=True, blank=True)
 
     def __str__(self):
         return 'Flujo de Caja {0} - Detalle: {1}'.format(self.flujo_caja_enc, self.id)

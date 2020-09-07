@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from django.contrib import messages
-from django.db import IntegrityError
 from django.db.models import F
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
@@ -10,6 +9,7 @@ from django.urls import reverse
 from EVA.General import app_datetime_now
 from EVA.views.index import AbstractEvaLoggedView
 from Financiero.models import FlujoCajaDetalle, SubTipoMovimiento, FlujoCajaEncabezado, EstadoFC, CorteFlujoCaja
+from Financiero.models.flujo_caja import EstadoFCDetalle
 from Proyectos.models import Contrato
 from TalentoHumano.models.colaboradores import ColaboradorContrato
 
@@ -42,7 +42,11 @@ class FlujoCajaContratosDetalleView(AbstractEvaLoggedView):
         fecha_minima_mes = obtener_fecha_minima_mes(contrato.id)
 
         movimientos = FlujoCajaDetalle.objects.filter(flujo_caja_enc__contrato=contrato, tipo_registro=tipo)\
-            .annotate(estado=F('flujo_caja_enc__estado'), fecha_corte=F('flujo_caja_enc__corteflujocaja__fecha_corte'))
+            .annotate(fecha_corte=F('flujo_caja_enc__corteflujocaja__fecha_corte'))\
+            .exclude(estado_id=EstadoFCDetalle.OBSOLETO)
+
+        if not request.user.has_perms('Financiero.can_access_usuarioespecial'):
+            movimientos = movimientos.exclude(estado_id=EstadoFCDetalle.ELIMINADO)
 
         if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
             movimientos = movimientos.filter(subtipo_movimiento__protegido=False)
@@ -83,7 +87,8 @@ class FlujoCajaContratosCrearView(AbstractEvaLoggedView):
         FlujoCajaDetalle.objects\
             .create(fecha_movimiento=fecha_movimiento, subtipo_movimiento_id=subtipo_movimiento_id,
                     valor=valor, tipo_registro=tipo, usuario_crea=request.user, usuario_modifica=request.user,
-                    flujo_caja_enc=flujo_encabezado, fecha_crea=app_datetime_now(), fecha_modifica=app_datetime_now())
+                    flujo_caja_enc=flujo_encabezado, fecha_crea=app_datetime_now(), fecha_modifica=app_datetime_now(),
+                    estado_id=EstadoFCDetalle.VIGENTE)
 
         messages.success(request, 'Se ha agregado el movimiento correctamente')
         return redirect(reverse('financiero:flujo-caja-contratos-detalle', args=[id_contrato, tipo]))
@@ -96,12 +101,13 @@ class FlujoCajaContratosEditarView(AbstractEvaLoggedView):
 
         if not tiene_permisos_de_acceso(request, flujo_detalle.flujo_caja_enc.contrato_id) or \
                 not validar_gestion_registro(request, flujo_detalle):
-            messages.error(request, 'No tiene permisos para acceder a este flujo de caja.')
-            return redirect(reverse('financiero:flujo-caja-contratos'))
+            return JsonResponse({"estado": "error",
+                                 "mensaje": "No tiene permisos para acceder a este flujo de caja."})
 
         if not validar_estado_planeacion_ejecucion(flujo_detalle.flujo_caja_enc.contrato_id, flujo_detalle.tipo_registro):
-            messages.error(request, 'No se puede crear un movimiento porque ya se encuentra en ejecución')
-            return redirect(reverse('financiero:flujo-caja-contratos'))
+            return JsonResponse({"estado": "error",
+                                 "mensaje": "No se puede crear un movimiento porque el flujo de caja"
+                                            " se encuentra en ejecución."})
 
         fecha_minima_mes = obtener_fecha_minima_mes(flujo_detalle.flujo_caja_enc.contrato_id)
         return render(request, 'Financiero/FlujoCaja/FlujoCajaGeneral/modal-crear-editar.html',
@@ -120,11 +126,16 @@ class FlujoCajaContratosEditarView(AbstractEvaLoggedView):
             messages.error(request, 'No se puede crear un movimiento porque ya se encuentra en ejecución')
             return redirect(reverse('financiero:flujo-caja-contratos'))
 
+        comentarios = request.POST.get('comentarios', '')
+        crear_registro_historial(flujo_detalle, comentarios, EstadoFCDetalle.OBSOLETO)
+
+        update_fields = ['fecha_movimiento', 'subtipo_movimiento', 'valor', 'fecha_modifica', 'comentarios', 'estado']
         flujo_detalle.fecha_movimiento = request.POST.get('fecha_movimiento', '')
         flujo_detalle.subtipo_movimiento_id = request.POST.get('subtipo_movimiento_id', '')
         flujo_detalle.valor = request.POST.get('valor', '')
         flujo_detalle.fecha_modifica = app_datetime_now()
-        flujo_detalle.save(update_fields=['fecha_movimiento', 'subtipo_movimiento', 'valor', 'fecha_modifica'])
+        flujo_detalle.estado_id = EstadoFCDetalle.EDITADO
+        flujo_detalle.save(update_fields=update_fields)
 
         messages.success(request, 'Se ha editado el movimiento correctamente')
         return redirect(reverse('financiero:flujo-caja-contratos-detalle',
@@ -133,26 +144,38 @@ class FlujoCajaContratosEditarView(AbstractEvaLoggedView):
 
 class FlujoCajaContratosEliminarView(AbstractEvaLoggedView):
     def post(self, request, id):
-        try:
-            flujo_detalle = FlujoCajaDetalle.objects.get(id=id)
 
-            if not tiene_permisos_de_acceso(request, flujo_detalle.flujo_caja_enc.contrato_id) or \
-                    not validar_gestion_registro(request, flujo_detalle):
-                messages.error(request, 'No tiene permisos para acceder a este flujo de caja.')
-                return redirect(reverse('financiero:flujo-caja-contratos'))
+        flujo_detalle = FlujoCajaDetalle.objects.get(id=id)
 
-            if not validar_estado_planeacion_ejecucion(flujo_detalle.flujo_caja_enc.contrato_id,
-                                                       flujo_detalle.tipo_registro):
-                messages.error(request, 'No se puede crear un movimiento porque ya se encuentra en ejecución')
-                return redirect(reverse('financiero:flujo-caja-contratos'))
+        if not tiene_permisos_de_acceso(request, flujo_detalle.flujo_caja_enc.contrato_id) or \
+                not validar_gestion_registro(request, flujo_detalle):
+            return JsonResponse({"estado": "error", "mensaje": "No tiene permisos para acceder a este flujo de caja."})
 
-            flujo_detalle.delete()
-            messages.success(request, 'Se ha eliminado el movimiento correctamente')
-            return JsonResponse({"estado": "OK"})
+        if not validar_estado_planeacion_ejecucion(flujo_detalle.flujo_caja_enc.contrato_id, flujo_detalle.tipo_registro):
+            return JsonResponse({"estado": "error",
+                                 "mensaje": "No se puede crear un movimiento porque ya se encuentra en ejecución"})
 
-        except IntegrityError:
-            return JsonResponse({"estado": "error", "mensaje": "Este movimiento no puede ser eliminado"
-                                                               "porque ya fue el flujo de caja ya fue cerrado."})
+        flujo_detalle.estado_id = EstadoFCDetalle.ELIMINADO
+        flujo_detalle.comentarios = request.POST['comentarios']
+        flujo_detalle.fecha_modifica = app_datetime_now()
+        flujo_detalle.save(update_fields=['comentarios', 'estado', 'fecha_modifica'])
+
+        messages.success(request, 'Se ha eliminado el movimiento correctamente')
+        return JsonResponse({"estado": "OK"})
+
+
+class FlujoCajaContratosHistorialView(AbstractEvaLoggedView):
+    def get(self, request, id):
+        flujo_detalle = FlujoCajaDetalle.objects.filter(id=id)
+        if not tiene_permisos_de_acceso(request, flujo_detalle.first().flujo_caja_enc.contrato_id,
+                                        permisos=['TalentoHumano.view_historial_flujocajadetalle']):
+            messages.error(request, 'No tiene permisos para acceder a este historial de flujo de caja.')
+            return redirect(reverse('financiero:flujo-caja-contratos'))
+
+        historial = FlujoCajaDetalle.objects.filter(flujo_detalle=flujo_detalle.first())
+        historial |= flujo_detalle
+        return render(request, 'Financiero/FlujoCaja/FlujoCajaGeneral/modal-historial.html',
+                      {'historial': historial})
 
 
 # region Métodos de ayuda
@@ -178,9 +201,12 @@ def datos_xa_render(request, opcion: str, id_contrato, tipo, fecha_minima_mes,
 # endregion
 
 
-def tiene_permisos_de_acceso(request, id_contrato):
+def tiene_permisos_de_acceso(request, id_contrato, permisos=None):
     if not ColaboradorContrato.objects\
             .filter(contrato_id=id_contrato, colaborador__usuario=request.user):
+        if permisos:
+            if request.user.has_perms(permisos):
+                return True
         if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
             return False
     return True
@@ -225,3 +251,14 @@ def validar_estado_planeacion_ejecucion(contrato_id, tipo):
             tipo == PROYECCION and flujo_enc.estado_id == EstadoFC.ALIMENTACION:
         return True
     return False
+
+
+def crear_registro_historial(flujo_detalle, comentarios, estado):
+    FlujoCajaDetalle.objects \
+        .create(fecha_movimiento=flujo_detalle.fecha_movimiento,
+                subtipo_movimiento_id=flujo_detalle.subtipo_movimiento_id,
+                valor=flujo_detalle.valor, tipo_registro=flujo_detalle.tipo_registro,
+                usuario_crea=flujo_detalle.usuario_crea, usuario_modifica=flujo_detalle.usuario_modifica,
+                flujo_caja_enc=flujo_detalle.flujo_caja_enc, fecha_crea=flujo_detalle.fecha_crea,
+                fecha_modifica=app_datetime_now(), flujo_detalle=flujo_detalle,
+                estado_id=estado, comentarios=comentarios)

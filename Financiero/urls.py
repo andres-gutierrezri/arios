@@ -54,5 +54,7 @@ urlpatterns = [
          name='categoria-movimiento-editar'),
     path('categorias-movimientos/<int:id>/delete', categorias_movimientos.CategoriaMovimientoEliminarView.as_view(),
          name='categoria-movimiento-eliminar'),
+    path('flujo-caja/contratos/detalle/<int:id>/historial', flujo_caja.FlujoCajaContratosHistorialView.as_view(),
+         name='flujo-caja-detalle-historial'),
 ]
 
