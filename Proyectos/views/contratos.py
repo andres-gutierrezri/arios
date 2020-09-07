@@ -35,47 +35,32 @@ class ContratoCrearView(AbstractEvaLoggedView):
     def post(self, request):
         contrato = Contrato.from_dictionary(request.POST)
         municipios = request.POST.getlist('municipio_id[]', [])
-        anho_vigencias = request.POST.getlist('anho_vigencia', [])
-        valor_vigencias = request.POST.getlist('valor_vigencia', [])
+        datos_garantias = request.POST.get('datos_vigencias', '')
+        datos_garantias = request.POST.get('datos_garantias', '')
+        recursos_propios = request.POST.get('origen_recurso_id', '')
+        contrato.origen_recursos = request.POST.get('origen_recurso', '')
 
-        print(municipios)
-        print(anho_vigencias)
-        print(valor_vigencias)
+        contrato.empresa_id = get_id_empresa_global(request)
+        if recursos_propios == 0:
+            contrato.recursos_propios = True
+            contrato.origen_recursos = 'Recursos Propios'
+        else:
+            contrato.recursos_propios = False
 
-        print(contrato.numero_contrato)
-        print(contrato.cliente_id)
-        print(contrato.anho)
-        print(contrato.fecha_suscripcion)
-        print(contrato.valor)
-        print(contrato.tipo_contrato_id)
-        print(contrato.objeto_del_contrato)
-        print(contrato.plazo_ejecucion)
+        try:
+            contrato.full_clean()
+        except ValidationError as errores:
+            datos = datos_xa_render(self.OPCION, contrato)
+            datos['errores'] = errores.message_dict
+            return render(request, 'Proyectos/Contrato/crear-editar.html', datos)
 
-        print(contrato.fecha_registro_presupuestal)
-        print(contrato.numero_registro_presupuestal)
-        print(contrato.valor_con_iva)
-        print(contrato.valor_sin_iva)
-        print(contrato.porcentaje_a)
-        print(contrato.porcentaje_i)
-        print(contrato.porcentaje_u)
-        print(contrato.recursos_propios)
-        print(contrato.origen_de_recursos)
+        if Contrato.objects.filter(numero_contrato=contrato.numero_contrato).exists():
+            messages.warning(request, 'Ya existe un contrato con número {0}'.format(contrato.numero_contrato))
+            return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.OPCION, contrato))
 
-        # contrato.empresa_id = get_id_empresa_global(request)
-        # try:
-        #     contrato.full_clean()
-        # except ValidationError as errores:
-        #     datos = datos_xa_render(self.OPCION, contrato)
-        #     datos['errores'] = errores.message_dict
-        #     return render(request, 'Proyectos/Contrato/crear-editar.html', datos)
-        #
-        # if Contrato.objects.filter(numero_contrato=contrato.numero_contrato).exists():
-        #     messages.warning(request, 'Ya existe un contrato con número {0}'.format(contrato.numero_contrato))
-        #     return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.OPCION, contrato))
-        #
-        # contrato.save()
-        # crear_notificacion_por_evento(EventoDesencadenador.CONTRATO, contrato.id, contrato.numero_contrato)
-        # messages.success(request, 'Se ha agregado el contrato número {0}'.format(contrato.numero_contrato))
+        contrato.save()
+        crear_notificacion_por_evento(EventoDesencadenador.CONTRATO, contrato.id, contrato.numero_contrato)
+        messages.success(request, 'Se ha agregado el contrato número {0}'.format(contrato.numero_contrato))
         return redirect(reverse('proyectos:contratos'))
 
 
@@ -164,14 +149,10 @@ def datos_xa_render(opcion: str, contrato: Contrato = None) -> dict:
     tipos_garantias = TipoGarantia.objects.get_xa_select_activos()
 
     formas_de_pago = [
-        {'campo_valor': 1, 'campo_texto': 'Anticipo – Actas Parciales – Liquidación'},
-        {'campo_valor': 2, 'campo_texto': 'Anticipo – Actas Parciales – Liquidación'},
-        {'campo_valor': 3, 'campo_texto': 'Anticipo – Actas Parciales – Liquidación'}
+        {'campo_valor': 1, 'campo_texto': 'Anticipo – Liquidación'},
+        {'campo_valor': 2, 'campo_texto': 'Actas Parciales – Liquidación'}
         ]
-    origen_recursos = [
-        {'campo_valor': 1, 'campo_texto': 'Recursos Propios'},
-        {'campo_valor': 2, 'campo_texto': 'Otro'}
-        ]
+    origen_recursos = [{'campo_valor': 1, 'campo_texto': 'Otro Origen'}]
     terceros = Tercero.objects.filter(estado=True)
     supervisores = []
     interventores = []
@@ -184,6 +165,7 @@ def datos_xa_render(opcion: str, contrato: Contrato = None) -> dict:
 
     tipos_contrato = TipoContrato.objects.tipos_comerciales(True, True)
     procesos = Proceso.objects.get_xa_select_activos()
+    colaboradores = Colaborador.objects.get_xa_select_activos()
     residentes = Colaborador.objects.get_xa_select_usuarios_activos()
     empresas = Empresa.objects.filter(estado=True).values(campo_valor=F('id'), campo_texto=F('nombre')) \
         .order_by('nombre')
@@ -197,6 +179,7 @@ def datos_xa_render(opcion: str, contrato: Contrato = None) -> dict:
              'supervisores': supervisores,
              'interventores': interventores,
              'procesos': procesos,
+             'colaboradores': colaboradores,
              'residentes': residentes,
              'empresas': empresas,
              'clientes': clientes,
