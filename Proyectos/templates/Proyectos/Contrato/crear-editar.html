@@ -91,7 +91,7 @@
                                                                         {% select_tag tipos_contrato 'tipo_contrato_id' 'Seleccione un tipo de contrato' texto_label="Tipo de Contrato" value=contrato.tipo_contrato_id  mensaje_validacion='Por favor seleccione un tipo de contrato' %}
                                                                     </div>
                                                                     <div class="col-md-6">
-                                                                        {% input_date_tag 'fecha_suscricion' 'Fecha de Suscripción' placeholder="Seleccione una fecha"  autocomplete="off" value=contrato.fecha_suscripcion  mensaje_validacion='Por favor seleccione una fecha.' invalido=errores.fecha_suscripcion %}
+                                                                        {% input_date_tag 'fecha_suscripcion' 'Fecha de Suscripción' placeholder="Seleccione una fecha"  autocomplete="off" value=contrato.fecha_suscripcion  mensaje_validacion='Por favor seleccione una fecha.' invalido=errores.fecha_suscripcion %}
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -171,16 +171,18 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
+                                                            <div id="div_vigencias"></div>
                                                             <div class="form-group">
                                                                 <div class="form-row">
-                                                                    <div class="col-md-5">
-                                                                        {% input_number_tag 'anho_vigencia' 'Año de vigencia' placeholder="Ingrese el año de vigencia"  min='0' max="100" step="0.01" onInput="validarLongitud(10,this)" value=contrato.acta_parcial mensaje_validacion='Por favor ingrese el porcentaje' invalido=errores.actas_parciales %}
+                                                                    <div class="col-md-6">
+                                                                        {% input_number_tag 'anho_vigencia' 'Año de vigencia' placeholder="Ingrese el año de vigencia" value=contrato.acta_parcial mensaje_validacion='Por favor ingrese el porcentaje' invalido=errores.actas_parciales %}
                                                                     </div>
                                                                     <div class="col-md-5">
-                                                                        {% input_number_tag 'valor_vigencia' 'Liquidación' placeholder="Ingrese el valor de vigencia"  min='0' max="100" step="0.01" onInput="validarLongitud(10,this)" value=contrato.liquidacion mensaje_validacion='Por favor ingrese el porcentaje' invalido=errores.liquidacion %}
+                                                                        {% input_number_tag 'valor_vigencia' 'Valor de vigencia' placeholder="Ingrese el valor de vigencia"  value=contrato.liquidacion mensaje_validacion='Por favor ingrese el porcentaje' invalido=errores.liquidacion %}
                                                                     </div>
-                                                                    <div class="col-md-2" style="padding-top: 22px;">
-                                                                    <button id="anadir_vigencia" class="btn btn-primary btn-block"> Añadir Vigencia </button>
+                                                                    <div class="col-md-1" style="padding-top:30px">
+                                                                        <a class="far fa-2x far fa-plus" id="agregar_vigencia" href="#" onclick="agregarVigencia()" title="" data-original-title="Agregar Vigencia" style=""></a>
+                                                                        <a style="display: none" class="far fa-2x far fa-times" id="eliminar_vigencia" href="#" onclick="quitarVigencia()" title="" data-original-title="Eliminar Vigencia"></a>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -198,20 +200,27 @@
                                                     </div>
                                                     <div id="step-4" class="">
                                                         <div id="form-step-3" data-toggle="validator">
+                                                            <div id="div_garantias"></div>
                                                             <div class="form-group">
                                                                 <div class="form-row">
-                                                                    <div class="col-md-6">
+                                                                    <div class="col-md-3">
                                                                         {% select_tag tipos_garantias 'tipo_garantia_id' 'Seleccione un tipo de garantía' texto_label="Tipo de Garantía" value=contrato.tipo_garantia_id  mensaje_validacion='Por favor seleccione una tipo de garantía.' invalido=errores.tipo_garantia %}
                                                                     </div>
-                                                                    <div class="col-md-6">
+                                                                    <div class="col-md-3">
                                                                         {% input_number_tag 'porcentaje_asegurado' 'Porcentaje Asegurado' placeholder="Ingrese el porcentaje asegurado"  min='0' max="100" step="0.01" onInput="validarLongitud(3,this)" value=contrato.porcentaje_asegurado mensaje_validacion='Por favor ingrese el porcentaje' invalido=errores.porcentaje_asegurado %}
                                                                     </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <div class="form-row">
-                                                                    <div class="col-md-6">
+                                                                    <div class="col-md-3">
                                                                         {% input_number_tag 'vigencia' 'Vigencia (Meses)' placeholder="Ingrese la vigencia en meses"  min='0' max="100" onInput="validarLongitud(3,this)" value=contrato.vigencia mensaje_validacion='Por favor ingrese la vigencia' invalido=errores.vigencia %}
+                                                                    </div>
+                                                                    <div class="col-md-2" style="padding-top: 33px;">
+                                                                        <div class="custom-control custom-checkbox">
+                                                                            <input type="checkbox" class="custom-control-input" id="garantia_extensiva">
+                                                                            <label class="custom-control-label" for="garantia_extensiva">Garantía Extensiva</label>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-1" style="padding-top:30px">
+                                                                        <a class="far fa-2x far fa-plus" id="agregar_vigencia" href="#" onclick="agregarGarantia()" title="" data-original-title="Agregar Garantía" style=""></a>
+                                                                        <a style="display: none" class="far fa-2x far fa-times" id="eliminar_garantia" href="#" onclick="quitarGarantia()" title="" data-original-title="Eliminar Garantía"></a>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -251,4 +260,5 @@
     <script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
     <script src="{% static 'Proyectos/js/Contratos/controlWizardForm.js' %}"></script>
     <script src="{% static 'Proyectos/js/Contratos/selectDependiente.js' %}"></script>
+    <script src="{% static 'Proyectos/js/Contratos/formularioContrato.js' %}"></script>
 {% endblock scripts %}
