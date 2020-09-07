@@ -12,4 +12,8 @@ permisos = [Permiso('index', None),
             Permiso('subtipo-movimiento-crear', ['Financiero.add_subtipomovimiento']),
             Permiso('subtipo-movimiento-editar', ['Financiero.change_subtipomovimiento']),
             Permiso('subtipo-movimiento-eliminar', ['Financiero.delete_subtipomovimiento']),
+            Permiso('categoria-movimiento-index', ['Financiero.view_categoriamovimiento']),
+            Permiso('categoria-movimiento-crear', ['Financiero.add_categoriamovimiento']),
+            Permiso('categoria-movimiento-editar', ['Financiero.change_categoriamovimiento']),
+            Permiso('categoria-movimiento-eliminar', ['Financiero.delete_categoriamovimiento']),
             ]

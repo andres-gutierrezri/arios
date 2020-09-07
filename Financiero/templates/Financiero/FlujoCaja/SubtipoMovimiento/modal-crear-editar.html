@@ -4,7 +4,7 @@
     <div class="modal-content">
         <div class="modal-header p-b-0">
             <h4 class="modal-title">
-                {% if opcion == 'editar' %}Editar Subtipo de Movimiento{% else %}Crear Subtipo de Movimiento{% endif %}{{ sub_mov }}
+                {% if opcion == 'editar' %}Editar Subtipo de Movimiento{% else %}Crear Subtipo de Movimiento{% endif %}
             </h4>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true"><i class="fal fa-times"></i></span>
@@ -28,6 +28,10 @@
                 <br>
                 <div>
                     {% select_tag tipos_movimientos 'tipo_movimiento_id' 'Seleccione un tipo de movimiento' texto_label="Tipo de Movimiento" value=sub_mov.tipo_movimiento_id required="" modal=True mensaje_validacion='Por favor seleccione un tipo de movimiento.' invalido=errores.tipo_movimiento %}
+                </div>
+                <br>
+                <div>
+                    {% select_tag categorias_movimientos 'categoria_movimiento_id' 'Seleccione una categoria de movimiento' texto_label="Categoria de Movimiento" value=sub_mov.categoria_movimiento_id required="" modal=True mensaje_validacion='Por favor seleccione una categoria de movimiento.' invalido=errores.categoria_movimiento %}
                 </div>
                 <br>
                 <div class="form-row">

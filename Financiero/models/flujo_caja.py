@@ -21,12 +21,41 @@ class TipoMovimiento(models.Model):
         verbose_name_plural = 'Tipos de Movimientos'
 
 
+class CategoriaMovimiento(models.Model):
+    objects = ManagerGeneral()
+    nombre = models.CharField(verbose_name='Nombre', max_length=30, null=False, blank=False)
+    descripcion = models.CharField(verbose_name='Descripción', max_length=100, null=False, blank=False)
+    estado = models.BooleanField(verbose_name='Estado', blank=False, null=False, default=True)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name = 'Categoria de Movimiento'
+        verbose_name_plural = 'Categorias de Movimientos'
+
+    @staticmethod
+    def from_dictionary(datos: dict) -> 'CategoriaMovimiento':
+        """
+        Crea una instancia de Categoria de Movimiento con los datos pasados en el diccionario.
+        :param datos: Diccionario con los datos para crear El Categoria de Movimiento.
+        :return: Instacia de entidad Categoria de Movimiento con la información especificada en el diccionario.
+        """
+        categoria_movimiento = CategoriaMovimiento()
+        categoria_movimiento.nombre = datos.get('nombre', '')
+        categoria_movimiento.descripcion = datos.get('descripcion', '')
+
+        return categoria_movimiento
+
+
 class SubTipoMovimiento(models.Model):
     objects = ManagerGeneral()
     nombre = models.CharField(verbose_name='Nombre', max_length=30, null=False, blank=False)
     descripcion = models.CharField(verbose_name='Descripción', max_length=100, null=False, blank=False)
     tipo_movimiento = models.ForeignKey(TipoMovimiento, on_delete=models.DO_NOTHING, verbose_name='Tipo de Movimiento',
                                         null=False, blank=False)
+    categoria_movimiento = models.ForeignKey(CategoriaMovimiento, on_delete=models.DO_NOTHING, null=False, blank=False,
+                                             verbose_name='Categoria de Movimiento')
     protegido = models.BooleanField(verbose_name='Protegido', blank=False, null=False)
     estado = models.BooleanField(verbose_name='Estado', blank=False, null=False, default=True)
 
@@ -48,6 +77,7 @@ class SubTipoMovimiento(models.Model):
         subtipo_movimiento.nombre = datos.get('nombre', '')
         subtipo_movimiento.descripcion = datos.get('descripcion', '')
         subtipo_movimiento.tipo_movimiento_id = datos.get('tipo_movimiento_id', '')
+        subtipo_movimiento.categoria_movimiento_id = datos.get('categoria_movimiento_id', '')
         subtipo_movimiento.protegido = datos.get('protegido', 'False') == 'True'
 
         return subtipo_movimiento
