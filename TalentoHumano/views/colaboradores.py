@@ -161,7 +161,6 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
         colaborador = Colaborador.from_dictionary(request.POST)
         colaborador.usuario_actualiza = request.user
         contratos = request.POST.getlist('contrato_id[]', None)
-        grupos = request.POST.getlist('grupo_id[]', None)
 
         colaborador.id = int(id)
         colaborador.foto_perfil = request.FILES.get('foto_perfil', None)
@@ -216,19 +215,9 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
                     if clb.contrato.id == int(ctr):
                         cont += 1
 
-        cambios_grupos = False
-        if obtener_lista_grupos(colaborador, 'str') != grupos:
-            cambios_grupos = True
-
-        if cambios_grupos:
-            for grp_col in colaborador.usuario.groups.all():
-                colaborador.usuario.groups.remove(grp_col)
-            for grp in grupos:
-                colaborador.usuario.groups.add(Group.objects.get(id=grp))
-
         if colaborador_db.comparar(colaborador, excluir=['foto_perfil', 'empresa_sesion', 'usuario_actualiza',
                                                          'usuario_crea']) and \
-                len(cambios_usuario) <= 0 and not colaborador.foto_perfil and cont == cant and not cambios_grupos:
+                len(cambios_usuario) <= 0 and not colaborador.foto_perfil and cont == cant:
             messages.success(request, 'No se hicieron cambios en el colaborador {0}'
                              .format(colaborador.nombre_completo))
             return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
