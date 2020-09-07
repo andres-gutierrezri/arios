@@ -1,5 +1,7 @@
+import json
 from datetime import datetime
 
+from django.core import serializers
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.shortcuts import render, redirect, reverse
@@ -11,8 +13,8 @@ from Administracion.utils import get_id_empresa_global
 from EVA.views.index import AbstractEvaLoggedView
 from Notificaciones.models.models import EventoDesencadenador
 from Notificaciones.views.views import crear_notificacion_por_evento
-from Proyectos.models.contratos import Contrato
-from Administracion.models import Tercero, Empresa, TipoContrato, Proceso
+from Proyectos.models.contratos import Contrato, TipoGarantia
+from Administracion.models import Tercero, Empresa, TipoContrato, Proceso, Pais, TipoTercero
 from TalentoHumano.models import Colaborador
 
 
@@ -32,21 +34,48 @@ class ContratoCrearView(AbstractEvaLoggedView):
 
     def post(self, request):
         contrato = Contrato.from_dictionary(request.POST)
-        contrato.empresa_id = get_id_empresa_global(request)
-        try:
-            contrato.full_clean()
-        except ValidationError as errores:
-            datos = datos_xa_render(self.OPCION, contrato)
-            datos['errores'] = errores.message_dict
-            return render(request, 'Proyectos/Contrato/crear-editar.html', datos)
+        municipios = request.POST.getlist('municipio_id[]', [])
+        anho_vigencias = request.POST.getlist('anho_vigencia', [])
+        valor_vigencias = request.POST.getlist('valor_vigencia', [])
 
-        if Contrato.objects.filter(numero_contrato=contrato.numero_contrato).exists():
-            messages.warning(request, 'Ya existe un contrato con número {0}'.format(contrato.numero_contrato))
-            return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.OPCION, contrato))
+        print(municipios)
+        print(anho_vigencias)
+        print(valor_vigencias)
 
-        contrato.save()
-        crear_notificacion_por_evento(EventoDesencadenador.CONTRATO, contrato.id, contrato.numero_contrato)
-        messages.success(request, 'Se ha agregado el contrato número {0}'.format(contrato.numero_contrato))
+        print(contrato.numero_contrato)
+        print(contrato.cliente_id)
+        print(contrato.anho)
+        print(contrato.fecha_suscripcion)
+        print(contrato.valor)
+        print(contrato.tipo_contrato_id)
+        print(contrato.objeto_del_contrato)
+        print(contrato.plazo_ejecucion)
+
+        print(contrato.fecha_registro_presupuestal)
+        print(contrato.numero_registro_presupuestal)
+        print(contrato.valor_con_iva)
+        print(contrato.valor_sin_iva)
+        print(contrato.porcentaje_a)
+        print(contrato.porcentaje_i)
+        print(contrato.porcentaje_u)
+        print(contrato.recursos_propios)
+        print(contrato.origen_de_recursos)
+
+        # contrato.empresa_id = get_id_empresa_global(request)
+        # try:
+        #     contrato.full_clean()
+        # except ValidationError as errores:
+        #     datos = datos_xa_render(self.OPCION, contrato)
+        #     datos['errores'] = errores.message_dict
+        #     return render(request, 'Proyectos/Contrato/crear-editar.html', datos)
+        #
+        # if Contrato.objects.filter(numero_contrato=contrato.numero_contrato).exists():
+        #     messages.warning(request, 'Ya existe un contrato con número {0}'.format(contrato.numero_contrato))
+        #     return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.OPCION, contrato))
+        #
+        # contrato.save()
+        # crear_notificacion_por_evento(EventoDesencadenador.CONTRATO, contrato.id, contrato.numero_contrato)
+        # messages.success(request, 'Se ha agregado el contrato número {0}'.format(contrato.numero_contrato))
         return redirect(reverse('proyectos:contratos'))
 
 
@@ -63,31 +92,50 @@ class ContratoEditarView(AbstractEvaLoggedView):
                          'periodicidad_informes', 'tiempo', 'tipo_contrato_id', 'empresa_id']
 
         contrato = Contrato.from_dictionary(request.POST)
-        contrato.empresa_id = get_id_empresa_global(request)
-        contrato.id = int(id)
-        if not contrato.residente_id:
-            contrato.residente_id = None
+        print(contrato.numero_contrato)
+        print(contrato.cliente_id)
+        print(contrato.anho)
+        print(contrato.fecha_suscripcion)
+        print(contrato.valor)
+        print(contrato.tipo_contrato_id)
+        print(contrato.objeto_del_contrato)
+        print(contrato.plazo_ejecucion)
 
-        try:
-            contrato.full_clean(validate_unique=False)
-        except ValidationError as errores:
-            datos = datos_xa_render(self.OPCION, contrato)
-            datos['errores'] = errores.message_dict
-            return render(request, 'Proyectos/Contrato/crear-editar.html', datos)
+        print(contrato.fecha_registro_presupuestal)
+        print(contrato.numero_registro_presupuestal)
+        print(contrato.valor_con_iva)
+        print(contrato.valor_sin_iva)
+        print(contrato.porcentaje_a)
+        print(contrato.porcentaje_i)
+        print(contrato.porcentaje_u)
+        print(contrato.recursos_propios)
+        print(contrato.origen_de_recursos)
 
-        if Contrato.objects.filter(numero_contrato=contrato.numero_contrato).exclude(id=id).exists():
-            messages.warning(request, 'Ya existe un contrato con número {0}'.format(contrato.numero_contrato))
-            return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.OPCION, contrato))
-
-        contrato_db = Contrato.objects.get(id=id)
-        if contrato_db.comparar(contrato):
-            messages.success(request, 'No se hicieron cambios en el contrato número {0}'
-                             .format(contrato.numero_contrato))
-            return redirect(reverse('Proyectos:contratos'))
-        else:
-            contrato.save(update_fields=update_fields)
-            messages.success(request, 'Se ha actualizado el contrato número {0}'.format(contrato.numero_contrato))
-            return redirect(reverse('Proyectos:contratos'))
+        # contrato.empresa_id = get_id_empresa_global(request)
+        # contrato.id = int(id)
+        # if not contrato.residente_id:
+        #     contrato.residente_id = None
+        #
+        # try:
+        #     contrato.full_clean(validate_unique=False)
+        # except ValidationError as errores:
+        #     datos = datos_xa_render(self.OPCION, contrato)
+        #     datos['errores'] = errores.message_dict
+        #     return render(request, 'Proyectos/Contrato/crear-editar.html', datos)
+        #
+        # if Contrato.objects.filter(numero_contrato=contrato.numero_contrato).exclude(id=id).exists():
+        #     messages.warning(request, 'Ya existe un contrato con número {0}'.format(contrato.numero_contrato))
+        #     return render(request, 'Proyectos/Contrato/crear-editar.html', datos_xa_render(self.OPCION, contrato))
+        #
+        # contrato_db = Contrato.objects.get(id=id)
+        # if contrato_db.comparar(contrato):
+        #     messages.success(request, 'No se hicieron cambios en el contrato número {0}'
+        #                      .format(contrato.numero_contrato))
+        #     return redirect(reverse('Proyectos:contratos'))
+        # else:
+        #     contrato.save(update_fields=update_fields)
+        #     messages.success(request, 'Se ha actualizado el contrato número {0}'.format(contrato.numero_contrato))
+        return redirect(reverse('Proyectos:contratos'))
 
 
 class ContratoEliminarView(AbstractEvaLoggedView):
@@ -112,19 +160,46 @@ def datos_xa_render(opcion: str, contrato: Contrato = None) -> dict:
     :return: Un diccionario con los datos.
     """
 
-    tipo_contratos = TipoContrato.objects.tipos_comerciales(True, True)
+    paises = Pais.objects.get_xa_select_activos()
+    tipos_garantias = TipoGarantia.objects.get_xa_select_activos()
+
+    formas_de_pago = [
+        {'campo_valor': 1, 'campo_texto': 'Anticipo – Actas Parciales – Liquidación'},
+        {'campo_valor': 2, 'campo_texto': 'Anticipo – Actas Parciales – Liquidación'},
+        {'campo_valor': 3, 'campo_texto': 'Anticipo – Actas Parciales – Liquidación'}
+        ]
+    origen_recursos = [
+        {'campo_valor': 1, 'campo_texto': 'Recursos Propios'},
+        {'campo_valor': 2, 'campo_texto': 'Otro'}
+        ]
+    terceros = Tercero.objects.filter(estado=True)
+    supervisores = []
+    interventores = []
+
+    for ter in terceros:
+        if ter.tipo_tercero_id == TipoTercero.SUPERVISOR:
+            supervisores.append({'campo_valor': ter.id, 'campo_texto': ter.nombre})
+        elif ter.tipo_tercero_id == TipoTercero.INTERVENTOR:
+            interventores.append({'campo_valor': ter.id, 'campo_texto': ter.nombre})
+
+    tipos_contrato = TipoContrato.objects.tipos_comerciales(True, True)
     procesos = Proceso.objects.get_xa_select_activos()
     residentes = Colaborador.objects.get_xa_select_usuarios_activos()
     empresas = Empresa.objects.filter(estado=True).values(campo_valor=F('id'), campo_texto=F('nombre')) \
         .order_by('nombre')
-    terceros = Tercero.objects.clientes_xa_select()
+    clientes = Tercero.objects.clientes_xa_select()
     rango_anho = [{'campo_valor': anho, 'campo_texto': str(anho)} for anho in range(2000, 2051)]
-
-    datos = {'tipo_contratos': tipo_contratos,
+    datos = {'paises': paises,
+             'tipos_garantias': tipos_garantias,
+             'formas_de_pago': formas_de_pago,
+             'tipos_contrato': tipos_contrato,
+             'origen_recursos': origen_recursos,
+             'supervisores': supervisores,
+             'interventores': interventores,
              'procesos': procesos,
              'residentes': residentes,
              'empresas': empresas,
-             'terceros': terceros,
+             'clientes': clientes,
              'rango_anho': rango_anho,
              'opcion': opcion,
              'menu_actual': 'contratos'}
