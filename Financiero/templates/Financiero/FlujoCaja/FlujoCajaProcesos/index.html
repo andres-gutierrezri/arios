@@ -1,4 +1,5 @@
-{% extends 'Administracion/_common/base_administracion.html' %}
+{% extends menu_extendido %}
+{% load eva_tags %}
 {% load static %}
 <title>{% block titulo %}Flujo de Caja por Procesos{% endblock %}</title>
 {% block styles %}
@@ -21,6 +22,14 @@
         <div class="row">
             <div class="col-xl-12">
                 <div id="panel-1" class="panel">
+                    {% if opciones %}
+                    <div class="panel-hdr">
+                        <div class="col-md-10"></div>
+                        <div class="col-md-2" style="float: right">
+                            {% select_tag opciones 'opcion_id' '' value=opcion %}
+                        </div>
+                    </div>
+                    {% endif %}
                     <div class="panel-container show">
                         <div class="panel-content">
                                 <div class="panel-group">
@@ -42,8 +51,8 @@
                                                             <td>{{ proceso.objeto }}</td>
                                                             <td><span class="badge badge-primary">{{ proceso.flujocajaencabezado_set.first.estado }}</span></td>
                                                             <td>
-                                                                <a href="{% url 'Financiero:flujo-caja-procesos-detalle' proceso.id REAL %}"><span class="badge badge-primary fw-300 ml-auto">Real</span><br></a>
-                                                                <a href="{% url 'Financiero:flujo-caja-procesos-detalle' proceso.id PROYECCION %}"><span class="badge badge-primary fw-300 ml-auto">Proyección</span></a>
+                                                                <a href="#" onclick="guardarRutaLocal('{% url 'Financiero:flujo-caja-procesos-detalle' proceso.id REAL %}')"><span class="badge badge-primary fw-300 ml-auto">Real</span><br></a>
+                                                                <a href="#" onclick="guardarRutaLocal('{% url 'Financiero:flujo-caja-procesos-detalle' proceso.id PROYECCION %}')"><span class="badge badge-primary fw-300 ml-auto">Proyección</span></a>
                                                             </td>
                                                         </tr>
                                                     {% endfor %}
@@ -68,4 +77,8 @@
     <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.export.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script>
+    <script src="{% static 'Financiero/js/FlujoCaja/exportarTablas/exportarTablasFlujoCajaProcesos.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
+    <script src="{% static 'Financiero/js/FlujoCaja/filtroFlujoCajaFinanciero.js' %}"></script>
+    <script src="{% static 'Financiero/js/FlujoCaja/volverAtras.js' %}"></script>
 {% endblock %}

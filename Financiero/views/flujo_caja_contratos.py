@@ -14,8 +14,8 @@ class FlujoCajaContratosView(AbstractEvaLoggedView):
             contratos = contratos.filter(colaboradorcontrato__colaborador__usuario=request.user)
 
         return render(request, 'Financiero/FlujoCaja/FlujoCajaContratos/index.html',
-                      {'contratos': contratos, 'fecha': datetime.now(),
-                       'menu_actual': 'fc_contratos'})
+                      {'contratos': contratos, 'fecha': datetime.now(), 'menu_actual': 'fc_contratos',
+                       'menu_extendido': 'Proyectos/_common/base_proyectos.html'})
 
 
 class FlujoCajaContratosDetalleView(AbstractEvaLoggedView):

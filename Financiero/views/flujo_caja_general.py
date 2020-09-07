@@ -15,6 +15,32 @@ from Proyectos.models import Contrato
 from TalentoHumano.models.colaboradores import ColaboradorContrato, Colaborador
 
 
+class FlujosDeCajaView(AbstractEvaLoggedView):
+    def get(self, request, opcion):
+        opciones = [{'campo_valor': 0, 'campo_texto': 'Contratos'}, {'campo_valor': 1, 'campo_texto': 'Procesos'}]
+        if opcion == 0:
+            if request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']) or \
+                    request.user.has_perms(['TalentoHumano.view_flujos_de_caja']):
+                contratos = Contrato.objects.all()
+            else:
+                contratos = Contrato.objects.filter(colaboradorcontrato__colaborador__usuario=request.user)
+            return render(request, 'Financiero/FlujoCaja/FlujoCajaContratos/index.html',
+                          {'contratos': contratos, 'fecha': datetime.now(), 'opciones': opciones, 'opcion': opcion,
+                           'menu_extendido': 'Financiero/_common/base_financiero.html',
+                           'menu_actual': ['flujo_caja', 'flujos_de_caja']})
+        else:
+            if request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']) or \
+                    request.user.has_perms(['TalentoHumano.view_flujos_de_caja']):
+                procesos = Proceso.objects.all()
+            else:
+                colaborador = Colaborador.objects.get(usuario=request.user)
+                procesos = Proceso.objects.filter(id=colaborador.proceso_id)
+            return render(request, 'Financiero/FlujoCaja/FlujoCajaProcesos/index.html',
+                          {'procesos': procesos, 'fecha': datetime.now(), 'opciones': opciones, 'opcion': opcion,
+                           'menu_extendido': 'Financiero/_common/base_financiero.html',
+                           'menu_actual': ['flujo_caja', 'flujos_de_caja']})
+
+
 class FlujoCajaMovimientoEditarView(AbstractEvaLoggedView):
     def get(self, request, id_movimiento):
         OPCION = 'editar'
@@ -67,7 +93,8 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None):
     fecha_minima_mes = obtener_fecha_minima_mes(contrato=contrato, proceso=proceso)
 
     if not request.user.has_perms('Financiero.can_access_usuarioespecial'):
-        movimientos = movimientos.exclude(estado_id=EstadoFCDetalle.ELIMINADO)
+        if not request.user.has_perms(['TalentoHumano.view_flujos_de_caja']):
+            movimientos = movimientos.exclude(estado_id=EstadoFCDetalle.ELIMINADO)
 
     if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
         movimientos = movimientos.filter(subtipo_movimiento__protegido=False)
@@ -86,7 +113,8 @@ def cargar_modal_crear_editar(request,  opcion, tipo=None, contrato=None, proces
         tipo = flujo_detalle.tipo_registro
     else:
         flujo_detalle = None
-    if not tiene_permisos_de_acceso(request, contrato=contrato, proceso=proceso):
+    if not tiene_permisos_de_acceso(request, contrato=contrato, proceso=proceso) or \
+            not validar_gestion_registro(request, flujo_detalle):
         return JsonResponse({"estado": "error",
                              "mensaje": "No tiene permisos para acceder a este flujo de caja."})
 
@@ -119,7 +147,8 @@ def guardar_movimiento(request, tipo=None, contrato=None, proceso=None, movimien
         objeto = proceso
         flujo_encabezado = FlujoCajaEncabezado.objects.get(proceso_id=proceso)
 
-    if not tiene_permisos_de_acceso(request, contrato=contrato, proceso=proceso):
+    if not tiene_permisos_de_acceso(request, contrato=contrato, proceso=proceso) or \
+            not validar_gestion_registro(request, flujo_detalle):
         messages.error(request, 'No tiene permisos para acceder a este flujo de caja.')
         return redirect(reverse(ruta_reversa))
 
@@ -182,8 +211,8 @@ def historial_movimiento(request, movimiento):
     contrato = flujo_detalle.first().flujo_caja_enc.contrato_id
     proceso = flujo_detalle.first().flujo_caja_enc.proceso_id
 
-    if not tiene_permisos_de_acceso(request, contrato=contrato, proceso=proceso,
-                                    permisos=['TalentoHumano.view_historial_flujocajadetalle']):
+    if not tiene_permisos_de_acceso(request, contrato=contrato, proceso=proceso) or \
+            not validar_gestion_registro(request, flujo_detalle.first()):
         messages.error(request, 'No tiene permisos para acceder a este historial de flujo de caja.')
         return redirect(reverse('financiero:flujo-caja-movimiento'))
 
@@ -224,27 +253,25 @@ def datos_xa_render(request, opcion: str, tipo, fecha_minima_mes, flujo_detalle:
 # endregion
 
 
-def tiene_permisos_de_acceso(request, contrato=None, proceso=None, permisos=None):
+def tiene_permisos_de_acceso(request, contrato=None, proceso=None):
+    validacion_adicional = False
     if contrato:
         if not ColaboradorContrato.objects\
                 .filter(contrato_id=contrato, colaborador__usuario=request.user):
-            if permisos:
-                if request.user.has_perms(permisos):
-                    return True
-            if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
-                return False
+            validacion_adicional = True
     else:
         if not Colaborador.objects.filter(proceso_id=proceso, usuario=request.user):
-            if permisos:
-                if request.user.has_perms(permisos):
-                    return True
-            if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
-                return False
+            validacion_adicional = True
+    if validacion_adicional:
+        if not request.user.has_perms(['TalentoHumano.view_flujos_de_caja']):
+            return False
+        if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
+            return False
     return True
 
 
 def validar_gestion_registro(request, flujo_detalle):
-    if flujo_detalle.subtipo_movimiento.protegido:
+    if flujo_detalle and flujo_detalle.subtipo_movimiento.protegido:
         if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
             return False
     return True
