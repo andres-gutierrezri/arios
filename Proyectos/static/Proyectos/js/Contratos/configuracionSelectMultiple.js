@@ -50,3 +50,29 @@ $(document).ready(function () {
        idSelectInterventor.val(JSON.parse(valoresInterventores)).trigger("change");
    }
 });
+
+let idSelectMunicipio = $('#municipio_id');
+
+$(document).ready(function () {
+   idSelectMunicipio.select2(
+        {
+            placeholder: "Seleccione un municipio",
+            "language": {
+                noResults: function () {
+                    return 'No se encontraron coincidencias';
+                },
+                searching: function () {
+                    return 'Buscando…';
+                },
+                removeAllItems: function () {
+                    return 'Quitar todas los items';
+                }
+            },
+        });
+
+   let valoresMunicipios = $('#valores_municipios').val();
+   idSelectMunicipio.next().find("input").css("min-width", "200px");
+   if (valoresMunicipios){
+       idSelectMunicipio.val(JSON.parse(valoresMunicipios)).trigger("change");
+   }
+});
