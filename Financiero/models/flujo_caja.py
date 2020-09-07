@@ -20,6 +20,11 @@ class TipoMovimiento(models.Model):
         verbose_name = 'Tipo de Movimiento'
         verbose_name_plural = 'Tipos de Movimientos'
 
+    # Estados Fijos
+    COSTOS = 1
+    GASTOS = 2
+    INGRESOS = 3
+
 
 class CategoriaMovimiento(models.Model):
     objects = ManagerGeneral()
@@ -136,7 +141,7 @@ class EstadoFCDetalle(models.Model):
 
 class FlujoCajaDetalle(models.Model):
     fecha_movimiento = models.DateTimeField(verbose_name='Fecha de Creación', max_length=100, null=False, blank=False)
-    subtipo_movimiento = models.ForeignKey(SubTipoMovimiento, on_delete=models.CASCADE,
+    subtipo_movimiento = models.ForeignKey(SubTipoMovimiento, on_delete=models.DO_NOTHING,
                                            verbose_name='SubTipo de Movimiento', null=False, blank=False)
     valor = models.IntegerField(verbose_name='Valor', blank=False, null=False)
     tipo_registro = models.IntegerField(verbose_name='Tipo Registro', blank=False, null=False)
@@ -181,7 +186,7 @@ def fecha_corte_default():
 
 
 class CorteFlujoCaja(models.Model):
-    flujo_caja_enc = models.ForeignKey(FlujoCajaEncabezado, on_delete=models.CASCADE,
+    flujo_caja_enc = models.ForeignKey(FlujoCajaEncabezado, on_delete=models.DO_NOTHING,
                                        verbose_name='Flujo de Caja Encabezado', null=False, blank=False)
     fecha_corte = models.DateField(verbose_name='Fecha de Corte', null=False, blank=False,
                                    default=fecha_corte_default)

@@ -6,9 +6,11 @@ const controls = {
     rightArrow: '<i class="fal fa-angle-right" style="font-size: 1.25rem"></i>'
 };
 
+let idCategorias = $('#categorias_id');
 let idContratoProceso = $('#contrato_proceso_id');
 let idEstados = $('#estados_id');
 let idSubtipos = $('#subtipos_id');
+let subtiposCategorias = JSON.parse($('#subtipos_categorias').val());
 
 $('.select2').select2({
     language: {
@@ -24,6 +26,23 @@ $('.select2').select2({
 $(document).ready(function() {
     // Exportar resultado de la busqueda del consolidado
     iniciarTablaExportar([0, 1, 2, 3, 4, 5]);
+
+    idCategorias.select2({
+        placeholder: "Seleccione una opción",
+        "language": {
+            noResults: function () {
+                return 'No se encontraron coincidencias';
+            },
+            searching: function () {
+                return 'Buscando…';
+            },
+        },
+    });
+    let valoresCategorias = $('#valores_categorias').val();
+    idCategorias.next().find("input").css("min-width", "200px");
+    if (valoresCategorias){
+        idCategorias.val(JSON.parse(valoresCategorias)).trigger("change");
+    }
 
     idContratoProceso.select2({
         placeholder: "Seleccione una opción",
@@ -109,6 +128,8 @@ let fechaMinima = fecha_min_max.fecha_min.split(" ")[0];
 let fechaMaxima = fecha_min_max.fecha_max.split(" ")[0];
 let borrarFechaDesde = $('#borrarFechaDesde');
 let borrarFechaHasta = $('#borrarFechaHasta');
+let validarFechaDesde = $('#validar_fecha_desde');
+let validarFechaHasta = $('#validar_fecha_hasta');
 
 fechaDesde.change(function () {
     if (fechaDesde.val() !== ''){
@@ -119,12 +140,26 @@ fechaDesde.change(function () {
     if (fechaHasta.val() !== ''){
         if (new Date(fechaHasta.val()) < new Date(fechaDesde.val())) {
             fechaHasta.val('');
+            fechaDesde.val('');
             borrarFechaHasta.hide();
-            EVANotificacion.toast.error('La fecha desde no puede ser mayor a la fecha hasta seleccionada.');
+            validarFechaDesde.html('La fecha desde no puede ser mayor a la fecha hasta seleccionada.');
+            validarFechaDesde.show();
+            borrarFechaDesde.hide();
+            setTimeout(function() {
+                validarFechaDesde.fadeOut(1000);
+            }, 5000);
+        }else{
+            if (!validarFechaMaxMin(fechaDesde, validarFechaDesde)){
+            borrarFechaDesde.hide();
+            return false;
+        }
+            validarFechaDesde.hide();
         }
     }else{
-        if (!validarFechaMaxMin(fechaDesde)){
+        if (!validarFechaMaxMin(fechaDesde, validarFechaDesde)){
             borrarFechaDesde.hide();
+        }else{
+            validarFechaDesde.hide();
         }
     }
 });
@@ -138,27 +173,50 @@ fechaHasta.change(function () {
     if (fechaDesde.val() !== ''){
         if (new Date(fechaDesde.val()) > new Date(fechaHasta.val())) {
             fechaDesde.val('');
+            fechaHasta.val('');
             borrarFechaDesde.hide();
-            EVANotificacion.toast.error('La fecha hasta no puede ser inferior a la fecha desde seleccionada.');
+            validarFechaHasta.html('La fecha hasta no puede ser inferior a la fecha desde seleccionada.');
+            validarFechaHasta.show();
+            borrarFechaHasta.hide();
+            setTimeout(function() {
+                validarFechaHasta.fadeOut(1000);
+            }, 5000);
+        }else{
+            if (!validarFechaMaxMin(fechaDesde, validarFechaDesde)) {
+                borrarFechaDesde.hide();
+                return
+            }
+            validarFechaHasta.hide();
         }
     }else{
-        if (!validarFechaMaxMin(fechaHasta)){
+        if (!validarFechaMaxMin(fechaHasta, validarFechaHasta)){
             borrarFechaHasta.hide();
+        }else{
+            validarFechaHasta.hide();
         }
     }
 });
 
-function validarFechaMaxMin(fecha) {
+function validarFechaMaxMin(fecha, validador) {
 
     if (new Date(fechaMinima) > new Date(fecha.val())){
-        EVANotificacion.toast.error('Los movimientos mas antiguos van desde ' + fechaMinima);
+        validador.html('Los movimientos mas antiguos van desde ' + fechaMinima);
+        validador.show();
+         setTimeout(function() {
+                validador.fadeOut(1000);
+            }, 5000);
         fecha.val('');
         return false;
     }else if (new Date(fechaMaxima) < new Date(fecha.val())){
-        EVANotificacion.toast.error('Los movimientos mas nuevos están hasta ' + fechaMaxima);
+        validador.html('Los movimientos mas nuevos están hasta ' + fechaMaxima);
+        validador.show();
+         setTimeout(function() {
+                validador.fadeOut(1000);
+            }, 5000);
         fecha.val('');
         return false;
     }
+    return true;
 }
 
 function borrarFecha(input) {
@@ -169,4 +227,48 @@ function borrarFecha(input) {
         fechaHasta.val('');
         borrarFechaHasta.hide();
     }
+}
+
+idCategorias.change(function () {
+        let selecciones = [];
+        $('#categorias_id option:selected').each(function() {
+            selecciones.push($(this).val());
+        });
+        if (selecciones.length > 0) {
+            idSubtipos.empty();
+            for (let sel = 0; sel < selecciones.length; sel ++){
+                for (let sub = 0; sub < subtiposCategorias.length; sub++) {
+                    if (parseInt(selecciones[sel]) === subtiposCategorias[sub].categoria_id){
+                        idSubtipos.append('<option value="' + subtiposCategorias[sub].id + '">' + subtiposCategorias[sub].nombre + '</option>');
+                    }
+                }
+            }
+        }else {
+            idSubtipos.empty();
+            for (let j = 0; j < subtiposCategorias.length; j++) {
+                idSubtipos.append('<option value="' + subtiposCategorias[j].id + '">' + subtiposCategorias[j].nombre + '</option>');
+            }
+        }
+    });
+
+function desplegarDetalle(origen, idObjeto) {
+    let mas = $('#mas_'+ origen +'_' + idObjeto);
+    let boton =  $('#boton_'+ origen +'_' + idObjeto);
+    if (mas.is(':visible')) {
+        mas.hide();
+        boton.removeClass('fa-minus-circle');
+        boton.addClass('fa-plus-circle');
+    } else {
+        mas.show();
+        boton.removeClass('fa-plus-circle');
+        boton.addClass('fa-minus-circle');
+    }
+}
+
+function Imprimir() {
+     let printContents = $('#consolidado').html();
+     let originalContents = document.body.innerHTML;
+     document.body.innerHTML = printContents;
+     window.print();
+     document.body.innerHTML = originalContents;
 }

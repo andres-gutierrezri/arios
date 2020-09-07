@@ -51,7 +51,6 @@ urlpatterns = [
          name='categoria-movimiento-editar'),
     path('categorias-movimientos/<int:id>/delete', categorias_movimientos.CategoriaMovimientoEliminarView.as_view(),
          name='categoria-movimiento-eliminar'),
-    path('flujo-caja/procesos', flujo_caja_procesos.FlujoCajaProcesosView.as_view(), name='flujo-caja-procesos'),
     path('flujo-caja/procesos/<int:id>/detalle/<int:tipo>', flujo_caja_procesos.FlujoCajaProcesosDetalleView.as_view(),
          name='flujo-caja-procesos-detalle'),
     path('flujo-caja/procesos/<int:id_proceso>/add/<int:tipo>', flujo_caja_procesos.FlujoCajaProcesosCrearView.as_view(),
