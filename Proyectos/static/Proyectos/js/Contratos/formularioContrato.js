@@ -11,6 +11,9 @@ let garantiaExtensiva = $('#garantia_extensiva');
 let vigenciaGarantia = $('#vigencia_id');
 let eliminarVigencia = $('#eliminar_vigencia');
 let eliminarGarantia = $('#eliminar_garantia');
+let datosVigencias = $('#datos_vigencias');
+let datosGarantias = $('#datos_garantias');
+
 
 let valoresVigencias = [];
 let valoresGarantias = [];
@@ -31,10 +34,11 @@ function agregarVigencia() {
         '<div class="col-md-5">\n' +
         '<label>Valor de vigencia</label>\n' +
         '<input disabled type="text" id="valor_vigencia_'+ contadorVigencia +'" value="'+ vigencia.val() +'" class="form-control"></div>\n' +
-        '<div class="col-md-1"></div></div></div>');
+        '<div class="col-md-1"></div></div><br></div>');
     contadorVigencia += 1;
     anho.val('');
     vigencia.val('');
+    datosVigencias.val(JSON.stringify(valoresVigencias));
 }
 
 function quitarVigencia() {
@@ -46,6 +50,7 @@ function quitarVigencia() {
     anho.val($('#valor_anho_' + contadorVigencia).val());
     vigencia.val($('#valor_vigencia_' + contadorVigencia).val());
     $('#vigencia_'+ contadorVigencia).remove();
+    datosVigencias.val(JSON.stringify(valoresVigencias));
 }
 
 let contadorGarantia = 0;
@@ -92,7 +97,7 @@ function agregarGarantia() {
         '<label class="custom-control-label">Garantía Extensiva</label>\n' +
         '</div></div>\n' +
         '<div class="col-md-1" style="padding-top:30px">\n' +
-        '</div></div></div>');
+        '</div></div><br></div>');
     contadorGarantia += 1;
 
     $('#select2-tipo_garantia_id_select_id-container').text('Seleccione un tipo de garantía');
@@ -100,6 +105,7 @@ function agregarGarantia() {
     porcentajeAsegurado.val('');
     vigenciaGarantia.val('');
     garantiaExtensiva.prop('checked', false);
+    datosGarantias.val(JSON.stringify(valoresGarantias));
 }
 
 function quitarGarantia() {
@@ -124,4 +130,5 @@ function quitarGarantia() {
        garantiaExtensiva.prop('checked', false);
     }
     $('#garantia_'+ contadorGarantia).remove();
+     datosGarantias.val(JSON.stringify(valoresGarantias));
 }
