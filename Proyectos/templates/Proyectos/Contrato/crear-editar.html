@@ -60,7 +60,7 @@
                                                             <div class="form-group">
                                                                 <div class="form-row">
                                                                     <div class="col-md-6">
-                                                                        {% select_tag clientes 'cliente' 'Seleccione un cliente' texto_label="Cliente" required="" value=contrato.genero  mensaje_validacion='Por favor seleccione un cliente' invalido=errores.cliente %}
+                                                                        {% select_tag clientes 'cliente_id' 'Seleccione un cliente' texto_label="Cliente" required="" value=contrato.genero  mensaje_validacion='Por favor seleccione un cliente' invalido=errores.cliente %}
                                                                     </div>
                                                                     <div class="col-md-6">
                                                                         {% input_number_tag 'anho' 'Año' placeholder="Ingrese el año del contrato"  min='2000' max="4000" onInput="validarLongitud(4,this)" required="" value=contrato.anho mensaje_validacion='Por favor ingrese el año (Mínimo año: 2000)' invalido=errores.anho %}
@@ -80,7 +80,7 @@
                                                             <div class="form-group">
                                                                 <div class="form-row">
                                                                     <div class="col-md-6">
-                                                                        {% input_text_tag 'numero_contrato' 'Número del Contrato' placeholder="Ingrese número del contrato"  maxlength="10" required="" value=contrato.numero_contrato mensaje_validacion='Por favor ingrese el número del contrato.' invalido=errores.numero_contrato %}
+                                                                        {% input_text_tag 'numero_contrato' 'Número del Contrato' placeholder="Ingrese número del contrato"  maxlength="20" required="" value=contrato.numero_contrato mensaje_validacion='Por favor ingrese el número del contrato.' invalido=errores.numero_contrato %}
                                                                     </div>
                                                                     <div class="col-md-6">
                                                                         {% input_text_tag 'objeto_del_contrato' 'Objeto del Contrato' placeholder="Ingrese el objeto del contrato"  maxlength="150" required="" value=contrato.objeto_del_contrato mensaje_validacion='Por favor ingrese el objeto del contrato.' invalido=errores.objeto_del_contrato %}
@@ -94,6 +94,19 @@
                                                                     </div>
                                                                     <div class="col-md-6">
                                                                         {% input_date_tag 'fecha_suscripcion' 'Fecha de Suscripción' placeholder="Seleccione una fecha"  autocomplete="off" required="" value=contrato.fecha_suscripcion  mensaje_validacion='Por favor seleccione una fecha.' invalido=errores.fecha_suscripcion %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <div class="form-row">
+                                                                    <div class="col-md-4">
+                                                                        {% select_tag colaboradores 'residente_id' 'Seleccione un colaborador' texto_label="Residente" value=contrato.residente  mensaje_validacion='Por favor seleccione un colaborador' %}
+                                                                    </div>
+                                                                    <div class="col-md-4">
+                                                                        {% select_tag procesos 'proceso_id' 'Seleccione un proceso' texto_label="Proceso a cargo" value=contrato.proceso_a_cargo  mensaje_validacion='Por favor seleccione un proceso' %}
+                                                                    </div>
+                                                                    <div class="col-md-4">
+                                                                        {% input_number_tag 'periodicidad_informes' 'Periodicidad de Informes(Meses)' placeholder="Ingrese la periodicidad de iformes en meses" min='0' max="2147483647" onInput="validarLongitud(10,this)" required="" value=contrato.periodicidad_informes mensaje_validacion='Por favor ingrese un valor' invalido=errores.periodicidad_informes %}
                                                                     </div>
                                                                 </div>
                                                             </div>
