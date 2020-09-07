@@ -17,8 +17,8 @@ Including another URLconf
 from django.urls import path
 
 from Financiero.views import PrincipalView, FacturaCrearView, FacturasView, FacturaEditarView, FacturaDetalleView, \
-    FacturaImprimirView
-from Financiero.views import subtipos_movimientos, flujo_caja, categorias_movimientos
+    FacturaImprimirView, flujo_caja_general
+from Financiero.views import subtipos_movimientos, flujo_caja_contratos, categorias_movimientos, flujo_caja_procesos
 
 app_name = 'Financiero'
 
@@ -37,15 +37,11 @@ urlpatterns = [
          name='subtipo-movimiento-editar'),
     path('subtipos-movimientos/<int:id>/delete', subtipos_movimientos.SubtipoMovimientoEliminarView.as_view(),
          name='subtipo-movimiento-eliminar'),
-    path('flujo-caja/contratos', flujo_caja.FlujoCajaContratosView.as_view(), name='flujo-caja-contratos'),
-    path('flujo-caja/contratos/<int:id>/detalle/<int:tipo>', flujo_caja.FlujoCajaContratosDetalleView.as_view(),
+    path('flujo-caja/contratos', flujo_caja_contratos.FlujoCajaContratosView.as_view(), name='flujo-caja-contratos'),
+    path('flujo-caja/contratos/<int:id>/detalle/<int:tipo>', flujo_caja_contratos.FlujoCajaContratosDetalleView.as_view(),
          name='flujo-caja-contratos-detalle'),
-    path('flujo-caja/contratos/<int:id_contrato>/add/<int:tipo>', flujo_caja.FlujoCajaContratosCrearView.as_view(),
+    path('flujo-caja/contratos/<int:id_contrato>/add/<int:tipo>', flujo_caja_contratos.FlujoCajaContratosCrearView.as_view(),
          name='flujo-caja-contratos-crear'),
-    path('flujo-caja/contratos/<int:id_flujo_caja>', flujo_caja.FlujoCajaContratosEditarView.as_view(),
-         name='flujo-caja-contratos-editar'),
-    path('flujo-caja/contratos/<int:id>/delete', flujo_caja.FlujoCajaContratosEliminarView.as_view(),
-         name='subtipo-movimiento-eliminar'),
     path('categorias-movimientos/', categorias_movimientos.CategoriasMovimientosView.as_view(),
          name='categoria-movimiento-index'),
     path('categorias-movimientos/add', categorias_movimientos.CategoriaMovimientoCrearView.as_view(),
@@ -54,7 +50,16 @@ urlpatterns = [
          name='categoria-movimiento-editar'),
     path('categorias-movimientos/<int:id>/delete', categorias_movimientos.CategoriaMovimientoEliminarView.as_view(),
          name='categoria-movimiento-eliminar'),
-    path('flujo-caja/contratos/detalle/<int:id>/historial', flujo_caja.FlujoCajaContratosHistorialView.as_view(),
-         name='flujo-caja-detalle-historial'),
+    path('flujo-caja/procesos', flujo_caja_procesos.FlujoCajaProcesosView.as_view(), name='flujo-caja-procesos'),
+    path('flujo-caja/procesos/<int:id>/detalle/<int:tipo>', flujo_caja_procesos.FlujoCajaProcesosDetalleView.as_view(),
+         name='flujo-caja-procesos-detalle'),
+    path('flujo-caja/procesos/<int:id_proceso>/add/<int:tipo>', flujo_caja_procesos.FlujoCajaProcesosCrearView.as_view(),
+         name='flujo-caja-procesos-crear'),
+    path('flujo-caja/<int:id_movimiento>', flujo_caja_general.FlujoCajaMovimientoEditarView.as_view(),
+         name='flujo-caja-movimiento-editar'),
+    path('flujo-caja/movimiento/<int:id_movimiento>/delete', flujo_caja_general.FlujoCajaMovimientoEliminarView.as_view(),
+         name='flujo-caja-movimiento-eliminar'),
+    path('flujo-caja/movimiento/detalle/<int:id_movimiento>/historial',
+         flujo_caja_general.FlujoCajaMovimientoHistorialView.as_view(), name='flujo-caja-movimiento-historial'),
 ]
 
