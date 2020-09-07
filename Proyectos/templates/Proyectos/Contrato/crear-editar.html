@@ -45,6 +45,8 @@
                                                 <form action="{% url 'Proyectos:contratos-crear' %}" id="contrato-form" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
                                             {% endif %}
                                             {% csrf_token %}
+                                            <input hidden id="datos_vigencias" name="datos_vigencias">
+                                            <input hidden id="datos_garantias" name="datos_garantias">
                                             <div id="smartwizard">
                                                 <ul>
                                                     <li><a href="#step-1">Información básica</a></li>
