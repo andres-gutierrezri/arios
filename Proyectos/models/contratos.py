@@ -57,9 +57,9 @@ class Contrato(models.Model, ModelDjangoExtensiones):
         """
         contrato = Contrato()
         contrato.numero_contrato = datos.get('numero_contrato', '')
-        contrato.cliente_id = datos.get('cliente_select_id', '')
-        contrato.anho = datos.get('anho_id', '')
-        contrato.fecha_suscripcion = string_to_date(datos.get('fecha_suscripcion_id', ''))
+        contrato.cliente_id = datos.get('cliente', '')
+        contrato.anho = datos.get('anho', '')
+        contrato.fecha_suscripcion = string_to_date(datos.get('fecha_suscripcion', ''))
         contrato.valor = datos.get('valor', '')
         contrato.tipo_contrato_id = datos.get('tipo_contrato_id', '')
         contrato.objeto_del_contrato = datos.get('objeto_del_contrato', '')
