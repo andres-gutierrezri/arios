@@ -96,7 +96,7 @@ function agregarGarantia() {
     contadorGarantia += 1;
 
     $('#select2-tipo_garantia_id_select_id-container').text('Seleccione un tipo de garantía');
-    $('#tipo_garantia_id_select_id').val('');
+    tipoGarantia.val('');
     porcentajeAsegurado.val('');
     vigenciaGarantia.val('');
     garantiaExtensiva.prop('checked', false);
@@ -113,7 +113,7 @@ function quitarGarantia() {
     let textoTipoGarantia = $('#texto_tipo_garantia_' + contadorGarantia).val();
 
     $('#select2-tipo_garantia_id_select_id-container').text(textoTipoGarantia);
-    $('#tipo_garantia_id_select_id').val(valorTipoGarantia);
+    tipoGarantia.val(valorTipoGarantia);
 
     porcentajeAsegurado.val($('#valor_porcentaje_asegurado_'+ contadorGarantia).val());
     vigenciaGarantia.val($('#valor_vigencia_garantia_'+ contadorGarantia).val());
