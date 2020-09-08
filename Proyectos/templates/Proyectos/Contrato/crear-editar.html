@@ -47,6 +47,7 @@
                                             {% csrf_token %}
                                             <input hidden id="datos_vigencias" name="datos_vigencias">
                                             <input hidden id="datos_garantias" name="datos_garantias">
+                                            <input hidden id="tipos_contrato" value="{{ tipos_contrato_json }}">
                                             <div id="smartwizard">
                                                 <ul>
                                                     <li><a href="#step-1">Información básica</a></li>
@@ -60,7 +61,7 @@
                                                             <div class="form-group">
                                                                 <div class="form-row">
                                                                     <div class="col-md-6">
-                                                                        {% select_tag clientes 'cliente_id' 'Seleccione un cliente' texto_label="Cliente" required="" value=contrato.genero  mensaje_validacion='Por favor seleccione un cliente' invalido=errores.cliente %}
+                                                                        {% select_tag clientes 'cliente_id' 'Seleccione un cliente' texto_label="Cliente" required="" value=contrato.cliente_id  mensaje_validacion='Por favor seleccione un cliente' invalido=errores.cliente %}
                                                                     </div>
                                                                     <div class="col-md-6">
                                                                         {% input_number_tag 'anho' 'Año' placeholder="Ingrese el año del contrato"  min='2000' max="4000" onInput="validarLongitud(4,this)" required="" value=contrato.anho mensaje_validacion='Por favor ingrese el año (Mínimo año: 2000)' invalido=errores.anho %}
@@ -100,10 +101,10 @@
                                                             <div class="form-group">
                                                                 <div class="form-row">
                                                                     <div class="col-md-4">
-                                                                        {% select_tag colaboradores 'residente_id' 'Seleccione un colaborador' texto_label="Residente" value=contrato.residente  mensaje_validacion='Por favor seleccione un colaborador' %}
+                                                                        {% select_tag colaboradores 'residente_id' 'Seleccione un colaborador' texto_label="Residente" value=contrato.residente_id  mensaje_validacion='Por favor seleccione un colaborador' %}
                                                                     </div>
                                                                     <div class="col-md-4">
-                                                                        {% select_tag procesos 'proceso_id' 'Seleccione un proceso' texto_label="Proceso a cargo" value=contrato.proceso_a_cargo  mensaje_validacion='Por favor seleccione un proceso' %}
+                                                                        {% select_tag procesos 'proceso_id' 'Seleccione un proceso' texto_label="Proceso a cargo" value=contrato.proceso_a_cargo_id  mensaje_validacion='Por favor seleccione un proceso' %}
                                                                     </div>
                                                                     <div class="col-md-4">
                                                                         {% input_number_tag 'periodicidad_informes' 'Periodicidad de Informes(Meses)' placeholder="Ingrese la periodicidad de iformes en meses" min='0' max="2147483647" onInput="validarLongitud(10,this)" required="" value=contrato.periodicidad_informes mensaje_validacion='Por favor ingrese un valor' invalido=errores.periodicidad_informes %}
@@ -148,7 +149,7 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div class="form-group">
+                                                            <div class="form-group" id="div_aiu" style="display: none">
                                                                 <div class="form-row">
                                                                     <div class="col-md-4">
                                                                         {% input_number_tag 'porcentaje_a' 'Porcentaje A' placeholder="Ingrese el porcentaje A"  min='0' max="100" step="0.01" onInput="validarLongitud(3,this)" required="" value=contrato.porcentaje_a mensaje_validacion='Por favor ingrese el porcentaje A' invalido=errores.porcentaje_a %}
@@ -164,7 +165,7 @@
                                                             <div class="form-group">
                                                                 <div class="form-row">
                                                                     <div class="col-md-6">
-                                                                        {% select_tag formas_de_pago 'forma_de_pago_id' 'Seleccione la forma de pago' texto_label="Forma de Pago" required="" value=contrato.forma_de_pago_id  mensaje_validacion='Por favor seleccione una forma de pago' invalido=errores.forma_de_pago %}
+                                                                        {% select_tag formas_de_pago 'forma_de_pago_id' 'Anticipo - Actas Parciales - Liquidación' primer_valor=True texto_label="Forma de Pago" required="" value=contrato.forma_de_pago_id  mensaje_validacion='Por favor seleccione una forma de pago' invalido=errores.forma_de_pago %}
                                                                     </div>
                                                                     <div class="col-md-2" id="div_anticipo">
                                                                         {% input_number_tag 'anticipo' 'Anticipo' placeholder="Porcentaje"  min='0' max="100" step="0.01" onInput="validarLongitud(3,this)" required="" value=contrato.anticipo mensaje_validacion='Por favor ingrese el porcentaje' invalido=errores.anticipo %}
@@ -180,7 +181,7 @@
                                                             <div class="form-group">
                                                                 <div class="form-row">
                                                                     <div class="col-md-6">
-                                                                        {% select_tag origen_recursos 'origen_recurso_id' 'Seleccione una opción' texto_label="Origen de los Recursos" required="" value=contrato.origen_recurso_id  mensaje_validacion='Por favor seleccione una opción.' invalido=errores.origen_recurso_id %}
+                                                                        {% select_tag origen_recursos 'origen_recurso_id' 'Recursos Propios' primer_valor=True texto_label="Origen de los Recursos" required="" value=contrato.origen_recurso_id  mensaje_validacion='Por favor seleccione una opción.' invalido=errores.origen_recurso_id %}
                                                                     </div>
                                                                     <div class="col-md-6">
                                                                         {% input_text_tag 'origen_recurso' 'Origen de los Recursos' placeholder="Describa el origen de los recursos"  maxlength="150" required="" value=contrato.origen_recurso mensaje_validacion='Por favor describa el origen de los recursos.' invalido=errores.origen_recurso %}
