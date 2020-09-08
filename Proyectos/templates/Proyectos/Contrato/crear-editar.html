@@ -48,6 +48,7 @@
                                             <input hidden id="datos_vigencias" name="datos_vigencias">
                                             <input hidden id="datos_garantias" name="datos_garantias">
                                             <input hidden id="tipos_contrato" value="{{ tipos_contrato_json }}">
+                                            <input hidden id="selecciones_pdm" value="{{ selecciones_pdm }}">
                                             <div id="smartwizard">
                                                 <ul>
                                                     <li><a href="#step-1">Información básica</a></li>
@@ -119,7 +120,7 @@
                                                                     <div class="col-md-4">
                                                                         {% select_tag departamentos 'departamento_id' 'Seleccione un departamento' texto_label="Departamento" required="" value=contrato.departamento_id  mensaje_validacion='Por favor seleccione un departamento' %}
                                                                     </div>
-                                                                    <input hidden id="valores_municipios" value="">
+                                                                    <input hidden id="valores_municipios" value="{{ lista_id_selecciones }}">
                                                                     <div class="col-md-4">
                                                                         {% select_multiple_tag municipios 'municipio_id[]' 'municipio_id' 'Seleccione un municipio' texto_label="Municipio" required="" value="" mensaje_validacion='Por favor seleccione un municipio' multiple='multiple' %}
                                                                     </div>
@@ -165,16 +166,16 @@
                                                             <div class="form-group">
                                                                 <div class="form-row">
                                                                     <div class="col-md-6">
-                                                                        {% select_tag formas_de_pago 'forma_de_pago_id' 'Anticipo - Actas Parciales - Liquidación' primer_valor=True texto_label="Forma de Pago" required="" value=contrato.forma_de_pago_id  mensaje_validacion='Por favor seleccione una forma de pago' invalido=errores.forma_de_pago %}
+                                                                        {% select_tag formas_de_pago 'forma_de_pago_id' 'Contraentrega y Satisfacción' primer_valor=True texto_label="Forma de Pago" required="" value=contrato.forma_de_pago_id  mensaje_validacion='Por favor seleccione una forma de pago' invalido=errores.forma_de_pago %}
                                                                     </div>
                                                                     <div class="col-md-2" id="div_anticipo">
-                                                                        {% input_number_tag 'anticipo' 'Anticipo' placeholder="Porcentaje"  min='0' max="100" step="0.01" onInput="validarLongitud(3,this)" required="" value=contrato.anticipo mensaje_validacion='Por favor ingrese el porcentaje' invalido=errores.anticipo %}
+                                                                        {% input_number_tag 'anticipo' 'Anticipo' placeholder="Porcentaje"  min='0' max="100" step="0.01" onInput="validarLongitud(3,this)" disabled="" value=contrato.anticipo mensaje_validacion='Por favor ingrese el porcentaje' invalido=errores.anticipo %}
                                                                     </div>
                                                                     <div class="col-md-2" id="div_actas_parciales">
-                                                                        {% input_number_tag 'actas_parciales' 'Actas Parciales' placeholder="Porcentaje"  min='0' max="100" step="0.01" onInput="validarLongitud(3,this)" required="" value=contrato.acta_parcial mensaje_validacion='Por favor ingrese el porcentaje' invalido=errores.actas_parciales %}
+                                                                        {% input_number_tag 'actas_parciales' 'Actas Parciales' placeholder="Porcentaje"  min='0' max="100" step="0.01" onInput="validarLongitud(3,this)" disabled="" value=contrato.acta_parcial mensaje_validacion='Por favor ingrese el porcentaje' invalido=errores.actas_parciales %}
                                                                     </div>
                                                                     <div class="col-md-2" id="div_liquidacion">
-                                                                        {% input_number_tag 'liquidacion' 'Liquidación' placeholder="Porcentaje"  min='0' max="100" step="0.01" onInput="validarLongitud(3,this)" required="" value=contrato.liquidacion mensaje_validacion='Por favor ingrese el porcentaje' invalido=errores.liquidacion %}
+                                                                        {% input_number_tag 'liquidacion' 'Liquidación' placeholder="Porcentaje"  min='0' max="100" step="0.01" onInput="validarLongitud(3,this)" disabled="" value=contrato.liquidacion mensaje_validacion='Por favor ingrese el porcentaje' invalido=errores.liquidacion %}
                                                                     </div>
                                                                 </div>
                                                             </div>
