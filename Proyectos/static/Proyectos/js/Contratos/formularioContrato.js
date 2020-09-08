@@ -186,25 +186,46 @@ $(document).ready(function () {
     let divLiquidacion = $('#div_liquidacion');
     let inputAnticipo = $('#anticipo_id');
     let inputActasParciales = $('#actas_parciales_id');
+    let inputLiquidacion = $('#liquidacion_id');
 
     $('#forma_de_pago_id_select_id').change(function () {
         if(this.value === '1'){
+            divAnticipo.show();
+            divActasParciales.show();
+
+            inputAnticipo.attr('required', true);
+            inputActasParciales.attr('required', true);
+            inputAnticipo.removeAttr('disabled', true);
+            inputActasParciales.removeAttr('disabled', true);
+            inputLiquidacion.removeAttr('disabled', true);
+
+            divAnticipo.removeClass('col-md-3');
+            divAnticipo.addClass('col-md-2');
+            divActasParciales.removeClass('col-md-3');
+            divActasParciales.addClass('col-md-2');
+            divLiquidacion.removeClass('col-md-3');
+            divLiquidacion.addClass('col-md-2');
+        }else if (this.value === '2'){
             divAnticipo.show();
             divActasParciales.hide();
 
             inputAnticipo.attr('required', true);
             inputActasParciales.removeAttr('required', true);
+            inputAnticipo.removeAttr('disabled', true);
+            inputLiquidacion.removeAttr('disabled', true);
 
             divAnticipo.removeClass('col-md-2');
             divAnticipo.addClass('col-md-3');
             divLiquidacion.removeClass('col-md-2');
             divLiquidacion.addClass('col-md-3');
-        }else if (this.value === '2'){
+        }else if (this.value === '3'){
             divAnticipo.hide();
             divActasParciales.show();
 
             inputAnticipo.removeAttr('required', true);
             inputActasParciales.attr('required', true);
+            inputActasParciales.removeAttr('disabled', true);
+            inputLiquidacion.removeAttr('disabled', true);
 
             divActasParciales.removeClass('col-md-2');
             divActasParciales.addClass('col-md-3');
@@ -214,8 +235,12 @@ $(document).ready(function () {
             divAnticipo.show();
             divActasParciales.show();
 
-            inputAnticipo.attr('required', true);
-            inputActasParciales.attr('required', true);
+            inputAnticipo.removeAttr('required', true);
+            inputActasParciales.removeAttr('required', true);
+            inputAnticipo.attr('disabled', true);
+            inputActasParciales.attr('disabled', true);
+            inputLiquidacion.attr('disabled', true);
+
 
             divAnticipo.removeClass('col-md-3');
             divAnticipo.addClass('col-md-2');

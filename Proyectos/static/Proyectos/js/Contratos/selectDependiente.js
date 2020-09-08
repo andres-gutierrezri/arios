@@ -87,7 +87,6 @@ function cargarMunicipios(idDepartamento) {
                         }
                     });
                 });
-                // console.log(valoresPDM.municipio);
                 if (valoresPDM && valores_seleccionados.length === 0) {
                     $.each(valoresPDM.municipio, function (pos, objeto) {
                         municipio.append('<option selected value="' + objeto.id + '">' + objeto.nombre + '</option>')
