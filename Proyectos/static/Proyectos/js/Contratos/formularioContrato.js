@@ -133,17 +133,52 @@ function quitarGarantia() {
      datosGarantias.val(JSON.stringify(valoresGarantias));
 }
 
-$(document).ready(function () {
-    let inputOrigenRecurso = $('#origen_recurso_id');
+let inputOrigenRecurso = $('#origen_recurso_id');
+let selectOrigenRecurso = $('#origen_recurso_id_select_id');
 
-    $('#origen_recurso_id_select_id').change(function () {
-        if(this.value === 1 || this.value === '1'){
-            inputOrigenRecurso.removeAttr('disabled', true);
-            inputOrigenRecurso.attr('required', true)
-        }else{
-            inputOrigenRecurso.attr('disabled', true);
-            inputOrigenRecurso.removeAttr('required', true)
+function origenRecursos(){
+    if(selectOrigenRecurso.value === 1 || selectOrigenRecurso.value === '1'){
+        inputOrigenRecurso.removeAttr('disabled', true);
+        inputOrigenRecurso.attr('required', true)
+    }else{
+        inputOrigenRecurso.attr('disabled', true);
+        inputOrigenRecurso.removeAttr('required', true)
+    }
+}
+
+let selectTipoContrato = $('#tipo_contrato_id_select_id');
+let tiposContrato = JSON.parse($('#tipos_contrato').val());
+let divAIU = $('#div_aiu');
+let inputA = $('#porcentaje_a_id');
+let inputI = $('#porcentaje_i_id');
+let inputU = $('#porcentaje_u_id');
+
+function verificarPorcentajeAIU(){
+    $.each(tiposContrato, function(pos, tipos) {
+        if(tipos.campo_valor === parseInt(selectTipoContrato.val())){
+            if (tipos.porcentaje_aiu){
+                divAIU.show();
+                inputA.attr('required', true);
+                inputI.attr('required', true);
+                inputU.attr('required', true)
+            }else{
+                divAIU.hide();
+                inputA.removeAttr('required', true);
+                inputI.removeAttr('required', true);
+                inputU.removeAttr('required', true)
+            }
         }
+    })
+}
+
+$(document).ready(function () {
+    origenRecursos();
+    selectOrigenRecurso.change(function () {
+        origenRecursos();
+    });
+    verificarPorcentajeAIU();
+    selectTipoContrato.change(function () {
+        verificarPorcentajeAIU();
     });
 
     let divAnticipo = $('#div_anticipo');
