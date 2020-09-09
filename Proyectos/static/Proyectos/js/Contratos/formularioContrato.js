@@ -20,12 +20,12 @@ let valoresGarantias = [];
 
 let contadorVigencia = 0;
 
-function agregarVigencia(valorAnho, valorVigencia) {
+function agregarVigencia(valores) {
     let datoAnho = anho.val();
     let datoVigencia = vigencia.val();
-    if (valorAnho && valorVigencia){
-        datoAnho = valorAnho;
-        datoVigencia = valorVigencia
+    if (valores){
+        datoAnho = valores.valor_anho;
+        datoVigencia = valores.valor_vigencia;
     }
     if (datoVigencia === '' || datoAnho === ''){
         EVANotificacion.toast.error('Debes llenar los campos disponibles antes de realizar esta acción.');
@@ -196,7 +196,7 @@ $(document).ready(function () {
     let valores_vigencias = $('#valores_vigencias_actuales').val();
     if (valores_vigencias){
         $.each(JSON.parse(valores_vigencias), function (pos, vigencia) {
-            agregarVigencia(vigencia.valor_anho, vigencia.valor_vigencia)
+            agregarVigencia(vigencia)
         });
     }
     quitarVigencia()
