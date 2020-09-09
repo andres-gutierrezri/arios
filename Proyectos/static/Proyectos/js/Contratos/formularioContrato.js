@@ -61,42 +61,52 @@ function quitarVigencia() {
 
 let contadorGarantia = 0;
 
-function agregarGarantia() {
-    if (tipoGarantia.val() === '' || vigenciaGarantia.val() === '' || porcentajeAsegurado.val() === ''){
+function agregarGarantia(valores) {
+    let datoTipoGarantia = tipoGarantia.val();
+    let datoNombreTipoGarantia = $("#tipo_garantia_id_select_id option:selected").text();
+    let datoPorcentajeAsegurado = porcentajeAsegurado.val();
+    let datoVigenciaGarantia = vigenciaGarantia.val();
+    let datoGarantiaExtensiva = vigencia.val();
+    if (valores){
+        datoTipoGarantia = valores.tipo_garantia;
+        datoNombreTipoGarantia = valores.nombre_tipo_garantia;
+        datoPorcentajeAsegurado = valores.porcentaje_asegurado;
+        datoVigenciaGarantia = valores.vigencia_garantia;
+        datoGarantiaExtensiva = valores.garantia_extensiva;
+    }
+    if (datoTipoGarantia === '' || datoPorcentajeAsegurado === '' || datoVigenciaGarantia === ''){
         EVANotificacion.toast.error('Debes llenar los campos disponibles antes de realizar esta acción.');
         return false;
     }
     let inputCheck;
     let checkActivo = false;
     eliminarGarantia.show();
-    if (garantiaExtensiva.prop('checked')){
+    if (garantiaExtensiva.prop('checked') || datoGarantiaExtensiva === true){
         inputCheck = '<input disabled checked id="valor_garantia_extensiva_'+ contadorGarantia +'" type="checkbox" class="custom-control-input">';
         checkActivo = true;
     }else{
         inputCheck = '<input disabled id="valor_garantia_extensiva_'+ contadorGarantia +'" type="checkbox" class="custom-control-input">';
     }
 
-    valoresGarantias.push({'tipo_garantia': tipoGarantia.val(), 'vigencia_garantia': vigenciaGarantia.val(),
-        'porcentaje_asegurado': porcentajeAsegurado.val(), 'garantia_extensiva': checkActivo});
-
-    let textoSelect = $("#tipo_garantia_id_select_id option:selected").text();
+    valoresGarantias.push({'tipo_garantia': datoTipoGarantia, 'vigencia_garantia': datoVigenciaGarantia,
+        'porcentaje_asegurado': datoVigenciaGarantia, 'garantia_extensiva': checkActivo});
 
     divGarantias.append('<div class="form-group" id="garantia_'+ contadorGarantia +'" style="margin-bottom: 0">\n' +
         '<div class="form-row" style="padding-bottom: 0">\n' +
         '<div class="col-md-3">\n' +
         '<label>Tipo de Garantía</label>\n' +
-        '<input hidden type="text" id="valor_tipo_garantia_'+ contadorGarantia +'" value="'+ tipoGarantia.val() +'">\n' +
-        '<input disabled type="text" id="texto_tipo_garantia_'+ contadorGarantia +'" value="'+ textoSelect +'"\n' +
+        '<input hidden type="text" id="valor_tipo_garantia_'+ contadorGarantia +'" value="'+ datoTipoGarantia +'">\n' +
+        '<input disabled type="text" id="texto_tipo_garantia_'+ contadorGarantia +'" value="'+ datoNombreTipoGarantia +'"\n' +
         'class="form-control">\n' +
         '</div>\n' +
         '<div class="col-md-3">\n' +
         '<label>Porcentaje Asegurado</label>\n' +
-        '<input disabled type="text" id="valor_porcentaje_asegurado_'+ contadorGarantia +'" value="'+ porcentajeAsegurado.val() +'"\n' +
+        '<input disabled type="text" id="valor_porcentaje_asegurado_'+ contadorGarantia +'" value="'+ datoPorcentajeAsegurado +'"\n' +
         'class="form-control">\n' +
         '</div>\n' +
         '<div class="col-md-3">\n' +
         '<label>Vigencia (Meses)</label>\n' +
-        '<input disabled type="text" id="valor_vigencia_garantia_'+ contadorGarantia +'" value="'+ vigenciaGarantia.val() +'" class="form-control">\n' +
+        '<input disabled type="text" id="valor_vigencia_garantia_'+ contadorGarantia +'" value="'+ datoVigenciaGarantia +'" class="form-control">\n' +
         '</div>\n' +
         '<div class="col-md-2" style="padding-top: 33px;">\n' +
         '<div class="custom-control custom-checkbox">\n' + inputCheck +
@@ -194,12 +204,19 @@ $(document).ready(function () {
         combinacionesFormasDePago(this.value);
     });
     let valores_vigencias = $('#valores_vigencias_actuales').val();
+    let valores_garantias = $('#valores_garantias_actuales').val();
     if (valores_vigencias){
         $.each(JSON.parse(valores_vigencias), function (pos, vigencia) {
             agregarVigencia(vigencia)
         });
     }
-    quitarVigencia()
+    quitarVigencia();
+    if (valores_garantias){
+        $.each(JSON.parse(valores_garantias), function (pos, garantia) {
+            agregarGarantia(garantia)
+        });
+    }
+    quitarGarantia()
 });
 
 let divAnticipo = $('#div_anticipo');
