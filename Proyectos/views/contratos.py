@@ -136,6 +136,21 @@ class ContratoEliminarView(AbstractEvaLoggedView):
                                                                "porque ya está siendo usado."})
 
 
+class ContratoDetalleView(AbstractEvaLoggedView):
+    def get(self, request, id):
+        contrato = Contrato.objects.get(id=id)
+        municipios = ContratoMunicipio.objects.filter(contrato=contrato)
+        forma_pago = FormasPago.objects.get(contrato=contrato)
+        vigencias = ContratoVigencia.objects.filter(contrato=contrato)
+        supervisores = ContratoIterventoriaSupervisor.objects.filter(contrato=contrato, tipo=SUPERVISOR)
+        interventores = ContratoIterventoriaSupervisor.objects.filter(contrato=contrato, tipo=INTERVENTOR)
+        garantias = ContratoGarantia.objects.filter(contrato=contrato)
+        return render(request, 'Proyectos/Contrato/_modal_contrato_detalle.html',
+                      {'contrato': contrato, 'municipios': municipios, 'forma_pago': forma_pago, 'vigencias': vigencias,
+                       'supervisores': supervisores, 'interventores': interventores, 'garantias': garantias,
+                       'menu_actual': 'contratos'})
+
+
 # region Métodos de ayuda
 def datos_xa_render(opcion: str, contrato: Contrato = None) -> dict:
     """
