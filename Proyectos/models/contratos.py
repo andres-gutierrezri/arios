@@ -128,9 +128,14 @@ class ContratoIterventoriaSupervisor(models.Model, ModelDjangoExtensiones):
                                  null=False, blank=False)
     tercero = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, verbose_name='Tercero',
                                 null=False, blank=False)
+    tipo = models.IntegerField(verbose_name='Tipo', null=False, blank=False)
 
     def __str__(self):
-        return 'Interventor/Supervisor del contrato {0}: {1}'.format(self.contrato, self.tercero)
+        if self.tipo == 0:
+            texto = 'Supervisor'
+        else:
+            texto = 'Interventor'
+        return '{0} del contrato {1}: {2}'.format(texto, self.contrato, self.tercero)
 
     class Meta:
         verbose_name = 'Contrato Interventoria Supervisor'
