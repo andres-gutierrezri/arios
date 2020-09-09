@@ -1,5 +1,5 @@
 {% load static %}
-
+{% load humanize %}
 <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
         <div class="modal-header p-b-0">
@@ -40,7 +40,7 @@
                                         <b>Plazo de Ejecución: </b>{{ contrato.plazo_ejecucion }}
                                     </small>
                                     <small class="mt-0 mb-3 text-muted">
-                                        <b>Valor del Contrato: </b>{{ contrato.valor }}
+                                        <b>Valor del Contrato: </b>{{ contrato.valor|intcomma }}
                                     </small>
                                     <small class="mt-0 mb-3 text-muted">
                                         <b>Tipo de Contrato: </b>{{ contrato.tipo_contrato }}
@@ -52,10 +52,10 @@
                                         {% endfor %}
                                     </small>
                                     <small class="mt-0 mb-3 text-muted">
-                                        <b>Fecha de Suscripción: </b>{{ contrato.fecha_suscripcion }}
+                                        <b>Fecha de Suscripción: </b>{{ contrato.fecha_suscripcion|date:'Y-m-d' }}
                                     </small>
                                     <small class="mt-0 mb-3 text-muted">
-                                        <b>Colaborador Residente: </b>{% if contrato.residente %}{{ contrato.residente }}{% else %}N/A{% endif %}
+                                        <b>Colaborador Residente: </b>{% if contrato.residente %}{{ contrato.residente.get_full_name }}{% else %}N/A{% endif %}
                                     </small>
                                     <small class="mt-0 mb-3 text-muted">
                                         <b>Proceso a Cargo: </b>{% if contrato.proceso_a_cargo %}{{ contrato.proceso_a_cargo }}{% else %}N/A{% endif %}
@@ -78,16 +78,16 @@
                             <div class="p-3">
                                 <h5>
                                     <small class="mt-0 mb-3 text-muted">
-                                        <b>Fecha de Registro Presupuestal: </b>{{ contrato.fecha_registro_presupuestal }}
+                                        <b>Fecha de Registro Presupuestal: </b>{{ contrato.fecha_registro_presupuestal|date:'Y-m-d' }}
                                     </small>
                                     <small class="mt-0 mb-3 text-muted">
                                         <b>Número del Registro Presupuestal: </b>{{ contrato.numero_registro_presupuestal }}
                                     </small>
                                     <small class="mt-0 mb-3 text-muted">
-                                        <b>Valor con IVA: </b>{{ contrato.valor_con_iva }}
+                                        <b>Valor con IVA: </b>{{ contrato.valor_con_iva|intcomma }}
                                     </small>
                                     <small class="mt-0 mb-3 text-muted">
-                                        <b>Valor sin IVA: </b>{{ contrato.valor_sin_iva }}
+                                        <b>Valor sin IVA: </b>{{ contrato.valor_sin_iva|intcomma }}
                                     </small>
                                     <small class="mt-0 mb-3 text-muted">
                                         <b>Porcentaje A: </b>{% if contrato.porcentaje_a %}{{ contrato.porcentaje_a }}{% else %}N/A{% endif %}
@@ -108,7 +108,7 @@
                                     <small class="mt-0 mb-3 text-muted">
                                         <b>Vigencias: </b>
                                         {% for vig in vigencias %}
-                                            <br>Año: {{ vig.anho }} - Valor: {{ vig.valor }}
+                                            <br>Año: {{ vig.anho }} - Valor: {{ vig.valor|intcomma }}
                                         {% endfor %}
                                     </small>
                                     <small class="mt-0 mb-3 text-muted">
