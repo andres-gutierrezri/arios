@@ -55,7 +55,7 @@
                                                         <td>{{ contrato.cliente}}</td>
                                                         <td>{{ contrato.numero_contrato }}</td>
                                                         <td>{{ contrato.anho}}</td>
-                                                        <td>{{ contrato.residente }}</td>
+                                                        <td>{{ contrato.residente.get_full_name }}</td>
                                                         <td>{{ contrato.fecha_suscripcion|date:'Y-m-d' }}</td>
                                                         <td>{{ contrato.valor|intcomma }}</td>
                                                         <td>{{ contrato.plazo_ejecucion }}</td>
