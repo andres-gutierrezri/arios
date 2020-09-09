@@ -288,3 +288,42 @@ function combinacionesFormasDePago(valor) {
             divLiquidacion.addClass('col-md-2');
         }
 }
+
+inputAnticipo.change(function () {
+    let sumaAnticipo = parseInt(inputLiquidacion.val()) + parseInt(inputAnticipo.val());
+    if (inputActasParciales.is(':visible')) {
+        sumaAnticipo += parseInt(inputActasParciales.val());
+    }
+    if (sumaAnticipo > 100){
+        EVANotificacion.toast.error('El total de los valores no debe ser mayor al 100%');
+        inputAnticipo.val('');
+        return false
+    }
+});
+
+inputActasParciales.change(function () {
+    let sumaActasParciales = parseInt(inputLiquidacion.val()) + parseInt(inputActasParciales.val());
+    if (inputAnticipo.is(':visible')) {
+        sumaActasParciales += parseInt(inputAnticipo.val());
+    }
+    if (sumaActasParciales > 100){
+        EVANotificacion.toast.error('El total de los valores no debe ser mayor al 100%');
+        inputActasParciales.val('');
+        return false
+    }
+});
+
+inputLiquidacion.change(function () {
+    let sumaLiquidacion = parseInt(inputLiquidacion.val());
+    if (inputAnticipo.is(':visible')) {
+        sumaLiquidacion += parseInt(inputAnticipo.val())
+    }
+    if (inputActasParciales.is(':visible')) {
+        sumaLiquidacion += parseInt(inputActasParciales.val())
+    }
+    if (sumaLiquidacion > 100){
+        EVANotificacion.toast.error('El total de los valores no debe ser mayor al 100%');
+        inputLiquidacion.val('');
+        return false
+    }
+});
