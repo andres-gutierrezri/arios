@@ -47,6 +47,7 @@
                                             {% csrf_token %}
                                             <input hidden id="datos_vigencias" name="datos_vigencias">
                                             <input hidden id="valores_vigencias_actuales" value="{{ valores_vigencias_actuales }}">
+                                            <input hidden id="valores_garantias_actuales" value="{{ valores_garantias_actuales }}">
                                             <input hidden id="datos_garantias" name="datos_garantias">
                                             <input hidden id="tipos_contrato" value="{{ tipos_contrato_json }}">
                                             <input hidden id="selecciones_pdm" value="{{ selecciones_pdm }}">
@@ -243,7 +244,7 @@
                                                                     </div>
                                                                     <div class="col-md-2" style="padding-top: 33px;">
                                                                         <div class="custom-control custom-checkbox">
-                                                                            <input type="checkbox" class="custom-control-input" id="garantia_extensiva">
+                                                                            <input type="checkbox" class="custom-control-input" id="garantia_extensiva" name="garantia_extensiva">
                                                                             <label class="custom-control-label" for="garantia_extensiva">Garantía Extensiva</label>
                                                                         </div>
                                                                     </div>
