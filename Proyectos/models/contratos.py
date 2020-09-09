@@ -85,8 +85,7 @@ class FormasPago(models.Model, ModelDjangoExtensiones):
                                           blank=True, null=True)
     liquidacion = models.DecimalField(verbose_name='Liquidación', decimal_places=2, max_digits=5,
                                       blank=True, null=True)
-    contraentrega_satisfaccion = models.IntegerField(verbose_name='Contraentrega y Satisfacción', blank=True, null=True)
-    estado = models.BooleanField(verbose_name="Estado", blank=False, null=False)
+    forma_pago = models.IntegerField(verbose_name='Forma de Pago', blank=False, null=False)
 
     def __str__(self):
         return 'Forma de Pago para el contrato: {0}'.format(self.contrato)
