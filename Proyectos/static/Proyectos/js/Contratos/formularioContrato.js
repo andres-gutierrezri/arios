@@ -153,7 +153,7 @@ let inputOrigenRecurso = $('#origen_recurso_id');
 let selectOrigenRecurso = $('#origen_recurso_id_select_id');
 
 function origenRecursos(){
-    if(selectOrigenRecurso.value === 1 || selectOrigenRecurso.value === '1'){
+    if(selectOrigenRecurso.val() === 1 || selectOrigenRecurso.val() === '1'){
         inputOrigenRecurso.removeAttr('disabled', true);
         inputOrigenRecurso.attr('required', true)
     }else{
