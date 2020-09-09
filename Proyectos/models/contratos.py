@@ -155,7 +155,7 @@ class TipoGarantia(models.Model, ModelDjangoExtensiones):
         verbose_name_plural = 'Tipos de Garantías'
 
 
-class Garantia(models.Model, ModelDjangoExtensiones):
+class ContratoGarantia(models.Model, ModelDjangoExtensiones):
     tipo_garantia = models.ForeignKey(TipoGarantia, on_delete=models.DO_NOTHING, verbose_name="Tipo de garantía",
                                       blank=False, null=False)
     contrato = models.ForeignKey(Contrato, on_delete=models.DO_NOTHING, verbose_name='Contrato',
@@ -163,11 +163,11 @@ class Garantia(models.Model, ModelDjangoExtensiones):
     porcentaje_asegurado = models.DecimalField(verbose_name='Porcentaje asegurado', decimal_places=2, max_digits=5,
                                                null=True, blank=True)
     vigencia = models.IntegerField(verbose_name="Vigencia", blank=False, null=False)
-    estensivas = models.BooleanField(verbose_name="Estensivas", blank=False, null=False)
+    extensiva = models.BooleanField(verbose_name="Extensiva", blank=False, null=False)
 
     def __str__(self):
         return 'Garantía del contrato: {0}'.format(self.contrato)
 
     class Meta:
-        verbose_name = 'Garantía'
-        verbose_name_plural = 'Garantías'
+        verbose_name = 'Contrato Garantía'
+        verbose_name_plural = 'Contratos Garantías'
