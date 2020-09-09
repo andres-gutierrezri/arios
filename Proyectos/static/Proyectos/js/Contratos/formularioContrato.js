@@ -20,20 +20,26 @@ let valoresGarantias = [];
 
 let contadorVigencia = 0;
 
-function agregarVigencia() {
-    if (vigencia.val() === '' || anho.val() === ''){
+function agregarVigencia(valorAnho, valorVigencia) {
+    let datoAnho = anho.val();
+    let datoVigencia = vigencia.val();
+    if (valorAnho && valorVigencia){
+        datoAnho = valorAnho;
+        datoVigencia = valorVigencia
+    }
+    if (datoVigencia === '' || datoAnho === ''){
         EVANotificacion.toast.error('Debes llenar los campos disponibles antes de realizar esta acción.');
         return false;
     }
     eliminarVigencia.show();
-    valoresVigencias.push({'anho': anho.val(), 'vigencia': vigencia.val()});
+    valoresVigencias.push({'anho': datoAnho, 'vigencia': datoVigencia});
     divVigencias.append('<div class="form-group" id="vigencia_'+ contadorVigencia +'" style="margin-bottom: 0">' +
         '<div class="form-row"><div class="col-md-6">\n' +
         '<label>Año de vigencia</label>\n' +
-        '<input disabled type="text" id="valor_anho_'+ contadorVigencia +'" value="'+ anho.val() +'" class="form-control"></div>\n' +
+        '<input disabled type="text" id="valor_anho_'+ contadorVigencia +'" value="'+ datoAnho +'" class="form-control"></div>\n' +
         '<div class="col-md-5">\n' +
         '<label>Valor de vigencia</label>\n' +
-        '<input disabled type="text" id="valor_vigencia_'+ contadorVigencia +'" value="'+ vigencia.val() +'" class="form-control"></div>\n' +
+        '<input disabled type="text" id="valor_vigencia_'+ contadorVigencia +'" value="'+ datoVigencia +'" class="form-control"></div>\n' +
         '<div class="col-md-1"></div></div><br></div>');
     contadorVigencia += 1;
     anho.val('');
@@ -187,6 +193,13 @@ $(document).ready(function () {
     selectFormaDePago.change(function () {
         combinacionesFormasDePago(this.value);
     });
+    let valores_vigencias = $('#valores_vigencias_actuales').val();
+    if (valores_vigencias){
+        $.each(JSON.parse(valores_vigencias), function (pos, vigencia) {
+            agregarVigencia(vigencia.valor_anho, vigencia.valor_vigencia)
+        });
+    }
+    quitarVigencia()
 });
 
 let divAnticipo = $('#div_anticipo');
