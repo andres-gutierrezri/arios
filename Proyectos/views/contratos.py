@@ -116,7 +116,7 @@ class ContratoDetalleView(AbstractEvaLoggedView):
         contrato = Contrato.objects.get(id=id)
         municipios = ContratoMunicipio.objects.filter(contrato=contrato)
         forma_pago = FormasPago.objects.get(contrato=contrato)
-        vigencias = ContratoVigencia.objects.filter(contrato=contrato)
+        vigencias = ContratoVigencia.objects.filter(contrato=contrato).order_by('anho')
         supervisores = ContratoIterventoriaSupervisor.objects.filter(contrato=contrato, tipo=SUPERVISOR)
         interventores = ContratoIterventoriaSupervisor.objects.filter(contrato=contrato, tipo=INTERVENTOR)
         garantias = ContratoGarantia.objects.filter(contrato=contrato)
