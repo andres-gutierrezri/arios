@@ -81,7 +81,7 @@ class Contrato(models.Model, ModelDjangoExtensiones):
 
 
 class FormasPago(models.Model, ModelDjangoExtensiones):
-    contrato = models.ForeignKey(Contrato, on_delete=models.DO_NOTHING, verbose_name='Contrato', null=False, blank=False)
+    contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato', null=False, blank=False)
     anticipo = models.DecimalField(verbose_name='Anticipo', decimal_places=2, max_digits=5, blank=True, null=True)
     actas_parciales = models.DecimalField(verbose_name='Actas parciales', decimal_places=2, max_digits=5,
                                           blank=True, null=True)
@@ -98,7 +98,7 @@ class FormasPago(models.Model, ModelDjangoExtensiones):
 
 
 class ContratoMunicipio(models.Model, ModelDjangoExtensiones):
-    contrato = models.ForeignKey(Contrato, on_delete=models.DO_NOTHING, verbose_name='Contrato',
+    contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato',
                                  null=False, blank=False)
     municipio = models.ForeignKey(Municipio, on_delete=models.DO_NOTHING, verbose_name='Municipio',
                                   null=False, blank=False)
@@ -112,7 +112,7 @@ class ContratoMunicipio(models.Model, ModelDjangoExtensiones):
 
 
 class ContratoVigencia(models.Model, ModelDjangoExtensiones):
-    contrato = models.ForeignKey(Contrato, on_delete=models.DO_NOTHING, verbose_name='Contrato',
+    contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato',
                                  null=False, blank=False)
     anho = models.IntegerField(verbose_name='Año', null=False, blank=False)
     valor = models.BigIntegerField(verbose_name='Valor', null=False, blank=False)
@@ -126,7 +126,7 @@ class ContratoVigencia(models.Model, ModelDjangoExtensiones):
 
 
 class ContratoIterventoriaSupervisor(models.Model, ModelDjangoExtensiones):
-    contrato = models.ForeignKey(Contrato, on_delete=models.DO_NOTHING, verbose_name='Contrato',
+    contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato',
                                  null=False, blank=False)
     tercero = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, verbose_name='Tercero',
                                 null=False, blank=False)
@@ -160,7 +160,7 @@ class TipoGarantia(models.Model, ModelDjangoExtensiones):
 class ContratoGarantia(models.Model, ModelDjangoExtensiones):
     tipo_garantia = models.ForeignKey(TipoGarantia, on_delete=models.DO_NOTHING, verbose_name="Tipo de garantía",
                                       blank=False, null=False)
-    contrato = models.ForeignKey(Contrato, on_delete=models.DO_NOTHING, verbose_name='Contrato',
+    contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato',
                                  null=False, blank=False)
     porcentaje_asegurado = models.DecimalField(verbose_name='Porcentaje asegurado', decimal_places=2, max_digits=5,
                                                null=True, blank=True)
