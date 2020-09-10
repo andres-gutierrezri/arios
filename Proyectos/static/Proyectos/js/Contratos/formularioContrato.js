@@ -290,9 +290,9 @@ function combinacionesFormasDePago(valor) {
 }
 
 inputAnticipo.change(function () {
-    let sumaAnticipo = parseInt(inputLiquidacion.val()) + parseInt(inputAnticipo.val());
+    let sumaAnticipo = parseFloat(inputLiquidacion.val()) + parseFloat(inputAnticipo.val());
     if (inputActasParciales.is(':visible')) {
-        sumaAnticipo += parseInt(inputActasParciales.val());
+        sumaAnticipo += parseFloat(inputActasParciales.val());
     }
     if (sumaAnticipo > 100){
         EVANotificacion.toast.error('El total de los valores no debe ser mayor al 100%');
@@ -302,9 +302,9 @@ inputAnticipo.change(function () {
 });
 
 inputActasParciales.change(function () {
-    let sumaActasParciales = parseInt(inputLiquidacion.val()) + parseInt(inputActasParciales.val());
+    let sumaActasParciales = parseFloat(inputLiquidacion.val()) + parseFloat(inputActasParciales.val());
     if (inputAnticipo.is(':visible')) {
-        sumaActasParciales += parseInt(inputAnticipo.val());
+        sumaActasParciales += parseFloat(inputAnticipo.val());
     }
     if (sumaActasParciales > 100){
         EVANotificacion.toast.error('El total de los valores no debe ser mayor al 100%');
@@ -314,12 +314,12 @@ inputActasParciales.change(function () {
 });
 
 inputLiquidacion.change(function () {
-    let sumaLiquidacion = parseInt(inputLiquidacion.val());
+    let sumaLiquidacion = parseFloat(inputLiquidacion.val());
     if (inputAnticipo.is(':visible')) {
-        sumaLiquidacion += parseInt(inputAnticipo.val())
+        sumaLiquidacion += parseFloat(inputAnticipo.val())
     }
     if (inputActasParciales.is(':visible')) {
-        sumaLiquidacion += parseInt(inputActasParciales.val())
+        sumaLiquidacion += parseFloat(inputActasParciales.val())
     }
     if (sumaLiquidacion > 100){
         EVANotificacion.toast.error('El total de los valores no debe ser mayor al 100%');

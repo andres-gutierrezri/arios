@@ -171,13 +171,13 @@
                                                                         {% select_tag formas_de_pago 'forma_de_pago_id' 'Contraentrega y Satisfacción' primer_valor=True texto_label="Forma de Pago" required="" value=formas_pago.forma_pago  mensaje_validacion='Por favor seleccione una forma de pago' invalido=errores.forma_de_pago %}
                                                                     </div>
                                                                     <div class="col-md-2" id="div_anticipo">
-                                                                        {% input_number_tag 'anticipo' 'Anticipo' placeholder="Porcentaje"  min='0' max="100" step="0.01" onInput="validarLongitud(3,this)" disabled="" value=formas_pago.anticipo mensaje_validacion='Por favor ingrese el porcentaje' invalido=errores.anticipo %}
+                                                                        {% input_number_tag 'anticipo' 'Anticipo' placeholder="Porcentaje"  min='0' max="100" step="0.01" onInput="validarLongitud(5,this)" disabled="" value=formas_pago.anticipo mensaje_validacion='Por favor ingrese el porcentaje' invalido=errores.anticipo %}
                                                                     </div>
                                                                     <div class="col-md-2" id="div_actas_parciales">
-                                                                        {% input_number_tag 'actas_parciales' 'Actas Parciales' placeholder="Porcentaje"  min='0' max="100" step="0.01" onInput="validarLongitud(3,this)" disabled="" value=formas_pago.actas_parciales mensaje_validacion='Por favor ingrese el porcentaje' invalido=errores.actas_parciales %}
+                                                                        {% input_number_tag 'actas_parciales' 'Actas Parciales' placeholder="Porcentaje"  min='0' max="100" step="0.01" onInput="validarLongitud(5,this)" disabled="" value=formas_pago.actas_parciales mensaje_validacion='Por favor ingrese el porcentaje' invalido=errores.actas_parciales %}
                                                                     </div>
                                                                     <div class="col-md-2" id="div_liquidacion">
-                                                                        {% input_number_tag 'liquidacion' 'Liquidación' placeholder="Porcentaje"  min='0' max="100" step="0.01" onInput="validarLongitud(3,this)" disabled="" value=formas_pago.liquidacion mensaje_validacion='Por favor ingrese el porcentaje' invalido=errores.liquidacion %}
+                                                                        {% input_number_tag 'liquidacion' 'Liquidación' placeholder="Porcentaje"  min='0' max="100" step="0.01" onInput="validarLongitud(5,this)" disabled="" value=formas_pago.liquidacion mensaje_validacion='Por favor ingrese el porcentaje' invalido=errores.liquidacion %}
                                                                     </div>
                                                                 </div>
                                                             </div>
