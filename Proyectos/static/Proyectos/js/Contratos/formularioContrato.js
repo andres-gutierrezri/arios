@@ -32,7 +32,7 @@ function agregarVigencia(valores) {
         return false;
     }
     eliminarVigencia.show();
-    valoresVigencias.push({'anho': datoAnho, 'vigencia': datoVigencia});
+    valoresVigencias.push({'valor_anho': datoAnho, 'valor_vigencia': datoVigencia});
     divVigencias.append('<div class="form-group" id="vigencia_'+ contadorVigencia +'" style="margin-bottom: 0">' +
         '<div class="form-row"><div class="col-md-6">\n' +
         '<label>Año de vigencia</label>\n' +
@@ -89,7 +89,7 @@ function agregarGarantia(valores) {
     }
 
     valoresGarantias.push({'tipo_garantia': datoTipoGarantia, 'vigencia_garantia': datoVigenciaGarantia,
-        'porcentaje_asegurado': datoVigenciaGarantia, 'garantia_extensiva': checkActivo});
+        'porcentaje_asegurado': datoPorcentajeAsegurado, 'garantia_extensiva': checkActivo, 'nombre_tipo_garantia': datoNombreTipoGarantia});
 
     divGarantias.append('<div class="form-group" id="garantia_'+ contadorGarantia +'" style="margin-bottom: 0">\n' +
         '<div class="form-row" style="padding-bottom: 0">\n' +
