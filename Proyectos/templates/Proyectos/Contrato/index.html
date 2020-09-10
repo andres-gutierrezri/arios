@@ -44,9 +44,7 @@
                                                     <th>Valor</th>
                                                     <th>Tiempo de ejecucición</th>
                                                     <th>Tipo de contrato</th>
-                                                    {% if perms.Proyectos.change_contrato or perms.Proyectos.delete_contrato %}
-                                                        <th>Acción</th>
-                                                    {% endif %}
+                                                    <th>Acción</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -60,7 +58,6 @@
                                                         <td>{{ contrato.valor|intcomma }}</td>
                                                         <td>{{ contrato.plazo_ejecucion }}</td>
                                                         <td>{{ contrato.tipo_contrato }}</td>
-                                                        {% if perms.Proyectos.change_contrato or perms.Proyectos.delete_contrato %}
                                                         <td>
                                                             {% if perms.Proyectos.view_contrato %}
                                                             <a class="far fa-2x fa-list-alt" href="javascript:abrirModalDetalleContrato('{% url 'Proyectos:contratos-detalle' contrato.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Detalle"></a>
@@ -73,7 +70,6 @@
                                                             <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ contrato.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminarContrato({{ contrato.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
                                                             {% endif %}
                                                         </td>
-                                                        {% endif %}
                                                     </tr>
                                                 {% endfor %}
                                             </tbody>
