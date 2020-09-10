@@ -233,6 +233,7 @@ function combinacionesFormasDePago(valor) {
 
             inputAnticipo.attr('required', true);
             inputActasParciales.attr('required', true);
+            inputLiquidacion.attr('required', true);
             inputAnticipo.removeAttr('disabled', true);
             inputActasParciales.removeAttr('disabled', true);
             inputLiquidacion.removeAttr('disabled', true);
@@ -249,6 +250,7 @@ function combinacionesFormasDePago(valor) {
 
             inputAnticipo.attr('required', true);
             inputActasParciales.removeAttr('required', true);
+            inputLiquidacion.attr('required', true);
             inputAnticipo.removeAttr('disabled', true);
             inputLiquidacion.removeAttr('disabled', true);
 
@@ -262,6 +264,7 @@ function combinacionesFormasDePago(valor) {
 
             inputAnticipo.removeAttr('required', true);
             inputActasParciales.attr('required', true);
+            inputLiquidacion.attr('required', true);
             inputActasParciales.removeAttr('disabled', true);
             inputLiquidacion.removeAttr('disabled', true);
 
@@ -275,6 +278,7 @@ function combinacionesFormasDePago(valor) {
 
             inputAnticipo.removeAttr('required', true);
             inputActasParciales.removeAttr('required', true);
+            inputLiquidacion.removeAttr('required', true);
             inputAnticipo.attr('disabled', true);
             inputActasParciales.attr('disabled', true);
             inputLiquidacion.attr('disabled', true);
