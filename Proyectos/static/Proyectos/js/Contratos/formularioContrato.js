@@ -331,3 +331,15 @@ inputLiquidacion.change(function () {
         return false
     }
 });
+
+porcentajeAsegurado.change(function () {
+   validarPorcentajeAsegurado();
+});
+
+function validarPorcentajeAsegurado() {
+    if (parseFloat(porcentajeAsegurado.val()) > 100){
+        porcentajeAsegurado.val('');
+        $('#guardar').click();
+       return false
+   }
+}
