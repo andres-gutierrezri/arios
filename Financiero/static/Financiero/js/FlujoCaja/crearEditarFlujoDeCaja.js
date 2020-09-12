@@ -6,7 +6,7 @@ const controls = {
     rightArrow: '<i class="fal fa-angle-right" style="font-size: 1.25rem"></i>'
 };
 
-function abrirModalCrearEditarFlujoDeCaja(url, fecha_minima_mes, fecha_maxima_mes, estado) {
+function abrirModalCrearEditarFlujoDeCaja(url, fecha_minima_mes, fecha_maxima_mes) {
     $('#crear_editar_flujo_caja').load(url, function (responseText) {
         try {
             if (responseText.includes("error")) {
@@ -33,12 +33,10 @@ function abrirModalCrearEditarFlujoDeCaja(url, fecha_minima_mes, fecha_maxima_me
                     return false
                 }
                 if (new Date(inputFecha.val()) > new Date(fecha_maxima_mes)){
-                    if (estado !== 1){
-                        inputFecha.next().find('div').prevObject.text('La fecha del movimiento no puede ser mayor a ' + fecha_maxima_mes);
-                        btnGuardar.click();
-                        inputFecha.val('');
-                        return false
-                    }
+                    inputFecha.next().find('div').prevObject.text('La fecha del movimiento no puede ser mayor a ' + fecha_maxima_mes);
+                    btnGuardar.click();
+                    inputFecha.val('');
+                    return false
                 }
             });
             $('#subtipo_movimiento_id_select_id').select2({
