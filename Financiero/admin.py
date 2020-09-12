@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from Financiero.models import ResolucionFacturacion
+from Financiero.models import ResolucionFacturacion, FlujoCajaEncabezado
 
 
 class ResolucionFacturacionAdmin(admin.ModelAdmin):
@@ -10,4 +10,11 @@ class ResolucionFacturacionAdmin(admin.ModelAdmin):
     search_fields = ('id', 'numero_resolucion', 'prefijo')
 
 
+class FlujoCajaEncabezadoAdmin(admin.ModelAdmin):
+    list_display = ('id', 'proceso', 'contrato', 'estado', 'fecha_crea')
+    list_display_links = ('id', 'proceso', 'contrato', 'estado', 'fecha_crea')
+    search_fields = ('id', 'proceso', 'contrato')
+
+
 admin.site.register(ResolucionFacturacion, ResolucionFacturacionAdmin)
+admin.site.register(FlujoCajaEncabezado, FlujoCajaEncabezadoAdmin)
