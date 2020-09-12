@@ -14,10 +14,10 @@ class Index(AbstractEvaLoggedView):
 
 
 class BuscarDocumentos(AbstractEvaLoggedView):
-    def post(self, request):
+    def get(self, request):
         empresa_id = get_id_empresa_global(request)
         colaborador = Colaborador.objects.get(usuario=request.user)
-        texto_busqueda = request.POST.get('texto_busqueda', '')
+        texto_busqueda = request.GET.get('texto_busqueda', '')
         documentos = Documento.objects.filter(nombre__icontains=texto_busqueda)
         procesos = Proceso.objects.filter(empresa_id=get_id_empresa_global(request)).order_by('nombre')
         grupos_documentos = GrupoDocumento.objects.filter(empresa_id=empresa_id, es_general=False).order_by('nombre')
