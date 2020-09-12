@@ -380,7 +380,7 @@ def generar_fecha_corte(parametro):
     anho = fecha.year
     mes = fecha.month
 
-    if parametro == Parametro.CORTE_PROYECCION:
+    if parametro == Parametro.CORTE_EJECUCION:
         if fecha.month == 12:
             anho = fecha.year + 1
             mes = 1

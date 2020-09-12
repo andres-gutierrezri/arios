@@ -262,5 +262,5 @@ class Parametro(models.Model, ModelDjangoExtensiones):
 
     # Parametros creados
     CORTE_ALIMENTACION = 1
-    CORTE_PROYECCION = 2
+    CORTE_EJECUCION = 2
 
