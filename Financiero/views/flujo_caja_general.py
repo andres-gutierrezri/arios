@@ -1,4 +1,5 @@
-from datetime import datetime
+import calendar
+from datetime import datetime, date
 
 from django.contrib import messages
 from django.db.models import F
@@ -7,6 +8,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 
 from Administracion.models import Proceso
+from Administracion.models.models import Parametro
 from EVA.General import app_datetime_now
 from EVA.views.index import AbstractEvaLoggedView
 from Financiero.models import FlujoCajaDetalle, SubTipoMovimiento, FlujoCajaEncabezado, EstadoFC, CorteFlujoCaja
@@ -301,15 +303,8 @@ def obtener_fecha_minima_mes(contrato=None, proceso=None):
         corte_fc = CorteFlujoCaja.objects.get(flujo_caja_enc__contrato_id=contrato)
     else:
         corte_fc = CorteFlujoCaja.objects.get(flujo_caja_enc__proceso_id=proceso)
-    if corte_fc.flujo_caja_enc.estado_id == EstadoFC.ALIMENTACION:
-        fecha_minima_mes = '{0}-{1}-1'.format(corte_fc.fecha_corte.year, corte_fc.fecha_corte.month)
-    else:
-        if datetime.now().date() <= corte_fc.fecha_corte:
-            fecha_minima_mes = '{0}-{1}-1'.format(corte_fc.fecha_corte.year, corte_fc.fecha_corte.month - 1)
-        else:
-            fecha_minima_mes = '{0}-{1}-1'.format(corte_fc.fecha_corte.year, corte_fc.fecha_corte.month)
 
-    fecha_minima_mes = datetime.strptime(fecha_minima_mes, "%Y-%m-%d").date()
+    fecha_minima_mes = validar_corte_flujo_caja(corte_fc)
 
     return fecha_minima_mes
 
@@ -350,3 +345,35 @@ def validar_permisos(request, permiso):
         return False
     else:
         return True
+
+
+def validar_corte_flujo_caja(corte_fc):
+    corte = CorteFlujoCaja.objects.get(id=corte_fc.id)
+    if corte_fc.flujo_caja_enc.estado_id == EstadoFC.ALIMENTACION:
+        corte.fecha_corte = generar_fecha_corte(Parametro.CORTE_ALIMENTACION)
+    else:
+        corte.fecha_corte = generar_fecha_corte(Parametro.CORTE_PROYECCION)
+    corte.save(update_fields=['fecha_corte'])
+    return corte.fecha_corte
+
+
+def generar_fecha_corte(parametro):
+    fecha = datetime.now()
+    dia_corte = int(Parametro.objects.get(id=parametro).valor)
+    dia_maximo_mes = (calendar.monthrange(fecha.year, fecha.month))[1]
+    if dia_corte > dia_maximo_mes:
+        dia_final = dia_maximo_mes
+    else:
+        dia_final = dia_corte
+
+    anho = fecha.year
+    mes = fecha.month
+
+    if parametro == Parametro.CORTE_PROYECCION:
+        if fecha.month == 12:
+            anho = fecha.year + 1
+            mes = 1
+        else:
+            mes = fecha.month + 1
+    return date(anho, mes, dia_final)
+
