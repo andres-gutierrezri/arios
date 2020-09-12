@@ -27,7 +27,7 @@ function abrirModalCrearEditarFlujoDeCaja(url, fecha_minima_mes, fecha_maxima_me
             let btnGuardar = $('#guardar');
             inputFecha.on("change", function(){
                 if (new Date(inputFecha.val()) < new Date(fecha_minima_mes)){
-                    inputFecha.next().find('div').prevObject.text('La fecha del movimiento no puede ser mayor a ' + fecha_maxima_mes);
+                    inputFecha.next().find('div').prevObject.text('La fecha del movimiento no puede ser menor a ' + fecha_minima_mes);
                     btnGuardar.click();
                     inputFecha.val('');
                     return false
