@@ -103,6 +103,7 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None):
         return redirect(reverse(ruta_reversa))
 
     fecha_minima_mes = obtener_fecha_minima_mes(contrato=contrato, proceso=proceso)
+    fecha_maxima_mes = obtener_fecha_maxima_mes(contrato=contrato, proceso=proceso)
 
     if not request.user.has_perms('Financiero.can_access_usuarioespecial'):
         if not request.user.has_perms(['TalentoHumano.view_flujos_de_caja']):
@@ -114,7 +115,8 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None):
     return render(request, 'Financiero/FlujoCaja/FlujoCajaGeneral/detalle_flujo_caja.html',
                   {'movimientos': movimientos, 'fecha': datetime.now(), 'contrato': contrato, 'proceso': proceso,
                    'menu_actual': menu_actual, 'fecha_minima_mes': fecha_minima_mes, 'tipo': tipo,
-                   'flujo_caja_enc': flujo_caja_enc, 'base_template': base_template})
+                   'fecha_maxima_mes': fecha_maxima_mes, 'flujo_caja_enc': flujo_caja_enc,
+                   'base_template': base_template})
 
 
 def cargar_modal_crear_editar(request,  opcion, tipo=None, contrato=None, proceso=None, movimiento=None):
@@ -304,9 +306,18 @@ def obtener_fecha_minima_mes(contrato=None, proceso=None):
     else:
         corte_fc = CorteFlujoCaja.objects.get(flujo_caja_enc__proceso_id=proceso)
 
-    fecha_minima_mes = validar_corte_flujo_caja(corte_fc)
+    return generar_fecha_minima(corte_fc)
 
-    return fecha_minima_mes
+
+def obtener_fecha_maxima_mes(contrato=None, proceso=None):
+    if contrato:
+        corte_fc = CorteFlujoCaja.objects.get(flujo_caja_enc__contrato_id=contrato)
+    else:
+        corte_fc = CorteFlujoCaja.objects.get(flujo_caja_enc__proceso_id=proceso)
+
+    fecha_maxima_mes = validar_corte_flujo_caja(corte_fc)
+
+    return fecha_maxima_mes
 
 
 REAL = 0
@@ -376,4 +387,17 @@ def generar_fecha_corte(parametro):
         else:
             mes = fecha.month + 1
     return date(anho, mes, dia_final)
+
+
+def generar_fecha_minima(flujo_corte):
+    fecha = flujo_corte.fecha_corte
+    anho = fecha.year
+    mes = fecha.month
+    if flujo_corte.flujo_caja_enc.estado_id == EstadoFC.EJECUCION:
+        if fecha.month == 1:
+            mes = 12
+            anho = fecha.year - 1
+        else:
+            mes = fecha.month - 1
+    return date(anho, mes, 1)
 
