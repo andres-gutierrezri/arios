@@ -233,3 +233,34 @@ class Impuesto(models.Model, ModelDjangoExtensiones):
         verbose_name = 'Impuesto'
         verbose_name_plural = 'Impuestos'
 
+
+GRUPOS = [
+    ('FINANCIERO', 'FINANCIERO')
+]
+
+SUBGRUPOS = [
+    ('FLUJO_CAJA', 'FLUJO DE CAJA')
+]
+
+
+class Parametro(models.Model, ModelDjangoExtensiones):
+    nombre = models.CharField(verbose_name="Nombre", max_length=50, null=False, blank=False)
+    descripcion = models.CharField(verbose_name="Descripción", max_length=150, null=False, blank=False)
+    tipo = models.CharField(verbose_name="Tipo", max_length=50, null=False, blank=False)
+    valor = models.CharField(verbose_name="Valor", max_length=50, null=False, blank=False)
+    estado = models.BooleanField(verbose_name='Estado', blank=False, null=False)
+    grupo = models.CharField(choices=GRUPOS, verbose_name="Grupo", max_length=50, null=False, blank=False, default=1)
+    sub_grupo = models.CharField(choices=SUBGRUPOS, verbose_name="Sub Grupo", max_length=50, null=False, blank=False,
+                                 default=1)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name = 'Parametro'
+        verbose_name_plural = 'Parametros'
+
+    # Parametros creados
+    CORTE_ALIMENTACION = 1
+    CORTE_PROYECCION = 2
+
