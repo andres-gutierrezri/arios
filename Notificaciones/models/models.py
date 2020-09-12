@@ -53,6 +53,7 @@ class EventoDesencadenador(models.Model):
     NOTIFICACION_CA = 8
     SOLICITUD_APROBACION = 9
     APROBACION_DIRECTA_DOCUMENTO = 10
+    VERSION_NUEVA_ARCHIVO_SGI = 11
     # endregion
 
 
@@ -65,7 +66,7 @@ class Notificacion(models.Model):
                                           verbose_name='Tipo Notificación', null=True, blank=False)
     evento_desencadenador = models.ForeignKey(EventoDesencadenador, on_delete=models.DO_NOTHING,
                                               verbose_name='Evento Desencadenador', null=True, blank=False)
-    id_evento = models.IntegerField(verbose_name='Id Evento', null=True, blank=False)
+    id_evento = models.CharField(max_length=100, verbose_name='Id Evento', null=True, blank=False)
     imagen = models.ImageField(upload_to='imagenes-notificaciones', verbose_name='Logo', null=True, blank=False)
     url = models.CharField(max_length=100, verbose_name='Url', null=True, blank=False)
     id_usuario = models.CharField(max_length=100, verbose_name='Id Usuario', null=True, blank=False)
