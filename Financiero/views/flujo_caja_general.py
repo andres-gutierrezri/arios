@@ -363,7 +363,7 @@ def validar_corte_flujo_caja(corte_fc):
     if corte_fc.flujo_caja_enc.estado_id == EstadoFC.ALIMENTACION:
         corte.fecha_corte = generar_fecha_corte(Parametro.CORTE_ALIMENTACION)
     else:
-        corte.fecha_corte = generar_fecha_corte(Parametro.CORTE_PROYECCION)
+        corte.fecha_corte = generar_fecha_corte_ejecucion(corte)
     corte.save(update_fields=['fecha_corte'])
     return corte.fecha_corte
 
@@ -400,4 +400,20 @@ def generar_fecha_minima(flujo_corte):
         else:
             mes = fecha.month - 1
     return date(anho, mes, 1)
+
+
+def generar_fecha_corte_ejecucion(corte):
+    parametro = Parametro.objects.get(id=Parametro.CORTE_EJECUCION)
+    fecha = corte.fecha_corte
+    if int(parametro.valor) != corte.fecha_corte.day:
+        fecha_corte_modificada = date(corte.fecha_corte.year, corte.fecha_corte.month, int(parametro.valor))
+        if date.today() < fecha_corte_modificada:
+            fecha = fecha_corte_modificada
+        else:
+            fecha = generar_fecha_corte(Parametro.CORTE_EJECUCION)
+    else:
+        if datetime.today().day > int(parametro.valor):
+            if corte.fecha_corte.month == datetime.now().month:
+                fecha = generar_fecha_corte(Parametro.CORTE_EJECUCION)
+    return fecha
 
