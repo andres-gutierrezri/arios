@@ -29,7 +29,7 @@ def construir_y_enviar_notificacion_x_email(notificaciones):
                                             'asunto': notif['asunto'], 'token': token,
                                             'lista_destinatarios': [notif['destinatario']]}
             else:
-                # Si es más de un destinatario se limpia el nombre ya que se envia el mismo contenido a todos.
+                # Si es más de un destinatario se elimina el nombre, ya que se envia el mismo contenido a todos.
                 correos.get(notif['id_not']).pop('nombre')
                 correos.get(notif['id_not']).get('lista_destinatarios').append(notif['destinatario'])
 
