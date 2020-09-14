@@ -369,7 +369,7 @@ def validar_corte_flujo_caja(corte_fc):
 
 
 def generar_fecha_corte(parametro):
-    fecha = datetime.now()
+    fecha = app_datetime_now()
     dia_corte = int(Parametro.objects.get(id=parametro).valor)
     dia_maximo_mes = (calendar.monthrange(fecha.year, fecha.month))[1]
     if dia_corte > dia_maximo_mes:
@@ -412,8 +412,8 @@ def generar_fecha_corte_ejecucion(corte):
         else:
             fecha = generar_fecha_corte(Parametro.CORTE_EJECUCION)
     else:
-        if datetime.today().day > int(parametro.valor):
-            if corte.fecha_corte.month == datetime.now().month:
+        if app_datetime_now().day > int(parametro.valor):
+            if corte.fecha_corte.month == app_datetime_now().month:
                 fecha = generar_fecha_corte(Parametro.CORTE_EJECUCION)
     return fecha
 
