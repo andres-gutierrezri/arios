@@ -29,8 +29,8 @@ class PermisosFuncionalidadAdmin(admin.ModelAdmin):
 
 
 class ParametrosAdmin(admin.ModelAdmin):
-    list_display = ('id', 'nombre', 'tipo', 'descripcion', 'valor', 'grupo', 'sub_grupo', 'estado')
-    list_display_links = ('id', 'nombre', 'tipo', 'descripcion', 'valor', 'grupo', 'sub_grupo', 'estado')
+    list_display = ('id', 'nombre', 'tipo', 'descripcion', 'valor', 'grupo', 'subgrupo', 'estado')
+    list_display_links = ('id', 'nombre', 'tipo', 'descripcion', 'valor', 'grupo', 'subgrupo', 'estado')
     search_fields = ('id', 'nombre', 'descripcion',)
 
 
