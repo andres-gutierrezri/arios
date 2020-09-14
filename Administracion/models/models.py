@@ -250,8 +250,8 @@ class Parametro(models.Model, ModelDjangoExtensiones):
     valor = models.CharField(verbose_name="Valor", max_length=50, null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', blank=False, null=False)
     grupo = models.CharField(choices=GRUPOS, verbose_name="Grupo", max_length=50, null=False, blank=False, default=1)
-    sub_grupo = models.CharField(choices=SUBGRUPOS, verbose_name="Sub Grupo", max_length=50, null=False, blank=False,
-                                 default=1)
+    subgrupo = models.CharField(choices=SUBGRUPOS, verbose_name="Subgrupo", max_length=50, null=False, blank=False,
+                                default='FLUJO_CAJA')
 
     def __str__(self):
         return self.nombre
