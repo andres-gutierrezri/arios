@@ -1,11 +1,12 @@
 import calendar
-from datetime import datetime, date
+from datetime import date
 
 from django.contrib.auth.models import User
 from django.db import models
 
 from Administracion.models import Proceso
 from Administracion.models.models import Parametro
+from EVA.General import app_date_now
 from EVA.General.modelmanagers import ManagerGeneral
 from Proyectos.models import Contrato
 
@@ -184,7 +185,7 @@ class FlujoCajaDetalle(models.Model):
 
 
 def fecha_corte_default():
-    fecha = datetime.now()
+    fecha = app_date_now()
     dia_corte = int(Parametro.objects.get(id=Parametro.CORTE_ALIMENTACION).valor)
     dia_maximo_mes = (calendar.monthrange(fecha.year, fecha.month))[1]
     if dia_corte > dia_maximo_mes:
