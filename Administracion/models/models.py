@@ -243,7 +243,19 @@ SUBGRUPOS = [
 ]
 
 
+class ParametroManager(ManagerGeneral):
+    def get_parametro(self, grupo, subgrupo, nombre) -> QuerySet:
+        return super().get_queryset().filter(grupo=grupo, subgrupo=subgrupo, nombre=nombre, estado=True)
+
+    def get_parametros_x_grupo(self, grupo) -> QuerySet:
+        return super().get_queryset().filter(grupo=grupo, estado=True)
+
+    def get_parametros_x_subgrupo(self, grupo, subgrupo) -> QuerySet:
+        return super().get_queryset().filter(grupo=grupo, subgrupo=subgrupo, estado=True)
+
+
 class Parametro(models.Model, ModelDjangoExtensiones):
+    objects = ParametroManager()
     nombre = models.CharField(verbose_name="Nombre", max_length=50, null=False, blank=False)
     descripcion = models.CharField(verbose_name="Descripción", max_length=150, null=False, blank=False)
     tipo = models.CharField(verbose_name="Tipo", max_length=50, null=False, blank=False)
@@ -260,7 +272,4 @@ class Parametro(models.Model, ModelDjangoExtensiones):
         verbose_name = 'Parametro'
         verbose_name_plural = 'Parametros'
 
-    # Parametros creados
-    CORTE_ALIMENTACION = 1
-    CORTE_EJECUCION = 2
 
