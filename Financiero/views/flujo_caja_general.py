@@ -17,6 +17,10 @@ from Proyectos.models import Contrato
 from TalentoHumano.models.colaboradores import ColaboradorContrato, Colaborador
 
 
+CORTE_EJECUCION = Parametro.objects.get_parametro('FINANCIERO', 'FLUJO_CAJA', 'Fecha de Corte Ejecucion').first().id
+CORTE_ALIMENTACION = Parametro.objects.get_parametro('FINANCIERO', 'FLUJO_CAJA', 'Fecha de Corte Proyeccion').first().id
+
+
 class FlujosDeCajaView(AbstractEvaLoggedView):
     def get(self, request, opcion):
         if not validar_permisos(request, 'view_flujos_de_caja'):
@@ -361,7 +365,7 @@ def validar_permisos(request, permiso):
 def validar_corte_flujo_caja(corte_fc):
     corte = CorteFlujoCaja.objects.get(id=corte_fc.id)
     if corte_fc.flujo_caja_enc.estado_id == EstadoFC.ALIMENTACION:
-        corte.fecha_corte = generar_fecha_corte(Parametro.CORTE_ALIMENTACION)
+        corte.fecha_corte = generar_fecha_corte(CORTE_ALIMENTACION)
     else:
         corte.fecha_corte = generar_fecha_corte_ejecucion(corte)
     corte.save(update_fields=['fecha_corte'])
@@ -380,7 +384,7 @@ def generar_fecha_corte(parametro):
     anho = fecha.year
     mes = fecha.month
 
-    if parametro == Parametro.CORTE_EJECUCION:
+    if parametro == CORTE_EJECUCION:
         if fecha.month == 12:
             anho = fecha.year + 1
             mes = 1
@@ -403,17 +407,17 @@ def generar_fecha_minima(flujo_corte):
 
 
 def generar_fecha_corte_ejecucion(corte):
-    parametro = Parametro.objects.get(id=Parametro.CORTE_EJECUCION)
+    parametro = Parametro.objects.get(id=CORTE_EJECUCION)
     fecha = corte.fecha_corte
     if int(parametro.valor) != corte.fecha_corte.day:
         fecha_corte_modificada = date(corte.fecha_corte.year, corte.fecha_corte.month, int(parametro.valor))
         if date.today() < fecha_corte_modificada:
             fecha = fecha_corte_modificada
         else:
-            fecha = generar_fecha_corte(Parametro.CORTE_EJECUCION)
+            fecha = generar_fecha_corte(CORTE_EJECUCION)
     else:
         if app_datetime_now().day > int(parametro.valor):
             if corte.fecha_corte.month == app_datetime_now().month:
-                fecha = generar_fecha_corte(Parametro.CORTE_EJECUCION)
+                fecha = generar_fecha_corte(CORTE_EJECUCION)
     return fecha
 
