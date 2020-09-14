@@ -186,7 +186,7 @@ class FlujoCajaDetalle(models.Model):
 
 def fecha_corte_default():
     fecha = app_date_now()
-    dia_corte = int(Parametro.objects.get(id=Parametro.CORTE_ALIMENTACION).valor)
+    dia_corte = int(Parametro.objects.get_parametro('FINANCIERO', 'FLUJO_CAJA', 'CORTE_ALIMENTACION').first().valor)
     dia_maximo_mes = (calendar.monthrange(fecha.year, fecha.month))[1]
     if dia_corte > dia_maximo_mes:
         dia_final = dia_maximo_mes
