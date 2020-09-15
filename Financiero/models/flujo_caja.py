@@ -122,6 +122,8 @@ class FlujoCajaEncabezado(models.Model):
     class Meta:
         verbose_name = 'Flujo de Caja Encabezado'
         verbose_name_plural = 'Flujos de Cajas Encabezados'
+        permissions = (("can_gestion_flujos_de_caja", "Can gestion de flujos de caja"),
+                       )
 
 
 class EstadoFCDetalle(models.Model):
