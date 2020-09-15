@@ -1,3 +1,6 @@
+
+'use strict';
+
 $(document).ready(function() {
 
     let opcionSelect = $("#opcion_id_select_id");
