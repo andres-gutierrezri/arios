@@ -31,7 +31,7 @@
                                 <input id="valores_categorias" hidden value="{{ valor.categorias }}">
                                 <input id="subtipos_categorias" hidden value="{{ subtipos_categorias }}">
                                 <div class="col-md-10">
-                                    {% select_multiple_tag categorias 'categorias[]' 'categorias_id' 'Seleccion una opción' texto_label="Categorias" multiple='multiple' %}
+                                    {% select_multiple_tag categorias 'categorias[]' 'categorias_id' 'Seleccion una opción' texto_label="Categorías" multiple='multiple' %}
                                 </div>
                                 <div class="col-md-2" style="padding-top: 25px">
                                     <a href="javascript:seleccionarTodos('categorias');" id="btn_all_categorias" class="btn btn-default btn-icon waves-effect waves-themed" title="{{ textos_categorias.texto }}">
@@ -138,7 +138,7 @@
                                             <thead class="bg-primary-400">
                                                 <tr>
                                                     <th></th>
-                                                    <th>Categorias</th>
+                                                    <th>Categorías</th>
                                                     {% if comparativo %}
                                                         <th>Valor de Ingresos Real</th>
                                                         <th>Valor de Egresos Real</th>
