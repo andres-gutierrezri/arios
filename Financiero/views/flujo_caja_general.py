@@ -410,7 +410,12 @@ def generar_fecha_corte_ejecucion(corte):
     parametro = Parametro.objects.get(id=CORTE_EJECUCION)
     fecha = corte.fecha_corte
     if int(parametro.valor) != corte.fecha_corte.day:
-        fecha_corte_modificada = date(corte.fecha_corte.year, corte.fecha_corte.month, int(parametro.valor))
+        fecha_maxima = calendar.monthrange(corte.fecha_corte.year, corte.fecha_corte.month)[1]
+        if fecha_maxima > int(parametro.valor):
+            dia = int(parametro.valor)
+        else:
+            dia = fecha_maxima
+        fecha_corte_modificada = date(corte.fecha_corte.year, corte.fecha_corte.month, dia)
         if date.today() < fecha_corte_modificada:
             fecha = fecha_corte_modificada
         else:
