@@ -11,7 +11,7 @@ from Administracion.models import Proceso
 from Administracion.models.models import Parametro
 from EVA.General import app_datetime_now
 from EVA.views.index import AbstractEvaLoggedView
-from Financiero.models import FlujoCajaDetalle, SubTipoMovimiento, FlujoCajaEncabezado, EstadoFC, CorteFlujoCaja
+from Financiero.models import FlujoCajaDetalle, SubTipoMovimiento, FlujoCajaEncabezado, EstadoFlujoCaja, CorteFlujoCaja
 from Financiero.models.flujo_caja import EstadoFCDetalle
 from Proyectos.models import Contrato
 from TalentoHumano.models.colaboradores import ColaboradorContrato, Colaborador
@@ -100,7 +100,7 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None):
         flujo_caja_enc = flujo_caja_enc.first()
     else:
         flujo_caja_enc = FlujoCajaEncabezado.objects.create(fecha_crea=datetime.now(), proceso=proceso, contrato=contrato,
-                                                            estado_id=EstadoFC.ALIMENTACION)
+                                                            estado_id=EstadoFlujoCaja.ALIMENTACION)
         CorteFlujoCaja.objects.create(flujo_caja_enc=flujo_caja_enc)
     if not tiene_permisos_de_acceso(request, contrato=contrato, proceso=proceso):
         messages.error(request, 'No tiene permisos para acceder a este flujo de caja.')
@@ -333,8 +333,8 @@ def validar_estado_planeacion_ejecucion(tipo, contrato=None, proceso=None):
         flujo_enc = FlujoCajaEncabezado.objects.get(contrato_id=contrato)
     else:
         flujo_enc = FlujoCajaEncabezado.objects.get(proceso_id=proceso)
-    if tipo == REAL and flujo_enc.estado_id == EstadoFC.EJECUCION or \
-            tipo == PROYECCION and flujo_enc.estado_id == EstadoFC.ALIMENTACION:
+    if tipo == REAL and flujo_enc.estado_id == EstadoFlujoCaja.EJECUCION or \
+            tipo == PROYECCION and flujo_enc.estado_id == EstadoFlujoCaja.ALIMENTACION:
         return True
     return False
 
@@ -364,7 +364,7 @@ def validar_permisos(request, permiso):
 
 def validar_corte_flujo_caja(corte_fc):
     corte = CorteFlujoCaja.objects.get(id=corte_fc.id)
-    if corte_fc.flujo_caja_enc.estado_id == EstadoFC.ALIMENTACION:
+    if corte_fc.flujo_caja_enc.estado_id == EstadoFlujoCaja.ALIMENTACION:
         corte.fecha_corte = generar_fecha_corte(CORTE_ALIMENTACION)
     else:
         corte.fecha_corte = generar_fecha_corte_ejecucion(corte)
@@ -397,7 +397,7 @@ def generar_fecha_minima(flujo_corte):
     fecha = flujo_corte.fecha_corte
     anho = fecha.year
     mes = fecha.month
-    if flujo_corte.flujo_caja_enc.estado_id == EstadoFC.EJECUCION:
+    if flujo_corte.flujo_caja_enc.estado_id == EstadoFlujoCaja.EJECUCION:
         if fecha.month == 1:
             mes = 12
             anho = fecha.year - 1

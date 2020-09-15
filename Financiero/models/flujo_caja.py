@@ -91,7 +91,7 @@ class SubTipoMovimiento(models.Model):
         return subtipo_movimiento
 
 
-class EstadoFC(models.Model):
+class EstadoFlujoCaja(models.Model):
     nombre = models.CharField(verbose_name='Nombre', max_length=30, null=False, blank=False)
     descripcion = models.CharField(verbose_name='Descripción', max_length=100, null=False, blank=False)
 
@@ -112,7 +112,7 @@ class FlujoCajaEncabezado(models.Model):
                                 null=True, blank=False)
     contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato',
                                  null=True, blank=False)
-    estado = models.ForeignKey(EstadoFC, on_delete=models.DO_NOTHING, verbose_name='Estado',
+    estado = models.ForeignKey(EstadoFlujoCaja, on_delete=models.DO_NOTHING, verbose_name='Estado',
                                null=False, blank=False)
     fecha_crea = models.DateTimeField(verbose_name='Fecha de Creación', null=False, blank=False)
 
