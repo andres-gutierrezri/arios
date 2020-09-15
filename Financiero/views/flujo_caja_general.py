@@ -23,12 +23,12 @@ CORTE_ALIMENTACION = Parametro.objects.get_parametro('FINANCIERO', 'FLUJO_CAJA',
 
 class FlujosDeCajaView(AbstractEvaLoggedView):
     def get(self, request, opcion):
-        if not validar_permisos(request, 'view_flujos_de_caja'):
+        if not validar_permisos(request, 'can_gestion_flujos_de_caja'):
             return redirect(reverse('eva-index'))
         opciones = [{'campo_valor': 0, 'campo_texto': 'Contratos'}, {'campo_valor': 1, 'campo_texto': 'Procesos'}]
         if opcion == 0:
             if request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']) or \
-                    request.user.has_perms(['TalentoHumano.view_flujos_de_caja']):
+                    request.user.has_perms(['Financiero.can_gestion_flujos_de_caja']):
                 contratos = Contrato.objects.all()
             else:
                 contratos = Contrato.objects.filter(colaboradorcontrato__colaborador__usuario=request.user)
@@ -38,7 +38,7 @@ class FlujosDeCajaView(AbstractEvaLoggedView):
                            'menu_actual': ['flujo_caja', 'flujos_de_caja']})
         else:
             if request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']) or \
-                    request.user.has_perms(['TalentoHumano.view_flujos_de_caja']):
+                    request.user.has_perms(['Financiero.can_gestion_flujos_de_caja']):
                 procesos = Proceso.objects.all()
             else:
                 colaborador = Colaborador.objects.get(usuario=request.user)
@@ -71,7 +71,7 @@ class FlujoCajaMovimientoEliminarView(AbstractEvaLoggedView):
 
 class FlujoCajaMovimientoHistorialView(AbstractEvaLoggedView):
     def get(self, request, id_movimiento):
-        if not validar_permisos(request, 'view_flujos_de_caja'):
+        if not validar_permisos(request, 'can_gestion_flujos_de_caja'):
             return redirect(reverse('eva-index'))
         return historial_movimiento(request, id_movimiento)
 
@@ -110,7 +110,7 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None):
     fecha_maxima_mes = obtener_fecha_maxima_mes(contrato=contrato, proceso=proceso)
 
     if not request.user.has_perms('Financiero.can_access_usuarioespecial'):
-        if not request.user.has_perms(['TalentoHumano.view_flujos_de_caja']):
+        if not request.user.has_perms(['Financiero.can_gestion_flujos_de_caja']):
             movimientos = movimientos.exclude(estado_id=EstadoFCDetalle.ELIMINADO)
 
     if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
@@ -281,7 +281,7 @@ def tiene_permisos_de_acceso(request, contrato=None, proceso=None):
         if not Colaborador.objects.filter(proceso_id=proceso, usuario=request.user):
             validacion_adicional = True
     if validacion_adicional:
-        if request.user.has_perms(['TalentoHumano.view_flujos_de_caja']):
+        if request.user.has_perms(['Financiero.can_gestion_flujos_de_caja']):
             return True
         elif request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
             return True
@@ -351,8 +351,8 @@ def crear_registro_historial(flujo_detalle, comentarios, estado):
 
 
 def validar_permisos(request, permiso):
-    if permiso == 'view_flujos_de_caja':
-        permiso = 'TalentoHumano.view_flujos_de_caja'
+    if permiso == 'can_gestion_flujos_de_caja':
+        permiso = 'Financiero.can_gestion_flujos_de_caja'
     else:
         permiso = 'Financiero.{0}'.format(permiso)
     if not request.user.has_perm(permiso):
