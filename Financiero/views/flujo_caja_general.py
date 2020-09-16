@@ -80,7 +80,7 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None):
     if proceso:
         ruta_reversa = 'financiero:flujo-caja-procesos'
         base_template = 'Administracion/_common/base_administracion.html'
-        menu_actual = 'fc_procesos'
+        menu_actual = ['procesos', 'flujos_de_caja']
         proceso = Proceso.objects.get(id=proceso)
         flujo_caja_enc = FlujoCajaEncabezado.objects.filter(proceso=proceso)
         movimientos = FlujoCajaDetalle.objects.filter(flujo_caja_enc__proceso=proceso, tipo_registro=tipo) \
