@@ -56,11 +56,19 @@ class FlujoCajaConsolidadoView(AbstractEvaLoggedView):
             categorias = CategoriaMovimiento.objects.all()
 
         con_pro = []
-        if datos['lista_procesos_contratos']:
-            con_pro = datos['lista_procesos_contratos']
+        if datos['lista_contratos']:
+            for valor in datos['lista_contratos']:
+                con_pro.append(valor)
         else:
-            for c_p in FlujoCajaEncabezado.objects.all():
-                con_pro.append(c_p.id)
+            for valor in FlujoCajaEncabezado.objects.get_flujos_x_contrato():
+                con_pro.append(valor.id)
+
+        if datos['lista_procesos']:
+            for valor in datos['lista_procesos']:
+                con_pro.append(valor)
+        else:
+            for valor in FlujoCajaEncabezado.objects.get_flujos_x_proceso():
+                con_pro.append(valor.id)
 
         movimientos = FlujoCajaDetalle.objects\
             .filter(estado_id__in=estados, flujo_caja_enc__in=con_pro,
@@ -87,12 +95,8 @@ def datos_xa_render(datos_formulario=None, movimientos=None):
     fecha_min_max = json.dumps({'fecha_min': str(fecha_min),
                                 'fecha_max': str(fecha_max)})
 
-    contratos_procesos = []
-    for pro_con in FlujoCajaEncabezado.objects.all():
-        if pro_con.contrato:
-            contratos_procesos.append({'campo_valor': pro_con.id, 'campo_texto': pro_con.contrato})
-        else:
-            contratos_procesos.append({'campo_valor': pro_con.id, 'campo_texto': pro_con.proceso.nombre})
+    procesos = FlujoCajaEncabezado.objects.get_xa_select_x_proceso()
+    contratos = FlujoCajaEncabezado.objects.get_xa_select_x_contrato()
 
     subtipos = SubTipoMovimiento.objects.get_xa_select_activos()
     categorias = CategoriaMovimiento.objects.get_xa_select_activos()
@@ -107,21 +111,25 @@ def datos_xa_render(datos_formulario=None, movimientos=None):
                {'campo_valor': 2, 'campo_texto': 'Editado'},
                {'campo_valor': 4, 'campo_texto': 'Eliminado'}]
 
-    datos = {'contratos_procesos': contratos_procesos, 'subtipos': subtipos, 'fecha_min_max': fecha_min_max,
-             'tipos_flujos': tipos_flujos, 'estados': estados, 'categorias': categorias,
-             'fecha_actual': datetime.today(), 'subtipos_categorias': json.dumps(subtipos_categorias)}
+    datos = {'procesos': procesos, 'contratos': contratos, 'tipos_flujos': tipos_flujos, 'estados': estados,
+             'categorias': categorias, 'subtipos': subtipos, 'fecha_actual': datetime.today(),
+             'subtipos_categorias': json.dumps(subtipos_categorias), 'fecha_min_max': fecha_min_max}
 
     quitar_selecciones = {'texto': 'Quitar Selecciones', 'icono': 'fa-times'}
     seleccionar_todos = {'texto': 'Seleccionar Todos', 'icono': 'fa-check'}
-    datos['textos_pro_con'] = seleccionar_todos
+    datos['textos_contratos'] = seleccionar_todos
+    datos['textos_procesos'] = seleccionar_todos
     datos['textos_subtipos'] = seleccionar_todos
     datos['textos_categorias'] = seleccionar_todos
 
     if datos_formulario:
         datos['valor'] = datos_formulario
 
-        if datos_formulario['lista_procesos_contratos']:
-            datos['textos_pro_con'] = quitar_selecciones
+        if datos_formulario['lista_contratos']:
+            datos['textos_contratos'] = quitar_selecciones
+
+        if datos_formulario['lista_procesos']:
+            datos['textos_procesos'] = quitar_selecciones
 
         if datos_formulario['subtipos']:
             datos['textos_subtipos'] = quitar_selecciones
@@ -144,7 +152,8 @@ def datos_xa_render(datos_formulario=None, movimientos=None):
 
 
 def datos_formulario_consolidado(request):
-    lista_procesos_contratos = request.POST.getlist('contrato_proceso[]', [])
+    procesos = request.POST.getlist('proceso[]', [])
+    contratos = request.POST.getlist('contrato[]', [])
     fecha_desde = request.POST.get('fecha_desde', '')
     fecha_hasta = request.POST.get('fecha_hasta', '')
     if fecha_desde:
@@ -157,9 +166,13 @@ def datos_formulario_consolidado(request):
     tipos_flujos_caja = request.POST.get('tipos_flujos_caja_id', '')
     estados = request.POST.getlist('estados[]', [])
 
-    lista_con_pro = []
-    for x in lista_procesos_contratos:
-        lista_con_pro.append(int(x))
+    lista_procesos = []
+    for pro in procesos:
+        lista_procesos.append(int(pro))
+
+    lista_contratos = []
+    for con in contratos:
+        lista_contratos.append(int(con))
 
     if estados:
         lista_estados = []
@@ -186,9 +199,9 @@ def datos_formulario_consolidado(request):
     else:
         fecha_min = datetime.now()
         fecha_max = datetime.now()
-    return {'lista_procesos_contratos': lista_con_pro, 'fecha_desde': fecha_desde, 'fecha_hasta': fecha_hasta,
-            'subtipos': lista_subtipos, 'tipos_flujos_caja': tipos_flujos_caja, 'estados': lista_estados,
-            'fecha_min': fecha_min, 'fecha_max': fecha_max, 'categorias': lista_categorias}
+    return {'lista_procesos': lista_procesos, 'lista_contratos': lista_contratos, 'fecha_desde': fecha_desde,
+            'fecha_hasta': fecha_hasta, 'subtipos': lista_subtipos, 'tipos_flujos_caja': tipos_flujos_caja,
+            'estados': lista_estados, 'fecha_min': fecha_min, 'fecha_max': fecha_max, 'categorias': lista_categorias}
 
 
 def construir_consolidado(objeto):
