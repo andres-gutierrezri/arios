@@ -57,15 +57,29 @@
                         </div>
                         <div class="form-group">
                             <div class="form-row">
-                                <input id="valores_con_pro" hidden value="{{ valor.lista_procesos_contratos }}">
+                                <input id="valores_contratos" hidden value="{{ valor.lista_contratos }}">
                                 <div class="col-md-10">
-                                    {% select_multiple_tag contratos_procesos 'contrato_proceso[]' 'contrato_proceso_id' 'Seleccion una opción' texto_label="Contratos/Procesos" multiple='multiple' %}
+                                    {% select_multiple_tag contratos 'contrato[]' 'contrato_id' 'Seleccion una opción' texto_label="Contratos" multiple='multiple' %}
                                 </div>
                                 <div class="col-md-2" style="padding-top: 25px">
-                                    <a href="javascript:seleccionarTodos('contrato_proceso');" id="btn_all_contrato_proceso" class="btn btn-default btn-icon waves-effect waves-themed" title="{{ textos_pro_con.texto }}">
-                                        <i id="ic_all_contrato_proceso" class="fal {{ textos_pro_con.icono }}"></i>
+                                    <a href="javascript:seleccionarTodos('contrato');" id="btn_all_contrato" class="btn btn-default btn-icon waves-effect waves-themed" title="{{ textos_contrato.texto }}">
+                                        <i id="ic_all_contrato" class="fal {{ textos_contratos.icono }}"></i>
                                     </a>
-                                    &nbsp;&nbsp;<b id="txt_all_contrato_proceso">{{ textos_pro_con.texto }}</b>
+                                    &nbsp;&nbsp;<b id="txt_all_contrato">{{ textos_contratos.texto }}</b>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-row">
+                                <input id="valores_procesos" hidden value="{{ valor.lista_procesos }}">
+                                <div class="col-md-10">
+                                    {% select_multiple_tag procesos 'proceso[]' 'proceso_id' 'Seleccion una opción' texto_label="Procesos" multiple='multiple' %}
+                                </div>
+                                <div class="col-md-2" style="padding-top: 25px">
+                                    <a href="javascript:seleccionarTodos('proceso');" id="btn_all_proceso" class="btn btn-default btn-icon waves-effect waves-themed" title="{{ textos_proceso.texto }}">
+                                        <i id="ic_all_proceso" class="fal {{ textos_procesos.icono }}"></i>
+                                    </a>
+                                    &nbsp;&nbsp;<b id="txt_all_proceso">{{ textos_procesos.texto }}</b>
                                 </div>
                             </div>
                         </div>
