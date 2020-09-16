@@ -113,7 +113,8 @@ def datos_xa_render(datos_formulario=None, movimientos=None):
 
     datos = {'procesos': procesos, 'contratos': contratos, 'tipos_flujos': tipos_flujos, 'estados': estados,
              'categorias': categorias, 'subtipos': subtipos, 'fecha_actual': datetime.today(),
-             'subtipos_categorias': json.dumps(subtipos_categorias), 'fecha_min_max': fecha_min_max}
+             'subtipos_categorias': json.dumps(subtipos_categorias), 'fecha_min_max': fecha_min_max,
+             'menu_actual': ['flujo_caja', 'consolidado']}
 
     quitar_selecciones = {'texto': 'Quitar Selecciones', 'icono': 'fa-times'}
     seleccionar_todos = {'texto': 'Seleccionar Todos', 'icono': 'fa-check'}
