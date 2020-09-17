@@ -49,10 +49,12 @@
                                                         <tr>
                                                             <td>{{ proceso.nombre }}</td>
                                                             <td>{{ proceso.objeto }}</td>
-                                                            <td><span class="badge badge-primary">{{ proceso.flujocajaencabezado_set.first.estado }}</span></td>
+                                                            <td>{% if tiene_permiso or proceso_usuario == proceso.id %}<span class="badge badge-primary">{{ proceso.flujocajaencabezado_set.first.estado }}</span>{% endif %}</td>
                                                             <td>
+                                                                {% if tiene_permiso or proceso_usuario == proceso.id %}
                                                                 <a href="#" onclick="guardarRutaLocal('{% url 'Financiero:flujo-caja-procesos-detalle' proceso.id REAL %}')"><span class="badge badge-primary fw-300 ml-auto">Real</span><br></a>
                                                                 <a href="#" onclick="guardarRutaLocal('{% url 'Financiero:flujo-caja-procesos-detalle' proceso.id PROYECCION %}')"><span class="badge badge-primary fw-300 ml-auto">Proyección</span></a>
+                                                                {% endif %}
                                                             </td>
                                                         </tr>
                                                     {% endfor %}

@@ -78,7 +78,7 @@ class FlujoCajaMovimientoHistorialView(AbstractEvaLoggedView):
 
 def flujo_caja_detalle(request, tipo, contrato=None, proceso=None):
     if proceso:
-        ruta_reversa = 'financiero:flujo-caja-procesos'
+        ruta_reversa = 'administracion:procesos'
         base_template = 'Administracion/_common/base_administracion.html'
         menu_actual = ['procesos', 'flujos_de_caja']
         proceso = Proceso.objects.get(id=proceso)
@@ -160,7 +160,7 @@ def guardar_movimiento(request, tipo=None, contrato=None, proceso=None, movimien
         objeto = contrato
         flujo_encabezado = FlujoCajaEncabezado.objects.get(contrato_id=contrato)
     else:
-        ruta_reversa = 'financiero:flujo-caja-procesos'
+        ruta_reversa = 'administracion:procesos'
         ruta_detalle = 'financiero:flujo-caja-procesos-detalle'
         objeto = proceso
         flujo_encabezado = FlujoCajaEncabezado.objects.get(proceso_id=proceso)
