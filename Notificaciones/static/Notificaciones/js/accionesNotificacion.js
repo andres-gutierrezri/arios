@@ -1,4 +1,8 @@
+'use strict';
+
 function fDetalleNotificacion(ruta, id_notificacion, id_evento, modal) {
+    let ruta_compuesta = '';
+
     if (ruta.indexOf('°') > -1) {
         ruta_compuesta = ruta.replace('°', id_evento);
     }else if (!modal){
