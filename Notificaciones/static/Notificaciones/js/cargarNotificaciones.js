@@ -30,8 +30,7 @@ function fCargarNotificaciones() {
                 }
                 let accionClic;
 
-                accionClic = 'fDetalleNotificacion(\''+ item.url +'\',' +
-                item.id +','+ item.id_evento +',' + item.modal + ')';
+                accionClic = `fDetalleNotificacion('${item.url}', ${item.id}, '${item.id_evento}', ${item.modal})`;
 
                 notificaciones +=(
                     '<li class="'+ estilo +'">' +
