@@ -17,10 +17,6 @@ from Proyectos.models import Contrato
 from TalentoHumano.models.colaboradores import ColaboradorContrato, Colaborador
 
 
-CORTE_EJECUCION = Parametro.objects.get_parametro('FINANCIERO', 'FLUJO_CAJA', 'CORTE_EJECUCION').first().id
-CORTE_ALIMENTACION = Parametro.objects.get_parametro('FINANCIERO', 'FLUJO_CAJA', 'CORTE_ALIMENTACION').first().id
-
-
 class FlujosDeCajaView(AbstractEvaLoggedView):
     def get(self, request, opcion):
         if not validar_permisos(request, 'can_gestion_flujos_de_caja'):
@@ -365,7 +361,8 @@ def validar_permisos(request, permiso):
 def validar_corte_flujo_caja(corte_fc):
     corte = CorteFlujoCaja.objects.get(id=corte_fc.id)
     if corte_fc.flujo_caja_enc.estado_id == EstadoFlujoCaja.ALIMENTACION:
-        corte.fecha_corte = generar_fecha_corte(CORTE_ALIMENTACION)
+        corte.fecha_corte = generar_fecha_corte(Parametro.objects.get_parametro
+                                                ('FINANCIERO', 'FLUJO_CAJA', 'CORTE_ALIMENTACION').first().id)
     else:
         corte.fecha_corte = generar_fecha_corte_ejecucion(corte)
     corte.save(update_fields=['fecha_corte'])
@@ -384,7 +381,7 @@ def generar_fecha_corte(parametro):
     anho = fecha.year
     mes = fecha.month
 
-    if parametro == CORTE_EJECUCION:
+    if parametro == Parametro.objects.get_parametro('FINANCIERO', 'FLUJO_CAJA', 'CORTE_EJECUCION').first().id:
         if fecha.month == 12:
             anho = fecha.year + 1
             mes = 1
@@ -407,6 +404,7 @@ def generar_fecha_minima(flujo_corte):
 
 
 def generar_fecha_corte_ejecucion(corte):
+    CORTE_EJECUCION = Parametro.objects.get_parametro('FINANCIERO', 'FLUJO_CAJA', 'CORTE_EJECUCION').first().id
     parametro = Parametro.objects.get(id=CORTE_EJECUCION)
     fecha = corte.fecha_corte
     if int(parametro.valor) != corte.fecha_corte.day:
