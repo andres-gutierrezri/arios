@@ -233,3 +233,43 @@ class Impuesto(models.Model, ModelDjangoExtensiones):
         verbose_name = 'Impuesto'
         verbose_name_plural = 'Impuestos'
 
+
+GRUPOS = [
+    ('FINANCIERO', 'FINANCIERO')
+]
+
+SUBGRUPOS = [
+    ('FLUJO_CAJA', 'FLUJO DE CAJA')
+]
+
+
+class ParametroManager(ManagerGeneral):
+    def get_parametro(self, grupo, subgrupo, nombre) -> QuerySet:
+        return super().get_queryset().filter(grupo=grupo, subgrupo=subgrupo, nombre=nombre, estado=True)
+
+    def get_parametros_x_grupo(self, grupo) -> QuerySet:
+        return super().get_queryset().filter(grupo=grupo, estado=True)
+
+    def get_parametros_x_subgrupo(self, grupo, subgrupo) -> QuerySet:
+        return super().get_queryset().filter(grupo=grupo, subgrupo=subgrupo, estado=True)
+
+
+class Parametro(models.Model, ModelDjangoExtensiones):
+    objects = ParametroManager()
+    nombre = models.CharField(verbose_name="Nombre", max_length=50, null=False, blank=False)
+    descripcion = models.CharField(verbose_name="Descripción", max_length=150, null=False, blank=False)
+    tipo = models.CharField(verbose_name="Tipo", max_length=50, null=False, blank=False)
+    valor = models.CharField(verbose_name="Valor", max_length=50, null=False, blank=False)
+    estado = models.BooleanField(verbose_name='Estado', blank=False, null=False)
+    grupo = models.CharField(choices=GRUPOS, verbose_name="Grupo", max_length=50, null=False, blank=False, default=1)
+    subgrupo = models.CharField(choices=SUBGRUPOS, verbose_name="Subgrupo", max_length=50, null=False, blank=False,
+                                default='FLUJO_CAJA')
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name = 'Parametro'
+        verbose_name_plural = 'Parametros'
+
+

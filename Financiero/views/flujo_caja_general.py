@@ -1,4 +1,5 @@
-from datetime import datetime
+import calendar
+from datetime import datetime, date
 
 from django.contrib import messages
 from django.db.models import F
@@ -7,12 +8,17 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 
 from Administracion.models import Proceso
+from Administracion.models.models import Parametro
 from EVA.General import app_datetime_now
 from EVA.views.index import AbstractEvaLoggedView
 from Financiero.models import FlujoCajaDetalle, SubTipoMovimiento, FlujoCajaEncabezado, EstadoFC, CorteFlujoCaja
 from Financiero.models.flujo_caja import EstadoFCDetalle
 from Proyectos.models import Contrato
 from TalentoHumano.models.colaboradores import ColaboradorContrato, Colaborador
+
+
+CORTE_EJECUCION = Parametro.objects.get_parametro('FINANCIERO', 'FLUJO_CAJA', 'CORTE_EJECUCION').first().id
+CORTE_ALIMENTACION = Parametro.objects.get_parametro('FINANCIERO', 'FLUJO_CAJA', 'CORTE_ALIMENTACION').first().id
 
 
 class FlujosDeCajaView(AbstractEvaLoggedView):
@@ -101,6 +107,7 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None):
         return redirect(reverse(ruta_reversa))
 
     fecha_minima_mes = obtener_fecha_minima_mes(contrato=contrato, proceso=proceso)
+    fecha_maxima_mes = obtener_fecha_maxima_mes(contrato=contrato, proceso=proceso)
 
     if not request.user.has_perms('Financiero.can_access_usuarioespecial'):
         if not request.user.has_perms(['TalentoHumano.view_flujos_de_caja']):
@@ -112,7 +119,8 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None):
     return render(request, 'Financiero/FlujoCaja/FlujoCajaGeneral/detalle_flujo_caja.html',
                   {'movimientos': movimientos, 'fecha': datetime.now(), 'contrato': contrato, 'proceso': proceso,
                    'menu_actual': menu_actual, 'fecha_minima_mes': fecha_minima_mes, 'tipo': tipo,
-                   'flujo_caja_enc': flujo_caja_enc, 'base_template': base_template})
+                   'fecha_maxima_mes': fecha_maxima_mes, 'flujo_caja_enc': flujo_caja_enc,
+                   'base_template': base_template})
 
 
 def cargar_modal_crear_editar(request,  opcion, tipo=None, contrato=None, proceso=None, movimiento=None):
@@ -301,17 +309,19 @@ def obtener_fecha_minima_mes(contrato=None, proceso=None):
         corte_fc = CorteFlujoCaja.objects.get(flujo_caja_enc__contrato_id=contrato)
     else:
         corte_fc = CorteFlujoCaja.objects.get(flujo_caja_enc__proceso_id=proceso)
-    if corte_fc.flujo_caja_enc.estado_id == EstadoFC.ALIMENTACION:
-        fecha_minima_mes = '{0}-{1}-1'.format(corte_fc.fecha_corte.year, corte_fc.fecha_corte.month)
+
+    return generar_fecha_minima(corte_fc)
+
+
+def obtener_fecha_maxima_mes(contrato=None, proceso=None):
+    if contrato:
+        corte_fc = CorteFlujoCaja.objects.get(flujo_caja_enc__contrato_id=contrato)
     else:
-        if datetime.now().date() <= corte_fc.fecha_corte:
-            fecha_minima_mes = '{0}-{1}-1'.format(corte_fc.fecha_corte.year, corte_fc.fecha_corte.month - 1)
-        else:
-            fecha_minima_mes = '{0}-{1}-1'.format(corte_fc.fecha_corte.year, corte_fc.fecha_corte.month)
+        corte_fc = CorteFlujoCaja.objects.get(flujo_caja_enc__proceso_id=proceso)
 
-    fecha_minima_mes = datetime.strptime(fecha_minima_mes, "%Y-%m-%d").date()
+    fecha_maxima_mes = validar_corte_flujo_caja(corte_fc)
 
-    return fecha_minima_mes
+    return fecha_maxima_mes
 
 
 REAL = 0
@@ -350,3 +360,69 @@ def validar_permisos(request, permiso):
         return False
     else:
         return True
+
+
+def validar_corte_flujo_caja(corte_fc):
+    corte = CorteFlujoCaja.objects.get(id=corte_fc.id)
+    if corte_fc.flujo_caja_enc.estado_id == EstadoFC.ALIMENTACION:
+        corte.fecha_corte = generar_fecha_corte(CORTE_ALIMENTACION)
+    else:
+        corte.fecha_corte = generar_fecha_corte_ejecucion(corte)
+    corte.save(update_fields=['fecha_corte'])
+    return corte.fecha_corte
+
+
+def generar_fecha_corte(parametro):
+    fecha = app_datetime_now()
+    dia_corte = int(Parametro.objects.get(id=parametro).valor)
+    dia_maximo_mes = (calendar.monthrange(fecha.year, fecha.month))[1]
+    if dia_corte > dia_maximo_mes:
+        dia_final = dia_maximo_mes
+    else:
+        dia_final = dia_corte
+
+    anho = fecha.year
+    mes = fecha.month
+
+    if parametro == CORTE_EJECUCION:
+        if fecha.month == 12:
+            anho = fecha.year + 1
+            mes = 1
+        else:
+            mes = fecha.month + 1
+    return date(anho, mes, dia_final)
+
+
+def generar_fecha_minima(flujo_corte):
+    fecha = flujo_corte.fecha_corte
+    anho = fecha.year
+    mes = fecha.month
+    if flujo_corte.flujo_caja_enc.estado_id == EstadoFC.EJECUCION:
+        if fecha.month == 1:
+            mes = 12
+            anho = fecha.year - 1
+        else:
+            mes = fecha.month - 1
+    return date(anho, mes, 1)
+
+
+def generar_fecha_corte_ejecucion(corte):
+    parametro = Parametro.objects.get(id=CORTE_EJECUCION)
+    fecha = corte.fecha_corte
+    if int(parametro.valor) != corte.fecha_corte.day:
+        fecha_maxima = calendar.monthrange(corte.fecha_corte.year, corte.fecha_corte.month)[1]
+        if fecha_maxima > int(parametro.valor):
+            dia = int(parametro.valor)
+        else:
+            dia = fecha_maxima
+        fecha_corte_modificada = date(corte.fecha_corte.year, corte.fecha_corte.month, dia)
+        if date.today() < fecha_corte_modificada:
+            fecha = fecha_corte_modificada
+        else:
+            fecha = generar_fecha_corte(CORTE_EJECUCION)
+    else:
+        if app_datetime_now().day > int(parametro.valor):
+            if corte.fecha_corte.month == app_datetime_now().month:
+                fecha = generar_fecha_corte(CORTE_EJECUCION)
+    return fecha
+

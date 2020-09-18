@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime, date
+import calendar
+from datetime import datetime, date, timedelta
 from decimal import Decimal
 from typing import Optional
 
@@ -29,6 +30,46 @@ def add_years(d, years):
         return d.replace(year=d.year + years)
     except ValueError:
         return d + (date(d.year + years, 1, 1) - date(d.year, 1, 1))
+
+
+def sumar_meses(d, meses):
+    try:
+        return d.replace(month=d.month + meses)
+    except ValueError:
+        return operar_meses('sumar', d, meses)
+
+
+def restar_meses(d, meses):
+    try:
+        return d.replace(month=d.month - meses)
+    except ValueError:
+        return operar_meses('restar', d, meses)
+
+
+def operar_meses(tipo, d, meses):
+    fecha = d
+    anho = d.year
+    mes = d.month
+    num = 0
+    if tipo == 'sumar':
+        while num < meses:
+            num += 1
+            mes += 1
+            if mes > 12:
+                anho += 1
+                mes = 1
+            dias = (calendar.monthrange(anho, mes))[1]
+            fecha = fecha + timedelta(days=dias)
+    else:
+        while num < meses:
+            num += 1
+            mes -= 1
+            if mes < 1:
+                anho -= 1
+                mes = 12
+            dias = (calendar.monthrange(anho, mes))[1]
+            fecha = fecha - timedelta(days=dias)
+    return fecha
 
 
 def numero_con_separadores(numero):

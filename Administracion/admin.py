@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 from Administracion.models import Impuesto, TipoDocumento, ConsecutivoDocumento, PermisosFuncionalidad
+from Administracion.models.models import Parametro
 
 
 class ImpuestoAdmin(admin.ModelAdmin):
@@ -27,7 +28,14 @@ class PermisosFuncionalidadAdmin(admin.ModelAdmin):
     search_fields = ('id', 'nombre', 'aplicacion')
 
 
+class ParametrosAdmin(admin.ModelAdmin):
+    list_display = ('id', 'nombre', 'tipo', 'descripcion', 'valor', 'grupo', 'subgrupo', 'estado')
+    list_display_links = ('id', 'nombre', 'tipo', 'descripcion', 'valor', 'grupo', 'subgrupo', 'estado')
+    search_fields = ('id', 'nombre', 'descripcion',)
+
+
 admin.site.register(Impuesto, ImpuestoAdmin)
 admin.site.register(TipoDocumento, TipoDocumentoAdmin)
 admin.site.register(ConsecutivoDocumento, ConsecutivoDocumentoAdmin)
 admin.site.register(PermisosFuncionalidad, PermisosFuncionalidadAdmin)
+admin.site.register(Parametro, ParametrosAdmin)
