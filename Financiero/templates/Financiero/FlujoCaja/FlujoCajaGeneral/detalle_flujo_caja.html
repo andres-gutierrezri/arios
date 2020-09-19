@@ -50,11 +50,7 @@
                                                             <th>Estado</th>
                                                         {% endif %}
                                                         {% if perms.Financiero.change_flujocajadetalle or perms.Financiero.delete_flujocajadetalle or perms.TalentoHumano.view_flujos_de_caja %}
-                                                            {% if tipo == REAL and flujo_caja_enc.estado_id == EJECUCION or tipo == PROYECCION and flujo_caja_enc.estado_id == ALIMENTACION %}
-                                                                <th>Acción</th>
-                                                            {% elif perms.TalentoHumano.can_access_usuarioespecial or perms.TalentoHumano.view_flujos_de_caja %}
-                                                                <th>Acción</th>
-                                                            {% endif %}
+                                                            <th>Acción</th>
                                                         {% endif %}
                                                     </tr>
                                                 </thead>
