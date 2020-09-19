@@ -179,9 +179,11 @@ def guardar_movimiento(request, tipo=None, contrato=None, proceso=None, movimien
         messages.error(request, 'La fecha ingresada es menor a la fecha mínima permitida')
         return redirect(reverse(ruta_reversa))
 
-    if string_to_only_date(str(fl_det.fecha_movimiento)) > generar_fecha_maxima(tipo):
-        messages.error(request, 'La fecha ingresada es mayor a la fecha máxima permitida')
-        return redirect(reverse(ruta_reversa))
+    fecha_maxima = generar_fecha_maxima(tipo)
+    if fecha_maxima:
+        if string_to_only_date(str(fl_det.fecha_movimiento)) > fecha_maxima:
+            messages.error(request, 'La fecha ingresada es mayor a la fecha máxima permitida')
+            return redirect(reverse(ruta_reversa))
 
     if flujo_detalle:
         update_fields = ['fecha_movimiento', 'subtipo_movimiento', 'valor', 'usuario_modifica',
@@ -350,7 +352,7 @@ def generar_fecha_minima(tipo):
 
 def generar_fecha_maxima(tipo):
     if tipo == PROYECCION:
-        fecha_maxima = date(2020, 12, 31)
+        fecha_maxima = False
     else:
         fecha_maxima = app_date_now()
     return fecha_maxima
