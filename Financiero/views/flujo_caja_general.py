@@ -10,7 +10,7 @@ from django.urls import reverse
 from Administracion.models import Proceso
 from Administracion.models.models import Parametro
 from EVA.General import app_datetime_now, app_date_now
-from EVA.General.conversiones import restar_meses, sumar_meses, string_to_only_date
+from EVA.General.conversiones import restar_meses, sumar_meses, string_to_date
 from EVA.views.index import AbstractEvaLoggedView
 from Financiero.models import FlujoCajaDetalle, SubTipoMovimiento, FlujoCajaEncabezado, EstadoFlujoCaja, CorteFlujoCaja
 from Financiero.models.flujo_caja import EstadoFCDetalle
@@ -175,13 +175,13 @@ def guardar_movimiento(request, tipo=None, contrato=None, proceso=None, movimien
     fl_det.usuario_modifica = request.user
     fl_det.fecha_modifica = app_datetime_now()
 
-    if string_to_only_date(str(fl_det.fecha_movimiento)) < generar_fecha_minima(tipo):
+    if string_to_date(str(fl_det.fecha_movimiento)) < generar_fecha_minima(tipo):
         messages.error(request, 'La fecha ingresada es menor a la fecha mínima permitida')
         return redirect(reverse(ruta_reversa))
 
     fecha_maxima = generar_fecha_maxima(tipo)
     if fecha_maxima:
-        if string_to_only_date(str(fl_det.fecha_movimiento)) > fecha_maxima:
+        if string_to_date(str(fl_det.fecha_movimiento)) > fecha_maxima:
             messages.error(request, 'La fecha ingresada es mayor a la fecha máxima permitida')
             return redirect(reverse(ruta_reversa))
 

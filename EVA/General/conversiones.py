@@ -12,7 +12,7 @@ from django.utils.translation import ngettext_lazy
 from EVA.General import app_datetime_now
 
 
-def string_to_date(fecha_string: str) -> Optional[datetime]:
+def string_to_datetime(fecha_string: str) -> Optional[datetime]:
     """
     Convierte un string a datetime, la fecha se toma con el timezone configurado en settings.TIME_ZONE
     :param fecha_string: string con formato "%Y-%m-%d"
@@ -25,14 +25,14 @@ def string_to_date(fecha_string: str) -> Optional[datetime]:
         return None
 
 
-def string_to_only_date(fecha_string: str) -> Optional[date]:
+def string_to_date(fecha_string: str) -> Optional[date]:
     """
     Convierte un string a date
     :param fecha_string: string con formato "%Y-%m-%d"
     :return: retorna el solo la fecha en formato date
     """
     try:
-        return string_to_date(fecha_string).date()
+        return string_to_datetime(fecha_string).date()
     except ValueError:
         return None
 

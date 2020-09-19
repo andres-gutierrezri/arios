@@ -4,7 +4,7 @@ from django.db import models
 from datetime import datetime
 
 from EVA import settings
-from EVA.General.conversiones import string_to_date
+from EVA.General.conversiones import string_to_datetime
 from django.contrib.auth.models import User
 # Create your models here.
 from Administracion.models import Empresa, Proceso
