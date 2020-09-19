@@ -25,6 +25,18 @@ def string_to_date(fecha_string: str) -> Optional[datetime]:
         return None
 
 
+def string_to_only_date(fecha_string: str) -> Optional[date]:
+    """
+    Convierte un string a date
+    :param fecha_string: string con formato "%Y-%m-%d"
+    :return: retorna el solo la fecha en formato date
+    """
+    try:
+        return string_to_date(fecha_string).date()
+    except ValueError:
+        return None
+
+
 def add_years(d, years):
     try:
         return d.replace(year=d.year + years)
