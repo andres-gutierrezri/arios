@@ -10,7 +10,7 @@ from django.urls import reverse
 from Administracion.models import Proceso
 from Administracion.models.models import Parametro
 from EVA.General import app_datetime_now, app_date_now
-from EVA.General.conversiones import restar_meses, sumar_meses
+from EVA.General.conversiones import restar_meses, sumar_meses, string_to_only_date
 from EVA.views.index import AbstractEvaLoggedView
 from Financiero.models import FlujoCajaDetalle, SubTipoMovimiento, FlujoCajaEncabezado, EstadoFlujoCaja, CorteFlujoCaja
 from Financiero.models.flujo_caja import EstadoFCDetalle
@@ -126,6 +126,10 @@ def cargar_modal_crear_editar(request,  opcion, tipo=None, contrato=None, proces
         contrato = flujo_detalle.flujo_caja_enc.contrato_id
         proceso = flujo_detalle.flujo_caja_enc.proceso_id
         tipo = flujo_detalle.tipo_registro
+
+        if not validar_fecha_accion(flujo_detalle):
+            return JsonResponse({"estado": "error",
+                                 "mensaje": "No tiene permisos para realizar esta acción."})
     else:
         flujo_detalle = None
     if not tiene_permisos_de_acceso(request, contrato=contrato, proceso=proceso) or \
@@ -145,6 +149,10 @@ def guardar_movimiento(request, tipo=None, contrato=None, proceso=None, movimien
         contrato = flujo_detalle.flujo_caja_enc.contrato_id
         proceso = flujo_detalle.flujo_caja_enc.proceso_id
         tipo = flujo_detalle.tipo_registro
+
+        if not validar_fecha_accion(flujo_detalle):
+            return JsonResponse({"estado": "error",
+                                 "mensaje": "No tiene permisos para realizar esta acción."})
     else:
         flujo_detalle = None
     if contrato:
@@ -163,13 +171,17 @@ def guardar_movimiento(request, tipo=None, contrato=None, proceso=None, movimien
         messages.error(request, 'No tiene permisos para acceder a este flujo de caja.')
         return redirect(reverse(ruta_reversa))
 
-    if not validar_estado_planeacion_ejecucion(tipo, contrato=contrato, proceso=proceso):
-        messages.error(request, 'No se puede gestionar un movimiento porque ya se encuentra en ejecución')
-        return redirect(reverse(ruta_reversa))
-
     fl_det = FlujoCajaDetalle.from_dictionary(request.POST)
     fl_det.usuario_modifica = request.user
     fl_det.fecha_modifica = app_datetime_now()
+
+    if string_to_only_date(str(fl_det.fecha_movimiento)) < generar_fecha_minima(tipo):
+        messages.error(request, 'La fecha ingresada es menor a la fecha mínima permitida')
+        return redirect(reverse(ruta_reversa))
+
+    if string_to_only_date(str(fl_det.fecha_movimiento)) > generar_fecha_maxima(tipo):
+        messages.error(request, 'La fecha ingresada es mayor a la fecha máxima permitida')
+        return redirect(reverse(ruta_reversa))
 
     if flujo_detalle:
         update_fields = ['fecha_movimiento', 'subtipo_movimiento', 'valor', 'usuario_modifica',
@@ -198,15 +210,14 @@ def eliminar_movimiento(request, flujo_detalle):
     flujo_detalle = FlujoCajaDetalle.objects.get(id=flujo_detalle)
     contrato = flujo_detalle.flujo_caja_enc.contrato_id
     proceso = flujo_detalle.flujo_caja_enc.proceso_id
-    tipo = flujo_detalle.tipo_registro
 
     if not tiene_permisos_de_acceso(request, contrato=contrato, proceso=proceso) or \
             not validar_gestion_registro(request, flujo_detalle):
         return JsonResponse({"estado": "error", "mensaje": "No tiene permisos para acceder a este flujo de caja."})
 
-    if not validar_estado_planeacion_ejecucion(contrato=contrato, proceso=proceso, tipo=tipo):
+    if not validar_fecha_accion(flujo_detalle):
         return JsonResponse({"estado": "error",
-                             "mensaje": "No se puede crear un movimiento porque ya se encuentra en ejecución"})
+                             "mensaje": "No tiene permisos para realizar esta acción."})
 
     flujo_detalle.estado_id = EstadoFCDetalle.ELIMINADO
     flujo_detalle.comentarios = request.POST['comentarios']
@@ -341,7 +352,7 @@ def generar_fecha_maxima(tipo):
     if tipo == PROYECCION:
         fecha_maxima = date(2020, 12, 31)
     else:
-        fecha_maxima = datetime.now()
+        fecha_maxima = app_date_now()
     return fecha_maxima
 
 
@@ -352,5 +363,12 @@ def obtener_dia_maximo(parametro):
     if dia_parametro > dia_maximo:
         dia = dia_maximo
     return dia
+
+
+def validar_fecha_accion(flujo_detalle):
+    fecha_minima = generar_fecha_minima(flujo_detalle.tipo_registro)
+    if flujo_detalle.fecha_movimiento < fecha_minima:
+        return False
+
 
 
