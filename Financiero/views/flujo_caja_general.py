@@ -369,7 +369,7 @@ def obtener_dia_maximo(parametro):
 
 def validar_fecha_accion(flujo_detalle):
     fecha_minima = generar_fecha_minima(flujo_detalle.tipo_registro)
-    if flujo_detalle.fecha_movimiento.date() > fecha_minima:
+    if flujo_detalle.fecha_movimiento.date() >= fecha_minima:
         return True
 
 
