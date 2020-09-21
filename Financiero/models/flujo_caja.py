@@ -5,8 +5,6 @@ from django.contrib.auth.models import User
 from django.db import models
 
 from Administracion.models import Proceso
-from Administracion.models.models import Parametro
-from EVA.General import app_date_now
 from EVA.General.modelmanagers import ManagerGeneral
 from Proyectos.models import Contrato
 
@@ -186,22 +184,10 @@ class FlujoCajaDetalle(models.Model):
         return flujo_caja_detalle
 
 
-def fecha_corte_default():
-    fecha = app_date_now()
-    dia_corte = int(Parametro.objects.get_parametro('FINANCIERO', 'FLUJO_CAJA', 'CORTE_ALIMENTACION').first().valor)
-    dia_maximo_mes = (calendar.monthrange(fecha.year, fecha.month))[1]
-    if dia_corte > dia_maximo_mes:
-        dia_final = dia_maximo_mes
-    else:
-        dia_final = dia_corte
-    return date(fecha.year, fecha.month, dia_final)
-
-
 class CorteFlujoCaja(models.Model):
     flujo_caja_enc = models.ForeignKey(FlujoCajaEncabezado, on_delete=models.DO_NOTHING,
                                        verbose_name='Flujo de Caja Encabezado', null=False, blank=False)
-    fecha_corte = models.DateField(verbose_name='Fecha de Corte', null=False, blank=False,
-                                   default=fecha_corte_default)
+    fecha_corte = models.DateField(verbose_name='Fecha de Corte', null=False, blank=False)
 
     def __str__(self):
         return '{0} - Fecha de Corte: {1}'.format(self.flujo_caja_enc, self.fecha_corte)

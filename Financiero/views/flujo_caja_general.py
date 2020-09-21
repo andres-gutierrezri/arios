@@ -8,12 +8,12 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 
 from Administracion.models import Proceso
-from Administracion.models.models import Parametro
 from EVA.General import app_datetime_now, app_date_now
 from EVA.General.conversiones import add_months, string_to_date
 from EVA.views.index import AbstractEvaLoggedView
-from Financiero.models import FlujoCajaDetalle, SubTipoMovimiento, FlujoCajaEncabezado, EstadoFlujoCaja, CorteFlujoCaja
+from Financiero.models import FlujoCajaDetalle, SubTipoMovimiento, FlujoCajaEncabezado, EstadoFlujoCaja
 from Financiero.models.flujo_caja import EstadoFCDetalle
+from Financiero.parametros import ParametrosFinancieros
 from Proyectos.models import Contrato
 from TalentoHumano.models.colaboradores import ColaboradorContrato, Colaborador
 
@@ -98,7 +98,6 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None):
     else:
         flujo_caja_enc = FlujoCajaEncabezado.objects.create(fecha_crea=datetime.now(), proceso=proceso, contrato=contrato,
                                                             estado_id=EstadoFlujoCaja.ALIMENTACION)
-        CorteFlujoCaja.objects.create(flujo_caja_enc=flujo_caja_enc)
     if not tiene_permisos_de_acceso(request, contrato=contrato, proceso=proceso):
         messages.error(request, 'No tiene permisos para acceder a este flujo de caja.')
         return redirect(reverse(ruta_reversa))
@@ -339,13 +338,12 @@ def validar_permisos(request, permiso):
 
 def generar_fecha_minima(tipo):
     fecha_minima = date(app_date_now().year, app_date_now().month, 1)
+    param_fc = ParametrosFinancieros.get_params_flujo_caja()
     if tipo == REAL:
-        parametro = Parametro.objects.get_parametro('FINANCIERO', 'FLUJO_CAJA', 'CORTE_EJECUCION').first()
-        if app_date_now().day <= int(parametro.valor):
-            fecha_minima = add_months(date(app_date_now().year, app_date_now().month, 1), 1)
+        if app_date_now().day <= param_fc.get_corte_ejecucion():
+            fecha_minima = add_months(date(app_date_now().year, app_date_now().month, 1), -1)
     else:
-        parametro = Parametro.objects.get_parametro('FINANCIERO', 'FLUJO_CAJA', 'CORTE_ALIMENTACION').first()
-        if app_date_now().day > int(parametro.valor):
+        if app_date_now().day > param_fc.get_corte_alimentacion():
             fecha_minima = add_months(date(app_date_now().year, app_date_now().month, 1), 1)
     return fecha_minima
 
