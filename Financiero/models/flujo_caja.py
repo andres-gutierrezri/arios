@@ -12,7 +12,7 @@ from Proyectos.models import Contrato
 class TipoMovimiento(models.Model):
     objects = ManagerGeneral()
     nombre = models.CharField(verbose_name='Nombre', max_length=30, null=False, blank=False)
-    descripcion = models.CharField(verbose_name='Descripción', max_length=100, null=False, blank=False)
+    descripcion = models.CharField(verbose_name='Descripción', max_length=200, null=False, blank=False)
 
     def __str__(self):
         return self.nombre
@@ -30,7 +30,7 @@ class TipoMovimiento(models.Model):
 class CategoriaMovimiento(models.Model):
     objects = ManagerGeneral()
     nombre = models.CharField(verbose_name='Nombre', max_length=30, null=False, blank=False)
-    descripcion = models.CharField(verbose_name='Descripción', max_length=100, null=False, blank=False)
+    descripcion = models.CharField(verbose_name='Descripción', max_length=200, null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', blank=False, null=False, default=True)
 
     def __str__(self):
@@ -43,8 +43,8 @@ class CategoriaMovimiento(models.Model):
     @staticmethod
     def from_dictionary(datos: dict) -> 'CategoriaMovimiento':
         """
-        Crea una instancia de Categoria de Movimiento con los datos pasados en el diccionario.
-        :param datos: Diccionario con los datos para crear El Categoria de Movimiento.
+        Crea una instancia de Categoría de Movimiento con los datos pasados en el diccionario.
+        :param datos: Diccionario con los datos para crear la Categoría de Movimiento.
         :return: Instacia de entidad Categoria de Movimiento con la información especificada en el diccionario.
         """
         categoria_movimiento = CategoriaMovimiento()
@@ -57,11 +57,11 @@ class CategoriaMovimiento(models.Model):
 class SubTipoMovimiento(models.Model):
     objects = ManagerGeneral()
     nombre = models.CharField(verbose_name='Nombre', max_length=30, null=False, blank=False)
-    descripcion = models.CharField(verbose_name='Descripción', max_length=100, null=False, blank=False)
+    descripcion = models.CharField(verbose_name='Descripción', max_length=200, null=False, blank=False)
     tipo_movimiento = models.ForeignKey(TipoMovimiento, on_delete=models.DO_NOTHING, verbose_name='Tipo de Movimiento',
                                         null=False, blank=False)
     categoria_movimiento = models.ForeignKey(CategoriaMovimiento, on_delete=models.DO_NOTHING, null=False, blank=False,
-                                             verbose_name='Categoria de Movimiento')
+                                             verbose_name='Categoría de Movimiento')
     protegido = models.BooleanField(verbose_name='Protegido', blank=False, null=False)
     estado = models.BooleanField(verbose_name='Estado', blank=False, null=False, default=True)
 
