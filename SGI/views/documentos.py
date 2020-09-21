@@ -86,14 +86,16 @@ class DocumentosCrearView(AbstractEvaLoggedView):
         proceso = Proceso.objects.get(id=id_proceso)
         grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
         documento.grupo_documento_id = id_grupo
+        excluir_en_validacion = []
         if grupo_documento.es_general:
             documento.proceso = None
+            excluir_en_validacion.append('proceso')
         else:
             documento.proceso_id = id_proceso
         documento.version_actual = 0.00
 
         try:
-            documento.full_clean()
+            documento.full_clean(exclude=excluir_en_validacion)
         except ValidationError as errores:
             datos = datos_xa_render(self.OPCION, documento, proceso=proceso, grupo_documento=grupo_documento,
                                     empresa=get_id_empresa_global(request))
