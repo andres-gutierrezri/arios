@@ -6,7 +6,7 @@
     </a>
 </li>
 {% endif %}
-{% if perms.Financiero.view_subtipomovimiento or perms.Financiero.view_categoriamovimiento or perms.TalentoHumano.view_flujos_de_caja %}
+{% if perms.Financiero.view_subtipomovimiento or perms.Financiero.view_categoriamovimiento or perms.Financiero.can_gestion_flujos_de_caja %}
 <li {% if menu_actual|first == 'flujo_caja' %} class="active open"{% endif %}>
     <a href="#" title="Flujo de Caja" data-filter-tags="flujo caja">
         <i class="fal fa-usd-square"></i>
@@ -29,7 +29,7 @@
             </a>
         </li>
         {% endif %}
-        {% if perms.TalentoHumano.view_flujos_de_caja %}
+        {% if perms.Financiero.can_gestion_flujos_de_caja %}
         <li {% if menu_actual|last == 'flujos_de_caja' %} class="active" {% endif %}>
             <a href="{% url 'Financiero:flujos-de-caja' 0 %}" title="Flujos de Caja" data-filter-tags="flujos caja">
                 <i class="fal fa-usd-square"></i>

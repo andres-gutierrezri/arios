@@ -23,7 +23,7 @@
                 </div>
                 <br>
                 <div>
-                    {% input_textarea_tag 'descripcion' 'Descripción' placeholder="Ingrese una descripción" required="" modal=True maxlength="100" value=sub_mov.descripcion mensaje_validacion='Por favor digite una descripción.' invalido=errores.descripcion %}
+                    {% input_textarea_tag 'descripcion' 'Descripción' placeholder="Ingrese una descripción" required="" modal=True maxlength="200" value=sub_mov.descripcion mensaje_validacion='Por favor digite una descripción.' invalido=errores.descripcion %}
                 </div>
                 <br>
                 <div>
@@ -31,7 +31,7 @@
                 </div>
                 <br>
                 <div>
-                    {% select_tag categorias_movimientos 'categoria_movimiento_id' 'Seleccione una categoria de movimiento' texto_label="Categoria de Movimiento" value=sub_mov.categoria_movimiento_id required="" modal=True mensaje_validacion='Por favor seleccione una categoria de movimiento.' invalido=errores.categoria_movimiento %}
+                    {% select_tag categorias_movimientos 'categoria_movimiento_id' 'Seleccione una categoría de movimiento' texto_label="Categoría de Movimiento" value=sub_mov.categoria_movimiento_id required="" modal=True mensaje_validacion='Por favor seleccione una categoría de movimiento.' invalido=errores.categoria_movimiento %}
                 </div>
                 <br>
                 <div class="form-row">

@@ -1,7 +1,9 @@
-var URLDomain = document.location.origin+"/";
-var idBorrar = 0;
-var urlFinal;
-var rutaBorrado = $('#rutaBorrado').val();
+
+'use strict';
+
+let URLDomain = document.location.origin+"/";
+let idBorrar = 0;
+let rutaBorrado = $('#rutaBorrado').val();
 
 function fConfirmarEliminar(idElemento) {
 

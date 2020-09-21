@@ -3,7 +3,7 @@ from django.db import models
 from Administracion.models import Tercero, TipoContrato, Empresa, Proceso
 
 # Create your models here.
-from EVA.General.conversiones import string_to_date
+from EVA.General.conversiones import string_to_datetime
 from EVA.General.modeljson import ModelDjangoExtensiones
 from EVA.General.modelmanagers import ManagerGeneral
 
@@ -53,9 +53,9 @@ class Contrato(models.Model, ModelDjangoExtensiones):
         contrato.supervisor_correo = datos.get('supervisor_correo', '')
         contrato.supervisor_telefono = datos.get('supervisor_telefono', '')
         contrato.residente_id = datos.get('residente_id', '')
-        contrato.fecha_inicio = string_to_date(datos.get('fecha_inicio', ''))
-        contrato.fecha_terminacion = string_to_date(datos.get('fecha_terminacion', ''))
-        contrato.fecha_suscripcion = string_to_date(datos.get('fecha_suscripcion', ''))
+        contrato.fecha_inicio = string_to_datetime(datos.get('fecha_inicio', ''))
+        contrato.fecha_terminacion = string_to_datetime(datos.get('fecha_terminacion', ''))
+        contrato.fecha_suscripcion = string_to_datetime(datos.get('fecha_suscripcion', ''))
         contrato.valor = datos.get('valor', '')
         contrato.periodicidad_informes = datos.get('periodicidad_informes', None)
         contrato.tiempo = datos.get('tiempo', '')

@@ -5,8 +5,6 @@ from django.contrib.auth.models import User
 from django.db import models
 
 from Administracion.models import Proceso
-from Administracion.models.models import Parametro
-from EVA.General import app_date_now
 from EVA.General.modelmanagers import ManagerGeneral
 from Proyectos.models import Contrato
 
@@ -14,7 +12,7 @@ from Proyectos.models import Contrato
 class TipoMovimiento(models.Model):
     objects = ManagerGeneral()
     nombre = models.CharField(verbose_name='Nombre', max_length=30, null=False, blank=False)
-    descripcion = models.CharField(verbose_name='Descripción', max_length=100, null=False, blank=False)
+    descripcion = models.CharField(verbose_name='Descripción', max_length=200, null=False, blank=False)
 
     def __str__(self):
         return self.nombre
@@ -32,7 +30,7 @@ class TipoMovimiento(models.Model):
 class CategoriaMovimiento(models.Model):
     objects = ManagerGeneral()
     nombre = models.CharField(verbose_name='Nombre', max_length=30, null=False, blank=False)
-    descripcion = models.CharField(verbose_name='Descripción', max_length=100, null=False, blank=False)
+    descripcion = models.CharField(verbose_name='Descripción', max_length=200, null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', blank=False, null=False, default=True)
 
     def __str__(self):
@@ -45,8 +43,8 @@ class CategoriaMovimiento(models.Model):
     @staticmethod
     def from_dictionary(datos: dict) -> 'CategoriaMovimiento':
         """
-        Crea una instancia de Categoria de Movimiento con los datos pasados en el diccionario.
-        :param datos: Diccionario con los datos para crear El Categoria de Movimiento.
+        Crea una instancia de Categoría de Movimiento con los datos pasados en el diccionario.
+        :param datos: Diccionario con los datos para crear la Categoría de Movimiento.
         :return: Instacia de entidad Categoria de Movimiento con la información especificada en el diccionario.
         """
         categoria_movimiento = CategoriaMovimiento()
@@ -59,11 +57,11 @@ class CategoriaMovimiento(models.Model):
 class SubTipoMovimiento(models.Model):
     objects = ManagerGeneral()
     nombre = models.CharField(verbose_name='Nombre', max_length=30, null=False, blank=False)
-    descripcion = models.CharField(verbose_name='Descripción', max_length=100, null=False, blank=False)
+    descripcion = models.CharField(verbose_name='Descripción', max_length=200, null=False, blank=False)
     tipo_movimiento = models.ForeignKey(TipoMovimiento, on_delete=models.DO_NOTHING, verbose_name='Tipo de Movimiento',
                                         null=False, blank=False)
     categoria_movimiento = models.ForeignKey(CategoriaMovimiento, on_delete=models.DO_NOTHING, null=False, blank=False,
-                                             verbose_name='Categoria de Movimiento')
+                                             verbose_name='Categoría de Movimiento')
     protegido = models.BooleanField(verbose_name='Protegido', blank=False, null=False)
     estado = models.BooleanField(verbose_name='Estado', blank=False, null=False, default=True)
 
@@ -91,7 +89,7 @@ class SubTipoMovimiento(models.Model):
         return subtipo_movimiento
 
 
-class EstadoFC(models.Model):
+class EstadoFlujoCaja(models.Model):
     nombre = models.CharField(verbose_name='Nombre', max_length=30, null=False, blank=False)
     descripcion = models.CharField(verbose_name='Descripción', max_length=100, null=False, blank=False)
 
@@ -112,7 +110,7 @@ class FlujoCajaEncabezado(models.Model):
                                 null=True, blank=False)
     contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato',
                                  null=True, blank=False)
-    estado = models.ForeignKey(EstadoFC, on_delete=models.DO_NOTHING, verbose_name='Estado',
+    estado = models.ForeignKey(EstadoFlujoCaja, on_delete=models.DO_NOTHING, verbose_name='Estado',
                                null=False, blank=False)
     fecha_crea = models.DateTimeField(verbose_name='Fecha de Creación', null=False, blank=False)
 
@@ -122,6 +120,8 @@ class FlujoCajaEncabezado(models.Model):
     class Meta:
         verbose_name = 'Flujo de Caja Encabezado'
         verbose_name_plural = 'Flujos de Cajas Encabezados'
+        permissions = (("can_gestion_flujos_de_caja", "Can gestion de flujos de caja"),
+                       )
 
 
 class EstadoFCDetalle(models.Model):
@@ -184,22 +184,10 @@ class FlujoCajaDetalle(models.Model):
         return flujo_caja_detalle
 
 
-def fecha_corte_default():
-    fecha = app_date_now()
-    dia_corte = int(Parametro.objects.get_parametro('FINANCIERO', 'FLUJO_CAJA', 'CORTE_ALIMENTACION').first().valor)
-    dia_maximo_mes = (calendar.monthrange(fecha.year, fecha.month))[1]
-    if dia_corte > dia_maximo_mes:
-        dia_final = dia_maximo_mes
-    else:
-        dia_final = dia_corte
-    return date(fecha.year, fecha.month, dia_final)
-
-
 class CorteFlujoCaja(models.Model):
     flujo_caja_enc = models.ForeignKey(FlujoCajaEncabezado, on_delete=models.DO_NOTHING,
                                        verbose_name='Flujo de Caja Encabezado', null=False, blank=False)
-    fecha_corte = models.DateField(verbose_name='Fecha de Corte', null=False, blank=False,
-                                   default=fecha_corte_default)
+    fecha_corte = models.DateField(verbose_name='Fecha de Corte', null=False, blank=False)
 
     def __str__(self):
         return '{0} - Fecha de Corte: {1}'.format(self.flujo_caja_enc, self.fecha_corte)

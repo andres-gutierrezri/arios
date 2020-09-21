@@ -12,7 +12,7 @@ from django.utils.translation import ngettext_lazy
 from EVA.General import app_datetime_now
 
 
-def string_to_date(fecha_string: str) -> Optional[datetime]:
+def string_to_datetime(fecha_string: str) -> Optional[datetime]:
     """
     Convierte un string a datetime, la fecha se toma con el timezone configurado en settings.TIME_ZONE
     :param fecha_string: string con formato "%Y-%m-%d"
@@ -25,6 +25,18 @@ def string_to_date(fecha_string: str) -> Optional[datetime]:
         return None
 
 
+def string_to_date(fecha_string: str) -> Optional[date]:
+    """
+    Convierte un string a date
+    :param fecha_string: string con formato "%Y-%m-%d"
+    :return: retorna el solo la fecha en formato date
+    """
+    try:
+        return string_to_datetime(fecha_string).date()
+    except ValueError:
+        return None
+
+
 def add_years(d, years):
     try:
         return d.replace(year=d.year + years)
@@ -32,44 +44,15 @@ def add_years(d, years):
         return d + (date(d.year + years, 1, 1) - date(d.year, 1, 1))
 
 
-def sumar_meses(d, meses):
-    try:
-        return d.replace(month=d.month + meses)
-    except ValueError:
-        return operar_meses('sumar', d, meses)
-
-
-def restar_meses(d, meses):
-    try:
-        return d.replace(month=d.month - meses)
-    except ValueError:
-        return operar_meses('restar', d, meses)
-
-
-def operar_meses(tipo, d, meses):
-    fecha = d
-    anho = d.year
-    mes = d.month
-    num = 0
-    if tipo == 'sumar':
-        while num < meses:
-            num += 1
-            mes += 1
-            if mes > 12:
-                anho += 1
-                mes = 1
-            dias = (calendar.monthrange(anho, mes))[1]
-            fecha = fecha + timedelta(days=dias)
-    else:
-        while num < meses:
-            num += 1
-            mes -= 1
-            if mes < 1:
-                anho -= 1
-                mes = 12
-            dias = (calendar.monthrange(anho, mes))[1]
-            fecha = fecha - timedelta(days=dias)
-    return fecha
+def add_months(d, meses):
+    mes_nuevo = (meses + d.month) % 12
+    anio_nuevo = d.year + (meses + d.month) // 12
+    if mes_nuevo == 0:
+        mes_nuevo = 12
+        anio_nuevo -= 1
+    dias_mes_nuevo = calendar.monthrange(anio_nuevo, mes_nuevo)[1]
+    dias_nuevo = d.day if dias_mes_nuevo > d.day else dias_mes_nuevo
+    return d.replace(year=anio_nuevo, month=mes_nuevo, day=dias_nuevo)
 
 
 def numero_con_separadores(numero):

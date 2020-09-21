@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from Administracion.models import Impuesto, TipoDocumento, ConsecutivoDocumento, PermisosFuncionalidad
-from Administracion.models.models import Parametro
+from Administracion.models import Impuesto, TipoDocumento, ConsecutivoDocumento, PermisosFuncionalidad,\
+    Parametro
 
 
 class ImpuestoAdmin(admin.ModelAdmin):

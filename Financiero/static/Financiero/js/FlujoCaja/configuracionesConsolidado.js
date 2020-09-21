@@ -200,7 +200,7 @@ fechaHasta.change(function () {
 function validarFechaMaxMin(fecha, validador) {
 
     if (new Date(fechaMinima) > new Date(fecha.val())){
-        validador.html('Los movimientos mas antiguos van desde ' + fechaMinima);
+        validador.html('Los movimientos más antiguos van desde ' + fechaMinima);
         validador.show();
          setTimeout(function() {
                 validador.fadeOut(1000);
@@ -208,7 +208,7 @@ function validarFechaMaxMin(fecha, validador) {
         fecha.val('');
         return false;
     }else if (new Date(fechaMaxima) < new Date(fecha.val())){
-        validador.html('Los movimientos mas nuevos están hasta ' + fechaMaxima);
+        validador.html('Los movimientos más nuevos están hasta ' + fechaMaxima);
         validador.show();
          setTimeout(function() {
                 validador.fadeOut(1000);

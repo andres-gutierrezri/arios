@@ -29,7 +29,7 @@
 </li>
 {% endif %}
 
-{% if perms.Administracion.view_procesos %}
+{% if perms.Administracion.view_proceso %}
 <li {% if menu_actual == 'procesos' %} class="active" {% endif %}>
     <a href="{% url 'Administracion:procesos' %}" title="Procesos" data-filter-tags="procesos">
         <i class="fal fa-usd-square"></i>
