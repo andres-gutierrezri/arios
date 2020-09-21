@@ -44,44 +44,15 @@ def add_years(d, years):
         return d + (date(d.year + years, 1, 1) - date(d.year, 1, 1))
 
 
-def sumar_meses(d, meses):
-    try:
-        return d.replace(month=d.month + meses)
-    except ValueError:
-        return operar_meses('sumar', d, meses)
-
-
-def restar_meses(d, meses):
-    try:
-        return d.replace(month=d.month - meses)
-    except ValueError:
-        return operar_meses('restar', d, meses)
-
-
-def operar_meses(tipo, d, meses):
-    fecha = d
-    anho = d.year
-    mes = d.month
-    num = 0
-    if tipo == 'sumar':
-        while num < meses:
-            num += 1
-            mes += 1
-            if mes > 12:
-                anho += 1
-                mes = 1
-            dias = (calendar.monthrange(anho, mes))[1]
-            fecha = fecha + timedelta(days=dias)
-    else:
-        while num < meses:
-            num += 1
-            mes -= 1
-            if mes < 1:
-                anho -= 1
-                mes = 12
-            dias = (calendar.monthrange(anho, mes))[1]
-            fecha = fecha - timedelta(days=dias)
-    return fecha
+def add_months(d, meses):
+    mes_nuevo = (meses + d.month) % 12
+    anio_nuevo = d.year + (meses + d.month) // 12
+    if mes_nuevo == 0:
+        mes_nuevo = 12
+        anio_nuevo -= 1
+    dias_mes_nuevo = calendar.monthrange(anio_nuevo, mes_nuevo)[1]
+    dias_nuevo = d.day if dias_mes_nuevo > d.day else dias_mes_nuevo
+    return d.replace(year=anio_nuevo, month=mes_nuevo, day=dias_nuevo)
 
 
 def numero_con_separadores(numero):

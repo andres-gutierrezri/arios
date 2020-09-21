@@ -10,7 +10,7 @@ from django.urls import reverse
 from Administracion.models import Proceso
 from Administracion.models.models import Parametro
 from EVA.General import app_datetime_now, app_date_now
-from EVA.General.conversiones import restar_meses, sumar_meses, string_to_date
+from EVA.General.conversiones import add_months, string_to_date
 from EVA.views.index import AbstractEvaLoggedView
 from Financiero.models import FlujoCajaDetalle, SubTipoMovimiento, FlujoCajaEncabezado, EstadoFlujoCaja, CorteFlujoCaja
 from Financiero.models.flujo_caja import EstadoFCDetalle
@@ -342,11 +342,11 @@ def generar_fecha_minima(tipo):
     if tipo == REAL:
         parametro = Parametro.objects.get_parametro('FINANCIERO', 'FLUJO_CAJA', 'CORTE_EJECUCION').first()
         if app_date_now().day <= int(parametro.valor):
-            fecha_minima = restar_meses(date(app_date_now().year, app_date_now().month, 1), 1)
+            fecha_minima = add_months(date(app_date_now().year, app_date_now().month, 1), 1)
     else:
         parametro = Parametro.objects.get_parametro('FINANCIERO', 'FLUJO_CAJA', 'CORTE_ALIMENTACION').first()
         if app_date_now().day > int(parametro.valor):
-            fecha_minima = sumar_meses(date(app_date_now().year, app_date_now().month, 1), 1)
+            fecha_minima = add_months(date(app_date_now().year, app_date_now().month, 1), 1)
     return fecha_minima
 
 
