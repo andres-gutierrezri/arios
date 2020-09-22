@@ -27,10 +27,15 @@ $('.select2').select2({
 });
 
 $(document).ready(function() {
-
+    let consolidadoComparativo = $('#consolidado_comparativo').val();
     let numeroMeses = $('#numero_meses').val();
     let configuracionColspan = $('.configuracion_colspan');
-    configuracionColspan.attr('colspan', (numeroMeses * 3) + 2);
+    if (consolidadoComparativo === 'True'){
+        configuracionColspan.attr('colspan', (numeroMeses * 6) + 2);
+    }else{
+        configuracionColspan.attr('colspan', (numeroMeses * 3) + 2);
+    }
+
 
     // Exportar resultado de la busqueda del consolidado
 
