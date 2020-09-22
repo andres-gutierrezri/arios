@@ -154,6 +154,7 @@
                                         </div>
                                     </div>
                                     <input hidden id="numero_meses" value={{ meses|length }}>
+                                    <input hidden id="consolidado_comparativo" value={{ comparativo }}>
                                     <div id="consolidado" class="table-responsive">
                                         <table class="table table-bordered w-100" id="dataTableCategoria">
                                             <thead class="bg-primary-400">
@@ -161,16 +162,20 @@
                                                     <th></th>
                                                     <th rowspan="2" style="padding-bottom: 30px;">Categorías</th>
                                                     {% for mes in meses %}
-                                                        <th colspan="3" style="width: 300px;">{{ mes.mes }}</th>
+                                                        <th colspan="{% if comparativo %} 6 {% else %} 3 {% endif %}" style="width: 300px;">{{ mes.mes }}</th>
                                                     {% endfor %}
                                                 </tr>
                                                 <tr>
                                                     <th></th>
                                                     {% if comparativo %}
-                                                        <th>Valor de Ingresos Real</th>
-                                                        <th>Valor de Egresos Real</th>
-                                                        <th>Valor de Ingresos Proyectado</th>
-                                                        <th>Valor de Egresos Proyectado</th>
+                                                        {% for mes in meses %}
+                                                            <th>Ingresos Reales</th>
+                                                            <th>Gastos Reales</th>
+                                                            <th>Costos Reales</th>
+                                                            <th>Ingresos Proyectados</th>
+                                                            <th>Gastos Proyectados</th>
+                                                            <th>Costos Proyectados</th>
+                                                        {% endfor %}
                                                     {% else %}
                                                         {% for mes in meses %}
                                                             <th>Ingresos</th>
@@ -188,10 +193,14 @@
                                                         </td>
                                                         <td>{{ mov.nombre }}</td>
                                                         {% if comparativo %}
-                                                            <td>{{ mov.valor_ingresos_real|intcomma }}</td>
-                                                            <td>{{ mov.valor_egresos_real|intcomma }}</td>
-                                                            <td>{{ mov.valor_ingresos_proyectado|intcomma }}</td>
-                                                            <td>{{ mov.valor_egresos_proyectado|intcomma }}</td>
+                                                            {% for mes in mov.meses %}
+                                                                <td>{{ mes.valor_ingresos_real|intcomma }}</td>
+                                                                <td>{{ mes.valor_costos_real|intcomma }}</td>
+                                                                <td>{{ mes.valor_gastos_real|intcomma }}</td>
+                                                                <td>{{ mes.valor_ingresos_proyectado|intcomma }}</td>
+                                                                <td>{{ mes.valor_costos_proyectado|intcomma }}</td>
+                                                                <td>{{ mes.valor_gastos_proyectado|intcomma }}</td>
+                                                            {% endfor %}
                                                         {% else %}
                                                             {% if valor.tipos_flujos_caja == 0 %}
                                                                 {% for mes in mov.meses %}
@@ -216,16 +225,20 @@
                                                                         <th></th>
                                                                         <th rowspan="2" style="padding-bottom: 30px;">Subtipos</th>
                                                                         {% for mes in meses %}
-                                                                            <th colspan="3" style="width: 300px;">{{ mes.mes }}</th>
+                                                                            <th colspan="{% if comparativo %} 6 {% else %} 3 {% endif %}" style="width: 300px;">{{ mes.mes }}</th>
                                                                         {% endfor %}
                                                                     </tr>
                                                                     <tr>
                                                                         <th></th>
                                                                         {% if comparativo %}
-                                                                            <th>Valor de Ingresos Real</th>
-                                                                            <th>Valor de Egresos Real</th>
-                                                                            <th>Valor de Ingresos Proyectado</th>
-                                                                            <th>Valor de Egresos Proyectado</th>
+                                                                            {% for mes in meses %}
+                                                                                <th>Ingresos Reales</th>
+                                                                                <th>Gastos Reales</th>
+                                                                                <th>Costos Reales</th>
+                                                                                <th>Ingresos Proyectados</th>
+                                                                                <th>Gastos Proyectados</th>
+                                                                                <th>Costos Proyectados</th>
+                                                                            {% endfor %}
                                                                         {% else %}
                                                                             {% for mes in meses %}
                                                                                 <th>Ingresos</th>
@@ -243,10 +256,14 @@
                                                                             </td>
                                                                             <td>{{ sub.nombre }}</td>
                                                                             {% if comparativo %}
-                                                                                <td class="t-a-e">{{ sub.valor_ingresos_real|intcomma }}</td>
-                                                                                <td class="t-a-e">{{ sub.valor_egresos_real|intcomma }}</td>
-                                                                                <td class="t-a-e">{{ sub.valor_ingresos_proyectado|intcomma }}</td>
-                                                                                <td class="t-a-e">{{ sub.valor_egresos_proyectado|intcomma }}</td>
+                                                                                {% for mes in sub.meses %}
+                                                                                    <td>{{ mes.valor_ingresos_real|intcomma }}</td>
+                                                                                    <td>{{ mes.valor_costos_real|intcomma }}</td>
+                                                                                    <td>{{ mes.valor_gastos_real|intcomma }}</td>
+                                                                                    <td>{{ mes.valor_ingresos_proyectado|intcomma }}</td>
+                                                                                    <td>{{ mes.valor_costos_proyectado|intcomma }}</td>
+                                                                                    <td>{{ mes.valor_gastos_proyectado|intcomma }}</td>
+                                                                                {% endfor %}
                                                                             {% else %}
                                                                                 {% if valor.tipos_flujos_caja == 0 %}
                                                                                     {% for mes in sub.meses %}
@@ -255,7 +272,7 @@
                                                                                         <td>{{ mes.valor_gastos_real|intcomma }}</td>
                                                                                     {% endfor %}
                                                                                 {% else %}
-                                                                                    {% for mes in mov.meses %}
+                                                                                    {% for mes in sub.meses %}
                                                                                         <td>{{ mes.valor_ingresos_proyectado|intcomma }}</td>
                                                                                         <td>{{ mes.valor_costos_proyectado|intcomma }}</td>
                                                                                         <td>{{ mes.valor_gastos_proyectado|intcomma }}</td>
@@ -270,16 +287,20 @@
                                                                                         <tr>
                                                                                             <th></th>
                                                                                             {% for mes in meses %}
-                                                                                                <th colspan="3" style="width: 300px;">{{ mes.mes }}</th>
+                                                                                                <th colspan="{% if comparativo %} 6 {% else %} 3 {% endif %}" style="width: 300px;">{{ mes.mes }}</th>
                                                                                             {% endfor %}
                                                                                         </tr>
                                                                                         <tr>
                                                                                             <th rowspan="2" style="padding-top: 0; padding-bottom: 30px; min-width: 170px">Contratos / Procesos</th>
                                                                                             {% if comparativo %}
-                                                                                                <th>Valor de Ingresos Real</th>
-                                                                                                <th>Valor de Egresos Real</th>
-                                                                                                <th>Valor de Ingresos Proyectado</th>
-                                                                                                <th>Valor de Egresos Proyectado</th>
+                                                                                                {% for mes in meses %}
+                                                                                                    <th>Ingresos Reales</th>
+                                                                                                    <th>Gastos Reales</th>
+                                                                                                    <th>Costos Reales</th>
+                                                                                                    <th>Ingresos Proyectados</th>
+                                                                                                    <th>Gastos Proyectados</th>
+                                                                                                    <th>Costos Proyectados</th>
+                                                                                                {% endfor %}
                                                                                             {% else %}
                                                                                                 {% for mes in meses %}
                                                                                                     <th>Ingresos</th>
@@ -294,10 +315,14 @@
                                                                                             <tr>
                                                                                                 <td>{{ cp.nombre }}</td>
                                                                                                 {% if comparativo %}
-                                                                                                    <td class="t-a-e">{{ cp.valor_ingresos_real|intcomma }}</td>
-                                                                                                    <td class="t-a-e">{{ cp.valor_egresos_real|intcomma }}</td>
-                                                                                                    <td class="t-a-e">{{ cp.valor_ingresos_proyectado|intcomma }}</td>
-                                                                                                    <td class="t-a-e">{{ cp.valor_egresos_proyectado|intcomma }}</td>
+                                                                                                    {% for mes in cp.meses %}
+                                                                                                        <td>{{ mes.valor_ingresos_real|intcomma }}</td>
+                                                                                                        <td>{{ mes.valor_costos_real|intcomma }}</td>
+                                                                                                        <td>{{ mes.valor_gastos_real|intcomma }}</td>
+                                                                                                        <td>{{ mes.valor_ingresos_proyectado|intcomma }}</td>
+                                                                                                        <td>{{ mes.valor_costos_proyectado|intcomma }}</td>
+                                                                                                        <td>{{ mes.valor_gastos_proyectado|intcomma }}</td>
+                                                                                                    {% endfor %}
                                                                                                 {% else %}
                                                                                                     {% if valor.tipos_flujos_caja == 0 %}
                                                                                                         {% for mes in cp.meses %}
@@ -306,7 +331,7 @@
                                                                                                             <td>{{ mes.valor_gastos_real|intcomma }}</td>
                                                                                                         {% endfor %}
                                                                                                     {% else %}
-                                                                                                        {% for mes in mov.meses %}
+                                                                                                        {% for mes in cp.meses %}
                                                                                                             <td>{{ mes.valor_ingresos_proyectado|intcomma }}</td>
                                                                                                             <td>{{ mes.valor_costos_proyectado|intcomma }}</td>
                                                                                                             <td>{{ mes.valor_gastos_proyectado|intcomma }}</td>
