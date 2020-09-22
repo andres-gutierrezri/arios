@@ -87,7 +87,7 @@ class FlujoCajaConsolidadoView(AbstractEvaLoggedView):
 
 
 def datos_xa_render(datos_formulario=None, movimientos=None):
-    procesos_contratos = FlujoCajaDetalle.objects.all().order_by('fecha_crea')
+    procesos_contratos = FlujoCajaDetalle.objects.all().order_by('fecha_movimiento')
     if procesos_contratos:
         fecha_min = procesos_contratos.first().fecha_movimiento
         fecha_max = procesos_contratos.last().fecha_movimiento
@@ -277,7 +277,8 @@ def construir_consolidado(objeto):
                     fecha_minima_con_pro = fecha_minima
                     valores_mes_con_pro = []
 
-                    while fecha_maxima.month >= fecha_minima_con_pro.month:
+                    while obtener_fecha_inicio_de_mes(fecha_maxima.year, fecha_maxima.month) >= \
+                            obtener_fecha_inicio_de_mes(fecha_minima_con_pro.year, fecha_minima_con_pro.month):
                         valor_con_pro_ingresos_real = 0
                         valor_con_pro_ingresos_proyectado = 0
                         valor_con_pro_costos_real = 0
@@ -329,7 +330,8 @@ def construir_consolidado(objeto):
 
                 fecha_minima_subtipos = fecha_minima
                 valores_mes_subtipos = []
-                while fecha_maxima.month >= fecha_minima_subtipos.month:
+                while obtener_fecha_inicio_de_mes(fecha_maxima.year, fecha_maxima.month) >= \
+                        obtener_fecha_inicio_de_mes(fecha_minima_subtipos.year, fecha_minima_subtipos.month):
                     valor_subtipos_ingresos_real = 0
                     valor_subtipos_ingresos_proyectado = 0
                     valor_subtipos_costos_real = 0
@@ -373,7 +375,8 @@ def construir_consolidado(objeto):
 
         fecha_minima_categorias = fecha_minima
         valores_mes_categorias = []
-        while fecha_maxima.month >= fecha_minima_categorias.month:
+        while obtener_fecha_inicio_de_mes(fecha_maxima.year, fecha_maxima.month) >= \
+                obtener_fecha_inicio_de_mes(fecha_minima_categorias.year, fecha_minima_categorias.month):
             valor_cat_ingresos_real = 0
             valor_cat_ingresos_proyectado = 0
             valor_cat_costos_real = 0
@@ -411,11 +414,12 @@ def construir_consolidado(objeto):
 
             coincidencia = False
             for mes in lista_meses:
-                if mes['numero'] == fecha_minima_categorias.month:
+                if mes['numero'] == fecha_minima_categorias.month and mes['anho'] == fecha_minima_categorias.year:
                     coincidencia = True
             if not coincidencia:
                 lista_meses.append({'numero': fecha_minima_categorias.month, 'pos': pos_mes,
-                                    'mes': mes_numero_a_letras(fecha_minima_categorias.month)})
+                                    'mes': mes_numero_a_letras(fecha_minima_categorias.month),
+                                    'anho': fecha_minima_categorias.year})
                 pos_mes += 1
 
             fecha_minima_categorias = sumar_meses(fecha_minima_categorias, 1)
