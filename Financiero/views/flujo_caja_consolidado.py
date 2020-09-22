@@ -149,9 +149,9 @@ def datos_xa_render(datos_formulario=None, movimientos=None):
 
     if movimientos:
         consolidado = construir_consolidado(movimientos)
-        print(consolidado)
         datos['movimientos'] = consolidado['lista_categorias']
         datos['totales'] = consolidado['totales']
+        datos['meses'] = consolidado['lista_meses']
 
     return datos
 
@@ -254,7 +254,8 @@ def construir_consolidado(objeto):
 
     for con in contratos:
         lista_procesos_contratos.append(con)
-
+    lista_meses = []
+    pos_mes = 1
     lista_categorias = []
     total_ingresos_real = 0
     total_ingresos_proyectado = 0
@@ -407,6 +408,16 @@ def construir_consolidado(objeto):
                  'valor_costos_proyectado': valor_cat_costos_proyectado,
                  'valor_gastos_real': valor_cat_gastos_real,
                  'valor_gastos_proyectado': valor_cat_gastos_proyectado})
+
+            coincidencia = False
+            for mes in lista_meses:
+                if mes['numero'] == fecha_minima_categorias.month:
+                    coincidencia = True
+            if not coincidencia:
+                lista_meses.append({'numero': fecha_minima_categorias.month, 'pos': pos_mes,
+                                    'mes': mes_numero_a_letras(fecha_minima_categorias.month)})
+                pos_mes += 1
+
             fecha_minima_categorias = sumar_meses(fecha_minima_categorias, 1)
 
             total_ingresos_real += valor_cat_ingresos_real
@@ -430,5 +441,5 @@ def construir_consolidado(objeto):
                    total_ingresos_proyectado - total_costos_proyectado - total_gastos_proyectado,
                }
 
-    return {'lista_categorias': lista_categorias, 'totales': totales}
+    return {'lista_categorias': lista_categorias, 'totales': totales, 'lista_meses': lista_meses}
 
