@@ -27,6 +27,11 @@ $('.select2').select2({
 });
 
 $(document).ready(function() {
+
+    let numeroMeses = $('#numero_meses').val();
+    let configuracionColspan = $('.configuracion_colspan');
+    configuracionColspan.attr('colspan', (numeroMeses * 3) + 2);
+
     // Exportar resultado de la busqueda del consolidado
 
     iniciarTablaExportar([0, 1, 2, 3, 4, 5]);
