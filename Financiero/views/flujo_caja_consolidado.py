@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 
 from EVA.General import app_date_now
-from EVA.General.conversiones import obtener_fecha_fin_de_mes, obtener_fecha_inicio_de_mes, sumar_meses, \
+from EVA.General.conversiones import obtener_fecha_fin_de_mes, obtener_fecha_inicio_de_mes, add_months, \
     mes_numero_a_letras
 from EVA.views.index import AbstractEvaLoggedView
 from Financiero.models import FlujoCajaEncabezado
@@ -318,7 +318,7 @@ def construir_consolidado(objeto):
                             'valor_gastos_real': valor_con_pro_gastos_real,
                             'valor_gastos_proyectado': valor_con_pro_gastos_proyectado})
 
-                        fecha_minima_con_pro = sumar_meses(fecha_minima_con_pro, 1)
+                        fecha_minima_con_pro = add_months(fecha_minima_con_pro, 1)
 
                     if con_pro['contrato']:
                         nombre = con_pro['contrato']
@@ -368,7 +368,7 @@ def construir_consolidado(objeto):
                          'valor_costos_proyectado': valor_subtipos_costos_proyectado,
                          'valor_gastos_real': valor_subtipos_gastos_real,
                          'valor_gastos_proyectado': valor_subtipos_gastos_proyectado})
-                    fecha_minima_subtipos = sumar_meses(fecha_minima_subtipos, 1)
+                    fecha_minima_subtipos = add_months(fecha_minima_subtipos, 1)
 
                 lista_subtipos.append({'id': sub['id_subtipo'], 'nombre': sub['nombre'], 'con_pro': lista_con_pro,
                                        'meses': valores_mes_subtipos})
@@ -422,7 +422,7 @@ def construir_consolidado(objeto):
                                     'anho': fecha_minima_categorias.year})
                 pos_mes += 1
 
-            fecha_minima_categorias = sumar_meses(fecha_minima_categorias, 1)
+            fecha_minima_categorias = add_months(fecha_minima_categorias, 1)
 
             total_ingresos_real += valor_cat_ingresos_real
             total_ingresos_proyectado += valor_cat_ingresos_proyectado
