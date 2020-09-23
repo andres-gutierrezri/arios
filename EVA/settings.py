@@ -20,7 +20,7 @@ EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'noreply@arios-ing.com'
-EMAIL_HOST_PASSWORD = 'wmeplulnvayregxq'
+EMAIL_HOST_PASSWORD = 'aympwbumzwbibbyh'
 EMAIL_PORT = 587
 DEFAULT_FROM_EMAIL = f'"EVA" <{EMAIL_HOST_USER}>'
 

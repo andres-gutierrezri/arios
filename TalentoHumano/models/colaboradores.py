@@ -7,7 +7,7 @@ from django.db.models.functions import Concat
 
 from Administracion.models import Persona, Cargo, Proceso, TipoContrato, CentroPoblado, Rango, Empresa
 from EVA import settings
-from EVA.General.conversiones import string_to_date
+from EVA.General.conversiones import string_to_datetime
 from EVA.General.modeljson import ModelDjangoExtensiones
 from EVA.General.modelmanagers import ManagerGeneral
 from Proyectos.models import Contrato
@@ -111,9 +111,9 @@ class Colaborador(Persona, ModelDjangoExtensiones):
         colaborador.arl_id = datos.get('arl_id', '')
         colaborador.afp_id = datos.get('afp_id', '')
         colaborador.caja_compensacion_id = datos.get('caja_compensacion_id', '')
-        colaborador.fecha_ingreso = string_to_date(datos.get('fecha_ingreso', ''))
-        colaborador.fecha_examen = string_to_date(datos.get('fecha_examen', ''))
-        colaborador.fecha_dotacion = string_to_date(datos.get('fecha_dotacion', ''))
+        colaborador.fecha_ingreso = string_to_datetime(datos.get('fecha_ingreso', ''))
+        colaborador.fecha_examen = string_to_datetime(datos.get('fecha_examen', ''))
+        colaborador.fecha_dotacion = string_to_datetime(datos.get('fecha_dotacion', ''))
         colaborador.salario = datos.get('salario', '')
         colaborador.jefe_inmediato_id = datos.get('jefe_inmediato_id', '')
         if colaborador.jefe_inmediato_id == '':
@@ -123,10 +123,10 @@ class Colaborador(Persona, ModelDjangoExtensiones):
         colaborador.tipo_contrato_id = datos.get('tipo_contrato_id', '')
         colaborador.lugar_nacimiento_id = datos.get('centro_poblado_id', '')
         colaborador.rango_id = datos.get('rango_id', '')
-        colaborador.fecha_nacimiento = string_to_date(datos.get('fecha_nacimiento', ''))
+        colaborador.fecha_nacimiento = string_to_datetime(datos.get('fecha_nacimiento', ''))
         colaborador.identificacion = datos.get('identificacion', '')
         colaborador.tipo_identificacion_id = datos.get('tipo_identificacion_id', '')
-        colaborador.fecha_expedicion = string_to_date(datos.get('fecha_expedicion', ''))
+        colaborador.fecha_expedicion = string_to_datetime(datos.get('fecha_expedicion', ''))
         colaborador.genero = datos.get('genero', '')[0:1]
         colaborador.telefono = datos.get('telefono', '')
         colaborador.estado = datos.get('estado', 'True') == 'True'

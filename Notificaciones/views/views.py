@@ -16,7 +16,8 @@ def crear_notificacion_por_evento(id_desencadenador, id_evento, nombre: str = No
         texto = TextoNotificacionDelSistema()
         texto.titulo = contenido['titulo']
         mensaje = contenido['mensaje']
-        usuario.append(contenido['usuario'])
+        if 'usuario' in contenido:
+            usuario.append(contenido['usuario'])
     else:
         texto = TextoNotificacionDelSistema.objects.get(evento_desencadenador_id=id_desencadenador)
         mensaje = texto.mensaje.format(nombre)

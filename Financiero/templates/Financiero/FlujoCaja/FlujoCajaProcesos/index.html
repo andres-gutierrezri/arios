@@ -40,8 +40,10 @@
                                                     <tr>
                                                         <th>Proceso</th>
                                                         <th>Descipción</th>
+                                                        {% if perms.Financiero.view_flujocajaencabezado %}
                                                         <th>Estado del Flujo de Caja</th>
                                                         <th>Ver Flujo de Caja</th>
+                                                        {% endif %}
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -49,13 +51,19 @@
                                                         <tr>
                                                             <td>{{ proceso.nombre }}</td>
                                                             <td>{{ proceso.objeto }}</td>
-                                                            <td>{% if tiene_permiso or proceso_usuario == proceso.id %}<span class="badge badge-primary">{{ proceso.flujocajaencabezado_set.first.estado }}</span>{% endif %}</td>
+                                                            {% if perms.Financiero.view_flujocajaencabezado %}
                                                             <td>
-                                                                {% if tiene_permiso or proceso_usuario == proceso.id %}
-                                                                <a href="#" onclick="guardarRutaLocal('{% url 'Financiero:flujo-caja-procesos-detalle' proceso.id REAL %}')"><span class="badge badge-primary fw-300 ml-auto">Real</span><br></a>
-                                                                <a href="#" onclick="guardarRutaLocal('{% url 'Financiero:flujo-caja-procesos-detalle' proceso.id PROYECCION %}')"><span class="badge badge-primary fw-300 ml-auto">Proyección</span></a>
+                                                                {% if proceso_usuario == proceso or perms.Financiero.can_gestion_flujos_de_caja %}
+                                                                    <span class="badge badge-primary">{{ proceso.flujocajaencabezado_set.first.estado }}</span>
                                                                 {% endif %}
                                                             </td>
+                                                            <td>
+                                                                {% if proceso_usuario == proceso or perms.Financiero.can_gestion_flujos_de_caja %}
+                                                                    <a href="#" onclick="guardarRutaLocal('{% url 'Financiero:flujo-caja-procesos-detalle' proceso.id REAL %}')"><span class="badge badge-primary fw-300 ml-auto">Real</span><br></a>
+                                                                    <a href="#" onclick="guardarRutaLocal('{% url 'Financiero:flujo-caja-procesos-detalle' proceso.id PROYECCION %}')"><span class="badge badge-primary fw-300 ml-auto">Proyección</span></a>
+                                                                {% endif %}
+                                                            </td>
+                                                            {% endif %}
                                                         </tr>
                                                     {% endfor %}
                                                 </tbody>
