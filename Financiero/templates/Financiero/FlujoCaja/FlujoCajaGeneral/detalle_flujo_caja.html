@@ -22,30 +22,28 @@
         <div class="row">
             <div class="col-xl-12">
                 <div id="panel-1" class="panel">
-                    {% if tipo == REAL and flujo_caja_enc.estado_id == EJECUCION or tipo == PROYECCION and flujo_caja_enc.estado_id == ALIMENTACION %}
-                        {% if perms.Financiero.change_flujocajadetalle %}
-                            <div class="panel-hdr">
-                                <div class="col-md-2">
-                                    <small>
-                                        {% if contrato %}
-                                            <a class="far fa-3x far fa-plus-circle" href="javascript:abrirModalCrearEditarFlujoDeCaja('{% url 'Financiero:flujo-caja-contratos-crear' contrato.id tipo %}', '{{ fecha_minima_mes|date:'Y-m-d' }}', '{{ fecha_maxima_mes|date:'Y-m-d' }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear"></a>
-                                        {% else %}
-                                            <a class="far fa-3x far fa-plus-circle" href="javascript:abrirModalCrearEditarFlujoDeCaja('{% url 'Financiero:flujo-caja-procesos-crear' proceso.id tipo %}', '{{ fecha_minima_mes|date:'Y-m-d' }}', '{{ fecha_maxima_mes|date:'Y-m-d' }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear"></a>
-                                        {% endif %}
-                                    </small>
-                                </div>
-                                <div class="col-md-5">
-                                    <h3>
-                                        <b>Total Ingresos: </b>{{ ingresos|intcomma }}
-                                    </h3>
-                                </div>
-                                <div class="col-md-5">
-                                    <h3>
-                                        <b>Total Egresos: </b>{{ egresos|intcomma }}
-                                    </h3>
-                                </div>
+                    {% if perms.Financiero.change_flujocajadetalle %}
+                        <div class="panel-hdr">
+                            <div class="col-md-2">
+                                <small>
+                                    {% if contrato %}
+                                        <a class="far fa-3x far fa-plus-circle" href="javascript:abrirModalCrearEditarFlujoDeCaja('{% url 'Financiero:flujo-caja-contratos-crear' contrato.id tipo %}', '{{ fecha_minima_mes|date:'Y-m-d' }}', '{{ fecha_maxima_mes|date:'Y-m-d' }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear"></a>
+                                    {% else %}
+                                        <a class="far fa-3x far fa-plus-circle" href="javascript:abrirModalCrearEditarFlujoDeCaja('{% url 'Financiero:flujo-caja-procesos-crear' proceso.id tipo %}', '{{ fecha_minima_mes|date:'Y-m-d' }}', '{{ fecha_maxima_mes|date:'Y-m-d' }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear"></a>
+                                    {% endif %}
+                                </small>
                             </div>
-                        {% endif %}
+                            <div class="col-md-5">
+                                <h3>
+                                    <b>Total Ingresos: </b>{{ ingresos|intcomma }}
+                                </h3>
+                            </div>
+                            <div class="col-md-5">
+                                <h3>
+                                    <b>Total Egresos: </b>{{ egresos|intcomma }}
+                                </h3>
+                            </div>
+                        </div>
                     {% endif %}
                     <div class="panel-container show">
                         <div class="panel-content">
