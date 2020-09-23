@@ -10,6 +10,7 @@
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/theme-demo.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/custom/generales.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'Financiero/css/configuracionesConsolidado.css' %}">
 {% endblock styles %}
 
 {% block main %}
@@ -22,7 +23,7 @@
         </div>
         <div class="row">
             <div class="col-xl-12">
-                <div id="panel-1" class="panel" style="padding: 20px">
+                <div id="panel-1" class="panel p-20">
                     <form action="{% url 'Financiero:flujo-caja-consolidado' %}" id="consolidado-form" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                         <input hidden id="fecha_min_max" value="{{ fecha_min_max }}">
@@ -33,7 +34,7 @@
                                 <div class="col-md-10">
                                     {% select_multiple_tag categorias 'categorias[]' 'categorias_id' 'Seleccion una opción' texto_label="Categorías" multiple='multiple' %}
                                 </div>
-                                <div class="col-md-2" style="padding-top: 25px">
+                                <div class="col-md-2 p-t-25">
                                     <a href="javascript:seleccionarTodos('categorias');" id="btn_all_categorias" class="btn btn-default btn-icon waves-effect waves-themed" title="{{ textos_categorias.texto }}">
                                         <i id="ic_all_categorias" class="fal {{ textos_categorias.icono }}"></i>
                                     </a>
@@ -47,7 +48,7 @@
                                 <div class="col-md-10">
                                     {% select_multiple_tag subtipos 'subtipos[]' 'subtipos_id' 'Seleccion una opción' texto_label="Subtipo de Movimiento" multiple='multiple' %}
                                 </div>
-                                <div class="col-md-2" style="padding-top: 25px">
+                                <div class="col-md-2 p-t-25">
                                     <a href="javascript:seleccionarTodos('subtipos');" id="btn_all_subtipos" class="btn btn-default btn-icon waves-effect waves-themed" title="{{ textos_subtipos.texto }}">
                                         <i id="ic_all_subtipos" class="fal {{ textos_subtipos.icono }}"></i>
                                     </a>
@@ -61,7 +62,7 @@
                                 <div class="col-md-10">
                                     {% select_multiple_tag contratos 'contrato[]' 'contrato_id' 'Seleccion una opción' texto_label="Contratos" multiple='multiple' %}
                                 </div>
-                                <div class="col-md-2" style="padding-top: 25px">
+                                <div class="col-md-2 p-t-25">
                                     <a href="javascript:seleccionarTodos('contrato');" id="btn_all_contrato" class="btn btn-default btn-icon waves-effect waves-themed" title="{{ textos_contrato.texto }}">
                                         <i id="ic_all_contrato" class="fal {{ textos_contratos.icono }}"></i>
                                     </a>
@@ -75,7 +76,7 @@
                                 <div class="col-md-10">
                                     {% select_multiple_tag procesos 'proceso[]' 'proceso_id' 'Seleccion una opción' texto_label="Procesos" multiple='multiple' %}
                                 </div>
-                                <div class="col-md-2" style="padding-top: 25px">
+                                <div class="col-md-2 p-t-25">
                                     <a href="javascript:seleccionarTodos('proceso');" id="btn_all_proceso" class="btn btn-default btn-icon waves-effect waves-themed" title="{{ textos_proceso.texto }}">
                                         <i id="ic_all_proceso" class="fal {{ textos_procesos.icono }}"></i>
                                     </a>
@@ -120,7 +121,7 @@
                                 <div class="col-md-4">
                                     {% select_tag tipos_flujos 'tipos_flujos_caja_id' 'Real' primer_valor=True texto_label="Proyectado/Real" value=valor.tipos_flujos_caja %}
                                 </div>
-                                <div class="col-md-4" style="padding-top: 25px">
+                                <div class="col-md-4 p-t-25">
                                     <button class="btn buttons-html5 btn-outline-primary btn-sm mr-1"><span>Buscar</span></button>
                                 </div>
                             </div>
@@ -141,12 +142,6 @@
                                         </div>
                                         <div class="col-sm-12 col-md-6 d-flex align-items-center justify-content-end">
                                             <div class="dt-buttons">
-                                                <button class="btn buttons-print btn-outline-secondary btn-sm" id="boton_mes_anterior" disabled
-                                                        tabindex="0" aria-controls="dataTableFlujoCaja" type="button" onclick="anteriorMes()">
-                                                    <span>Mes Anterior</span></button>
-                                                <button class="btn buttons-print btn-outline-secondary btn-sm" id="boton_mes_siguiente"
-                                                        tabindex="0" aria-controls="dataTableFlujoCaja" type="button" onclick="siguienteMes()">
-                                                    <span>Mes Siguiente</span></button>
                                                 <button class="btn buttons-print btn-outline-primary btn-sm"
                                                         tabindex="0" aria-controls="dataTableFlujoCaja" type="button" onclick="Imprimir()">
                                                     <span>Imprimir</span></button>
@@ -155,14 +150,14 @@
                                     </div>
                                     <input hidden id="numero_meses" value={{ meses|length }}>
                                     <input hidden id="consolidado_comparativo" value={{ comparativo }}>
-                                    <div id="consolidado" class="table-responsive">
+                                    <div id="div_consolidado" class="table-responsive">
                                         <table class="table table-bordered w-100" id="dataTableCategoria">
                                             <thead class="bg-primary-400">
                                                 <tr>
                                                     <th></th>
-                                                    <th rowspan="2" style="padding-bottom: 30px;">Categorías</th>
+                                                    <th rowspan="2" class="p-b-30">Categorías</th>
                                                     {% for mes in meses %}
-                                                        <th colspan="{% if comparativo %} 6 {% else %} 3 {% endif %}" style="width: 300px;">{{ mes.mes }}</th>
+                                                        <th class="w-300" colspan="{% if comparativo %} 6 {% else %} 3 {% endif %}">{{ mes.mes }}</th>
                                                     {% endfor %}
                                                 </tr>
                                                 <tr>
@@ -188,7 +183,7 @@
                                             <tbody>
                                                 {% for mov in movimientos %}
                                                     <tr>
-                                                        <td style="width: 10px">
+                                                        <td class="w-10">
                                                             <a class="far fa-2x far fa-plus-circle" id="boton_categoria_{{ mov.id }}" href="javascript:desplegarDetalle('categoria', {{ mov.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip"></a>
                                                         </td>
                                                         <td>{{ mov.nombre }}</td>
@@ -223,9 +218,9 @@
                                                                 <thead class="bg-info-400">
                                                                     <tr>
                                                                         <th></th>
-                                                                        <th rowspan="2" style="padding-bottom: 30px;">Subtipos</th>
+                                                                        <th rowspan="2" class="p-b-30">Subtipos</th>
                                                                         {% for mes in meses %}
-                                                                            <th colspan="{% if comparativo %} 6 {% else %} 3 {% endif %}" style="width: 300px;">{{ mes.mes }}</th>
+                                                                            <th class="w-300" colspan="{% if comparativo %} 6 {% else %} 3 {% endif %}">{{ mes.mes }}</th>
                                                                         {% endfor %}
                                                                     </tr>
                                                                     <tr>
@@ -251,7 +246,7 @@
                                                                 <tbody>
                                                                     {% for sub in mov.subtipos %}
                                                                         <tr>
-                                                                            <td style="width: 10px">
+                                                                            <td class="w-10">
                                                                                 <a class="far fa-2x far fa-plus-circle" id="boton_subtipo_{{ sub.id }}" href="javascript:desplegarDetalle('subtipo', {{ sub.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip"></a>
                                                                             </td>
                                                                             <td>{{ sub.nombre }}</td>
@@ -287,11 +282,11 @@
                                                                                         <tr>
                                                                                             <th></th>
                                                                                             {% for mes in meses %}
-                                                                                                <th colspan="{% if comparativo %} 6 {% else %} 3 {% endif %}" style="width: 300px;">{{ mes.mes }}</th>
+                                                                                                <th class="w-300" colspan="{% if comparativo %} 6 {% else %} 3 {% endif %}">{{ mes.mes }}</th>
                                                                                             {% endfor %}
                                                                                         </tr>
                                                                                         <tr>
-                                                                                            <th rowspan="2" style="padding-top: 0; padding-bottom: 30px; min-width: 170px">Contratos / Procesos</th>
+                                                                                            <th rowspan="2" class="p-b-30 p-t-0 m-w-170">Contratos / Procesos</th>
                                                                                             {% if comparativo %}
                                                                                                 {% for mes in meses %}
                                                                                                     <th>Ingresos Reales</th>
@@ -353,6 +348,65 @@
                                             </tbody>
                                         </table>
                                     </div>
+                                    <br><br>
+                                    <div id="div_totales" class="table-responsive">
+                                        <table class="table table-bordered w-100" id="dataTableCategoria">
+                                            <thead class="bg-primary-400">
+                                                {% if comparativo %}
+                                                <tr>
+                                                    <th colspan="4" class="w-300">Totales Reales</th>
+                                                    <th colspan="4" class="w-300">Totales Proyectados</th>
+                                                </tr>
+                                                <tr>
+                                                    <th>Ingresos</th>
+                                                    <th>Costos</th>
+                                                    <th>Gastos</th>
+                                                    <th>Ingresos - Egresos</th>
+                                                    <th>Ingresos</th>
+                                                    <th>Costos</th>
+                                                    <th>Gastos</th>
+                                                    <th>Ingresos - Egresos</th>
+                                                <tr>
+                                                {% else %}
+                                                    <tr>
+                                                        <th colspan="4" class="w-300">Totales</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Ingresos</th>
+                                                        <th>Costos</th>
+                                                        <th>Gastos</th>
+                                                        <th>Ingresos - Egresos</th>
+                                                    </tr>
+                                                {% endif %}
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                {% if comparativo %}
+                                                    <td>{{ totales.total_ingresos_real }}</td>
+                                                    <td>{{ totales.total_costos_real }}</td>
+                                                    <td>{{ totales.total_gastos_real }}</td>
+                                                    <td>{{ totales.diferencia_ingresos_egresos_real }}</td>
+                                                    <td>{{ totales.total_ingresos_proyectado }}</td>
+                                                    <td>{{ totales.total_costos_proyectado }}</td>
+                                                    <td>{{ totales.total_gastos_proyectado }}</td>
+                                                    <td>{{ totales.diferencia_ingresos_egresos_proyectado }}</td>
+                                                {% else %}
+                                                    {% if valor.tipos_flujos_caja == 0 %}
+                                                        <td>{{ totales.total_ingresos_real }}</td>
+                                                        <td>{{ totales.total_costos_real }}</td>
+                                                        <td>{{ totales.total_gastos_real }}</td>
+                                                        <td>{{ totales.diferencia_ingresos_egresos_real }}</td>
+                                                    {% else %}
+                                                        <td>{{ totales.total_ingresos_proyectado }}</td>
+                                                        <td>{{ totales.total_costos_proyectado }}</td>
+                                                        <td>{{ totales.total_gastos_proyectado }}</td>
+                                                        <td>{{ totales.diferencia_ingresos_egresos_proyectado }}</td>
+                                                    {% endif %}
+                                                {% endif %}
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -371,10 +425,4 @@
     <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js'%}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script>
     <script src="{% static 'Financiero/js/FlujoCaja/Consolidado/configuracionesConsolidado.js' %}"></script>
-    <script src="{% static 'Financiero/js/FlujoCaja/Consolidado/botonesAnteriorSiguiente.js' %}"></script>
-    <style>
-    table th {
-      text-align: center;
-    }
-    </style>
 {% endblock %}

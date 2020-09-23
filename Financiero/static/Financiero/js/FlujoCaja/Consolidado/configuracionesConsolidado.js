@@ -310,9 +310,10 @@ function desplegarDetalle(origen, idObjeto) {
 }
 
 function Imprimir() {
-     let printContents = $('#consolidado').html();
+     let zonaImpresionConsolidado = $('#div_consolidado').html();
+     let zonaImpresionTotales = $('#div_totales').html();
      let originalContents = document.body.innerHTML;
-     document.body.innerHTML = printContents;
+     document.body.innerHTML = zonaImpresionConsolidado + zonaImpresionTotales;
      window.print();
      document.body.innerHTML = originalContents;
 }
