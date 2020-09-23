@@ -155,7 +155,7 @@
                                             <thead class="bg-primary-400">
                                                 <tr>
                                                     <th></th>
-                                                    <th rowspan="2" class="p-b-30">Categorías</th>
+                                                    <th rowspan="2" style="padding-bottom: 30px;">Categorías</th>
                                                     {% for mes in meses %}
                                                         <th class="w-300" colspan="{% if comparativo %} 6 {% else %} 3 {% endif %}">{{ mes.mes }}</th>
                                                     {% endfor %}
@@ -218,7 +218,7 @@
                                                                 <thead class="bg-info-400">
                                                                     <tr>
                                                                         <th></th>
-                                                                        <th rowspan="2" class="p-b-30">Subtipos</th>
+                                                                        <th rowspan="2" style="padding-bottom: 30px;">Subtipos</th>
                                                                         {% for mes in meses %}
                                                                             <th class="w-300" colspan="{% if comparativo %} 6 {% else %} 3 {% endif %}">{{ mes.mes }}</th>
                                                                         {% endfor %}
@@ -286,7 +286,7 @@
                                                                                             {% endfor %}
                                                                                         </tr>
                                                                                         <tr>
-                                                                                            <th rowspan="2" class="p-b-30 p-t-0 m-w-170">Contratos / Procesos</th>
+                                                                                            <th rowspan="2" class="p-t-0 m-w-170" style="padding-bottom: 30px;">Contratos / Procesos</th>
                                                                                             {% if comparativo %}
                                                                                                 {% for mes in meses %}
                                                                                                     <th>Ingresos Reales</th>
