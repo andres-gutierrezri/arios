@@ -63,15 +63,17 @@ class FlujoCajaConsolidadoView(AbstractEvaLoggedView):
             for valor in datos['lista_contratos']:
                 con_pro.append(valor)
         else:
-            for valor in FlujoCajaEncabezado.objects.get_flujos_x_contrato():
-                con_pro.append(valor.id)
+            if not datos['lista_procesos']:
+                for valor in FlujoCajaEncabezado.objects.get_flujos_x_contrato():
+                    con_pro.append(valor.id)
 
         if datos['lista_procesos']:
             for valor in datos['lista_procesos']:
                 con_pro.append(valor)
         else:
-            for valor in FlujoCajaEncabezado.objects.get_flujos_x_proceso():
-                con_pro.append(valor.id)
+            if not datos['lista_contratos']:
+                for valor in FlujoCajaEncabezado.objects.get_flujos_x_proceso():
+                    con_pro.append(valor.id)
 
         movimientos = FlujoCajaDetalle.objects\
             .filter(estado_id__in=estados, flujo_caja_enc__in=con_pro,
