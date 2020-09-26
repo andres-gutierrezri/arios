@@ -199,3 +199,56 @@ class ColaboradorContrato(models.Model):
     class Meta:
         unique_together = ('colaborador', 'contrato')
 
+
+class ColaboradorEmpresaManger(models.Manager):
+
+    def get_ids_empresas(self, colaborador_id: int = None, colaborador: Colaborador = None) -> QuerySet:
+        if colaborador:
+            colaborador_id = colaborador.id
+
+        filtro = {}
+        if colaborador_id:
+            filtro['colaborador_id'] = colaborador_id
+
+        return super().get_queryset().filter(**filtro).values_list('empresa_id', flat=True)
+
+    def get_ids_empresas_list(self, colaborador_id: int = None, colaborador: Colaborador = None) -> list:
+        return list(self.get_ids_empresas(colaborador_id, colaborador))
+
+
+class ColaboradorEmpresa(models.Model):
+    objects = ColaboradorEmpresaManger()
+    colaborador = models.ForeignKey(Colaborador, on_delete=models.DO_NOTHING, verbose_name='Colaborador', null=False,
+                                    blank=False)
+    empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa', null=False,
+                                blank=False)
+
+    def __str__(self):
+        return str(self.empresa.id)
+
+    class Meta:
+        unique_together = ('colaborador', 'empresa')
+
+
+class TipoNovedad(models.Model):
+    nombre = models.CharField(max_length=30, verbose_name="Nombre", null=False, blank=False)
+    descripcion = models.CharField(max_length=100, verbose_name="Descripción", null=False, blank=False)
+    activar_usuario = models.BooleanField(verbose_name='Activar Usuario', null=False, blank=False)
+    desactivar_usuario = models.BooleanField(verbose_name='Desactivar Usuario', null=False, blank=False)
+    estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
+
+    def __str__(self):
+        return self.nombre
+
+
+class NovedaColaborador(models.Model):
+    tipo_novedad = models.ForeignKey(TipoNovedad, on_delete=models.DO_NOTHING, verbose_name='Tipo de Novedad',
+                                     null=False, blank=False)
+    usuario_crea = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario Crea',
+                                     null=False, blank=False)
+    descripcion = models.CharField(max_length=100, verbose_name="Descripción", null=False, blank=False)
+    fecha_novedad = models.DateField(verbose_name='Fecha de Novedad', null=False, blank=False)
+    fecha_crea = models.DateField(verbose_name='Fecha de Creación', null=False, blank=False)
+
+    def __str__(self):
+        return self.tipo_novedad.nombre
