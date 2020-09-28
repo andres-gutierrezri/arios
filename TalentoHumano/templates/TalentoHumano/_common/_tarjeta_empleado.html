@@ -25,6 +25,9 @@
                         {% if perms.auth.change_permission and request.user.id != colaborador.usuario_id and not colaborador.usuario.is_superuser %}
                         <a class="dropdown-item" href="{% url 'TalentoHumano:colaboradores-permisos' colaborador.usuario_id 0 %}">Gestionar Permisos</a>
                         {% endif %}
+                        {% if perms.TalentoHumano.add_novedacolaborador %}
+                        <a class="dropdown-item" href="javascript: agregarNovedad({{ colaborador.usuario_id }})">Agregar Novedad</a>
+                        {% endif %}
                         {% if perms.TalentoHumano.delete_colaborador %}
                         <a class="dropdown-item" href="javascript:void(0);" id="eliminar_{{ id_tarjeta }}"   onclick="fConfirmarEliminar({{ id_tarjeta }})">Eliminar</a>
                         {% endif %}
