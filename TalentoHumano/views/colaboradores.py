@@ -297,6 +297,32 @@ class ColaboradorCambiarFotoPerfilView(AbstractEvaLoggedView):
         return redirect(reverse('TalentoHumano:colaboradores-perfil', args=[id]))
 
 
+class AgregarNovedadView(AbstractEvaLoggedView):
+    def get(self, request, id_usuario):
+        colaborador = Colaborador.objects.get(usuario_id=id_usuario)
+        tipos_novedad = TipoNovedad.objects.get_xa_select_activos()
+        return render(request, 'TalentoHumano/_elements/_modal_agregar_novedad.html', {'colaborador': colaborador,
+                                                                                       'tipos_novedad': tipos_novedad})
+
+    def post(self, request, id_usuario):
+        colaborador = Colaborador.objects.get(usuario_id=id_usuario)
+        novedad = NovedaColaborador.from_dictionary(request.POST)
+        novedad.colaborador = colaborador
+        novedad.usuario_crea = request.user
+        novedad.fecha_crea = app_datetime_now()
+        try:
+            novedad.full_clean()
+        except ValidationError as errores:
+            if 'descripcion' in errores.message_dict:
+                messages.error(request, 'La descripción ingresada excede el tamaño máximo')
+            else:
+                messages.error(request, 'Ha ocurrido un error')
+            return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
+        novedad.save()
+        messages.success(request, 'Se agregó la novedad correctamente')
+        return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
+
+
 # region Métodos de ayuda
 
 
