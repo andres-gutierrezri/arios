@@ -1,0 +1,39 @@
+{% load eva_tags %}
+{% load static %}
+
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header p-b-0">
+            <h4 class="modal-title">
+                Agregar Novedad al Colaborador: {{ colaborador.nombre_completo }}
+            </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"><i class="fal fa-times"></i></span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form action="{% url 'TalentoHumano:colaboradores-novedad-agregar' colaborador.id %}" id="agregar-novedad-form" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <div class="form-group">
+                    <div class="m-b-10">
+                        {% select_tag tipos_novedad 'tipo_novedad_id' 'Seleccione un tipo de novedad' texto_label="Tipo de Novedad" required="" modal=True mensaje_validacion='Por favor seleccione un tipo de novedad' %}
+                    </div>
+                    <div class="m-b-10">
+                        {% input_date_tag 'fecha_novedad' 'Fecha de novedad' placeholder="Seleccione una fecha" required="" modal=True autocomplete="off" mensaje_validacion='Por favor seleccione una fecha.' %}
+                    </div>
+                    <div class="m-b-10">
+                        {% input_textarea_tag 'descripcion' 'Descripción' placeholder="Ingrese la descripción de na novedad" required="" modal=True maxlength="100" mensaje_validacion='Por favor describa la novedad' %}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div >
+                        <button id="agregar" type="submit" class="btn btn-primary btn-block"> Agregar </button>
+                    </div>
+                    <div style="padding-left: 15px">
+                        <button data-dismiss="modal" class="btn btn-danger btn-block">Cancelar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
