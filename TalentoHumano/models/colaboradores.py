@@ -231,6 +231,7 @@ class ColaboradorEmpresa(models.Model):
 
 
 class TipoNovedad(models.Model):
+    objects = ManagerGeneral()
     nombre = models.CharField(max_length=30, verbose_name="Nombre", null=False, blank=False)
     descripcion = models.CharField(max_length=100, verbose_name="Descripción", null=False, blank=False)
     activar_usuario = models.BooleanField(verbose_name='Activar Usuario', null=False, blank=False)
@@ -245,6 +246,8 @@ class TipoNovedad(models.Model):
 
 
 class NovedaColaborador(models.Model):
+    colaborador = models.ForeignKey(Colaborador, on_delete=models.DO_NOTHING, verbose_name='Colaborador', null=False,
+                                    blank=False)
     tipo_novedad = models.ForeignKey(TipoNovedad, on_delete=models.DO_NOTHING, verbose_name='Tipo de Novedad',
                                      null=False, blank=False)
     usuario_crea = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario Crea',
@@ -255,3 +258,16 @@ class NovedaColaborador(models.Model):
 
     def __str__(self):
         return self.tipo_novedad.nombre
+
+    @staticmethod
+    def from_dictionary(datos: dict) -> 'NovedaColaborador':
+        """
+        Crea una instancia de NovedadColborador con los datos pasados en el diccionario.
+        :param datos: Diccionario con los datos para crear Colaboradores.
+        :return: Instacia de entidad NovedadColaborador con la información especificada en el diccionario.
+        """
+        novedad = NovedaColaborador()
+        novedad.tipo_novedad_id = datos.get('tipo_novedad_id', '')
+        novedad.fecha_novedad = datos.get('fecha_novedad', '')
+        novedad.descripcion = datos.get('descripcion', '')
+        return novedad
