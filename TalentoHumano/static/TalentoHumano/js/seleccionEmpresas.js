@@ -9,7 +9,7 @@ function seleccionarEmpresas(usuario) {
         try {
             $(this).modal('show');
             JSON.parse($('#empresas_seleccionadas').val()).forEach(function (item) {
-                 adicionarSeleccionEmpresa(item.id);
+                 adicionarSeleccionEmpresa(item);
             });
         } catch (err) {
             console.log(err);
