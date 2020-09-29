@@ -28,7 +28,7 @@
                         {% if perms.TalentoHumano.add_novedacolaborador %}
                         <a class="dropdown-item" href="javascript: agregarNovedad({{ colaborador.usuario_id }})">Agregar Novedad</a>
                         {% endif %}
-                        {% if perms.TalentoHumano.add_empresacolaborador %}
+                        {% if perms.TalentoHumano.add_colaboradorempresa %}
                         <a class="dropdown-item" href="javascript: seleccionarEmpresas({{ colaborador.usuario_id }})">Empresas</a>
                         {% endif %}
                         {% if perms.TalentoHumano.delete_colaborador %}
