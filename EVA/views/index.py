@@ -32,7 +32,7 @@ class IndexView(AbstractEvaLoggedView):
 
 def actualizar_empresa_sesion(request):
     colaborador = Colaborador.objects.get(usuario=request.user)
-    colaborador_empresa = ColaboradorEmpresa.objects.filter(colaborador=colaborador)
+    colaborador_empresa = ColaboradorEmpresa.objects.filter(colaborador=colaborador).order_by('empresa_id')
 
     coincidencia = False
     for c_e in colaborador_empresa:
