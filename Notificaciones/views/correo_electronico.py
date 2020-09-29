@@ -20,36 +20,24 @@ from Notificaciones.views.views import construir_notificaciones, crear_notificac
 
 def construir_y_enviar_notificacion_x_email(notificaciones):
     try:
-        lista_notificaciones = []
+        correos = {}
         for notif in notificaciones:
-            existe = False
-            for lista in lista_notificaciones:
-                if lista == notif['id_not']:
-                    existe = True
-            if not existe:
-                lista_notificaciones.append(notif['id_not'])
+            if notif['id_not'] not in correos:
+                token = get_random_string(length=30)
+                TokenRutaCorreo.objects.create(token=token, ruta=notif['ruta'], destinatario_id=notif['id_dest'])
+                correos[notif['id_not']] = {'nombre': notif['nombre'], 'mensaje': notif['mensaje'],
+                                            'asunto': notif['asunto'], 'token': token,
+                                            'lista_destinatarios': [notif['destinatario']]}
+            else:
+                # Si es más de un destinatario se elimina el nombre, ya que se envia el mismo contenido a todos.
+                correos.get(notif['id_not']).get('lista_destinatarios').append(notif['destinatario'])
 
-        for id_not in lista_notificaciones:
-            lista_destinatarios = []
-            asunto = ''
-            nombre = ''
-            mensaje = ''
-            ruta = ''
-            id_dest = ''
-            for notif in notificaciones:
-                if id_not == notif['id_not']:
-                    asunto = notif['asunto']
-                    nombre = notif['nombre']
-                    mensaje = notif['mensaje']
-                    ruta = notif['ruta']
-                    id_dest = notif['id_dest']
-                    lista_destinatarios.append(notif['destinatario'])
-            token = get_random_string(length=30)
-            TokenRutaCorreo.objects.create(token=token, ruta=ruta, destinatario_id=id_dest)
-            contenido = {'nombre': nombre, 'mensaje': mensaje, 'asunto': asunto, 'token': token, 'lista_destinatarios': lista_destinatarios}
+        for contenido in correos.values():
+            if len(contenido) > 1:
+                contenido.pop('nombre')
             enviar_correo(contenido)
-        return True
 
+        return True
     except:
         return False
 
