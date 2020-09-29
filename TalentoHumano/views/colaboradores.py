@@ -10,6 +10,7 @@ from django.utils.http import urlsafe_base64_encode
 
 from Administracion.models import Cargo, Proceso, TipoContrato, CentroPoblado, Rango, Municipio, Departamento, \
     TipoIdentificacion, Empresa
+from Administracion.utils import get_id_empresa_global
 from EVA import settings
 from EVA.General.utilidades import validar_formato_imagen, app_datetime_now
 from Notificaciones.views.correo_electronico import enviar_correo
@@ -69,6 +70,7 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
 
     def post(self, request):
         colaborador = Colaborador.from_dictionary(request.POST)
+        colaborador.empresa_sesion_id = get_id_empresa_global(request)
         colaborador.usuario_crea = request.user
         contratos = request.POST.getlist('contrato_id[]', None)
         grupos = request.POST.getlist('grupo_id[]', None)
@@ -80,7 +82,7 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
 
         try:
             # Se excluye el usuario debido a que el id no es asignado  después de ser guardado en la BD.
-            colaborador.full_clean(exclude=['usuario', 'empresa_sesion'])
+            colaborador.full_clean(exclude=['usuario'])
         except ValidationError as errores:
             datos = datos_xa_render(self.OPCION, colaborador)
             datos['errores'] = errores.message_dict
@@ -109,6 +111,7 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
             colaborador.usuario_id = colaborador.usuario.id
             colaborador.empresa_sesion_id = Contrato.objects.get(id=contratos[0]).empresa_id
             colaborador.save()
+            ColaboradorEmpresa.objects.create(colaborador=colaborador, empresa_id=get_id_empresa_global(request))
             crear_notificacion_por_evento(EventoDesencadenador.BIENVENIDA, colaborador.usuario_id,
                                           colaborador.nombre_completo)
             crear_notificacion_por_evento(EventoDesencadenador.COLABORADOR, colaborador.usuario_id,
