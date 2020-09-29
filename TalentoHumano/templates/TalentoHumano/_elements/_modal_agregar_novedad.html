@@ -12,7 +12,7 @@
             </button>
         </div>
         <div class="modal-body">
-            <form action="{% url 'TalentoHumano:colaboradores-novedad-agregar' colaborador.id %}" id="agregar-novedad-form" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+            <form action="{% url 'TalentoHumano:colaboradores-novedad-agregar' colaborador.usuario_id %}" id="agregar-novedad-form" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
                 {% csrf_token %}
                 <div class="form-group">
                     <div class="m-b-10">
