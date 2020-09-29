@@ -240,6 +240,9 @@ class TipoNovedad(models.Model):
     def __str__(self):
         return self.nombre
 
+    # Tipos Fijos
+    ENTEREGA_DOTACION = 1
+
 
 class NovedaColaborador(models.Model):
     tipo_novedad = models.ForeignKey(TipoNovedad, on_delete=models.DO_NOTHING, verbose_name='Tipo de Novedad',

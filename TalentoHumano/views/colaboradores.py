@@ -11,10 +11,10 @@ from django.utils.http import urlsafe_base64_encode
 from Administracion.models import Cargo, Proceso, TipoContrato, CentroPoblado, Rango, Municipio, Departamento, \
     TipoIdentificacion
 from EVA import settings
-from EVA.General.utilidades import validar_formato_imagen
+from EVA.General.utilidades import validar_formato_imagen, app_datetime_now
 from Notificaciones.views.correo_electronico import enviar_correo
 from EVA.General.validacionpermisos import tiene_permisos
-from TalentoHumano.models.colaboradores import ColaboradorContrato
+from TalentoHumano.models.colaboradores import ColaboradorContrato, TipoNovedad, NovedaColaborador
 from EVA.views.index import AbstractEvaLoggedView
 from Notificaciones.models.models import EventoDesencadenador
 from Notificaciones.views.views import crear_notificacion_por_evento
@@ -46,12 +46,19 @@ class ColaboradoresPerfilView(AbstractEvaLoggedView):
                 not tiene_permisos(request, 'TalentoHumano', ['view_colaborador'], None):
             return redirect(reverse('eva-index'))
         else:
-            colaborador = Colaborador.objects.get(id=id)
+            colaborador = Colaborador.objects.get(usuario_id=id)
+            colaborador.usuario.get_full_name()
             colaboradores = Colaborador.objects.all()[:9]
             contratos = ColaboradorContrato.objects.filter(colaborador=colaborador)
-            return render(request, 'TalentoHumano/Colaboradores/perfil.html', {'colaborador': colaborador,
-                                                                               'contratos': contratos,
-                                                                               'colaboradores': colaboradores})
+            novedades = NovedaColaborador.objects.filter(colaborador=colaborador)
+            entregas_dotacion = novedades.filter(tipo_novedad_id=TipoNovedad.ENTEREGA_DOTACION)
+            novedades_colaborador = novedades.exclude(tipo_novedad_id=TipoNovedad.ENTEREGA_DOTACION)
+            return render(request, 'TalentoHumano/Colaboradores/perfil.html',
+                          {'colaborador': colaborador,
+                           'contratos': contratos,
+                           'entregas_dotacion': entregas_dotacion,
+                           'novedades_colaborador': novedades_colaborador,
+                           'colaboradores': colaboradores})
 
 
 class ColaboradoresCrearView(AbstractEvaLoggedView):
@@ -318,6 +325,16 @@ class AgregarNovedadView(AbstractEvaLoggedView):
             else:
                 messages.error(request, 'Ha ocurrido un error')
             return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
+
+        if novedad.tipo_novedad.activar_usuario:
+            usuario = User.objects.get(id=id_usuario)
+            usuario.is_active = True
+            usuario.save(update_fields=['is_active'])
+        if novedad.tipo_novedad.desactivar_usuario:
+            usuario = User.objects.get(id=id_usuario)
+            usuario.is_active = False
+            usuario.save(update_fields=['is_active'])
+
         novedad.save()
         messages.success(request, 'Se agregó la novedad correctamente')
         return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
