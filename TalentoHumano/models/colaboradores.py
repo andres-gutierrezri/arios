@@ -54,7 +54,6 @@ class Colaborador(Persona, ModelDjangoExtensiones):
                                           related_name='%(app_label)s_%(class)s_caja_compensacion')
     fecha_ingreso = models.DateField(verbose_name='Fecha de ingreso', null=False, blank=False)
     fecha_examen = models.DateField(verbose_name='Fecha de examen', null=False, blank=False)
-    fecha_dotacion = models.DateField(verbose_name='Fecha de dotación', null=True, blank=False)
     salario = models.IntegerField(verbose_name="Salario", null=True, blank=False)
     jefe_inmediato = models.ForeignKey('self', on_delete=models.DO_NOTHING, verbose_name='Jefe inmediato', null=True,
                                        blank=True)
@@ -112,7 +111,6 @@ class Colaborador(Persona, ModelDjangoExtensiones):
         colaborador.caja_compensacion_id = datos.get('caja_compensacion_id', '')
         colaborador.fecha_ingreso = string_to_date(datos.get('fecha_ingreso', ''))
         colaborador.fecha_examen = string_to_date(datos.get('fecha_examen', ''))
-        colaborador.fecha_dotacion = string_to_date(datos.get('fecha_dotacion', ''))
         colaborador.salario = datos.get('salario', '')
         colaborador.jefe_inmediato_id = datos.get('jefe_inmediato_id', '')
         if colaborador.jefe_inmediato_id == '':

@@ -92,11 +92,6 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
                         break
             return render(request, 'TalentoHumano/Colaboradores/crear-editar.html', datos)
 
-        if colaborador.fecha_dotacion < colaborador.fecha_ingreso:
-            messages.warning(request, 'La fecha de ingreso debe ser menor o igual a la fecha de entrega de dotación')
-            return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
-                          datos_xa_render(self.OPCION, colaborador))
-
         if colaborador.fecha_ingreso < colaborador.fecha_examen:
             messages.warning(request, 'La fecha de examen debe ser menor o igual a la fecha de ingreso')
             return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
@@ -159,7 +154,7 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
     def post(self, request, id):
         update_fields = ['direccion', 'talla_camisa', 'talla_zapatos', 'talla_pantalon', 'eps_id',
                          'arl_id', 'afp_id', 'caja_compensacion_id', 'fecha_ingreso', 'fecha_examen',
-                         'fecha_dotacion', 'salario', 'jefe_inmediato_id', 'cargo_id', 'proceso_id',
+                         'salario', 'jefe_inmediato_id', 'cargo_id', 'proceso_id',
                          'tipo_contrato_id', 'lugar_nacimiento_id', 'rango_id', 'fecha_nacimiento',
                          'identificacion', 'tipo_identificacion_id', 'fecha_expedicion', 'genero', 'telefono',
                          'estado', 'nombre_contacto', 'grupo_sanguineo', 'telefono_contacto', 'parentesco',
@@ -228,11 +223,6 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
             messages.success(request, 'No se hicieron cambios en el colaborador {0}'
                              .format(colaborador.nombre_completo))
             return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
-
-        if colaborador.fecha_dotacion < colaborador.fecha_ingreso:
-            messages.warning(request, 'La fecha de ingreso debe ser menor o igual a la fecha de entrega de dotación')
-            return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
-                          datos_xa_render(self.OPCION, colaborador))
 
         if colaborador.fecha_ingreso < colaborador.fecha_examen:
             messages.warning(request, 'La fecha de examen debe ser menor o igual a la fecha de ingreso')
