@@ -38,7 +38,7 @@ function agregarNovedad(usuario) {
             agregarValidacionFormularios();
         } catch (err) {
             console.log(err);
-            EVANotificacion.toast.error('Ha ocurrido un error al cargar la foto de perfil');
+            EVANotificacion.toast.error('Ha ocurrido un error al guardar la novedad');
         }
     });
 }
