@@ -41,4 +41,6 @@ urlpatterns = [
          name='colaboradores-permisos'),
     path('colaboradores/novedad/add/<int:id_usuario>', colaboradores.AgregarNovedadView.as_view(),
          name='colaboradores-novedad-agregar'),
+    path('colaboradores/seleccion-empresas/<int:id_usuario>', colaboradores.SeleccionEmpresaView.as_view(),
+         name='colaboradores-seleccion-empresas'),
 ]

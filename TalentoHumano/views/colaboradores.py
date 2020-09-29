@@ -9,12 +9,12 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
 from Administracion.models import Cargo, Proceso, TipoContrato, CentroPoblado, Rango, Municipio, Departamento, \
-    TipoIdentificacion
+    TipoIdentificacion, Empresa
 from EVA import settings
 from EVA.General.utilidades import validar_formato_imagen, app_datetime_now
 from Notificaciones.views.correo_electronico import enviar_correo
 from EVA.General.validacionpermisos import tiene_permisos
-from TalentoHumano.models.colaboradores import ColaboradorContrato, TipoNovedad, NovedaColaborador
+from TalentoHumano.models.colaboradores import ColaboradorContrato, TipoNovedad, NovedaColaborador, ColaboradorEmpresa
 from EVA.views.index import AbstractEvaLoggedView
 from Notificaciones.models.models import EventoDesencadenador
 from Notificaciones.views.views import crear_notificacion_por_evento
@@ -337,6 +337,45 @@ class AgregarNovedadView(AbstractEvaLoggedView):
 
         novedad.save()
         messages.success(request, 'Se agregó la novedad correctamente')
+        return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
+
+
+class SeleccionEmpresaView(AbstractEvaLoggedView):
+    def get(self, request, id_usuario):
+        todas_empresas = Empresa.objects.filter(estado=True)
+        empresas_seleccionadas = ColaboradorEmpresa.objects.filter(colaborador__usuario_id=id_usuario)
+        lista_empresas = []
+        for empresa in todas_empresas:
+            seleccion = False
+            for selecciones in empresas_seleccionadas:
+                if empresa == selecciones.empresa:
+                    seleccion = True
+                    break
+            lista_empresas.append({'id': empresa.id, 'nombre': empresa.nombre, 'logo': empresa.logo.url,
+                                   'seleccion': seleccion})
+        lista_selecciones = []
+        for e_s in empresas_seleccionadas:
+            lista_selecciones.append(e_s.empresa_id)
+
+        return render(request, 'TalentoHumano/_elements/_modal_seleccion_empresa.html',
+                      {'empresas': lista_empresas,
+                       'selecciones': lista_selecciones,
+                       'id_usuario': id_usuario})
+
+    def post(self, request, id_usuario):
+        colaborador = Colaborador.objects.get(usuario_id=id_usuario)
+
+        selecciones = request.POST.get('empresas_seleccionadas', '')
+        if selecciones:
+            selecciones = selecciones.split(',')
+            ColaboradorEmpresa.objects.filter(colaborador=colaborador).delete()
+        else:
+            messages.success(request, 'No se encontraron selecciones. No se realizó ningún cambio.')
+            return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
+
+        for sel in selecciones:
+            ColaboradorEmpresa.objects.create(colaborador=colaborador, empresa_id=sel)
+        messages.success(request, 'Se guardaron las empresas seleccionadas correctamente.')
         return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
 
 
