@@ -241,6 +241,10 @@ class TipoNovedad(models.Model):
     def __str__(self):
         return self.nombre
 
+    class Meta:
+        verbose_name = 'Tipo Novedad'
+        verbose_name_plural = 'Tipos Novedades'
+
     # Tipos Fijos
     ENTEREGA_DOTACION = 1
 
