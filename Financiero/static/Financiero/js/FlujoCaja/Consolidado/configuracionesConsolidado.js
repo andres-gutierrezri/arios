@@ -31,9 +31,9 @@ $(document).ready(function() {
     let numeroMeses = $('#numero_meses').val();
     let configuracionColspan = $('.configuracion_colspan');
     if (consolidadoComparativo === 'True'){
-        configuracionColspan.attr('colspan', (numeroMeses * 6) + 2);
+        configuracionColspan.attr('colspan', ((parseInt(numeroMeses) * 2) + 2));
     }else{
-        configuracionColspan.attr('colspan', (numeroMeses * 3) + 2);
+        configuracionColspan.attr('colspan', (parseInt(numeroMeses) + 2));
     }
 
 
