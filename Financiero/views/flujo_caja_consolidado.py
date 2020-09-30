@@ -212,7 +212,10 @@ def datos_formulario_consolidado(request):
 
 
 def obtener_fecha_minima(objeto):
-    primera_fecha = app_date_now()
+    if objeto:
+        primera_fecha = objeto.order_by('fecha_movimiento').first().fecha_movimiento.date()
+    else:
+        primera_fecha = app_date_now()
     for x in objeto:
         if x.fecha_movimiento.date() < primera_fecha:
             primera_fecha = x.fecha_movimiento.date()
@@ -220,11 +223,14 @@ def obtener_fecha_minima(objeto):
 
 
 def obtener_fecha_maxima(objeto):
-    segunda_fecha = app_date_now()
+    if objeto:
+        ultima_fecha = objeto.order_by('fecha_movimiento').last().fecha_movimiento.date()
+    else:
+        ultima_fecha = app_date_now()
     for x in objeto:
-        if x.fecha_movimiento.date() > segunda_fecha:
-            segunda_fecha = x.fecha_movimiento.date()
-    return segunda_fecha
+        if x.fecha_movimiento.date() > ultima_fecha:
+            ultima_fecha = x.fecha_movimiento.date()
+    return ultima_fecha
 
 
 def consolidado_ingresos_costos_gastos(objeto):
