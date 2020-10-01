@@ -60,7 +60,7 @@ class Contrato(models.Model, ModelDjangoExtensiones):
         contrato.cliente_id = datos.get('cliente_id', '')
         contrato.anho = datos.get('anho', '')
         contrato.residente_id = datos.get('residente_id', '')
-        contrato.fecha_suscripcion = string_to_date(datos.get('fecha_suscripcion', ''))
+        contrato.fecha_suscripcion = string_to_datetime(datos.get('fecha_suscripcion', ''))
         contrato.valor = datos.get('valor', '')
         contrato.valor_con_iva = datos.get('valor_con_iva', '')
         contrato.valor_sin_iva = datos.get('valor_sin_iva', '')
@@ -88,6 +88,7 @@ class FormasPago(models.Model, ModelDjangoExtensiones):
     liquidacion = models.DecimalField(verbose_name='Liquidación', decimal_places=2, max_digits=5,
                                       blank=True, null=True)
     forma_pago = models.IntegerField(verbose_name='Forma de Pago', blank=False, null=False)
+    aplica_porcentaje = models.BooleanField(verbose_name='Aplica Porcentaje', blank=False, null=False)
 
     def __str__(self):
         return 'Forma de Pago para el contrato: {0}'.format(self.contrato)
