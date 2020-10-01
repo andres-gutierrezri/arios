@@ -173,7 +173,7 @@
                                                     <tr>
                                                         <td class="w-10">
                                                             {% if mov.valores %}
-                                                                <a class="far fa-2x far fa-plus-circle" id="boton_tipo_movimiento_{{ mov.id_tipo }}" href="javascript:desplegarDetalle('tipo_movimiento', {{ mov.id_tipo }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip"></a>
+                                                                <a class="far fa-2x far fa-plus-circle" id="boton_tipo_movimiento_{{ mov.id_tipo }}_{{ mov.id_tipo }}" href="javascript:desplegarDetalle('tipo_movimiento', '{{ mov.id_tipo }}', '{{ mov.id_tipo }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip"></a>
                                                             {% endif %}
                                                         </td>
                                                         <td>{{ mov.nombre_tipo }}</td>
@@ -192,7 +192,7 @@
                                                             {% endfor %}
                                                         {% endif %}
                                                     </tr>
-                                                    <tr id="mas_tipo_movimiento_{{ mov.id_tipo }}" style="display: none">
+                                                    <tr id="mas_tipo_movimiento_{{ mov.id_tipo }}_{{ mov.id_tipo }}" style="display: none">
                                                         <td class="configuracion_colspan">
                                                              <table class="table table-bordered w-100" id="dataTableCategoria">
                                                                 <thead class="bg-info-700">
@@ -215,7 +215,7 @@
                                                                     {% for cat in mov.valores %}
                                                                         <tr>
                                                                             <td class="w-10">
-                                                                                <a class="far fa-2x far fa-plus-circle" id="boton_categoria_{{ cat.id }}" href="javascript:desplegarDetalle('categoria', {{ cat.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip"></a>
+                                                                                <a class="far fa-2x far fa-plus-circle" id="boton_categoria_{{ mov.id_tipo }}_{{ cat.id }}" href="javascript:desplegarDetalle('categoria', '{{ cat.id }}', '{{ mov.id_tipo }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip"></a>
                                                                             </td>
                                                                             <td>{{ cat.nombre }}</td>
                                                                             {% if comparativo %}
@@ -255,7 +255,7 @@
                                                                                 {% endif %}
                                                                             {% endif %}
                                                                         </tr>
-                                                                        <tr id="mas_categoria_{{ cat.id }}" style="display: none">
+                                                                        <tr id="mas_categoria_{{ mov.id_tipo }}_{{ cat.id }}" style="display: none">
                                                                             <td class="configuracion_colspan">
                                                                                  <table class="table table-bordered w-100" id="dataTableSubtipo">
                                                                                     <thead class="bg-success-700">
@@ -278,7 +278,7 @@
                                                                                         {% for sub in cat.subtipos %}
                                                                                             <tr>
                                                                                                 <td class="w-10">
-                                                                                                    <a class="far fa-2x far fa-plus-circle" id="boton_subtipo_{{ sub.id }}" href="javascript:desplegarDetalle('subtipo', {{ sub.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip"></a>
+                                                                                                    <a class="far fa-2x far fa-plus-circle" id="boton_subtipo_{{ mov.id_tipo }}_{{ sub.id }}" href="javascript:desplegarDetalle('subtipo', '{{ sub.id }}', '{{ mov.id_tipo }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip"></a>
                                                                                                 </td>
                                                                                                 <td>{{ sub.nombre }}</td>
                                                                                                 {% if comparativo %}
@@ -318,7 +318,7 @@
                                                                                                     {% endif %}
                                                                                                 {% endif %}
                                                                                             </tr>
-                                                                                            <tr id="mas_subtipo_{{ sub.id }}" style="display: none">
+                                                                                            <tr id="mas_subtipo_{{ mov.id_tipo }}_{{ sub.id }}" style="display: none">
                                                                                                 <td class="configuracion_colspan">
                                                                                                      <table class="table table-bordered w-100" id="dataTableConPro">
                                                                                                         <thead class="bg-fusion-50">

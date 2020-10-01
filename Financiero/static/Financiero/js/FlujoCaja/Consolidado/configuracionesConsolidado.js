@@ -295,9 +295,9 @@ idCategorias.change(function () {
         }
     });
 
-function desplegarDetalle(origen, idObjeto) {
-    let mas = $('#mas_'+ origen +'_' + idObjeto);
-    let boton =  $('#boton_'+ origen +'_' + idObjeto);
+function desplegarDetalle(origen, idObjeto, idTipo) {
+    let mas = $('#mas_'+ origen +'_' + idTipo + '_' + idObjeto);
+    let boton =  $('#boton_'+ origen +'_' + idTipo + '_' + idObjeto);
     if (mas.is(':visible')) {
         mas.hide();
         boton.removeClass('fa-minus-circle');

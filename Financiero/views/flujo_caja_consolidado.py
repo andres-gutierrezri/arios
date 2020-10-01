@@ -295,7 +295,8 @@ def consolidado_ingresos_costos_gastos(objeto):
         consolidado_resultado\
             .append({'id_tipo': tipo_movimiento.id, 'nombre_tipo': tipo_movimiento.nombre,
                      'meses': valores_mes_tipo_movimiento,
-                     'valores': construir_consolidado(objeto.filter(subtipo_movimiento__tipo_movimiento=tipo_movimiento))})
+                     'valores': construir_consolidado(objeto.filter(subtipo_movimiento__tipo_movimiento=tipo_movimiento),
+                                                      fecha_minima, fecha_maxima)})
 
     totales = {'total_ingresos_real': total_ingresos_real,
                'total_ingresos_proyectado': total_ingresos_proyectado,
@@ -311,9 +312,7 @@ def consolidado_ingresos_costos_gastos(objeto):
     return {'consolidado': consolidado_resultado, 'lista_meses': lista_meses, 'totales': totales}
 
 
-def construir_consolidado(objeto):
-    fecha_minima = obtener_fecha_minima(objeto)
-    fecha_maxima = obtener_fecha_maxima(objeto)
+def construir_consolidado(objeto, fecha_minima, fecha_maxima):
 
     categorias = objeto.distinct('subtipo_movimiento__categoria_movimiento')\
         .values(id_categoria=F('subtipo_movimiento__categoria_movimiento_id'),
