@@ -4,13 +4,23 @@ from __future__ import unicode_literals
 from django.http import JsonResponse
 from django.shortcuts import render
 
-from Administracion.models import Municipio, CentroPoblado
+from Administracion.models import Municipio, CentroPoblado, Departamento
 from EVA.views.index import AbstractEvaLoggedView
 
 
 class PrincipalView(AbstractEvaLoggedView):
     def get(self, request):
         return render(request, 'Administracion/index.html')
+
+
+class CargarDepartamentosSelectJsonView(AbstractEvaLoggedView):
+    def get(self, request, id):
+        try:
+            departamentos = Departamento.objects.filter(pais_id=id).order_by('nombre')
+            departamentos_json = [departamento.to_dict(campos=['id', 'nombre']) for departamento in departamentos]
+            return JsonResponse(departamentos_json, safe=False)
+        except:
+            return JsonResponse({"Error": "True"})
 
 
 class CargarMunicipiosSelectJsonView(AbstractEvaLoggedView):

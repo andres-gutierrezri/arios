@@ -1,0 +1,188 @@
+{% load static %}
+{% load humanize %}
+<div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+        <div class="modal-header p-b-0">
+            <h4 class="modal-title">
+                Detalle del Contrato: {{ contrato.numero_contrato }} - {{ contrato.objeto_del_contrato }}
+            </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"><i class="fal fa-times"></i></span>
+            </button>
+        </div>
+        <div class="modal-body p-b-0">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card mb-g">
+                        <div class="row row-grid no-gutters">
+                            <div class="col-12">
+                                <div class="p-3">
+                                    <h2 class="mb-0 fs-xl">
+                                        <strong> Información Básica </strong>
+                                    </h2>
+                                </div>
+                            </div>
+                            <div class="p-3">
+                                <h5>
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Cliente: </b>{{ contrato.cliente }}
+                                    </small>
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Año del Contrato: </b>{{ contrato.anho }}
+                                    </small>
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Número del Contrato: </b>{{ contrato.numero_contrato }}
+                                    </small>
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Objeto del Contrato: </b>{{ contrato.objeto_del_contrato }}
+                                    </small>
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Plazo de Ejecución: </b>{{ contrato.plazo_ejecucion }}
+                                    </small>
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Valor del Contrato: </b>{{ contrato.valor|intcomma }}
+                                    </small>
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Tipo de Contrato: </b>{{ contrato.tipo_contrato }}
+                                    </small>
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Localización de Obras: </b>
+                                        {% for mun in municipios %}
+                                            <br>{{ mun.municipio.departamento.pais }} - {{ mun.municipio.departamento|title }} - {{ mun.municipio|title }}
+                                        {% endfor %}
+                                    </small>
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Fecha de Suscripción: </b>{{ contrato.fecha_suscripcion|date:'Y-m-d' }}
+                                    </small>
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Colaborador Residente: </b>{% if contrato.residente %}{{ contrato.residente.get_full_name }}{% else %}N/A{% endif %}
+                                    </small>
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Proceso a Cargo: </b>{% if contrato.proceso_a_cargo %}{{ contrato.proceso_a_cargo }}{% else %}N/A{% endif %}
+                                    </small>
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card mb-g">
+                        <div class="row row-grid no-gutters">
+                            <div class="col-12">
+                                <div class="p-3">
+                                    <h2 class="mb-0 fs-xl">
+                                        <strong> Información Financiera </strong>
+                                    </h2>
+                                </div>
+                            </div>
+                            <div class="p-3">
+                                <h5>
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Fecha de Registro Presupuestal: </b>{{ contrato.fecha_registro_presupuestal|date:'Y-m-d' }}
+                                    </small>
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Número del Registro Presupuestal: </b>{{ contrato.numero_registro_presupuestal }}
+                                    </small>
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Valor con IVA: </b>{{ contrato.valor_con_iva|intcomma }}
+                                    </small>
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Valor sin IVA: </b>{{ contrato.valor_sin_iva|intcomma }}
+                                    </small>
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Porcentaje A: </b>{% if contrato.porcentaje_a %}{{ contrato.porcentaje_a }}{% else %}N/A{% endif %}
+                                    </small>
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Porcentaje I: </b>{% if contrato.porcentaje_i %}{{ contrato.porcentaje_a }}{% else %}N/A{% endif %}
+                                    </small>
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Porcentaje U: </b>{% if contrato.porcentaje_u %}{{ contrato.porcentaje_a }}{% else %}N/A{% endif %}
+                                    </small>
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Forma de Pago: </b>
+                                        {% if forma_pago.anticipo %}<br>- <b>Anticipo: </b>{{ forma_pago.anticipo }}%{% endif %}
+                                        {% if forma_pago.actas_parciales %}<br>- <b>Actas Parciales: </b>{{ forma_pago.actas_parciales }}%{% endif %}
+                                        {% if forma_pago.liquidacion %}<br>- <b>Liquidación: </b>{{ forma_pago.liquidacion }}%{% endif %}
+                                        {% if forma_pago.forma_pago == 0 %}<br>- <b>Satisfacción y Contraentrega: </b> 100%{% endif %}
+                                    </small>
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Vigencias: </b>
+                                        {% for vig in vigencias %}
+                                            <br>Año: {{ vig.anho }} - Valor: {{ vig.valor|intcomma }}
+                                        {% endfor %}
+                                    </small>
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Origen de los Recursos: </b>{{ contrato.origen_de_recursos }}
+                                    </small>
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card mb-g">
+                        <div class="row row-grid no-gutters">
+                            <div class="col-12">
+                                <div class="p-3">
+                                    <h2 class="mb-0 fs-xl">
+                                        <strong> Supervisión e Interventoría </strong>
+                                    </h2>
+                                </div>
+                            </div>
+                            <div class="p-3">
+                                <h5>
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Supervisores: </b>
+                                        {% for sup in supervisores %}
+                                            <br>
+                                            - {{ sup.tercero }}
+                                        {% endfor %}
+                                    </small>
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Interventores: </b>
+                                        {% for int in interventores %}
+                                            <br>
+                                            - {{ int.tercero }}
+                                        {% endfor %}
+                                    </small>
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card mb-g">
+                        <div class="row row-grid no-gutters">
+                            <div class="col-12">
+                                <div class="p-3">
+                                    <h2 class="mb-0 fs-xl">
+                                        <strong> Garantías </strong>
+                                    </h2>
+                                </div>
+                            </div>
+                            <div class="p-3">
+                                <h5>
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Garantías: </b>
+                                        {% for gar in garantias %}
+                                            <br><b>Tipo: </b>{{ gar.tipo_garantia }}
+                                            <br><b>Porcentaje Asegurado: </b>{{ gar.porcentaje_asegurado }}%
+                                            <br><b>Vigencia: </b>{{ gar.vigencia }} Meses
+                                            <br><b>Extensiva: </b>{% if gar.extensiva %}Si{% else %}No{% endif %}
+                                            <br>
+                                        {% endfor %}
+                                    </small>
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer p-t-0" style="align-items: end">
+            <div style="padding-left: 15px">
+                <button data-dismiss="modal" class="btn btn-danger btn-block">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>

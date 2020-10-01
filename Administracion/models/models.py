@@ -146,6 +146,7 @@ class TipoContrato(models.Model):
     sigla = models.CharField(max_length=5, verbose_name='Sigla', null=False, blank=False, default='')
     tiene_fecha_fin = models.BooleanField(verbose_name='Tiene Fecha de Finalización', null=False, blank=False,
                                           default=True)
+    porcentaje_aiu = models.BooleanField(verbose_name='Porcentaje AIU', blank=False, null=False)
 
     def __str__(self):
         return self.nombre

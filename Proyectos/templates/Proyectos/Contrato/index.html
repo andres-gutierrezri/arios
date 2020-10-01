@@ -10,92 +10,81 @@
 {% endblock styles %}
 
 {% block main %}
-
     <div class="panel-container show">
-            <div class="header">
-                 <h1 class="header-title">
-                    <i class='far fa-file-alt'></i> Contratos <span class='fw-300'></span>
-                     <br>
-                     <br>
-                 </h1>
-            </div>
-            <div class="row">
-                <div class="col-xl-12">
-                    <div id="panel-1" class="panel">
-                        {% if perms.Proyectos.add_contrato %}
-                        <div class="panel-hdr">
-                            <small>
-                                 <a class="far fa-3x far fa-plus-circle"  href="{% url 'Proyectos:contratos-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar contrato"></a>
-                            </small>
-                        </div>
-                        {% endif %}
-                        <div class="panel-container show">
-                            <div class="panel-content">
-                                    <div class="panel-group">
-                                        <div class="panel-body">
-                                            <div class="table-responsive">
-                                                <table class="table table-bordered w-100" id="dataTable">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Cliente</th>
-                                                            <th>Número de contrato</th>
-                                                            <th>Año</th>
-                                                            <th>Nombre del supervisor</th>
-                                                            <th>Teléfono del supervisor</th>
-                                                            <th>Correo del supervisor</th>
-                                                            <th>Nombre del residente</th>
-                                                            <th>Fecha de suscripción</th>
-                                                            <th>Fecha de inicio</th>
-                                                            <th>Fecha de terminación</th>
-                                                            <th>Valor</th>
-                                                            <th>Tiempo de ejecucición</th>
-                                                            <th>Tipo de contrato</th>
-                                                            {% if perms.Proyectos.change_contrato or perms.Proyectos.delete_contrato %}
-                                                                <th>Acción</th>
+        <div class="header">
+             <h1 class="header-title">
+                <i class='far fa-file-alt'></i> Contratos <span class='fw-300'></span>
+                 <br>
+                 <br>
+             </h1>
+        </div>
+        <div class="row">
+            <div class="col-xl-12">
+                <div id="panel-1" class="panel">
+                    {% if perms.Proyectos.add_contrato %}
+                    <div class="panel-hdr">
+                        <small>
+                             <a class="far fa-3x far fa-plus-circle"  href="{% url 'Proyectos:contratos-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar contrato"></a>
+                        </small>
+                    </div>
+                    {% endif %}
+                    <div class="panel-container show">
+                        <div class="panel-content">
+                            <div class="panel-group">
+                                <div class="panel-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered w-100" id="dataTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Cliente</th>
+                                                    <th>Número de contrato</th>
+                                                    <th>Año</th>
+                                                    <th>Residente</th>
+                                                    <th>Fecha de suscripción</th>
+                                                    <th>Valor</th>
+                                                    <th>Tiempo de ejecucición</th>
+                                                    <th>Tipo de contrato</th>
+                                                    <th>Acción</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for contrato in contratos %}
+                                                    <tr>
+                                                        <td>{{ contrato.cliente}}</td>
+                                                        <td>{{ contrato.numero_contrato }}</td>
+                                                        <td>{{ contrato.anho}}</td>
+                                                        <td>{{ contrato.residente.get_full_name }}</td>
+                                                        <td>{{ contrato.fecha_suscripcion|date:'Y-m-d' }}</td>
+                                                        <td>{{ contrato.valor|intcomma }}</td>
+                                                        <td>{{ contrato.plazo_ejecucion }}</td>
+                                                        <td>{{ contrato.tipo_contrato }}</td>
+                                                        <td>
+                                                            {% if perms.Proyectos.view_contrato %}
+                                                            <a class="far fa-2x fa-list-alt" href="javascript:abrirModalDetalleContrato('{% url 'Proyectos:contratos-detalle' contrato.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Detalle"></a>
                                                             {% endif %}
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {% for contrato in contratos %}
-                                                            <tr>
-                                                                <td>{{ contrato.cliente}}</td>
-                                                                <td>{{ contrato.numero_contrato }}</td>
-                                                                <td>{{ contrato.anho}}</td>
-                                                                <td>{{ contrato.supervisor_nombre }}</td>
-                                                                <td>{{ contrato.supervisor_telefono }}</td>
-                                                                <td>{{ contrato.supervisor_correo }}</td>
-                                                                <td>{% if contrato.residente %}{{ contrato.residente }}{% endif %}</td>
-                                                                <td>{{ contrato.fecha_suscripcion|date:'Y-m-d' }}</td>
-                                                                <td>{{ contrato.fecha_inicio|date:'Y-m-d' }}</td>
-                                                                <td>{{ contrato.fecha_terminacion|date:'Y-m-d' }}</td>
-                                                                <td>{{ contrato.valor|intcomma }}</td>
-                                                                <td>{{ contrato.tiempo }}</td>
-                                                                <td>{{ contrato.tipo_contrato }}</td>
-                                                                {% if perms.Proyectos.change_contrato or perms.Proyectos.delete_contrato %}
-                                                                <td>
-                                                                    {% if perms.Proyectos.change_contrato %}
-                                                                    <a class="far fa-2x fa-edit"   href="{% url 'Proyectos:contratos-editar' contrato.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
-                                                                    {% endif %}
-                                                                    {% if perms.Proyectos.delete_contrato %}
-                                                                    <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ contrato.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminarContrato({{ contrato.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
-                                                                    {% endif %}
-                                                                </td>
-                                                                {% endif %}
-                                                            </tr>
-                                                        {% endfor %}
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                        <div class="card-footer small text-muted">Actualizado: {{ fecha }}</div>
+                                                            &nbsp;
+                                                            {% if perms.Proyectos.change_contrato %}
+                                                            <a class="far fa-2x fa-edit" href="{% url 'Proyectos:contratos-editar' contrato.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                            {% endif %}
+                                                            {% if perms.Proyectos.delete_contrato %}
+                                                            <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ contrato.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminarContrato({{ contrato.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+                                                            {% endif %}
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
+                                <div class="card-footer small text-muted">Actualizado: {{ fecha }}</div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
     </div>
-
+    <div class="modal fade" tabindex="-1" id="detalle_contrato" role="dialog"></div>
 
     {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='proyectos/contratos' %}
 {% endblock %}
@@ -107,4 +96,5 @@
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.export.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script>
     <script src="{% static 'Proyectos/js/Contratos/exportar_tabla.js' %}"></script>
+    <script src="{% static 'Proyectos/js/Contratos/detalleContrato.js' %}"></script>
 {% endblock %}

@@ -69,6 +69,10 @@ def numero_con_separadores(numero):
     return '{:,}'.format(numero).replace(",", "X").replace(".", ",").replace("X", ".")
 
 
+def decimal_para_input_number(numero):
+    return '{0}'.format(numero).replace(',', '.')
+
+
 def unidades_a_letras(unidad: str, decena_uno: bool) -> str:
     unidades = ['', 'UN', 'DOS', 'TRES', 'CUATRO', 'CINCO', 'SEIS', 'SIETE', 'OCHO', 'NUEVE']
     decenas = ['', 'ONCE', 'DOCE', 'TRECE', 'CATORCE', 'QUINCE', 'DIECISÉIS', 'DIECISIETE', 'DIECIOCHO', 'DIECINUEVE']
