@@ -133,3 +133,11 @@ position: relative;
 .t-a-e {
     text-align: end;
 }
+
+.min-w-200{
+    min-width: 200px;
+}
+
+.table-td-a-t-e td{
+    text-align: end;
+}
