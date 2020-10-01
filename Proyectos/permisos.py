@@ -7,4 +7,5 @@ permisos = [Permiso('index', None),
             Permiso('contratos-crear', ['Proyectos.add_contrato']),
             Permiso('contratos-editar', ['Proyectos.change_contrato']),
             Permiso('contratos-eliminar', ['Proyectos.delete_contrato']),
+            Permiso('contratos-detalle', ['Proyectos.view_contrato']),
             ]
