@@ -1,0 +1,60 @@
+{% load eva_tags %}
+{% load static %}
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header p-b-0">
+            <h4 class="modal-title">
+                {% if opcion == 'editar' %}Editar Movimiento{% else %}Agregar Movimiento{% endif %}
+            </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"><i class="fal fa-times"></i></span>
+            </button>
+        </div>
+        <div class="modal-body p-b-0">
+            {% if contrato %}
+                {% if opcion == 'editar' %}
+                    <form action="{% url 'Financiero:flujo-caja-movimiento-editar' flujo_detalle.id %}" id="flujo-caja-contratos-form" method="post" class="needs-validation" novalidate>
+                {% else %}
+                    <form action="{% url 'Financiero:flujo-caja-contratos-crear' contrato.id tipo %}" id="flujo-caja-contratos-form" method="post" class="needs-validation" novalidate>
+                {% endif %}
+            {% else %}
+                {% if opcion == 'editar' %}
+                    <form action="{% url 'Financiero:flujo-caja-movimiento-editar' flujo_detalle.id %}" id="flujo-caja-procesos-form" method="post" class="needs-validation" novalidate>
+                {% else %}
+                    <form action="{% url 'Financiero:flujo-caja-procesos-crear' proceso.id tipo %}" id="flujo-caja-procesos-form" method="post" class="needs-validation" novalidate>
+                {% endif %}
+            {% endif %}
+            {% csrf_token %}
+            <div class="form-group">
+                <div>
+                    {% input_date_tag 'fecha_movimiento' 'Fecha de movimiento' placeholder="Seleccione una fecha" required="" modal=True autocomplete="off" value=flujo_detalle.fecha_movimiento  mensaje_validacion='Por favor seleccione una fecha.' invalido=errores.fecha_movimiento %}
+                </div>
+                <br>
+                <div>
+                    {% input_number_tag 'valor' 'Valor' placeholder="Ingrese una Valor" required="" modal=True min="0" max="2147483647" value=flujo_detalle.valor mensaje_validacion='Por favor ingrese un valor.' invalido=errores.descripcion %}
+                </div>
+                <br>
+                <div>
+                    {% select_tag subtipos_movimientos 'subtipo_movimiento_id' 'Seleccione un subtipo de movimiento' texto_label="Subtipo de Movimiento" value=flujo_detalle.subtipo_movimiento_id required="" modal=True mensaje_validacion='Por favor seleccione un subtipo de movimiento.' invalido=errores.subtipo_movimiento %}
+                </div>
+                {% if opcion == 'editar' %}
+                    <br>
+                    <div>
+                        {% input_textarea_tag 'comentarios' 'Comentarios' placeholder="Ingrese los comentarios" maxlength="100" required="" modal=True mensaje_validacion='Por favor ingrese los comentarios.' invalido=errores.comentarios %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="form-row">
+                <div class="modal-footer p-t-0" style="padding-left: 280px">
+                    <div>
+                        <button id="guardar" type="submit" class="btn btn-primary btn-block">{% if opcion == 'editar' %} Actualizar {% else %} Agregar {% endif %}</button>
+                    </div>
+                    <div>
+                        <button data-dismiss="modal" class="btn btn-danger btn-block">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>

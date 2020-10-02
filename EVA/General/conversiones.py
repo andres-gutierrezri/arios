@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime, date
+import calendar
+from datetime import datetime, date, timedelta
 from decimal import Decimal
 from typing import Optional
 
@@ -11,7 +12,7 @@ from django.utils.translation import ngettext_lazy
 from EVA.General import app_datetime_now
 
 
-def string_to_date(fecha_string: str) -> Optional[datetime]:
+def string_to_datetime(fecha_string: str) -> Optional[datetime]:
     """
     Convierte un string a datetime, la fecha se toma con el timezone configurado en settings.TIME_ZONE
     :param fecha_string: string con formato "%Y-%m-%d"
@@ -24,6 +25,28 @@ def string_to_date(fecha_string: str) -> Optional[datetime]:
         return None
 
 
+def string_to_date(fecha_string: str) -> Optional[date]:
+    """
+    Convierte un string a date
+    :param fecha_string: string con formato "%Y-%m-%d"
+    :return: retorna el solo la fecha en formato date
+    """
+    try:
+        return string_to_datetime(fecha_string).date()
+    except ValueError:
+        return None
+
+
+def obtener_fecha_inicio_de_mes(anho, mes):
+    return datetime.strptime('{0}-{1}-1'.format(anho, mes), "%Y-%m-%d").astimezone(pytz.timezone(settings.TIME_ZONE)) \
+        .astimezone(pytz.timezone('UTC'))
+
+
+def obtener_fecha_fin_de_mes(anho, mes):
+    return datetime.strptime('{0}-{1}-{2}'.format(anho, mes, (calendar.monthrange(anho, mes))[1]), "%Y-%m-%d")\
+        .astimezone(pytz.timezone(settings.TIME_ZONE)).astimezone(pytz.timezone('UTC'))
+
+
 def add_years(d, years):
     try:
         return d.replace(year=d.year + years)
@@ -31,8 +54,23 @@ def add_years(d, years):
         return d + (date(d.year + years, 1, 1) - date(d.year, 1, 1))
 
 
+def add_months(d, meses):
+    mes_nuevo = (meses + d.month) % 12
+    anio_nuevo = d.year + (meses + d.month) // 12
+    if mes_nuevo == 0:
+        mes_nuevo = 12
+        anio_nuevo -= 1
+    dias_mes_nuevo = calendar.monthrange(anio_nuevo, mes_nuevo)[1]
+    dias_nuevo = d.day if dias_mes_nuevo > d.day else dias_mes_nuevo
+    return d.replace(year=anio_nuevo, month=mes_nuevo, day=dias_nuevo)
+
+
 def numero_con_separadores(numero):
     return '{:,}'.format(numero).replace(",", "X").replace(".", ",").replace("X", ".")
+
+
+def decimal_para_input_number(numero):
+    return '{0}'.format(numero).replace(',', '.')
 
 
 def unidades_a_letras(unidad: str, decena_uno: bool) -> str:
@@ -171,3 +209,31 @@ def tiempo_transcurrido(fecha) -> str:
     :return: Retorna un texto con el tiempo transcurrido en español.
     """
     return timesince(fecha, app_datetime_now(), False, TIME_STRINGS)
+
+
+def mes_numero_a_letras(mes) -> str:
+    if mes == 1:
+        return 'Enero'
+    elif mes == 2:
+        return 'Febrero'
+    elif mes == 3:
+        return 'Marzo'
+    elif mes == 4:
+        return 'Abril'
+    elif mes == 5:
+        return 'Mayo'
+    elif mes == 6:
+        return 'Junio'
+    elif mes == 7:
+        return 'Julio'
+    elif mes == 8:
+        return 'Agosto'
+    elif mes == 9:
+        return 'Septiembre'
+    elif mes == 10:
+        return 'Octubre'
+    elif mes == 11:
+        return 'Noviembre'
+    elif mes == 12:
+        return 'Diciembre'
+

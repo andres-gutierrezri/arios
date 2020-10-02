@@ -72,6 +72,14 @@ input[type=checkbox] ~ label:before {
     padding-right: 10px; !important;
 }
 
+.p-b-10{
+    padding-bottom: 10px; !important;
+}
+
+.p-b-30{
+    padding-bottom: 30px; !important;
+}
+
 .campo_activo{
     background-color: rgba(233, 233, 233, 0.5); !important;
 }
@@ -106,4 +114,30 @@ right: 0;
 
 .app-list-item{
 position: relative;
+}
+
+.validaciones {
+    position: absolute;
+    top: 100%;
+    z-index: 5;
+    max-width: 100%;
+    padding: 0.3rem 0.6rem;
+    margin-top: .1rem;
+    font-size: 0.75rem;
+    line-height: 0.9;
+    color: #fff;
+    background-color: #fd395e;
+    border-radius: 5px;
+}
+
+.t-a-e {
+    text-align: end;
+}
+
+.min-w-200{
+    min-width: 200px;
+}
+
+.table-td-a-t-e td{
+    text-align: end;
 }

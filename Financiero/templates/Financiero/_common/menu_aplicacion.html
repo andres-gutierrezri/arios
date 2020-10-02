@@ -6,3 +6,51 @@
     </a>
 </li>
 {% endif %}
+{% if perms.Financiero.view_subtipomovimiento or perms.Financiero.view_categoriamovimiento or perms.Financiero.can_gestion_flujos_de_caja %}
+    <li {% if menu_actual|first == 'flujo_caja' %} class="active"{% endif %}>
+        <a href="#" title="Flujo de Caja" data-filter-tags="flujo caja">
+            <i class="fal fa-usd-square"></i>
+            <span class="nav-link-text" > Flujo de Caja</span>
+        </a>
+        <ul>
+            <li {% if menu_actual|last == 'categorias_movimientos' or menu_actual|last == 'subtipos_movimientos' %} class="active" {% endif %}>
+                <a href="#" title="Parametrización" data-filter-tags="parametrizacion">
+                    <i class="fal fa-window-restore"></i>
+                    <span class="nav-link-text" data-i18n="nav.Financiero_subtipos_movimientos">Parametrización</span>
+                </a>
+                <ul>
+                    {% if perms.Financiero.view_categoriamovimiento %}
+                    <li {% if menu_actual|last == 'categorias_movimientos' %} class="active" {% endif %}>
+                        <a href="{% url 'Financiero:categoria-movimiento-index' %}" title="Categorías de Movimientos" data-filter-tags="categoria movimientos">
+                            <span class="nav-link-text" data-i18n="nav.Financiero_categorias_movimientos">Categorías de Movimientos</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% if perms.Financiero.view_subtipomovimiento %}
+                    <li {% if menu_actual|last == 'subtipos_movimientos' %} class="active" {% endif %}>
+                        <a href="{% url 'Financiero:subtipo-movimiento-index' %}" title="Subtipos de Movimientos" data-filter-tags="subtipos movimientos">
+                            <span class="nav-link-text" data-i18n="nav.Financiero_subtipos_movimientos">Subtipos de Movimientos</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </li>
+            {% if perms.Financiero.can_gestion_flujos_de_caja %}
+            <li {% if menu_actual|last == 'flujos_de_caja' %} class="active" {% endif %}>
+                <a href="{% url 'Financiero:flujos-de-caja' 0 %}" title="Flujos de Caja" data-filter-tags="flujos caja">
+                    <i class="fal fa-usd-square"></i>
+                    <span class="nav-link-text" data-i18n="nav.Financiero_flujos_caja">Gestionar Flujos de Caja</span>
+                </a>
+            </li>
+            {% endif %}
+            {% if perms.TalentoHumano.can_access_usuarioespecial %}
+            <li {% if menu_actual|last == 'consolidado' %} class="active" {% endif %}>
+                <a href="{% url 'Financiero:flujo-caja-consolidado' %}" title="Consolidado" data-filter-tags="consolidado">
+                    <i class="fal fa-window-restore"></i>
+                    <span class="nav-link-text" data-i18n="nav.Financiero_consolidado">Consolidado</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </li>
+{% endif %}

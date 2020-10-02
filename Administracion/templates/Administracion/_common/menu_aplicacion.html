@@ -28,6 +28,23 @@
     </a>
 </li>
 {% endif %}
-
+{% if perms.Administracion.view_proceso %}
+<li {% if menu_actual|first == 'procesos' %} class="active" {% endif %}>
+    <a href="#" title="Procesos" data-filter-tags="procesos">
+        <i class="fal fa-code-branch"></i>
+        <span class="nav-link-text" > Procesos</span>
+    </a>
+    <ul>
+        {% if perms.Administracion.view_proceso %}
+        <li {% if menu_actual|last == 'flujos_de_caja' %} class="active" {% endif %}>
+            <a href="{% url 'Administracion:procesos' %}" title="Flujos de Caja" data-filter-tags="flujos caja">
+                <i class="subheader-icon fal fa-usd-square"></i>
+                <span class="nav-link-text" data-i18n="nav.administracion_procesos_flujos_de_caja">Flujos de Caja</span>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</li>
+{% endif %}
 
 

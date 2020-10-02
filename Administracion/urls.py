@@ -15,7 +15,7 @@ Including another URLconf
 """
 
 from django.urls import path
-from Administracion.views import terceros, administracion, inicio_sesion, empresas, grupos_permisos
+from Administracion.views import terceros, administracion, inicio_sesion, empresas, grupos_permisos, procesos
 from Administracion.views.seleccion_empresa import SeleccionEmpresaModalView
 
 app_name = 'Administracion'
@@ -27,6 +27,8 @@ urlpatterns = [
     path('terceros/<int:id>/', terceros.TerceroEditarView.as_view(), name='terceros-editar'),
     path('terceros/<int:id>/json', terceros.TerceroDetalleView.as_view(), name='terceros-detalle'),
     path('terceros/<int:id>/delete', terceros.TerceroEliminarView.as_view(), name='terceros-eliminar'),
+    path('paises/<int:id>/departamentos/json', administracion.CargarDepartamentosSelectJsonView.as_view(),
+         name='departamentos-json'),
     path('departamentos/<int:id>/municipios/json', administracion.CargarMunicipiosSelectJsonView.as_view(),
          name='municipios-json'),
     path('municipios/<int:id>/centros-poblados/json', administracion.CargarCentroPobladoSelectJsonView.as_view(),
@@ -48,4 +50,5 @@ urlpatterns = [
     path('grupos-permisos/<int:id>/', grupos_permisos.GruposPermisosEditarView.as_view(), name='grupos-permisos-editar'),
     path('grupos-permisos/<int:id>/delete', grupos_permisos.GruposPermisosEliminarView.as_view(),
          name='grupos-permisos-eliminar'),
+    path('procesos', procesos.ProcesosView.as_view(), name='procesos'),
 ]
