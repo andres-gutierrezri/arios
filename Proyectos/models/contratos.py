@@ -151,7 +151,7 @@ class TipoGarantia(models.Model, ModelDjangoExtensiones):
     objects = ManagerGeneral()
     nombre = models.CharField(verbose_name="Nombre", max_length=50, blank=False, null=False)
     descripcion = models.CharField(verbose_name="Descripción", max_length=50, blank=False, null=False)
-    aplica_valor_smlv = models.BooleanField(verbose_name="Aplica Valor en SMLV", blank=False, null=False)
+    aplica_valor_smmlv = models.BooleanField(verbose_name="Aplica Valor en SMMLV", blank=False, null=False)
 
     def __str__(self):
         return self.nombre
