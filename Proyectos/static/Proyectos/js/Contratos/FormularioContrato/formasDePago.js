@@ -12,28 +12,31 @@ let inputActasParciales = $('#actas_parciales_id');
 let inputLiquidacion = $('#liquidacion_id');
 
 $(document).ready(function () {
-    selectPorcentajeValor.change(function () {
-        cambiosPorcentajeValor(this.value);
-    });
-
+    cambiosPorcentajeValor(selectPorcentajeValor.value);
     combinacionesFormasDePago(selectFormaDePago.val());
-    selectFormaDePago.change(function () {
-        combinacionesFormasDePago(this.value);
-    });
+});
+
+selectPorcentajeValor.change(function () {
+    cambiosPorcentajeValor(this.value);
+});
+
+selectFormaDePago.change(function () {
+    combinacionesFormasDePago(this.value);
+    sumarCombinacionFormaDePago(this.value)
 });
 
 let inputValorConIVA = $('#valor_con_iva_id');
 
-function validarSumaPorcentajeValor(selectValor){
+function validarSumaPorcentajeValor(valorInput){
     if (selectPorcentajeValor.val() === '0') {
-        if (selectValor > 100 || selectValor < 100){
-            EVANotificacion.toast.error('El total de los valores no debe sumar el 100%');
+        if (valorInput > 100 || valorInput < 100){
+            EVANotificacion.toast.error('El total de los valores debe ser igual al 100%');
             inputLiquidacion.val('');
             return false
         }
     }else{
-        if (selectValor > parseInt(inputValorConIVA.val()) || selectValor < parseInt(inputValorConIVA.val())){
-            EVANotificacion.toast.error('El total de los valores no debe ser igual al valor con IVA');
+        if (valorInput > parseFloat(inputValorConIVA.val()) || valorInput < parseFloat(inputValorConIVA.val())){
+            EVANotificacion.toast.error('El total de los valores debe ser igual al valor con IVA');
             inputLiquidacion.val('');
             return false
         }
@@ -41,42 +44,28 @@ function validarSumaPorcentajeValor(selectValor){
 }
 
 inputAnticipo.change(function () {
-    cambiosAnticipo()
+    sumarCombinacionFormaDePago(selectFormaDePago.val())
 });
 
 inputActasParciales.change(function () {
-    cambiosActaParciales()
+    sumarCombinacionFormaDePago(selectFormaDePago.val())
 });
 
 inputLiquidacion.change(function () {
-    cambiosLiquidacion()
+    sumarCombinacionFormaDePago(selectFormaDePago.val())
 });
 
-function cambiosAnticipo(){
-    let sumaAnticipo = parseFloat(inputLiquidacion.val()) + parseFloat(inputAnticipo.val());
-    if (inputActasParciales.is(':visible')) {
-        sumaAnticipo += parseFloat(inputActasParciales.val());
+function sumarCombinacionFormaDePago(selectFormaDePago) {
+    let sumaTotal = 0;
+    if (parseInt(selectFormaDePago) === 1){
+        sumaTotal = parseFloat(inputLiquidacion.val()) + parseFloat(inputAnticipo.val()) +
+            parseFloat(inputActasParciales.val())
+    }else if (parseInt(selectFormaDePago) === 2){
+        sumaTotal = parseFloat(inputLiquidacion.val()) + parseFloat(inputAnticipo.val())
+    }else if (parseInt(selectFormaDePago) === 3){
+        sumaTotal = parseFloat(inputLiquidacion.val()) + parseFloat(inputActasParciales.val())
     }
-    validarSumaPorcentajeValor(sumaAnticipo)
-}
-
-function cambiosActaParciales(){
-    let sumaActasParciales = parseFloat(inputLiquidacion.val()) + parseFloat(inputActasParciales.val());
-    if (inputAnticipo.is(':visible')) {
-        sumaActasParciales += parseFloat(inputAnticipo.val());
-    }
-    validarSumaPorcentajeValor(sumaActasParciales)
-}
-
-function cambiosLiquidacion(){
-    let sumaLiquidacion = parseFloat(inputLiquidacion.val());
-    if (inputAnticipo.is(':visible')) {
-        sumaLiquidacion += parseFloat(inputAnticipo.val())
-    }
-    if (inputActasParciales.is(':visible')) {
-        sumaLiquidacion += parseFloat(inputActasParciales.val())
-    }
-    validarSumaPorcentajeValor(sumaLiquidacion)
+    validarSumaPorcentajeValor(sumaTotal);
 }
 
 function cambiosPorcentajeValor(valor) {
@@ -87,6 +76,17 @@ function cambiosPorcentajeValor(valor) {
         inputActasParciales.next('div').text('Por favor ingrese el porcentaje');
         inputLiquidacion.attr('placeholder', 'Porcentaje');
         inputLiquidacion.next('div').text('Por favor ingrese el porcentaje');
+
+        inputAnticipo.attr('placeholder', 'Ingrese un porcentaje');
+        inputAnticipo.attr('max', '100');
+        inputAnticipo.attr('onInput', 'validarLongitud(5,this)');
+        inputLiquidacion.attr('placeholder', 'Ingrese un porcentaje');
+        inputLiquidacion.attr('max', '100');
+        inputLiquidacion.attr('onInput', 'validarLongitud(5,this)');
+        inputActasParciales.attr('placeholder', 'Ingrese un porcentaje');
+        inputActasParciales.attr('max', '100');
+        inputActasParciales.attr('onInput', 'validarLongitud(5,this)');
+
     }else{
         inputAnticipo.attr('placeholder', 'Valor');
         inputAnticipo.next('div').text('Por favor ingrese el valor');
@@ -94,10 +94,18 @@ function cambiosPorcentajeValor(valor) {
         inputActasParciales.next('div').text('Por favor ingrese el valor');
         inputLiquidacion.attr('placeholder', 'Valor');
         inputLiquidacion.next('div').text('Por favor ingrese el valor');
+
+        inputAnticipo.attr('placeholder', 'Ingrese un valor');
+        inputAnticipo.attr('max', '99999999999999.99');
+        inputAnticipo.attr('onInput', 'validarLongitud(16,this)');
+        inputLiquidacion.attr('placeholder', 'Ingrese un valor');
+        inputLiquidacion.attr('max', '99999999999999.99');
+        inputLiquidacion.attr('onInput', 'validarLongitud(16,this)');
+        inputActasParciales.attr('placeholder', 'Ingrese un valor');
+        inputActasParciales.attr('max', '99999999999999.99');
+        inputActasParciales.attr('onInput', 'validarLongitud(16,this)');
     }
-    cambiosAnticipo();
-    cambiosActaParciales();
-    cambiosLiquidacion()
+    sumarCombinacionFormaDePago(selectFormaDePago.val())
 }
 
 function combinacionesFormasDePago(valor) {
