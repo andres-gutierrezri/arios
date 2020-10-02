@@ -143,7 +143,9 @@ def datos_xa_render(request, opcion: str, contrato: Contrato = None) -> dict:
         {'campo_valor': 2, 'campo_texto': 'Anticipo – Liquidación'},
         {'campo_valor': 3, 'campo_texto': 'Actas Parciales – Liquidación'}
         ]
+    porcentaje_valor = [{'campo_valor': 1, 'campo_texto': 'Valor'}]
     origen_recursos = [{'campo_valor': 1, 'campo_texto': 'Otro Origen'}]
+    supervisor_interventor = [{'campo_valor': 1, 'campo_texto': 'Interventor'}]
     terceros = Tercero.objects.filter(estado=True)
     supervisores = []
     interventores = []
@@ -169,6 +171,8 @@ def datos_xa_render(request, opcion: str, contrato: Contrato = None) -> dict:
     datos = {'paises': paises,
              'tipos_garantias': tipos_garantias,
              'formas_de_pago': formas_de_pago,
+             'porcentaje_valor': porcentaje_valor,
+             'supervisor_interventor': supervisor_interventor,
              'tipos_contrato': lista_tipos_contratos,
              'tipos_contrato_json': json.dumps(lista_tipos_contratos),
              'origen_recursos': origen_recursos,
@@ -197,17 +201,26 @@ def datos_xa_render(request, opcion: str, contrato: Contrato = None) -> dict:
             datos['origen_de_recursos'] = contrato.origen_de_recursos
 
         datos['contrato'] = contrato
+        datos['valor_contrato'] = decimal_para_input_number(contrato.valor)
+        datos['valor_contrato_con_iva'] = decimal_para_input_number(contrato.valor_con_iva)
+        datos['valor_contrato_sin_iva'] = decimal_para_input_number(contrato.valor_sin_iva)
+
         formas_pago = FormasPago.objects.filter(contrato=contrato)
+        aplica_porcentaje = 1
         if formas_pago:
+            if formas_pago.first().aplica_porcentaje:
+                aplica_porcentaje = 0
             datos['formas_pago'] = {'anticipo': decimal_para_input_number(formas_pago.first().anticipo),
                                     'actas_parciales': decimal_para_input_number(formas_pago.first().actas_parciales),
                                     'liquidacion': decimal_para_input_number(formas_pago.first().liquidacion),
-                                    'forma_pago': formas_pago.first().forma_pago}
+                                    'forma_pago': formas_pago.first().forma_pago,
+                                    'aplica_porcentaje': aplica_porcentaje}
         else:
             datos['formas_pago'] = {'anticipo': datos_formulario['anticipo'],
                                     'actas_parciales': datos_formulario['actas_parciales'],
                                     'liquidacion': datos_formulario['liquidacion'],
-                                    'forma_pago': int(datos_formulario['forma_de_pago'])}
+                                    'forma_pago': int(datos_formulario['forma_de_pago']),
+                                    'aplica_porcentaje': aplica_porcentaje}
 
         lista_vigencias = []
         for vigencia in ContratoVigencia.objects.filter(contrato=contrato).order_by('anho'):
@@ -261,6 +274,11 @@ def datos_xa_render(request, opcion: str, contrato: Contrato = None) -> dict:
             for interventor in datos_formulario['interventores']:
                 lista_interventores.append(int(interventor))
 
+        if lista_supervisores:
+            supervisor_interventor = SUPERVISOR
+        else:
+            supervisor_interventor = INTERVENTOR
+        datos['seleccion_supervisor_interventor'] = supervisor_interventor
         datos['selecciones_interventores'] = lista_interventores
         datos['selecciones_supervisores'] = lista_supervisores
 
@@ -331,32 +349,48 @@ def obtener_datos_contrato(request):
     vigencia_garantia = request.POST.get('vigencia', '')
     garantia_extensiva = request.POST.get('garantia_extensiva', '')
     datos_garantias = request.POST.get('datos_garantias', '')
+    aplica_porcentaje = request.POST.get('porcentaje_valor_id', '')
+    supervisor_interventor = request.POST.get('supervisor_interventor_id', '')
+
+    if not anticipo:
+        anticipo = 0
+    if not actas_parciales:
+        actas_parciales = 0
+    if not liquidacion:
+        liquidacion = 0
 
     return {'municipios': municipios, 'supervisores': supervisores, 'interventores': interventores,
             'forma_de_pago': forma_de_pago, 'anticipo': anticipo, 'actas_parciales': actas_parciales,
             'liquidacion': liquidacion, 'anho_vigencia': anho_vigencia, 'valor_vigencia': valor_vigencia,
             'datos_vigencias': datos_vigencias, 'tipo_garantia_id': tipo_garantia_id,
             'porcentaje_asegurado': porcentaje_asegurado, 'vigencia_garantia': vigencia_garantia,
-            'garantia_extensiva': garantia_extensiva, 'datos_garantias': datos_garantias}
+            'garantia_extensiva': garantia_extensiva, 'datos_garantias': datos_garantias,
+            'aplica_porcentaje': aplica_porcentaje, 'supervisor_interventor': supervisor_interventor}
 
 
 def gestionar_contrato(request, origen, contrato):
     datos = obtener_datos_contrato(request)
     crear_actualizar_formas_de_pago(contrato, datos['anticipo'], datos['actas_parciales'], datos['liquidacion'],
-                                   datos['forma_de_pago'], origen)
+                                    datos['forma_de_pago'], datos['aplica_porcentaje'], origen)
     crear_actualizar_vigencias(datos['anho_vigencia'], datos['valor_vigencia'], datos['datos_vigencias'],
                                contrato, origen)
     crear_actualizar_garantias(datos['garantia_extensiva'], datos['tipo_garantia_id'], datos['porcentaje_asegurado'],
                                datos['vigencia_garantia'], datos['datos_garantias'], contrato, origen)
     crear_actualizar_municipios(datos['municipios'], contrato, origen)
-    crear_actualizar_supervisores_interventores(datos['supervisores'], datos['interventores'], contrato, origen)
+    crear_actualizar_supervisores_interventores(datos['supervisores'], datos['interventores'], contrato,
+                                                datos['supervisor_interventor'], origen)
 
 
-def crear_actualizar_formas_de_pago(contrato, anticipo, actas_parciales, liquidacion, forma_de_pago, origen):
+def crear_actualizar_formas_de_pago(contrato, anticipo, actas_parciales, liquidacion, forma_de_pago, aplica_porcentaje,
+                                    origen):
+    if aplica_porcentaje == '1':
+        aplica_porcentaje = False
+    else:
+        aplica_porcentaje = True
     if origen == 'editar':
         FormasPago.objects.filter(contrato=contrato).delete()
     FormasPago.objects.create(contrato=contrato, anticipo=anticipo, actas_parciales=actas_parciales,
-                              liquidacion=liquidacion, forma_pago=forma_de_pago)
+                              liquidacion=liquidacion, forma_pago=forma_de_pago, aplica_porcentaje=aplica_porcentaje)
 
 
 def crear_actualizar_vigencias(anho_vigencia, valor_vigencia, datos_vigencias, contrato, origen):
@@ -399,12 +433,14 @@ def crear_actualizar_municipios(municipios, contrato, origen):
         ContratoMunicipio.objects.create(contrato=contrato, municipio_id=mun)
 
 
-def crear_actualizar_supervisores_interventores(supervisores, interventores, contrato, origen):
+def crear_actualizar_supervisores_interventores(supervisores, interventores, contrato, supervisor_interventor, origen):
     if origen == 'editar':
         ContratoIterventoriaSupervisor.objects.filter(contrato=contrato).delete()
-    for supervisor in supervisores:
-        ContratoIterventoriaSupervisor.objects.create(contrato=contrato, tercero_id=supervisor, tipo=SUPERVISOR)
-    for interventor in interventores:
-        ContratoIterventoriaSupervisor.objects.create(contrato=contrato, tercero_id=interventor, tipo=INTERVENTOR)
+    if supervisor_interventor == SUPERVISOR:
+        for supervisor in supervisores:
+            ContratoIterventoriaSupervisor.objects.create(contrato=contrato, tercero_id=supervisor, tipo=SUPERVISOR)
+    else:
+        for interventor in interventores:
+            ContratoIterventoriaSupervisor.objects.create(contrato=contrato, tercero_id=interventor, tipo=INTERVENTOR)
 
 # endregion
