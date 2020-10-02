@@ -137,6 +137,10 @@ def datos_xa_render(request, opcion: str, contrato: Contrato = None) -> dict:
 
     paises = Pais.objects.get_xa_select_activos()
     tipos_garantias = TipoGarantia.objects.get_xa_select_activos()
+    todos_tipos_garantias = TipoGarantia.objects.all()
+    tipos_garantias_smmlv = []
+    for td in todos_tipos_garantias:
+        tipos_garantias_smmlv.append({'id': td.id, 'aplica_valor_smmlv': td.aplica_valor_smmlv})
 
     formas_de_pago = [
         {'campo_valor': 1, 'campo_texto': 'Anticipo – Actas Parciales - Liquidación'},
@@ -170,6 +174,7 @@ def datos_xa_render(request, opcion: str, contrato: Contrato = None) -> dict:
     rango_anho = [{'campo_valor': anho, 'campo_texto': str(anho)} for anho in range(2000, 2051)]
     datos = {'paises': paises,
              'tipos_garantias': tipos_garantias,
+             'tipos_garantias_smmlv': json.dumps(tipos_garantias_smmlv),
              'formas_de_pago': formas_de_pago,
              'porcentaje_valor': porcentaje_valor,
              'supervisor_interventor': supervisor_interventor,
