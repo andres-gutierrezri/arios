@@ -149,15 +149,16 @@ function quitarGarantia() {
      datosGarantias.val(JSON.stringify(valoresGarantias));
 }
 
+let divOrigenRecurso = $('#div_origen_recurso');
 let inputOrigenRecurso = $('#origen_recurso_id');
 let selectOrigenRecurso = $('#origen_recurso_id_select_id');
 
 function origenRecursos(){
     if(selectOrigenRecurso.val() === 1 || selectOrigenRecurso.val() === '1'){
-        inputOrigenRecurso.removeAttr('disabled', true);
+        divOrigenRecurso.show();
         inputOrigenRecurso.attr('required', true)
     }else{
-        inputOrigenRecurso.attr('disabled', true);
+        divOrigenRecurso.hide();
         inputOrigenRecurso.removeAttr('required', true)
     }
 }
@@ -197,12 +198,6 @@ $(document).ready(function () {
         verificarPorcentajeAIU();
     });
 
-    let selectFormaDePago = $('#forma_de_pago_id_select_id');
-    combinacionesFormasDePago(selectFormaDePago.val());
-
-    selectFormaDePago.change(function () {
-        combinacionesFormasDePago(this.value);
-    });
     let valores_vigencias = $('#valores_vigencias_actuales').val();
     let valores_garantias = $('#valores_garantias_actuales').val();
     if (valores_vigencias){
@@ -216,120 +211,28 @@ $(document).ready(function () {
             agregarGarantia(garantia)
         });
     }
-    quitarGarantia()
-});
 
-let divAnticipo = $('#div_anticipo');
-let divActasParciales = $('#div_actas_parciales');
-let divLiquidacion = $('#div_liquidacion');
-let inputAnticipo = $('#anticipo_id');
-let inputActasParciales = $('#actas_parciales_id');
-let inputLiquidacion = $('#liquidacion_id');
+    quitarGarantia();
 
-function combinacionesFormasDePago(valor) {
-    if(valor === '1'){
-            divAnticipo.show();
-            divActasParciales.show();
+    let botonSiguiente = $('.sw-btn-next');
+    let botonAnterior = $('.sw-btn-prev');
 
-            inputAnticipo.attr('required', true);
-            inputActasParciales.attr('required', true);
-            inputLiquidacion.attr('required', true);
-            inputAnticipo.removeAttr('disabled', true);
-            inputActasParciales.removeAttr('disabled', true);
-            inputLiquidacion.removeAttr('disabled', true);
-
-            divAnticipo.removeClass('col-md-3');
-            divAnticipo.addClass('col-md-2');
-            divActasParciales.removeClass('col-md-3');
-            divActasParciales.addClass('col-md-2');
-            divLiquidacion.removeClass('col-md-3');
-            divLiquidacion.addClass('col-md-2');
-        }else if (valor === '2'){
-            divAnticipo.show();
-            divActasParciales.hide();
-
-            inputAnticipo.attr('required', true);
-            inputActasParciales.removeAttr('required', true);
-            inputLiquidacion.attr('required', true);
-            inputAnticipo.removeAttr('disabled', true);
-            inputLiquidacion.removeAttr('disabled', true);
-
-            divAnticipo.removeClass('col-md-2');
-            divAnticipo.addClass('col-md-3');
-            divLiquidacion.removeClass('col-md-2');
-            divLiquidacion.addClass('col-md-3');
-        }else if (valor === '3'){
-            divAnticipo.hide();
-            divActasParciales.show();
-
-            inputAnticipo.removeAttr('required', true);
-            inputActasParciales.attr('required', true);
-            inputLiquidacion.attr('required', true);
-            inputActasParciales.removeAttr('disabled', true);
-            inputLiquidacion.removeAttr('disabled', true);
-
-            divActasParciales.removeClass('col-md-2');
-            divActasParciales.addClass('col-md-3');
-            divLiquidacion.removeClass('col-md-2');
-            divLiquidacion.addClass('col-md-3');
-        }else{
-            divAnticipo.show();
-            divActasParciales.show();
-
-            inputAnticipo.removeAttr('required', true);
-            inputActasParciales.removeAttr('required', true);
-            inputLiquidacion.removeAttr('required', true);
-            inputAnticipo.attr('disabled', true);
-            inputActasParciales.attr('disabled', true);
-            inputLiquidacion.attr('disabled', true);
-
-
-            divAnticipo.removeClass('col-md-3');
-            divAnticipo.addClass('col-md-2');
-            divActasParciales.removeClass('col-md-3');
-            divActasParciales.addClass('col-md-2');
-            divLiquidacion.removeClass('col-md-3');
-            divLiquidacion.addClass('col-md-2');
+    botonSiguiente.click(function () {
+        if (botonSiguiente.hasClass('disabled')){
+            botonSiguiente.text('Guardar');
+            botonSiguiente.removeClass('disabled');
+            botonSiguiente.removeClass('btn-secondary');
+            botonSiguiente.addClass('btn-primary');
+            botonSiguiente.attr('onclick', '$("#guardar").click()');
         }
-}
+    });
 
-inputAnticipo.change(function () {
-    let sumaAnticipo = parseFloat(inputLiquidacion.val()) + parseFloat(inputAnticipo.val());
-    if (inputActasParciales.is(':visible')) {
-        sumaAnticipo += parseFloat(inputActasParciales.val());
-    }
-    if (sumaAnticipo > 100){
-        EVANotificacion.toast.error('El total de los valores no debe ser mayor al 100%');
-        inputAnticipo.val('');
-        return false
-    }
-});
-
-inputActasParciales.change(function () {
-    let sumaActasParciales = parseFloat(inputLiquidacion.val()) + parseFloat(inputActasParciales.val());
-    if (inputAnticipo.is(':visible')) {
-        sumaActasParciales += parseFloat(inputAnticipo.val());
-    }
-    if (sumaActasParciales > 100){
-        EVANotificacion.toast.error('El total de los valores no debe ser mayor al 100%');
-        inputActasParciales.val('');
-        return false
-    }
-});
-
-inputLiquidacion.change(function () {
-    let sumaLiquidacion = parseFloat(inputLiquidacion.val());
-    if (inputAnticipo.is(':visible')) {
-        sumaLiquidacion += parseFloat(inputAnticipo.val())
-    }
-    if (inputActasParciales.is(':visible')) {
-        sumaLiquidacion += parseFloat(inputActasParciales.val())
-    }
-    if (sumaLiquidacion > 100){
-        EVANotificacion.toast.error('El total de los valores no debe ser mayor al 100%');
-        inputLiquidacion.val('');
-        return false
-    }
+    botonAnterior.click(function () {
+        botonSiguiente.text('Siguiente');
+        botonSiguiente.removeClass('btn-primary');
+        botonSiguiente.addClass('btn-secondary');
+        botonSiguiente.removeAttr('onclick', '$("#guardar").click()');
+    });
 });
 
 porcentajeAsegurado.change(function () {
