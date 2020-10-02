@@ -203,6 +203,7 @@
                                                                 <div id="div_vigencias"></div>
                                                                 <div class="form-group">
                                                                     <div class="form-row">
+                                                                        <input hidden id="tipos_garantias_smmlv" value="{{ tipos_garantias_smmlv }}">
                                                                         <div class="col-md-6">
                                                                             {% input_number_tag 'anho_vigencia' 'Año de vigencia' placeholder="Ingrese el año de vigencia" min='2000' max="4000" onInput="validarLongitud(4,this)" required="" value=contrato.acta_parcial mensaje_validacion='Por favor ingrese el año (Mínimo año: 2000)' %}
                                                                         </div>
@@ -255,7 +256,7 @@
                                                                             {% select_tag tipos_garantias 'tipo_garantia_id' 'Seleccione un tipo de garantía' texto_label="Tipo de Garantía" required="" value=contrato.tipo_garantia_id  mensaje_validacion='Por favor seleccione una tipo de garantía.' invalido=errores.tipo_garantia %}
                                                                         </div>
                                                                         <div class="col-md-3">
-                                                                            {% input_number_tag 'porcentaje_asegurado' 'Porcentaje Asegurado' placeholder="Ingrese el porcentaje asegurado"  min='0' max="100" step="0.01" onInput="validarLongitud(5,this)" required="" value=contrato.porcentaje_asegurado mensaje_validacion='Por favor ingrese el porcentaje (Maximo 100%)' invalido=errores.porcentaje_asegurado %}
+                                                                            {% input_number_tag 'porcentaje_asegurado' 'Porcentaje Asegurado' placeholder="Ingrese el porcentaje asegurado"  min='0' max="100" step="0.01" onInput="validarLongitud(5,this)" required="" label_id=True value=contrato.porcentaje_asegurado mensaje_validacion='Por favor ingrese el porcentaje (Maximo 100%)' invalido=errores.porcentaje_asegurado %}
                                                                         </div>
                                                                         <div class="col-md-3">
                                                                             {% input_number_tag 'vigencia' 'Vigencia (Meses)' placeholder="Ingrese la vigencia en meses"  min='0' max="2147483647" onInput="validarLongitud(10,this)" required="" value=contrato.vigencia mensaje_validacion='Por favor ingrese la vigencia' invalido=errores.vigencia %}
@@ -267,7 +268,7 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-md-1" style="padding-top:30px">
-                                                                            <a class="far fa-2x far fa-plus" id="agregar_vigencia" href="#" onclick="agregarGarantia()" title="" data-original-title="Agregar Garantía" style=""></a>
+                                                                            <a class="far fa-2x far fa-plus" id="agregar_garantia" href="#" onclick="agregarGarantia()" title="" data-original-title="Agregar Garantía" style=""></a>
                                                                             <a style="display: none" class="far fa-2x far fa-times" id="eliminar_garantia" href="#" onclick="quitarGarantia()" title="" data-original-title="Eliminar Garantía"></a>
                                                                         </div>
                                                                     </div>
