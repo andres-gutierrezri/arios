@@ -118,7 +118,7 @@ class ContratoVigencia(models.Model, ModelDjangoExtensiones):
     contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato',
                                  null=False, blank=False)
     anho = models.IntegerField(verbose_name='Año', null=False, blank=False)
-    valor = models.BigIntegerField(verbose_name='Valor', null=False, blank=False)
+    valor = models.DecimalField(verbose_name='Valor', decimal_places=2, max_digits=16, null=False, blank=False)
 
     def __str__(self):
         return 'Vigencia del contrato {0}'.format(self.contrato)

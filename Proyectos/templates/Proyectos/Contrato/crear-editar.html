@@ -203,12 +203,11 @@
                                                                 <div id="div_vigencias"></div>
                                                                 <div class="form-group">
                                                                     <div class="form-row">
-                                                                        <input hidden id="tipos_garantias_smmlv" value="{{ tipos_garantias_smmlv }}">
                                                                         <div class="col-md-6">
                                                                             {% input_number_tag 'anho_vigencia' 'Año de vigencia' placeholder="Ingrese el año de vigencia" min='2000' max="4000" onInput="validarLongitud(4,this)" required="" value=contrato.acta_parcial mensaje_validacion='Por favor ingrese el año (Mínimo año: 2000)' %}
                                                                         </div>
                                                                         <div class="col-md-5">
-                                                                            {% input_number_tag 'valor_vigencia' 'Valor de vigencia' placeholder="Ingrese el valor de vigencia" min='0' max="999999999999" onInput="validarLongitud(12,this)" required="" value=contrato.liquidacion mensaje_validacion='Por favor ingrese un valor'  %}
+                                                                            {% input_number_tag 'valor_vigencia' 'Valor de vigencia' placeholder="Ingrese el valor de vigencia" min='0' max="99999999999999.99" step="0.01" onInput="validarLongitud(16,this)" required="" value=contrato.liquidacion mensaje_validacion='Por favor ingrese un valor'  %}
                                                                         </div>
                                                                         <div class="col-md-1" style="padding-top:30px">
                                                                             <a class="far fa-2x far fa-plus-circle" id="agregar_vigencia" href="#" onclick="agregarVigencia()" title="" data-original-title="Agregar Vigencia" style=""></a>
@@ -246,6 +245,7 @@
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    <input hidden id="tipos_garantias_smmlv" value="{{ tipos_garantias_smmlv }}">
                                                     <div id="step-4" class="">
                                                         <div id="form-step-3" data-toggle="validator">
                                                             <div class="conenedor_con_borde" style="padding-bottom: 10px">

@@ -229,7 +229,8 @@ def datos_xa_render(request, opcion: str, contrato: Contrato = None) -> dict:
 
         lista_vigencias = []
         for vigencia in ContratoVigencia.objects.filter(contrato=contrato).order_by('anho'):
-            lista_vigencias.append({'valor_anho': vigencia.anho, 'valor_vigencia': vigencia.valor})
+            lista_vigencias.append({'valor_anho': vigencia.anho,
+                                    'valor_vigencia': decimal_para_input_number(vigencia.valor)})
 
         lista_garantias = []
         for garantia in ContratoGarantia.objects.filter(contrato=contrato).order_by('-id'):
@@ -247,7 +248,7 @@ def datos_xa_render(request, opcion: str, contrato: Contrato = None) -> dict:
             valores_garantias = []
             valores_vigencias.append(json.loads(datos_formulario['datos_vigencias'])[0])
             valores_vigencias.append({"valor_anho": datos_formulario['anho_vigencia'],
-                                      "valor_vigencia": datos_formulario['valor_vigencia']})
+                                      "valor_vigencia": decimal_para_input_number(datos_formulario['valor_vigencia'])})
 
             valor_garantia_extensiva = False
             if datos_formulario['garantia_extensiva'] == "on":
