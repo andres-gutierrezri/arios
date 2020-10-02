@@ -13,6 +13,7 @@ let eliminarVigencia = $('#eliminar_vigencia');
 let eliminarGarantia = $('#eliminar_garantia');
 let datosVigencias = $('#datos_vigencias');
 let datosGarantias = $('#datos_garantias');
+let tiposGarantiasSmmlv = $('#tipos_garantias_smmlv');
 
 
 let valoresVigencias = [];
@@ -149,6 +150,32 @@ function quitarGarantia() {
      datosGarantias.val(JSON.stringify(valoresGarantias));
 }
 
+
+tipoGarantia.change(function () {
+    let datos = JSON.parse(tiposGarantiasSmmlv.val());
+    let valorTipoGarantia = $('#tipo_garantia_id_select_id').val();
+    let labelValorPorcentajeAsegurado = $('#label_porcentaje_asegurado_id');
+
+    if (valorTipoGarantia !== ''){
+        datos.forEach(function (elemento) {
+            if (parseInt(valorTipoGarantia) === elemento.id){
+                if (elemento.aplica_valor_smmlv){
+                    porcentajeAsegurado.attr('placeholder', 'Ingrese un valor');
+                    porcentajeAsegurado.attr('max', '99999999999999.99');
+                    porcentajeAsegurado.attr('onInput', 'validarLongitud(16,this)');
+                    labelValorPorcentajeAsegurado.text('Cantidad en SMMLV Asegurados')
+                }else{
+                    porcentajeAsegurado.attr('placeholder', 'Ingrese el porcentaje');
+                    porcentajeAsegurado.attr('max', '100');
+                    porcentajeAsegurado.attr('onInput', 'validarLongitud(5,this)');
+                    labelValorPorcentajeAsegurado.text('Porcentaje Asegurado')
+                }
+            }
+        })
+    }
+});
+
+
 let divOrigenRecurso = $('#div_origen_recurso');
 let inputOrigenRecurso = $('#origen_recurso_id');
 let selectOrigenRecurso = $('#origen_recurso_id_select_id');
@@ -240,9 +267,18 @@ porcentajeAsegurado.change(function () {
 });
 
 function validarPorcentajeAsegurado() {
-    if (parseFloat(porcentajeAsegurado.val()) > 100){
-        porcentajeAsegurado.val('');
-        $('#guardar').click();
-       return false
-   }
+    let tipoGarantiaSeleccionada = $('#tipo_garantia_id_select_id');
+    let tiposGarantiasSMMLV = JSON.parse(tiposGarantiasSmmlv.val());
+
+    tiposGarantiasSMMLV.forEach(function (elemento) {
+        if (parseInt(tipoGarantiaSeleccionada.val()) === elemento.id){
+            if (!elemento.aplica_valor_smmlv){
+                if (parseFloat(porcentajeAsegurado.val()) > 100){
+                    porcentajeAsegurado.val('');
+                    $('#guardar').click();
+                    return false
+                }
+            }
+        }
+    });
 }
