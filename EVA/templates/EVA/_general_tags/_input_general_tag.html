@@ -3,7 +3,7 @@
         <div class="custom-control custom-checkbox">
 {% else %}
     {% if texto_label %}
-        <label for="{{ nombre }}_id">{{ texto_label}}</label>
+        <label for="{{ nombre }}_id" {% if label_id %}id="label_{{ nombre }}_id" {% endif %}>{{ texto_label}}</label>
     {% endif %}
 {% endif %}
 
