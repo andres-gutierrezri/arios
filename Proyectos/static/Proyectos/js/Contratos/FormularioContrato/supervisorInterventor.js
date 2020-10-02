@@ -7,6 +7,10 @@ let divInterventores = $('#div_interventores');
 let inputSupervisores = $('#supervisor_id');
 let inputInteventores = $('#interventor_id');
 
+$(document).ready(function () {
+    ValidarSeleccionSupervisorInterventor();
+});
+
 selectSupervisorInterventor.change(function () {
     ValidarSeleccionSupervisorInterventor();
 });
