@@ -1,6 +1,7 @@
 
 'use strict';
 
+let divGarantias = $('#div_garantias');
 let tipoGarantia = $('#tipo_garantia_id_select_id');
 let porcentajeAsegurado = $('#porcentaje_asegurado_id');
 let garantiaExtensiva = $('#garantia_extensiva');
@@ -63,8 +64,8 @@ function agregarGarantia(valores) {
         '<label class="custom-control-label">Garantía Extensiva</label>\n' +
         '</div></div>\n' +
         '<div class="col-md-1" style="padding-top:30px">\n' +
-        '<a class="far fa-2x far fa-edit" id="editar_pos_garantia" href="#" onclick="editarPosGarantia('+ contadorGarantia +')" title="" data-original-title="Agregar Garantía" style=""></a>\n' +
-        '<a class="far fa-2x far fa-trash-alt color-danger-900" id="eliminar_pos_garantia" href="#" onclick="quitarPosGarantia('+ contadorGarantia +')" title="" data-original-title="Eliminar Garantía"></a>\n' +
+        '<a class="far fa-2x far fa-edit" href="#" onclick="editarPosGarantia('+ contadorGarantia +')" title="" data-original-title="Agregar Garantía" style=""></a>\n' +
+        '<a class="far fa-2x far fa-trash-alt color-danger-900" href="#" onclick="quitarPosGarantia('+ contadorGarantia +')" title="" data-original-title="Eliminar Garantía"></a>\n' +
         '</div>' +
         '</div><br></div>');
     contadorGarantia += 1;
@@ -81,7 +82,7 @@ function editarPosGarantia(contador) {
     if (tipoGarantia.val() !== '' && vigenciaGarantia.val() !== '' && porcentajeAsegurado.val() !== ''){
         $('#agregar_garantia').click();
     }
-    retomarCampo(contador);
+    retomarCampoGarantia(contador);
     valoresGarantias.forEach(function (elemento, pos) {
        if (elemento.pos === contador){
             valoresGarantias.splice(pos, 1)
@@ -108,12 +109,12 @@ function quitarGarantia() {
         eliminarGarantia.hide();
     }
     valoresGarantias.pop();
-    retomarCampo(contadorGarantia);
+    retomarCampoGarantia(contadorGarantia);
     $('#garantia_'+ contadorGarantia).remove();
      datosGarantias.val(JSON.stringify(valoresGarantias));
 }
 
-function retomarCampo(contadorGarantia){
+function retomarCampoGarantia(contadorGarantia){
     let valorTipoGarantia = $('#valor_tipo_garantia_' + contadorGarantia).val();
     let textoTipoGarantia = $('#texto_tipo_garantia_' + contadorGarantia).val();
 
@@ -136,7 +137,7 @@ tipoGarantia.change(function () {
 
 function validarTipoGarantia(){
     let datos = JSON.parse(tiposGarantiasSmmlv.val());
-    let valorTipoGarantia = $('#tipo_garantia_id_select_id').val();
+    let valorTipoGarantia = tipoGarantia.val();
     let labelValorPorcentajeAsegurado = $('#label_porcentaje_asegurado_id');
 
     if (valorTipoGarantia !== ''){
@@ -163,11 +164,10 @@ porcentajeAsegurado.change(function () {
 });
 
 function validarPorcentajeAsegurado() {
-    let tipoGarantiaSeleccionada = $('#tipo_garantia_id_select_id');
     let tiposGarantiasSMMLV = JSON.parse(tiposGarantiasSmmlv.val());
 
     tiposGarantiasSMMLV.forEach(function (elemento) {
-        if (parseInt(tipoGarantiaSeleccionada.val()) === elemento.id){
+        if (parseInt(tipoGarantia.val()) === elemento.id){
             if (!elemento.aplica_valor_smmlv){
                 if (parseFloat(porcentajeAsegurado.val()) > 100){
                     porcentajeAsegurado.val('');
