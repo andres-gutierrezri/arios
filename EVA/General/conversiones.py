@@ -37,6 +37,16 @@ def string_to_date(fecha_string: str) -> Optional[date]:
         return None
 
 
+def obtener_fecha_inicio_de_mes(anho, mes):
+    return datetime.strptime('{0}-{1}-1'.format(anho, mes), "%Y-%m-%d").astimezone(pytz.timezone(settings.TIME_ZONE)) \
+        .astimezone(pytz.timezone('UTC'))
+
+
+def obtener_fecha_fin_de_mes(anho, mes):
+    return datetime.strptime('{0}-{1}-{2}'.format(anho, mes, (calendar.monthrange(anho, mes))[1]), "%Y-%m-%d")\
+        .astimezone(pytz.timezone(settings.TIME_ZONE)).astimezone(pytz.timezone('UTC'))
+
+
 def add_years(d, years):
     try:
         return d.replace(year=d.year + years)
@@ -199,3 +209,31 @@ def tiempo_transcurrido(fecha) -> str:
     :return: Retorna un texto con el tiempo transcurrido en español.
     """
     return timesince(fecha, app_datetime_now(), False, TIME_STRINGS)
+
+
+def mes_numero_a_letras(mes) -> str:
+    if mes == 1:
+        return 'Enero'
+    elif mes == 2:
+        return 'Febrero'
+    elif mes == 3:
+        return 'Marzo'
+    elif mes == 4:
+        return 'Abril'
+    elif mes == 5:
+        return 'Mayo'
+    elif mes == 6:
+        return 'Junio'
+    elif mes == 7:
+        return 'Julio'
+    elif mes == 8:
+        return 'Agosto'
+    elif mes == 9:
+        return 'Septiembre'
+    elif mes == 10:
+        return 'Octubre'
+    elif mes == 11:
+        return 'Noviembre'
+    elif mes == 12:
+        return 'Diciembre'
+

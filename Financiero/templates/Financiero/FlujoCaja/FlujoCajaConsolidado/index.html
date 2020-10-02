@@ -10,10 +10,11 @@
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/theme-demo.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/custom/generales.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'Financiero/css/configuracionesConsolidado.css' %}">
 {% endblock styles %}
 
 {% block main %}
-    {% with EDITADO=2 ELIMINADO=4 %}
+    {% with EDITADO=2 ELIMINADO=4 COSTOS=1 GASTOS=2 INGRESOS=3 REAL=0 PROYECTADO=1 %}
     <div class="panel-container show">
         <div class="header p-b-10">
             <h1 class="header-title">
@@ -22,7 +23,7 @@
         </div>
         <div class="row">
             <div class="col-xl-12">
-                <div id="panel-1" class="panel" style="padding: 20px">
+                <div id="panel-1" class="panel p-20">
                     <form action="{% url 'Financiero:flujo-caja-consolidado' %}" id="consolidado-form" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                         <input hidden id="fecha_min_max" value="{{ fecha_min_max }}">
@@ -33,7 +34,7 @@
                                 <div class="col-md-10">
                                     {% select_multiple_tag categorias 'categorias[]' 'categorias_id' 'Seleccion una opción' texto_label="Categorías" multiple='multiple' %}
                                 </div>
-                                <div class="col-md-2" style="padding-top: 25px">
+                                <div class="col-md-2 p-t-25">
                                     <a href="javascript:seleccionarTodos('categorias');" id="btn_all_categorias" class="btn btn-default btn-icon waves-effect waves-themed" title="{{ textos_categorias.texto }}">
                                         <i id="ic_all_categorias" class="fal {{ textos_categorias.icono }}"></i>
                                     </a>
@@ -47,7 +48,7 @@
                                 <div class="col-md-10">
                                     {% select_multiple_tag subtipos 'subtipos[]' 'subtipos_id' 'Seleccion una opción' texto_label="Subtipo de Movimiento" multiple='multiple' %}
                                 </div>
-                                <div class="col-md-2" style="padding-top: 25px">
+                                <div class="col-md-2 p-t-25">
                                     <a href="javascript:seleccionarTodos('subtipos');" id="btn_all_subtipos" class="btn btn-default btn-icon waves-effect waves-themed" title="{{ textos_subtipos.texto }}">
                                         <i id="ic_all_subtipos" class="fal {{ textos_subtipos.icono }}"></i>
                                     </a>
@@ -57,15 +58,29 @@
                         </div>
                         <div class="form-group">
                             <div class="form-row">
-                                <input id="valores_con_pro" hidden value="{{ valor.lista_procesos_contratos }}">
+                                <input id="valores_contratos" hidden value="{{ valor.lista_contratos }}">
                                 <div class="col-md-10">
-                                    {% select_multiple_tag contratos_procesos 'contrato_proceso[]' 'contrato_proceso_id' 'Seleccion una opción' texto_label="Contratos/Procesos" multiple='multiple' %}
+                                    {% select_multiple_tag contratos 'contrato[]' 'contrato_id' 'Seleccion una opción' texto_label="Contratos" multiple='multiple' %}
                                 </div>
-                                <div class="col-md-2" style="padding-top: 25px">
-                                    <a href="javascript:seleccionarTodos('contrato_proceso');" id="btn_all_contrato_proceso" class="btn btn-default btn-icon waves-effect waves-themed" title="{{ textos_pro_con.texto }}">
-                                        <i id="ic_all_contrato_proceso" class="fal {{ textos_pro_con.icono }}"></i>
+                                <div class="col-md-2 p-t-25">
+                                    <a href="javascript:seleccionarTodos('contrato');" id="btn_all_contrato" class="btn btn-default btn-icon waves-effect waves-themed" title="{{ textos_contrato.texto }}">
+                                        <i id="ic_all_contrato" class="fal {{ textos_contratos.icono }}"></i>
                                     </a>
-                                    &nbsp;&nbsp;<b id="txt_all_contrato_proceso">{{ textos_pro_con.texto }}</b>
+                                    &nbsp;&nbsp;<b id="txt_all_contrato">{{ textos_contratos.texto }}</b>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-row">
+                                <input id="valores_procesos" hidden value="{{ valor.lista_procesos }}">
+                                <div class="col-md-10">
+                                    {% select_multiple_tag procesos 'proceso[]' 'proceso_id' 'Seleccion una opción' texto_label="Procesos" multiple='multiple' %}
+                                </div>
+                                <div class="col-md-2 p-t-25">
+                                    <a href="javascript:seleccionarTodos('proceso');" id="btn_all_proceso" class="btn btn-default btn-icon waves-effect waves-themed" title="{{ textos_proceso.texto }}">
+                                        <i id="ic_all_proceso" class="fal {{ textos_procesos.icono }}"></i>
+                                    </a>
+                                    &nbsp;&nbsp;<b id="txt_all_proceso">{{ textos_procesos.texto }}</b>
                                 </div>
                             </div>
                         </div>
@@ -106,7 +121,7 @@
                                 <div class="col-md-4">
                                     {% select_tag tipos_flujos 'tipos_flujos_caja_id' 'Real' primer_valor=True texto_label="Proyectado/Real" value=valor.tipos_flujos_caja %}
                                 </div>
-                                <div class="col-md-4" style="padding-top: 25px">
+                                <div class="col-md-4 p-t-25">
                                     <button class="btn buttons-html5 btn-outline-primary btn-sm mr-1"><span>Buscar</span></button>
                                 </div>
                             </div>
@@ -133,120 +148,239 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div id="consolidado" class="table-responsive">
-                                        <table class="table table-bordered w-100" id="dataTableCategoria">
+                                    <input hidden id="numero_meses" value={{ meses|length }}>
+                                    <input hidden id="consolidado_comparativo" value={{ comparativo }}>
+                                    <div id="div_consolidado" class="table-responsive">
+                                        <table class="table table-bordered w-100" id="dataTableTipoMovimiento">
                                             <thead class="bg-primary-400">
                                                 <tr>
                                                     <th></th>
-                                                    <th>Categorías</th>
+                                                    <th class="min-w-200">Tipo de Movimiento</th>
                                                     {% if comparativo %}
-                                                        <th>Valor de Ingresos Real</th>
-                                                        <th>Valor de Egresos Real</th>
-                                                        <th>Valor de Ingresos Proyectado</th>
-                                                        <th>Valor de Egresos Proyectado</th>
+                                                        {% for mes in meses %}
+                                                            <th class="min-w-200">{{ mes.mes }} - Real</th>
+                                                            <th class="min-w-200">{{ mes.mes }} - Proyectado</th>
+                                                        {% endfor %}
                                                     {% else %}
-                                                        <th>Valor de Ingresos</th>
-                                                        <th>Valor de Egresos</th>
+                                                        {% for mes in meses %}
+                                                            <th class="min-w-200">{{ mes.mes }}</th>
+                                                        {% endfor %}
                                                     {% endif %}
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 {% for mov in movimientos %}
                                                     <tr>
-                                                        <td style="width: 10px">
-                                                            <a class="far fa-2x far fa-plus-circle" id="boton_categoria_{{ mov.id }}" href="javascript:desplegarDetalle('categoria', {{ mov.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip"></a>
-                                                        </td>
-                                                        <td>{{ mov.nombre }}</td>
-                                                        {% if comparativo %}
-                                                            <td class="t-a-e">{{ mov.valor_ingresos_real|intcomma }}</td>
-                                                            <td class="t-a-e">{{ mov.valor_egresos_real|intcomma }}</td>
-                                                            <td class="t-a-e">{{ mov.valor_ingresos_proyectado|intcomma }}</td>
-                                                            <td class="t-a-e">{{ mov.valor_egresos_proyectado|intcomma }}</td>
-                                                        {% else %}
-                                                            {% if valor.tipos_flujos_caja == 0 %}
-                                                                <td class="t-a-e">{{ mov.valor_ingresos_real|intcomma }}</td>
-                                                                <td class="t-a-e">{{ mov.valor_egresos_real|intcomma }}</td>
-                                                            {% else %}
-                                                                <td class="t-a-e">{{ mov.valor_ingresos_proyectado|intcomma }}</td>
-                                                                <td class="t-a-e">{{ mov.valor_egresos_proyectado|intcomma }}</td>
+                                                        <td class="w-10">
+                                                            {% if mov.valores %}
+                                                                <a class="far fa-2x far fa-plus-circle" id="boton_tipo_movimiento_{{ mov.id_tipo }}_{{ mov.id_tipo }}" href="javascript:desplegarDetalle('tipo_movimiento', '{{ mov.id_tipo }}', '{{ mov.id_tipo }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip"></a>
                                                             {% endif %}
+                                                        </td>
+                                                        <td>{{ mov.nombre_tipo }}</td>
+                                                        {% if comparativo %}
+                                                            {% for valor_mes in mov.meses %}
+                                                                <td class="t-a-e">{{ valor_mes.valor_real|intcomma }}</td>
+                                                                <td class="t-a-e">{{ valor_mes.valor_proyectado|intcomma }}</td>
+                                                            {% endfor %}
+                                                        {% else %}
+                                                            {% for valor_mes in mov.meses %}
+                                                                {% if valor.tipos_flujos_caja == REAL %}
+                                                                    <td class="t-a-e">{{ valor_mes.valor_real|intcomma }}</td>
+                                                                {% else %}
+                                                                    <td class="t-a-e">{{ valor_mes.valor_proyectado|intcomma }}</td>
+                                                                {% endif %}
+                                                            {% endfor %}
                                                         {% endif %}
                                                     </tr>
-                                                    <tr id="mas_categoria_{{ mov.id }}" style="display: none">
-                                                        <td colspan="6">
-                                                             <table class="table table-bordered w-100" id="dataTableSubtipo">
-                                                                <thead class="bg-info-400">
+                                                    <tr id="mas_tipo_movimiento_{{ mov.id_tipo }}_{{ mov.id_tipo }}" style="display: none">
+                                                        <td class="configuracion_colspan">
+                                                             <table class="table table-bordered w-100" id="dataTableCategoria">
+                                                                <thead class="bg-info-700">
                                                                     <tr>
                                                                         <th></th>
-                                                                        <th>Subtipos</th>
+                                                                        <th class="min-w-200">Categorias</th>
                                                                         {% if comparativo %}
-                                                                            <th>Valor de Ingresos Real</th>
-                                                                            <th>Valor de Egresos Real</th>
-                                                                            <th>Valor de Ingresos Proyectado</th>
-                                                                            <th>Valor de Egresos Proyectado</th>
+                                                                            {% for mes in meses %}
+                                                                                <th class="min-w-200">{{ mes.mes }} - Real</th>
+                                                                                <th class="min-w-200">{{ mes.mes }} - Proyectado</th>
+                                                                            {% endfor %}
                                                                         {% else %}
-                                                                            <th>Valor de Ingresos</th>
-                                                                            <th>Valor de Egresos</th>
+                                                                            {% for mes in meses %}
+                                                                                <th class="min-w-200">{{ mes.mes }}</th>
+                                                                            {% endfor %}
                                                                         {% endif %}
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
-                                                                    {% for sub in mov.subtipos %}
+                                                                    {% for cat in mov.valores %}
                                                                         <tr>
-                                                                            <td style="width: 10px">
-                                                                                <a class="far fa-2x far fa-plus-circle" id="boton_subtipo_{{ sub.id }}" href="javascript:desplegarDetalle('subtipo', {{ sub.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip"></a>
+                                                                            <td class="w-10">
+                                                                                <a class="far fa-2x far fa-plus-circle" id="boton_categoria_{{ mov.id_tipo }}_{{ cat.id }}" href="javascript:desplegarDetalle('categoria', '{{ cat.id }}', '{{ mov.id_tipo }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip"></a>
                                                                             </td>
-                                                                            <td>{{ sub.nombre }}</td>
+                                                                            <td>{{ cat.nombre }}</td>
                                                                             {% if comparativo %}
-                                                                                <td class="t-a-e">{{ sub.valor_ingresos_real|intcomma }}</td>
-                                                                                <td class="t-a-e">{{ sub.valor_egresos_real|intcomma }}</td>
-                                                                                <td class="t-a-e">{{ sub.valor_ingresos_proyectado|intcomma }}</td>
-                                                                                <td class="t-a-e">{{ sub.valor_egresos_proyectado|intcomma }}</td>
+                                                                                {% for mes in cat.meses %}
+                                                                                    {% if mov.id_tipo == INGRESOS %}
+                                                                                        <td class="t-a-e">{{ mes.valor_ingresos_real|intcomma }}</td>
+                                                                                        <td class="t-a-e">{{ mes.valor_ingresos_proyectado|intcomma }}</td>
+                                                                                    {% elif mov.id_tipo == COSTOS %}
+                                                                                        <td class="t-a-e">{{ mes.valor_costos_real|intcomma }}</td>
+                                                                                        <td class="t-a-e">{{ mes.valor_costos_proyectado|intcomma }}</td>
+                                                                                    {% elif mov.id_tipo == GASTOS %}
+                                                                                        <td class="t-a-e">{{ mes.valor_gastos_real|intcomma }}</td>
+                                                                                        <td class="t-a-e">{{ mes.valor_gastos_proyectado|intcomma }}</td>
+                                                                                    {% endif %}
+                                                                                {% endfor %}
                                                                             {% else %}
-                                                                                {% if valor.tipos_flujos_caja == 0 %}
-                                                                                    <td class="t-a-e">{{ sub.valor_ingresos_real|intcomma }}</td>
-                                                                                    <td class="t-a-e">{{ sub.valor_egresos_real|intcomma }}</td>
+                                                                                {% if valor.tipos_flujos_caja == REAL %}
+                                                                                    {% for mes in cat.meses %}
+                                                                                        {% if mov.id_tipo == INGRESOS %}
+                                                                                            <td class="t-a-e">{{ mes.valor_ingresos_real|intcomma }}</td>
+                                                                                        {% elif mov.id_tipo == COSTOS %}
+                                                                                            <td class="t-a-e">{{ mes.valor_costos_real|intcomma }}</td>
+                                                                                        {% elif mov.id_tipo == GASTOS %}
+                                                                                            <td class="t-a-e">{{ mes.valor_gastos_real|intcomma }}</td>
+                                                                                        {% endif %}
+                                                                                    {% endfor %}
                                                                                 {% else %}
-                                                                                    <td class="t-a-e">{{ sub.valor_ingresos_proyectado|intcomma }}</td>
-                                                                                    <td class="t-a-e">{{ sub.valor_egresos_proyectado|intcomma }}</td>
+                                                                                    {% for mes in cat.meses %}
+                                                                                        {% if mov.id_tipo == INGRESOS %}
+                                                                                            <td class="t-a-e">{{ mes.valor_ingresos_proyectado|intcomma }}</td>
+                                                                                        {% elif mov.id_tipo == COSTOS %}
+                                                                                            <td class="t-a-e">{{ mes.valor_costos_proyectado|intcomma }}</td>
+                                                                                        {% elif mov.id_tipo == GASTOS %}
+                                                                                            <td class="t-a-e">{{ mes.valor_gastos_proyectado|intcomma }}</td>
+                                                                                        {% endif %}
+                                                                                    {% endfor %}
                                                                                 {% endif %}
                                                                             {% endif %}
                                                                         </tr>
-                                                                        <tr id="mas_subtipo_{{ sub.id }}" style="display: none">
-                                                                            <td colspan="6">
-                                                                                 <table class="table table-bordered w-100" id="dataTableProCon">
-                                                                                    <thead class="bg-success-100">
+                                                                        <tr id="mas_categoria_{{ mov.id_tipo }}_{{ cat.id }}" style="display: none">
+                                                                            <td class="configuracion_colspan">
+                                                                                 <table class="table table-bordered w-100" id="dataTableSubtipo">
+                                                                                    <thead class="bg-success-700">
                                                                                         <tr>
-                                                                                            <th>Procesos / Contratos</th>
+                                                                                            <th></th>
+                                                                                            <th class="min-w-200">Subtipos</th>
                                                                                             {% if comparativo %}
-                                                                                                <th>Valor de Ingresos Real</th>
-                                                                                                <th>Valor de Egresos Real</th>
-                                                                                                <th>Valor de Ingresos Proyectado</th>
-                                                                                                <th>Valor de Egresos Proyectado</th>
+                                                                                                {% for mes in meses %}
+                                                                                                    <th class="min-w-200">{{ mes.mes }} - Real</th>
+                                                                                                    <th class="min-w-200">{{ mes.mes }} - Proyectado</th>
+                                                                                                {% endfor %}
                                                                                             {% else %}
-                                                                                                <th>Valor de Ingresos</th>
-                                                                                                <th>Valor de Egresos</th>
+                                                                                                {% for mes in meses %}
+                                                                                                    <th class="min-w-200">{{ mes.mes }}</th>
+                                                                                                {% endfor %}
                                                                                             {% endif %}
                                                                                         </tr>
                                                                                     </thead>
                                                                                     <tbody>
-                                                                                        {% for cp in sub.con_pro %}
+                                                                                        {% for sub in cat.subtipos %}
                                                                                             <tr>
-                                                                                                <td>{{ cp.nombre }}</td>
+                                                                                                <td class="w-10">
+                                                                                                    <a class="far fa-2x far fa-plus-circle" id="boton_subtipo_{{ mov.id_tipo }}_{{ sub.id }}" href="javascript:desplegarDetalle('subtipo', '{{ sub.id }}', '{{ mov.id_tipo }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip"></a>
+                                                                                                </td>
+                                                                                                <td>{{ sub.nombre }}</td>
                                                                                                 {% if comparativo %}
-                                                                                                    <td class="t-a-e">{{ cp.valor_ingresos_real|intcomma }}</td>
-                                                                                                    <td class="t-a-e">{{ cp.valor_egresos_real|intcomma }}</td>
-                                                                                                    <td class="t-a-e">{{ cp.valor_ingresos_proyectado|intcomma }}</td>
-                                                                                                    <td class="t-a-e">{{ cp.valor_egresos_proyectado|intcomma }}</td>
+                                                                                                    {% for mes in sub.meses %}
+                                                                                                        {% if mov.id_tipo == INGRESOS %}
+                                                                                                            <td class="t-a-e">{{ mes.valor_ingresos_real|intcomma }}</td>
+                                                                                                            <td class="t-a-e">{{ mes.valor_ingresos_proyectado|intcomma }}</td>
+                                                                                                        {% elif mov.id_tipo == COSTOS %}
+                                                                                                            <td class="t-a-e">{{ mes.valor_costos_real|intcomma }}</td>
+                                                                                                            <td class="t-a-e">{{ mes.valor_costos_proyectado|intcomma }}</td>
+                                                                                                        {% elif mov.id_tipo == GASTOS %}
+                                                                                                            <td class="t-a-e">{{ mes.valor_gastos_real|intcomma }}</td>
+                                                                                                            <td class="t-a-e">{{ mes.valor_gastos_proyectado|intcomma }}</td>
+                                                                                                        {% endif %}
+                                                                                                    {% endfor %}
                                                                                                 {% else %}
-                                                                                                    {% if valor.tipos_flujos_caja == 0 %}
-                                                                                                        <td class="t-a-e">{{ cp.valor_ingresos_real|intcomma }}</td>
-                                                                                                        <td class="t-a-e">{{ cp.valor_egresos_real|intcomma }}</td>
+                                                                                                    {% if valor.tipos_flujos_caja == REAL %}
+                                                                                                        {% for mes in sub.meses %}
+                                                                                                            {% if mov.id_tipo == INGRESOS %}
+                                                                                                                <td class="t-a-e">{{ mes.valor_ingresos_real|intcomma }}</td>
+                                                                                                            {% elif mov.id_tipo == COSTOS %}
+                                                                                                                <td class="t-a-e">{{ mes.valor_costos_real|intcomma }}</td>
+                                                                                                            {% elif mov.id_tipo == GASTOS %}
+                                                                                                                <td class="t-a-e">{{ mes.valor_gastos_real|intcomma }}</td>
+                                                                                                            {% endif %}
+                                                                                                        {% endfor %}
                                                                                                     {% else %}
-                                                                                                        <td class="t-a-e">{{ cp.valor_ingresos_proyectado|intcomma }}</td>
-                                                                                                        <td class="t-a-e">{{ cp.valor_egresos_proyectado|intcomma }}</td>
+                                                                                                        {% for mes in sub.meses %}
+                                                                                                            {% if mov.id_tipo == INGRESOS %}
+                                                                                                                <td class="t-a-e">{{ mes.valor_ingresos_proyectado|intcomma }}</td>
+                                                                                                            {% elif mov.id_tipo == COSTOS %}
+                                                                                                                <td class="t-a-e">{{ mes.valor_costos_proyectado|intcomma }}</td>
+                                                                                                            {% elif mov.id_tipo == GASTOS %}
+                                                                                                                <td class="t-a-e">{{ mes.valor_gastos_proyectado|intcomma }}</td>
+                                                                                                            {% endif %}
+                                                                                                        {% endfor %}
                                                                                                     {% endif %}
                                                                                                 {% endif %}
+                                                                                            </tr>
+                                                                                            <tr id="mas_subtipo_{{ mov.id_tipo }}_{{ sub.id }}" style="display: none">
+                                                                                                <td class="configuracion_colspan">
+                                                                                                     <table class="table table-bordered w-100" id="dataTableConPro">
+                                                                                                        <thead class="bg-fusion-50">
+                                                                                                            <tr>
+                                                                                                                <th class="min-w-200">Contratos - Procesos</th>
+                                                                                                                {% if comparativo %}
+                                                                                                                    {% for mes in meses %}
+                                                                                                                        <th class="min-w-200">{{ mes.mes }} - Real</th>
+                                                                                                                        <th class="min-w-200">{{ mes.mes }} - Proyectado</th>
+                                                                                                                    {% endfor %}
+                                                                                                                {% else %}
+                                                                                                                    {% for mes in meses %}
+                                                                                                                        <th class="min-w-200">{{ mes.mes }}</th>
+                                                                                                                    {% endfor %}
+                                                                                                                {% endif %}
+                                                                                                            </tr>
+                                                                                                        </thead>
+                                                                                                        <tbody>
+                                                                                                            {% for cp in sub.con_pro %}
+                                                                                                                <tr>
+                                                                                                                    <td>{{ cp.nombre }}</td>
+                                                                                                                    {% if comparativo %}
+                                                                                                                        {% for mes in cp.meses %}
+                                                                                                                            {% if mov.id_tipo == INGRESOS %}
+                                                                                                                                <td class="t-a-e">{{ mes.valor_ingresos_real|intcomma }}</td>
+                                                                                                                                <td class="t-a-e">{{ mes.valor_ingresos_proyectado|intcomma }}</td>
+                                                                                                                            {% elif mov.id_tipo == COSTOS %}
+                                                                                                                                <td class="t-a-e">{{ mes.valor_costos_real|intcomma }}</td>
+                                                                                                                                <td class="t-a-e">{{ mes.valor_costos_proyectado|intcomma }}</td>
+                                                                                                                            {% elif mov.id_tipo == GASTOS %}
+                                                                                                                                <td class="t-a-e">{{ mes.valor_gastos_real|intcomma }}</td>
+                                                                                                                                <td class="t-a-e">{{ mes.valor_gastos_proyectado|intcomma }}</td>
+                                                                                                                            {% endif %}
+                                                                                                                        {% endfor %}
+                                                                                                                    {% else %}
+                                                                                                                        {% if valor.tipos_flujos_caja == REAL %}
+                                                                                                                            {% for mes in cp.meses %}
+                                                                                                                                {% if mov.id_tipo == INGRESOS %}
+                                                                                                                                    <td class="t-a-e">{{ mes.valor_ingresos_real|intcomma }}</td>
+                                                                                                                                {% elif mov.id_tipo == COSTOS %}
+                                                                                                                                    <td class="t-a-e">{{ mes.valor_costos_real|intcomma }}</td>
+                                                                                                                                {% elif mov.id_tipo == GASTOS %}
+                                                                                                                                    <td class="t-a-e">{{ mes.valor_gastos_real|intcomma }}</td>
+                                                                                                                                {% endif %}
+                                                                                                                            {% endfor %}
+                                                                                                                        {% else %}
+                                                                                                                            {% for mes in cp.meses %}
+                                                                                                                                {% if mov.id_tipo == INGRESOS %}
+                                                                                                                                    <td class="t-a-e">{{ mes.valor_ingresos_proyectado|intcomma }}</td>
+                                                                                                                                {% elif mov.id_tipo == COSTOS %}
+                                                                                                                                    <td class="t-a-e">{{ mes.valor_costos_proyectado|intcomma }}</td>
+                                                                                                                                {% elif mov.id_tipo == GASTOS %}
+                                                                                                                                    <td class="t-a-e">{{ mes.valor_gastos_proyectado|intcomma }}</td>
+                                                                                                                                {% endif %}
+                                                                                                                            {% endfor %}
+                                                                                                                        {% endif %}
+                                                                                                                    {% endif %}
+                                                                                                                </tr>
+                                                                                                            {% endfor %}
+                                                                                                        </tbody>
+                                                                                                    </table>
+                                                                                                </td>
                                                                                             </tr>
                                                                                         {% endfor %}
                                                                                     </tbody>
@@ -259,23 +393,64 @@
                                                         </td>
                                                     </tr>
                                                 {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <br><br>
+                                    <div id="div_totales" class="table-responsive">
+                                        <table class="table table-bordered w-100 table-td-a-t-e" id="dataTableTotales">
+                                            <thead class="bg-primary-400">
+                                                {% if comparativo %}
                                                 <tr>
-                                                    <td></td>
-                                                    <td>Total</td>
-                                                    {% if comparativo %}
-                                                        <td class="t-a-e">{{ totales.total_ingresos_real|intcomma }}</td>
-                                                        <td class="t-a-e">{{ totales.total_egresos_real|intcomma }}</td>
-                                                        <td class="t-a-e">{{ totales.total_ingresos_proyectado|intcomma }}</td>
-                                                        <td class="t-a-e">{{ totales.total_egresos_proyectado|intcomma }}</td>
+                                                    <th colspan="4" class="w-300">Totales Reales</th>
+                                                    <th colspan="4" class="w-300">Totales Proyectados</th>
+                                                </tr>
+                                                <tr>
+                                                    <th>Ingresos</th>
+                                                    <th>Costos</th>
+                                                    <th>Gastos</th>
+                                                    <th>Ingresos - Egresos</th>
+                                                    <th>Ingresos</th>
+                                                    <th>Costos</th>
+                                                    <th>Gastos</th>
+                                                    <th>Ingresos - Egresos</th>
+                                                <tr>
+                                                {% else %}
+                                                    <tr>
+                                                        <th colspan="4" class="w-300">Totales</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Ingresos</th>
+                                                        <th>Costos</th>
+                                                        <th>Gastos</th>
+                                                        <th>Ingresos - Egresos</th>
+                                                    </tr>
+                                                {% endif %}
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                {% if comparativo %}
+                                                    <td>{{ totales.total_ingresos_real }}</td>
+                                                    <td>{{ totales.total_costos_real }}</td>
+                                                    <td>{{ totales.total_gastos_real }}</td>
+                                                    <td>{{ totales.diferencia_ingresos_egresos_real }}</td>
+                                                    <td>{{ totales.total_ingresos_proyectado }}</td>
+                                                    <td>{{ totales.total_costos_proyectado }}</td>
+                                                    <td>{{ totales.total_gastos_proyectado }}</td>
+                                                    <td>{{ totales.diferencia_ingresos_egresos_proyectado }}</td>
+                                                {% else %}
+                                                    {% if valor.tipos_flujos_caja == 0 %}
+                                                        <td>{{ totales.total_ingresos_real }}</td>
+                                                        <td>{{ totales.total_costos_real }}</td>
+                                                        <td>{{ totales.total_gastos_real }}</td>
+                                                        <td>{{ totales.diferencia_ingresos_egresos_real }}</td>
                                                     {% else %}
-                                                        {% if valor.tipos_flujos_caja == 0 %}
-                                                            <td class="t-a-e">{{ totales.total_ingresos_real|intcomma }}</td>
-                                                            <td class="t-a-e">{{ totales.total_egresos_real|intcomma }}</td>
-                                                        {% else %}
-                                                            <td class="t-a-e">{{ totales.total_ingresos_proyectado|intcomma }}</td>
-                                                            <td class="t-a-e">{{ totales.total_egresos_proyectado|intcomma }}</td>
-                                                        {% endif %}
+                                                        <td>{{ totales.total_ingresos_proyectado }}</td>
+                                                        <td>{{ totales.total_costos_proyectado }}</td>
+                                                        <td>{{ totales.total_gastos_proyectado }}</td>
+                                                        <td>{{ totales.diferencia_ingresos_egresos_proyectado }}</td>
                                                     {% endif %}
+                                                {% endif %}
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -297,5 +472,5 @@
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.export.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js'%}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script>
-    <script src="{% static 'Financiero/js/FlujoCaja/configuracionesConsolidado.js' %}"></script>
+    <script src="{% static 'Financiero/js/FlujoCaja/Consolidado/configuracionesConsolidado.js' %}"></script>
 {% endblock %}
