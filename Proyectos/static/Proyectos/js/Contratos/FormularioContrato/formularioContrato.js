@@ -1,56 +1,6 @@
 
 'use strict';
 
-let divVigencias = $('#div_vigencias');
-let divGarantias = $('#div_garantias');
-let anho = $('#anho_vigencia_id');
-let vigencia = $('#valor_vigencia_id');
-let eliminarVigencia = $('#eliminar_vigencia');
-let datosVigencias = $('#datos_vigencias');
-
-let valoresVigencias = [];
-
-
-let contadorVigencia = 0;
-
-function agregarVigencia(valores) {
-    let datoAnho = anho.val();
-    let datoVigencia = vigencia.val();
-    if (valores){
-        datoAnho = valores.valor_anho;
-        datoVigencia = valores.valor_vigencia;
-    }
-    if (datoVigencia === '' || datoAnho === ''){
-        EVANotificacion.toast.error('Debes llenar los campos disponibles antes de realizar esta acción.');
-        return false;
-    }
-    eliminarVigencia.show();
-    valoresVigencias.push({'pos': contadorVigencia, 'valor_anho': datoAnho, 'valor_vigencia': datoVigencia});
-    divVigencias.append('<div class="form-group" id="vigencia_'+ contadorVigencia +'" style="margin-bottom: 0">' +
-        '<div class="form-row"><div class="col-md-6">\n' +
-        '<label>Año de vigencia</label>\n' +
-        '<input disabled type="text" id="valor_anho_'+ contadorVigencia +'" value="'+ datoAnho +'" class="form-control"></div>\n' +
-        '<div class="col-md-5">\n' +
-        '<label>Valor de vigencia</label>\n' +
-        '<input disabled type="text" id="valor_vigencia_'+ contadorVigencia +'" value="'+ datoVigencia +'" class="form-control"></div>\n' +
-        '<div class="col-md-1"></div></div><br></div>');
-    contadorVigencia += 1;
-    anho.val('');
-    vigencia.val('');
-    datosVigencias.val(JSON.stringify(valoresVigencias));
-}
-
-function quitarVigencia() {
-    contadorVigencia -= 1;
-    if (contadorVigencia === 0){
-        eliminarVigencia.hide();
-    }
-    valoresVigencias.pop();
-    anho.val($('#valor_anho_' + contadorVigencia).val());
-    vigencia.val($('#valor_vigencia_' + contadorVigencia).val());
-    $('#vigencia_'+ contadorVigencia).remove();
-    datosVigencias.val(JSON.stringify(valoresVigencias));
-}
 
 
 
