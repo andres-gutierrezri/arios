@@ -211,8 +211,8 @@
                                                                             {% input_number_tag 'valor_vigencia' 'Valor de vigencia' placeholder="Ingrese el valor de vigencia" min='0' max="999999999999" onInput="validarLongitud(12,this)" required="" value=contrato.liquidacion mensaje_validacion='Por favor ingrese un valor'  %}
                                                                         </div>
                                                                         <div class="col-md-1" style="padding-top:30px">
-                                                                            <a class="far fa-2x far fa-plus" id="agregar_vigencia" href="#" onclick="agregarVigencia()" title="" data-original-title="Agregar Vigencia" style=""></a>
-                                                                            <a style="display: none" class="far fa-2x far fa-times" id="eliminar_vigencia" href="#" onclick="quitarVigencia()" title="" data-original-title="Eliminar Vigencia"></a>
+                                                                            <a class="far fa-2x far fa-plus-circle" id="agregar_vigencia" href="#" onclick="agregarVigencia()" title="" data-original-title="Agregar Vigencia" style=""></a>
+                                                                            <a style="display: none" class="far fa-2x far fa-trash-alt color-danger-900" id="eliminar_vigencia" href="#" onclick="quitarVigencia()" title="" data-original-title="Eliminar Vigencia"></a>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -268,8 +268,8 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-md-1" style="padding-top:30px">
-                                                                            <a class="far fa-2x far fa-plus" id="agregar_garantia" href="#" onclick="agregarGarantia()" title="" data-original-title="Agregar Garantía" style=""></a>
-                                                                            <a style="display: none" class="far fa-2x far fa-times" id="eliminar_garantia" href="#" onclick="quitarGarantia()" title="" data-original-title="Eliminar Garantía"></a>
+                                                                            <a class="far fa-2x far fa-plus-circle" id="agregar_garantia" href="#" onclick="agregarGarantia()" title="" data-original-title="Agregar Garantía" style=""></a>
+                                                                            <a style="display: none" class="far fa-2x far fa-trash-alt color-danger-900" id="eliminar_garantia" href="#" onclick="quitarGarantia()" title="" data-original-title="Eliminar Garantía"></a>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -310,5 +310,6 @@
     <script src="{% static 'Proyectos/js/Contratos/FormularioContrato/formularioContrato.js' %}"></script>
     <script src="{% static 'Proyectos/js/Contratos/FormularioContrato/formasDePago.js' %}"></script>
     <script src="{% static 'Proyectos/js/Contratos/FormularioContrato/supervisorInterventor.js' %}"></script>
+    <script src="{% static 'Proyectos/js/Contratos/FormularioContrato/controlGarantias.js' %}"></script>
     <script src="{% static 'Proyectos/js/Contratos/configuracionSelectMultiple.js' %}"></script>
 {% endblock scripts %}
