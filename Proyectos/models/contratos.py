@@ -79,6 +79,9 @@ class Contrato(models.Model, ModelDjangoExtensiones):
         contrato.recursos_propios = datos.get('origen_recurso_id', '')
         contrato.origen_de_recursos = datos.get('origen_recurso', '')
 
+        if not contrato.fecha_registro_presupuestal:
+            contrato.fecha_registro_presupuestal = None
+
         return contrato
 
 
