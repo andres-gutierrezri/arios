@@ -136,10 +136,10 @@
                                                             <div class="form-group">
                                                                 <div class="form-row">
                                                                     <div class="col-md-6">
-                                                                        {% input_date_tag 'fecha_registro_presupuestal' 'Fecha de Registro Presupuestal' placeholder="Seleccione una fecha"  autocomplete="off" required="" value=contrato.fecha_registro_presupuestal  mensaje_validacion='Por favor seleccione una fecha.' invalido=errores.fecha_presupuestal %}
+                                                                        {% input_date_tag 'fecha_registro_presupuestal' 'Fecha de Registro Presupuestal' placeholder="Seleccione una fecha"  autocomplete="off" value=contrato.fecha_registro_presupuestal  mensaje_validacion='Por favor seleccione una fecha.' invalido=errores.fecha_presupuestal %}
                                                                     </div>
                                                                     <div class="col-md-6">
-                                                                        {% input_text_tag 'numero_registro_presupuestal' 'Número del Registro Presupuestal' placeholder="Ingrese el número del registro presupuestal" maxlength="150" required="" value=contrato.numero_registro_presupuestal mensaje_validacion='Por favor ingrese el número del registro presupuestal.' invalido=errores.numero_registro_presupuestal %}
+                                                                        {% input_text_tag 'numero_registro_presupuestal' 'Número del Registro Presupuestal' placeholder="Ingrese el número del registro presupuestal" maxlength="150" value=contrato.numero_registro_presupuestal mensaje_validacion='Por favor ingrese el número del registro presupuestal.' invalido=errores.numero_registro_presupuestal %}
                                                                     </div>
                                                                 </div>
                                                             </div>
