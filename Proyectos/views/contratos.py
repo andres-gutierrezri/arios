@@ -442,7 +442,7 @@ def crear_actualizar_municipios(municipios, contrato, origen):
 def crear_actualizar_supervisores_interventores(supervisores, interventores, contrato, supervisor_interventor, origen):
     if origen == 'editar':
         ContratoIterventoriaSupervisor.objects.filter(contrato=contrato).delete()
-    if supervisor_interventor == SUPERVISOR:
+    if int(supervisor_interventor) == SUPERVISOR:
         for supervisor in supervisores:
             ContratoIterventoriaSupervisor.objects.create(contrato=contrato, tercero_id=supervisor, tipo=SUPERVISOR)
     else:
