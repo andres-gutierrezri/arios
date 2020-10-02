@@ -16,9 +16,11 @@ class Contrato(models.Model, ModelDjangoExtensiones):
     residente = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Residente', null=True,
                                   blank=True)
     fecha_suscripcion = models.DateTimeField(verbose_name='Fecha de suscripción', null=False, blank=False)
-    valor = models.BigIntegerField(verbose_name="Valor", null=False, blank=False)
-    valor_con_iva = models.BigIntegerField(verbose_name="Valor con IVA", null=False, blank=False)
-    valor_sin_iva = models.BigIntegerField(verbose_name="Valor con IVA", null=False, blank=False)
+    valor = models.DecimalField(verbose_name="Valor", decimal_places=2, max_digits=16, null=False, blank=False)
+    valor_con_iva = models.DecimalField(verbose_name="Valor con IVA", decimal_places=2, max_digits=16,
+                                        null=False, blank=False)
+    valor_sin_iva = models.DecimalField(verbose_name="Valor con IVA", decimal_places=2, max_digits=16,
+                                        null=False, blank=False)
     porcentaje_a = models.DecimalField(verbose_name='Porcentaje A', decimal_places=2, max_digits=5, null=True,
                                        blank=True)
     porcentaje_i = models.DecimalField(verbose_name='Porcentaje I', decimal_places=2, max_digits=5, null=True,
