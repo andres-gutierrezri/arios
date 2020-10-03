@@ -235,33 +235,40 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                {% if novedades_colaborador %}
                                                 <div class="card mb-g">
                                                     <div class="row row-grid no-gutters">
                                                         <div class="col-12">
                                                             <div class="p-3">
                                                                 <h2 class="mb-0 fs-xl">
-                                                                    <strong> Dotación </strong>
+                                                                    <strong> Novedades del Colaborador </strong>
                                                                 </h2>
                                                             </div>
                                                         </div>
                                                         <div class="p-3">
                                                             <h5>
-                                                                <small class="mt-0 mb-3 text-muted">
-                                                                    <b>Talla de camisa:</b> {{ colaborador.talla_camisa }}
-                                                                </small>
-                                                                <small class="mt-0 mb-3 text-muted">
-                                                                    <b>Talla de pantalón:</b> {{ colaborador.talla_pantalon }}
-                                                                </small>
-                                                                <small class="mt-0 mb-3 text-muted">
-                                                                    <b>Talla de zapatos:</b> {{ colaborador.talla_zapatos }}
-                                                                </small>
-                                                                <small class="mt-0 mb-3 text-muted">
-                                                                    <b>Fecha de entrega de dotación:</b> {{ colaborador.fecha_dotacion|date:'Y-m-d' }}
-                                                                </small>
+                                                                {% for novedad in novedades_colaborador %}
+                                                                    {% if novedad != novedades_colaborador.first %}
+                                                                        <br>
+                                                                    {% endif %}
+                                                                    <small class="mt-0 mb-3 text-muted">
+                                                                        <b>Fecha de Novedad:</b> {{ novedad.fecha_novedad }}
+                                                                    </small>
+                                                                    <small class="mt-0 mb-3 text-muted">
+                                                                        <b>Tipo de Novedad:</b> {{ novedad.tipo_novedad }}
+                                                                    </small>
+                                                                    <small class="mt-0 mb-3 text-muted">
+                                                                        <b>Descipción:</b> {{ novedad.descripcion }}
+                                                                    </small>
+                                                                    <small class="mt-0 mb-3 text-muted">
+                                                                        <b>Responsable:</b> {{ novedad.usuario_crea.get_full_name }}
+                                                                    </small>
+                                                                {% endfor %}
                                                             </h5>
                                                         </div>
                                                     </div>
                                                 </div>
+                                                {% endif %}
                                             </div>
                                             <div class="col-lg-6 col-xl-3 order-lg-2 order-xl-3">
                                                 <!-- add : -->
@@ -344,6 +351,61 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <div class="card mb-g">
+                                                    <div class="row row-grid no-gutters">
+                                                        <div class="col-12">
+                                                            <div class="p-3">
+                                                                <h2 class="mb-0 fs-xl">
+                                                                    <strong> Dotación </strong>
+                                                                </h2>
+                                                            </div>
+                                                        </div>
+                                                        <div class="p-3">
+                                                            <h5>
+                                                                <small class="mt-0 mb-3 text-muted">
+                                                                    <b>Talla de camisa:</b> {{ colaborador.talla_camisa }}
+                                                                </small>
+                                                                <small class="mt-0 mb-3 text-muted">
+                                                                    <b>Talla de pantalón:</b> {{ colaborador.talla_pantalon }}
+                                                                </small>
+                                                                <small class="mt-0 mb-3 text-muted">
+                                                                    <b>Talla de zapatos:</b> {{ colaborador.talla_zapatos }}
+                                                                </small>
+                                                            </h5>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {% if entregas_dotacion %}
+                                                <div class="card mb-g">
+                                                    <div class="row row-grid no-gutters">
+                                                        <div class="col-12">
+                                                            <div class="p-3">
+                                                                <h2 class="mb-0 fs-xl">
+                                                                    <strong> Entregas de Dotación </strong>
+                                                                </h2>
+                                                            </div>
+                                                        </div>
+                                                        <div class="p-3">
+                                                            <h5>
+                                                                {% for entrega in entregas_dotacion %}
+                                                                    {% if entrega != entregas_dotacion.first %}
+                                                                    <br>
+                                                                    {% endif %}
+                                                                    <small class="mt-0 mb-3 text-muted">
+                                                                        <b>Fecha: </b> {{ entrega.fecha_crea }}
+                                                                    </small>
+                                                                    <small class="mt-0 mb-3 text-muted">
+                                                                        <b>Descripción:</b> {{ entrega.descripcion }}
+                                                                    </small>
+                                                                    <small class="mt-0 mb-3 text-muted">
+                                                                        <b>Responsable: </b> {{ entrega.usuario_crea.get_full_name }}
+                                                                    </small>
+                                                                {% endfor %}
+                                                            </h5>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </main>
