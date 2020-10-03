@@ -238,7 +238,8 @@ def datos_xa_render(request, opcion: str, contrato: Contrato = None) -> dict:
                                     'nombre_tipo_garantia': garantia.tipo_garantia.nombre,
                                     'porcentaje_asegurado': str(garantia.porcentaje_asegurado),
                                     'vigencia_garantia': garantia.vigencia,
-                                    'garantia_extensiva': garantia.extensiva})
+                                    'garantia_extensiva': garantia.extensiva,
+                                    'aplica_valor_smmlv': garantia.tipo_garantia.aplica_valor_smmlv})
 
         datos['valores_vigencias_actuales'] = json.dumps(lista_vigencias)
         datos['valores_garantias_actuales'] = json.dumps(lista_garantias)
