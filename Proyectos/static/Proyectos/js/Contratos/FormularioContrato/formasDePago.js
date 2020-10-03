@@ -28,17 +28,19 @@ selectFormaDePago.change(function () {
 let inputValorConIVA = $('#valor_con_iva_id');
 
 function validarSumaPorcentajeValor(valorInput){
-    if (selectPorcentajeValor.val() === '0') {
-        if (valorInput > 100 || valorInput < 100){
-            EVANotificacion.toast.error('El total de los valores debe ser igual al 100%');
-            inputLiquidacion.val('');
-            return false
-        }
-    }else{
-        if (valorInput > parseFloat(inputValorConIVA.val()) || valorInput < parseFloat(inputValorConIVA.val())){
-            EVANotificacion.toast.error('El total de los valores debe ser igual al valor con IVA');
-            inputLiquidacion.val('');
-            return false
+    if (valorInput !== 0){
+        if (selectPorcentajeValor.val() === '0') {
+            if (valorInput > 100 || valorInput < 100){
+                EVANotificacion.toast.error('El total de los valores debe ser igual al 100%');
+                inputLiquidacion.val('');
+                return false
+            }
+        }else{
+            if (valorInput > parseFloat(inputValorConIVA.val()) || valorInput < parseFloat(inputValorConIVA.val())){
+                EVANotificacion.toast.error('El total de los valores debe ser igual al valor con IVA');
+                inputLiquidacion.val('');
+                return false
+            }
         }
     }
 }
