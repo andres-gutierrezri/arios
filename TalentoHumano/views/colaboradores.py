@@ -15,7 +15,7 @@ from EVA import settings
 from EVA.General.utilidades import validar_formato_imagen, app_datetime_now
 from Notificaciones.views.correo_electronico import enviar_correo
 from EVA.General.validacionpermisos import tiene_permisos
-from TalentoHumano.models.colaboradores import ColaboradorContrato, TipoNovedad, NovedaColaborador, ColaboradorEmpresa
+from TalentoHumano.models.colaboradores import ColaboradorContrato, TipoNovedad, NovedadColaborador, ColaboradorEmpresa
 from EVA.views.index import AbstractEvaLoggedView
 from Notificaciones.models.models import EventoDesencadenador
 from Notificaciones.views.views import crear_notificacion_por_evento
@@ -51,7 +51,7 @@ class ColaboradoresPerfilView(AbstractEvaLoggedView):
             colaborador.usuario.get_full_name()
             colaboradores = Colaborador.objects.all()[:9]
             contratos = ColaboradorContrato.objects.filter(colaborador=colaborador)
-            novedades = NovedaColaborador.objects.filter(colaborador=colaborador)
+            novedades = NovedadColaborador.objects.filter(colaborador=colaborador)
             entregas_dotacion = novedades.filter(tipo_novedad_id=TipoNovedad.ENTEREGA_DOTACION)
             novedades_colaborador = novedades.exclude(tipo_novedad_id=TipoNovedad.ENTEREGA_DOTACION)
             return render(request, 'TalentoHumano/Colaboradores/perfil.html',
@@ -306,7 +306,7 @@ class AgregarNovedadView(AbstractEvaLoggedView):
 
     def post(self, request, id_usuario):
         colaborador = Colaborador.objects.get(usuario_id=id_usuario)
-        novedad = NovedaColaborador.from_dictionary(request.POST)
+        novedad = NovedadColaborador.from_dictionary(request.POST)
         novedad.colaborador = colaborador
         novedad.usuario_crea = request.user
         novedad.fecha_crea = app_datetime_now()

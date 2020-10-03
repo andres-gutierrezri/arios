@@ -248,7 +248,7 @@ class TipoNovedad(models.Model):
     ENTEREGA_DOTACION = 1
 
 
-class NovedaColaborador(models.Model):
+class NovedadColaborador(models.Model):
     colaborador = models.ForeignKey(Colaborador, on_delete=models.DO_NOTHING, verbose_name='Colaborador', null=False,
                                     blank=False)
     tipo_novedad = models.ForeignKey(TipoNovedad, on_delete=models.DO_NOTHING, verbose_name='Tipo de Novedad',
@@ -263,13 +263,13 @@ class NovedaColaborador(models.Model):
         return self.tipo_novedad.nombre
 
     @staticmethod
-    def from_dictionary(datos: dict) -> 'NovedaColaborador':
+    def from_dictionary(datos: dict) -> 'NovedadColaborador':
         """
         Crea una instancia de NovedadColborador con los datos pasados en el diccionario.
         :param datos: Diccionario con los datos para crear Colaboradores.
         :return: Instacia de entidad NovedadColaborador con la información especificada en el diccionario.
         """
-        novedad = NovedaColaborador()
+        novedad = NovedadColaborador()
         novedad.tipo_novedad_id = datos.get('tipo_novedad_id', '')
         novedad.fecha_novedad = datos.get('fecha_novedad', '')
         novedad.descripcion = datos.get('descripcion', '')
