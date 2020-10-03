@@ -11,8 +11,8 @@ from Administracion.models import Proceso
 from EVA.General import app_datetime_now, app_date_now
 from EVA.General.conversiones import add_months, string_to_date
 from EVA.views.index import AbstractEvaLoggedView
-from Financiero.models import FlujoCajaDetalle, SubTipoMovimiento, FlujoCajaEncabezado, EstadoFlujoCaja
-from Financiero.models.flujo_caja import EstadoFCDetalle
+from Financiero.models import FlujoCajaDetalle, SubTipoMovimiento, FlujoCajaEncabezado, EstadoFlujoCaja, CorteFlujoCaja
+from Financiero.models.flujo_caja import EstadoFCDetalle, TipoMovimiento
 from Financiero.parametros import ParametrosFinancieros
 from Proyectos.models import Contrato
 from TalentoHumano.models.colaboradores import ColaboradorContrato, Colaborador
@@ -75,9 +75,9 @@ class FlujoCajaMovimientoHistorialView(AbstractEvaLoggedView):
 
 def flujo_caja_detalle(request, tipo, contrato=None, proceso=None):
     if proceso:
-        ruta_reversa = 'financiero:flujo-caja-procesos'
+        ruta_reversa = 'administracion:procesos'
         base_template = 'Administracion/_common/base_administracion.html'
-        menu_actual = 'fc_procesos'
+        menu_actual = ['procesos', 'flujos_de_caja']
         proceso = Proceso.objects.get(id=proceso)
         flujo_caja_enc = FlujoCajaEncabezado.objects.filter(proceso=proceso)
         movimientos = FlujoCajaDetalle.objects.filter(flujo_caja_enc__proceso=proceso, tipo_registro=tipo) \
@@ -109,6 +109,14 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None):
         if not request.user.has_perms(['Financiero.can_gestion_flujos_de_caja']):
             movimientos = movimientos.exclude(estado_id=EstadoFCDetalle.ELIMINADO)
 
+    ingresos = 0
+    egresos = 0
+    for movimiento in movimientos:
+        if movimiento.subtipo_movimiento.tipo_movimiento_id == TipoMovimiento.INGRESOS:
+            ingresos += movimiento.valor
+        else:
+            egresos += movimiento.valor
+
     if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
         movimientos = movimientos.filter(subtipo_movimiento__protegido=False)
 
@@ -116,7 +124,7 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None):
                   {'movimientos': movimientos, 'fecha': datetime.now(), 'contrato': contrato, 'proceso': proceso,
                    'menu_actual': menu_actual, 'fecha_minima_mes': fecha_minima_mes, 'tipo': tipo,
                    'fecha_maxima_mes': fecha_maxima_mes, 'flujo_caja_enc': flujo_caja_enc,
-                   'base_template': base_template})
+                   'base_template': base_template, 'ingresos': ingresos, 'egresos': egresos})
 
 
 def cargar_modal_crear_editar(request,  opcion, tipo=None, contrato=None, proceso=None, movimiento=None):
@@ -160,7 +168,7 @@ def guardar_movimiento(request, tipo=None, contrato=None, proceso=None, movimien
         objeto = contrato
         flujo_encabezado = FlujoCajaEncabezado.objects.get(contrato_id=contrato)
     else:
-        ruta_reversa = 'financiero:flujo-caja-procesos'
+        ruta_reversa = 'administracion:procesos'
         ruta_detalle = 'financiero:flujo-caja-procesos-detalle'
         objeto = proceso
         flujo_encabezado = FlujoCajaEncabezado.objects.get(proceso_id=proceso)

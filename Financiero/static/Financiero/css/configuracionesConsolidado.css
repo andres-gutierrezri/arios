@@ -1,0 +1,27 @@
+table th {
+  text-align: center;
+}
+
+@page {
+    size: landscape;
+}
+
+.p-t-25 {
+    padding-top: 25px;
+}
+
+.w-300{
+    width: 300px;
+}
+
+.w-10{
+    width: 10px;
+}
+
+.m-w-170{
+    min-width: 170px;
+}
+
+.p-20{
+    padding: 20px;
+}

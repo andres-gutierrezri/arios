@@ -19,7 +19,7 @@
             {% csrf_token %}
             <div class="form-group">
                 <div>
-                    {% input_text_tag 'nombre' 'Nombre' placeholder="Ingrese el nombre" required="" modal=True maxlength="100" value=cat_mov.nombre mensaje_validacion='Por favor digite el nombre.' invalido=errores.nombre %}
+                    {% input_text_tag 'nombre' 'Nombre' placeholder="Ingrese el nombre" required="" modal=True maxlength="30" value=cat_mov.nombre mensaje_validacion='Por favor digite el nombre.' invalido=errores.nombre %}
                 </div>
                 <br>
                 <div>

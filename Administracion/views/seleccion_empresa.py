@@ -6,13 +6,12 @@ from django.shortcuts import redirect, render, reverse
 
 from Administracion.models import Empresa
 from EVA.views.index import AbstractEvaLoggedView
-from Proyectos.models import Contrato
-from TalentoHumano.models.colaboradores import ColaboradorContrato, Colaborador
+from TalentoHumano.models.colaboradores import Colaborador, ColaboradorEmpresa
 
 
 class SeleccionEmpresaModalView(AbstractEvaLoggedView):
     def get(self, request):
-        empresas = ColaboradorContrato.objects.filter(colaborador__usuario=request.user).distinct('contrato__empresa')
+        empresas = ColaboradorEmpresa.objects.filter(colaborador__usuario=request.user)
         empresa_actual = Empresa.objects.get(colaborador__usuario=request.user)
         colaborador = Colaborador.objects.get(usuario=request.user)
 

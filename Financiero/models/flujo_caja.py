@@ -3,6 +3,7 @@ from datetime import date
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import QuerySet, F
 
 from Administracion.models import Proceso
 from EVA.General.modelmanagers import ManagerGeneral
@@ -105,7 +106,24 @@ class EstadoFlujoCaja(models.Model):
     EJECUCION = 2
 
 
+class FlujoCajaEncabezadoManager(ManagerGeneral):
+    def get_xa_select_x_contrato(self) -> QuerySet:
+        return super().get_queryset().filter(contrato__isnull=False)\
+            .values(campo_valor=F('id'), campo_texto=F('contrato__numero_contrato'))
+
+    def get_xa_select_x_proceso(self) -> QuerySet:
+        return super().get_queryset().filter(proceso__isnull=False) \
+            .values(campo_valor=F('id'), campo_texto=F('proceso__nombre'))
+
+    def get_flujos_x_contrato(self) -> QuerySet:
+        return super().get_queryset().filter(contrato__isnull=False)
+
+    def get_flujos_x_proceso(self) -> QuerySet:
+        return super().get_queryset().filter(proceso__isnull=False)
+
+
 class FlujoCajaEncabezado(models.Model):
+    objects = FlujoCajaEncabezadoManager()
     proceso = models.ForeignKey(Proceso, on_delete=models.CASCADE, verbose_name='Proceso',
                                 null=True, blank=False)
     contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato',

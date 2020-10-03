@@ -13,11 +13,11 @@
         </div>
         <div class="modal-body">
             {% for empresa in empresas %}
-                <div style="text-align: center; position: relative; cursor: pointer; {% if empresa_actual.id != empresa.contrato.empresa.id %} opacity: 0.5 {% endif %}"
+                <div style="text-align: center; position: relative; cursor: pointer; {% if empresa_actual.id != empresa.empresa.id %} opacity: 0.5 {% endif %}"
                      onmouseover="$(this).find('.text-logo').fadeIn(0); $(this).css('opacity','1');"
-                     onmouseleave="$(this).find('.text-logo').fadeOut(0);$(this).css('opacity',{% if empresa_actual.id != empresa.contrato.empresa.id %} '0.5' {% else %} '1' {% endif %});">
-                    <img class="logo-nav" style="width: 300px; position: relative;" onclick="clicEmpresa({{ empresa.contrato.empresa.id }})" src="{{ empresa.contrato.empresa.logo.url }}" >
-                    <div style="height: 31px"><h3 class="text-logo" style="position: relative; display: none;" ><strong>{{ empresa.contrato.empresa.nombre }}</strong></h3></div>
+                     onmouseleave="$(this).find('.text-logo').fadeOut(0);$(this).css('opacity',{% if empresa_actual.id != empresa.empresa.id %} '0.5' {% else %} '1' {% endif %});">
+                    <img class="logo-nav" style="width: 300px; position: relative;" onclick="clicEmpresa({{ empresa.empresa.id }})" src="{{ empresa.empresa.logo.url }}" >
+                    <div style="height: 31px"><h3 class="text-logo" style="position: relative; display: none;" ><strong>{{ empresa.empresa.nombre }}</strong></h3></div>
                     <br>
                 </div>
             {% endfor %}

@@ -1,0 +1,15 @@
+.opacidad_05{
+    text-align: center;
+    position: relative;
+    cursor: pointer;
+    opacity: 0.5
+}
+
+.imagen_empresa{
+    width: 200px;
+    position: relative;
+}
+
+.h3_texto_imagen{
+    position: relative;
+}

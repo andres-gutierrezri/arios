@@ -39,4 +39,8 @@ urlpatterns = [
          name='colaboradores-foto-perfil'),
     path('colaboradores/<int:id>/permisos/<int:id_filtro>', gestion_permisos.AsignacionPermisosView.as_view(),
          name='colaboradores-permisos'),
+    path('colaboradores/novedad/add/<int:id_usuario>', colaboradores.AgregarNovedadView.as_view(),
+         name='colaboradores-novedad-agregar'),
+    path('colaboradores/seleccion-empresas/<int:id_usuario>', colaboradores.SeleccionEmpresaView.as_view(),
+         name='colaboradores-seleccion-empresas'),
 ]

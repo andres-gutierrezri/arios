@@ -14,7 +14,7 @@
                     {% if perms.TalentoHumano.view_colaborador %}
                     <div class="dropdown-menu">
                         {% if perms.TalentoHumano.view_colaborador %}
-                        <a class="dropdown-item" href="{% url 'TalentoHumano:colaboradores-perfil' id_tarjeta %}">Ver perfil</a>
+                        <a class="dropdown-item" href="{% url 'TalentoHumano:colaboradores-perfil' colaborador.usuario_id %}">Ver perfil</a>
                         {% endif %}
                         {% if perms.TalentoHumano.change_colaborador %}
                         <a class="dropdown-item" href="{% url 'TalentoHumano:colaboradores-editar' id_tarjeta %}">Editar</a>
@@ -24,6 +24,12 @@
                         {% endif %}
                         {% if perms.auth.change_permission and request.user.id != colaborador.usuario_id and not colaborador.usuario.is_superuser %}
                         <a class="dropdown-item" href="{% url 'TalentoHumano:colaboradores-permisos' colaborador.usuario_id 0 %}">Gestionar Permisos</a>
+                        {% endif %}
+                        {% if perms.TalentoHumano.add_novedadcolaborador %}
+                        <a class="dropdown-item" href="javascript: agregarNovedad({{ colaborador.usuario_id }})">Agregar Novedad</a>
+                        {% endif %}
+                        {% if perms.TalentoHumano.add_colaboradorempresa %}
+                        <a class="dropdown-item" href="javascript: seleccionarEmpresas({{ colaborador.usuario_id }})">Empresas</a>
                         {% endif %}
                         {% if perms.TalentoHumano.delete_colaborador %}
                         <a class="dropdown-item" href="javascript:void(0);" id="eliminar_{{ id_tarjeta }}"   onclick="fConfirmarEliminar({{ id_tarjeta }})">Eliminar</a>

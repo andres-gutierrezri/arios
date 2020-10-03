@@ -9,12 +9,13 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
 from Administracion.models import Cargo, Proceso, TipoContrato, CentroPoblado, Rango, Municipio, Departamento, \
-    TipoIdentificacion
+    TipoIdentificacion, Empresa
+from Administracion.utils import get_id_empresa_global
 from EVA import settings
-from EVA.General.utilidades import validar_formato_imagen
+from EVA.General.utilidades import validar_formato_imagen, app_datetime_now
 from Notificaciones.views.correo_electronico import enviar_correo
 from EVA.General.validacionpermisos import tiene_permisos
-from TalentoHumano.models.colaboradores import ColaboradorContrato
+from TalentoHumano.models.colaboradores import ColaboradorContrato, TipoNovedad, NovedadColaborador, ColaboradorEmpresa
 from EVA.views.index import AbstractEvaLoggedView
 from Notificaciones.models.models import EventoDesencadenador
 from Notificaciones.views.views import crear_notificacion_por_evento
@@ -46,12 +47,19 @@ class ColaboradoresPerfilView(AbstractEvaLoggedView):
                 not tiene_permisos(request, 'TalentoHumano', ['view_colaborador'], None):
             return redirect(reverse('eva-index'))
         else:
-            colaborador = Colaborador.objects.get(id=id)
+            colaborador = Colaborador.objects.get(usuario_id=id)
+            colaborador.usuario.get_full_name()
             colaboradores = Colaborador.objects.all()[:9]
             contratos = ColaboradorContrato.objects.filter(colaborador=colaborador)
-            return render(request, 'TalentoHumano/Colaboradores/perfil.html', {'colaborador': colaborador,
-                                                                               'contratos': contratos,
-                                                                               'colaboradores': colaboradores})
+            novedades = NovedadColaborador.objects.filter(colaborador=colaborador)
+            entregas_dotacion = novedades.filter(tipo_novedad_id=TipoNovedad.ENTEREGA_DOTACION)
+            novedades_colaborador = novedades.exclude(tipo_novedad_id=TipoNovedad.ENTEREGA_DOTACION)
+            return render(request, 'TalentoHumano/Colaboradores/perfil.html',
+                          {'colaborador': colaborador,
+                           'contratos': contratos,
+                           'entregas_dotacion': entregas_dotacion,
+                           'novedades_colaborador': novedades_colaborador,
+                           'colaboradores': colaboradores})
 
 
 class ColaboradoresCrearView(AbstractEvaLoggedView):
@@ -62,6 +70,7 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
 
     def post(self, request):
         colaborador = Colaborador.from_dictionary(request.POST)
+        colaborador.empresa_sesion_id = get_id_empresa_global(request)
         colaborador.usuario_crea = request.user
         contratos = request.POST.getlist('contrato_id[]', None)
         grupos = request.POST.getlist('grupo_id[]', None)
@@ -73,7 +82,7 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
 
         try:
             # Se excluye el usuario debido a que el id no es asignado  después de ser guardado en la BD.
-            colaborador.full_clean(exclude=['usuario', 'empresa_sesion'])
+            colaborador.full_clean(exclude=['usuario'])
         except ValidationError as errores:
             datos = datos_xa_render(self.OPCION, colaborador)
             datos['errores'] = errores.message_dict
@@ -84,11 +93,6 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
                                          .format(colaborador.identificacion))
                         break
             return render(request, 'TalentoHumano/Colaboradores/crear-editar.html', datos)
-
-        if colaborador.fecha_dotacion < colaborador.fecha_ingreso:
-            messages.warning(request, 'La fecha de ingreso debe ser menor o igual a la fecha de entrega de dotación')
-            return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
-                          datos_xa_render(self.OPCION, colaborador))
 
         if colaborador.fecha_ingreso < colaborador.fecha_examen:
             messages.warning(request, 'La fecha de examen debe ser menor o igual a la fecha de ingreso')
@@ -107,6 +111,7 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
             colaborador.usuario_id = colaborador.usuario.id
             colaborador.empresa_sesion_id = Contrato.objects.get(id=contratos[0]).empresa_id
             colaborador.save()
+            ColaboradorEmpresa.objects.create(colaborador=colaborador, empresa_id=get_id_empresa_global(request))
             crear_notificacion_por_evento(EventoDesencadenador.BIENVENIDA, colaborador.usuario_id,
                                           colaborador.nombre_completo)
             crear_notificacion_por_evento(EventoDesencadenador.COLABORADOR, colaborador.usuario_id,
@@ -152,7 +157,7 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
     def post(self, request, id):
         update_fields = ['direccion', 'talla_camisa', 'talla_zapatos', 'talla_pantalon', 'eps_id',
                          'arl_id', 'afp_id', 'caja_compensacion_id', 'fecha_ingreso', 'fecha_examen',
-                         'fecha_dotacion', 'salario', 'jefe_inmediato_id', 'cargo_id', 'proceso_id',
+                         'salario', 'jefe_inmediato_id', 'cargo_id', 'proceso_id',
                          'tipo_contrato_id', 'lugar_nacimiento_id', 'rango_id', 'fecha_nacimiento',
                          'identificacion', 'tipo_identificacion_id', 'fecha_expedicion', 'genero', 'telefono',
                          'estado', 'nombre_contacto', 'grupo_sanguineo', 'telefono_contacto', 'parentesco',
@@ -222,11 +227,6 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
                              .format(colaborador.nombre_completo))
             return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
 
-        if colaborador.fecha_dotacion < colaborador.fecha_ingreso:
-            messages.warning(request, 'La fecha de ingreso debe ser menor o igual a la fecha de entrega de dotación')
-            return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
-                          datos_xa_render(self.OPCION, colaborador))
-
         if colaborador.fecha_ingreso < colaborador.fecha_examen:
             messages.warning(request, 'La fecha de examen debe ser menor o igual a la fecha de ingreso')
             return render(request, 'TalentoHumano/Colaboradores/crear-editar.html',
@@ -295,6 +295,81 @@ class ColaboradorCambiarFotoPerfilView(AbstractEvaLoggedView):
                 messages.success(request, 'No se realizaron cambios en la foto de perfil.')
 
         return redirect(reverse('TalentoHumano:colaboradores-perfil', args=[id]))
+
+
+class AgregarNovedadView(AbstractEvaLoggedView):
+    def get(self, request, id_usuario):
+        colaborador = Colaborador.objects.get(usuario_id=id_usuario)
+        tipos_novedad = TipoNovedad.objects.get_xa_select_activos()
+        return render(request, 'TalentoHumano/_elements/_modal_agregar_novedad.html', {'colaborador': colaborador,
+                                                                                       'tipos_novedad': tipos_novedad})
+
+    def post(self, request, id_usuario):
+        colaborador = Colaborador.objects.get(usuario_id=id_usuario)
+        novedad = NovedadColaborador.from_dictionary(request.POST)
+        novedad.colaborador = colaborador
+        novedad.usuario_crea = request.user
+        novedad.fecha_crea = app_datetime_now()
+        try:
+            novedad.full_clean()
+        except ValidationError as errores:
+            if 'descripcion' in errores.message_dict:
+                messages.error(request, 'La descripción ingresada excede el tamaño máximo')
+            else:
+                messages.error(request, 'Ha ocurrido un error')
+            return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
+
+        if novedad.tipo_novedad.activar_usuario:
+            usuario = User.objects.get(id=id_usuario)
+            usuario.is_active = True
+            usuario.save(update_fields=['is_active'])
+        if novedad.tipo_novedad.desactivar_usuario:
+            usuario = User.objects.get(id=id_usuario)
+            usuario.is_active = False
+            usuario.save(update_fields=['is_active'])
+
+        novedad.save()
+        messages.success(request, 'Se agregó la novedad correctamente')
+        return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
+
+
+class SeleccionEmpresaView(AbstractEvaLoggedView):
+    def get(self, request, id_usuario):
+        todas_empresas = Empresa.objects.filter(estado=True)
+        empresas_seleccionadas = ColaboradorEmpresa.objects.filter(colaborador__usuario_id=id_usuario)
+        lista_empresas = []
+        for empresa in todas_empresas:
+            seleccion = False
+            for selecciones in empresas_seleccionadas:
+                if empresa == selecciones.empresa:
+                    seleccion = True
+                    break
+            lista_empresas.append({'id': empresa.id, 'nombre': empresa.nombre, 'logo': empresa.logo.url,
+                                   'seleccion': seleccion})
+        lista_selecciones = []
+        for e_s in empresas_seleccionadas:
+            lista_selecciones.append(e_s.empresa_id)
+
+        return render(request, 'TalentoHumano/_elements/_modal_seleccion_empresa.html',
+                      {'empresas': lista_empresas,
+                       'selecciones': lista_selecciones,
+                       'id_usuario': id_usuario})
+
+    def post(self, request, id_usuario):
+        colaborador = Colaborador.objects.get(usuario_id=id_usuario)
+
+        selecciones = request.POST.get('empresas_seleccionadas', '')
+        if selecciones:
+            selecciones = selecciones.split(',')
+            ColaboradorEmpresa.objects.filter(colaborador=colaborador).delete()
+        else:
+            messages.success(request, 'No se encontraron selecciones. No se realizó ningún cambio.')
+            return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
+
+        for sel in selecciones:
+            ColaboradorEmpresa.objects.create(colaborador=colaborador, empresa_id=sel)
+        messages.success(request, 'Se guardaron las empresas seleccionadas correctamente.')
+        return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
 
 
 # region Métodos de ayuda

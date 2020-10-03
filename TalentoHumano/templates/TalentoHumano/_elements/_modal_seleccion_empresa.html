@@ -1,0 +1,42 @@
+<div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">
+                Empresas
+                <small class="m-0 text-muted">
+                    Seleccione una Empresa
+                </small>
+            </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"><i class="fal fa-times"></i></span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form action="{% url 'TalentoHumano:colaboradores-seleccion-empresas' id_usuario %}" id="empresas-form" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+            {% csrf_token %}
+                <div class="form-group">
+                    <div class="form-row">
+                        {% for empresa in empresas %}
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div id="div_empresa_{{ empresa.id }}" class="opacidad_05">
+                                    <img class="logo-nav imagen_empresa" onclick="adicionarSeleccionEmpresa({{ empresa.id }})" src="{{ empresa.logo }}">
+                                    <div style="height: 31px"><h3 class="text-logo h3_texto_imagen"><strong>{{ empresa.nombre }}</strong></h3></div>
+                                    <br>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <input id="empresas_seleccionadas" name="empresas_seleccionadas" value="{{ selecciones }}" hidden>
+                <div class="modal-footer">
+                    <div style="padding-left: 15px">
+                        <button data-dismiss="modal" class="btn btn-danger btn-block">Cancelar</button>
+                    </div>
+                    <div>
+                        <button id="guardar" type="submit" class="btn btn-primary btn-block">Guardar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

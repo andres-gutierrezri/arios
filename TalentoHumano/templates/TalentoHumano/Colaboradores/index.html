@@ -10,6 +10,8 @@
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/theme-demo.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
     <link rel="mask-icon" href="{% static 'EVA/Plantilla/img/favicon/safari-pinned-tab.svg' %}" color="#5bbad5">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/bootstrap-datepicker/bootstrap-datepicker.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'TalentoHumano/css/seleccionEmpresas.css' %}">
 {% endblock styles %}
 
 {% block main %}
@@ -73,6 +75,8 @@
             </div>
         </div>
     </div>
+    <div class="modal fade"  tabindex="-1" id="mAgregarNovedad" role="dialog"></div>
+    <div class="modal fade"  tabindex="-1" id="mSeleccionEmpresas" role="dialog"></div>
     {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='talento-humano/colaboradores' %}
 {% endblock main%}
 
@@ -82,7 +86,11 @@
     <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
     <script src="{% static 'TalentoHumano/js/filtro_entidad.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
+    <script src="{% static 'TalentoHumano/js/agregarNovedad.js' %}"></script>
+    <script src="{% static 'TalentoHumano/js/seleccionEmpresas.js' %}"></script>
     <script>
         $(document).ready(function()
         {

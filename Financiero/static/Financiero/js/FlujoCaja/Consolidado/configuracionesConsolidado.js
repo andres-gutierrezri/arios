@@ -7,10 +7,13 @@ const controls = {
 };
 
 let idCategorias = $('#categorias_id');
-let idContratoProceso = $('#contrato_proceso_id');
+let idContrato = $('#contrato_id');
+let idProceso = $('#proceso_id');
 let idEstados = $('#estados_id');
 let idSubtipos = $('#subtipos_id');
 let subtiposCategorias = JSON.parse($('#subtipos_categorias').val());
+
+// Inicio del bloque de Configuración de los Select Multiples
 
 $('.select2').select2({
     language: {
@@ -24,9 +27,21 @@ $('.select2').select2({
 });
 
 $(document).ready(function() {
+    let consolidadoComparativo = $('#consolidado_comparativo').val();
+    let numeroMeses = $('#numero_meses').val();
+    let configuracionColspan = $('.configuracion_colspan');
+    if (consolidadoComparativo === 'True'){
+        configuracionColspan.attr('colspan', ((parseInt(numeroMeses) * 2) + 2));
+    }else{
+        configuracionColspan.attr('colspan', (parseInt(numeroMeses) + 2));
+    }
+
+
     // Exportar resultado de la busqueda del consolidado
+
     iniciarTablaExportar([0, 1, 2, 3, 4, 5]);
 
+    // Configuración del Select Multiple de Categorias
     idCategorias.select2({
         placeholder: "Seleccione una opción",
         "language": {
@@ -43,8 +58,29 @@ $(document).ready(function() {
     if (valoresCategorias){
         idCategorias.val(JSON.parse(valoresCategorias)).trigger("change");
     }
+    //Fin del Bloque
 
-    idContratoProceso.select2({
+    // Configuración del Select Multiple de Contrato
+     idContrato.select2({
+        placeholder: "Seleccione una opción",
+        "language": {
+            noResults: function () {
+                return 'No se encontraron coincidencias';
+            },
+            searching: function () {
+                return 'Buscando…';
+            },
+        },
+    });
+    let valoresContratos = $('#valores_contratos').val();
+    idContrato.next().find("input").css("min-width", "200px");
+    if (valoresContratos){
+        idContrato.val(JSON.parse(valoresContratos)).trigger("change");
+    }
+    // Final del Bloque
+
+    // Configuración del Select Multiple de Contrato
+    idProceso.select2({
         placeholder: "Seleccione una opción",
         "language": {
             noResults: function () {
@@ -56,19 +92,14 @@ $(document).ready(function() {
         },
     });
 
-    $('.fecha-control ').datepicker({
-		todayHighlight: true,
-		orientation: "bottom left",
-		templates: controls,
-		format: 'yyyy-mm-dd',
-		autoclose: true
-	});
-    let valoresContratoProceso = $('#valores_con_pro').val();
-    idContratoProceso.next().find("input").css("min-width", "200px");
-    if (valoresContratoProceso){
-        idContratoProceso.val(JSON.parse(valoresContratoProceso)).trigger("change");
+    let valoresProcesos = $('#valores_procesos').val();
+    idProceso.next().find("input").css("min-width", "200px");
+    if (valoresProcesos){
+        idProceso.val(JSON.parse(valoresProcesos)).trigger("change");
     }
+    // Final del Bloque
 
+    // Configuración del Select Multiple de Estados
     idEstados.select2({
         placeholder: "Seleccione un opción",
         "language": {
@@ -82,7 +113,9 @@ $(document).ready(function() {
     });
     idEstados.next().find("input").css("min-width", "200px");
     idEstados.val(JSON.parse($('#valores_estados').val())).trigger("change");
+    // Final del Bloque
 
+    // Configuración del Select Multiple de Subtipos
     idSubtipos.select2({
         placeholder: "Seleccione un opción",
         "language": {
@@ -99,7 +132,9 @@ $(document).ready(function() {
     if (valoresSubtipos){
         idSubtipos.val(JSON.parse(valoresSubtipos)).trigger("change");
     }
+    // Fin del Bloque
 });
+// Fin del Bloque
 
 function seleccionarTodos(elemento) {
     let idElemento = $('#' + elemento + '_id');
@@ -197,6 +232,15 @@ fechaHasta.change(function () {
     }
 });
 
+// Configuraciones de los inputs de fecha desde hasta
+$('.fecha-control ').datepicker({
+		todayHighlight: true,
+		orientation: "bottom left",
+		templates: controls,
+		format: 'yyyy-mm-dd',
+		autoclose: true
+	});
+
 function validarFechaMaxMin(fecha, validador) {
 
     if (new Date(fechaMinima) > new Date(fecha.val())){
@@ -251,9 +295,9 @@ idCategorias.change(function () {
         }
     });
 
-function desplegarDetalle(origen, idObjeto) {
-    let mas = $('#mas_'+ origen +'_' + idObjeto);
-    let boton =  $('#boton_'+ origen +'_' + idObjeto);
+function desplegarDetalle(origen, idObjeto, idTipo) {
+    let mas = $('#mas_'+ origen +'_' + idTipo + '_' + idObjeto);
+    let boton =  $('#boton_'+ origen +'_' + idTipo + '_' + idObjeto);
     if (mas.is(':visible')) {
         mas.hide();
         boton.removeClass('fa-minus-circle');
@@ -266,9 +310,10 @@ function desplegarDetalle(origen, idObjeto) {
 }
 
 function Imprimir() {
-     let printContents = $('#consolidado').html();
+     let zonaImpresionConsolidado = $('#div_consolidado').html();
+     let zonaImpresionTotales = $('#div_totales').html();
      let originalContents = document.body.innerHTML;
-     document.body.innerHTML = printContents;
+     document.body.innerHTML = zonaImpresionConsolidado + zonaImpresionTotales;
      window.print();
      document.body.innerHTML = originalContents;
 }

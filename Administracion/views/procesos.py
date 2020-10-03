@@ -12,6 +12,6 @@ class ProcesosView(AbstractEvaLoggedView):
         procesos = Proceso.objects.all()
         proceso_usuario = Colaborador.objects.get(usuario=request.user).proceso
         return render(request, 'Financiero/FlujoCaja/FlujoCajaProcesos/index.html',
-                      {'procesos': procesos, 'fecha': datetime.now(), 'menu_actual': 'procesos',
+                      {'procesos': procesos, 'fecha': datetime.now(), 'menu_actual': ['procesos', 'flujos_de_caja'],
                        'proceso_usuario': proceso_usuario,
                        'menu_extendido': 'Administracion/_common/base_administracion.html'})
