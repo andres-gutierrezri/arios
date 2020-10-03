@@ -87,10 +87,10 @@ class Contrato(models.Model, ModelDjangoExtensiones):
 
 class FormasPago(models.Model, ModelDjangoExtensiones):
     contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato', null=False, blank=False)
-    anticipo = models.DecimalField(verbose_name='Anticipo', decimal_places=2, max_digits=5, blank=True, null=True)
-    actas_parciales = models.DecimalField(verbose_name='Actas parciales', decimal_places=2, max_digits=5,
+    anticipo = models.DecimalField(verbose_name='Anticipo', decimal_places=2, max_digits=16, blank=True, null=True)
+    actas_parciales = models.DecimalField(verbose_name='Actas parciales', decimal_places=2, max_digits=16,
                                           blank=True, null=True)
-    liquidacion = models.DecimalField(verbose_name='Liquidación', decimal_places=2, max_digits=5,
+    liquidacion = models.DecimalField(verbose_name='Liquidación', decimal_places=2, max_digits=16,
                                       blank=True, null=True)
     forma_pago = models.IntegerField(verbose_name='Forma de Pago', blank=False, null=False)
     aplica_porcentaje = models.BooleanField(verbose_name='Aplica Porcentaje', blank=False, null=False)
