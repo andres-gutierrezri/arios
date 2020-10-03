@@ -133,6 +133,7 @@ function retomarCampoGarantia(contadorGarantia){
 
 tipoGarantia.change(function () {
     validarTipoGarantia();
+    validarPorcentajeAsegurado();
 });
 
 function validarTipoGarantia(){
@@ -147,11 +148,13 @@ function validarTipoGarantia(){
                     porcentajeAsegurado.attr('placeholder', 'Ingrese un valor');
                     porcentajeAsegurado.attr('max', '99999999999999.99');
                     porcentajeAsegurado.attr('onInput', 'validarLongitud(16,this)');
+                    porcentajeAsegurado.next('div').text('Por favor ingrese un valor');
                     labelValorPorcentajeAsegurado.text('SMMLV Asegurados')
                 }else{
                     porcentajeAsegurado.attr('placeholder', 'Ingrese el porcentaje');
                     porcentajeAsegurado.attr('max', '100');
                     porcentajeAsegurado.attr('onInput', 'validarLongitud(5,this)');
+                    porcentajeAsegurado.next('div').text('Por favor ingrese el porcentaje (Maximo 100%)');
                     labelValorPorcentajeAsegurado.text('Porcentaje Asegurado')
                 }
             }
