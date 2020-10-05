@@ -9,6 +9,21 @@ let datosVigencias = $('#datos_vigencias');
 let valoresVigencias = [];
 let contadorVigencia = 0;
 
+let sumaValoresVigencias = 0;
+
+$(document).ready(function () {
+    let valorConVA = $('#valor_con_iva_id').val();
+    let valorVigencia = $('#valor_vigencia_id');
+
+    valorVigencia.change(function () {
+        if (sumaValoresVigencias + parseFloat(valorVigencia.val()) > parseFloat(valorConVA)){
+            EVANotificacion.toast.error('La suma de los valores no puede ser mayor al valor con IVA');
+            valorVigencia.val('');
+            return false
+        }
+    });
+});
+
 function agregarVigencia(valores) {
     let datoAnho = anho.val();
     let datoVigencia = vigencia.val();
@@ -20,6 +35,7 @@ function agregarVigencia(valores) {
         EVANotificacion.toast.error('Debes llenar los campos disponibles antes de realizar esta acción.');
         return false;
     }
+    sumaValoresVigencias += parseInt(datoVigencia);
     eliminarVigencia.show();
     valoresVigencias.push({'pos': contadorVigencia, 'valor_anho': datoAnho, 'valor_vigencia': datoVigencia});
     divVigencias.append('<div class="form-group" id="vigencia_'+ contadorVigencia +'" style="margin-bottom: 0">' +
@@ -76,6 +92,9 @@ function quitarVigencia() {
 }
 
 function retomarCampoVigencia(contadorVigencia){
-    anho.val($('#valor_anho_' + contadorVigencia).val());
-    vigencia.val($('#valor_vigencia_' + contadorVigencia).val());
+    let valorAnho = $('#valor_anho_' + contadorVigencia).val();
+    let valorVigencia = $('#valor_vigencia_' + contadorVigencia).val();
+    sumaValoresVigencias -= parseInt(valorVigencia);
+    anho.val(valorAnho);
+    vigencia.val(valorVigencia);
 }
