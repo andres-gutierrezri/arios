@@ -3,6 +3,7 @@ from datetime import datetime
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
+from Administracion.utils import get_id_empresa_global
 from EVA.views.index import AbstractEvaLoggedView
 from Financiero.views.flujo_caja_general import flujo_caja_detalle, cargar_modal_crear_editar, guardar_movimiento, \
     validar_permisos
@@ -14,7 +15,7 @@ class FlujoCajaContratosView(AbstractEvaLoggedView):
         if not validar_permisos(request, 'view_flujocajaencabezado'):
             return redirect(reverse('eva-index'))
 
-        contratos = Contrato.objects.all()
+        contratos = Contrato.objects.filter(empresa_id=get_id_empresa_global(request))
         if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
             contratos = contratos.filter(colaboradorcontrato__colaborador__usuario=request.user)
 
