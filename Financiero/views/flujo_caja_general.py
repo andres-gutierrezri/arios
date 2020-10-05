@@ -7,6 +7,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
+from Administracion.utils import get_id_empresa_global
 from Administracion.models import Proceso
 from EVA.General import app_datetime_now, app_date_now
 from EVA.General.conversiones import add_months, string_to_date, mes_numero_a_letras, obtener_fecha_inicio_de_mes, \
@@ -27,9 +28,10 @@ class FlujosDeCajaView(AbstractEvaLoggedView):
         if opcion == 0:
             if request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']) or \
                     request.user.has_perms(['Financiero.can_gestion_flujos_de_caja']):
-                contratos = Contrato.objects.all()
+                contratos = Contrato.objects.filter(empresa_id=get_id_empresa_global)
             else:
-                contratos = Contrato.objects.filter(colaboradorcontrato__colaborador__usuario=request.user)
+                contratos = Contrato.objects.filter(empresa_id=get_id_empresa_global,
+                                                    colaboradorcontrato__colaborador__usuario=request.user)
             return render(request, 'Financiero/FlujoCaja/FlujoCajaContratos/index.html',
                           {'contratos': contratos, 'fecha': datetime.now(), 'opciones': opciones, 'opcion': opcion,
                            'menu_extendido': 'Financiero/_common/base_financiero.html',
@@ -37,7 +39,7 @@ class FlujosDeCajaView(AbstractEvaLoggedView):
         else:
             if request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']) or \
                     request.user.has_perms(['Financiero.can_gestion_flujos_de_caja']):
-                procesos = Proceso.objects.all()
+                procesos = Proceso.objects.filter(empresa_id=get_id_empresa_global)
             else:
                 colaborador = Colaborador.objects.get(usuario=request.user)
                 procesos = Proceso.objects.filter(id=colaborador.proceso_id)
@@ -80,8 +82,11 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
         base_template = 'Administracion/_common/base_administracion.html'
         menu_actual = ['procesos', 'flujos_de_caja']
         proceso = Proceso.objects.get(id=proceso)
-        flujo_caja_enc = FlujoCajaEncabezado.objects.filter(proceso=proceso)
-        movimientos = FlujoCajaDetalle.objects.filter(flujo_caja_enc__proceso=proceso, tipo_registro=tipo) \
+        flujo_caja_enc = FlujoCajaEncabezado.objects.filter(proceso=proceso,
+                                                            proceso__empresa_id=get_id_empresa_global(request))
+        movimientos = FlujoCajaDetalle\
+            .objects.filter(flujo_caja_enc__proceso=proceso, tipo_registro=tipo,
+                            flujo_caja_enc__proceso__empresa_id=get_id_empresa_global(request)) \
             .annotate(fecha_corte=F('flujo_caja_enc__corteflujocaja__fecha_corte')) \
             .exclude(estado_id=EstadoFCDetalle.OBSOLETO)
     else:
@@ -89,8 +94,11 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
         base_template = 'Proyectos/_common/base_proyectos.html'
         menu_actual = 'fc_contratos'
         contrato = Contrato.objects.get(id=contrato)
-        flujo_caja_enc = FlujoCajaEncabezado.objects.filter(contrato=contrato)
-        movimientos = FlujoCajaDetalle.objects.filter(flujo_caja_enc__contrato=contrato, tipo_registro=tipo) \
+        flujo_caja_enc = FlujoCajaEncabezado.objects.filter(contrato=contrato,
+                                                            contrato__empresa_id=get_id_empresa_global(request))
+        movimientos = FlujoCajaDetalle\
+            .objects.filter(flujo_caja_enc__contrato=contrato, tipo_registro=tipo,
+                            flujo_caja_enc__contrato__empresa_id=get_id_empresa_global(request)) \
             .annotate(fecha_corte=F('flujo_caja_enc__corteflujocaja__fecha_corte')) \
             .exclude(estado_id=EstadoFCDetalle.OBSOLETO)
 
