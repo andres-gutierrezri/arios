@@ -73,7 +73,7 @@ class FlujoCajaMovimientoHistorialView(AbstractEvaLoggedView):
         return historial_movimiento(request, id_movimiento)
 
 
-def flujo_caja_detalle(request, tipo, contrato=None, proceso=None):
+def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccion=None, mes_seleccion=None):
     if proceso:
         ruta_reversa = 'administracion:procesos'
         base_template = 'Administracion/_common/base_administracion.html'
@@ -212,7 +212,7 @@ def guardar_movimiento(request, tipo=None, contrato=None, proceso=None, movimien
         fl_det.save()
         messages.success(request, 'Se ha agregado el movimiento correctamente')
 
-    return redirect(reverse(ruta_detalle, args=[objeto, tipo]))
+    return redirect(reverse(ruta_detalle, args=[objeto, tipo, app_datetime_now().year, app_datetime_now().month]))
 
 
 def eliminar_movimiento(request, flujo_detalle):

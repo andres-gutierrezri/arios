@@ -64,8 +64,8 @@
                                                             <td>{{ contrato.tipo_contrato }}</td>
                                                             <td><span class="badge badge-primary">{{ contrato.flujocajaencabezado_set.first.estado }}</span></td>
                                                             <td>
-                                                                <a href="#" onclick="guardarRutaLocal('{% url 'Financiero:flujo-caja-contratos-detalle' contrato.id REAL %}')"><span class="badge badge-primary fw-300 ml-auto">Real</span><br></a>
-                                                                <a href="#" onclick="guardarRutaLocal('{% url 'Financiero:flujo-caja-contratos-detalle' contrato.id PROYECCION %}')"><span class="badge badge-primary fw-300 ml-auto">Proyección</span></a>
+                                                                <a href="#" onclick="guardarRutaLocal('{% url 'Financiero:flujo-caja-contratos-detalle' contrato.id REAL fecha.year fecha.month %}')"><span class="badge badge-primary fw-300 ml-auto">Real</span><br></a>
+                                                                <a href="#" onclick="guardarRutaLocal('{% url 'Financiero:flujo-caja-contratos-detalle' contrato.id PROYECCION fecha.year fecha.month %}')"><span class="badge badge-primary fw-300 ml-auto">Proyección</span></a>
                                                             </td>
                                                         </tr>
                                                     {% endfor %}

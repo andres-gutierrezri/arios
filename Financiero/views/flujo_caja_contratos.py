@@ -24,11 +24,11 @@ class FlujoCajaContratosView(AbstractEvaLoggedView):
 
 
 class FlujoCajaContratosDetalleView(AbstractEvaLoggedView):
-    def get(self, request, id, tipo):
+    def get(self, request, id, tipo, anio, mes):
         if not validar_permisos(request, 'view_flujocajadetalle'):
             return redirect(reverse('eva-index'))
 
-        return flujo_caja_detalle(request, tipo, contrato=id)
+        return flujo_caja_detalle(request, tipo, contrato=id, anio_seleccion=anio, mes_seleccion=mes)
 
 
 class FlujoCajaContratosCrearView(AbstractEvaLoggedView):
