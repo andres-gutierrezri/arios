@@ -9,7 +9,8 @@ from django.urls import reverse
 
 from Administracion.models import Proceso
 from EVA.General import app_datetime_now, app_date_now
-from EVA.General.conversiones import add_months, string_to_date
+from EVA.General.conversiones import add_months, string_to_date, mes_numero_a_letras, obtener_fecha_inicio_de_mes, \
+    obtener_fecha_fin_de_mes
 from EVA.views.index import AbstractEvaLoggedView
 from Financiero.models import FlujoCajaDetalle, SubTipoMovimiento, FlujoCajaEncabezado, EstadoFlujoCaja, CorteFlujoCaja
 from Financiero.models.flujo_caja import EstadoFCDetalle, TipoMovimiento
@@ -120,11 +121,39 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
     if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
         movimientos = movimientos.filter(subtipo_movimiento__protegido=False)
 
+    fecha_incial = app_datetime_now()
+    fecha_final = app_datetime_now()
+    if movimientos:
+        fecha_incial = movimientos.order_by('fecha_movimiento').first().fecha_movimiento
+        fecha_final = movimientos.order_by('fecha_movimiento').last().fecha_movimiento
+
+    meses = []
+    anios = []
+    while fecha_incial <= fecha_final:
+        coincidencia_mes = False
+        for mes in meses:
+            coincidencia_mes = False
+            if fecha_incial.month == mes['campo_valor']:
+                coincidencia_mes = True
+        if not coincidencia_mes:
+            meses.append({'campo_valor': fecha_incial.month, 'campo_texto': mes_numero_a_letras(fecha_incial.month)})
+        coincidencia_anio = False
+        for anio in anios:
+            coincidencia_anio = False
+            if fecha_incial.year == anio['campo_valor']:
+                coincidencia_anio = True
+        if not coincidencia_anio:
+            anios.append({'campo_valor': fecha_incial.year, 'campo_texto': fecha_incial.year})
+
+        fecha_incial = add_months(fecha_incial, 1)
+    movimientos = movimientos.filter(fecha_movimiento__range=[obtener_fecha_inicio_de_mes(anio_seleccion, mes_seleccion),
+                                                              obtener_fecha_fin_de_mes(anio_seleccion, mes_seleccion)])
     return render(request, 'Financiero/FlujoCaja/FlujoCajaGeneral/detalle_flujo_caja.html',
                   {'movimientos': movimientos, 'fecha': datetime.now(), 'contrato': contrato, 'proceso': proceso,
                    'menu_actual': menu_actual, 'fecha_minima_mes': fecha_minima_mes, 'tipo': tipo,
                    'fecha_maxima_mes': fecha_maxima_mes, 'flujo_caja_enc': flujo_caja_enc,
-                   'base_template': base_template, 'ingresos': ingresos, 'egresos': egresos})
+                   'base_template': base_template, 'ingresos': ingresos, 'egresos': egresos,
+                   'anios': anios, 'meses': meses, 'anio_seleccion': anio_seleccion, 'mes_seleccion': mes_seleccion})
 
 
 def cargar_modal_crear_editar(request,  opcion, tipo=None, contrato=None, proceso=None, movimiento=None):
