@@ -115,7 +115,9 @@ class ContratoDetalleView(AbstractEvaLoggedView):
     def get(self, request, id):
         contrato = Contrato.objects.get(id=id)
         municipios = ContratoMunicipio.objects.filter(contrato=contrato)
-        forma_pago = FormasPago.objects.get(contrato=contrato)
+        forma_pago = FormasPago.objects.filter(contrato=contrato)
+        if forma_pago:
+            forma_pago = forma_pago.first()
         vigencias = ContratoVigencia.objects.filter(contrato=contrato).order_by('anho')
         supervisores = ContratoIterventoriaSupervisor.objects.filter(contrato=contrato, tipo=SUPERVISOR)
         interventores = ContratoIterventoriaSupervisor.objects.filter(contrato=contrato, tipo=INTERVENTOR)
@@ -221,11 +223,12 @@ def datos_xa_render(request, opcion: str, contrato: Contrato = None) -> dict:
                                     'forma_pago': formas_pago.first().forma_pago,
                                     'aplica_porcentaje': aplica_porcentaje}
         else:
-            datos['formas_pago'] = {'anticipo': datos_formulario['anticipo'],
-                                    'actas_parciales': datos_formulario['actas_parciales'],
-                                    'liquidacion': datos_formulario['liquidacion'],
-                                    'forma_pago': int(datos_formulario['forma_de_pago']),
-                                    'aplica_porcentaje': aplica_porcentaje}
+            if datos_formulario['forma_de_pago']:
+                datos['formas_pago'] = {'anticipo': datos_formulario['anticipo'],
+                                        'actas_parciales': datos_formulario['actas_parciales'],
+                                        'liquidacion': datos_formulario['liquidacion'],
+                                        'forma_pago': int(datos_formulario['forma_de_pago']),
+                                        'aplica_porcentaje': aplica_porcentaje}
 
         lista_vigencias = []
         for vigencia in ContratoVigencia.objects.filter(contrato=contrato).order_by('anho'):
