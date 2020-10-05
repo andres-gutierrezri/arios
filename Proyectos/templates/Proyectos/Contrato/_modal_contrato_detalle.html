@@ -40,7 +40,7 @@
                                         <b>Plazo de Ejecución: </b>{{ contrato.plazo_ejecucion }}
                                     </small>
                                     <small class="mt-0 mb-3 text-muted">
-                                        <b>Valor del Contrato: </b>{{ contrato.valor|intcomma }}
+                                        <b>Valor del Contrato: </b> ${{ contrato.valor|intcomma }}
                                     </small>
                                     <small class="mt-0 mb-3 text-muted">
                                         <b>Tipo de Contrato: </b>{{ contrato.tipo_contrato }}
@@ -84,19 +84,19 @@
                                         <b>Número del Registro Presupuestal: </b>{{ contrato.numero_registro_presupuestal }}
                                     </small>
                                     <small class="mt-0 mb-3 text-muted">
-                                        <b>Valor con IVA: </b>{{ contrato.valor_con_iva|intcomma }}
+                                        <b>Valor con IVA: </b> ${{ contrato.valor_con_iva|intcomma }}
                                     </small>
                                     <small class="mt-0 mb-3 text-muted">
-                                        <b>Valor sin IVA: </b>{{ contrato.valor_sin_iva|intcomma }}
+                                        <b>Valor sin IVA: </b> ${{ contrato.valor_sin_iva|intcomma }}
                                     </small>
                                     <small class="mt-0 mb-3 text-muted">
-                                        <b>Porcentaje A: </b>{% if contrato.porcentaje_a %}{{ contrato.porcentaje_a }}{% else %}N/A{% endif %}
+                                        <b>Porcentaje de Administración: </b>{% if contrato.porcentaje_a %}{{ contrato.porcentaje_a }}%{% else %}N/A{% endif %}
                                     </small>
                                     <small class="mt-0 mb-3 text-muted">
-                                        <b>Porcentaje I: </b>{% if contrato.porcentaje_i %}{{ contrato.porcentaje_a }}{% else %}N/A{% endif %}
+                                        <b>Porcentaje de Imprevistos: </b>{% if contrato.porcentaje_i %}{{ contrato.porcentaje_a }}%{% else %}N/A{% endif %}
                                     </small>
                                     <small class="mt-0 mb-3 text-muted">
-                                        <b>Porcentaje U: </b>{% if contrato.porcentaje_u %}{{ contrato.porcentaje_a }}{% else %}N/A{% endif %}
+                                        <b>Porcentaje de Utilidad: </b>{% if contrato.porcentaje_u %}{{ contrato.porcentaje_a }}%{% else %}N/A{% endif %}
                                     </small>
                                     <small class="mt-0 mb-3 text-muted">
                                         <b>Forma de Pago: </b>
@@ -108,7 +108,7 @@
                                     <small class="mt-0 mb-3 text-muted">
                                         <b>Vigencias: </b>
                                         {% for vig in vigencias %}
-                                            <br>Año: {{ vig.anho }} - Valor: {{ vig.valor|intcomma }}
+                                            <br>Año: {{ vig.anho }} - Valor: ${{ vig.valor|intcomma }}
                                         {% endfor %}
                                     </small>
                                     <small class="mt-0 mb-3 text-muted">
@@ -166,7 +166,11 @@
                                         <b>Garantías: </b>
                                         {% for gar in garantias %}
                                             <br><b>Tipo: </b>{{ gar.tipo_garantia }}
-                                            <br><b>Porcentaje Asegurado: </b>{{ gar.porcentaje_asegurado }}%
+                                            {% if gar.tipo_garantia.aplica_valor_smmlv %}
+                                                <br><b>Valor Asegurado: </b> ${{ gar.porcentaje_asegurado }}
+                                            {% else %}
+                                                <br><b>Porcentaje Asegurado: </b>{{ gar.porcentaje_asegurado }}%
+                                            {% endif %}
                                             <br><b>Vigencia: </b>{{ gar.vigencia }} Meses
                                             <br><b>Extensiva: </b>{% if gar.extensiva %}Si{% else %}No{% endif %}
                                             <br>
