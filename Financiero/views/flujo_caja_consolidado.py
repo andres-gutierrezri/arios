@@ -155,7 +155,40 @@ def datos_xa_render(datos_formulario=None, movimientos=None):
         datos['totales'] = consolidado['totales']
         datos['meses'] = consolidado['lista_meses']
 
+        total_mes_a_mes = []
+        for mes in datos['meses']:
+            suma_mes_real = 0
+            suma_mes_proyectado = 0
+
+            total_ingresos = sumar_consolidado_mes_a_mes(consolidado, mes, TipoMovimiento.COSTOS)
+            suma_mes_real -= total_ingresos['suma_mes_real']
+            suma_mes_proyectado -= total_ingresos['suma_mes_proyectado']
+
+            total_ingresos = sumar_consolidado_mes_a_mes(consolidado, mes, TipoMovimiento.GASTOS)
+            suma_mes_real -= total_ingresos['suma_mes_real']
+            suma_mes_proyectado -= total_ingresos['suma_mes_proyectado']
+
+            total_ingresos = sumar_consolidado_mes_a_mes(consolidado, mes, TipoMovimiento.INGRESOS)
+            suma_mes_real += total_ingresos['suma_mes_real']
+            suma_mes_proyectado += total_ingresos['suma_mes_proyectado']
+
+            total_mes_a_mes.append({'mes': mes['mes'], 'valor_real': suma_mes_real,
+                                    'valor_proyectado': suma_mes_proyectado})
+
+            datos['totales_mes_a_mes'] = total_mes_a_mes
     return datos
+
+
+def sumar_consolidado_mes_a_mes(consolidado, mes, tipo):
+    suma_mes_real = 0
+    suma_mes_proyectado = 0
+    for tipos in consolidado['consolidado']:
+        for m in tipos['meses']:
+            if m['mes'] == mes['mes'] and m['anho'] == mes['anho'] and \
+                    tipos['id_tipo'] == tipo:
+                suma_mes_real += m['valor_real']
+                suma_mes_proyectado += m['valor_proyectado']
+    return {'suma_mes_real': suma_mes_real, 'suma_mes_proyectado': suma_mes_proyectado}
 
 
 def datos_formulario_consolidado(request):
@@ -267,7 +300,7 @@ def consolidado_ingresos_costos_gastos(objeto):
                     valor_proyectado += ptm.valor
 
             valores_mes_tipo_movimiento.append({'mes': mes_numero_a_letras(fecha_minima_tipo_movimiento.month),
-                                                'valor_real': valor_real,
+                                                'valor_real': valor_real, 'anho': fecha_minima_tipo_movimiento.year,
                                                 'valor_proyectado': valor_proyectado})
 
             if tipo_movimiento.id == TipoMovimiento.INGRESOS:
