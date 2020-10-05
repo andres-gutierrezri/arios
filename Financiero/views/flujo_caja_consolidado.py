@@ -22,7 +22,7 @@ class FlujoCajaConsolidadoView(AbstractEvaLoggedView):
     def get(self, request):
         if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
             return redirect(reverse('eva-index'))
-        return render(request, 'Financiero/FlujoCaja/FlujoCajaConsolidado/index.html', datos_xa_render())
+        return render(request, 'Financiero/FlujoCaja/FlujoCajaConsolidado/index.html', datos_xa_render(request))
 
     def post(self, request):
         if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
@@ -64,7 +64,7 @@ class FlujoCajaConsolidadoView(AbstractEvaLoggedView):
                 con_pro.append(valor)
         else:
             if not datos['lista_procesos']:
-                for valor in FlujoCajaEncabezado.objects.get_flujos_x_contrato():
+                for valor in FlujoCajaEncabezado.objects.get_flujos_x_contrato(request):
                     con_pro.append(valor.id)
 
         if datos['lista_procesos']:
@@ -72,7 +72,7 @@ class FlujoCajaConsolidadoView(AbstractEvaLoggedView):
                 con_pro.append(valor)
         else:
             if not datos['lista_contratos']:
-                for valor in FlujoCajaEncabezado.objects.get_flujos_x_proceso():
+                for valor in FlujoCajaEncabezado.objects.get_flujos_x_proceso(request):
                     con_pro.append(valor.id)
 
         movimientos = FlujoCajaDetalle.objects\
@@ -85,10 +85,10 @@ class FlujoCajaConsolidadoView(AbstractEvaLoggedView):
         if not movimientos:
             messages.warning(request, 'No se encontraron concidencias')
         return render(request, 'Financiero/FlujoCaja/FlujoCajaConsolidado/index.html',
-                      datos_xa_render(datos, movimientos))
+                      datos_xa_render(request, datos, movimientos))
 
 
-def datos_xa_render(datos_formulario=None, movimientos=None):
+def datos_xa_render(request, datos_formulario=None, movimientos=None):
     procesos_contratos = FlujoCajaDetalle.objects.all().order_by('fecha_movimiento')
     if procesos_contratos:
         fecha_min = procesos_contratos.first().fecha_movimiento
@@ -100,8 +100,8 @@ def datos_xa_render(datos_formulario=None, movimientos=None):
     fecha_min_max = json.dumps({'fecha_min': str(fecha_min),
                                 'fecha_max': str(fecha_max)})
 
-    procesos = FlujoCajaEncabezado.objects.get_xa_select_x_proceso()
-    contratos = FlujoCajaEncabezado.objects.get_xa_select_x_contrato()
+    procesos = FlujoCajaEncabezado.objects.get_xa_select_x_proceso(request)
+    contratos = FlujoCajaEncabezado.objects.get_xa_select_x_contrato(request)
 
     subtipos = SubTipoMovimiento.objects.get_xa_select_activos()
     categorias = CategoriaMovimiento.objects.get_xa_select_activos()
