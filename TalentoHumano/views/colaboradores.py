@@ -28,12 +28,14 @@ class ColaboradoresIndexView(AbstractEvaLoggedView):
 
     def get(self, request, id_contrato):
         if id_contrato != 0:
-            colaboradores = Colaborador.objects.filter(colaboradorcontrato__contrato_id=id_contrato)\
+            colaboradores = Colaborador.objects\
+                .filter(colaboradorcontrato__contrato_id=id_contrato, empresa_id=get_id_empresa_global(request))\
                 .order_by('usuario__first_name', 'usuario__last_name')
         else:
-            colaboradores = Colaborador.objects.all().order_by('usuario__first_name', 'usuario__last_name')
+            colaboradores = Colaborador.objects.filter(empresa_id=get_id_empresa_global(request))\
+                .order_by('usuario__first_name', 'usuario__last_name')
 
-        contratos = Contrato.objects.get_xa_select_activos()
+        contratos = Contrato.objects.get_xa_select_activos().filter(empresa_id=get_id_empresa_global(request))
         return render(request, 'TalentoHumano/Colaboradores/index.html', {'colaboradores': colaboradores,
                                                                           'contratos': contratos,
                                                                           'id_contrato': id_contrato,
@@ -71,6 +73,7 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
     def post(self, request):
         colaborador = Colaborador.from_dictionary(request.POST)
         colaborador.empresa_sesion_id = get_id_empresa_global(request)
+        colaborador.empresa_id = get_id_empresa_global(request)
         colaborador.usuario_crea = request.user
         contratos = request.POST.getlist('contrato_id[]', None)
         grupos = request.POST.getlist('grupo_id[]', None)
@@ -176,7 +179,7 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
         try:
             # Se excluye el usuario debido a que el full clean valida el id del usuario existente y no tiene en cuenta
             # los nuevos datos de usuario.
-            colaborador.full_clean(validate_unique=False, exclude=['usuario', 'empresa_sesion'])
+            colaborador.full_clean(validate_unique=False, exclude=['usuario', 'empresa', 'empresa_sesion'])
         except ValidationError as errores:
             datos = datos_xa_render(self.OPCION, colaborador)
             datos['errores'] = errores.message_dict
