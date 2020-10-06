@@ -51,7 +51,7 @@ function agregarVigencia(valores) {
         $('.sw-btn-next').click();
         return false;
     }
-    sumaValoresVigencias += parseInt(datoVigencia);
+    sumaValoresVigencias += parseFloat(datoVigencia);
     eliminarVigencia.show();
     valoresVigencias.push({'pos': contadorVigencia, 'valor_anho': datoAnho, 'valor_vigencia': datoVigencia});
     divVigencias.append('<div class="form-group" id="vigencia_'+ contadorVigencia +'" style="margin-bottom: 0">' +
