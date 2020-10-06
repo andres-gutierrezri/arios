@@ -132,14 +132,12 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
     while fecha_incial <= fecha_final:
         coincidencia_mes = False
         for mes in meses:
-            coincidencia_mes = False
             if fecha_incial.month == mes['campo_valor']:
                 coincidencia_mes = True
         if not coincidencia_mes:
             meses.append({'campo_valor': fecha_incial.month, 'campo_texto': mes_numero_a_letras(fecha_incial.month)})
         coincidencia_anio = False
         for anio in anios:
-            coincidencia_anio = False
             if fecha_incial.year == anio['campo_valor']:
                 coincidencia_anio = True
         if not coincidencia_anio:
