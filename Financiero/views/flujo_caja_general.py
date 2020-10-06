@@ -28,9 +28,9 @@ class FlujosDeCajaView(AbstractEvaLoggedView):
         if opcion == 0:
             if request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']) or \
                     request.user.has_perms(['Financiero.can_gestion_flujos_de_caja']):
-                contratos = Contrato.objects.filter(empresa_id=get_id_empresa_global)
+                contratos = Contrato.objects.filter(empresa_id=get_id_empresa_global(request))
             else:
-                contratos = Contrato.objects.filter(empresa_id=get_id_empresa_global,
+                contratos = Contrato.objects.filter(empresa_id=get_id_empresa_global(request),
                                                     colaboradorcontrato__colaborador__usuario=request.user)
             return render(request, 'Financiero/FlujoCaja/FlujoCajaContratos/index.html',
                           {'contratos': contratos, 'fecha': datetime.now(), 'opciones': opciones, 'opcion': opcion,
@@ -39,7 +39,7 @@ class FlujosDeCajaView(AbstractEvaLoggedView):
         else:
             if request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']) or \
                     request.user.has_perms(['Financiero.can_gestion_flujos_de_caja']):
-                procesos = Proceso.objects.filter(empresa_id=get_id_empresa_global)
+                procesos = Proceso.objects.filter(empresa_id=get_id_empresa_global(request))
             else:
                 colaborador = Colaborador.objects.get(usuario=request.user)
                 procesos = Proceso.objects.filter(id=colaborador.proceso_id)
