@@ -164,11 +164,12 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
                          'tipo_contrato_id', 'lugar_nacimiento_id', 'rango_id', 'fecha_nacimiento',
                          'identificacion', 'tipo_identificacion_id', 'fecha_expedicion', 'genero', 'telefono',
                          'estado', 'nombre_contacto', 'grupo_sanguineo', 'telefono_contacto', 'parentesco',
-                         'fecha_modificacion', 'usuario_actualiza']
+                         'fecha_modificacion', 'usuario_actualiza', 'empresa']
 
         colaborador = Colaborador.from_dictionary(request.POST)
         colaborador.usuario_actualiza = request.user
         contratos = request.POST.getlist('contrato_id[]', None)
+        colaborador.empresa_id = request.POST.get('empresa_id')
 
         colaborador.id = int(id)
         colaborador.foto_perfil = request.FILES.get('foto_perfil', None)
@@ -179,7 +180,7 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
         try:
             # Se excluye el usuario debido a que el full clean valida el id del usuario existente y no tiene en cuenta
             # los nuevos datos de usuario.
-            colaborador.full_clean(validate_unique=False, exclude=['usuario', 'empresa', 'empresa_sesion'])
+            colaborador.full_clean(validate_unique=False, exclude=['usuario', 'empresa_sesion'])
         except ValidationError as errores:
             datos = datos_xa_render(self.OPCION, colaborador)
             datos['errores'] = errores.message_dict
@@ -240,6 +241,8 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
                 colaborador.usuario.save(update_fields=cambios_usuario)
 
             colaborador.save(update_fields=update_fields)
+            ColaboradorEmpresa.objects.filter(colaborador=colaborador).delete()
+            ColaboradorEmpresa.objects.create(colaborador=colaborador, empresa_id=get_id_empresa_global(request))
 
             ColaboradorContrato.objects.filter(colaborador_id=id).delete()
             for contrato in contratos:
@@ -411,8 +414,9 @@ def datos_xa_render(opcion: str = None, colaborador: Colaborador = None) -> dict
     tipo_identificacion = TipoIdentificacion.objects.get_xa_select_activos()
     grupo_sanguineo = [{'campo_valor': grupo_sanguineo, 'campo_texto': str(grupo_sanguineo)} for grupo_sanguineo in
                     ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']]
+    empresa = Empresa.objects.get_xa_select_activos()
 
-    datos = {'arl': arl, 'eps': eps, 'afp': afp, 'caja_compensacion': caja_compensacion,
+    datos = {'arl': arl, 'eps': eps, 'afp': afp, 'caja_compensacion': caja_compensacion, 'empresa': empresa,
              'jefe_inmediato': jefe_inmediato, 'contrato': contrato, 'cargo': cargo, 'proceso': proceso,
              'tipo_contrato': tipo_contratos, 'rango': rango, 'departamentos': departamentos,
              'talla_camisa': talla_camisa, 'talla_zapatos': talla_zapatos, 'talla_pantalon': talla_pantalon,
