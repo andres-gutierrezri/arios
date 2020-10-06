@@ -66,6 +66,8 @@ class SubTipoMovimiento(models.Model):
                                              verbose_name='Categoría de Movimiento')
     protegido = models.BooleanField(verbose_name='Protegido', blank=False, null=False)
     estado = models.BooleanField(verbose_name='Estado', blank=False, null=False, default=True)
+    solo_contrato = models.BooleanField(verbose_name='Solo Contrato', blank=False, null=False)
+    solo_proceso = models.BooleanField(verbose_name='Solo Proceso', blank=False, null=False)
 
     def __str__(self):
         return self.nombre
