@@ -118,14 +118,6 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
         if not request.user.has_perms(['Financiero.can_gestion_flujos_de_caja']):
             movimientos = movimientos.exclude(estado_id=EstadoFCDetalle.ELIMINADO)
 
-    ingresos = 0
-    egresos = 0
-    for movimiento in movimientos:
-        if movimiento.subtipo_movimiento.tipo_movimiento_id == TipoMovimiento.INGRESOS:
-            ingresos += movimiento.valor
-        else:
-            egresos += movimiento.valor
-
     if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
         movimientos = movimientos.filter(subtipo_movimiento__protegido=False)
 
@@ -156,6 +148,14 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
         fecha_incial = add_months(fecha_incial, 1)
     movimientos = movimientos.filter(fecha_movimiento__range=[obtener_fecha_inicio_de_mes(anio_seleccion, mes_seleccion),
                                                               obtener_fecha_fin_de_mes(anio_seleccion, mes_seleccion)])
+    ingresos = 0
+    egresos = 0
+    for movimiento in movimientos:
+        if movimiento.subtipo_movimiento.tipo_movimiento_id == TipoMovimiento.INGRESOS:
+            ingresos += movimiento.valor
+        else:
+            egresos += movimiento.valor
+
     return render(request, 'Financiero/FlujoCaja/FlujoCajaGeneral/detalle_flujo_caja.html',
                   {'movimientos': movimientos, 'fecha': datetime.now(), 'contrato': contrato, 'proceso': proceso,
                    'menu_actual': menu_actual, 'fecha_minima_mes': fecha_minima_mes, 'tipo': tipo,
