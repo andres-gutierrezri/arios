@@ -12,14 +12,14 @@ let contadorVigencia = 0;
 let sumaValoresVigencias = 0;
 
 $(document).ready(function () {
-    let valorConVA = $('#valor_con_iva_id').val();
+    let valorConIVA = $('#valor_con_iva_id');
     let valorVigencia = $('#valor_vigencia_id');
 
     valorVigencia.change(function () {
         if (isNaN(sumaValoresVigencias)){
             sumaValoresVigencias = 0;
         }
-        if (sumaValoresVigencias + parseFloat(valorVigencia.val()) > parseFloat(valorConVA)){
+        if (sumaValoresVigencias + parseFloat(valorVigencia.val()) > parseFloat(valorConIVA.val())){
             valorVigencia.val('');
             valorVigencia.next('div').text('La suma de los valores no puede ser mayor al valor con IVA.');
             $('.sw-btn-next').click();
