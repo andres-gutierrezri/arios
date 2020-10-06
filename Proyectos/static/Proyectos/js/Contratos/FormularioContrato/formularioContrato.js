@@ -41,8 +41,9 @@ function verificarPorcentajeAIU(){
 }
 function validarIngreso_AIU(objeto){
     if (objeto.val() < 0 || objeto.val() > 100){
-        EVANotificacion.toast.error('El porcentaje debe estar entre 1% y 100%.');
+        objeto.next('div').text('El porcentaje debe estar entre 1% y 100%.');
         objeto.val('');
+        $('.sw-btn-next').click();
         return false;
     }
 }
