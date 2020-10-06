@@ -27,6 +27,7 @@ class SubtipoMovimientoCrearView(AbstractEvaLoggedView):
 
     def post(self, request):
         subtipo_movimiento = SubTipoMovimiento.from_dictionary(request.POST)
+        interpretar_radio_solo_contrato_proceso(subtipo_movimiento, request.POST.get('solo_contrato_proceso', ''))
         subtipo_movimiento.save()
         messages.success(request, 'Se ha creado el subtipo de movimiento {0}'.format(subtipo_movimiento.nombre))
         return redirect(reverse('financiero:subtipo-movimiento-index'))
@@ -41,13 +42,27 @@ class SubtipoMovimientoEditarView(AbstractEvaLoggedView):
                       datos_xa_render(self.OPCION, sub_mov))
 
     def post(self, request, id):
-        update_fields = ['nombre', 'descripcion', 'tipo_movimiento', 'categoria_movimiento', 'protegido', 'estado']
+        update_fields = ['nombre', 'descripcion', 'tipo_movimiento', 'categoria_movimiento', 'protegido', 'estado',
+                         'solo_proceso', 'solo_contrato']
         sub_mov = SubTipoMovimiento.from_dictionary(request.POST)
+        sub_mov = interpretar_radio_solo_contrato_proceso(sub_mov, request.POST.get('solo_contrato_proceso', ''))
         sub_mov.id = id
         sub_mov.estado = request.POST.get('estado', 'False') == 'True'
         sub_mov.save(update_fields=update_fields)
         messages.success(request, 'Se ha editado el subtipo de movimiento {0}'.format(sub_mov.nombre))
         return redirect(reverse('Financiero:subtipo-movimiento-index'))
+
+
+def interpretar_radio_solo_contrato_proceso(subtipo_movimiento, valor):
+    subtipo_movimiento.solo_contrato = False
+    subtipo_movimiento.solo_proceso = False
+    if valor == '1':
+        subtipo_movimiento.solo_contrato = True
+        subtipo_movimiento.solo_proceso = False
+    elif valor == '2':
+        subtipo_movimiento.solo_contrato = False
+        subtipo_movimiento.solo_proceso = True
+    return subtipo_movimiento
 
 
 class SubtipoMovimientoEliminarView(AbstractEvaLoggedView):
@@ -73,10 +88,20 @@ def datos_xa_render(opcion: str, sub_mov: SubTipoMovimiento = None) -> dict:
     """
     tipos_movimientos = TipoMovimiento.objects.get_xa_select_activos()
     categorias_movimientos = CategoriaMovimiento.objects.get_xa_select_activos()
+    opciones_solo_contrato_proceso = [{'valor': 0, 'texto': 'General'},
+                                      {'valor': 1, 'texto': 'Solo Contratos'},
+                                      {'valor': 2, 'texto': 'Solo Procesos'}]
     datos = {'opcion': opcion, 'tipos_movimientos': tipos_movimientos,
+             'opciones_solo_contrato_proceso': opciones_solo_contrato_proceso,
              'menu_actual': 'subtip_movimientos', 'categorias_movimientos': categorias_movimientos}
     if sub_mov:
         datos['sub_mov'] = sub_mov
+        valor = 0
+        if sub_mov.solo_contrato:
+            valor = 1
+        elif sub_mov.solo_proceso:
+            valor = 2
+        datos['solo_contrato_proceso'] = valor
 
     return datos
 # endregion

@@ -311,7 +311,7 @@ def datos_xa_render(request, opcion: str, tipo, fecha_minima_mes, flujo_detalle:
         proceso = Proceso.objects.get(id=proceso)
         menu_actual = 'fc_procesos'
 
-    subtipos_movimientos = valores_select_subtipos_movimientos(request)
+    subtipos_movimientos = valores_select_subtipos_movimientos(request, contrato, proceso)
     datos = {'opcion': opcion, 'contrato': contrato, 'proceso': proceso, 'subtipos_movimientos': subtipos_movimientos,
              'fecha': app_datetime_now(), 'menu_actual': menu_actual, 'fecha_minima_mes': fecha_minima_mes,
              'tipo': tipo}
@@ -347,8 +347,12 @@ def validar_gestion_registro(request, flujo_detalle):
     return True
 
 
-def valores_select_subtipos_movimientos(request):
-    subtipos = SubTipoMovimiento.objects.filter(estado=True)
+def valores_select_subtipos_movimientos(request, contrato, proceso):
+    subtipos = SubTipoMovimiento.objects.filter(estado=True, solo_contrato=False, solo_proceso=False)
+    if contrato:
+        subtipos |= SubTipoMovimiento.objects.filter(estado=True, solo_contrato=True)
+    if proceso:
+        subtipos |= SubTipoMovimiento.objects.filter(estado=True, solo_proceso=True)
     if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
         subtipos = subtipos.filter(protegido=False)
     return subtipos.values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
