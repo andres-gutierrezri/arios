@@ -250,20 +250,22 @@ def datos_xa_render(request, opcion: str, contrato: Contrato = None) -> dict:
         if not lista_garantias and not lista_vigencias:
             valores_vigencias = []
             valores_garantias = []
-            valores_vigencias.append(json.loads(datos_formulario['datos_vigencias'])[0])
-            valores_vigencias.append({"valor_anho": datos_formulario['anho_vigencia'],
-                                      "valor_vigencia": decimal_para_input_number(datos_formulario['valor_vigencia'])})
+            if datos_formulario['datos_vigencias']:
+                valores_vigencias.append(json.loads(datos_formulario['datos_vigencias'])[0])
+                valores_vigencias.append({"valor_anho": datos_formulario['anho_vigencia'],
+                                          "valor_vigencia": decimal_para_input_number(datos_formulario['valor_vigencia'])})
 
             valor_garantia_extensiva = False
             if datos_formulario['garantia_extensiva'] == "on":
                 valor_garantia_extensiva = True
-            valores_garantias.append(json.loads(datos_formulario['datos_garantias'])[0])
-            valores_garantias.append({"tipo_garantia": int(datos_formulario['tipo_garantia_id']),
-                                      "porcentaje_asegurado": datos_formulario['porcentaje_asegurado'],
-                                      "vigencia_garantia": datos_formulario['vigencia_garantia'],
-                                      "garantia_extensiva": valor_garantia_extensiva,
-                                      "nombre_tipo_garantia": TipoGarantia.objects
-                                     .get(id=datos_formulario['tipo_garantia_id']).nombre})
+            if datos_formulario['datos_garantias']:
+                valores_garantias.append(json.loads(datos_formulario['datos_garantias'])[0])
+                valores_garantias.append({"tipo_garantia": int(datos_formulario['tipo_garantia_id']),
+                                          "porcentaje_asegurado": datos_formulario['porcentaje_asegurado'],
+                                          "vigencia_garantia": datos_formulario['vigencia_garantia'],
+                                          "garantia_extensiva": valor_garantia_extensiva,
+                                          "nombre_tipo_garantia": TipoGarantia.objects
+                                         .get(id=datos_formulario['tipo_garantia_id']).nombre})
 
             datos['valores_vigencias_actuales'] = json.dumps(valores_vigencias)
             datos['valores_garantias_actuales'] = json.dumps(valores_garantias)
