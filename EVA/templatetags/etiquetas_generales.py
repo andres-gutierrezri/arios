@@ -219,6 +219,7 @@ def arma_input_general_tag(nombre, **kwargs):
     valor = kwargs.pop('value', '')
     tipo = kwargs.pop('type', u'text')
     opciones = kwargs.pop('opciones', '')
+    label_id = kwargs.pop('label_id', '')
     is_fecha = tipo == 'date'
     if is_fecha:
         tipo = 'text'
@@ -237,7 +238,7 @@ def arma_input_general_tag(nombre, **kwargs):
 
     return {'nombre': nombre, 'texto_label': texto_label, 'tipo': tipo, 'valor': valor,
             'propiedades': propiedades_to_str(kwargs), 'mensaje_validacion': mensaje_validacion, 'is_fecha': is_fecha,
-            'modal': modal, 'opciones': opciones}
+            'modal': modal, 'opciones': opciones, 'label_id': label_id}
 
 
 def get_min_decimal_string(decimal_places):
