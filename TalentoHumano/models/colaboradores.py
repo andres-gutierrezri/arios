@@ -6,6 +6,7 @@ from django.db.models import F, QuerySet, CharField, Value
 from django.db.models.functions import Concat
 
 from Administracion.models import Persona, Cargo, Proceso, TipoContrato, CentroPoblado, Rango, Empresa
+from Administracion.utils import get_id_empresa_global
 from EVA import settings
 from EVA.General.conversiones import string_to_datetime
 from EVA.General.modeljson import ModelDjangoExtensiones
@@ -32,6 +33,13 @@ class ColaboradorManger(ManagerGeneral):
 
     def get_xa_select_usuarios_activos(self) -> QuerySet:
         return super().get_queryset().filter(estado=True).values(campo_valor=F('usuario_id'))\
+            .annotate(campo_texto=Concat('usuario__first_name', Value(' '), 'usuario__last_name',
+                                         output_field=CharField()))\
+            .order_by('usuario__first_name', 'usuario__last_name')
+
+    def get_xa_select_usuarios_activos_x_empresa(self, request) -> QuerySet:
+        return super().get_queryset().filter(estado=True, empresa_id=get_id_empresa_global(request))\
+            .values(campo_valor=F('usuario_id'))\
             .annotate(campo_texto=Concat('usuario__first_name', Value(' '), 'usuario__last_name',
                                          output_field=CharField()))\
             .order_by('usuario__first_name', 'usuario__last_name')

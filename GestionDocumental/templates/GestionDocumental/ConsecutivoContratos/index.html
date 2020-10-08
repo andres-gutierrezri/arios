@@ -45,7 +45,6 @@
                                             <table class="table table-bordered w-100" id="dataTableConsecutivos">
                                                 <thead>
                                                     <tr>
-                                                        <th>ID</th>
                                                         <th>Consecutivo</th>
                                                         <th>Nombre</th>
                                                         <th>Fecha de Inicio</th>
@@ -56,7 +55,6 @@
                                                 <tbody>
                                                     {% for consecutivo in consecutivos %}
                                                         <tr>
-                                                            <td>{{ consecutivo.id }}</td>
                                                             <td>{{ consecutivo.codigo }}</td>
                                                             <td>{% if consecutivo.usuario %}
                                                                     {{ consecutivo.usuario.get_full_name }}

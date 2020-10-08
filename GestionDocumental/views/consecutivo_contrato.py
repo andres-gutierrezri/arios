@@ -15,9 +15,10 @@ from TalentoHumano.models import Colaborador
 class ConsecutivoContratoView(AbstractEvaLoggedView):
     def get(self, request, id):
         if id == 0:
-            consecutivos = ConsecutivoContrato.objects.all()
+            consecutivos = ConsecutivoContrato.objects.filter(empresa_id=get_id_empresa_global(request))
         else:
-            consecutivos = ConsecutivoContrato.objects.filter(tipo_contrato_id=id)
+            consecutivos = ConsecutivoContrato.objects.filter(tipo_contrato_id=id,
+                                                              empresa_id=get_id_empresa_global(request))
 
         return render(request, 'GestionDocumental/ConsecutivoContratos/index.html',
                       {'consecutivos': consecutivos,
@@ -33,6 +34,7 @@ class ConsecutivoContratoCrearView(AbstractEvaLoggedView):
 
     def post(self, request):
         consecutivo = ConsecutivoContrato.from_dictionary(request.POST)
+        consecutivo.empresa_id = get_id_empresa_global(request)
         consecutivo.numero_contrato = ConsecutivoDocumento\
             .get_consecutivo_por_anho(tipo_documento_id=TipoDocumento.CONTRATOS,
                                       empresa_id=get_id_empresa_global(request))
@@ -46,7 +48,7 @@ class ConsecutivoContratoCrearView(AbstractEvaLoggedView):
 
 def datos_xa_render(request) -> dict:
     tipo_contratos = TipoContrato.objects
-    colaboradores = Colaborador.objects.get_xa_select_usuarios_activos()
+    colaboradores = Colaborador.objects.get_xa_select_usuarios_activos_x_empresa(request)
     terceros = Tercero.objects.get_xa_select_activos()
     extra_tipos_contrato = []
     for tipo_contrato in tipo_contratos.all():
