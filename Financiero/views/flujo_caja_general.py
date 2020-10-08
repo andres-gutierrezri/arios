@@ -7,9 +7,11 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
+from Administracion.utils import get_id_empresa_global
 from Administracion.models import Proceso
 from EVA.General import app_datetime_now, app_date_now
-from EVA.General.conversiones import add_months, string_to_date
+from EVA.General.conversiones import add_months, string_to_date, mes_numero_a_letras, obtener_fecha_inicio_de_mes, \
+    obtener_fecha_fin_de_mes
 from EVA.views.index import AbstractEvaLoggedView
 from Financiero.models import FlujoCajaDetalle, SubTipoMovimiento, FlujoCajaEncabezado, EstadoFlujoCaja, CorteFlujoCaja
 from Financiero.models.flujo_caja import EstadoFCDetalle, TipoMovimiento
@@ -26,9 +28,10 @@ class FlujosDeCajaView(AbstractEvaLoggedView):
         if opcion == 0:
             if request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']) or \
                     request.user.has_perms(['Financiero.can_gestion_flujos_de_caja']):
-                contratos = Contrato.objects.all()
+                contratos = Contrato.objects.filter(empresa_id=get_id_empresa_global(request))
             else:
-                contratos = Contrato.objects.filter(colaboradorcontrato__colaborador__usuario=request.user)
+                contratos = Contrato.objects.filter(empresa_id=get_id_empresa_global(request),
+                                                    colaboradorcontrato__colaborador__usuario=request.user)
             return render(request, 'Financiero/FlujoCaja/FlujoCajaContratos/index.html',
                           {'contratos': contratos, 'fecha': datetime.now(), 'opciones': opciones, 'opcion': opcion,
                            'menu_extendido': 'Financiero/_common/base_financiero.html',
@@ -36,7 +39,7 @@ class FlujosDeCajaView(AbstractEvaLoggedView):
         else:
             if request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']) or \
                     request.user.has_perms(['Financiero.can_gestion_flujos_de_caja']):
-                procesos = Proceso.objects.all()
+                procesos = Proceso.objects.filter(empresa_id=get_id_empresa_global(request))
             else:
                 colaborador = Colaborador.objects.get(usuario=request.user)
                 procesos = Proceso.objects.filter(id=colaborador.proceso_id)
@@ -73,14 +76,17 @@ class FlujoCajaMovimientoHistorialView(AbstractEvaLoggedView):
         return historial_movimiento(request, id_movimiento)
 
 
-def flujo_caja_detalle(request, tipo, contrato=None, proceso=None):
+def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccion=None, mes_seleccion=None):
     if proceso:
         ruta_reversa = 'administracion:procesos'
         base_template = 'Administracion/_common/base_administracion.html'
         menu_actual = ['procesos', 'flujos_de_caja']
         proceso = Proceso.objects.get(id=proceso)
-        flujo_caja_enc = FlujoCajaEncabezado.objects.filter(proceso=proceso)
-        movimientos = FlujoCajaDetalle.objects.filter(flujo_caja_enc__proceso=proceso, tipo_registro=tipo) \
+        flujo_caja_enc = FlujoCajaEncabezado.objects.filter(proceso=proceso,
+                                                            proceso__empresa_id=get_id_empresa_global(request))
+        movimientos = FlujoCajaDetalle\
+            .objects.filter(flujo_caja_enc__proceso=proceso, tipo_registro=tipo,
+                            flujo_caja_enc__proceso__empresa_id=get_id_empresa_global(request)) \
             .annotate(fecha_corte=F('flujo_caja_enc__corteflujocaja__fecha_corte')) \
             .exclude(estado_id=EstadoFCDetalle.OBSOLETO)
     else:
@@ -88,8 +94,11 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None):
         base_template = 'Proyectos/_common/base_proyectos.html'
         menu_actual = 'fc_contratos'
         contrato = Contrato.objects.get(id=contrato)
-        flujo_caja_enc = FlujoCajaEncabezado.objects.filter(contrato=contrato)
-        movimientos = FlujoCajaDetalle.objects.filter(flujo_caja_enc__contrato=contrato, tipo_registro=tipo) \
+        flujo_caja_enc = FlujoCajaEncabezado.objects.filter(contrato=contrato,
+                                                            contrato__empresa_id=get_id_empresa_global(request))
+        movimientos = FlujoCajaDetalle\
+            .objects.filter(flujo_caja_enc__contrato=contrato, tipo_registro=tipo,
+                            flujo_caja_enc__contrato__empresa_id=get_id_empresa_global(request)) \
             .annotate(fecha_corte=F('flujo_caja_enc__corteflujocaja__fecha_corte')) \
             .exclude(estado_id=EstadoFCDetalle.OBSOLETO)
 
@@ -109,6 +118,34 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None):
         if not request.user.has_perms(['Financiero.can_gestion_flujos_de_caja']):
             movimientos = movimientos.exclude(estado_id=EstadoFCDetalle.ELIMINADO)
 
+    if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
+        movimientos = movimientos.filter(subtipo_movimiento__protegido=False)
+
+    fecha_incial = app_datetime_now()
+    fecha_final = app_datetime_now()
+    if movimientos:
+        fecha_incial = movimientos.order_by('fecha_movimiento').first().fecha_movimiento
+        fecha_final = movimientos.order_by('fecha_movimiento').last().fecha_movimiento
+
+    meses = []
+    anios = []
+    while fecha_incial <= fecha_final:
+        coincidencia_mes = False
+        for mes in meses:
+            if fecha_incial.month == mes['campo_valor']:
+                coincidencia_mes = True
+        if not coincidencia_mes:
+            meses.append({'campo_valor': fecha_incial.month, 'campo_texto': mes_numero_a_letras(fecha_incial.month)})
+        coincidencia_anio = False
+        for anio in anios:
+            if fecha_incial.year == anio['campo_valor']:
+                coincidencia_anio = True
+        if not coincidencia_anio:
+            anios.append({'campo_valor': fecha_incial.year, 'campo_texto': fecha_incial.year})
+
+        fecha_incial = add_months(fecha_incial, 1)
+    movimientos = movimientos.filter(fecha_movimiento__range=[obtener_fecha_inicio_de_mes(anio_seleccion, mes_seleccion),
+                                                              obtener_fecha_fin_de_mes(anio_seleccion, mes_seleccion)])
     ingresos = 0
     egresos = 0
     for movimiento in movimientos:
@@ -117,14 +154,12 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None):
         else:
             egresos += movimiento.valor
 
-    if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
-        movimientos = movimientos.filter(subtipo_movimiento__protegido=False)
-
     return render(request, 'Financiero/FlujoCaja/FlujoCajaGeneral/detalle_flujo_caja.html',
                   {'movimientos': movimientos, 'fecha': datetime.now(), 'contrato': contrato, 'proceso': proceso,
                    'menu_actual': menu_actual, 'fecha_minima_mes': fecha_minima_mes, 'tipo': tipo,
                    'fecha_maxima_mes': fecha_maxima_mes, 'flujo_caja_enc': flujo_caja_enc,
-                   'base_template': base_template, 'ingresos': ingresos, 'egresos': egresos})
+                   'base_template': base_template, 'ingresos': ingresos, 'egresos': egresos,
+                   'anios': anios, 'meses': meses, 'anio_seleccion': anio_seleccion, 'mes_seleccion': mes_seleccion})
 
 
 def cargar_modal_crear_editar(request,  opcion, tipo=None, contrato=None, proceso=None, movimiento=None):
@@ -212,7 +247,7 @@ def guardar_movimiento(request, tipo=None, contrato=None, proceso=None, movimien
         fl_det.save()
         messages.success(request, 'Se ha agregado el movimiento correctamente')
 
-    return redirect(reverse(ruta_detalle, args=[objeto, tipo]))
+    return redirect(reverse(ruta_detalle, args=[objeto, tipo, app_datetime_now().year, app_datetime_now().month]))
 
 
 def eliminar_movimiento(request, flujo_detalle):
@@ -274,7 +309,7 @@ def datos_xa_render(request, opcion: str, tipo, fecha_minima_mes, flujo_detalle:
         proceso = Proceso.objects.get(id=proceso)
         menu_actual = 'fc_procesos'
 
-    subtipos_movimientos = valores_select_subtipos_movimientos(request)
+    subtipos_movimientos = valores_select_subtipos_movimientos(request, contrato, proceso)
     datos = {'opcion': opcion, 'contrato': contrato, 'proceso': proceso, 'subtipos_movimientos': subtipos_movimientos,
              'fecha': app_datetime_now(), 'menu_actual': menu_actual, 'fecha_minima_mes': fecha_minima_mes,
              'tipo': tipo}
@@ -310,8 +345,12 @@ def validar_gestion_registro(request, flujo_detalle):
     return True
 
 
-def valores_select_subtipos_movimientos(request):
-    subtipos = SubTipoMovimiento.objects.filter(estado=True)
+def valores_select_subtipos_movimientos(request, contrato, proceso):
+    subtipos = SubTipoMovimiento.objects.filter(estado=True, solo_contrato=False, solo_proceso=False)
+    if contrato:
+        subtipos |= SubTipoMovimiento.objects.filter(estado=True, solo_contrato=True)
+    if proceso:
+        subtipos |= SubTipoMovimiento.objects.filter(estado=True, solo_proceso=True)
     if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
         subtipos = subtipos.filter(protegido=False)
     return subtipos.values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')

@@ -1,9 +1,6 @@
 
 'use strict';
 
-
-
-
 let divOrigenRecurso = $('#div_origen_recurso');
 let inputOrigenRecurso = $('#origen_recurso_id');
 let selectOrigenRecurso = $('#origen_recurso_id_select_id');
@@ -42,6 +39,25 @@ function verificarPorcentajeAIU(){
         }
     })
 }
+function validarIngreso_AIU(objeto){
+    if (objeto.val() < 0 || objeto.val() > 100){
+        objeto.next('div').text('El porcentaje debe estar entre 1% y 100%.');
+        objeto.val('');
+        $('.sw-btn-next').click();
+        return false;
+    }
+}
+inputA.change(function () {
+    validarIngreso_AIU(inputA)
+});
+
+inputI.change(function () {
+    validarIngreso_AIU(inputI)
+});
+
+inputU.change(function () {
+    validarIngreso_AIU(inputU)
+});
 
 $(document).ready(function () {
     origenRecursos();

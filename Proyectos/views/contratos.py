@@ -115,7 +115,9 @@ class ContratoDetalleView(AbstractEvaLoggedView):
     def get(self, request, id):
         contrato = Contrato.objects.get(id=id)
         municipios = ContratoMunicipio.objects.filter(contrato=contrato)
-        forma_pago = FormasPago.objects.get(contrato=contrato)
+        forma_pago = FormasPago.objects.filter(contrato=contrato)
+        if forma_pago:
+            forma_pago = forma_pago.first()
         vigencias = ContratoVigencia.objects.filter(contrato=contrato).order_by('anho')
         supervisores = ContratoIterventoriaSupervisor.objects.filter(contrato=contrato, tipo=SUPERVISOR)
         interventores = ContratoIterventoriaSupervisor.objects.filter(contrato=contrato, tipo=INTERVENTOR)
@@ -221,11 +223,12 @@ def datos_xa_render(request, opcion: str, contrato: Contrato = None) -> dict:
                                     'forma_pago': formas_pago.first().forma_pago,
                                     'aplica_porcentaje': aplica_porcentaje}
         else:
-            datos['formas_pago'] = {'anticipo': datos_formulario['anticipo'],
-                                    'actas_parciales': datos_formulario['actas_parciales'],
-                                    'liquidacion': datos_formulario['liquidacion'],
-                                    'forma_pago': int(datos_formulario['forma_de_pago']),
-                                    'aplica_porcentaje': aplica_porcentaje}
+            if datos_formulario['forma_de_pago']:
+                datos['formas_pago'] = {'anticipo': datos_formulario['anticipo'],
+                                        'actas_parciales': datos_formulario['actas_parciales'],
+                                        'liquidacion': datos_formulario['liquidacion'],
+                                        'forma_pago': int(datos_formulario['forma_de_pago']),
+                                        'aplica_porcentaje': aplica_porcentaje}
 
         lista_vigencias = []
         for vigencia in ContratoVigencia.objects.filter(contrato=contrato).order_by('anho'):
@@ -247,20 +250,22 @@ def datos_xa_render(request, opcion: str, contrato: Contrato = None) -> dict:
         if not lista_garantias and not lista_vigencias:
             valores_vigencias = []
             valores_garantias = []
-            valores_vigencias.append(json.loads(datos_formulario['datos_vigencias'])[0])
-            valores_vigencias.append({"valor_anho": datos_formulario['anho_vigencia'],
-                                      "valor_vigencia": decimal_para_input_number(datos_formulario['valor_vigencia'])})
+            if datos_formulario['datos_vigencias']:
+                valores_vigencias.append(json.loads(datos_formulario['datos_vigencias'])[0])
+                valores_vigencias.append({"valor_anho": datos_formulario['anho_vigencia'],
+                                          "valor_vigencia": decimal_para_input_number(datos_formulario['valor_vigencia'])})
 
             valor_garantia_extensiva = False
             if datos_formulario['garantia_extensiva'] == "on":
                 valor_garantia_extensiva = True
-            valores_garantias.append(json.loads(datos_formulario['datos_garantias'])[0])
-            valores_garantias.append({"tipo_garantia": int(datos_formulario['tipo_garantia_id']),
-                                      "porcentaje_asegurado": datos_formulario['porcentaje_asegurado'],
-                                      "vigencia_garantia": datos_formulario['vigencia_garantia'],
-                                      "garantia_extensiva": valor_garantia_extensiva,
-                                      "nombre_tipo_garantia": TipoGarantia.objects
-                                     .get(id=datos_formulario['tipo_garantia_id']).nombre})
+            if datos_formulario['datos_garantias']:
+                valores_garantias.append(json.loads(datos_formulario['datos_garantias'])[0])
+                valores_garantias.append({"tipo_garantia": int(datos_formulario['tipo_garantia_id']),
+                                          "porcentaje_asegurado": datos_formulario['porcentaje_asegurado'],
+                                          "vigencia_garantia": datos_formulario['vigencia_garantia'],
+                                          "garantia_extensiva": valor_garantia_extensiva,
+                                          "nombre_tipo_garantia": TipoGarantia.objects
+                                         .get(id=datos_formulario['tipo_garantia_id']).nombre})
 
             datos['valores_vigencias_actuales'] = json.dumps(valores_vigencias)
             datos['valores_garantias_actuales'] = json.dumps(valores_garantias)

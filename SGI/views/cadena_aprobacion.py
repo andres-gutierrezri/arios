@@ -21,8 +21,8 @@ from TalentoHumano.models import Colaborador
 
 class CadenaAprobacionView(AbstractEvaLoggedView):
     def get(self, request):
-        cadenas_aprobacion = CadenaAprobacionEncabezado.objects.all()
-        detalles = CadenaAprobacionDetalle.objects.all()
+        cadenas_aprobacion = CadenaAprobacionEncabezado.objects.filter(empresa_id=get_id_empresa_global(request))
+        detalles = CadenaAprobacionDetalle.objects.filter(cadena_aprobacion__empresa_id=get_id_empresa_global(request))
         colaboradores = Colaborador.objects.all()
         procesos = Proceso.objects.filter(empresa_id=get_id_empresa_global(request)).order_by('nombre')
         return render(request, 'SGI/CadenasAprobacion/index.html', {'cadenas_aprobacion': cadenas_aprobacion,
@@ -135,8 +135,10 @@ class CadenaAprobacionEliminarView(AbstractEvaLoggedView):
 
 class AprobacionDocumentoView(AbstractEvaLoggedView):
     def get(self, request):
-        archivos = ResultadosAprobacion.objects.filter(usuario=request.user, estado_id=EstadoArchivo.PENDIENTE,
-                                                       aprobacion_anterior=EstadoArchivo.APROBADO)
+        archivos = ResultadosAprobacion\
+            .objects.filter(usuario=request.user, estado_id=EstadoArchivo.PENDIENTE,
+                            aprobacion_anterior=EstadoArchivo.APROBADO,
+                            archivo__cadena_aprobacion__empresa_id=get_id_empresa_global(request))
         procesos = Proceso.objects.filter(empresa_id=get_id_empresa_global(request)).order_by('nombre')
         fecha = datetime.now()
         return render(request, 'SGI/AprobacionDocumentos/index.html', {'archivos': archivos,
@@ -265,8 +267,10 @@ def usuario_siguiente_cadena_aprobacion_detalle(archivo, usuario):
 
 class SolicitudesAprobacionDocumentoView(AbstractEvaLoggedView):
     def get(self, request):
-        archivos = Archivo.objects.filter(usuario=request.user)\
-            .exclude(estado=EstadoArchivo.OBSOLETO).exclude(cadena_aprobacion_id=None)
+        archivos = Archivo.objects\
+            .filter(usuario=request.user, cadena_aprobacion__empresa_id=get_id_empresa_global(request))\
+            .exclude(estado=EstadoArchivo.OBSOLETO)\
+            .exclude(cadena_aprobacion_id=None)
 
         procesos = Proceso.objects.filter(empresa_id=get_id_empresa_global(request)).order_by('nombre')
         return render(request, 'SGI/AprobacionDocumentos/solicitudes_aprobacion.html',

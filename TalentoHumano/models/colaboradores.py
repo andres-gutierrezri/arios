@@ -65,13 +65,16 @@ class Colaborador(Persona, ModelDjangoExtensiones):
                                          null=False, blank=False)
     rango = models.ForeignKey(Rango, on_delete=models.DO_NOTHING, verbose_name='Rango', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
-    foto_perfil = models.ImageField(upload_to=f'{settings.EVA_PUBLIC_MEDIA}/foto_perfil', blank=True, default='foto_perfil/profile-none.png')
+    foto_perfil = models.ImageField(upload_to=f'{settings.EVA_PUBLIC_MEDIA}/foto_perfil', blank=True,
+                                    default='foto_perfil/profile-none.png')
     empresa_sesion = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa Sesion',
-                                       null=True, blank=False)
+                                       null=True, blank=False, related_name='%(app_label)s_%(class)s_empresa_sesion')
     grupo_sanguineo = models.CharField(max_length=3, verbose_name="Grupo sanguíneo", null=False, blank=False)
     nombre_contacto = models.CharField(max_length=100, verbose_name='Nombre del contacto', null=False, blank=False)
     parentesco = models.CharField(max_length=100, verbose_name='Parentesco', null=False, blank=False)
     telefono_contacto = models.CharField(max_length=20, verbose_name='Teléfono del contacto', null=False, blank=False)
+    empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name=Empresa, null=False, blank=False,
+                                related_name='%(app_label)s_%(class)s_empresa')
 
     class Meta:
         verbose_name = 'Colaborador'
