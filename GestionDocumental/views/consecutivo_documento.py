@@ -15,7 +15,7 @@ from TalentoHumano.models import Colaborador
 class ConsecutivoOficiosView(AbstractEvaLoggedView):
     def get(self, request, id):
         if id == 0:
-            consecutivos = ConsecutivoOficio.objects.all()
+            consecutivos = ConsecutivoOficio.objects.filter(empresa_id=get_id_empresa_global(request))
             colaborador = Colaborador.objects.values('usuario_id', 'proceso__sigla')
         else:
             colaborador = Colaborador.objects.filter(usuario=request.user).values('usuario_id', 'proceso__sigla')

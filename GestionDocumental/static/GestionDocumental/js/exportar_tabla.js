@@ -9,7 +9,7 @@ function iniciarTablaExportarConsecutivos(columnasExportar)
         "order": [[ 0, "desc" ]],
         "columnDefs": [
                { "targets": 0,
-                   "width": "10px",
+                   "max-width": "80px",
                }],
         responsive: true,
         lengthChange: false,
