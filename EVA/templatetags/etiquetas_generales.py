@@ -40,6 +40,9 @@ def input_text_tag(nombre, texto_label, **kwargs):
     kwargs['texto_label'] = texto_label
     kwargs['type'] = u'text'
 
+    if 'data_inputmask' in kwargs:
+        kwargs['data-inputmask'] = kwargs.pop('data_inputmask', '')
+
     return arma_input_general_tag(nombre, **kwargs)
 
 
@@ -77,6 +80,21 @@ def input_number_tag(nombre, texto_label, **kwargs):
     kwargs['type'] = u'number'
 
     return arma_input_general_tag(nombre, **kwargs)
+
+
+@register.inclusion_tag('EVA/_general_tags/_input_general_tag.html')
+def input_currency_tag(nombre, texto_label, **kwargs):
+
+    kwargs['data-inputmask'] = "'alias': 'currency'"
+    return input_text_tag(nombre, texto_label, **kwargs)
+
+
+@register.inclusion_tag('EVA/_general_tags/_input_general_tag.html')
+def input_decimal_tag(nombre, texto_label, **kwargs):
+
+    kwargs['data-inputmask'] = "'alias': 'numeric', 'groupSeparator': ':', 'max':1000.50, 'digitsOptional':false," \
+                               "'digits': 2, 'autoGroup':true, 'placeholder': '0'"
+    return input_text_tag(nombre, texto_label, **kwargs)
 
 
 @register.inclusion_tag('EVA/_general_tags/_input_general_tag.html')

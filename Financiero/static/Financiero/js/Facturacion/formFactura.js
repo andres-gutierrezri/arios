@@ -129,6 +129,9 @@ $(document).ready(function () {
     configurarBotones();
     cargaImpuestosEnFactura();
     cargarBorrador();
+    $("#valor_unitario_id").inputmask();
+    $("#valor_amortizacion_id").inputmask();
+    $("#cantidad_id").inputmask();
 });
 
 function configurarTablaDetalle() {
@@ -167,7 +170,8 @@ function configurarTablaDetalle() {
         columnDefs: [
                     {
                         "targets": [1],
-                        "width": '10%'
+                        "width": '10%',
+                        className: 'text-right'
                     },
                     {
                         "targets": [2],
@@ -239,10 +243,6 @@ function configurarBotones() {
     
 }
 
-function redondear2Decimales(valor) {
-    return Number(valor.toFixed(2));
-}
-
 function cerrarModalAgregarItem() {
     $("#agregar_item_modal").modal('hide');
     $(".modal-backdrop").remove();
@@ -260,9 +260,9 @@ function ItemFactura(titulo, descripcion, valorUnitario, cantidad, impuesto) {
 function getItemXaTabla(itemFactura) {
     return([
         `<b>${itemFactura.titulo}</b><br>${itemFactura.descripcion}`,
-        itemFactura.cantidad,
-        itemFactura.valorUnitario,
-        itemFactura.valorTotal
+        numToDecimalStr(itemFactura.cantidad),
+        numToDecimalStr(itemFactura.valorUnitario),
+        numToDecimalStr(itemFactura.valorTotal)
     ]);
 }
 
@@ -270,7 +270,7 @@ function agregarItemFactura() {
     let existe = false;
     const tituloItem = $('#titulo_item_id').val();
     const descripcionItem = $('#descripcion_item_id').val();
-    const valorUnitario = Number($('#valor_unitario_id').val());
+    const valorUnitario = Number($('#valor_unitario_id').inputmask('unmaskedvalue'));
     const cantidad = Number($('#cantidad_id').val());
     const impuesto_seleccionado = $('#impuesto_select_id')[0].selectedOptions[0];
     const impuesto = impuesto_seleccionado.value !== '' ? JSON.parse(impuesto_seleccionado.value) : {id:0, porcentaje:0.00};
@@ -297,7 +297,7 @@ function renderTotalFactura() {
 
 function getFilaTotales(nombre, valor) {
     if(nombre !== 'Subtotal')
-        return `<tr><td colspan="3" class="text-right"><b>${nombre}</b></td><td class="text-right">${valor}</td></tr>`;
+        return `<tr><td colspan="3" class="text-right"><b>${nombre}</b></td><td class="text-right">${numToDecimalStr(valor)}</td></tr>`;
     else
         return `<tr><td colspan="3" class="text-right"><div class="btn-group dropup">
                         <button type="button" class="btn btn-warning rounded-circle btn-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -310,7 +310,7 @@ function getFilaTotales(nombre, valor) {
                             <a class="dropdown-item" href="javascript:abrirModalAgregarAmortizacion();">Amortización</a>
                             <a class="dropdown-item" href="javascript:abrirModalAgregarAIU();">AIU</a>
                         </div>
-                    </div> <b>${nombre}</b></td><td class="text-right">${valor}
+                    </div> <b>${nombre}</b></td><td class="text-right">${numToDecimalStr(valor)}
                 </td></tr>`
 }
 
@@ -365,7 +365,7 @@ function cerrarModalAgregarAIU() {
 
 function agregarAmortizacionFactura() {
 
-    factura.setAmortizacion(Number($('#valor_amortizacion_id').val()));
+    factura.setAmortizacion(Number($('#valor_amortizacion_id').inputmask('unmaskedvalue')));
 
     renderTotalFactura();
 }

@@ -32,10 +32,10 @@
                     <div class="form-group">
                         <div class="row">
                             <div class="col-sm-6 col-md-4 col-lg-4">
-                                {% input_number_tag 'valor_unitario' "Valor unitario:" placeholder="Ingrese valor unitario" required="" min="0.01" max="9999999999.99" step="0.01" %}
+                                {% input_currency_tag 'valor_unitario' "Valor unitario:" placeholder="Ingrese valor unitario" required="" min="0.01" max="9999999999.99" step="0.01" %}
                             </div>
                             <div class="col-sm-6 col-md-4 col-lg-4">
-                                {% input_number_tag 'cantidad' "Cantidad:" placeholder="Ingrese cantidad" required="" min="0.01" max="9999999999.99" step="0.01" %}
+                                {% input_decimal_tag 'cantidad' "Cantidad:" placeholder="Ingrese cantidad" required="" min="0.01" max="9999999999.99" step="0.01" %}
                             </div>
                             <div class="col-sm-6 col-md-4 col-lg-4">
                                 {% select_tag impuestos 'impuesto' 'Seleccione el impuesto' texto_label="Impuesto:" %}

@@ -1,5 +1,6 @@
 {% extends 'Financiero/_common/base_financiero.html' %}
 {% load static %}
+{% load humanize %}
 <title>{% block titulo %}Terceros{% endblock %}</title>
 {% block styles %}
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/datagrid/datatables/datatables.bundle.css' %}">
@@ -55,7 +56,7 @@
                                             <td>{{ factura.numero_factura }}</td>
                                             <td>{{ factura.tercero.nombre}}</td>
                                             <td>{{ factura.can_items }}</td>
-                                            <td>{{ factura.total_factura }}</td>
+                                            <td class="text-right">{{ factura.total_factura | intcomma:False }}</td>
                                             <td><span class="badge badge-primary">Activa</span></td>
                                             <td>{{ factura.fecha_creacion |date:'Y-m-d' }}</td>
                                             <td>{{ factura.usuario_crea.username}}</td>
@@ -88,7 +89,7 @@
                                             <td>{{ factura.id}}</td>
                                             <td>{{ factura.tercero.nombre}}</td>
                                             <td>{{ factura.can_items }}</td>
-                                            <td>{{ factura.total_factura }}</td>
+                                            <td class="text-right">{{ factura.total_factura | intcomma:False }}</td>
                                             <td>{{ factura.fecha_creacion |date:'Y-m-d' }}</td>
                                             <td>{{ factura.usuario_crea.username}}</td>
                                             <td>
