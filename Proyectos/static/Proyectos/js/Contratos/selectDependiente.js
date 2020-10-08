@@ -96,12 +96,12 @@ function cargarMunicipios(idDepartamento) {
                     let coincidencia = false;
                     if (valoresPDM) {
                         $.each(valoresPDM.municipio, function (pos, mun) {
-                            if (mun.id === data[i].id) {
+                            if (parseInt(mun.id) === parseInt(data[i].id)) {
                                 coincidencia = true;
                             }
                         });
                         $.each(valores_seleccionados, function (pos, sel) {
-                            if (parseInt(sel) === data[i].id) {
+                            if (parseInt(sel) === parseInt(data[i].id)) {
                                 coincidencia = true;
                             }
                         });

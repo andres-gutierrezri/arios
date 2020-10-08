@@ -3,7 +3,7 @@
 {% endif %}
 <select class="select2 form-control" id="{{ nombre }}_select_id" name="{{ nombre }}" {{ propiedades }}>
     {% if texto_seleccion %}
-        <option {% if primer_valor %}value="0" {% else %}value=""{% endif %}>{{ texto_seleccion }}</option>
+        <option {% if primer_valor %}{% if primer_campo_valor %} value="{{ primer_campo_valor }}" {% else %} value="0" {% endif %} {% else %}value=""{% endif %}>{{ texto_seleccion }}</option>
     {% endif %}
     {% for item in lista %}
         <option value="{{ item.campo_valor }}" {% if item.campo_valor == valor %} selected {% endif %}>{{ item.campo_texto }}</option>

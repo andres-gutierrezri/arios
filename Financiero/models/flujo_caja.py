@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import QuerySet, F
 
+from Administracion.utils import get_id_empresa_global
 from Administracion.models import Proceso
 from EVA.General.modelmanagers import ManagerGeneral
 from Proyectos.models import Contrato
@@ -65,6 +66,8 @@ class SubTipoMovimiento(models.Model):
                                              verbose_name='Categoría de Movimiento')
     protegido = models.BooleanField(verbose_name='Protegido', blank=False, null=False)
     estado = models.BooleanField(verbose_name='Estado', blank=False, null=False, default=True)
+    solo_contrato = models.BooleanField(verbose_name='Solo Contrato', blank=False, null=False)
+    solo_proceso = models.BooleanField(verbose_name='Solo Proceso', blank=False, null=False)
 
     def __str__(self):
         return self.nombre
@@ -107,19 +110,21 @@ class EstadoFlujoCaja(models.Model):
 
 
 class FlujoCajaEncabezadoManager(ManagerGeneral):
-    def get_xa_select_x_contrato(self) -> QuerySet:
-        return super().get_queryset().filter(contrato__isnull=False)\
+    def get_xa_select_x_contrato(self, request) -> QuerySet:
+        return super().get_queryset()\
+            .filter(contrato__isnull=False, contrato__empresa_id=get_id_empresa_global(request))\
             .values(campo_valor=F('id'), campo_texto=F('contrato__numero_contrato'))
 
-    def get_xa_select_x_proceso(self) -> QuerySet:
-        return super().get_queryset().filter(proceso__isnull=False) \
+    def get_xa_select_x_proceso(self, request) -> QuerySet:
+        return super().get_queryset()\
+            .filter(proceso__isnull=False, proceso__empresa_id=get_id_empresa_global(request)) \
             .values(campo_valor=F('id'), campo_texto=F('proceso__nombre'))
 
-    def get_flujos_x_contrato(self) -> QuerySet:
-        return super().get_queryset().filter(contrato__isnull=False)
+    def get_flujos_x_contrato(self, request) -> QuerySet:
+        return super().get_queryset().filter(contrato__isnull=False, contrato__empresa_id=get_id_empresa_global(request))
 
-    def get_flujos_x_proceso(self) -> QuerySet:
-        return super().get_queryset().filter(proceso__isnull=False)
+    def get_flujos_x_proceso(self, request) -> QuerySet:
+        return super().get_queryset().filter(proceso__isnull=False, proceso__empresa_id=get_id_empresa_global(request))
 
 
 class FlujoCajaEncabezado(models.Model):

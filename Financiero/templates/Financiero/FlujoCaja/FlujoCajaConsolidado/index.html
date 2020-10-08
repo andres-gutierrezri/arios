@@ -393,6 +393,23 @@
                                                         </td>
                                                     </tr>
                                                 {% endfor %}
+                                                <tr>
+                                                    <td class="w-10">
+                                                    </td>
+                                                    <td>Total</td>
+                                                    {% for mov in totales_mes_a_mes %}
+                                                        {% if comparativo %}
+                                                            <td class="t-a-e">{{ mov.valor_real|intcomma }}</td>
+                                                            <td class="t-a-e">{{ mov.valor_proyectado|intcomma }}</td>
+                                                        {% else %}
+                                                            {% if valor.tipos_flujos_caja == 0 %}
+                                                                <td class="t-a-e">{{ mov.valor_real|intcomma }}</td>
+                                                            {% else %}
+                                                                <td class="t-a-e">{{ mov.valor_proyectado|intcomma }}</td>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </tr>
                                             </tbody>
                                         </table>
                                     </div>

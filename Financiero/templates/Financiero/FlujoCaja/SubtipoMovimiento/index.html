@@ -42,6 +42,7 @@
                                                         <th>Tipo de Movimiento</th>
                                                         <th>Categoría de Movimiento</th>
                                                         <th>Protegido</th>
+                                                        <th>Uso</th>
                                                         <th>Estado</th>
                                                         {% if perms.Financiero.change_subtipomovimiento or perms.Financiero.delete_subtipomovimiento %}
                                                             <th>Acción</th>
@@ -57,6 +58,9 @@
                                                             <td>{{ sub_mov.categoria_movimiento }}</td>
                                                             <td>
                                                                 <span class="badge badge-primary">{% if sub_mov.protegido %}Protegido{% else %}No Protegido{% endif %}</span>
+                                                            </td>
+                                                            <td>
+                                                                <span class="badge badge-primary">{% if sub_mov.solo_contrato %}Solo Contrato{% elif sub_mov.solo_proceso %}Solo Proceso{% else %}General{% endif %}
                                                             </td>
                                                             <td>
                                                                 <span class="badge badge-primary">{% if sub_mov.estado %}Activo{% else %}Inactivo{% endif %}</span>

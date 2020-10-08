@@ -225,6 +225,11 @@
                                                                         {% select_multiple_tag grupos 'grupo_id[]' 'grupo_id' 'Seleccione un grupo' placeholder="Seleccione un grupo de permisos" texto_label="Grupo de Permisos" value="" required="" mensaje_validacion='Por favor seleccione un grupo de permisos' multiple='multiple' invalido=errores.grupo %}
                                                                     </div>
                                                                     {% endif %}
+                                                                    {% if opcion == 'editar' %}
+                                                                    <div class="col-md-6">
+                                                                        {% select_tag empresa 'empresa_id' 'Seleccione una empresa' texto_label="Empresa" value=colaborador.empresa_id required="" mensaje_validacion='Por favor seleccione una empresa' invalido=errores.empresa %}
+                                                                    </div>
+                                                                    {% endif %}
                                                                 </div>
                                                             </div>
                                                         </div>

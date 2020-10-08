@@ -6,10 +6,11 @@ function iniciarTablaExportarConsecutivos(columnasExportar)
 {
     $('#dataTableConsecutivos').dataTable(
     {
-        "order": [[ 1, "desc" ]],
+        "order": [[ 0, "desc" ]],
         "columnDefs": [
                { "targets": 0,
-                   "width": "130px"}],
+                   "width": "10px",
+               }],
         responsive: true,
         lengthChange: false,
         dom:

@@ -7,10 +7,10 @@ from Financiero.views.flujo_caja_general import flujo_caja_detalle, cargar_modal
 
 
 class FlujoCajaProcesosDetalleView(AbstractEvaLoggedView):
-    def get(self, request, id, tipo):
+    def get(self, request, id, tipo, anio, mes):
         if not validar_permisos(request, 'view_flujocajadetalle'):
             return redirect(reverse('eva-index'))
-        return flujo_caja_detalle(request, tipo, proceso=id)
+        return flujo_caja_detalle(request, tipo, proceso=id, anio_seleccion=anio, mes_seleccion=mes)
 
 
 class FlujoCajaProcesosCrearView(AbstractEvaLoggedView):
