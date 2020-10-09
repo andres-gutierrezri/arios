@@ -36,7 +36,7 @@ input[type=checkbox] ~ label:before {
 .seleccionEmpresaGlobal {
     height:60px;
     width:auto;
-    max-width:500px;
+    max-width:200px;
     padding-bottom: 6px;
 }
 

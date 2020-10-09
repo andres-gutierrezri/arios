@@ -12,15 +12,17 @@
             </button>
         </div>
         <div class="modal-body">
-            {% for empresa in empresas %}
-                <div style="text-align: center; position: relative; cursor: pointer; {% if empresa_actual.id != empresa.empresa.id %} opacity: 0.5 {% endif %}"
-                     onmouseover="$(this).find('.text-logo').fadeIn(0); $(this).css('opacity','1');"
-                     onmouseleave="$(this).find('.text-logo').fadeOut(0);$(this).css('opacity',{% if empresa_actual.id != empresa.empresa.id %} '0.5' {% else %} '1' {% endif %});">
-                    <img class="logo-nav" style="width: 300px; position: relative;" onclick="clicEmpresa({{ empresa.empresa.id }})" src="{{ empresa.empresa.logo.url }}" >
-                    <div style="height: 31px"><h3 class="text-logo" style="position: relative; display: none;" ><strong>{{ empresa.empresa.nombre }}</strong></h3></div>
-                    <br>
-                </div>
-            {% endfor %}
+            <div class="form-row">
+                {% for empresa in empresas %}
+                    <div class="col-lg-6 col-md-6 col-sm-12" style="text-align: center; position: relative; cursor: pointer; {% if empresa_actual.id != empresa.empresa.id %} opacity: 0.5 {% endif %}"
+                         onmouseover="$(this).find('.text-logo').fadeIn(0); $(this).css('opacity','1');"
+                         onmouseleave="$(this).find('.text-logo').fadeOut(0);$(this).css('opacity',{% if empresa_actual.id != empresa.empresa.id %} '0.5' {% else %} '1' {% endif %});">
+                        <img class="seleccionEmpresaGlobal logo-nav" style="position: relative;" onclick="clicEmpresa({{ empresa.empresa.id }})" src="{{ empresa.empresa.logo.url }}" >
+                        <div style="height: 31px"><h3 class="text-logo" style="position: relative; display: none;" ><strong>{{ empresa.empresa.nombre }}</strong></h3></div>
+                        <br>
+                    </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 </div>
