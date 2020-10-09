@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 
-from Administracion.models import Tercero, TipoContrato
+from Administracion.models import Tercero, TipoContrato, Empresa
 from EVA.General.modelmanagers import ManagerGeneral
 from Proyectos.models import Contrato
 
@@ -15,6 +15,7 @@ class ConsecutivoOficio(models.Model):
     destinatario = models.CharField(max_length=100, verbose_name='Destinatario', null=False, blank=False)
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Usuario', null=False, blank=False)
     codigo = models.CharField(max_length=50, verbose_name='Código', null=False, blank=False)
+    empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa', blank=False, null=False)
 
     def __str__(self):
         return self.codigo
@@ -49,6 +50,7 @@ class ConsecutivoContrato(models.Model):
     fecha_final = models.DateTimeField(verbose_name='Fecha Final', null=True, blank=True)
     codigo = models.CharField(max_length=50, verbose_name='Código', null=False, blank=False)
     fecha_crea = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False, blank=False)
+    empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa', null=False, blank=False)
 
     def __str__(self):
         return self.codigo

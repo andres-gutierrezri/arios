@@ -15,11 +15,12 @@ from TalentoHumano.models import Colaborador
 class ConsecutivoOficiosView(AbstractEvaLoggedView):
     def get(self, request, id):
         if id == 0:
-            consecutivos = ConsecutivoOficio.objects.all()
+            consecutivos = ConsecutivoOficio.objects.filter(empresa_id=get_id_empresa_global(request))
             colaborador = Colaborador.objects.values('usuario_id', 'proceso__sigla')
         else:
             colaborador = Colaborador.objects.filter(usuario=request.user).values('usuario_id', 'proceso__sigla')
-            consecutivos = ConsecutivoOficio.objects.filter(usuario_id=request.user.id)
+            consecutivos = ConsecutivoOficio.objects.filter(usuario_id=request.user.id,
+                                                            empresa_id=get_id_empresa_global(request))
 
         opciones_filtro = [{'campo_valor': 0, 'campo_texto': 'Todos'},
                            {'campo_valor': 1, 'campo_texto': 'Mis consecutivos'}]
@@ -34,7 +35,9 @@ class ConsecutivoOficiosView(AbstractEvaLoggedView):
 
 class ConsecutivoOficiosCrearView(AbstractEvaLoggedView):
     def get(self, request):
-        contratos = Contrato.objects.values('id', 'numero_contrato', 'cliente__nombre')
+        contratos = Contrato.objects\
+            .filter(empresa_id=get_id_empresa_global(request))\
+            .values('id', 'numero_contrato', 'cliente__nombre')
         lista_contratos = []
         for contrato in contratos:
             lista_contratos.append({'campo_valor': contrato['id'], 'campo_texto': '{0} - {1}'
@@ -47,6 +50,7 @@ class ConsecutivoOficiosCrearView(AbstractEvaLoggedView):
     def post(self, request):
         consecutivo = ConsecutivoOficio.from_dictionary(request.POST)
         consecutivo.usuario = request.user
+        consecutivo.empresa_id = get_id_empresa_global(request)
         consecutivo.consecutivo = ConsecutivoDocumento\
             .get_consecutivo_por_anho(tipo_documento_id=TipoDocumento.OFICIOS,
                                       empresa_id=get_id_empresa_global(request))

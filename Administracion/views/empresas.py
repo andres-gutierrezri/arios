@@ -13,6 +13,7 @@ from django.shortcuts import render, redirect
 from Administracion.models import Empresa
 from Notificaciones.models.models import EventoDesencadenador
 from Notificaciones.views.views import crear_notificacion_por_evento
+from TalentoHumano.models import Colaborador
 
 
 class EmpresaView(AbstractEvaLoggedView):
@@ -125,7 +126,7 @@ def datos_xa_render(opcion: str, empresa: Empresa = None) -> dict:
 class SubempresaView(AbstractEvaLoggedView):
     def get(self, request):
         subempresas = Empresa.objects.filter(subempresa=True, empresa_ppal_id=get_id_empresa_global(request))
-        empresa_actual = Empresa.objects.get(colaborador__usuario=request.user)
+        empresa_actual = Colaborador.objects.get(usuario_id=request.user).empresa_id
         return render(request, 'Administracion/Subempresas/index.html', {'subempresas': subempresas,
                                                                          'fecha': datetime.now(),
                                                                          'empresa_actual': empresa_actual,
