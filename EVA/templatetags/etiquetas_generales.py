@@ -86,15 +86,15 @@ def input_number_tag(nombre, texto_label, **kwargs):
 @register.inclusion_tag('EVA/_general_tags/_input_general_tag.html')
 def input_currency_tag(nombre, texto_label, **kwargs):
 
-    kwargs['data-inputmask'] = "'alias': 'currency'"
+    kwargs['data-inputmask'] = "'alias': 'currency'" + extraer_min_max(**kwargs)
     return input_text_tag(nombre, texto_label, **kwargs)
 
 
 @register.inclusion_tag('EVA/_general_tags/_input_general_tag.html')
 def input_decimal_tag(nombre, texto_label, **kwargs):
 
-    kwargs['data-inputmask'] = "'alias': 'numeric', 'groupSeparator': ':', 'max':1000.50, 'digitsOptional':false," \
-                               "'digits': 2, 'autoGroup':true, 'placeholder': '0'"
+    kwargs['data-inputmask'] = "'alias': 'numeric', 'groupSeparator': ',', 'digitsOptional':false," \
+                               "'digits': 2, 'autoGroup':true, 'placeholder': '0'" + extraer_min_max(**kwargs)
     return input_text_tag(nombre, texto_label, **kwargs)
 
 
@@ -255,4 +255,14 @@ def propiedades_to_str(propiedades):
     for llave in propiedades:
         ustr += u' {0}="{1}"'.format(llave, propiedades[llave])
     return mark_safe(ustr)
+
+
+def extraer_min_max(**kwargs) -> str:
+    max_min = ''
+    if 'min' in kwargs:
+        max_min += f", 'min':{kwargs.pop('min')}"
+    if 'max' in kwargs:
+        max_min += f", 'max':{kwargs.pop('max')}"
+    return max_min
+
 # endregion
