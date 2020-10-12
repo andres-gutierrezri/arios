@@ -85,16 +85,29 @@ def input_number_tag(nombre, texto_label, **kwargs):
 
 @register.inclusion_tag('EVA/_general_tags/_input_general_tag.html')
 def input_currency_tag(nombre, texto_label, **kwargs):
-
-    kwargs['data-inputmask'] = "'alias': 'currency'" + extraer_min_max(**kwargs)
-    return input_text_tag(nombre, texto_label, **kwargs)
+    return input_with_format_tag('evaCurrency', nombre, texto_label, **kwargs)
 
 
 @register.inclusion_tag('EVA/_general_tags/_input_general_tag.html')
-def input_decimal_tag(nombre, texto_label, **kwargs):
+def input_number_format_tag(nombre, texto_label, **kwargs):
+    return input_with_format_tag('evaNumeric', nombre, texto_label, **kwargs)
 
-    kwargs['data-inputmask'] = "'alias': 'numeric', 'groupSeparator': ',', 'digitsOptional':false," \
-                               "'digits': 2, 'autoGroup':true, 'placeholder': '0'" + extraer_min_max(**kwargs)
+
+@register.inclusion_tag('EVA/_general_tags/_input_general_tag.html')
+def input_with_format_tag(alias, nombre, texto_label, **kwargs):
+    prop_decimales = ''
+    if not kwargs.pop('decimales', True):
+        prop_decimales = ", 'digitsOptional': true, 'digits': 0"
+
+    remove_mask_onsubmit = ''
+    if kwargs.pop('removeMaskOnSubmit', False):
+        remove_mask_onsubmit = ", 'removeMaskOnSubmit': true"
+
+    kwargs['data-inputmask'] = f"'alias': '{alias}'{prop_decimales}{remove_mask_onsubmit}"
+    kwargs['class'] = 'form-control inputmask'
+    if 'mensaje_validacion' not in kwargs:
+        kwargs['mensaje_validacion'] = 'Debe ser mayor a 0'
+
     return input_text_tag(nombre, texto_label, **kwargs)
 
 
@@ -153,6 +166,15 @@ def input_select_radio_tag(nombre, texto_label, opciones, **kwargs):
     if 'class' not in kwargs:
         kwargs['class'] = 'custom-control-input form-control'
 
+    return arma_input_general_tag(nombre, **kwargs)
+
+
+@register.inclusion_tag('EVA/_general_tags/_input_general_tag.html')
+def input_hidden_tag(nombre, **kwargs):
+
+    kwargs.pop('texto_label', None)
+    kwargs.pop('type', None)
+    kwargs['type'] = u'hidden'
     return arma_input_general_tag(nombre, **kwargs)
 
 
