@@ -129,9 +129,7 @@ $(document).ready(function () {
     configurarBotones();
     cargaImpuestosEnFactura();
     cargarBorrador();
-    $("#valor_unitario_id").inputmask();
-    $("#valor_amortizacion_id").inputmask();
-    $("#cantidad_id").inputmask();
+
 });
 
 function configurarTablaDetalle() {
@@ -192,42 +190,31 @@ function configurarTablaDetalle() {
 }
 
 function configurarFormularios() {
-    const form = $("#fitem_factura");
-    form.submit(function (event) {
-        const isValidate = form[0].checkValidity();
-        if (isValidate) {
-            event.preventDefault();
-            agregarItemFactura();
-            form[0].reset();
-            cerrarModalAgregarItem();
-            return false;
-        }
-
+    const form = $("#fitem_factura")[0];
+    agregarValidacionForm(form, function (event){
+        agregarItemFactura();
+        limpiarFormulario(form);
+        $('#impuesto_select_id').val(null).trigger('change');
+        cerrarModalAgregarItem();
+        return true;
     });
 
-    const formAmortizacion = $("#famortizacion_factura");
-    formAmortizacion.submit(function (event) {
-        const isValidate = formAmortizacion[0].checkValidity();
-        if (isValidate) {
-            event.preventDefault();
-            agregarAmortizacionFactura();
-            formAmortizacion[0].reset();
-            cerrarModalAgregarAmortizacion();
-            return false;
-        }
+    const formAmortizacion = $("#famortizacion_factura")[0];
+    agregarValidacionForm(formAmortizacion, function (event) {
+        agregarAmortizacionFactura();
+        limpiarFormulario(formAmortizacion);
+        cerrarModalAgregarAmortizacion();
+        return true;
     });
 
-    const formAIU = $("#faiu_factura");
-    formAIU.submit(function (event) {
-        const isValidate = formAIU[0].checkValidity();
-        if (isValidate) {
-            event.preventDefault();
-            agregarAIUFactura();
-            formAIU[0].reset();
-            cerrarModalAgregarAIU();
-            return false;
-        }
+    const formAIU = $("#faiu_factura")[0];
+    agregarValidacionForm(formAIU, function (event) {
+        agregarAIUFactura();
+        limpiarFormulario(formAIU);
+        cerrarModalAgregarAIU();
+        return true;
     });
+
 }
 
 function configurarBotones() {
@@ -271,7 +258,7 @@ function agregarItemFactura() {
     const tituloItem = $('#titulo_item_id').val();
     const descripcionItem = $('#descripcion_item_id').val();
     const valorUnitario = Number($('#valor_unitario_id').inputmask('unmaskedvalue'));
-    const cantidad = Number($('#cantidad_id').val());
+    const cantidad = Number($('#cantidad_id').inputmask('unmaskedvalue'));
     const impuesto_seleccionado = $('#impuesto_select_id')[0].selectedOptions[0];
     const impuesto = impuesto_seleccionado.value !== '' ? JSON.parse(impuesto_seleccionado.value) : {id:0, porcentaje:0.00};
 
@@ -536,3 +523,5 @@ function renderBorrador() {
     clienteSelect.val(factura.cliente).change();
     habilitarBotones(false, true);
 }
+
+

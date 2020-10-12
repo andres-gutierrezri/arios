@@ -1,5 +1,5 @@
 {% load eva_tags %}
-<form id="faiu_factura">
+<form id="faiu_factura" novalidate>
     <div class="modal fade"  tabindex="-1" id="agregar_aiu_modal" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
             <div class="modal-content">
@@ -16,21 +16,21 @@
                     <div class="form-group">
                         <div class="row">
                             <div class="col-12">
-                                {% input_number_tag 'porcentaje_administracion' "Administración (%):" placeholder="Ingrese % administración" required="" min="0.00" max="100.00" step="0.01" %}
+                                {% input_number_format_tag 'porcentaje_administracion' "Administración (%):" placeholder="Ingrese  administración" required="" min="0.00" max="100.00" step="0.01" %}
                             </div>
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="row">
                             <div class="col-12">
-                                {% input_number_tag 'porcentaje_imprevistos' "Imprevistos (%):" placeholder="Ingrese % imprevistos" required="" min="0.00" max="100.00" step="0.01" %}
+                                {% input_number_format_tag 'porcentaje_imprevistos' "Imprevistos (%):" placeholder="Ingrese % imprevistos" required="" min="0.00" max="100.00" step="0.01" %}
                             </div>
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="row">
                             <div class="col-12">
-                                {% input_number_tag 'porcentaje_utilidad' "Utilidad (%):" placeholder="Ingrese % utilidad" required="" min="0.00" max="100.00" step="0.01" %}
+                                {% input_number_format_tag 'porcentaje_utilidad' "Utilidad (%):" placeholder="Ingrese % utilidad" required="" min="0.00" max="100.00" step="0.01" %}
                             </div>
                         </div>
                     </div>
