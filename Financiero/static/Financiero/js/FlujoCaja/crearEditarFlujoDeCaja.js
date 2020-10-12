@@ -15,6 +15,9 @@ function abrirModalCrearEditarFlujoDeCaja(url, fecha_minima_mes, fecha_maxima_me
                 return false;
             }
             $(this).modal('show');
+
+            $('#valor_id').inputmask();
+
             agregarValidacionFormularios();
             let inputFecha = $('#fecha_movimiento_id');
             inputFecha.datepicker({
