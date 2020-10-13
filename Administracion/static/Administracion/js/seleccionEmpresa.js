@@ -37,7 +37,7 @@ function clicEmpresa(idEmpresa) {
             }
         },
         failure: function (errMsg) {
-            alert('Se presentó un error. No se pudó seleccionar la empresa.');
+            alert('Se presentó un error. No se pudo seleccionar la empresa.');
             cerrarModalEmpresa();
             location.reload();
         }

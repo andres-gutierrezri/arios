@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 
+from django.db.models import Q, Subquery
 from django.http import JsonResponse
 from django.shortcuts import redirect, render, reverse
 
@@ -11,13 +12,16 @@ from TalentoHumano.models.colaboradores import Colaborador, ColaboradorEmpresa
 
 class SeleccionEmpresaModalView(AbstractEvaLoggedView):
     def get(self, request):
-        empresas = ColaboradorEmpresa.objects.filter(colaborador__usuario=request.user)
+        empresa_colaborador = ColaboradorEmpresa.objects.filter(colaborador__usuario=request.user).values('empresa_id')
         colaborador = Colaborador.objects.get(usuario=request.user)
+        empresas = Empresa.objects.filter(Q(id=colaborador.empresa_id) | Q(id__in=Subquery(empresa_colaborador)))
+
         empresa_actual = colaborador.empresa_sesion
 
-        return render(request, 'Administracion/_common/_modal_seleccion_empresa.html', {'empresas': empresas,
-                                                                                        'colaborador': colaborador,
-                                                                                        'empresa_actual': empresa_actual})
+        return render(request, 'Administracion/_common/_modal_seleccion_empresa.html',
+                      {'empresas': empresas,
+                       'colaborador': colaborador,
+                       'empresa_actual': empresa_actual})
 
     def post(self, request):
         try:
