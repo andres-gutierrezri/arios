@@ -11,8 +11,8 @@ from TalentoHumano.models.colaboradores import ColaboradorEmpresa, Colaborador
 class AbstractEvaLoggedView(View):
     def dispatch(self, *args, **kwargs):
         if self.request.user.is_authenticated:
-            if not actualizar_empresa_sesion(self.request):
-                return redirect(reverse('administracion:iniciar-sesion'))
+            # if not actualizar_empresa_sesion(self.request):
+            #     return redirect(reverse('administracion:iniciar-sesion'))
 
             if not validar_permisos(self.request.user, self.request.resolver_match.app_name,
                                     self.request.resolver_match.url_name):
