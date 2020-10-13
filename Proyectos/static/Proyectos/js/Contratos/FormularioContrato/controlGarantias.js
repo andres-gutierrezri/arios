@@ -42,20 +42,19 @@ function agregarGarantia(valores) {
     valoresGarantias.push({'pos': contadorGarantia, 'tipo_garantia': datoTipoGarantia, 'vigencia_garantia': datoVigenciaGarantia,
         'porcentaje_asegurado': datoPorcentajeAsegurado, 'garantia_extensiva': checkActivo, 'nombre_tipo_garantia': datoNombreTipoGarantia});
 
-    divGarantias.append('<div class="form-group" id="garantia_'+ contadorGarantia +'" style="margin-bottom: 0">\n' +
-        '<div class="form-row" style="padding-bottom: 0">\n' +
-        '<div class="col-md-3">\n' +
+    divGarantias.append('<div class="form-row" id="garantia_'+ contadorGarantia +'" style="margin-bottom: 0">\n' +
+        '<div class="form-group col-md-3">\n' +
         '<label>Tipo de Garantía</label>\n' +
         '<input hidden type="text" id="valor_tipo_garantia_'+ contadorGarantia +'" value="'+ datoTipoGarantia +'">\n' +
         '<input disabled type="text" id="texto_tipo_garantia_'+ contadorGarantia +'" value="'+ datoNombreTipoGarantia +'"\n' +
         'class="form-control">\n' +
         '</div>\n' +
-        '<div class="col-md-3">\n' +
+        '<div class="form-group col-md-3">\n' +
         '<label>Porcentaje Asegurado</label>\n' +
         '<input disabled type="text" id="valor_porcentaje_asegurado_'+ contadorGarantia +'" value="'+ datoPorcentajeAsegurado +'"\n' +
         'class="form-control">\n' +
         '</div>\n' +
-        '<div class="col-md-3">\n' +
+        '<div class="form-group col-md-3">\n' +
         '<label>Vigencia (Meses)</label>\n' +
         '<input disabled type="text" id="valor_vigencia_garantia_'+ contadorGarantia +'" value="'+ datoVigenciaGarantia +'" class="form-control">\n' +
         '</div>\n' +
@@ -67,7 +66,7 @@ function agregarGarantia(valores) {
         '<a class="far fa-2x far fa-edit" href="#" onclick="editarPosGarantia('+ contadorGarantia +')" title="" data-original-title="Agregar Garantía" style=""></a>\n' +
         '<a class="far fa-2x far fa-trash-alt color-danger-900" href="#" onclick="quitarPosGarantia('+ contadorGarantia +')" title="" data-original-title="Eliminar Garantía"></a>\n' +
         '</div>' +
-        '</div><br></div>');
+        '</div>');
     contadorGarantia += 1;
 
     $('#select2-tipo_garantia_id_select_id-container').text('Seleccione un tipo de garantía');

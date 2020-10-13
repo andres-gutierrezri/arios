@@ -141,3 +141,7 @@ position: relative;
 .table-td-a-t-e td{
     text-align: end;
 }
+
+.form-group:last-child, .form-group:only-child {
+    margin-bottom: 1.5rem;
+}

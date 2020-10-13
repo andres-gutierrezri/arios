@@ -54,18 +54,18 @@ function agregarVigencia(valores) {
     sumaValoresVigencias += parseFloat(datoVigencia);
     eliminarVigencia.show();
     valoresVigencias.push({'pos': contadorVigencia, 'valor_anho': datoAnho, 'valor_vigencia': datoVigencia});
-    divVigencias.append('<div class="form-group" id="vigencia_'+ contadorVigencia +'" style="margin-bottom: 0">' +
-        '<div class="form-row"><div class="col-md-6">\n' +
-        '<label>Año de vigencia</label>\n' +
+    divVigencias.append('<div class="form-row" id="vigencia_'+ contadorVigencia +'" style="margin-bottom: 0">' +
+        '<div class="form-group col-md-6">\n' +
+        '<label>Año</label>\n' +
         '<input disabled type="text" id="valor_anho_'+ contadorVigencia +'" value="'+ datoAnho +'" class="form-control"></div>\n' +
-        '<div class="col-md-5">\n' +
-        '<label>Valor de vigencia</label>\n' +
+        '<div class="form-group col-md-5">\n' +
+        '<label>Valor</label>\n' +
         '<input disabled type="text" id="valor_vigencia_'+ contadorVigencia +'" value="'+ datoVigencia +'" class="form-control"></div>\n' +
         '<div class="col-md-1" style="padding-top:30px">\n' +
         '<a class="far fa-2x far fa-edit" href="#" onclick="editarPosVigencia('+ contadorVigencia +')" title="" data-original-title="Agregar Vigencia" style=""></a>\n' +
         '<a class="far fa-2x far fa-trash-alt color-danger-900" href="#" onclick="quitarPosVigencia('+ contadorVigencia +')" title="" data-original-title="Eliminar Vigencia"></a>\n' +
         '</div>' +
-        '</div><br></div>');
+        '</div>');
     contadorVigencia += 1;
     anho.val('');
     vigencia.val('');

@@ -42,7 +42,7 @@
                                                     <th>Residente</th>
                                                     <th>Fecha de suscripción</th>
                                                     <th>Valor</th>
-                                                    <th>Tiempo de ejecucición</th>
+                                                    <th>Plazo de ejecución (meses)</th>
                                                     <th>Tipo de contrato</th>
                                                     <th>Acción</th>
                                                 </tr>
@@ -55,7 +55,7 @@
                                                         <td>{{ contrato.anho}}</td>
                                                         <td>{{ contrato.residente.get_full_name }}</td>
                                                         <td>{{ contrato.fecha_suscripcion|date:'Y-m-d' }}</td>
-                                                        <td>{{ contrato.valor|intcomma }}</td>
+                                                        <td class="text-right">{{ contrato.valor|intcomma:False }}</td>
                                                         <td>{{ contrato.plazo_ejecucion }}</td>
                                                         <td>{{ contrato.tipo_contrato }}</td>
                                                         <td>

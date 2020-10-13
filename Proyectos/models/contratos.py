@@ -34,7 +34,7 @@ class Contrato(models.Model, ModelDjangoExtensiones):
     empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa', null=False, blank=False)
     proceso_a_cargo = models.ForeignKey(Proceso, on_delete=models.DO_NOTHING, verbose_name='Proceso a cargo',
                                         null=True, blank=True)
-    objeto_del_contrato = models.CharField(max_length=150, verbose_name='Objeto de contrato', null=False, blank=False)
+    objeto_del_contrato = models.CharField(max_length=500, verbose_name='Objeto de contrato', null=False, blank=False)
     fecha_registro_presupuestal = models.DateTimeField(verbose_name='Fecha de registro presupuestal', null=True,
                                                        blank=True)
     numero_registro_presupuestal = models.CharField(max_length=50, verbose_name='Número de registro presupuestal',
