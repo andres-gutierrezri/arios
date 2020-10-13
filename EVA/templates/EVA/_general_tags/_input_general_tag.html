@@ -7,25 +7,32 @@
     {% endif %}
 {% endif %}
 
+{% if is_fecha %}
+    <div class="input-group">
+{% endif %}
+
 {% if tipo == 'textarea' %}
     <textarea id="{{ nombre }}_id" name="{{ nombre }}" {{ propiedades }}>{{ valor }}</textarea>
 {% elif tipo == 'checkbox' %}
      <input type="{{ tipo }}"  {% if valor %}checked {% endif %}   value="True" id="{{ nombre }}_id" name="{{ nombre }}" {{ propiedades }}>
 {% else %}
-{% if tipo == 'file' %}
-    <div class="custom-file">
-{% endif %}
+    {% if tipo == 'file' %}
+        <div class="custom-file">
+    {% endif %}
+
     <input type="{{ tipo }}" id="{{ nombre }}_id" name="{{ nombre }}"  {% if is_fecha  %} value="{{ valor|date:'Y-m-d' }}" {% else %} value="{{ valor }}" {% endif %} {{ propiedades }}>
-{% if tipo == 'file' %}
-   <label class="custom-file-label" for="{{nombre}}_id">Seleccione un archivo</label>
-    </div>
-{% endif %}
+
+    {% if tipo == 'file' %}
+        <label class="custom-file-label" for="{{nombre}}_id">Seleccione un archivo</label>
+        </div>
+    {% endif %}
 {% endif %}
 {% if tipo == 'checkbox' %}
             <label for="{{ nombre }}_id" class="custom-control-label">{{ texto_label}}</label>
         </div>
     </div>
 {% endif %}
+
 {% if tipo == 'radio' %}
     <br>&nbsp;&nbsp;
     {% for opcion in opciones %}
@@ -35,6 +42,15 @@
     </div>
     {% endfor %}
 {% endif %}
+
 {% if mensaje_validacion %}
      <div class="invalid-tooltip {% if modal %}invalid-tooltip-modal{% endif %}">{{ mensaje_validacion }}</div>
+{% endif %}
+{% if is_fecha %}
+    <div class="input-group-append">
+        <span class="input-group-text fs-xl">
+            <i class="fal fa-calendar-alt"></i>
+        </span>
+    </div>
+    </div>
 {% endif %}
