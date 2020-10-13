@@ -1,39 +1,37 @@
 {% load eva_tags %}
 {% load static %}
 
-
-<div class="modal-dialog" role="document">
-    <div class="modal-content">
-        <div class="modal-header p-b-0">
-            <h4 class="modal-title">
-                {{ documento }}
-            </h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true"><i class="fal fa-times"></i></span>
-            </button>
-        </div>
-        <div class="modal-body">
-            <form action="{% url 'sgi:aprobacion-documentos-accion' documento.id %}" id="empresas-form" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+<form action="{% url 'sgi:aprobacion-documentos-accion' documento.id %}" id="empresas-form" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    {{ documento }}
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
                 {% csrf_token %}
-                <div class="form-group">
-                    <div class="m-b-10">
-                        {% input_textarea_tag 'comentario' 'Comentarios' maxlength="300" placeholder="Describa la razón por la cual va a tomar la acción" required="" modal=True  mensaje_validacion='Por favor escriba un comentario' invalido=errores.comentario %}
-                    </div>
-                    <div class="m-b-10">
-                        <div class="frame-wrap">
-                            {% input_select_radio_tag 'opcion' '¿Desea aprobar este documento?' opciones required="" modal=True mensaje_validacion='Por favor seleccione una opción' invalido=errores.comentario %}
-                        </div>
-                    </div>
-                </div>
+
+                <p class="mb-3">¿Qué desea hacer con el documento?</p>
                 <div class="form-row">
-                    <div>
-                        <button id="guardar" type="submit" class="btn btn-primary btn-block"> Confirmar </button>
-                    </div>
-                    <div style="padding-left: 15px">
-                        <button data-dismiss="modal" class="btn btn-danger btn-block">Cancelar</button>
+                    <div class="form-group col-12">
+                        {% input_select_radio_tag 'opcion' '' opciones required="" mensaje_validacion='Por favor seleccione una opción' invalido=errores.comentario %}
                     </div>
                 </div>
-            </form>
+
+                <div class="form-row">
+                    <div class="form-group col-12">
+                        {% input_textarea_tag 'comentario' 'Comentarios' maxlength="300" placeholder="Describa la razón de la aprobación o rechazo" required="" mensaje_validacion='Por favor escriba un comentario' invalido=errores.comentario %}
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-danger btn-pills">Cancelar</button>
+                <button id="guardar" type="submit" class="btn btn-primary btn-pills"> Confirmar </button>
+            </div>
         </div>
     </div>
-</div>
+</form>

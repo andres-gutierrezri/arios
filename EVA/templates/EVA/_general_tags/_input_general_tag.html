@@ -34,9 +34,8 @@
 {% endif %}
 
 {% if tipo == 'radio' %}
-    <br>&nbsp;&nbsp;
     {% for opcion in opciones %}
-    &nbsp;&nbsp;<div class="custom-control custom-radio custom-control-inline">
+    {% if not forloop.first %}&nbsp;&nbsp;{% endif %}<div class="custom-control custom-radio custom-control-inline">
         <input type="radio" class="custom-control-input" id="{{ opcion.texto }}_id" name="{{ nombre }}" value="{{ opcion.valor }}" required {% if opcion.valor == valor %}checked{% endif %}>
         <label class="custom-control-label" for="{{ opcion.texto }}_id">{{ opcion.texto }}</label>
     </div>

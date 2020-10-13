@@ -158,8 +158,8 @@ ACCION_APROBACION_DIRECTA = 4
 class AccionAprobacionDocumentosView(AbstractEvaLoggedView):
     def get(self, request, id):
         documento = Archivo.objects.get(resultadosaprobacion=id)
-        opciones = [{'texto': 'Aprobado', 'valor': EstadoArchivo.APROBADO},
-                    {'texto': 'Rechazado', 'valor': EstadoArchivo.RECHAZADO}]
+        opciones = [{'texto': 'Aprobar', 'valor': EstadoArchivo.APROBADO},
+                    {'texto': 'Rechazar', 'valor': EstadoArchivo.RECHAZADO}]
         return render(request, 'SGI/AprobacionDocumentos/accion_documento.html', {'documento': documento,
                                                                                   'opciones': opciones})
 

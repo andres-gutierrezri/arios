@@ -145,3 +145,11 @@ position: relative;
 .form-group:last-child, .form-group:only-child {
     margin-bottom: 1.5rem;
 }
+
+.contenedor-con-borde{
+    border-color: #e0e0e0;
+    border-width: 1px;
+    border-style: solid;
+    padding: 10px;
+    border-radius: 4px;
+}

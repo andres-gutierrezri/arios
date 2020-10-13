@@ -1,55 +1,65 @@
 {% load eva_tags %}
 {% load static %}
 
-
-<div class="modal-dialog" role="document">
-    <div class="modal-content">
-        <div class="modal-header p-b-0">
-            <h4 class="modal-title">
-                Cargar archivo al documento {{ documento }}
-            </h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true"><i class="fal fa-times"></i></span>
-            </button>
-        </div>
-        <div class="modal-body">
-            <form action="{% url 'sgi:documentos-cargar' proceso.id  grupo_documento.id documento.id %}" id="empresas-form" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+<form action="{% url 'sgi:documentos-cargar' proceso.id  grupo_documento.id documento.id %}" id="empresas-form" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header p-b-0">
+                <h4 class="modal-title">
+                    Cargar archivo al documento {{ documento }}
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
                 {% csrf_token %}
-                <div class="form-group">
-                    <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons" style="float: right">
-                        <label class="btn btn-default waves-effect waves-themed active" onclick="cambioCheck('archivo')">
-                            <input type="radio" name="tipo_archivo" id="radio_archivo" checked="" value="archivo"> Archivo
-                        </label>
-                        <label class="btn btn-default waves-effect waves-themed" onclick="cambioCheck('enlace')">
-                            <input type="radio" name="tipo_archivo" id="radio_enlace" value="enlace"> Enlace
-                        </label>
-                    </div>
-                    <br>
-                    <div class="m-b-10 div_archivo">
-                        {% input_file_tag 'archivo' 'Archivo' placeholder="Seleccione un archivo" required="" modal=True invalido=errores.logo accept=".docx, .pptx, .xlsx, .xlsm, .pdf, .dwg" mensaje_validacion='Por favor seleccione un archivo'%}
-                    </div>
-                    <div class="m-b-10 div_enlace" style="display:none;">
-                        {% input_text_tag 'enlace' 'Enlace' placeholder="Ingrese un enlace" maxlength="300" modal=True value=documento.enlace mensaje_validacion='Por favor ingrese un enlace' invalido=errores.enlace %}
-                    </div>
-                    <div class="m-b-10">
-                        {% input_date_tag 'fecha_documento' 'Fecha del Documento' placeholder="Seleccione una fecha"   required="" modal=True value=archivo.fecha_documento autocomplete="off"  mensaje_validacion='Por favor seleccione una fecha.' invalido=errores.fecha_documento %}
-                    </div>
-                    <div class="m-b-10">
-                        {% input_number_tag 'version' 'Versión' placeholder="Ingrese la versión del documento"  required="" modal=True min=version max="9999.9" step="0.1" value=version mensaje_validacion='Por favor digite una version mayor a la anterior.' invalido=errores.version %}
-                    </div>
-                    <div class="m-b-10">
-                        {% input_textarea_tag 'notas' 'Notas' type="textarea" placeholder="Digite una nota o los cambios realizados al documento."  maxlength="500" required="" modal=True value=archivo.notas mensaje_validacion='Por favor ingrese una nota' invalido=errores.notas %}
-                    </div>
-                </div>
                 <div class="form-row">
-                    <div >
-                        <button id="guardar" type="submit" class="btn btn-primary btn-block"> Cargar </button>
-                    </div>
-                    <div style="padding-left: 15px">
-                        <button data-dismiss="modal" class="btn btn-danger btn-block">Cancelar</button>
+                    <div class="form-group col-12">
+                        <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons" style="float: right">
+                            <label class="btn btn-default waves-effect waves-themed active" onclick="cambioCheck('archivo')">
+                                <input type="radio" name="tipo_archivo" id="radio_archivo" checked="" value="archivo"> Archivo
+                            </label>
+                            <label class="btn btn-default waves-effect waves-themed" onclick="cambioCheck('enlace')">
+                                <input type="radio" name="tipo_archivo" id="radio_enlace" value="enlace"> Enlace
+                            </label>
+                        </div>
                     </div>
                 </div>
-            </form>
+                <div class="form-row div_archivo">
+                    <div class="form-group col-12">
+                        {% input_file_tag 'archivo' 'Archivo' placeholder="Seleccione un archivo" required="" invalido=errores.logo accept=".docx, .pptx, .xlsx, .xlsm, .pdf, .dwg" mensaje_validacion='Por favor seleccione un archivo'%}
+                    </div>
+                </div>
+                <div class="form-row div_enlace" style="display:none;">
+                    <div class="form-group col-12">
+                        {% input_text_tag 'enlace' 'Enlace' placeholder="Ingrese un enlace" maxlength="300" value=documento.enlace mensaje_validacion='Por favor ingrese un enlace' invalido=errores.enlace %}
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-12">
+                        {% input_date_tag 'fecha_documento' 'Fecha del Documento' placeholder="Seleccione una fecha"   required="" value=archivo.fecha_documento autocomplete="off"  mensaje_validacion='Por favor seleccione una fecha.' invalido=errores.fecha_documento %}
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-12">
+                        {% input_number_tag 'version' 'Versión' placeholder="Ingrese la versión del documento"  required="" min=version max="9999.9" step="0.1" value=version mensaje_validacion='Por favor digite una version mayor a la anterior.' invalido=errores.version %}
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-12">
+                        {% input_textarea_tag 'notas' 'Notas' type="textarea" placeholder="Digite una nota o los cambios realizados al documento."  maxlength="500" required="" value=archivo.notas mensaje_validacion='Por favor ingrese una nota' invalido=errores.notas %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-danger btn-pills">Cancelar</button>
+                <button id="guardar" type="submit" class="btn btn-primary btn-pills"> Cargar </button>
+            </div>
         </div>
     </div>
-</div>
+</form>

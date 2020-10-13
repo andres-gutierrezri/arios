@@ -88,9 +88,9 @@ def datos_xa_render(opcion: str, sub_mov: SubTipoMovimiento = None) -> dict:
     """
     tipos_movimientos = TipoMovimiento.objects.get_xa_select_activos()
     categorias_movimientos = CategoriaMovimiento.objects.get_xa_select_activos()
-    opciones_solo_contrato_proceso = [{'valor': 0, 'texto': 'General'},
-                                      {'valor': 1, 'texto': 'Solo Contratos'},
-                                      {'valor': 2, 'texto': 'Solo Procesos'}]
+    opciones_solo_contrato_proceso = [{'valor': 0, 'texto': 'Ambos'},
+                                      {'valor': 1, 'texto': 'Contratos'},
+                                      {'valor': 2, 'texto': 'Procesos'}]
     datos = {'opcion': opcion, 'tipos_movimientos': tipos_movimientos,
              'opciones_solo_contrato_proceso': opciones_solo_contrato_proceso,
              'menu_actual': 'subtip_movimientos', 'categorias_movimientos': categorias_movimientos}
