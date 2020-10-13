@@ -46,7 +46,7 @@ $(document).ready(function() {
             contentCache: true, //ajax content
             disabledSteps: [], // Array Steps disabled
             errorSteps: [], // Highlight step with errors
-            theme: 'default', //dots, default, circles
+            theme: 'arrows', //dots, default, circles
             transitionEffect: 'slide', // Effect on navigation, none/slide/fade
             transitionSpeed: '400'
         });

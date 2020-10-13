@@ -281,21 +281,21 @@
   background: #46b8da !important; }
 
 .sw-theme-arrows > ul.step-anchor > li.active > a {
-  border-color: #5cb85c !important;
+  border-color: #886ab5 !important;
   color: #fff !important;
-  background: #5cb85c !important; }
+  background: #886ab5 !important; }
 
 .sw-theme-arrows > ul.step-anchor > li.active > a:after {
-  border-left: 30px solid #5cb85c !important; }
+  border-left: 30px solid #886ab5 !important; }
 
 .sw-theme-arrows > ul.step-anchor > li.done > a {
-  border-color: #b1dfbb !important;
-  /*  #5cb85c */
+  border-color: #beaed7 !important;
+  /*  #886ab5 */
   color: #fff !important;
-  background: #b1dfbb !important; }
+  background: #beaed7 !important; }
 
 .sw-theme-arrows > ul.step-anchor > li.done > a:after {
-  border-left: 30px solid #b1dfbb;
+  border-left: 30px solid #beaed7;
   /* c3e6cb */ }
 
 .sw-theme-arrows > ul.step-anchor > li.danger > a {
@@ -327,7 +327,7 @@
 /* Loader Custom Style */
 .sw-theme-arrows::before {
   border: 10px solid #f3f3f3;
-  border-top: 10px solid #5cb85c; }
+  border-top: 10px solid #886ab5; }
 
 /*!
  * SmartWizard v4.3.x
