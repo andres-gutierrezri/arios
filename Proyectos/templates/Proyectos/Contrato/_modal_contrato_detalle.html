@@ -64,6 +64,43 @@
                             </div>
                         </div>
                     </div>
+                    <div class="card mb-g">
+                        <div class="row row-grid no-gutters">
+                            <div class="col-12">
+                                <div class="p-3">
+                                    <h2 class="mb-0 fs-xl">
+                                        {% if supervisores %}
+                                            <strong> Supervisores </strong>
+                                        {% else %}
+                                            <strong> Interventores </strong>
+                                        {% endif %}
+                                    </h2>
+                                </div>
+                            </div>
+                            <div class="p-3">
+                                <h5>
+                                    {% if supervisores %}
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Supervisores: </b>
+                                        {% for sup in supervisores %}
+                                            <br>
+                                            - {{ sup.tercero }}
+                                        {% endfor %}
+                                    </small>
+                                    {% endif %}
+                                    {% if interventores %}
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Interventores: </b>
+                                        {% for int in interventores %}
+                                            <br>
+                                            - {{ int.tercero }}
+                                        {% endfor %}
+                                    </small>
+                                    {% endif %}
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="col-lg-6">
                     <div class="card mb-g">
@@ -124,47 +161,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="card mb-g">
-                        <div class="row row-grid no-gutters">
-                            <div class="col-12">
-                                <div class="p-3">
-                                    <h2 class="mb-0 fs-xl">
-                                        {% if supervisores %}
-                                            <strong> Supervisores </strong>
-                                        {% else %}
-                                            <strong> Interventores </strong>
-                                        {% endif %}
-                                    </h2>
-                                </div>
-                            </div>
-                            <div class="p-3">
-                                <h5>
-                                    {% if supervisores %}
-                                    <small class="mt-0 mb-3 text-muted">
-                                        <b>Supervisores: </b>
-                                        {% for sup in supervisores %}
-                                            <br>
-                                            - {{ sup.tercero }}
-                                        {% endfor %}
-                                    </small>
-                                    {% endif %}
-                                    {% if interventores %}
-                                    <small class="mt-0 mb-3 text-muted">
-                                        <b>Interventores: </b>
-                                        {% for int in interventores %}
-                                            <br>
-                                            - {{ int.tercero }}
-                                        {% endfor %}
-                                    </small>
-                                    {% endif %}
-                                </h5>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6">
                     <div class="card mb-g">
                         <div class="row row-grid no-gutters">
                             <div class="col-12">
