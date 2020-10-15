@@ -87,7 +87,7 @@
                                                             <td>{{ movimiento.fecha_crea|date:'Y-m-d' }}</td>
                                                             <td>{{ movimiento.fecha_modifica|date:'Y-m-d' }}</td>
                                                             {% if perms.TalentoHumano.can_access_usuarioespecial or perms.TalentoHumano.view_flujos_de_caja %}
-                                                                <td><span class="badge {% if movimiento.estado_id == ELIMINADO %} badge-danger {% else %} badge-primary {% endif %} fw-300 ml-auto">{{ movimiento.estado }}</span></td>
+                                                                <td><span class="badge {% if movimiento.estado_id == ELIMINADO %} badge-danger {% elif movimiento.estado_id == EDITADO %} bg-primary-900 {% else %} badge-primary {% endif %} fw-300 ml-auto">{{ movimiento.estado }}</span></td>
                                                             {% endif %}
                                                             {% if perms.Financiero.change_flujocajadetalle or perms.Financiero.delete_flujocajadetalle or perms.TalentoHumano.view_flujos_de_caja %}
                                                                 <td>
