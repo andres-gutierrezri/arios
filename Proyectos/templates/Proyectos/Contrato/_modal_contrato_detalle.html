@@ -46,7 +46,7 @@
                                         <b>Tipo de Contrato: </b>{{ contrato.tipo_contrato }}
                                     </small>
                                     <small class="mt-0 mb-3 text-muted">
-                                        <b>Localización de Obras: </b>
+                                        <b>Localización de los Trabajos: </b>
                                         {% for mun in municipios %}
                                             <br>{{ mun.municipio.departamento.pais }} - {{ mun.municipio.departamento|title }} - {{ mun.municipio|title }}
                                         {% endfor %}
@@ -89,15 +89,21 @@
                                     <small class="mt-0 mb-3 text-muted">
                                         <b>Valor sin IVA: </b> ${{ contrato.valor_sin_iva|intcomma }}
                                     </small>
+                                    {% if contrato.porcentaje_a %}
                                     <small class="mt-0 mb-3 text-muted">
-                                        <b>Porcentaje de Administración: </b>{% if contrato.porcentaje_a %}{{ contrato.porcentaje_a }}%{% else %}N/A{% endif %}
+                                        <b>Porcentaje de Administración: </b>{{ contrato.porcentaje_a }}%
                                     </small>
+                                    {% endif %}
+                                    {% if contrato.porcentaje_a %}
                                     <small class="mt-0 mb-3 text-muted">
-                                        <b>Porcentaje de Imprevistos: </b>{% if contrato.porcentaje_i %}{{ contrato.porcentaje_a }}%{% else %}N/A{% endif %}
+                                        <b>Porcentaje de Imprevistos: </b>{{ contrato.porcentaje_a }}%
                                     </small>
+                                    {% endif %}
+                                    {% if contrato.porcentaje_a %}
                                     <small class="mt-0 mb-3 text-muted">
-                                        <b>Porcentaje de Utilidad: </b>{% if contrato.porcentaje_u %}{{ contrato.porcentaje_a }}%{% else %}N/A{% endif %}
+                                        <b>Porcentaje de Utilidad: </b>{{ contrato.porcentaje_a }}%
                                     </small>
+                                    {% endif %}
                                     <small class="mt-0 mb-3 text-muted">
                                         <b>Forma de Pago: </b>
                                         {% if forma_pago.anticipo %}<br>- <b>Anticipo: </b>{{ forma_pago.anticipo }}%{% endif %}
