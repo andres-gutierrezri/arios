@@ -1,6 +1,9 @@
 
 'use strict';
-let selectPorcentajeValor = $('#porcentaje_valor_id_select_id');
+let aplicaPorcentajeValor = $('#aplica_porcentaje_valor');
+let selectPorcentajeValor = $('#porcentaje_valor_id');
+let radioValor = $('#Valor_id');
+let radioPorcentaje = $('#Porcentaje_id');
 let selectFormaDePago = $('#forma_de_pago_id_select_id');
 
 let divFormasDePago = $('#div_formas_pago');
@@ -15,6 +18,20 @@ $(document).ready(function () {
     cambiosPorcentajeValor(selectPorcentajeValor.val());
     combinacionesFormasDePago(selectFormaDePago.val());
 });
+
+radioValor.change(function () {
+    cambiosPorcentajeValor(this.value);
+    selectPorcentajeValor.val(this.value);
+    sumarCombinacionFormaDePago(this.value)
+});
+
+
+radioPorcentaje.change(function () {
+    cambiosPorcentajeValor(this.value);
+    selectPorcentajeValor.val(this.value);
+    sumarCombinacionFormaDePago(this.value)
+});
+
 
 selectPorcentajeValor.change(function () {
     cambiosPorcentajeValor(this.value);
@@ -149,6 +166,7 @@ function combinacionesFormasDePago(valor) {
             divActasParciales.addClass('col-md-4');
             divLiquidacion.removeClass('col-md-6');
             divLiquidacion.addClass('col-md-4');
+            aplicaPorcentajeValor.show();
         }else if (valor === '2'){
             divAnticipo.show();
             divActasParciales.hide();
@@ -164,6 +182,7 @@ function combinacionesFormasDePago(valor) {
             divAnticipo.addClass('col-md-6');
             divLiquidacion.removeClass('col-md-4');
             divLiquidacion.addClass('col-md-6');
+            aplicaPorcentajeValor.show();
         }else if (valor === '3'){
             divAnticipo.hide();
             divActasParciales.show();
@@ -179,6 +198,7 @@ function combinacionesFormasDePago(valor) {
             divActasParciales.addClass('col-md-6');
             divLiquidacion.removeClass('col-md-4');
             divLiquidacion.addClass('col-md-6');
+            aplicaPorcentajeValor.show();
         }else{
             divAnticipo.show();
             divActasParciales.show();
@@ -187,5 +207,6 @@ function combinacionesFormasDePago(valor) {
             inputActasParciales.removeAttr('required', true);
             inputLiquidacion.removeAttr('required', true);
             divFormasDePago.hide();
+            aplicaPorcentajeValor.hide();
         }
 }

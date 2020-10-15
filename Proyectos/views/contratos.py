@@ -149,7 +149,8 @@ def datos_xa_render(request, opcion: str, contrato: Contrato = None) -> dict:
         {'campo_valor': 2, 'campo_texto': 'Anticipo – Liquidación'},
         {'campo_valor': 3, 'campo_texto': 'Actas Parciales – Liquidación'}
         ]
-    porcentaje_valor = [{'campo_valor': 1, 'campo_texto': 'Valor'}]
+    porcentaje_valor = [{'valor': 0, 'texto': 'Porcentaje'},
+                        {'valor': 1, 'texto': 'Valor'}]
     origen_recursos = [{'campo_valor': 1, 'campo_texto': 'Otro Origen'}]
     supervisor_interventor = [{'campo_valor': 1, 'campo_texto': 'Interventor'}]
     terceros = Tercero.objects.filter(estado=True)
@@ -320,6 +321,8 @@ def datos_xa_render(request, opcion: str, contrato: Contrato = None) -> dict:
                  'nombre_departamento': municipios_formulario.first().departamento.nombre,
                  'municipio': lista_municipios})
             datos['lista_id_selecciones'] = lista_id_selecciones
+    else:
+        datos['formas_pago'] = {'aplica_porcentaje': 0}
     return datos
 
 
@@ -361,7 +364,7 @@ def obtener_datos_contrato(request):
     vigencia_garantia = request.POST.get('vigencia', '')
     garantia_extensiva = request.POST.get('garantia_extensiva', '')
     datos_garantias = request.POST.get('datos_garantias', '')
-    aplica_porcentaje = request.POST.get('porcentaje_valor_id', '')
+    aplica_porcentaje = request.POST.get('porcentaje_valor', '')
     supervisor_interventor = request.POST.get('supervisor_interventor_id', '')
 
     if not anticipo:

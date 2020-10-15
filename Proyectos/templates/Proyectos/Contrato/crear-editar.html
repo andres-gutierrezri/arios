@@ -155,7 +155,12 @@
                                                                     {% select_tag formas_de_pago 'forma_de_pago_id' 'Contraentrega y Satisfacción' primer_valor=True texto_label="Forma de Pago" required="" value=formas_pago.forma_pago  mensaje_validacion='Por favor seleccione una forma de pago' invalido=errores.forma_de_pago %}
                                                                 </div>
                                                                 <div class="form-group col-md-6">
-                                                                    {% select_tag porcentaje_valor 'porcentaje_valor_id' 'Porcentaje' primer_valor=True texto_label="Porcentaje/Valor" required="" value=formas_pago.aplica_porcentaje  mensaje_validacion='Por favor seleccione una opción' invalido=errores.porcentaje_valor %}
+                                                                    <p class="mb-0">Aplica:</p>
+                                                                    <div class="contenedor-con-borde">
+                                                                        <div class="form-row">
+                                                                            {% input_select_radio_tag 'porcentaje_valor' '' opciones=porcentaje_valor value=formas_pago.aplica_porcentaje required="" mensaje_validacion='Por favor seleccione una opción' %}
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                             <div class="form-row" id="div_formas_pago">
