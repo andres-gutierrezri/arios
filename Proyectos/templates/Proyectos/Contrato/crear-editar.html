@@ -176,7 +176,12 @@
                                                             </div>
                                                             <div class="form-row">
                                                                 <div class="form-group col-md-6">
-                                                                    {% select_tag origen_recursos 'origen_recurso_id' 'Recursos Propios' primer_valor=True texto_label="Origen de los Recursos" required="" value=select_origen_recursos  mensaje_validacion='Por favor seleccione una opción.' invalido=errores.origen_recurso_id %}
+                                                                    <p class="mb-0">Origen de los Recursos:</p>
+                                                                    <div class="contenedor-con-borde">
+                                                                        <div class="form-row">
+                                                                            {% input_select_radio_tag 'origen_recurso_select' '' opciones=origen_recursos value=select_origen_recursos required="" mensaje_validacion='Por favor seleccione una opción' %}
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
                                                                 <div class="form-group col-md-6" id="div_origen_recurso">
                                                                     {% input_text_tag 'origen_recurso' 'Origen de los Recursos' placeholder="Describa el origen de los recursos"  maxlength="150" required="" value=origen_de_recursos mensaje_validacion='Por favor describa el origen de los recursos.' invalido=errores.origen_recurso %}

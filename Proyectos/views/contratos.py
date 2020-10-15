@@ -151,7 +151,8 @@ def datos_xa_render(request, opcion: str, contrato: Contrato = None) -> dict:
         ]
     porcentaje_valor = [{'valor': 0, 'texto': 'Porcentaje'},
                         {'valor': 1, 'texto': 'Valor'}]
-    origen_recursos = [{'campo_valor': 1, 'campo_texto': 'Otro Origen'}]
+    origen_recursos = [{'valor': 0, 'texto': 'Propios'},
+                       {'valor': 1, 'texto': 'Otro'}]
     supervisor_interventor = [{'valor': 0, 'texto': 'Supervisor'},
                               {'valor': 1, 'texto': 'Interventor'}]
     terceros = Tercero.objects.filter(estado=True)
@@ -325,6 +326,8 @@ def datos_xa_render(request, opcion: str, contrato: Contrato = None) -> dict:
     else:
         datos['formas_pago'] = {'aplica_porcentaje': 0}
         datos['seleccion_supervisor_interventor'] = 0
+        datos['select_origen_recursos'] = PROPIOS
+        datos['origen_de_recursos'] = ''
     return datos
 
 
