@@ -55,7 +55,10 @@ function agregarVigencia(valores) {
     }
     sumaValoresVigencias += Number(vigencia.inputmask('unmaskedvalue'));
     eliminarVigencia.show();
-    valoresVigencias.push({'pos': contadorVigencia, 'valor_anho': datoAnho, 'valor_vigencia': valorDatoVigencia});
+    valoresVigencias.push({'pos': contadorVigencia, 'valor_anho': datoAnho, 'valor_vigencia': Number(valorDatoVigencia)});
+    if (datoVigencia.indexOf('$') === -1) {
+        datoVigencia = numToCurrencyStr(Number(datoVigencia)).replace('COP', '$')
+    }
     divVigencias.append('<div class="form-row" id="vigencia_'+ contadorVigencia +'" style="margin-bottom: 0">' +
         '<div class="form-group col-md-6">\n' +
         '<label>Año</label>\n' +
