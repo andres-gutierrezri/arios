@@ -79,7 +79,10 @@ class ContratoEditarView(AbstractEvaLoggedView):
         contrato = Contrato.from_dictionary(request.POST)
         contrato.id = id
         contrato = validar_datos_contrato(request, contrato)
-
+        if not contrato.tipo_contrato.porcentaje_aiu:
+            contrato.porcentaje_a = None
+            contrato.porcentaje_i = None
+            contrato.porcentaje_u = None
         try:
             contrato.full_clean(validate_unique=False)
         except ValidationError as errores:
