@@ -8,11 +8,13 @@
 }
 
 .was-validated .form-control:invalid, .form-control.is-invalid {
+    padding-right: 14px;
     border-color:#ccc;
     background-image: none;
 }
 
 .was-validated .form-control:valid, .form-control.is-valid {
+    padding-right: 14px;
     border-color:#ccc;
     background-image: none;
 }
