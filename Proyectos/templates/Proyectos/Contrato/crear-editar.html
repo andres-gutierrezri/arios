@@ -101,16 +101,19 @@
                                                                     {% input_textarea_tag 'objeto_del_contrato' 'Objeto del Contrato' placeholder="Ingrese el objeto del contrato"  maxlength="500" required="" value=contrato.objeto_del_contrato mensaje_validacion='Por favor ingrese el objeto del contrato.' invalido=errores.objeto_del_contrato %}
                                                                 </div>
                                                             </div>
-                                                            <div class="form-row">
-                                                                <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                                                                    {% select_tag paises 'pais_id' 'Seleccione un país' texto_label="País" required="" value=contrato.pais_id  mensaje_validacion='Por favor seleccione un país' invalido=errores.pais %}
-                                                                </div>
-                                                                <div class="form-group col-md-4">
-                                                                    {% select_tag departamentos 'departamento_id' 'Seleccione un departamento' texto_label="Departamento" required="" value=contrato.departamento_id  mensaje_validacion='Por favor seleccione un departamento' %}
-                                                                </div>
-                                                                <input hidden id="valores_municipios" value="{{ lista_id_selecciones }}">
-                                                                <div class="form-group col-md-4">
-                                                                    {% select_multiple_tag municipios 'municipio_id[]' 'municipio_id' 'Seleccione un municipio' texto_label="Municipio" required="" value="" mensaje_validacion='Por favor seleccione un municipio' multiple='multiple' %}
+                                                            <div class="contenedor-con-borde" style="padding-bottom: 10px">
+                                                                <h4>Localización de los Trabajos</h4>
+                                                                <div class="form-row">
+                                                                    <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                                                        {% select_tag paises 'pais_id' 'Seleccione un país' texto_label="País" required="" value=contrato.pais_id  mensaje_validacion='Por favor seleccione un país' invalido=errores.pais %}
+                                                                    </div>
+                                                                    <div class="form-group col-md-4">
+                                                                        {% select_tag departamentos 'departamento_id' 'Seleccione un departamento' texto_label="Departamento" required="" value=contrato.departamento_id  mensaje_validacion='Por favor seleccione un departamento' %}
+                                                                    </div>
+                                                                    <input hidden id="valores_municipios" value="{{ lista_id_selecciones }}">
+                                                                    <div class="form-group col-md-4">
+                                                                        {% select_multiple_tag municipios 'municipio_id[]' 'municipio_id' 'Seleccione un municipio' texto_label="Municipio" required="" value="" mensaje_validacion='Por favor seleccione un municipio' multiple='multiple' %}
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
