@@ -37,9 +37,11 @@ $(document).ready(function () {
 function agregarVigencia(valores) {
     let datoAnho = anho.val();
     let datoVigencia = vigencia.val();
+    let valorDatoVigencia = Number(vigencia.inputmask('unmaskedvalue'));
     if (valores){
         datoAnho = valores.valor_anho;
         datoVigencia = valores.valor_vigencia;
+        valorDatoVigencia = valores.valor_vigencia
     }
     if (datoVigencia === '' || datoAnho === ''){
         $('.sw-btn-next').click();
@@ -53,7 +55,7 @@ function agregarVigencia(valores) {
     }
     sumaValoresVigencias += Number(vigencia.inputmask('unmaskedvalue'));
     eliminarVigencia.show();
-    valoresVigencias.push({'pos': contadorVigencia, 'valor_anho': datoAnho, 'valor_vigencia': Number(vigencia.inputmask('unmaskedvalue'))});
+    valoresVigencias.push({'pos': contadorVigencia, 'valor_anho': datoAnho, 'valor_vigencia': valorDatoVigencia});
     divVigencias.append('<div class="form-row" id="vigencia_'+ contadorVigencia +'" style="margin-bottom: 0">' +
         '<div class="form-group col-md-6">\n' +
         '<label>Año</label>\n' +
