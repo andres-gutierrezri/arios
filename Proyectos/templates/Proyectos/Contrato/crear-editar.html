@@ -155,19 +155,17 @@
                                                                     {% select_tag porcentaje_valor 'porcentaje_valor_id' 'Porcentaje' primer_valor=True texto_label="Porcentaje/Valor" required="" value=formas_pago.aplica_porcentaje  mensaje_validacion='Por favor seleccione una opción' invalido=errores.porcentaje_valor %}
                                                                 </div>
                                                             </div>
-
                                                             <div class="form-row" id="div_formas_pago">
                                                                 <div class="form-group col-md-4" id="div_anticipo">
-                                                                    {% input_number_tag 'anticipo' 'Anticipo' min='0' max="100" step="0.01" onInput="validarLongitud(5,this)" value=formas_pago.anticipo mensaje_validacion='Por favor ingrese el porcentaje' invalido=errores.anticipo %}
+                                                                    {% input_currency_tag 'anticipo' 'Anticipo' min='0' max="100" step="0.01" value=formas_pago.anticipo mensaje_validacion='Por favor ingrese el porcentaje' invalido=errores.anticipo removeMaskOnSubmit=True %}
                                                                 </div>
                                                                 <div class="form-group col-md-4" id="div_actas_parciales">
-                                                                    {% input_number_tag 'actas_parciales' 'Actas Parciales' min='0' max="100" step="0.01" onInput="validarLongitud(5,this)" value=formas_pago.actas_parciales mensaje_validacion='Por favor ingrese el porcentaje' invalido=errores.actas_parciales %}
+                                                                    {% input_currency_tag 'actas_parciales' 'Actas Parciales' min='0' max="100" step="0.01" value=formas_pago.actas_parciales mensaje_validacion='Por favor ingrese el porcentaje' invalido=errores.actas_parciales removeMaskOnSubmit=True %}
                                                                 </div>
                                                                 <div class="form-group col-md-4" id="div_liquidacion">
-                                                                    {% input_number_tag 'liquidacion' 'Liquidación' min='0' max="100" step="0.01" onInput="validarLongitud(5,this)" value=formas_pago.liquidacion mensaje_validacion='Por favor ingrese el porcentaje' invalido=errores.liquidacion %}
+                                                                    {% input_currency_tag 'liquidacion' 'Liquidación' min='0' max="100" step="0.01" value=formas_pago.liquidacion mensaje_validacion='Por favor ingrese el porcentaje' invalido=errores.liquidacion removeMaskOnSubmit=True %}
                                                                 </div>
                                                             </div>
-
                                                             <div class="form-row">
                                                                 <div class="form-group col-md-6">
                                                                     {% select_tag origen_recursos 'origen_recurso_id' 'Recursos Propios' primer_valor=True texto_label="Origen de los Recursos" required="" value=select_origen_recursos  mensaje_validacion='Por favor seleccione una opción.' invalido=errores.origen_recurso_id %}
