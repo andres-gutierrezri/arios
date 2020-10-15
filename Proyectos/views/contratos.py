@@ -152,7 +152,8 @@ def datos_xa_render(request, opcion: str, contrato: Contrato = None) -> dict:
     porcentaje_valor = [{'valor': 0, 'texto': 'Porcentaje'},
                         {'valor': 1, 'texto': 'Valor'}]
     origen_recursos = [{'campo_valor': 1, 'campo_texto': 'Otro Origen'}]
-    supervisor_interventor = [{'campo_valor': 1, 'campo_texto': 'Interventor'}]
+    supervisor_interventor = [{'valor': 0, 'texto': 'Supervisor'},
+                              {'valor': 1, 'texto': 'Interventor'}]
     terceros = Tercero.objects.filter(estado=True)
     supervisores = []
     interventores = []
@@ -323,6 +324,7 @@ def datos_xa_render(request, opcion: str, contrato: Contrato = None) -> dict:
             datos['lista_id_selecciones'] = lista_id_selecciones
     else:
         datos['formas_pago'] = {'aplica_porcentaje': 0}
+        datos['seleccion_supervisor_interventor'] = 0
     return datos
 
 
@@ -365,7 +367,7 @@ def obtener_datos_contrato(request):
     garantia_extensiva = request.POST.get('garantia_extensiva', '')
     datos_garantias = request.POST.get('datos_garantias', '')
     aplica_porcentaje = request.POST.get('porcentaje_valor', '')
-    supervisor_interventor = request.POST.get('supervisor_interventor_id', '')
+    supervisor_interventor = request.POST.get('supervisor_interventor', '')
 
     if not anticipo:
         anticipo = 0

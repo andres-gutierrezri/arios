@@ -205,12 +205,14 @@
 
                                                     <div id="step-3" class="">
                                                         <div id="form-step-2" data-toggle="validator">
-                                                            <div class="form-row">
-                                                                <div class="form-group col-md-6">
-                                                                    {% select_tag supervisor_interventor 'supervisor_interventor_id' 'Supervisores' primer_valor=True texto_label="Supervisor/Interventor" required="" value=seleccion_supervisor_interventor mensaje_validacion='Por favor seleccione una opción' invalido=errores.supervisor_interventor %}
+                                                            <div class="form-group col-md-6 pl-0">
+                                                                <p class="mb-0">Aplica:</p>
+                                                                <div class="contenedor-con-borde">
+                                                                    <div class="form-row">
+                                                                        {% input_select_radio_tag 'supervisor_interventor' '' opciones=supervisor_interventor value=seleccion_supervisor_interventor required="" mensaje_validacion='Por favor seleccione una opción' %}
+                                                                    </div>
                                                                 </div>
                                                             </div>
-
                                                             <input hidden id="valores_supervisores" value="{{ selecciones_supervisores }}">
                                                             <div class="form-row" id="div_supervisores">
                                                                 <div class="form-group col-md-12">
