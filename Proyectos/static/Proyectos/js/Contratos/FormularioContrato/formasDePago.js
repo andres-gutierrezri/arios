@@ -119,13 +119,13 @@ function cambiosPorcentajeValor(valor) {
         inputLiquidacion.inputmask('remove');
         inputActasParciales.inputmask('remove');
 
-        inputAnticipo.removeAttr('data-inputmask', "'alias': 'evaCurrency', 'removeMaskOnSubmit': true");
-        inputLiquidacion.removeAttr('data-inputmask', "'alias': 'evaCurrency', 'removeMaskOnSubmit': true");
-        inputActasParciales.removeAttr('data-inputmask', "'alias': 'evaCurrency', 'removeMaskOnSubmit': true");
+        inputAnticipo.removeAttr('data-inputmask');
+        inputLiquidacion.removeAttr('data-inputmask');
+        inputActasParciales.removeAttr('data-inputmask');
 
-        inputAnticipo.inputmask({alias:'evaNumeric'});
-        inputLiquidacion.inputmask({alias:'evaNumeric'});
-        inputActasParciales.inputmask({alias:'evaNumeric'});
+        inputAnticipo.inputmask({alias:'evaNumeric', removeMaskOnSubmit:true});
+        inputLiquidacion.inputmask({alias:'evaNumeric', removeMaskOnSubmit:true});
+        inputActasParciales.inputmask({alias:'evaNumeric', removeMaskOnSubmit:true});
 
     }else{
         inputAnticipo.attr('placeholder', 'Valor');
@@ -149,9 +149,13 @@ function cambiosPorcentajeValor(valor) {
         inputAnticipo.inputmask('remove');
         inputActasParciales.inputmask('remove');
 
-        inputAnticipo.inputmask({alias:'evaCurrency'});
-        inputLiquidacion.inputmask({alias:'evaCurrency'});
-        inputActasParciales.inputmask({alias:'evaCurrency'});
+        inputAnticipo.removeAttr('data-inputmask');
+        inputLiquidacion.removeAttr('data-inputmask');
+        inputActasParciales.removeAttr('data-inputmask');
+
+        inputAnticipo.inputmask({alias:'evaCurrency', removeMaskOnSubmit:true});
+        inputLiquidacion.inputmask({alias:'evaCurrency', removeMaskOnSubmit:true});
+        inputActasParciales.inputmask({alias:'evaCurrency', removeMaskOnSubmit:true});
     }
     sumarCombinacionFormaDePago(selectFormaDePago.val())
 }
