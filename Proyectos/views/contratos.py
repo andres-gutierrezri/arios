@@ -79,7 +79,10 @@ class ContratoEditarView(AbstractEvaLoggedView):
         contrato = Contrato.from_dictionary(request.POST)
         contrato.id = id
         contrato = validar_datos_contrato(request, contrato)
-
+        if not contrato.tipo_contrato.porcentaje_aiu:
+            contrato.porcentaje_a = None
+            contrato.porcentaje_i = None
+            contrato.porcentaje_u = None
         try:
             contrato.full_clean(validate_unique=False)
         except ValidationError as errores:
@@ -149,9 +152,12 @@ def datos_xa_render(request, opcion: str, contrato: Contrato = None) -> dict:
         {'campo_valor': 2, 'campo_texto': 'Anticipo – Liquidación'},
         {'campo_valor': 3, 'campo_texto': 'Actas Parciales – Liquidación'}
         ]
-    porcentaje_valor = [{'campo_valor': 1, 'campo_texto': 'Valor'}]
-    origen_recursos = [{'campo_valor': 1, 'campo_texto': 'Otro Origen'}]
-    supervisor_interventor = [{'campo_valor': 1, 'campo_texto': 'Interventor'}]
+    porcentaje_valor = [{'valor': 0, 'texto': 'Porcentaje'},
+                        {'valor': 1, 'texto': 'Valor'}]
+    origen_recursos = [{'valor': 0, 'texto': 'Propios'},
+                       {'valor': 1, 'texto': 'Otro'}]
+    supervisor_interventor = [{'valor': 0, 'texto': 'Supervisor'},
+                              {'valor': 1, 'texto': 'Interventor'}]
     terceros = Tercero.objects.filter(estado=True)
     supervisores = []
     interventores = []
@@ -320,6 +326,11 @@ def datos_xa_render(request, opcion: str, contrato: Contrato = None) -> dict:
                  'nombre_departamento': municipios_formulario.first().departamento.nombre,
                  'municipio': lista_municipios})
             datos['lista_id_selecciones'] = lista_id_selecciones
+    else:
+        datos['formas_pago'] = {'aplica_porcentaje': 0}
+        datos['seleccion_supervisor_interventor'] = 0
+        datos['select_origen_recursos'] = PROPIOS
+        datos['origen_de_recursos'] = ''
     return datos
 
 
@@ -361,8 +372,8 @@ def obtener_datos_contrato(request):
     vigencia_garantia = request.POST.get('vigencia', '')
     garantia_extensiva = request.POST.get('garantia_extensiva', '')
     datos_garantias = request.POST.get('datos_garantias', '')
-    aplica_porcentaje = request.POST.get('porcentaje_valor_id', '')
-    supervisor_interventor = request.POST.get('supervisor_interventor_id', '')
+    aplica_porcentaje = request.POST.get('porcentaje_valor', '')
+    supervisor_interventor = request.POST.get('supervisor_interventor', '')
 
     if not anticipo:
         anticipo = 0

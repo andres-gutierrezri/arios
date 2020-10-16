@@ -3,7 +3,9 @@
 
 let divOrigenRecurso = $('#div_origen_recurso');
 let inputOrigenRecurso = $('#origen_recurso_id');
-let selectOrigenRecurso = $('#origen_recurso_id_select_id');
+let selectOrigenRecurso = $('#origen_recurso_select_id');
+let radioPropios = $('#Propios_id');
+let radioOtro = $('#Otro_id');
 
 function origenRecursos(){
     if(selectOrigenRecurso.val() === 1 || selectOrigenRecurso.val() === '1'){
@@ -61,6 +63,15 @@ inputU.change(function () {
 
 $(document).ready(function () {
     origenRecursos();
+    radioPropios.change(function () {
+        selectOrigenRecurso.val(this.value);
+        origenRecursos();
+    });
+
+    radioOtro.change(function () {
+        selectOrigenRecurso.val(this.value);
+        origenRecursos();
+    });
     selectOrigenRecurso.change(function () {
         origenRecursos();
     });

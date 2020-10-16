@@ -101,16 +101,19 @@
                                                                     {% input_textarea_tag 'objeto_del_contrato' 'Objeto del Contrato' placeholder="Ingrese el objeto del contrato"  maxlength="500" required="" value=contrato.objeto_del_contrato mensaje_validacion='Por favor ingrese el objeto del contrato.' invalido=errores.objeto_del_contrato %}
                                                                 </div>
                                                             </div>
-                                                            <div class="form-row">
-                                                                <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                                                                    {% select_tag paises 'pais_id' 'Seleccione un país' texto_label="País" required="" value=contrato.pais_id  mensaje_validacion='Por favor seleccione un país' invalido=errores.pais %}
-                                                                </div>
-                                                                <div class="form-group col-md-4">
-                                                                    {% select_tag departamentos 'departamento_id' 'Seleccione un departamento' texto_label="Departamento" required="" value=contrato.departamento_id  mensaje_validacion='Por favor seleccione un departamento' %}
-                                                                </div>
-                                                                <input hidden id="valores_municipios" value="{{ lista_id_selecciones }}">
-                                                                <div class="form-group col-md-4">
-                                                                    {% select_multiple_tag municipios 'municipio_id[]' 'municipio_id' 'Seleccione un municipio' texto_label="Municipio" required="" value="" mensaje_validacion='Por favor seleccione un municipio' multiple='multiple' %}
+                                                            <div class="contenedor-con-borde" style="padding-bottom: 10px">
+                                                                <h4>Localización de los Trabajos</h4>
+                                                                <div class="form-row">
+                                                                    <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                                                        {% select_tag paises 'pais_id' 'Seleccione un país' texto_label="País" required="" value=contrato.pais_id  mensaje_validacion='Por favor seleccione un país' invalido=errores.pais %}
+                                                                    </div>
+                                                                    <div class="form-group col-md-4">
+                                                                        {% select_tag departamentos 'departamento_id' 'Seleccione un departamento' texto_label="Departamento" required="" value=contrato.departamento_id  mensaje_validacion='Por favor seleccione un departamento' %}
+                                                                    </div>
+                                                                    <input hidden id="valores_municipios" value="{{ lista_id_selecciones }}">
+                                                                    <div class="form-group col-md-4">
+                                                                        {% select_multiple_tag municipios 'municipio_id[]' 'municipio_id' 'Seleccione un municipio' texto_label="Municipio" required="" value="" mensaje_validacion='Por favor seleccione un municipio' multiple='multiple' %}
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -151,26 +154,43 @@
                                                                 <div class="form-group col-md-6">
                                                                     {% select_tag formas_de_pago 'forma_de_pago_id' 'Contraentrega y Satisfacción' primer_valor=True texto_label="Forma de Pago" required="" value=formas_pago.forma_pago  mensaje_validacion='Por favor seleccione una forma de pago' invalido=errores.forma_de_pago %}
                                                                 </div>
-                                                                <div class="form-group col-md-6">
-                                                                    {% select_tag porcentaje_valor 'porcentaje_valor_id' 'Porcentaje' primer_valor=True texto_label="Porcentaje/Valor" required="" value=formas_pago.aplica_porcentaje  mensaje_validacion='Por favor seleccione una opción' invalido=errores.porcentaje_valor %}
+                                                                <div class="form-group col-md-6" id="aplica_porcentaje_valor">
+                                                                    <div class="form-row">
+                                                                        <div class="col-12">
+                                                                            <p>Indique como va a ingresar las cantidades</p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="form-row">
+                                                                        <div class="col-12">
+                                                                            {% input_select_radio_tag 'porcentaje_valor' '' opciones=porcentaje_valor value=formas_pago.aplica_porcentaje required="" mensaje_validacion='Por favor seleccione una opción' %}
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-
                                                             <div class="form-row" id="div_formas_pago">
                                                                 <div class="form-group col-md-4" id="div_anticipo">
-                                                                    {% input_number_tag 'anticipo' 'Anticipo' min='0' max="100" step="0.01" onInput="validarLongitud(5,this)" value=formas_pago.anticipo mensaje_validacion='Por favor ingrese el porcentaje' invalido=errores.anticipo %}
+                                                                    {% input_currency_tag 'anticipo' 'Anticipo' min='0.01' max="100" step="0.01" value=formas_pago.anticipo mensaje_validacion='Por favor ingrese el porcentaje' invalido=errores.anticipo removeMaskOnSubmit=True %}
                                                                 </div>
                                                                 <div class="form-group col-md-4" id="div_actas_parciales">
-                                                                    {% input_number_tag 'actas_parciales' 'Actas Parciales' min='0' max="100" step="0.01" onInput="validarLongitud(5,this)" value=formas_pago.actas_parciales mensaje_validacion='Por favor ingrese el porcentaje' invalido=errores.actas_parciales %}
+                                                                    {% input_currency_tag 'actas_parciales' 'Actas Parciales' min='0.01' max="100" step="0.01" value=formas_pago.actas_parciales mensaje_validacion='Por favor ingrese el porcentaje' invalido=errores.actas_parciales removeMaskOnSubmit=True %}
                                                                 </div>
                                                                 <div class="form-group col-md-4" id="div_liquidacion">
-                                                                    {% input_number_tag 'liquidacion' 'Liquidación' min='0' max="100" step="0.01" onInput="validarLongitud(5,this)" value=formas_pago.liquidacion mensaje_validacion='Por favor ingrese el porcentaje' invalido=errores.liquidacion %}
+                                                                    {% input_currency_tag 'liquidacion' 'Liquidación' min='0.01' max="100" step="0.01" value=formas_pago.liquidacion mensaje_validacion='Por favor ingrese el porcentaje' invalido=errores.liquidacion removeMaskOnSubmit=True %}
                                                                 </div>
                                                             </div>
-
                                                             <div class="form-row">
-                                                                <div class="form-group col-md-6">
-                                                                    {% select_tag origen_recursos 'origen_recurso_id' 'Recursos Propios' primer_valor=True texto_label="Origen de los Recursos" required="" value=select_origen_recursos  mensaje_validacion='Por favor seleccione una opción.' invalido=errores.origen_recurso_id %}
+                                                                <div class="form-group col-md-3">
+                                                                    <div class="form-row">
+                                                                        <div class="col-12">
+                                                                            <p>Origen de los Recursos</p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="form-row">
+                                                                        <div class="col-12">
+                                                                            {% input_select_radio_tag 'origen_recurso_select' '' opciones=origen_recursos value=select_origen_recursos required="" mensaje_validacion='Por favor seleccione una opción' %}
+                                                                        </div>
+                                                                    </div>
+
                                                                 </div>
                                                                 <div class="form-group col-md-6" id="div_origen_recurso">
                                                                     {% input_text_tag 'origen_recurso' 'Origen de los Recursos' placeholder="Describa el origen de los recursos"  maxlength="150" required="" value=origen_de_recursos mensaje_validacion='Por favor describa el origen de los recursos.' invalido=errores.origen_recurso %}
@@ -185,7 +205,7 @@
                                                                         {% input_number_tag 'anho_vigencia' 'Año' placeholder="Ingrese el año de vigencia" min='2000' max="4000" onInput="validarLongitud(4,this)" required="" value=contrato.acta_parcial mensaje_validacion='Por favor ingrese el año (Mínimo año: 2000)' %}
                                                                     </div>
                                                                     <div class="form-group col-md-5">
-                                                                        {% input_number_tag 'valor_vigencia' 'Valor' placeholder="Ingrese el valor de vigencia" min='0' max="99999999999999.99" step="0.01" onInput="validarLongitud(16,this)" required="" value=contrato.liquidacion mensaje_validacion='Por favor ingrese un valor'  %}
+                                                                        {% input_currency_tag 'valor_vigencia' "Valor" placeholder="Ingrese el valor de vigencia" required="" min="0.01" max="9999999999.99" step="0.01" removeMaskOnSubmit=True %}
                                                                     </div>
                                                                     <div class="col-md-1" style="padding-top:30px">
                                                                         <a class="far fa-2x far fa-plus-circle" id="agregar_vigencia" href="#" onclick="agregarVigencia()" title="" data-original-title="Agregar Vigencia" style=""></a>
@@ -199,12 +219,19 @@
 
                                                     <div id="step-3" class="">
                                                         <div id="form-step-2" data-toggle="validator">
-                                                            <div class="form-row">
-                                                                <div class="form-group col-md-6">
-                                                                    {% select_tag supervisor_interventor 'supervisor_interventor_id' 'Supervisores' primer_valor=True texto_label="Supervisor/Interventor" required="" value=seleccion_supervisor_interventor mensaje_validacion='Por favor seleccione una opción' invalido=errores.supervisor_interventor %}
+                                                            <div class="form-group col-md-6 pl-0">
+                                                                <div class="form-row">
+                                                                    <div class="col-md-6">
+                                                                        <p>Aplica:</p>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
+                                                                <div class="form-row">
+                                                                    <div class="col-md-6">
+                                                                        {% input_select_radio_tag 'supervisor_interventor' '' opciones=supervisor_interventor value=seleccion_supervisor_interventor required="" mensaje_validacion='Por favor seleccione una opción' %}
+                                                                    </div>
+                                                                </div>
 
+                                                            </div>
                                                             <input hidden id="valores_supervisores" value="{{ selecciones_supervisores }}">
                                                             <div class="form-row" id="div_supervisores">
                                                                 <div class="form-group col-md-12">
@@ -284,7 +311,8 @@
     <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js' %}"></script>
     <script src="{% static 'TalentoHumano/js/date_picker.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/smartwizard/smartwizard.js' %}"></script>
-    <script src="{% static 'EVA/Plantilla/js/smart-wizard/wizard.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/wizard.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/conversiones.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/inputmask/inputmask.bundle.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/inputmask.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>

@@ -84,7 +84,7 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
         proceso = Proceso.objects.get(id=proceso)
         flujo_caja_enc = FlujoCajaEncabezado.objects.filter(proceso=proceso,
                                                             proceso__empresa_id=get_id_empresa_global(request))
-        movimientos = FlujoCajaDetalle\
+        movimientos = FlujoCajaDetalle \
             .objects.filter(flujo_caja_enc__proceso=proceso, tipo_registro=tipo,
                             flujo_caja_enc__proceso__empresa_id=get_id_empresa_global(request)) \
             .annotate(fecha_corte=F('flujo_caja_enc__corteflujocaja__fecha_corte')) \
@@ -96,7 +96,7 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
         contrato = Contrato.objects.get(id=contrato)
         flujo_caja_enc = FlujoCajaEncabezado.objects.filter(contrato=contrato,
                                                             contrato__empresa_id=get_id_empresa_global(request))
-        movimientos = FlujoCajaDetalle\
+        movimientos = FlujoCajaDetalle \
             .objects.filter(flujo_caja_enc__contrato=contrato, tipo_registro=tipo,
                             flujo_caja_enc__contrato__empresa_id=get_id_empresa_global(request)) \
             .annotate(fecha_corte=F('flujo_caja_enc__corteflujocaja__fecha_corte')) \
@@ -105,7 +105,8 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
     if flujo_caja_enc:
         flujo_caja_enc = flujo_caja_enc.first()
     else:
-        flujo_caja_enc = FlujoCajaEncabezado.objects.create(fecha_crea=datetime.now(), proceso=proceso, contrato=contrato,
+        flujo_caja_enc = FlujoCajaEncabezado.objects.create(fecha_crea=datetime.now(), proceso=proceso,
+                                                            contrato=contrato,
                                                             estado_id=EstadoFlujoCaja.ALIMENTACION)
     if not tiene_permisos_de_acceso(request, contrato=contrato, proceso=proceso):
         messages.error(request, 'No tiene permisos para acceder a este flujo de caja.')
@@ -144,8 +145,26 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
             anios.append({'campo_valor': fecha_incial.year, 'campo_texto': fecha_incial.year})
 
         fecha_incial = add_months(fecha_incial, 1)
-    movimientos = movimientos.filter(fecha_movimiento__range=[obtener_fecha_inicio_de_mes(anio_seleccion, mes_seleccion),
-                                                              obtener_fecha_fin_de_mes(anio_seleccion, mes_seleccion)])
+
+    coincidencia_mes = False
+    for m in meses:
+        if m['campo_valor'] == mes_seleccion:
+            coincidencia_mes = True
+
+    if not coincidencia_mes:
+        mes_seleccion = meses[0]['campo_valor']
+
+    coincidencia_anio = False
+    for a in anios:
+        if a['campo_valor'] == anio_seleccion:
+            coincidencia_anio = True
+
+    if not coincidencia_anio:
+        anio_seleccion = anios[0]['campo_valor']
+
+    movimientos = movimientos.filter(
+        fecha_movimiento__range=[obtener_fecha_inicio_de_mes(anio_seleccion, mes_seleccion),
+                                 obtener_fecha_fin_de_mes(anio_seleccion, mes_seleccion)])
     ingresos = 0
     egresos = 0
     for movimiento in movimientos:
@@ -162,7 +181,7 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
                    'anios': anios, 'meses': meses, 'anio_seleccion': anio_seleccion, 'mes_seleccion': mes_seleccion})
 
 
-def cargar_modal_crear_editar(request,  opcion, tipo=None, contrato=None, proceso=None, movimiento=None):
+def cargar_modal_crear_editar(request, opcion, tipo=None, contrato=None, proceso=None, movimiento=None):
     if movimiento:
         flujo_detalle = FlujoCajaDetalle.objects.get(id=movimiento)
         contrato = flujo_detalle.flujo_caja_enc.contrato_id
@@ -316,13 +335,15 @@ def datos_xa_render(request, opcion: str, tipo, fecha_minima_mes, flujo_detalle:
     if flujo_detalle:
         datos['flujo_detalle'] = flujo_detalle
     return datos
+
+
 # endregion
 
 
 def tiene_permisos_de_acceso(request, contrato=None, proceso=None):
     validacion_adicional = False
     if contrato:
-        if not ColaboradorContrato.objects\
+        if not ColaboradorContrato.objects \
                 .filter(contrato_id=contrato, colaborador__usuario=request.user):
             validacion_adicional = True
     else:
@@ -416,6 +437,3 @@ def validar_fecha_accion(flujo_detalle):
     fecha_minima = generar_fecha_minima(flujo_detalle.tipo_registro)
     if flujo_detalle.fecha_movimiento.date() >= fecha_minima:
         return True
-
-
-

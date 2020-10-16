@@ -46,7 +46,7 @@
                                         <b>Tipo de Contrato: </b>{{ contrato.tipo_contrato }}
                                     </small>
                                     <small class="mt-0 mb-3 text-muted">
-                                        <b>Localización de Obras: </b>
+                                        <b>Localización de los Trabajos: </b>
                                         {% for mun in municipios %}
                                             <br>{{ mun.municipio.departamento.pais }} - {{ mun.municipio.departamento|title }} - {{ mun.municipio|title }}
                                         {% endfor %}
@@ -64,62 +64,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="card mb-g">
-                        <div class="row row-grid no-gutters">
-                            <div class="col-12">
-                                <div class="p-3">
-                                    <h2 class="mb-0 fs-xl">
-                                        <strong> Información Financiera </strong>
-                                    </h2>
-                                </div>
-                            </div>
-                            <div class="p-3">
-                                <h5>
-                                    <small class="mt-0 mb-3 text-muted">
-                                        <b>Fecha de Registro Presupuestal: </b>{{ contrato.fecha_registro_presupuestal|date:'Y-m-d' }}
-                                    </small>
-                                    <small class="mt-0 mb-3 text-muted">
-                                        <b>Número del Registro Presupuestal: </b>{{ contrato.numero_registro_presupuestal }}
-                                    </small>
-                                    <small class="mt-0 mb-3 text-muted">
-                                        <b>Valor con IVA: </b> ${{ contrato.valor_con_iva|intcomma }}
-                                    </small>
-                                    <small class="mt-0 mb-3 text-muted">
-                                        <b>Valor sin IVA: </b> ${{ contrato.valor_sin_iva|intcomma }}
-                                    </small>
-                                    <small class="mt-0 mb-3 text-muted">
-                                        <b>Porcentaje de Administración: </b>{% if contrato.porcentaje_a %}{{ contrato.porcentaje_a }}%{% else %}N/A{% endif %}
-                                    </small>
-                                    <small class="mt-0 mb-3 text-muted">
-                                        <b>Porcentaje de Imprevistos: </b>{% if contrato.porcentaje_i %}{{ contrato.porcentaje_a }}%{% else %}N/A{% endif %}
-                                    </small>
-                                    <small class="mt-0 mb-3 text-muted">
-                                        <b>Porcentaje de Utilidad: </b>{% if contrato.porcentaje_u %}{{ contrato.porcentaje_a }}%{% else %}N/A{% endif %}
-                                    </small>
-                                    <small class="mt-0 mb-3 text-muted">
-                                        <b>Forma de Pago: </b>
-                                        {% if forma_pago.anticipo %}<br>- <b>Anticipo: </b>{{ forma_pago.anticipo }}%{% endif %}
-                                        {% if forma_pago.actas_parciales %}<br>- <b>Actas Parciales: </b>{{ forma_pago.actas_parciales }}%{% endif %}
-                                        {% if forma_pago.liquidacion %}<br>- <b>Liquidación: </b>{{ forma_pago.liquidacion }}%{% endif %}
-                                        {% if forma_pago.forma_pago == 0 %}<br>- <b>Satisfacción y Contraentrega: </b> 100%{% endif %}
-                                    </small>
-                                    <small class="mt-0 mb-3 text-muted">
-                                        <b>Vigencias: </b>
-                                        {% for vig in vigencias %}
-                                            <br>Año: {{ vig.anho }} - Valor: ${{ vig.valor|intcomma }}
-                                        {% endfor %}
-                                    </small>
-                                    <small class="mt-0 mb-3 text-muted">
-                                        <b>Origen de los Recursos: </b>{{ contrato.origen_de_recursos }}
-                                    </small>
-                                </h5>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6">
                     <div class="card mb-g">
                         <div class="row row-grid no-gutters">
                             <div class="col-12">
@@ -159,6 +103,64 @@
                     </div>
                 </div>
                 <div class="col-lg-6">
+                    <div class="card mb-g">
+                        <div class="row row-grid no-gutters">
+                            <div class="col-12">
+                                <div class="p-3">
+                                    <h2 class="mb-0 fs-xl">
+                                        <strong> Información Financiera </strong>
+                                    </h2>
+                                </div>
+                            </div>
+                            <div class="p-3">
+                                <h5>
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Fecha de Registro Presupuestal: </b>{{ contrato.fecha_registro_presupuestal|date:'Y-m-d' }}
+                                    </small>
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Número del Registro Presupuestal: </b>{{ contrato.numero_registro_presupuestal }}
+                                    </small>
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Valor con IVA: </b> ${{ contrato.valor_con_iva|intcomma }}
+                                    </small>
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Valor sin IVA: </b> ${{ contrato.valor_sin_iva|intcomma }}
+                                    </small>
+                                    {% if contrato.porcentaje_a %}
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Porcentaje de Administración: </b>{{ contrato.porcentaje_a }}%
+                                    </small>
+                                    {% endif %}
+                                    {% if contrato.porcentaje_a %}
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Porcentaje de Imprevistos: </b>{{ contrato.porcentaje_i }}%
+                                    </small>
+                                    {% endif %}
+                                    {% if contrato.porcentaje_a %}
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Porcentaje de Utilidad: </b>{{ contrato.porcentaje_u }}%
+                                    </small>
+                                    {% endif %}
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Forma de Pago: </b>
+                                        {% if forma_pago.anticipo %}<br>- <b>Anticipo: </b>{{ forma_pago.anticipo }}%{% endif %}
+                                        {% if forma_pago.actas_parciales %}<br>- <b>Actas Parciales: </b>{{ forma_pago.actas_parciales }}%{% endif %}
+                                        {% if forma_pago.liquidacion %}<br>- <b>Liquidación: </b>{{ forma_pago.liquidacion }}%{% endif %}
+                                        {% if forma_pago.forma_pago == 0 %}<br>- <b>Satisfacción y Contraentrega: </b> 100%{% endif %}
+                                    </small>
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Vigencias: </b>
+                                        {% for vig in vigencias %}
+                                            <br>Año: {{ vig.anho }} - Valor: ${{ vig.valor|intcomma }}
+                                        {% endfor %}
+                                    </small>
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>Origen de los Recursos: </b>{{ contrato.origen_de_recursos }}
+                                    </small>
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
                     <div class="card mb-g">
                         <div class="row row-grid no-gutters">
                             <div class="col-12">

@@ -19,7 +19,7 @@ $(document).ready(function () {
         if (isNaN(sumaValoresVigencias)){
             sumaValoresVigencias = 0;
         }
-        if (sumaValoresVigencias + parseFloat(valorVigencia.val()) > parseFloat(valorConIVA.val())){
+        if (sumaValoresVigencias + Number(valorVigencia.inputmask('unmaskedvalue')) > Number(valorConIVA.inputmask('unmaskedvalue'))){
             valorVigencia.val('');
             valorVigencia.next('div').text('La suma de los valores no puede ser mayor al valor con IVA.');
             $('.sw-btn-next').click();
@@ -37,30 +37,35 @@ $(document).ready(function () {
 function agregarVigencia(valores) {
     let datoAnho = anho.val();
     let datoVigencia = vigencia.val();
+    let valorDatoVigencia = Number(vigencia.inputmask('unmaskedvalue'));
     if (valores){
         datoAnho = valores.valor_anho;
         datoVigencia = valores.valor_vigencia;
+        valorDatoVigencia = valores.valor_vigencia
     }
     if (datoVigencia === '' || datoAnho === ''){
-        EVANotificacion.toast.error('Debes llenar los campos disponibles antes de realizar esta acción.');
+        $('.sw-btn-next').click();
         return false;
     }
-    if (parseInt(datoVigencia) < 0){
+    if (Number(vigencia.inputmask('unmaskedvalue')) < 0){
         vigencia.next('div').text('El valor ingresado no debe ser menor a cero.');
         vigencia.val('');
         $('.sw-btn-next').click();
         return false;
     }
-    sumaValoresVigencias += parseFloat(datoVigencia);
+    sumaValoresVigencias += Number(vigencia.inputmask('unmaskedvalue'));
     eliminarVigencia.show();
-    valoresVigencias.push({'pos': contadorVigencia, 'valor_anho': datoAnho, 'valor_vigencia': datoVigencia});
+    valoresVigencias.push({'pos': contadorVigencia, 'valor_anho': datoAnho, 'valor_vigencia': Number(valorDatoVigencia)});
+    if (datoVigencia.indexOf('$') === -1) {
+        datoVigencia = numToCurrencyStr(Number(datoVigencia)).replace('COP', '$')
+    }
     divVigencias.append('<div class="form-row" id="vigencia_'+ contadorVigencia +'" style="margin-bottom: 0">' +
         '<div class="form-group col-md-6">\n' +
         '<label>Año</label>\n' +
         '<input disabled type="text" id="valor_anho_'+ contadorVigencia +'" value="'+ datoAnho +'" class="form-control"></div>\n' +
         '<div class="form-group col-md-5">\n' +
         '<label>Valor</label>\n' +
-        '<input disabled type="text" id="valor_vigencia_'+ contadorVigencia +'" value="'+ datoVigencia +'" class="form-control"></div>\n' +
+        '<input disabled type="text" id="valor_vigencia_'+ contadorVigencia +'" value="'+ datoVigencia +'" class="form-control" style="text-align: right;"></div>\n' +
         '<div class="col-md-1" style="padding-top:30px">\n' +
         '<a class="far fa-2x far fa-edit" href="#" onclick="editarPosVigencia('+ contadorVigencia +')" title="" data-original-title="Agregar Vigencia" style=""></a>\n' +
         '<a class="far fa-2x far fa-trash-alt color-danger-900" href="#" onclick="quitarPosVigencia('+ contadorVigencia +')" title="" data-original-title="Eliminar Vigencia"></a>\n' +

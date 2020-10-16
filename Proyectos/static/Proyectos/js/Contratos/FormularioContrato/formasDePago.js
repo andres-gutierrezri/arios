@@ -1,6 +1,9 @@
 
 'use strict';
-let selectPorcentajeValor = $('#porcentaje_valor_id_select_id');
+let aplicaPorcentajeValor = $('#aplica_porcentaje_valor');
+let selectPorcentajeValor = $('#porcentaje_valor_id');
+let radioValor = $('#Valor_id');
+let radioPorcentaje = $('#Porcentaje_id');
 let selectFormaDePago = $('#forma_de_pago_id_select_id');
 
 let divFormasDePago = $('#div_formas_pago');
@@ -12,9 +15,23 @@ let inputActasParciales = $('#actas_parciales_id');
 let inputLiquidacion = $('#liquidacion_id');
 
 $(document).ready(function () {
-    cambiosPorcentajeValor(selectPorcentajeValor.value);
+    cambiosPorcentajeValor(selectPorcentajeValor.val());
     combinacionesFormasDePago(selectFormaDePago.val());
 });
+
+radioValor.change(function () {
+    cambiosPorcentajeValor(this.value);
+    selectPorcentajeValor.val(this.value);
+    sumarCombinacionFormaDePago(this.value)
+});
+
+
+radioPorcentaje.change(function () {
+    cambiosPorcentajeValor(this.value);
+    selectPorcentajeValor.val(this.value);
+    sumarCombinacionFormaDePago(this.value)
+});
+
 
 selectPorcentajeValor.change(function () {
     cambiosPorcentajeValor(this.value);
@@ -36,36 +53,44 @@ function validarSumaPorcentajeValor(valorInput){
                 return false
             }
         }else{
-            if (valorInput > parseFloat(inputValorConIVA.val()) || valorInput < parseFloat(inputValorConIVA.val())){
+            if (valorInput > Number(inputValorConIVA.inputmask('unmaskedvalue')) || valorInput < Number(inputValorConIVA.inputmask('unmaskedvalue'))){
                 EVANotificacion.toast.error('El total de los valores debe ser igual al valor con IVA');
                 inputLiquidacion.val('');
                 return false
             }
         }
+    }else{
+        inputLiquidacion.val('');
+        inputActasParciales.val('');
+        inputAnticipo.val('');
+        return false;
     }
 }
 
-inputAnticipo.change(function () {
+inputAnticipo.blur(function () {
     sumarCombinacionFormaDePago(selectFormaDePago.val())
 });
 
-inputActasParciales.change(function () {
+inputActasParciales.blur(function () {
     sumarCombinacionFormaDePago(selectFormaDePago.val())
 });
 
-inputLiquidacion.change(function () {
+inputLiquidacion.blur(function () {
     sumarCombinacionFormaDePago(selectFormaDePago.val())
 });
 
 function sumarCombinacionFormaDePago(selectFormaDePago) {
     let sumaTotal = 0;
     if (parseInt(selectFormaDePago) === 1){
-        sumaTotal = parseFloat(inputLiquidacion.val()) + parseFloat(inputAnticipo.val()) +
-            parseFloat(inputActasParciales.val())
+        sumaTotal = Number(inputLiquidacion.inputmask('unmaskedvalue')) +
+            Number(inputAnticipo.inputmask('unmaskedvalue')) +
+            Number(inputActasParciales.inputmask('unmaskedvalue'))
     }else if (parseInt(selectFormaDePago) === 2){
-        sumaTotal = parseFloat(inputLiquidacion.val()) + parseFloat(inputAnticipo.val())
+        sumaTotal = Number(inputLiquidacion.inputmask('unmaskedvalue')) +
+            Number(inputAnticipo.inputmask('unmaskedvalue'))
     }else if (parseInt(selectFormaDePago) === 3){
-        sumaTotal = parseFloat(inputLiquidacion.val()) + parseFloat(inputActasParciales.val())
+        sumaTotal = Number(inputLiquidacion.inputmask('unmaskedvalue')) +
+            Number(inputActasParciales.inputmask('unmaskedvalue'))
     }
     validarSumaPorcentajeValor(sumaTotal);
 }
@@ -89,6 +114,14 @@ function cambiosPorcentajeValor(valor) {
         inputActasParciales.attr('max', '100');
         inputActasParciales.attr('onInput', 'validarLongitud(5,this)');
 
+        inputAnticipo.inputmask('remove');
+        inputLiquidacion.inputmask('remove');
+        inputActasParciales.inputmask('remove');
+
+        inputAnticipo.val(inputAnticipo.val().split(' ')[1]);
+        inputLiquidacion.val(inputLiquidacion.val().split(' ')[1]);
+        inputActasParciales.val(inputActasParciales.val().split(' ')[1]);
+
     }else{
         inputAnticipo.attr('placeholder', 'Valor');
         inputAnticipo.next('div').text('Por favor ingrese el valor');
@@ -106,6 +139,10 @@ function cambiosPorcentajeValor(valor) {
         inputActasParciales.attr('placeholder', 'Ingrese un valor');
         inputActasParciales.attr('max', '99999999999999.99');
         inputActasParciales.attr('onInput', 'validarLongitud(16,this)');
+
+        inputAnticipo.inputmask();
+        inputLiquidacion.inputmask();
+        inputActasParciales.inputmask();
     }
     sumarCombinacionFormaDePago(selectFormaDePago.val())
 }
@@ -129,6 +166,7 @@ function combinacionesFormasDePago(valor) {
             divActasParciales.addClass('col-md-4');
             divLiquidacion.removeClass('col-md-6');
             divLiquidacion.addClass('col-md-4');
+            aplicaPorcentajeValor.show();
         }else if (valor === '2'){
             divAnticipo.show();
             divActasParciales.hide();
@@ -144,6 +182,7 @@ function combinacionesFormasDePago(valor) {
             divAnticipo.addClass('col-md-6');
             divLiquidacion.removeClass('col-md-4');
             divLiquidacion.addClass('col-md-6');
+            aplicaPorcentajeValor.show();
         }else if (valor === '3'){
             divAnticipo.hide();
             divActasParciales.show();
@@ -159,6 +198,7 @@ function combinacionesFormasDePago(valor) {
             divActasParciales.addClass('col-md-6');
             divLiquidacion.removeClass('col-md-4');
             divLiquidacion.addClass('col-md-6');
+            aplicaPorcentajeValor.show();
         }else{
             divAnticipo.show();
             divActasParciales.show();
@@ -167,5 +207,6 @@ function combinacionesFormasDePago(valor) {
             inputActasParciales.removeAttr('required', true);
             inputLiquidacion.removeAttr('required', true);
             divFormasDePago.hide();
+            aplicaPorcentajeValor.hide();
         }
 }
