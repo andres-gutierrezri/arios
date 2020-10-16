@@ -117,4 +117,12 @@ $(document).ready(function () {
     });
 });
 
+$('#valor_con_iva_id').change(function () {
+    validarMinMaxInputMaskPorInput([this]);
+    sumarCombinacionFormaDePago($('#porcentaje_valor_id'))
+});
+
+$('#valor_sin_iva_id').change(function () {
+    validarMinMaxInputMaskPorInput([this]);
+});
 
