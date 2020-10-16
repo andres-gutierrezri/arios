@@ -155,9 +155,13 @@
                                                                     {% select_tag formas_de_pago 'forma_de_pago_id' 'Contraentrega y Satisfacción' primer_valor=True texto_label="Forma de Pago" required="" value=formas_pago.forma_pago  mensaje_validacion='Por favor seleccione una forma de pago' invalido=errores.forma_de_pago %}
                                                                 </div>
                                                                 <div class="form-group col-md-6" id="aplica_porcentaje_valor">
-                                                                    <p class="mb-0">Aplica:</p>
-                                                                    <div class="contenedor-con-borde">
-                                                                        <div class="form-row">
+                                                                    <div class="form-row">
+                                                                        <div class="col-12">
+                                                                            <p>Indique como va a ingresar las cantidades</p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="form-row">
+                                                                        <div class="col-12">
                                                                             {% input_select_radio_tag 'porcentaje_valor' '' opciones=porcentaje_valor value=formas_pago.aplica_porcentaje required="" mensaje_validacion='Por favor seleccione una opción' %}
                                                                         </div>
                                                                     </div>
@@ -175,13 +179,18 @@
                                                                 </div>
                                                             </div>
                                                             <div class="form-row">
-                                                                <div class="form-group col-md-6">
-                                                                    <p class="mb-0">Origen de los Recursos:</p>
-                                                                    <div class="contenedor-con-borde">
-                                                                        <div class="form-row">
+                                                                <div class="form-group col-md-3">
+                                                                    <div class="form-row">
+                                                                        <div class="col-12">
+                                                                            <p>Origen de los Recursos</p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="form-row">
+                                                                        <div class="col-12">
                                                                             {% input_select_radio_tag 'origen_recurso_select' '' opciones=origen_recursos value=select_origen_recursos required="" mensaje_validacion='Por favor seleccione una opción' %}
                                                                         </div>
                                                                     </div>
+
                                                                 </div>
                                                                 <div class="form-group col-md-6" id="div_origen_recurso">
                                                                     {% input_text_tag 'origen_recurso' 'Origen de los Recursos' placeholder="Describa el origen de los recursos"  maxlength="150" required="" value=origen_de_recursos mensaje_validacion='Por favor describa el origen de los recursos.' invalido=errores.origen_recurso %}
@@ -211,12 +220,17 @@
                                                     <div id="step-3" class="">
                                                         <div id="form-step-2" data-toggle="validator">
                                                             <div class="form-group col-md-6 pl-0">
-                                                                <p class="mb-0">Aplica:</p>
-                                                                <div class="contenedor-con-borde">
-                                                                    <div class="form-row">
+                                                                <div class="form-row">
+                                                                    <div class="col-md-6">
+                                                                        <p>Aplica:</p>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-row">
+                                                                    <div class="col-md-6">
                                                                         {% input_select_radio_tag 'supervisor_interventor' '' opciones=supervisor_interventor value=seleccion_supervisor_interventor required="" mensaje_validacion='Por favor seleccione una opción' %}
                                                                     </div>
                                                                 </div>
+
                                                             </div>
                                                             <input hidden id="valores_supervisores" value="{{ selecciones_supervisores }}">
                                                             <div class="form-row" id="div_supervisores">
