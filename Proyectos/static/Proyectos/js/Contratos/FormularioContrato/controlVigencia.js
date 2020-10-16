@@ -16,10 +16,7 @@ $(document).ready(function () {
     let valorVigencia = $('#valor_vigencia_id');
 
     valorVigencia.change(function () {
-        if (isNaN(sumaValoresVigencias)){
-            sumaValoresVigencias = 0;
-        }
-        if (sumaValoresVigencias + Number(valorVigencia.inputmask('unmaskedvalue')) > Number(valorConIVA.inputmask('unmaskedvalue'))){
+        if (sumaValoresVigencias + Math.round10(Number(valorVigencia.inputmask('unmaskedvalue')), -2) > Number(valorConIVA.inputmask('unmaskedvalue'))){
             valorVigencia.val('');
             valorVigencia.next('div').text('La suma de los valores no puede ser mayor al valor con IVA.');
             $('.sw-btn-next').click();
@@ -53,7 +50,7 @@ function agregarVigencia(valores) {
         $('.sw-btn-next').click();
         return false;
     }
-    sumaValoresVigencias += Number(vigencia.inputmask('unmaskedvalue'));
+    sumaValoresVigencias += Number(valorDatoVigencia);
     eliminarVigencia.show();
     valoresVigencias.push({'pos': contadorVigencia, 'valor_anho': datoAnho, 'valor_vigencia': Number(valorDatoVigencia)});
     if (datoVigencia.indexOf('$') === -1) {
@@ -115,7 +112,7 @@ function quitarVigencia() {
 function retomarCampoVigencia(contadorVigencia){
     let valorAnho = $('#valor_anho_' + contadorVigencia).val();
     let valorVigencia = $('#valor_vigencia_' + contadorVigencia).val();
-    sumaValoresVigencias -= parseInt(valorVigencia);
     anho.val(valorAnho);
     vigencia.val(valorVigencia);
+    sumaValoresVigencias -= Number(vigencia.inputmask('unmaskedvalue'));
 }
