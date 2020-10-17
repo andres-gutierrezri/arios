@@ -88,10 +88,12 @@ function sumarCombinacionFormaDePago(selectFormaDePago) {
             Number(inputActasParciales.inputmask('unmaskedvalue'))
     }else if (parseInt(selectFormaDePago) === 2){
         sumaTotal = Number(inputLiquidacion.inputmask('unmaskedvalue')) +
-            Number(inputAnticipo.inputmask('unmaskedvalue'))
+            Number(inputAnticipo.inputmask('unmaskedvalue'));
+        inputActasParciales.val(0.01)
     }else if (parseInt(selectFormaDePago) === 3){
         sumaTotal = Number(inputLiquidacion.inputmask('unmaskedvalue')) +
-            Number(inputActasParciales.inputmask('unmaskedvalue'))
+            Number(inputActasParciales.inputmask('unmaskedvalue'));
+        inputAnticipo.val(0.01)
     }
     validarSumaPorcentajeValor(sumaTotal);
 }
