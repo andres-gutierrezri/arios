@@ -4,6 +4,7 @@
 let divVigencias = $('#div_vigencias');
 let anho = $('#anho_vigencia_id');
 let vigencia = $('#valor_vigencia_id');
+let valorConIVA = $('#valor_con_iva_id');
 let eliminarVigencia = $('#eliminar_vigencia');
 let datosVigencias = $('#datos_vigencias');
 let valoresVigencias = [];
@@ -11,25 +12,31 @@ let contadorVigencia = 0;
 
 let sumaValoresVigencias = 0;
 
-$(document).ready(function () {
-    let valorConIVA = $('#valor_con_iva_id');
-    let valorVigencia = $('#valor_vigencia_id');
+ vigencia.change(function () {
+    validarVigencias(valorConIVA, vigencia);
+});
 
-    valorVigencia.change(function () {
+valorConIVA.change(function () {
+    validarVigencias(valorConIVA, vigencia)
+});
+
+function validarVigencias(valorConIVA, valorVigencia) {
+        let elemento = document.getElementById(valorVigencia[0].id);
         if (sumaValoresVigencias + Math.round10(Number(valorVigencia.inputmask('unmaskedvalue')), -2) > Number(valorConIVA.inputmask('unmaskedvalue'))){
-            valorVigencia.val('');
             valorVigencia.next('div').text('La suma de los valores no puede ser mayor al valor con IVA.');
-            $('.sw-btn-next').click();
+            elemento.setCustomValidity('.');
             return false
+        }else{
+            elemento.setCustomValidity('');
         }
         if (parseInt(valorVigencia.val()) < 0){
-            valorVigencia.val('');
             valorVigencia.next('div').text('El valor ingresado no debe ser menor a cero.');
-            $('.sw-btn-next').click();
+            elemento.setCustomValidity('.');
             return false;
+        }else{
+            elemento.setCustomValidity('');
+        }
     }
-    });
-});
 
 function agregarVigencia(valores) {
     let datoAnho = anho.val();
@@ -86,6 +93,7 @@ function editarPosVigencia(contador) {
     });
     datosVigencias.val(JSON.stringify(valoresVigencias));
     $('#vigencia_'+ contador).remove();
+    validarVigencias(valorConIVA, vigencia)
 }
 
 function quitarPosVigencia(contador) {
@@ -96,6 +104,7 @@ function quitarPosVigencia(contador) {
     });
     $('#vigencia_'+ contador).remove();
     datosVigencias.val(JSON.stringify(valoresVigencias));
+    validarVigencias(valorConIVA, vigencia)
 }
 
 function quitarVigencia() {
@@ -107,6 +116,7 @@ function quitarVigencia() {
     retomarCampoVigencia(contadorVigencia);
     $('#vigencia_'+ contadorVigencia).remove();
     datosVigencias.val(JSON.stringify(valoresVigencias));
+    validarVigencias(valorConIVA, vigencia)
 }
 
 function retomarCampoVigencia(contadorVigencia){
@@ -115,4 +125,5 @@ function retomarCampoVigencia(contadorVigencia){
     anho.val(valorAnho);
     vigencia.val(valorVigencia);
     sumaValoresVigencias -= Number(vigencia.inputmask('unmaskedvalue'));
+    validarVigencias(valorConIVA, vigencia)
 }
