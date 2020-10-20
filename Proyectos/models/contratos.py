@@ -181,3 +181,18 @@ class ContratoGarantia(models.Model, ModelDjangoExtensiones):
     class Meta:
         verbose_name = 'Contrato Garantía'
         verbose_name_plural = 'Contratos Garantías'
+
+
+class GarantiaAmparosAdiciones(models.Model, ModelDjangoExtensiones):
+    garantia = models.ForeignKey(ContratoGarantia, on_delete=models.DO_NOTHING, verbose_name="Contrato garantía",
+                                 blank=False, null=False)
+    amparo = models.CharField(verbose_name="Amparo", blank="False", null="False", max_length=300)
+    adicion = models.CharField(verbose_name="Adición", blank="False", null="False", max_length=300)
+    limite_asegurado = models.CharField(verbose_name="Límite asegurado", blank="False", null="False", max_length=100)
+
+    def __str__(self):
+        return 'Adicion o Amparo del contrato: {0}'.format(self.garantia.contrato)
+
+    class Meta:
+        verbose_name = 'Amparo y Adicion de Garantía'
+        verbose_name_plural = 'Amparos y Adiciones de Garantías'
