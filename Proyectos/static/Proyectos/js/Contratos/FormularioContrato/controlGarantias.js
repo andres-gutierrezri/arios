@@ -29,6 +29,21 @@ function agregarGarantia(valores) {
         datoGarantiaExtensiva = valores.garantia_extensiva;
         datosAdicionesAmparos = valores.adiciones_amparos
     }
+
+    let datos = JSON.parse(tiposGarantiasSmmlv.val());
+    let textoLabelPorcentajeValor = 'Porcentaje';
+    let textoLabelVigenciaAmparoAdicion = 'Vigencia (Meses)';
+    datos.forEach(function (elemento) {
+        if (parseInt(datoTipoGarantia) === elemento.id) {
+            if (elemento.aplica_valor_smmlv) {
+                textoLabelPorcentajeValor = 'SMMLV Asegurados';
+                if (elemento.aplica_amparos_adiciones){
+                    textoLabelVigenciaAmparoAdicion = 'Amparos y Adiciones'
+                }
+            }
+        }
+    });
+
     if (datoTipoGarantia === '' || datoPorcentajeAsegurado === '' || datoVigenciaGarantia === ''){
         EVANotificacion.toast.error('Debes llenar los campos disponibles antes de realizar esta acción.');
         return false;
@@ -54,11 +69,11 @@ function agregarGarantia(valores) {
         <input disabled type="text" id="texto_tipo_garantia_${contadorGarantia}" value="${datoNombreTipoGarantia}" class="form-control">
         </div>
         <div class="form-group col-md-3">
-        <label>Porcentaje Asegurado</label>
+        <label>${textoLabelPorcentajeValor}</label>
         <input disabled type="text" id="valor_porcentaje_asegurado_${contadorGarantia}" value="${datoPorcentajeAsegurado}" class="form-control">
         </div>
         <div class="form-group col-md-3">
-        <label>Vigencia (Meses)</label>
+        <label>${textoLabelVigenciaAmparoAdicion}</label>
         <input disabled type="text" id="valor_vigencia_garantia_${contadorGarantia}" value="${datoVigenciaGarantia}" class="form-control">
         </div>
         <div class="col-md-2" style="padding-top: 33px;">
@@ -158,7 +173,6 @@ $('#div_despliegue_modal_adicion_amparo').click(function () {
     }else{
         let elementos = JSON.parse(inputAdicionesAmparos.val());
         elementos.forEach(function (e) {
-            console.log(e.descripcion);
             $('#descripcion_0_id').val(e.descripcion);
             $('#limite_asegurado_0_id').val(e.limite_asegurado);
             if (e.adicion_amparo === '0'){
@@ -217,7 +231,7 @@ function agregarAdicionAmparo(inicial) {
                     </div>
                     <div class="form-group col-4">
                         <label for="limite_asegurado_${pos}_id">Límite Asegurado</label>
-                        <textarea id="limite_asegurado_${pos}_id" name="limite_asegurado" placeholder="Ingrese el límite asegurado" maxlength="300"
+                        <textarea id="limite_asegurado_${pos}_id" name="limite_asegurado" placeholder="Ingrese el límite asegurado" maxlength="100"
                                   required="" class="form-control valores">${limiteAseguradoValor}</textarea>
                         <div class="invalid-tooltip ">Por favor ingrese el número del contrato.</div>
                     </div>
@@ -304,7 +318,7 @@ function validarTipoGarantia(){
                     labelValorPorcentajeAsegurado.text('SMMLV Asegurados');
                     if (elemento.aplica_amparos_adiciones){
                         labelVigenciaAmparos.text('Amparos o Adiciones');
-                        vigenciaGarantia.attr('readonly');
+                        vigenciaGarantia.attr('readonly', true);
                         vigenciaGarantia.addClass('desactivado')
                     }
                 }else{
@@ -315,9 +329,9 @@ function validarTipoGarantia(){
                     labelValorPorcentajeAsegurado.text('Porcentaje Asegurado')
                 }
                 if (!elemento.aplica_amparos_adiciones){
-                    vigenciaGarantia.removeAttr('readonly');
+                    vigenciaGarantia.removeAttr('readonly', true);
                     vigenciaGarantia.removeClass('desactivado');
-                    labelVigenciaAmparos.text('Vigencia');
+                    labelVigenciaAmparos.text('Vigencia (Meses)');
                 }
             }
         })
