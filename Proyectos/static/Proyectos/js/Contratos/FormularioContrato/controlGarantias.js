@@ -142,7 +142,7 @@ tipoGarantia.change(function () {
     validarPorcentajeAsegurado();
 });
 
-$('#div_presionar').click(function () {
+$('#div_despliegue_modal_adicion_amparo').click(function () {
     if (vigenciaGarantia.hasClass('desactivado')) {
         $('#agregar_adicion_amparo').modal('show');
         $('#contenedor').empty();
