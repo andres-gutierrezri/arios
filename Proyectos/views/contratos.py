@@ -125,10 +125,11 @@ class ContratoDetalleView(AbstractEvaLoggedView):
         supervisores = ContratoIterventoriaSupervisor.objects.filter(contrato=contrato, tipo=SUPERVISOR)
         interventores = ContratoIterventoriaSupervisor.objects.filter(contrato=contrato, tipo=INTERVENTOR)
         garantias = ContratoGarantia.objects.filter(contrato=contrato)
+        adiciones_amparos = GarantiaAmparosAdiciones.objects.filter(garantia__contrato=contrato)
         return render(request, 'Proyectos/Contrato/_modal_contrato_detalle.html',
                       {'contrato': contrato, 'municipios': municipios, 'forma_pago': forma_pago, 'vigencias': vigencias,
                        'supervisores': supervisores, 'interventores': interventores, 'garantias': garantias,
-                       'menu_actual': 'contratos'})
+                       'adiciones_amparos': adiciones_amparos, 'menu_actual': 'contratos'})
 
 
 # region Métodos de ayuda
