@@ -9,6 +9,7 @@ let vigenciaGarantia = $('#vigencia_id');
 let eliminarGarantia = $('#eliminar_garantia');
 let datosGarantias = $('#datos_garantias');
 let tiposGarantiasSmmlv = $('#tipos_garantias_smmlv');
+let inputAdicionesAmparos = $('#input_adiciones_amparos');
 let valoresGarantias = [];
 let contadorGarantia = 0;
 
@@ -18,12 +19,15 @@ function agregarGarantia(valores) {
     let datoPorcentajeAsegurado = porcentajeAsegurado.val();
     let datoVigenciaGarantia = vigenciaGarantia.val();
     let datoGarantiaExtensiva = vigencia.val();
+    let datosAdicionesAmparos = inputAdicionesAmparos.val();
+
     if (valores){
         datoTipoGarantia = valores.tipo_garantia;
         datoNombreTipoGarantia = valores.nombre_tipo_garantia;
         datoPorcentajeAsegurado = valores.porcentaje_asegurado;
         datoVigenciaGarantia = valores.vigencia_garantia;
         datoGarantiaExtensiva = valores.garantia_extensiva;
+        datosAdicionesAmparos = valores.adiciones_amparos
     }
     if (datoTipoGarantia === '' || datoPorcentajeAsegurado === '' || datoVigenciaGarantia === ''){
         EVANotificacion.toast.error('Debes llenar los campos disponibles antes de realizar esta acción.');
@@ -40,39 +44,40 @@ function agregarGarantia(valores) {
     }
 
     valoresGarantias.push({'pos': contadorGarantia, 'tipo_garantia': datoTipoGarantia, 'vigencia_garantia': datoVigenciaGarantia,
-        'porcentaje_asegurado': datoPorcentajeAsegurado, 'garantia_extensiva': checkActivo, 'nombre_tipo_garantia': datoNombreTipoGarantia});
+        'porcentaje_asegurado': datoPorcentajeAsegurado, 'garantia_extensiva': checkActivo, 'nombre_tipo_garantia': datoNombreTipoGarantia,
+        'adiciones_amparos': datosAdicionesAmparos});
 
-    divGarantias.append('<div class="form-row" id="garantia_'+ contadorGarantia +'" style="margin-bottom: 0">\n' +
-        '<div class="form-group col-md-3">\n' +
-        '<label>Tipo de Garantía</label>\n' +
-        '<input hidden type="text" id="valor_tipo_garantia_'+ contadorGarantia +'" value="'+ datoTipoGarantia +'">\n' +
-        '<input disabled type="text" id="texto_tipo_garantia_'+ contadorGarantia +'" value="'+ datoNombreTipoGarantia +'"\n' +
-        'class="form-control">\n' +
-        '</div>\n' +
-        '<div class="form-group col-md-3">\n' +
-        '<label>Porcentaje Asegurado</label>\n' +
-        '<input disabled type="text" id="valor_porcentaje_asegurado_'+ contadorGarantia +'" value="'+ datoPorcentajeAsegurado +'"\n' +
-        'class="form-control">\n' +
-        '</div>\n' +
-        '<div class="form-group col-md-3">\n' +
-        '<label>Vigencia (Meses)</label>\n' +
-        '<input disabled type="text" id="valor_vigencia_garantia_'+ contadorGarantia +'" value="'+ datoVigenciaGarantia +'" class="form-control">\n' +
-        '</div>\n' +
-        '<div class="col-md-2" style="padding-top: 33px;">\n' +
-        '<div class="custom-control custom-checkbox">\n' + inputCheck +
-        '<label class="custom-control-label">Garantía Extensiva</label>\n' +
-        '</div></div>\n' +
-        '<div class="col-md-1" style="padding-top:30px">\n' +
-        '<a class="far fa-2x far fa-edit" href="#" onclick="editarPosGarantia('+ contadorGarantia +')" title="" data-original-title="Agregar Garantía" style=""></a>\n' +
-        '<a class="far fa-2x far fa-trash-alt color-danger-900" href="#" onclick="quitarPosGarantia('+ contadorGarantia +')" title="" data-original-title="Eliminar Garantía"></a>\n' +
-        '</div>' +
-        '</div>');
+    divGarantias.append(`<div class="form-row" id="garantia_${contadorGarantia}" style="margin-bottom: 0">
+        <div class="form-group col-md-3">
+        <label>Tipo de Garantía</label>
+        <input hidden type="text" id="valor_tipo_garantia_${contadorGarantia}" value="${datoTipoGarantia}">
+        <input disabled type="text" id="texto_tipo_garantia_${contadorGarantia}" value="${datoNombreTipoGarantia}" class="form-control">
+        </div>
+        <div class="form-group col-md-3">
+        <label>Porcentaje Asegurado</label>
+        <input disabled type="text" id="valor_porcentaje_asegurado_${contadorGarantia}" value="${datoPorcentajeAsegurado}" class="form-control">
+        </div>
+        <div class="form-group col-md-3">
+        <label>Vigencia (Meses)</label>
+        <input disabled type="text" id="valor_vigencia_garantia_${contadorGarantia}" value="${datoVigenciaGarantia}" class="form-control">
+        </div>
+        <div class="col-md-2" style="padding-top: 33px;">
+        <div class="custom-control custom-checkbox">${inputCheck}
+        <label class="custom-control-label">Garantía Extensiva</label>
+        </div></div>
+        <div class="col-md-1" style="padding-top:30px">
+        <a class="far fa-2x far fa-edit" href="#" onclick="editarPosGarantia(${contadorGarantia})" title="" data-original-title="Agregar Garantía" style=""></a>
+        <a class="far fa-2x far fa-trash-alt color-danger-900" href="#" onclick="quitarPosGarantia(${contadorGarantia})" title="" data-original-title="Eliminar Garantía"></a>
+        </div>
+        <input hidden id="input_adiciones_amparos_${contadorGarantia}" value='${datosAdicionesAmparos}'>
+        </div>`);
     contadorGarantia += 1;
 
     $('#select2-tipo_garantia_id_select_id-container').text('Seleccione un tipo de garantía');
     tipoGarantia.val('');
     porcentajeAsegurado.val('');
     vigenciaGarantia.val('');
+    inputAdicionesAmparos.val('');
     garantiaExtensiva.prop('checked', false);
     datosGarantias.val(JSON.stringify(valoresGarantias));
 }
@@ -122,12 +127,14 @@ function retomarCampoGarantia(contadorGarantia){
 
     porcentajeAsegurado.val($('#valor_porcentaje_asegurado_'+ contadorGarantia).val());
     vigenciaGarantia.val($('#valor_vigencia_garantia_'+ contadorGarantia).val());
+    inputAdicionesAmparos.val($('#input_adiciones_amparos_'+ contadorGarantia).val());
 
     if ($('#valor_garantia_extensiva_'+ contadorGarantia).prop('checked')){
         garantiaExtensiva.prop('checked', true);
     }else{
        garantiaExtensiva.prop('checked', false);
     }
+    validarTipoGarantia();
 }
 
 tipoGarantia.change(function () {
@@ -135,10 +142,156 @@ tipoGarantia.change(function () {
     validarPorcentajeAsegurado();
 });
 
+$('#div_presionar').click(function () {
+    if (vigenciaGarantia.hasClass('desactivado')) {
+        $('#agregar_adicion_amparo').modal('show');
+        $('#contenedor').empty();
+        $('#contenedor_inicial').empty();
+        contadorAdiciones = 0;
+        agregarAdicionAmparo(true);
+    }
+    if (inputAdicionesAmparos.val() === 'undefined' || inputAdicionesAmparos.val() === ''){
+        $('#contenedor').empty();
+        $('#contenedor_inicial').empty();
+        contadorAdiciones = 0;
+        agregarAdicionAmparo(true);
+    }else{
+        let elementos = JSON.parse(inputAdicionesAmparos.val());
+        elementos.forEach(function (e) {
+            console.log(e.descripcion);
+            $('#descripcion_0_id').val(e.descripcion);
+            $('#limite_asegurado_0_id').val(e.limite_asegurado);
+            if (e.adicion_amparo === '0'){
+                $('#adicion_0_id').click();
+            }else{
+                $('#amparo_0_id').click();
+            }
+            if (e !== elementos[elementos.length - 1]){
+                agregarAdicionAmparo(false);
+            }
+        })
+    }
+});
+
+let contadorAdiciones = 0;
+
+function agregarAdicionAmparo(inicial) {
+    let descripcion = $('#descripcion_0_id');
+    let limiteAsegurado = $('#limite_asegurado_0_id');
+    let descripcionValor = '';
+    let limiteAseguradoValor = '';
+    let seleccionAdicionRadio = '';
+    let seleccionAmparoRadio = '';
+
+    if (descripcion.val() !== undefined){
+        descripcionValor = descripcion.val();
+    }
+    if (limiteAsegurado.val() !== undefined){
+        limiteAseguradoValor = limiteAsegurado.val();
+    }
+    if ($('input:radio[name=adicion_amparo_0]:checked').val() === '0'){
+        seleccionAdicionRadio = `checked`
+    }else{
+        seleccionAmparoRadio = `checked`
+    }
+
+    let contenedor = $('#contenedor');
+    let contenedorInicial = $('#contenedor_inicial');
+    let pos = contadorAdiciones;
+    contadorAdiciones += 1;
+
+    let botonGestion;
+    if (inicial){
+        botonGestion = `<a class="far fa-2x far fa-plus-circle" id="agregar_adicion_amparo" href="#" 
+                            onclick="agregarAdicionAmparo()" title="" data-original-title="Agregar Adición o Amparo" style=""></a>`
+    }else{
+        botonGestion = `<a class="far fa-2x far fa-trash-alt color-danger-900" id="eliminar_garantia" href="#"
+                            onclick="quitarAdicionAmparo(${pos})" title="" data-original-title="Eliminar Garantía"></a>`;
+    }
+    let inputs = `<div class="form-row div-inputs-${pos}">
+                    <div class="form-group col-4">
+                        <label for="descripcion_${pos}_id">Descripción</label>
+                        <textarea id="descripcion_${pos}_id" name="descripcion" placeholder="Ingrese la descripción" maxlength="300"
+                                  required="" class="form-control valores">${descripcionValor}</textarea>
+                        <div class="invalid-tooltip ">Por favor ingrese el número del contrato.</div>
+                    </div>
+                    <div class="form-group col-4">
+                        <label for="limite_asegurado_${pos}_id">Límite Asegurado</label>
+                        <textarea id="limite_asegurado_${pos}_id" name="limite_asegurado" placeholder="Ingrese el límite asegurado" maxlength="300"
+                                  required="" class="form-control valores">${limiteAseguradoValor}</textarea>
+                        <div class="invalid-tooltip ">Por favor ingrese el número del contrato.</div>
+                    </div>
+                    <div class="form-group col-2">
+                        <div class="form-row">
+                            <div class="col-12">
+                                <p>Seleccione</p>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-12">
+                                <div class="custom-control custom-radio custom-control-inline">
+                                    <input type="radio" class="custom-control-input" id="adicion_${pos}_id" name="adicion_amparo_${pos}" value="0"
+                                           required="" ${seleccionAdicionRadio}>
+                                    <label class="custom-control-label" for="adicion_${pos}_id">Adición</label>
+                                </div>
+                                &nbsp;&nbsp;<div class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" class="custom-control-input" id="amparo_${pos}_id" name="adicion_amparo_${pos}" value="1"
+                                       required="" ${seleccionAmparoRadio}>
+                                <label class="custom-control-label" for="amparo_${pos}_id">Amparo</label>
+                            </div>
+                                <div class="invalid-tooltip ">Por favor seleccione una opción</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-1" style="padding-top:30px">
+                        ${botonGestion}
+                    </div>
+                </div>`;
+    if (inicial && contenedorInicial.is(':empty')){
+        contenedorInicial.append(inputs);
+    }else{
+        contenedor.append(inputs)
+    }
+    descripcion.val('');
+    limiteAsegurado.val('');
+}
+
+function quitarAdicionAmparo(pos) {
+    $('.div-inputs-' + pos).remove();
+    contadorAdiciones -= 1
+}
+
+function configurarFormulario() {
+    const form = $("#form_adicion_amparo")[0];
+    agregarValidacionForm(form, function (event){
+        guardarAdicionAmparo();
+        cerrarModalAdicionAmparo();
+        return true;
+    });
+}
+
+function cerrarModalAdicionAmparo() {
+    $("#agregar_adicion_amparo").modal('hide');
+    $(".modal-backdrop").remove();
+}
+
+function guardarAdicionAmparo() {
+    let datos = [];
+
+    for(let i=0; i < contadorAdiciones; i++){
+        datos.push({'descripcion': $('#descripcion_'+ i +'_id').val(),
+            'limite_asegurado': $('#limite_asegurado_'+ i +'_id').val(),
+            'adicion_amparo': $('input:radio[name=adicion_amparo_'+ i +']:checked').val()})
+    }
+    vigenciaGarantia.val(datos.length);
+    inputAdicionesAmparos.val(JSON.stringify(datos))
+}
+
 function validarTipoGarantia(){
     let datos = JSON.parse(tiposGarantiasSmmlv.val());
     let valorTipoGarantia = tipoGarantia.val();
     let labelValorPorcentajeAsegurado = $('#label_porcentaje_asegurado_id');
+    let labelVigenciaAmparos = $('#label_vigencia_id');
 
     if (valorTipoGarantia !== ''){
         datos.forEach(function (elemento) {
@@ -148,13 +301,23 @@ function validarTipoGarantia(){
                     porcentajeAsegurado.attr('max', '99999999999999.99');
                     porcentajeAsegurado.attr('onInput', 'validarLongitud(16,this)');
                     porcentajeAsegurado.next('div').text('Por favor ingrese un valor');
-                    labelValorPorcentajeAsegurado.text('SMMLV Asegurados')
+                    labelValorPorcentajeAsegurado.text('SMMLV Asegurados');
+                    if (elemento.aplica_amparos_adiciones){
+                        labelVigenciaAmparos.text('Amparos o Adiciones');
+                        vigenciaGarantia.attr('readonly');
+                        vigenciaGarantia.addClass('desactivado')
+                    }
                 }else{
                     porcentajeAsegurado.attr('placeholder', 'Ingrese el porcentaje');
                     porcentajeAsegurado.attr('max', '100');
                     porcentajeAsegurado.attr('onInput', 'validarLongitud(5,this)');
                     porcentajeAsegurado.next('div').text('Por favor ingrese el porcentaje (Maximo 100%)');
                     labelValorPorcentajeAsegurado.text('Porcentaje Asegurado')
+                }
+                if (!elemento.aplica_amparos_adiciones){
+                    vigenciaGarantia.removeAttr('readonly');
+                    vigenciaGarantia.removeClass('desactivado');
+                    labelVigenciaAmparos.text('Vigencia');
                 }
             }
         })
@@ -193,5 +356,6 @@ $(document).ready(function () {
     }
     quitarGarantia();
     validarPorcentajeAsegurado();
-    validarTipoGarantia()
+    validarTipoGarantia();
+    configurarFormulario();
 });
