@@ -14,7 +14,7 @@ from EVA.views.index import AbstractEvaLoggedView
 from Notificaciones.models.models import EventoDesencadenador
 from Notificaciones.views.views import crear_notificacion_por_evento
 from Proyectos.models.contratos import Contrato, TipoGarantia, ContratoMunicipio, FormasPago, ContratoVigencia, \
-    ContratoIterventoriaSupervisor, ContratoGarantia
+    ContratoIterventoriaSupervisor, ContratoGarantia, GarantiaAmparosAdiciones
 from Administracion.models import Tercero, Empresa, TipoContrato, Proceso, Pais, TipoTercero, Municipio
 from TalentoHumano.models import Colaborador
 
@@ -145,7 +145,8 @@ def datos_xa_render(request, opcion: str, contrato: Contrato = None) -> dict:
     todos_tipos_garantias = TipoGarantia.objects.all()
     tipos_garantias_smmlv = []
     for td in todos_tipos_garantias:
-        tipos_garantias_smmlv.append({'id': td.id, 'aplica_valor_smmlv': td.aplica_valor_smmlv})
+        tipos_garantias_smmlv.append({'id': td.id, 'aplica_valor_smmlv': td.aplica_valor_smmlv,
+                                      'aplica_amparos_adiciones': td.aplica_amparos_adiciones})
 
     formas_de_pago = [
         {'campo_valor': 1, 'campo_texto': 'Anticipo – Actas Parciales - Liquidación'},
@@ -156,6 +157,8 @@ def datos_xa_render(request, opcion: str, contrato: Contrato = None) -> dict:
                         {'valor': 1, 'texto': 'Valor'}]
     origen_recursos = [{'valor': 0, 'texto': 'Propios'},
                        {'valor': 1, 'texto': 'Otro'}]
+    adicion_amparo = [{'valor': 0, 'texto': 'Adición'},
+                      {'valor': 1, 'texto': 'Amparo'}]
     supervisor_interventor = [{'valor': 0, 'texto': 'Supervisor'},
                               {'valor': 1, 'texto': 'Interventor'}]
     terceros = Tercero.objects.filter(estado=True)
@@ -185,6 +188,7 @@ def datos_xa_render(request, opcion: str, contrato: Contrato = None) -> dict:
              'tipos_garantias_smmlv': json.dumps(tipos_garantias_smmlv),
              'formas_de_pago': formas_de_pago,
              'porcentaje_valor': porcentaje_valor,
+             'adicion_amparo': adicion_amparo,
              'supervisor_interventor': supervisor_interventor,
              'tipos_contrato': lista_tipos_contratos,
              'tipos_contrato_json': json.dumps(lista_tipos_contratos),
@@ -243,12 +247,26 @@ def datos_xa_render(request, opcion: str, contrato: Contrato = None) -> dict:
 
         lista_garantias = []
         for garantia in ContratoGarantia.objects.filter(contrato=contrato).order_by('-id'):
+            adicion_amparo = []
+            adiciones_amparos = GarantiaAmparosAdiciones.objects.filter(garantia=garantia)
+            if adiciones_amparos:
+                for ad_am in adiciones_amparos:
+                    if ad_am.adicion:
+                        adicion_o_amparo = "0"
+                        descripcion = ad_am.adicion
+                    else:
+                        adicion_o_amparo = "1"
+                        descripcion = ad_am.amparo
+                    adicion_amparo.append({'descripcion': descripcion, 'limite_asegurado': ad_am.limite_asegurado,
+                                           'adicion_amparo': adicion_o_amparo})
+
             lista_garantias.append({'tipo_garantia': garantia.tipo_garantia_id,
                                     'nombre_tipo_garantia': garantia.tipo_garantia.nombre,
                                     'porcentaje_asegurado': str(garantia.porcentaje_asegurado),
                                     'vigencia_garantia': garantia.vigencia,
                                     'garantia_extensiva': garantia.extensiva,
-                                    'aplica_valor_smmlv': garantia.tipo_garantia.aplica_valor_smmlv})
+                                    'aplica_valor_smmlv': garantia.tipo_garantia.aplica_valor_smmlv,
+                                    'adiciones_amparos': json.dumps(adicion_amparo)})
 
         datos['valores_vigencias_actuales'] = json.dumps(lista_vigencias)
         datos['valores_garantias_actuales'] = json.dumps(lista_garantias)
@@ -374,6 +392,7 @@ def obtener_datos_contrato(request):
     datos_garantias = request.POST.get('datos_garantias', '')
     aplica_porcentaje = request.POST.get('porcentaje_valor', '')
     supervisor_interventor = request.POST.get('supervisor_interventor', '')
+    adiciones_amparos = request.POST.get('adiciones_amparos', '')
 
     if not anticipo:
         anticipo = 0
@@ -388,7 +407,8 @@ def obtener_datos_contrato(request):
             'datos_vigencias': datos_vigencias, 'tipo_garantia_id': tipo_garantia_id,
             'porcentaje_asegurado': porcentaje_asegurado, 'vigencia_garantia': vigencia_garantia,
             'garantia_extensiva': garantia_extensiva, 'datos_garantias': datos_garantias,
-            'aplica_porcentaje': aplica_porcentaje, 'supervisor_interventor': supervisor_interventor}
+            'aplica_porcentaje': aplica_porcentaje, 'supervisor_interventor': supervisor_interventor,
+            'adiciones_amparos': adiciones_amparos}
 
 
 def gestionar_contrato(request, origen, contrato):
@@ -398,7 +418,8 @@ def gestionar_contrato(request, origen, contrato):
     crear_actualizar_vigencias(datos['anho_vigencia'], datos['valor_vigencia'], datos['datos_vigencias'],
                                contrato, origen)
     crear_actualizar_garantias(datos['garantia_extensiva'], datos['tipo_garantia_id'], datos['porcentaje_asegurado'],
-                               datos['vigencia_garantia'], datos['datos_garantias'], contrato, origen)
+                               datos['vigencia_garantia'], datos['datos_garantias'], datos['adiciones_amparos'],
+                               contrato, origen)
     crear_actualizar_municipios(datos['municipios'], contrato, origen)
     crear_actualizar_supervisores_interventores(datos['supervisores'], datos['interventores'], contrato,
                                                 datos['supervisor_interventor'], origen)
@@ -429,24 +450,39 @@ def crear_actualizar_vigencias(anho_vigencia, valor_vigencia, datos_vigencias, c
 
 
 def crear_actualizar_garantias(garantia_extensiva, tipo_garantia_id, porcentaje_asegurado, vigencia_garantia,
-                               datos_garantias, contrato, origen):
+                               datos_garantias, adiciones_amparos, contrato, origen):
     if origen == 'editar':
+        GarantiaAmparosAdiciones.objects.filter(garantia__contrato=contrato).delete()
         ContratoGarantia.objects.filter(contrato=contrato).delete()
     valor_garantia_extensiva = False
     if garantia_extensiva == "on":
         valor_garantia_extensiva = True
 
     lista_garantias = [{"tipo_garantia": tipo_garantia_id, "porcentaje_asegurado": porcentaje_asegurado,
-                        "vigencia_garantia": vigencia_garantia, "garantia_extensiva": valor_garantia_extensiva}]
+                        "vigencia_garantia": vigencia_garantia, "garantia_extensiva": valor_garantia_extensiva,
+                        "adiciones_amparos": adiciones_amparos}]
+
     if datos_garantias:
         for datos in json.loads(datos_garantias):
             lista_garantias.append(datos)
 
     for garantia in lista_garantias:
-        ContratoGarantia.objects.create(contrato=contrato, tipo_garantia_id=garantia["tipo_garantia"],
-                                        porcentaje_asegurado=garantia["porcentaje_asegurado"],
-                                        vigencia=garantia["vigencia_garantia"],
-                                        extensiva=garantia["garantia_extensiva"])
+        contrato_garantia = ContratoGarantia.objects\
+            .create(contrato=contrato, tipo_garantia_id=garantia["tipo_garantia"],
+                    porcentaje_asegurado=garantia["porcentaje_asegurado"],
+                    vigencia=garantia["vigencia_garantia"],
+                    extensiva=garantia["garantia_extensiva"])
+        if garantia['adiciones_amparos'] != '':
+            for adicion_amparo in json.loads(garantia['adiciones_amparos']):
+                amparo = ''
+                adicion = ''
+                if adicion_amparo['adicion_amparo'] == "0":
+                    adicion = adicion_amparo['descripcion']
+                else:
+                    amparo = adicion_amparo['descripcion']
+
+                GarantiaAmparosAdiciones.objects.create(garantia=contrato_garantia, amparo=amparo, adicion=adicion,
+                                                        limite_asegurado=adicion_amparo['limite_asegurado'])
 
 
 def crear_actualizar_municipios(municipios, contrato, origen):
