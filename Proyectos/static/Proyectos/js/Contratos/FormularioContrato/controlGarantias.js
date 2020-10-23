@@ -275,7 +275,7 @@ function quitarAdicionAmparo(pos) {
     contadorAdiciones -= 1
 }
 
-function configurarFormulario() {
+function configurarFormularioAdicionAmparo() {
     const form = $("#form_adicion_amparo")[0];
     agregarValidacionForm(form, function (event){
         guardarAdicionAmparo();
@@ -319,7 +319,11 @@ function validarTipoGarantia(){
                     if (elemento.aplica_amparos_adiciones){
                         labelVigenciaAmparos.text('Amparos o Adiciones');
                         vigenciaGarantia.attr('readonly', true);
-                        vigenciaGarantia.addClass('desactivado')
+                        vigenciaGarantia.addClass('desactivado');
+                        if (inputAdicionesAmparos.val() === '' || inputAdicionesAmparos.val() === 'undefined' ||
+                            inputAdicionesAmparos.val() === undefined){
+                            vigenciaGarantia.val('')
+                        }
                     }
                 }else{
                     porcentajeAsegurado.attr('placeholder', 'Ingrese el porcentaje');
@@ -350,7 +354,7 @@ function validarPorcentajeAsegurado() {
             if (!elemento.aplica_valor_smmlv){
                 if (parseFloat(porcentajeAsegurado.val()) > 100){
                     porcentajeAsegurado.val('');
-                    $('#guardar').click();
+                    document.getElementById(porcentajeAsegurado[0].id).setCustomValidity('.');
                     return false
                 }
             }
@@ -371,5 +375,5 @@ $(document).ready(function () {
     quitarGarantia();
     validarPorcentajeAsegurado();
     validarTipoGarantia();
-    configurarFormulario();
+    configurarFormularioAdicionAmparo();
 });
