@@ -175,6 +175,10 @@ function combinacionesFormasDePago(valor) {
             inputLiquidacion.removeAttr('disabled', true);
             divFormasDePago.show();
 
+            inputAnticipo.inputmask();
+            inputLiquidacion.inputmask();
+            inputActasParciales.inputmask();
+
             divAnticipo.removeClass('col-md-6');
             divAnticipo.addClass('col-md-4');
             divActasParciales.removeClass('col-md-6');
@@ -193,6 +197,10 @@ function combinacionesFormasDePago(valor) {
             inputLiquidacion.removeAttr('disabled', true);
             divFormasDePago.show();
 
+            inputAnticipo.inputmask();
+            inputLiquidacion.inputmask();
+            inputActasParciales.inputmask('remove');
+
             divAnticipo.removeClass('col-md-4');
             divAnticipo.addClass('col-md-6');
             divLiquidacion.removeClass('col-md-4');
@@ -209,6 +217,10 @@ function combinacionesFormasDePago(valor) {
             inputLiquidacion.removeAttr('disabled', true);
             divFormasDePago.show();
 
+            inputAnticipo.inputmask('remove');
+            inputLiquidacion.inputmask();
+            inputActasParciales.inputmask();
+
             divActasParciales.removeClass('col-md-4');
             divActasParciales.addClass('col-md-6');
             divLiquidacion.removeClass('col-md-4');
@@ -217,6 +229,10 @@ function combinacionesFormasDePago(valor) {
         }else{
             divAnticipo.show();
             divActasParciales.show();
+
+            inputAnticipo.inputmask('remove');
+            inputLiquidacion.inputmask('remove');
+            inputActasParciales.inputmask('remove');
 
             inputAnticipo.removeAttr('required', true);
             inputActasParciales.removeAttr('required', true);
