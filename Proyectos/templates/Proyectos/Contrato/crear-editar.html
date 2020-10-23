@@ -131,10 +131,10 @@
 
                                                             <div class="form-row">
                                                                 <div class="form-group col-md-6">
-                                                                    {% input_currency_tag 'valor_con_iva' 'Valor con IVA' removeMaskOnSubmit=True placeholder="Ingrese el valor con IVA"  min='0' max="99999999999999.99" step="0.01" onInput="validarLongitud(16,this)" required="" value=valor_contrato_con_iva mensaje_validacion='Por favor ingrese el valor con IVA' invalido=errores.valor_con_iva %}
+                                                                    {% input_currency_tag 'valor_con_iva' 'Valor con IVA' removeMaskOnSubmit=True placeholder="Ingrese el valor con IVA"  min='0' max="99999999999999.99" step="0.01" required="" value=valor_contrato_con_iva mensaje_validacion='Por favor ingrese el valor con IVA' invalido=errores.valor_con_iva %}
                                                                 </div>
                                                                 <div class="form-group col-md-6">
-                                                                    {% input_currency_tag 'valor_sin_iva' 'Valor sin IVA' removeMaskOnSubmit=True placeholder="Ingrese el valor sin IVA"  min='0' max="99999999999999.99" step="0.01" onInput="validarLongitud(16,this)" required="" value=valor_contrato_sin_iva mensaje_validacion='Por favor ingrese el valor sin IVA' invalido=errores.valor_sin_iva %}
+                                                                    {% input_currency_tag 'valor_sin_iva' 'Valor sin IVA' removeMaskOnSubmit=True placeholder="Ingrese el valor sin IVA"  min='0' max="99999999999999.99" step="0.01" required="" value=valor_contrato_sin_iva mensaje_validacion='Por favor ingrese el valor sin IVA' invalido=errores.valor_sin_iva %}
                                                                 </div>
                                                             </div>
 
@@ -318,6 +318,7 @@
     <script src="{% static 'EVA/Plantilla/js/formplugins/inputmask/inputmask.bundle.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/inputmask.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/mathround/mathround.js' %}"></script>
     <script src="{% static 'Proyectos/js/Contratos/controlWizardForm.js' %}"></script>
     <script src="{% static 'Proyectos/js/Contratos/selectDependiente.js' %}"></script>
     <script src="{% static 'Proyectos/js/Contratos/FormularioContrato/formularioContrato.js' %}"></script>
