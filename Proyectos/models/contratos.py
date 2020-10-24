@@ -184,6 +184,7 @@ class ContratoGarantia(models.Model, ModelDjangoExtensiones):
 
 
 class Amparos(models.Model, ModelDjangoExtensiones):
+    objects = ManagerGeneral()
     nombre = models.CharField(verbose_name="Nombre", blank="False", null="False", max_length=100)
     descripcion = models.CharField(verbose_name="Desripción", blank="False", null="False", max_length=100)
     estado = models.BooleanField(verbose_name="Estado", blank="False", null="False")
