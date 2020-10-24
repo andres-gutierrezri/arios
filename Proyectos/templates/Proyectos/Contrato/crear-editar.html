@@ -51,6 +51,7 @@
                                             <input hidden id="datos_garantias" name="datos_garantias">
                                             <input hidden id="tipos_contrato" value="{{ tipos_contrato_json }}">
                                             <input hidden id="selecciones_pdm" value="{{ selecciones_pdm }}">
+                                            <input hidden id="opciones_amparos" value="{{ opciones_amparos }}">
                                             <div id="smartwizard">
                                                 <ul>
                                                     <li><a href="#step-1">Información básica</a></li>
@@ -267,10 +268,10 @@
                                                                             {% input_number_tag 'porcentaje_asegurado' 'Porcentaje Asegurado' placeholder='Ingrese un porcentaje'  min='0' max="100" step="0.01" onInput="validarLongitud(5,this)" required="" label_id=True value=contrato.porcentaje_asegurado mensaje_validacion='Por favor ingrese el porcentaje (Maximo 100%)' invalido=errores.porcentaje_asegurado %}
                                                                         </div>
                                                                     {% endif %}
-                                                                    <div class="form-group col-md-3" id="div_despliegue_modal_adicion_amparo">
+                                                                    <div class="form-group col-md-3" id="div_despliegue_modal_amparo">
                                                                         {% input_number_tag 'vigencia' 'Vigencia (Meses)' placeholder="Ingrese la vigencia en meses"  min='0' max="2147483647" onInput="validarLongitud(10,this)" required="" label_id=True value=contrato.vigencia mensaje_validacion='Por favor ingrese la vigencia' invalido=errores.vigencia %}
                                                                     </div>
-                                                                    <input hidden name="adiciones_amparos" id="input_adiciones_amparos" value="{{ amparo_adicion }}">
+                                                                    <input hidden name="amparos" id="input_amparos">
                                                                     <div class="col-md-2" style="padding-top: 33px;">
                                                                         <div class="custom-control custom-checkbox">
                                                                             <input type="checkbox" class="custom-control-input" id="garantia_extensiva" name="garantia_extensiva">
@@ -303,7 +304,7 @@
             </div>
         </div>
     </div>
-    {% include 'Proyectos/Contrato/_modal_garantia_amparos_adiciones.html' with adicion_amparo=adicion_amparo %}
+    {% include 'Proyectos/Contrato/_modal_garantia_amparos.html' with amparo=amparo %}
 
 {% endblock main %}
 
