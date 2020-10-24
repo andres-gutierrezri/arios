@@ -172,13 +172,12 @@
                                     </h2>
                                 </div>
                             </div>
-                            <div class="p-3">
+                            <div class="col-12 p-3">
                                 <h5>
                                     <small class="mt-0 mb-3 text-muted">
                                         <div class="row">
                                             {% for gar in garantias %}
                                                 <div class="col-lg-6">
-                                                {% if gar != garantias.first %}<br>{% endif %}
                                                 <b>Garantía: </b>
                                                 <br><b>Tipo: </b>{{ gar.tipo_garantia }}
                                                 {% if gar.tipo_garantia.aplica_valor_smmlv %}
@@ -193,24 +192,21 @@
                                                 {% endif %}
                                                 <br><b>Extensiva: </b>{% if gar.extensiva %}Si{% else %}No{% endif %}
                                                 </div>
-                                                {% if not gar.tipo_garantia.aplica_amparos_adiciones %}
+                                                {% if not gar.tipo_garantia.aplica_amparos %}
                                                     <div class="col-lg-6"></div>
+                                                    <div class="col-12"><br></div>
                                                 {% else %}
                                                     <div class="col-lg-6">
-                                                        {% for ad_am in adiciones_amparos %}
-                                                            {% if ad_am.garantia == gar %}
-                                                                {% if ad_am.adicion %}
-                                                                    <br><b>Adición y Límite Asegurado: </b>
-                                                                    <br><b>Adición: </b>{{ ad_am.adicion }}
-                                                                {% else %}
-                                                                    <br><b>Amparo y Límite Asegurado: </b>
-                                                                    <br><b>Amparo: </b>{{ ad_am.amparo }}
-                                                                {% endif %}
-                                                                <br><b>Límite Asegurado: </b>{{ ad_am.limite_asegurado }}
+                                                        <b>Amparos y Límites: </b><br>
+                                                        {% for amparo in amparos %}
+                                                            {% if amparo.garantia == gar %}
+                                                                <b>Amparo: </b>{{ amparo.amparo }}
+                                                                <br><b>Límite Asegurado: </b>{{ amparo.limite_asegurado }}
                                                                 <br>
                                                             {% endif %}
                                                         {% endfor %}
                                                     </div>
+                                                    <div class="col-12"><br></div>
                                                 {% endif %}
                                                 <br>
                                             {% endfor %}
