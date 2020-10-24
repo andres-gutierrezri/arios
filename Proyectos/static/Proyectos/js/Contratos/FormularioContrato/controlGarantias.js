@@ -293,8 +293,8 @@ function guardarAdicionAmparo() {
     let datos = [];
 
     for(let i=0; i < contadorAdiciones; i++){
-        datos.push({'descripcion': $('#descripcion_'+ i +'_id').val(),
-            'limite_asegurado': $('#limite_asegurado_'+ i +'_id').val(),
+        datos.push({'descripcion': $('#descripcion_'+ i +'_id').val().replace("'", "").replace('"', ''),
+            'limite_asegurado': $('#limite_asegurado_'+ i +'_id').val().replace("'", "").replace('"', ''),
             'adicion_amparo': $('input:radio[name=adicion_amparo_'+ i +']:checked').val()})
     }
     vigenciaGarantia.val(datos.length);
