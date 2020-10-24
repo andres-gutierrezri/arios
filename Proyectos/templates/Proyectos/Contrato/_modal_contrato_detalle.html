@@ -178,7 +178,8 @@
                                         <div class="row">
                                             {% for gar in garantias %}
                                                 <div class="col-lg-6">
-                                                <br><b>Garantía: </b>
+                                                {% if gar != garantias.first %}<br>{% endif %}
+                                                <b>Garantía: </b>
                                                 <br><b>Tipo: </b>{{ gar.tipo_garantia }}
                                                 {% if gar.tipo_garantia.aplica_valor_smmlv %}
                                                     <br><b>Valor SMMLV: </b> {{ gar.porcentaje_asegurado }}
@@ -198,7 +199,6 @@
                                                     <div class="col-lg-6">
                                                         {% for ad_am in adiciones_amparos %}
                                                             {% if ad_am.garantia == gar %}
-                                                                <br>
                                                                 {% if ad_am.adicion %}
                                                                     <br><b>Adición y Límite Asegurado: </b>
                                                                     <br><b>Adición: </b>{{ ad_am.adicion }}
