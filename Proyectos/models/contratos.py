@@ -155,7 +155,7 @@ class TipoGarantia(models.Model, ModelDjangoExtensiones):
     nombre = models.CharField(verbose_name="Nombre", max_length=50, blank=False, null=False)
     descripcion = models.CharField(verbose_name="Descripción", max_length=50, blank=False, null=False)
     aplica_valor_smmlv = models.BooleanField(verbose_name="Aplica Valor en SMMLV", blank=False, null=False)
-    aplica_amparos_adiciones = models.BooleanField(verbose_name="Aplica Amparos o Adiciones", blank=False, null=False)
+    aplica_amparos = models.BooleanField(verbose_name="Aplica Amparos", blank=False, null=False)
 
     def __str__(self):
         return self.nombre
@@ -183,16 +183,29 @@ class ContratoGarantia(models.Model, ModelDjangoExtensiones):
         verbose_name_plural = 'Contratos Garantías'
 
 
-class GarantiaAmparosAdiciones(models.Model, ModelDjangoExtensiones):
+class Amparos(models.Model, ModelDjangoExtensiones):
+    nombre = models.CharField(verbose_name="Nombre", blank="False", null="False", max_length=100)
+    descripcion = models.CharField(verbose_name="Desripción", blank="False", null="False", max_length=100)
+    estado = models.BooleanField(verbose_name="Estado", blank="False", null="False")
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name = 'Amparo'
+        verbose_name_plural = 'Amparos'
+
+
+class GarantiaAmparos(models.Model, ModelDjangoExtensiones):
     garantia = models.ForeignKey(ContratoGarantia, on_delete=models.DO_NOTHING, verbose_name="Contrato garantía",
                                  blank=False, null=False)
-    amparo = models.CharField(verbose_name="Amparo", blank="False", null="False", max_length=300)
-    adicion = models.CharField(verbose_name="Adición", blank="False", null="False", max_length=300)
+    amparo = models.ForeignKey(Amparos, on_delete=models.DO_NOTHING, verbose_name="Contrato garantía",
+                               blank=False, null=False)
     limite_asegurado = models.CharField(verbose_name="Límite asegurado", blank="False", null="False", max_length=100)
 
     def __str__(self):
-        return 'Adicion o Amparo del contrato: {0}'.format(self.garantia.contrato)
+        return 'Amparo {0} del contrato: {1}'.format(self.amparo, self.garantia.contrato)
 
     class Meta:
-        verbose_name = 'Amparo y Adicion de Garantía'
-        verbose_name_plural = 'Amparos y Adiciones de Garantías'
+        verbose_name = 'Amparo de Garantía'
+        verbose_name_plural = 'Amparos de Garantías'
