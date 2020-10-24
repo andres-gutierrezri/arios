@@ -154,6 +154,7 @@ function retomarCampoGarantia(contadorGarantia){
 }
 
 tipoGarantia.change(function () {
+    vigenciaGarantia.val('');
     validarTipoGarantia();
     validarPorcentajeAsegurado();
 });
@@ -227,7 +228,7 @@ function agregarAmparo(inicial) {
                             <option value="">Seleccione un amparo</option>
                             ${opcionesAmparos}
                         </select>
-                        <div class="invalid-tooltip invalid-tooltip-modal">Por favor seleccione un amparo</div>
+                        <div class="invalid-tooltip">Por favor seleccione un amparo</div>
                     </div>
                     <div class="form-group col-6">
                         <label for="limite_asegurado_${pos}_id">Límite Asegurado</label>
@@ -288,7 +289,6 @@ function validarTipoGarantia(){
     let valorTipoGarantia = tipoGarantia.val();
     let labelValorPorcentajeAsegurado = $('#label_porcentaje_asegurado_id');
     let labelVigenciaAmparos = $('#label_vigencia_id');
-    vigenciaGarantia.val('');
 
     if (valorTipoGarantia !== ''){
         datos.forEach(function (elemento) {
