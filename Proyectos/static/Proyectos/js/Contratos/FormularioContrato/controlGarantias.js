@@ -9,7 +9,8 @@ let vigenciaGarantia = $('#vigencia_id');
 let eliminarGarantia = $('#eliminar_garantia');
 let datosGarantias = $('#datos_garantias');
 let tiposGarantiasSmmlv = $('#tipos_garantias_smmlv');
-let inputAdicionesAmparos = $('#input_adiciones_amparos');
+let inputAmparos = $('#input_amparos');
+let opcionesSelectAmparos = $('#opciones_amparos');
 let valoresGarantias = [];
 let contadorGarantia = 0;
 
@@ -19,7 +20,7 @@ function agregarGarantia(valores) {
     let datoPorcentajeAsegurado = porcentajeAsegurado.val();
     let datoVigenciaGarantia = vigenciaGarantia.val();
     let datoGarantiaExtensiva = vigencia.val();
-    let datosAdicionesAmparos = inputAdicionesAmparos.val();
+    let datosAmparos = inputAmparos.val();
 
     if (valores){
         datoTipoGarantia = valores.tipo_garantia;
@@ -27,18 +28,18 @@ function agregarGarantia(valores) {
         datoPorcentajeAsegurado = valores.porcentaje_asegurado;
         datoVigenciaGarantia = valores.vigencia_garantia;
         datoGarantiaExtensiva = valores.garantia_extensiva;
-        datosAdicionesAmparos = valores.adiciones_amparos
+        datosAmparos = valores.lista_amparos
     }
 
     let datos = JSON.parse(tiposGarantiasSmmlv.val());
     let textoLabelPorcentajeValor = 'Porcentaje';
-    let textoLabelVigenciaAmparoAdicion = 'Vigencia (Meses)';
+    let textoLabelVigenciaAmparo = 'Vigencia (Meses)';
     datos.forEach(function (elemento) {
         if (parseInt(datoTipoGarantia) === elemento.id) {
             if (elemento.aplica_valor_smmlv) {
                 textoLabelPorcentajeValor = 'SMMLV Asegurados';
-                if (elemento.aplica_amparos_adiciones){
-                    textoLabelVigenciaAmparoAdicion = 'Amparos y Adiciones'
+                if (elemento.aplica_amparos){
+                    textoLabelVigenciaAmparo = 'Amparos'
                 }
             }
         }
@@ -60,7 +61,7 @@ function agregarGarantia(valores) {
 
     valoresGarantias.push({'pos': contadorGarantia, 'tipo_garantia': datoTipoGarantia, 'vigencia_garantia': datoVigenciaGarantia,
         'porcentaje_asegurado': datoPorcentajeAsegurado, 'garantia_extensiva': checkActivo, 'nombre_tipo_garantia': datoNombreTipoGarantia,
-        'adiciones_amparos': datosAdicionesAmparos});
+        'amparos': datosAmparos});
 
     divGarantias.append(`<div class="form-row" id="garantia_${contadorGarantia}" style="margin-bottom: 0">
         <div class="form-group col-md-3">
@@ -73,7 +74,7 @@ function agregarGarantia(valores) {
         <input disabled type="text" id="valor_porcentaje_asegurado_${contadorGarantia}" value="${datoPorcentajeAsegurado}" class="form-control">
         </div>
         <div class="form-group col-md-3">
-        <label>${textoLabelVigenciaAmparoAdicion}</label>
+        <label>${textoLabelVigenciaAmparo}</label>
         <input disabled type="text" id="valor_vigencia_garantia_${contadorGarantia}" value="${datoVigenciaGarantia}" class="form-control">
         </div>
         <div class="col-md-2" style="padding-top: 33px;">
@@ -84,7 +85,7 @@ function agregarGarantia(valores) {
         <a class="far fa-2x far fa-edit" href="#" onclick="editarPosGarantia(${contadorGarantia})" title="" data-original-title="Agregar Garantía" style=""></a>
         <a class="far fa-2x far fa-trash-alt color-danger-900" href="#" onclick="quitarPosGarantia(${contadorGarantia})" title="" data-original-title="Eliminar Garantía"></a>
         </div>
-        <input hidden id="input_adiciones_amparos_${contadorGarantia}" value='${datosAdicionesAmparos}'>
+        <input hidden id="input_amparos_${contadorGarantia}" value='${datosAmparos}'>
         </div>`);
     contadorGarantia += 1;
 
@@ -92,7 +93,7 @@ function agregarGarantia(valores) {
     tipoGarantia.val('');
     porcentajeAsegurado.val('');
     vigenciaGarantia.val('');
-    inputAdicionesAmparos.val('');
+    inputAmparos.val('');
     garantiaExtensiva.prop('checked', false);
     datosGarantias.val(JSON.stringify(valoresGarantias));
 }
@@ -142,7 +143,7 @@ function retomarCampoGarantia(contadorGarantia){
 
     porcentajeAsegurado.val($('#valor_porcentaje_asegurado_'+ contadorGarantia).val());
     vigenciaGarantia.val($('#valor_vigencia_garantia_'+ contadorGarantia).val());
-    inputAdicionesAmparos.val($('#input_adiciones_amparos_'+ contadorGarantia).val());
+    inputAmparos.val($('#input_amparos_'+ contadorGarantia).val());
 
     if ($('#valor_garantia_extensiva_'+ contadorGarantia).prop('checked')){
         garantiaExtensiva.prop('checked', true);
@@ -157,105 +158,82 @@ tipoGarantia.change(function () {
     validarPorcentajeAsegurado();
 });
 
-$('#div_despliegue_modal_adicion_amparo').click(function () {
+let contadorAmparos = 0;
+
+$('#div_despliegue_modal_amparo').click(function () {
     if (vigenciaGarantia.hasClass('desactivado')) {
-        $('#agregar_adicion_amparo').modal('show');
+        $('#agregar_amparo_modal').modal('show');
         $('#contenedor').empty();
         $('#contenedor_inicial').empty();
-        contadorAdiciones = 0;
-        agregarAdicionAmparo(true);
+        contadorAmparos = 0;
+        agregarAmparo(true);
     }
-    if (inputAdicionesAmparos.val() === 'undefined' || inputAdicionesAmparos.val() === ''){
+    if (inputAmparos.val() === 'undefined' || inputAmparos.val() === ''){
         $('#contenedor').empty();
         $('#contenedor_inicial').empty();
-        contadorAdiciones = 0;
-        agregarAdicionAmparo(true);
+        contadorAmparos = 0;
+        agregarAmparo(true);
     }else{
-        let elementos = JSON.parse(inputAdicionesAmparos.val());
+        let elementos = JSON.parse(inputAmparos.val());
+        let opcionesAmparosJson = JSON.parse(opcionesSelectAmparos.val());
         elementos.forEach(function (e) {
-            $('#descripcion_0_id').val(e.descripcion);
+            $('#amparo_select_0_id').val(e.amparo);
             $('#limite_asegurado_0_id').val(e.limite_asegurado);
-            if (e.adicion_amparo === '0'){
-                $('#adicion_0_id').click();
-            }else{
-                $('#amparo_0_id').click();
-            }
+            $('#select2-amparo_select_0_id-container').text(opcionesAmparosJson[1].campo_texto);
             if (e !== elementos[elementos.length - 1]){
-                agregarAdicionAmparo(false);
+                agregarAmparo(false);
             }
-        })
+        });
     }
 });
 
-let contadorAdiciones = 0;
-
-function agregarAdicionAmparo(inicial) {
-    let descripcion = $('#descripcion_0_id');
+function agregarAmparo(inicial) {
+    let amparoSeleccionId = $('#amparo_select_0_id');
     let limiteAsegurado = $('#limite_asegurado_0_id');
-    let descripcionValor = '';
     let limiteAseguradoValor = '';
-    let seleccionAdicionRadio = '';
-    let seleccionAmparoRadio = '';
 
-    if (descripcion.val() !== undefined){
-        descripcionValor = descripcion.val();
-    }
     if (limiteAsegurado.val() !== undefined){
         limiteAseguradoValor = limiteAsegurado.val();
-    }
-    if ($('input:radio[name=adicion_amparo_0]:checked').val() === '0'){
-        seleccionAdicionRadio = `checked`
-    }else{
-        seleccionAmparoRadio = `checked`
     }
 
     let contenedor = $('#contenedor');
     let contenedorInicial = $('#contenedor_inicial');
-    let pos = contadorAdiciones;
-    contadorAdiciones += 1;
+    let pos = contadorAmparos;
+    let opcionesAmparos = '';
+    contadorAmparos += 1;
+    let opcionesAmparosJson = JSON.parse(opcionesSelectAmparos.val());
+    opcionesAmparosJson.forEach(function (e) {
+        if (parseInt(amparoSeleccionId.val()) === e.campo_valor){
+            opcionesAmparos += `<option value="${e.campo_valor}" selected>${e.campo_texto}</option>`
+        }else{
+            opcionesAmparos += `<option value="${e.campo_valor}">${e.campo_texto}</option>`
+        }
+    });
 
     let botonGestion;
     if (inicial){
-        botonGestion = `<a class="far fa-2x far fa-plus-circle" id="agregar_adicion_amparo" href="#" 
-                            onclick="agregarAdicionAmparo()" title="" data-original-title="Agregar Adición o Amparo" style=""></a>`
+        botonGestion = `<a class="far fa-2x far fa-plus-circle" id="agregar_amparo" href="#" 
+                            onclick="agregarAmparo()" title="" data-original-title="Agregar Amparo" style=""></a>`
     }else{
-        botonGestion = `<a class="far fa-2x far fa-trash-alt color-danger-900" id="eliminar_garantia" href="#"
-                            onclick="quitarAdicionAmparo(${pos})" title="" data-original-title="Eliminar Garantía"></a>`;
+        botonGestion = `<a class="far fa-2x far fa-trash-alt color-danger-900" id="eliminar_amparo" href="#"
+                            onclick="quitarAmparo(${pos})" title="" data-original-title="Eliminar Amparo"></a>`;
     }
-    let inputs = `<div class="form-row div-inputs-${pos}">
-                    <div class="form-group col-4">
-                        <label for="descripcion_${pos}_id">Descripción</label>
-                        <textarea id="descripcion_${pos}_id" name="descripcion" placeholder="Ingrese la descripción" maxlength="300"
-                                  required="" class="form-control valores">${descripcionValor}</textarea>
-                        <div class="invalid-tooltip ">Por favor ingrese una descripción.</div>
+
+    let inputs = `
+                <div class="form-row div-inputs-${pos}">
+                    <div class="form-group col-5">
+                       <label for="amparo_select_${pos}_id">Amparos</label>
+                        <select class="amparo-select select2 form-control" id="amparo_select_${pos}_id" name="amparo_select_${pos}" tabindex="-1" required="required">
+                            <option value="">Seleccione un amparo</option>
+                            ${opcionesAmparos}
+                        </select>
+                        <div class="invalid-tooltip invalid-tooltip-modal">Por favor seleccione un amparo</div>
                     </div>
-                    <div class="form-group col-4">
+                    <div class="form-group col-6">
                         <label for="limite_asegurado_${pos}_id">Límite Asegurado</label>
-                        <textarea id="limite_asegurado_${pos}_id" name="limite_asegurado" placeholder="Ingrese el límite asegurado" maxlength="100"
-                                  required="" class="form-control valores">${limiteAseguradoValor}</textarea>
+                        <input id="limite_asegurado_${pos}_id" name="limite_asegurado_${pos}" placeholder="Ingrese el límite asegurado" maxlength="100"
+                                  required="" class="form-control valores" value="${limiteAseguradoValor}">
                         <div class="invalid-tooltip ">Por favor ingrese el límite asegurado.</div>
-                    </div>
-                    <div class="form-group col-2">
-                        <div class="form-row">
-                            <div class="col-12">
-                                <p>Seleccione</p>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="col-12">
-                                <div class="custom-control custom-radio custom-control-inline">
-                                    <input type="radio" class="custom-control-input" id="adicion_${pos}_id" name="adicion_amparo_${pos}" value="0"
-                                           required="" ${seleccionAdicionRadio}>
-                                    <label class="custom-control-label" for="adicion_${pos}_id">Adición</label>
-                                </div>
-                                &nbsp;&nbsp;<div class="custom-control custom-radio custom-control-inline">
-                                <input type="radio" class="custom-control-input" id="amparo_${pos}_id" name="adicion_amparo_${pos}" value="1"
-                                       required="" ${seleccionAmparoRadio}>
-                                <label class="custom-control-label" for="amparo_${pos}_id">Amparo</label>
-                            </div>
-                                <div class="invalid-tooltip ">Por favor seleccione una opción</div>
-                            </div>
-                        </div>
                     </div>
                     <div class="col-md-1" style="padding-top:30px">
                         ${botonGestion}
@@ -266,39 +244,43 @@ function agregarAdicionAmparo(inicial) {
     }else{
         contenedor.append(inputs)
     }
-    descripcion.val('');
+    amparoSeleccionId.val('');
     limiteAsegurado.val('');
+
+    $('.amparo-select').select2({
+        dropdownParent: $('#agregar_amparo_modal')
+    });
 }
 
-function quitarAdicionAmparo(pos) {
+function quitarAmparo(pos) {
     $('.div-inputs-' + pos).remove();
-    contadorAdiciones -= 1
+    contadorAmparos -= 1
 }
 
-function configurarFormularioAdicionAmparo() {
-    const form = $("#form_adicion_amparo")[0];
+function configurarFormularioAmparo() {
+    const form = $("#form_amparo")[0];
     agregarValidacionForm(form, function (event){
-        guardarAdicionAmparo();
-        cerrarModalAdicionAmparo();
+        guardarAmparo();
+        cerrarModalAmparo();
         return true;
     });
 }
 
-function cerrarModalAdicionAmparo() {
-    $("#agregar_adicion_amparo").modal('hide');
+function cerrarModalAmparo() {
+    $("#agregar_amparo_modal").modal('hide');
     $(".modal-backdrop").remove();
 }
 
-function guardarAdicionAmparo() {
+function guardarAmparo() {
     let datos = [];
 
-    for(let i=0; i < contadorAdiciones; i++){
-        datos.push({'descripcion': $('#descripcion_'+ i +'_id').val().replace("'", "").replace('"', ''),
-            'limite_asegurado': $('#limite_asegurado_'+ i +'_id').val().replace("'", "").replace('"', ''),
-            'adicion_amparo': $('input:radio[name=adicion_amparo_'+ i +']:checked').val()})
+    for(let i=0; i < contadorAmparos; i++){
+        datos.push({'amparo': $('#amparo_select_'+ i +'_id').val(),
+            'limite_asegurado': $('#limite_asegurado_'+ i +'_id').val()
+                .replace("'", "").replace('"', '')})
     }
     vigenciaGarantia.val(datos.length);
-    inputAdicionesAmparos.val(JSON.stringify(datos))
+    inputAmparos.val(JSON.stringify(datos))
 }
 
 function validarTipoGarantia(){
@@ -316,12 +298,12 @@ function validarTipoGarantia(){
                     porcentajeAsegurado.attr('onInput', 'validarLongitud(16,this)');
                     porcentajeAsegurado.next('div').text('Por favor ingrese un valor');
                     labelValorPorcentajeAsegurado.text('SMMLV Asegurados');
-                    if (elemento.aplica_amparos_adiciones){
-                        labelVigenciaAmparos.text('Amparos o Adiciones');
+                    if (elemento.aplica_amparos){
+                        labelVigenciaAmparos.text('Amparos');
                         vigenciaGarantia.attr('readonly', true);
                         vigenciaGarantia.addClass('desactivado');
-                        if (inputAdicionesAmparos.val() === '' || inputAdicionesAmparos.val() === 'undefined' ||
-                            inputAdicionesAmparos.val() === undefined){
+                        if (inputAmparos.val() === '' || inputAmparos.val() === 'undefined' ||
+                            inputAmparos.val() === undefined){
                             vigenciaGarantia.val('')
                         }
                     }
@@ -332,7 +314,7 @@ function validarTipoGarantia(){
                     porcentajeAsegurado.next('div').text('Por favor ingrese el porcentaje (Maximo 100%)');
                     labelValorPorcentajeAsegurado.text('Porcentaje Asegurado')
                 }
-                if (!elemento.aplica_amparos_adiciones){
+                if (!elemento.aplica_amparos){
                     vigenciaGarantia.removeAttr('readonly', true);
                     vigenciaGarantia.removeClass('desactivado');
                     labelVigenciaAmparos.text('Vigencia (Meses)');
@@ -375,5 +357,5 @@ $(document).ready(function () {
     quitarGarantia();
     validarPorcentajeAsegurado();
     validarTipoGarantia();
-    configurarFormularioAdicionAmparo();
+    configurarFormularioAmparo();
 });
