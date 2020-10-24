@@ -288,6 +288,7 @@ function validarTipoGarantia(){
     let valorTipoGarantia = tipoGarantia.val();
     let labelValorPorcentajeAsegurado = $('#label_porcentaje_asegurado_id');
     let labelVigenciaAmparos = $('#label_vigencia_id');
+    vigenciaGarantia.val('');
 
     if (valorTipoGarantia !== ''){
         datos.forEach(function (elemento) {
