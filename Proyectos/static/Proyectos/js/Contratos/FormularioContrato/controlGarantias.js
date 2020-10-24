@@ -227,13 +227,13 @@ function agregarAdicionAmparo(inicial) {
                         <label for="descripcion_${pos}_id">Descripción</label>
                         <textarea id="descripcion_${pos}_id" name="descripcion" placeholder="Ingrese la descripción" maxlength="300"
                                   required="" class="form-control valores">${descripcionValor}</textarea>
-                        <div class="invalid-tooltip ">Por favor ingrese el número del contrato.</div>
+                        <div class="invalid-tooltip ">Por favor ingrese una descripción.</div>
                     </div>
                     <div class="form-group col-4">
                         <label for="limite_asegurado_${pos}_id">Límite Asegurado</label>
                         <textarea id="limite_asegurado_${pos}_id" name="limite_asegurado" placeholder="Ingrese el límite asegurado" maxlength="100"
                                   required="" class="form-control valores">${limiteAseguradoValor}</textarea>
-                        <div class="invalid-tooltip ">Por favor ingrese el número del contrato.</div>
+                        <div class="invalid-tooltip ">Por favor ingrese el límite asegurado.</div>
                     </div>
                     <div class="form-group col-2">
                         <div class="form-row">
