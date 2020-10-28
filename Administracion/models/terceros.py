@@ -4,7 +4,7 @@ from django.db.models import QuerySet
 
 from EVA.General.modelmanagers import ManagerGeneral
 from .models import Empresa, TipoIdentificacion, Persona
-from .divipol import CentroPoblado
+from .divipol import CentroPoblado, Municipio
 from EVA.General.modeljson import ModelDjangoExtensiones
 
 
@@ -65,6 +65,23 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     direccion = models.CharField(max_length=100, verbose_name='Dirección', null=False, blank=False)
     telefono = models.CharField(max_length=30, verbose_name='Teléfono', null=False, blank=False)
     fax = models.CharField(max_length=30, verbose_name='fax', null=True, blank=True)
+    telefono_fijo_principal = models.CharField(max_length=30, verbose_name='Teléfono Fijo Principal',
+                                               null=True, blank=True)
+    telefono_fijo_auxiliar = models.CharField(max_length=30, verbose_name='Teléfono Fijo auxiliar',
+                                              null=True, blank=True)
+    telefono_movil_principal = models.CharField(max_length=30, verbose_name='Teléfono Movil Principal',
+                                                null=True, blank=True)
+    telefono_movil_auxiliar = models.CharField(max_length=30, verbose_name='Teléfono Movil Auxiliar',
+                                               null=True, blank=True)
+    correo_principal = models.CharField(max_length=30, verbose_name='Correo Principal', null=True, blank=True)
+    correo_auxiliar = models.CharField(max_length=30, verbose_name='Correo Auxiliar', null=True, blank=True)
+    nombre_rl = models.CharField(max_length=100, verbose_name='Nombre del Representante Legal', null=True, blank=True)
+    identificacion_rl = models.CharField(max_length=100, verbose_name='Identificación del Representante Legal',
+                                         null=True, blank=True)
+    lugar_expedicion_rl = models.ForeignKey(Municipio, on_delete=models.DO_NOTHING,
+                                            verbose_name='Lugar de Expedicion del Id del RL', null=True, blank=True)
+    fecha_constitucion = models.DateTimeField(verbose_name='Fecha de Constitución', null=True, blank=True)
+    fecha_inicio_actividad = models.DateTimeField(verbose_name='Fecha de Inicio de Actividad', null=True, blank=True)
 
     def __str__(self):
         return self.nombre
@@ -106,3 +123,46 @@ class UsuarioTercero(Persona):
     class Meta:
         verbose_name = 'Usuario Tercero'
         verbose_name_plural = 'Usuarios Terceros'
+
+
+class TipoDocumentoTercero(models.Model):
+    objects = ManagerGeneral()
+    nombre = models.CharField(verbose_name='Nombre', max_length=100, null=False, blank=False)
+    aplica_natural = models.BooleanField(verbose_name='Aplica Natural', null=False, blank=False)
+    aplica_juridica = models.BooleanField(verbose_name='Aplica Jurídica', null=False, blank=False)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name = 'Tipo Documento Tercero'
+        verbose_name_plural = 'Tipos de Documentos Terceros'
+
+
+class DocumentoTercero(models.Model):
+    objects = ManagerGeneral()
+    nombre_documento = models.CharField(verbose_name='Nombre', max_length=100, null=False, blank=False)
+    tipo_documento = models.ForeignKey(TipoDocumentoTercero, on_delete=models.DO_NOTHING, blank=False, null=False)
+    tercero = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, name='Tercero', blank=False, null=False)
+    fecha_crea = models.DateTimeField(name='Fecha de Creación', blank=False, null=False)
+    estado = models.BooleanField(name='Estado', blank=False, null=False)
+
+    def __str__(self):
+        return self.nombre_documento
+
+    class Meta:
+        verbose_name = 'Tipo de Contribuyente'
+        verbose_name_plural = 'Tipos de Contribuyentes'
+
+
+class Certificacion(models.Model):
+    objects = ManagerGeneral()
+    tercero = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, name='Tercero', blank=False, null=False)
+    fecha_crea = models.DateField(verbose_name='Fecha de Creación', null=False, blank=False)
+
+    def __str__(self):
+        return 'Certificación de {0}'.format(self.tercero)
+
+    class Meta:
+        verbose_name = 'Certificación'
+        verbose_name_plural = 'Certifiacaiones'
