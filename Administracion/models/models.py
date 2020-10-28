@@ -234,3 +234,31 @@ class Impuesto(models.Model, ModelDjangoExtensiones):
         verbose_name = 'Impuesto'
         verbose_name_plural = 'Impuestos'
 
+
+class ServiciosBienes(models.Model):
+    objects = ImpuestoManager()
+    nombre = models.CharField(verbose_name="Nombre", max_length=100, null=False, blank=False)
+    descripcion = models.CharField(verbose_name="Descripción", max_length=300, null=False, blank=False)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name = 'Servicio y Bien'
+        verbose_name_plural = 'Servicios y Bienes'
+
+
+class TextoDocumento(models.Model):
+    objects = ImpuestoManager()
+    titulo = models.CharField(name='Título', max_length=100, blank=False, null=False)
+    texto1 = models.TextField(verbose_name='Texto 1', null=False, blank=False)
+    texto2 = models.TextField(verbose_name='Texto 2', null=True, blank=True)
+    texto3 = models.TextField(verbose_name='Texto 3', null=True, blank=True)
+    firma = models.CharField(verbose_name='Firma', max_length=100, null=True, blank=True)
+
+    def __str__(self):
+        return self.titulo
+
+    class Meta:
+        verbose_name = 'Texto de Documento'
+        verbose_name_plural = 'Textos de Documentos'
