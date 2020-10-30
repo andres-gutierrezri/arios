@@ -236,7 +236,7 @@ class Impuesto(models.Model, ModelDjangoExtensiones):
 
 
 class ServiciosBienes(models.Model):
-    objects = ImpuestoManager()
+    objects = ManagerGeneral()
     nombre = models.CharField(verbose_name="Nombre", max_length=100, null=False, blank=False)
     descripcion = models.CharField(verbose_name="Descripción", max_length=300, null=False, blank=False)
 
@@ -249,7 +249,7 @@ class ServiciosBienes(models.Model):
 
 
 class TextoDocumento(models.Model):
-    objects = ImpuestoManager()
+    objects = ManagerGeneral()
     titulo = models.CharField(name='Título', max_length=100, blank=False, null=False)
     texto1 = models.TextField(verbose_name='Texto 1', null=False, blank=False)
     texto2 = models.TextField(verbose_name='Texto 2', null=True, blank=True)
