@@ -132,13 +132,13 @@ function cambiosPorcentajeValor(valor) {
 
         inputAnticipo.attr('placeholder', 'Ingrese un valor');
         inputAnticipo.attr('max', '99999999999999.99');
-        inputAnticipo.attr('onInput', 'validarLongitud(16,this)');
+        inputAnticipo.attr('onInput', 'validarLongitud(22,this)');
         inputLiquidacion.attr('placeholder', 'Ingrese un valor');
         inputLiquidacion.attr('max', '99999999999999.99');
-        inputLiquidacion.attr('onInput', 'validarLongitud(16,this)');
+        inputLiquidacion.attr('onInput', 'validarLongitud(22,this)');
         inputActasParciales.attr('placeholder', 'Ingrese un valor');
         inputActasParciales.attr('max', '99999999999999.99');
-        inputActasParciales.attr('onInput', 'validarLongitud(16,this)');
+        inputActasParciales.attr('onInput', 'validarLongitud(22,this)');
 
         inputAnticipo.inputmask();
         inputLiquidacion.inputmask();
