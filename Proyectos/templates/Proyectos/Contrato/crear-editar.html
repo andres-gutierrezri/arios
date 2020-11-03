@@ -90,7 +90,7 @@
                                                                     {% select_tag procesos 'proceso_id' 'Seleccione un proceso' texto_label="Proceso a cargo" value=contrato.proceso_a_cargo_id  mensaje_validacion='Por favor seleccione un proceso' %}
                                                                 </div>
                                                                 <div class="form-group col-xl-3 col-lg-4 col-md-6 col-sm-6">
-                                                                        {% select_tag colaboradores 'residente_id' 'Seleccione un colaborador' texto_label="Residente" value=contrato.residente_id  mensaje_validacion='Por favor seleccione un colaborador' %}
+                                                                        {% select_tag residentes 'residente_id' 'Seleccione un colaborador' texto_label="Residente" value=contrato.residente_id  mensaje_validacion='Por favor seleccione un colaborador' %}
                                                                 </div>
                                                                 <div class="form-group col-xl-3 col-lg-4 col-md-6 col-sm-6">
                                                                     {% input_number_tag 'periodicidad_informes' 'Periodicidad de Informes(Meses)' placeholder="Ingrese la periodicidad de informes en meses" min='0' max="2147483647" onInput="validarLongitud(10,this)" required="" value=contrato.periodicidad_informes mensaje_validacion='Por favor ingrese un valor' invalido=errores.periodicidad_informes %}
