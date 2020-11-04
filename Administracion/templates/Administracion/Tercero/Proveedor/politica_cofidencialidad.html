@@ -1,0 +1,31 @@
+{% extends 'Administracion/Autenticacion/_common/base_autenticacion.html' %}
+{% load static %}
+{% block titulo %}
+    Política de Cofidencialidad
+{% endblock %}
+
+{% block main %}
+    <div class="flex-1" style="background: url('{% static 'EVA/Plantilla/img/svg/pattern-1.svg' %}') no-repeat center bottom fixed; background-size: cover ">
+        <div class="container py-4 py-lg-5 my-lg-5 px-4 px-sm-0 w-50">
+            <div style="position: fixed; top: 45%; left: 50%; width: 500px; height: auto; -webkit-transform: translate(-50%,-50%); transform: translate(-50%,-50%);">
+                <div class="page-logo m-0 w-100 align-items-center justify-content-center rounded border-bottom-left-radius-0 border-bottom-right-radius-0 px-4">
+                    <a href="javascript:void(0)" class="page-logo-link press-scale-down d-flex align-items-center">
+                        <img src="{% static 'EVA/Plantilla/img/logo.png' %}" alt="EVA" aria-roledescription="logo">
+                        <span class="page-logo-text mr-1">Política de Cofidencialidad y Tratamiento de Datos</span>
+                        <i class="fal fa-angle-down d-inline-block ml-1 fs-lg color-primary-300"></i>
+                    </a>
+                </div>
+                <div class="card p-4 border-top-left-radius-0 border-top-right-radius-0">
+                    <h3>
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cum dicta dolore, explicabo illo ipsam nesciunt odio repellat tenetur voluptates! At dolor dolores ipsa, laboriosam quidem quos ratione similique tempora ut!
+                    </h3>
+                    <br>
+                    <br>
+                    <div class="form-group" style="text-align: center;">
+                        <a href="{% url 'Administracion:proveedor-registro' %}" class="btn btn-danger btn-block" style="max-width: 50%; align-self: center">Volver</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock main %}
