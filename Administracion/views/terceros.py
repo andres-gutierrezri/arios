@@ -1,19 +1,25 @@
+import json
 from datetime import datetime
 
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.db.models import F
+from django.db.transaction import atomic
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib import messages
 from django.core.exceptions import ValidationError
+from django.views import View
 
 from Administracion.models import Tercero, TipoIdentificacion, TipoTercero, CentroPoblado, Empresa, Departamento, \
     Municipio
 from Administracion.utils import get_id_empresa_global
-from EVA.views.index import AbstractEvaLoggedView
+from EVA.views.index import AbstractEvaLoggedView, AbstractEvaLoggedProveedorView
 from Notificaciones.models.models import EventoDesencadenador
 from Notificaciones.views.views import crear_notificacion_por_evento
+from TalentoHumano.models import Colaborador
 
 
 class TerceroView(AbstractEvaLoggedView):
@@ -117,6 +123,105 @@ class TerceroDetalleView(AbstractEvaLoggedView):
         except Tercero.DoesNotExist:
             return JsonResponse({"estado": "error", "mensaje": 'El cliente seleccionado no existe.'})
 
+
+class IndexProveedorView(AbstractEvaLoggedProveedorView):
+    def get(self, request):
+        if request.user.is_authenticated:
+            if Colaborador.objects.filter(usuario=request.user):
+                messages.success(request, 'Ha iniciado sesión como {0}'.format(request.email))
+                return redirect(reverse('eva-index'))
+
+        return render(request, 'EVA/index.html')
+
+
+class InicioSesionProveedorView(View):
+    def get(self, request):
+        if request.user.is_authenticated:
+            if Colaborador.objects.filter(usuario=request.user):
+                messages.success(request, 'Ha iniciado sesión como {0}'.format(request.email))
+                return redirect(reverse('eva-index'))
+        return render(request, 'Administracion/Tercero/Proveedor/inicio-sesion.html')
+
+    def post(self, request):
+        if request.user.is_authenticated:
+            if Colaborador.objects.filter(usuario=request.user):
+                messages.success(request, 'Ha iniciado sesión como {0}'.format(request.user))
+                return redirect(reverse('Administracion:proveedor-index'))
+        else:
+            correo = request.POST.get('correo', '')
+            password = request.POST.get('password', '')
+            usuario = User.objects.filter(email=correo)
+            if usuario:
+                user = authenticate(username=usuario.first().username, password=password)
+                login(request, user)
+                messages.success(request, 'Ha iniciado sesión como {0}'.format(user))
+                request.session['proveedor'] = user.first_name
+                proveedor = Tercero.objects.filter(usuario=user)
+                if proveedor:
+                    request.session['proveedor_foto'] = 'EVA/Plantilla/img/profile.png'
+                    request.session['proveedor_nombre'] = proveedor.first().nombre
+                    request.session['proveedor_correo'] = user.email
+                    request.session['proveedor_empresa'] = proveedor.first().empresa_to_dict()
+                    messages.success(request, 'Ha iniciado sesión como {0}'.format(request.user.first_name))
+            else:
+                messages.warning(request, 'El correo y/o la contraseña no son válidos')
+                return redirect(reverse('Administracion:proveedor-iniciar-sesion'))
+
+        return redirect(reverse('Administracion:proveedor-index'))
+
+
+class RegistroProveedorView(View):
+    def get(self, request):
+        if request.user.is_authenticated:
+            return redirect(reverse('eva-index'))
+        tipo_identificacion = TipoIdentificacion.objects.get_xa_select_activos()
+        return render(request, 'Administracion/Tercero/Proveedor/registro.html',
+                      {'tipo_identificacion': tipo_identificacion})
+
+    @atomic
+    def post(self, request):
+        body_unicode = request.body.decode('utf-8')
+        datos_registro = json.loads(body_unicode)
+
+        nombre = datos_registro['nombre']
+        correo = datos_registro['correo']
+        identificacion = datos_registro['identificacion']
+
+        usuario = Colaborador.crear_usuario(nombre, 'proveedor', correo)
+
+        tercero = Tercero()
+        tercero.nombre = nombre
+        tercero.estado = True
+        tercero.tipo_tercero_id = TipoTercero.objects.get(nombre='Proveedor').id
+        tercero.tipo_identificacion_id = datos_registro['tipoIdentificacion']
+        tercero.identificacion = identificacion
+        tercero.telefono_movil_principal = datos_registro['celular']
+        tercero.correo_principal = correo
+        tercero.empresa_id = 1
+
+        if User.objects.filter(email=correo):
+            return JsonResponse({'estado': 'ERROR', 'mensaje': 'El correo ingresado ya se encuentra registrado'})
+
+        if Tercero.objects.filter(identificacion=identificacion):
+            return JsonResponse({'estado': 'ERROR',
+                                 'mensaje': 'El número de identificación ingresado ya está registrado'})
+        try:
+            usuario.save()
+            tercero.usuario = usuario
+            tercero.save()
+        except:
+            return JsonResponse({'estado': 'ERROR'})
+
+        return JsonResponse({'estado': 'OK', 'datos': {'correo': correo}})
+
+
+class PoliticaDeCofidencialidadView(View):
+    def get(self, request):
+        if request.user.is_authenticated:
+            return redirect(reverse('eva-index'))
+        tipo_identificacion = TipoIdentificacion.objects.get_xa_select_activos()
+        return render(request, 'Administracion/Tercero/Proveedor/politica_cofidencialidad.html',
+                      {'tipo_identificacion': tipo_identificacion})
 
 # region Métodos de ayuda
 
