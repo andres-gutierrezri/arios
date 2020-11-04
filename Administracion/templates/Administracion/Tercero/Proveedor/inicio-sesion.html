@@ -1,0 +1,67 @@
+{% extends 'Administracion/Autenticacion/_common/base_autenticacion.html' %}
+{% load static %}
+{% block titulo %}
+    Inicio de sesión Proveedores
+{% endblock %}
+
+{% block styles %}
+	<!-- page related CSS below -->
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/sweetalert2/sweetalert2.bundle.css'%}">
+{% endblock styles%}
+
+{% block main %}
+    <div class="flex-1" style="background: url('{% static 'EVA/Plantilla/img/svg/pattern-1.svg' %}') no-repeat center bottom fixed; background-size: cover ">
+        <div class="container py-4 py-lg-5 my-lg-5 px-4 px-sm-0 w-50">
+            <div style="position: fixed; top: 45%; left: 50%; width: 320px; height: auto; -webkit-transform: translate(-50%,-50%); transform: translate(-50%,-50%);">
+                <div class="page-logo m-0 w-100 align-items-center justify-content-center rounded border-bottom-left-radius-0 border-bottom-right-radius-0 px-4">
+                    <a href="javascript:void(0)" class="page-logo-link press-scale-down d-flex align-items-center">
+                        <img src="{% static 'EVA/Plantilla/img/logo.png' %}" alt="EVA" aria-roledescription="logo">
+                        <span class="page-logo-text mr-1">Proveedores</span>
+                        <i class="fal fa-angle-down d-inline-block ml-1 fs-lg color-primary-300"></i>
+                    </a>
+                </div>
+                <div class="card p-4 border-top-left-radius-0 border-top-right-radius-0">
+                    <form action="{% url 'Administracion:proveedor-iniciar-sesion' %}" id="iniciar-sesion-proveedor-form" method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label class="form-label" for="correo">Correo</label>
+                            <input type="text" id="correo" name="correo" class="form-control" placeholder="Correo" value="{{ correo }}">
+                            <span class="help-block">
+                                Ingrese su correo electronico
+                            </span>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="password">Contraseña</label>
+                            <input type="password" id="password" name="password" class="form-control" placeholder="Contraseña">
+                            <span class="help-block">
+                                Ingrese su contraseña
+                            </span>
+                        </div>
+                        <div class="form-group text-left">
+                            <a href="{% url 'Administracion:olvido-contrasena' %}" >
+                                ¿Olvidó su contraseña?
+                            </a>
+                        </div>
+                        <input id="datos_token" name="datos" hidden value="{{ datos }}">
+                        <div class="row no-gutters">
+                            <div class="col-lg-6 pl-lg-1 my-2">
+                                <a href="{% url 'Administracion:proveedor-registro' %}" class="btn btn-primary btn-block">Registrarse</a>
+                            </div>
+                            <div class="col-lg-6 pl-lg-1 my-2">
+                                <button id="js-login-btn" type="submit" class="btn btn-danger btn-block ">Iniciar sesión</button>
+                            </div>
+                        </div>
+                    </form>
+                    {% if mensaje %}
+                       <input hidden id="mensaje_exitoso" value="{{ mensaje }}">
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
+    <script src="{% static 'Administracion/js/Tercero/confirmacionRegistroProveedor.js' %}"></script>
+{% endblock scripts %}
