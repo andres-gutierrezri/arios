@@ -3,6 +3,7 @@ from datetime import datetime
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
+from django.contrib.auth.tokens import default_token_generator
 from django.db import IntegrityError
 from django.db.models import F
 from django.db.transaction import atomic
@@ -12,12 +13,15 @@ from django.urls import reverse
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.views import View
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 
 from Administracion.models import Tercero, TipoIdentificacion, TipoTercero, CentroPoblado, Empresa, Departamento, \
     Municipio
 from Administracion.utils import get_id_empresa_global
 from EVA.views.index import AbstractEvaLoggedView, AbstractEvaLoggedProveedorView
 from Notificaciones.models.models import EventoDesencadenador
+from Notificaciones.views.correo_electronico import enviar_correo
 from Notificaciones.views.views import crear_notificacion_por_evento
 from TalentoHumano.models import Colaborador
 
@@ -210,6 +214,24 @@ class RegistroProveedorView(View):
             usuario.save()
             tercero.usuario = usuario
             tercero.save()
+            dominio = request.get_host()
+            uidb64 = urlsafe_base64_encode(force_bytes(usuario.pk))
+            token = default_token_generator.make_token(usuario)
+            ruta = 'http://{0}/password-reset-confirm/{1}/{2}'.format(dominio, uidb64, token)
+
+            mensaje = "<p>Hola {0}, " \
+                      "Te estamos enviando este correo para que asignes una contraseña a tu " \
+                      "cuenta de proveedor en EVA.</p>" \
+                      "<p>Tu usuario es: {1}</p>" \
+                      "<p>El siguiente enlace te llevará a EVA donde puedes realizar el cambio:</p>" \
+                      "<a href={2}>Ir a EVA para asignación de la contraseña nueva</a>"\
+                .format(tercero.nombre, usuario.email, ruta)
+
+            enviar_correo({'nombre': tercero.nombre,
+                           'mensaje': mensaje,
+                           'asunto': 'Bienvenido a EVA',
+                           'token': False,
+                           'lista_destinatarios': [usuario.email]})
         except:
             return JsonResponse({'estado': 'ERROR'})
 
