@@ -3,7 +3,7 @@
 <html lang="es">
     <head>
         <meta charset="UTF-8">
-        <title>EVA - {% block titulo %}{% endblock %}</title>
+        <title>{% if request.session.colaborador %}EVA - {% endif %}{% block titulo %}{% endblock %}</title>
         <meta name="description" content="Page Titile">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no, minimal-ui">
@@ -59,14 +59,25 @@
                             </div>
                         </div>
                         <div class="info-card">
-                            <img src="{{ request.session.colaborador }}" class="profile-image rounded-circle" alt="Nombre Usuario">
+
+                            <img src="{% if request.session.colaborador %}{{ request.session.colaborador }}{% else%}{% static 'EVA/Plantilla/img/profile.png' %}{% endif %}" class="profile-image rounded-circle" alt="Nombre Usuario">
+
                             <div class="info-card-text">
+                                {% if request.session.colaborador %}
                                 <a href="#" class="d-flex align-items-center text-white">
                                     <span class="text-truncate text-truncate-sm d-inline-block">
                                         <a style="color: white" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ver perfil" href="{% url 'TalentoHumano:colaboradores-perfil' request.session.colaborador_id %}"> {{  request.user.first_name.split | first }}{{ ' ' }}{{ request.user.last_name.split | first }}</a>
                                     </span>
                                 </a>
                                 <span class="d-inline-block text-truncate text-truncate-sm">ARIOS Ingeniería</span>
+                                {% else %}
+                                    <a href="#" class="d-flex align-items-center text-white">
+                                    <span class="text-truncate text-truncate-sm d-inline-block">
+                                        <a style="color: white" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""> {{ request.session.proveedor_nombre }}</a>
+                                    </span>
+                                </a>
+                                <span class="d-inline-block text-truncate text-truncate-sm">Proveedor</span>
+                                {% endif %}
                             </div>
                             <img src="{% static 'EVA/Plantilla/img/card-backgrounds/cover-2-lg.png' %}" class="cover" alt="cover">
                             <a href="#" onclick="return false;" class="pull-trigger-btn" data-action="toggle" data-class="list-filter-active" data-target=".page-sidebar" data-focus="nav_filter_input">
