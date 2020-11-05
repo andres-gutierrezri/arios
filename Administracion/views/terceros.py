@@ -128,7 +128,7 @@ class IndexProveedorView(AbstractEvaLoggedProveedorView):
     def get(self, request):
         if request.user.is_authenticated:
             if Tercero.objects.filter(usuario=request.user):
-                messages.success(request, 'Ha iniciado sesión como {0}'.format(request.email))
+                messages.success(request, 'Ha iniciado sesión como {0}'.format(request.user.email))
             else:
                 return redirect(reverse('Administracion:iniciar-sesion'))
         return render(request, 'EVA/index.html')
@@ -138,7 +138,7 @@ class InicioSesionProveedorView(View):
     def get(self, request):
         if request.user.is_authenticated:
             if Tercero.objects.filter(usuario=request.user):
-                messages.success(request, 'Ha iniciado sesión como {0}'.format(request.email))
+                messages.success(request, 'Ha iniciado sesión como {0}'.format(request.user.email))
             else:
                 return redirect(reverse('Administracion:iniciar-sesion'))
         return render(request, 'Administracion/Tercero/Proveedor/inicio-sesion.html')
@@ -155,7 +155,7 @@ class InicioSesionProveedorView(View):
             if usuario:
                 user = authenticate(username=usuario.first().username, password=password)
                 login(request, user)
-                messages.success(request, 'Ha iniciado sesión como {0}'.format(user))
+                messages.success(request, 'Ha iniciado sesión como {0}'.format(user.email))
                 request.session['proveedor'] = user.first_name
                 proveedor = Tercero.objects.filter(usuario=user)
                 if proveedor:
