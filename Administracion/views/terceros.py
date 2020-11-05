@@ -157,17 +157,21 @@ class InicioSesionProveedorView(View):
             password = request.POST.get('password', '')
             usuario = User.objects.filter(email=correo)
             if usuario:
-                user = authenticate(username=usuario.first().username, password=password)
-                login(request, user)
-                messages.success(request, 'Ha iniciado sesión como {0}'.format(user.email))
-                request.session['proveedor'] = user.first_name
-                proveedor = Tercero.objects.filter(usuario=user)
-                if proveedor:
-                    request.session['proveedor_foto'] = 'EVA/Plantilla/img/profile.png'
-                    request.session['proveedor_nombre'] = proveedor.first().nombre
-                    request.session['proveedor_correo'] = user.email
-                    request.session['proveedor_empresa'] = proveedor.first().empresa_to_dict()
-                    messages.success(request, 'Ha iniciado sesión como {0}'.format(request.user.first_name))
+                try:
+                    user = authenticate(username=usuario.first().username, password=password)
+                    login(request, user)
+                    messages.success(request, 'Ha iniciado sesión como {0}'.format(user.email))
+                    request.session['proveedor'] = user.first_name
+                    proveedor = Tercero.objects.filter(usuario=user)
+                    if proveedor:
+                        request.session['proveedor_foto'] = 'EVA/Plantilla/img/profile.png'
+                        request.session['proveedor_nombre'] = proveedor.first().nombre
+                        request.session['proveedor_correo'] = user.email
+                        request.session['proveedor_empresa'] = proveedor.first().empresa_to_dict()
+                        messages.success(request, 'Ha iniciado sesión como {0}'.format(request.user.first_name))
+                except:
+                    messages.warning(request, 'El correo y/o la contraseña no son válidos')
+                    return redirect(reverse('Administracion:proveedor-iniciar-sesion'))
             else:
                 messages.warning(request, 'El correo y/o la contraseña no son válidos')
                 return redirect(reverse('Administracion:proveedor-iniciar-sesion'))
