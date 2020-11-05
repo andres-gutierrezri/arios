@@ -152,7 +152,7 @@ class Colaborador(Persona, ModelDjangoExtensiones):
         return colaborador
 
     @staticmethod
-    def crear_usuario(nombre: str, apellido: str, correo: str, usuario_id: int) -> User:
+    def crear_usuario(nombre: str, apellido: str, correo: str, usuario_id: int = None) -> User:
 
         usuario = User(id=usuario_id)
         usuario.first_name = nombre
