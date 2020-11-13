@@ -22,7 +22,6 @@ from EVA.views.index import AbstractEvaLoggedView
 from Financiero.models import FacturaEncabezado, ResolucionFacturacion, FacturaDetalle
 from Financiero.models.facturacion import FacturaImpuesto
 from Financiero.reportes.facturacion.factura import FacturaPdf
-from Financiero.views.correo_factura import CorreoFactura
 
 
 class FacturasView(AbstractEvaLoggedView):
