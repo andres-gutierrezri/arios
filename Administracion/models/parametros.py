@@ -1,10 +1,13 @@
 from django.db import models
+
+from Administracion.models import Empresa
 from EVA.General.modeljson import ModelDjangoExtensiones
 
 
 # region Constantes grupos y subgrupos de parámetros.
 G_FINANCIERO = 'FINANCIERO'
 G_FINANCIERO_S_FLUJO_CAJA = 'FLUJO_CAJA'
+G_FINANCIERO_S_FACELEC = 'FACTURACION_ELECTRONICA'
 # endregion
 
 
@@ -14,7 +17,8 @@ SELECCIONES_GRUPOS = [
 ]
 
 SELECCIONES_SUBGRUPOS = [
-    (G_FINANCIERO_S_FLUJO_CAJA, 'Flujo de caja')
+    (G_FINANCIERO_S_FLUJO_CAJA, 'Flujo de caja'),
+    (G_FINANCIERO_S_FACELEC, 'Facturación Electrónica')
 ]
 # endregion
 
@@ -46,11 +50,12 @@ class Parametro(models.Model, ModelDjangoExtensiones):
     descripcion = models.CharField(verbose_name="Descripción", max_length=150, null=False, blank=False)
     tipo = models.CharField(choices=SELECCIONES_TIPOS_PARAMETROS, verbose_name="Tipo", max_length=50, null=False,
                             blank=False)
-    valor = models.CharField(verbose_name="Valor", max_length=50, null=False, blank=False)
+    valor = models.CharField(verbose_name="Valor", max_length=100, null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', blank=False, null=False)
     grupo = models.CharField(choices=SELECCIONES_GRUPOS, verbose_name="Grupo", max_length=50, null=False, blank=False)
     subgrupo = models.CharField(choices=SELECCIONES_SUBGRUPOS, verbose_name="Subgrupo", max_length=50, null=False,
                                 blank=False)
+    empresa = models.ForeignKey(Empresa, verbose_name='Empresa', null=True, blank=True, on_delete=models.DO_NOTHING)
 
     def __str__(self):
         return self.nombre
