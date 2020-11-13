@@ -2,6 +2,8 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import QuerySet, F, Value, CharField
 from django.db.models.functions import Concat
+
+from Administracion.models import Municipio
 from EVA import settings
 from EVA.General.modeljson import ModelDjangoExtensiones
 from EVA.General.modelmanagers import ManagerGeneral
@@ -11,11 +13,23 @@ class Empresa(models.Model, ModelDjangoExtensiones):
     objects = ManagerGeneral()
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     nit = models.TextField(max_length=20, verbose_name='NIT', null=False, blank=False, unique=True)
-    logo = models.ImageField(upload_to=f'{settings.EVA_PUBLIC_MEDIA}/logos-empresas', verbose_name='Logo', null=False, blank=False)
+    digito_verificacion = models.SmallIntegerField(verbose_name='Digito de Verificación', null=True, blank=True)
+    logo = models.ImageField(upload_to=f'{settings.EVA_PUBLIC_MEDIA}/logos-empresas', verbose_name='Logo', null=False,
+                             blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
     subempresa = models.BooleanField(verbose_name='Subempresa', null=False, blank=False)
     empresa_ppal = models.ForeignKey('self', on_delete=models.DO_NOTHING, verbose_name='Empresa Ppal', null=True
                                      , blank=False)
+    tipo_persona = models.SmallIntegerField(verbose_name='Tipo de Persona', null=False, blank=False)
+    matricula_mercantil = models.CharField(max_length=20, verbose_name='Matricula Mercantil', null=True, blank=True)
+    responsabilidades_fiscales = models.CharField(max_length=200, verbose_name='Responsabilidades Fiscales', null=True,
+                                                  blank=True)
+    regimen_fiscal = models.SmallIntegerField(verbose_name='Régimen Fiscal', null=False, blank=False)
+    tributos = models.CharField(max_length=10, verbose_name='Tributo', null=True, blank=True)
+    codigo_postal = models.CharField(max_length=10, verbose_name='Código Postal', null=True, blank=True)
+    direccion = models.CharField(max_length=300, verbose_name='Dirección', null=True, blank=True)
+    municipio = models.ForeignKey(Municipio, verbose_name='Municipio', null=True, blank=True,
+                                  on_delete=models.DO_NOTHING)
 
     def __str__(self):
         return self.nombre
