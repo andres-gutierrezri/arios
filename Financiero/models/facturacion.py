@@ -13,6 +13,7 @@ class ResolucionFacturacion(models.Model):
     numero_desde = models.IntegerField(verbose_name='Número desde', null=False, blank=False)
     numero_hasta = models.IntegerField(verbose_name='Número hasta', null=False, blank=False)
     prefijo = models.CharField(verbose_name='Prefijo', max_length=10, null=True, blank=True)
+    llave_tecnica = models.CharField(verbose_name="Llave Técnica", max_length=42, null=True, blank=True)
     fecha_creacion = models.DateField(auto_now_add=True, verbose_name='Fecha de Creación', null=False, blank=False)
     fecha_modificacion = models.DateField(verbose_name='Fecha de Modificación', null=True, blank=False)
     usuario_crea = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario Crea", null=False,
@@ -20,6 +21,7 @@ class ResolucionFacturacion(models.Model):
     usuario_modifica = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario Modifica", null=True,
                                          blank=False, related_name='ResFacModifica')
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
+    fecha_resolucion_fin = models.DateField(verbose_name='Fecha de resolución fin', null=False, blank=False)
 
     def __str__(self):
         return 'Resolución # {0} desde {1} hasta {2}' \
@@ -56,6 +58,16 @@ class FacturaEncabezado(models.Model, ModelDjangoExtensiones):
                                          blank=False, related_name='FacturaModifica')
     estado = models.SmallIntegerField(verbose_name='Estado', null=False, blank=False)
     total = models.DecimalField(verbose_name='Total', max_digits=12, decimal_places=2, null=False)
+    cufe = models.CharField(verbose_name='CUFE', max_length=96, null=True, blank=True)
+    total_letras = models.CharField(verbose_name='Total en Letras', max_length=250, null=False, blank=False)
+    nombre_archivo_fe = models.CharField(verbose_name='Nombre del archivo de la factura electrónica', max_length=50,
+                                         null=True, blank=True)
+    nombre_archivo_zip = models.CharField(verbose_name='Nombre del archivo ZIP validado ', max_length=50,
+                                          null=True, blank=True)
+    nombre_archivo_ad = models.CharField(verbose_name='Nombre del archivo Attached Document', max_length=50,
+                                         null=True, blank=True)
+    forma_pago = models.SmallIntegerField(verbose_name='Forma de pago', null=False, blank=False, default=2)
+    medio_pago = models.SmallIntegerField(verbose_name='Medio de pago', null=False, blank=False, default=1)
 
     def __str__(self):
         return 'Factura # {0}'.format(self.numero_factura)

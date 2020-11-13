@@ -2,20 +2,27 @@ from datetime import datetime
 import json
 from typing import List, Optional
 
+import requests
 from django.contrib import messages
+from django.core.mail import EmailMessage
+from django.db import transaction
 from django.db.models import F, DecimalField, ExpressionWrapper
 from django.db.transaction import atomic
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
+from django.template.loader import get_template
 from django.urls import reverse
 
 from Administracion.models import Tercero, Impuesto, ConsecutivoDocumento, TipoDocumento
 from Administracion.utils import get_id_empresa_global
+from EVA import settings
+from EVA.General.conversiones import valor_pesos_a_letras
 from EVA.General.jsonencoders import AriosJSONEncoder
 from EVA.views.index import AbstractEvaLoggedView
 from Financiero.models import FacturaEncabezado, ResolucionFacturacion, FacturaDetalle
 from Financiero.models.facturacion import FacturaImpuesto
 from Financiero.reportes.facturacion.factura import FacturaPdf
+from Financiero.views.correo_factura import CorreoFactura
 
 
 class FacturasView(AbstractEvaLoggedView):
@@ -36,8 +43,15 @@ class FacturaCrearView(AbstractEvaLoggedView):
         return render(request, 'Financiero/Facturacion/crear_factura.html',
                       {'terceros': terceros, 'impuestos': impuestos, 'menu_actual': 'facturas'})
 
-    @atomic
     def post(self, request):
+        resultado = self.guardar_factura(request)
+        if resultado['estado'] == 'OK' and 'id_factura' in resultado:
+            self.generar_factura_electronica(resultado['id_factura'])
+
+        return JsonResponse(resultado)
+
+    @atomic
+    def guardar_factura(self, request) -> dict:
         body_unicode = request.body.decode('utf-8')
         factura = json.loads(body_unicode)
 
@@ -49,25 +63,24 @@ class FacturaCrearView(AbstractEvaLoggedView):
             try:
                 factura_borrador = FacturaEncabezado.objects.get(id=factura_id, empresa_id=empresa_id)
             except FacturaEncabezado.DoesNotExist:
-                return JsonResponse({'estado': 'error',
-                                     'mensaje': 'No se encuentra información del borrador en el sistema'})
+                return {'estado': 'error', 'mensaje': 'No se encuentra información del borrador en el sistema'}
         # endregion
 
         # region Validaciones.
         error_validacion = self.validaciones_factura(factura, factura_borrador)
         if error_validacion:
-            return JsonResponse({"estado": "error", "mensaje": error_validacion})
+            return {"estado": "error", "mensaje": error_validacion}
         # endregion
 
         if factura['estado'] == 0:
             # region Factura encabezado.
             factura_enc = FacturaEncabezado()
             factura_enc.empresa_id = empresa_id
-            resolucion = ResolucionFacturacion.objects.filter(empresa_id=factura_enc.empresa_id, estado=True).only('id')\
+            resolucion = ResolucionFacturacion.objects.filter(empresa_id=factura_enc.empresa_id, estado=True).only('id') \
                 .order_by('-fecha_resolucion').first()
 
             if resolucion is None:
-                return JsonResponse({"estado": "error", "mensaje": "No se encontró resolución de facturación"})
+                return {"estado": "error", "mensaje": "No se encontró resolución de facturación"}
 
             factura_enc.id = factura_id if factura_id != 0 else None
             if factura_enc.id != 0:
@@ -92,6 +105,7 @@ class FacturaCrearView(AbstractEvaLoggedView):
             factura_enc.fecha_creacion = datetime.now()
             factura_enc.numero_factura = None
             factura_enc.total = factura['total']
+            factura_enc.total_letras = valor_pesos_a_letras(factura_enc.total)
 
             factura_enc.save()
             factura['id'] = factura_enc.id
@@ -125,14 +139,15 @@ class FacturaCrearView(AbstractEvaLoggedView):
                 factura_imp.save()
             # endregion
 
-            return JsonResponse({'estado': 'OK', 'datos': {'factura_id': factura_enc.id}})
+            return {'estado': 'OK', 'datos': {'factura_id': factura_enc.id}}
         else:
             factura_borrador.estado = 1
-            factura_borrador.numero_factura = ConsecutivoDocumento\
+            factura_borrador.numero_factura = ConsecutivoDocumento \
                 .get_consecutivo_documento(TipoDocumento.FACTURA, factura_borrador.empresa_id)
             factura_borrador.save(update_fields=['estado', 'numero_factura'])
 
-            return JsonResponse({'estado': 'OK', 'datos': {'factura_numero': factura_borrador.numero_factura}})
+            return {'estado': 'OK', 'datos': {'factura_numero': factura_borrador.numero_factura},
+                    'id_factura': factura_borrador.id}
 
     @staticmethod
     def validaciones_factura(factura: dict, factura_borrador: FacturaEncabezado) -> Optional[str]:
@@ -194,6 +209,39 @@ class FacturaCrearView(AbstractEvaLoggedView):
         # endregion
 
         return None
+
+    @staticmethod
+    def generar_factura_electronica(id_factura: int):
+        response = requests.post(f'{settings.EVA_URL_BASE_FACELEC}{id_factura}/enviar')
+        if response.status_code == requests.codes.ok:
+            FacturaCrearView.enviar_correo(id_factura)
+
+    @staticmethod
+    def enviar_correo(id_factura: int):
+
+        try:
+            info_factura = FacturaEncabezado.objects.\
+                values('resolucion__prefijo', 'numero_factura', 'empresa__nombre', 'empresa__nit', 'tercero__nombre',
+                       'tercero__correo_facelec', 'nombre_archivo_ad', 'cufe').get(id=id_factura)
+
+            asunto = f"{info_factura['empresa__nit']}; {info_factura['empresa__nombre']}; " \
+                     f"{info_factura['resolucion__prefijo']}{info_factura['numero_factura']}; 01; " \
+                     f"{info_factura['empresa__nombre']}"
+
+            from_email = '"Facturación {}" <noreply@arios-ing.com>'.format(info_factura['empresa__nombre'])
+
+            ruta_adjunto = f"{settings.EVA_RUTA_ARCHIVOS_FACTURA}{info_factura['empresa__nit']}/" \
+                           f"{info_factura['nombre_archivo_ad'].replace('xml', 'zip')}"
+
+            plantilla = get_template('Financiero/Facturacion/Facturas/correo.html')
+
+            email = EmailMessage(asunto,  plantilla.render(info_factura), from_email, [info_factura['tercero__correo_facelec']])
+            email.attach_file(ruta_adjunto)
+            email.content_subtype = "html"
+            valor = email.send()
+            print(valor)
+        except FacturaEncabezado.DoesNotExist:
+            return {'estado': 'error', 'mensaje': 'No se encuentra información del borrador en el sistema'}
 
 
 class FacturaEditarView(AbstractEvaLoggedView):
