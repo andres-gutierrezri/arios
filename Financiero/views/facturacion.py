@@ -8,7 +8,7 @@ from django.core.mail import EmailMessage
 from django.db import transaction
 from django.db.models import F, DecimalField, ExpressionWrapper
 from django.db.transaction import atomic
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, FileResponse
 from django.shortcuts import render, redirect
 from django.template.loader import get_template
 from django.urls import reverse
@@ -296,11 +296,13 @@ class FacturaImprimirView(AbstractEvaLoggedView):
     def get(self, request, id_factura):
         try:
             factura = FacturaEncabezado.objects.get(id=id_factura, empresa_id=get_id_empresa_global(request))
-            empresa = factura.empresa
-            reporte = FacturaPdf.generar(factura, empresa)
-            http_response = HttpResponse(reporte, 'application/pdf')
-            http_response['Content-Disposition'] = 'inline; filename="factura {0}.pdf"'.format(factura.id)
-            return http_response
+            if factura.nombre_archivo_ad:
+                ruta_adjunto = f"{settings.EVA_RUTA_ARCHIVOS_FACTURA}{factura.empresa.nit}/" \
+                               f"{factura.nombre_archivo_ad.replace('xml', 'pdf')}"
+                return FileResponse(open(ruta_adjunto, 'rb'), filename="factura {0}.pdf".format(factura.id))
+            else:
+                messages.error(self.request, 'No se encontró la representación grafica para la factura.')
+                return redirect(reverse('Financiero:factura-index'))
         except FacturaEncabezado.DoesNotExist:
             messages.error(self.request, 'No se encontró la factura solicitada.')
             return redirect(reverse('Financiero:factura-index'))
