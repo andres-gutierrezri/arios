@@ -18,6 +18,8 @@ class Factura
         this.porcentajeImprevistos = 0.00;
         this.porcentajeUtilidad = 0.00;
         this.amortizacion = 0.00;
+        this.idAmortizacion = ''
+        this.fechaAmortizacion = new Date();
         this.items = [];
         this.impuestos = [];
         this.total = 0.00;
@@ -101,8 +103,10 @@ class Factura
         this.actualizarTotal();
     }
 
-    setAmortizacion(amortizacion) {
+    setAmortizacion(amortizacion, id, fecha) {
        this.amortizacion = amortizacion;
+       this.idAmortizacion = id;
+       this.fechaAmortizacion = fecha;
        this.actualizarTotal();
     }
 
@@ -116,7 +120,10 @@ class Factura
         return impuesto ? impuesto.porcentaje : 0;
     }
 }
-
+let controls = {
+	leftArrow: '<i class="fal fa-angle-left" style="font-size: 1.25rem"></i>',
+	rightArrow: '<i class="fal fa-angle-right" style="font-size: 1.25rem"></i>'
+};
 let factura = new Factura();
 
 function valorXaPorcentaje(valor, porcentaje) {
@@ -143,6 +150,14 @@ $(document).ready(function () {
     configurarBotones();
     cargaImpuestosEnFactura();
     cargarBorrador();
+
+    $('.fecha-control ').datepicker({
+		todayHighlight: true,
+		orientation: "bottom left",
+		templates: controls,
+		format: 'yyyy-mm-dd',
+		autoclose: true
+	});
 
 });
 
@@ -368,7 +383,8 @@ function cerrarModalAgregarAIU() {
 
 function agregarAmortizacionFactura() {
 
-    factura.setAmortizacion(Number($('#valor_amortizacion_id').inputmask('unmaskedvalue')));
+    factura.setAmortizacion(Number($('#valor_amortizacion_id').inputmask('unmaskedvalue')),
+        $('#id_amortizacion_id').val(), new Date($('#fecha_amortizacion_id').val()));
 
     renderTotalFactura();
 }

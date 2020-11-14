@@ -17,7 +17,7 @@ from Administracion.models import Tercero, Impuesto, ConsecutivoDocumento, TipoD
 from Administracion.utils import get_id_empresa_global
 from EVA import settings
 from EVA.General import app_date_now
-from EVA.General.conversiones import valor_pesos_a_letras
+from EVA.General.conversiones import valor_pesos_a_letras, isostring_to_datetime
 from EVA.General.jsonencoders import AriosJSONEncoder
 from EVA.views.index import AbstractEvaLoggedView
 from Financiero.models import FacturaEncabezado, ResolucionFacturacion, FacturaDetalle
@@ -96,6 +96,10 @@ class FacturaCrearView(AbstractEvaLoggedView):
             factura_enc.porcentaje_imprevistos = factura['porcentajeImprevistos'] != 0
             factura_enc.porcentaje_utilidad = factura['porcentajeUtilidad']
             factura_enc.amortizacion = factura['amortizacion']
+            if factura_enc.amortizacion != 0:
+                factura_enc.amortizacion_id = factura['idAmortizacion']
+                factura_enc.amortizacion_fecha = isostring_to_datetime(factura['fechaAmortizacion']).date()
+
             if factura_enc.id:
                 factura_enc.usuario_crea_id = factura_borrador.usuario_crea_id
             else:
