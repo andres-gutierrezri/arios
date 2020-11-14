@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import QuerySet, F, Value, CharField
@@ -114,11 +116,23 @@ class Rango(models.Model):
         verbose_name_plural = 'Rangos'
 
 
+class TipoIdentificacionManager(ManagerGeneral):
+    def get_xa_select_personas_activos(self) -> json:
+        return self.get_x_estado(True, True).filter(tipo_nit=False)
+
+    def get_activos_like_json(self):
+        datos = []
+        for elemento in self.get_x_estado(True, False):
+            datos.append({'id': elemento.id, 'tipo_nit': elemento.tipo_nit})
+        return json.dumps(datos)
+
+
 class TipoIdentificacion(models.Model):
-    objects = ManagerGeneral()
+    objects = TipoIdentificacionManager()
     
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     sigla = models.TextField(max_length=5, verbose_name='Sigla', null=False, blank=False, unique=True)
+    tipo_nit = models.BooleanField(verbose_name='Tipo NIT', null=False, blank=False, default=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
 
     def __str__(self):
