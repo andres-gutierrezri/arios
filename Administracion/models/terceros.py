@@ -60,6 +60,8 @@ class Tercero(models.Model, ModelDjangoExtensiones):
                                               blank=False)
     tipo_identificacion = models.ForeignKey(TipoIdentificacion, on_delete=models.DO_NOTHING,
                                             verbose_name='Tipo de identificación', null=True, blank=False)
+    ciudad = models.ForeignKey(Municipio, on_delete=models.DO_NOTHING, verbose_name='Ciudad', null=True, blank=True,
+                               related_name='proveedor_ciudad')
     centro_poblado = models.ForeignKey(CentroPoblado, on_delete=models.DO_NOTHING,
                                        verbose_name='Centro poblado', null=True, blank=False)
     tipo_tercero = models.ForeignKey(TipoTercero, on_delete=models.DO_NOTHING, verbose_name='Tipo Tercero', null=True,
@@ -80,8 +82,9 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     nombre_rl = models.CharField(max_length=100, verbose_name='Nombre del Representante Legal', null=True, blank=True)
     identificacion_rl = models.CharField(max_length=100, verbose_name='Identificación del Representante Legal',
                                          null=True, blank=True)
-    lugar_expedicion_rl = models.ForeignKey(Municipio, on_delete=models.DO_NOTHING,
-                                            verbose_name='Lugar de Expedicion del Id del RL', null=True, blank=True)
+    lugar_expedicion_rl = models.ForeignKey(Municipio, on_delete=models.DO_NOTHING, null=True, blank=True,
+                                            related_name='proveedor_rl_lugar_expedicion',
+                                            verbose_name='Lugar de Expedicion del Id del RL')
     fecha_constitucion = models.DateTimeField(verbose_name='Fecha de Constitución', null=True, blank=True)
     fecha_inicio_actividad = models.DateTimeField(verbose_name='Fecha de Inicio de Actividad', null=True, blank=True)
     usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario', null=True, blank=True)
