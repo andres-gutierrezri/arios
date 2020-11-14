@@ -42,14 +42,18 @@ class FacturaEncabezado(models.Model, ModelDjangoExtensiones):
     can_items = models.PositiveIntegerField(verbose_name='Cantidad Items', null=False)
     numero_factura = models.PositiveIntegerField(verbose_name='Número de Factura', null=True, blank=True)
     valor_impuesto = models.DecimalField(verbose_name='Valor Impuesto', max_digits=12, decimal_places=2, null=True)
+    base_impuesto = models.DecimalField(verbose_name='Base Impuesto', max_digits=12, decimal_places=2, null=True)
     porcentaje_administracion = models.DecimalField(verbose_name='Administración %', decimal_places=2, max_digits=5,
                                                     null=True, blank=True)
     porcentaje_imprevistos = models.DecimalField(verbose_name='Imprevistos %', decimal_places=2, max_digits=5,
                                                  null=True, blank=True)
     porcentaje_utilidad = models.DecimalField(verbose_name='Utilidad %', decimal_places=2, max_digits=5, null=True,
                                               blank=True)
-    amortizacion = models.DecimalField(verbose_name='Valor Total', max_digits=12, decimal_places=2, null=True,
-                                       blank=True)
+    amortizacion = models.DecimalField(verbose_name='Valor de la Amortización', max_digits=12, decimal_places=2,
+                                       null=True, blank=True)
+    amortizacion_id = models.CharField(verbose_name='Id de la Amortización',  max_length=150, null=True, blank=True)
+    amortizacion_fecha = models.DateField(verbose_name='Fecha de la Amortización',
+                                          null=True, blank=True)
     fecha_creacion = models.DateField(auto_now_add=True, verbose_name='Fecha de Creación', null=False, blank=False)
     fecha_modificacion = models.DateField(verbose_name='Fecha de Modificación', null=True, blank=False)
     usuario_crea = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario Crea", null=False,
@@ -125,6 +129,10 @@ class FacturaDetalle(models.Model):
     cantidad = models.PositiveIntegerField(verbose_name='Cantidad', null=False, blank=False)
     valor_unitario = models.DecimalField(verbose_name='Valor Unitario', max_digits=12, decimal_places=2, null=False,
                                          blank=False)
+    valor_total = models.DecimalField(verbose_name='Valor Total', max_digits=12, decimal_places=2, null=False,
+                                      blank=False)
+    valor_impuesto = models.DecimalField(verbose_name='Valor Impuesto', max_digits=12, decimal_places=2, null=False,
+                                         blank=False)
     impuesto = models.ForeignKey(Impuesto, on_delete=models.DO_NOTHING, verbose_name='Impuesto', null=True)
 
     def __str__(self):
@@ -133,10 +141,6 @@ class FacturaDetalle(models.Model):
     class Meta:
         verbose_name = 'Detalle Factura'
         verbose_name_plural = 'Detalles Factura'
-
-    @property
-    def valor_total(self):
-        return Decimal(round(Decimal(self.cantidad) * Decimal(self.valor_unitario), 2))
 
 
 class FacturaImpuesto(models.Model):

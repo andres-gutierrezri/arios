@@ -13,6 +13,7 @@ class Factura
         this.cantidadItems = 0;
         this.numeroFactura = 0;
         this.valorImpuestos = 0.00;
+        this.baseImpuestos = 0.00;
         this.porcentajeAdministracion = 0.00;
         this.porcentajeImprevistos = 0.00;
         this.porcentajeUtilidad = 0.00;
@@ -22,20 +23,16 @@ class Factura
         this.total = 0.00;
     }
 
-    valorXaPorcentaje(valor, porcentaje) {
-        return redondear2Decimales((valor * porcentaje) / 100.00);
-    }
-
     get totalAdministracion() {
-        return(this.valorXaPorcentaje(this.subtotal, this.porcentajeAdministracion))
+        return(valorXaPorcentaje(this.subtotal, this.porcentajeAdministracion))
     }
 
     get totalImprevistos() {
-        return(this.valorXaPorcentaje(this.subtotal, this.porcentajeImprevistos))
+        return(valorXaPorcentaje(this.subtotal, this.porcentajeImprevistos))
     }
 
     get totalUtilidad() {
-        return(this.valorXaPorcentaje(this.subtotal, this.porcentajeUtilidad))
+        return(valorXaPorcentaje(this.subtotal, this.porcentajeUtilidad))
     }
 
     get isAplicaAIU() {
@@ -45,11 +42,11 @@ class Factura
     }
 
     agregarItem(tituloItem, descripcionItem, valorUnitario, cantidad, impuesto) {
-        const item = new ItemFactura(tituloItem, descripcionItem, valorUnitario, cantidad, impuesto );
+        const item = new ItemFactura(tituloItem, descripcionItem, valorUnitario, cantidad, impuesto, this.getPorcentajeImpuesto(impuesto) );
         this.items.push(item);
         this.subtotal += item.valorTotal;
         this.cantidadItems++;
-        this.actualizarImpuesto(item.impuesto, item.valorTotal, true);
+        this.actualizarImpuesto(item, true);
         this.actualizarTotal();
         return(item);
     }
@@ -58,27 +55,36 @@ class Factura
          const item = this.items.splice(posicionItem, 1)[0];
          this.subtotal -= item.valorTotal;
          this.cantidadItems--;
-         this.actualizarImpuesto(item.impuesto, item.valorTotal, false);
+         this.actualizarImpuesto(item, false);
          this.actualizarTotal();
     }
 
-    actualizarImpuesto(id, valor, incrementa) {
-        const pos = this.impuestos.findIndex((value) => {
-            return value.id === id;
-        });
-        if(pos >= 0) {
-            if (incrementa)
-                this.impuestos[pos].base += valor;
-            else
-                this.impuestos[pos].base -= valor;
+    actualizarImpuesto(item, incrementa) {
+        let impuesto = this.impuestos.find( value => value.id === item.impuesto)
+
+        if(impuesto) {
+            if (incrementa) {
+                impuesto.base += item.valorTotal;
+                impuesto.valor += item.valorImpuesto;
+                this.valorImpuestos += item.valorImpuesto;
+                this.baseImpuestos += item.valorTotal;
+            }
+            else {
+                impuesto.base -= item.valorTotal;
+                impuesto.valor -= item.valorImpuesto;
+                this.valorImpuestos -= item.valorImpuesto;
+                this.baseImpuestos -= item.valorTotal;
+
+            }
+
         }
-        this.calcularTotalImpuestos();
+        //this.calcularTotalImpuestos();
     }
     calcularTotalImpuestos()
     {
         let total = 0.00;
         this.impuestos.forEach( impuesto => {
-            total += this.valorXaPorcentaje(impuesto.base, impuesto.porcentaje);
+            total += valorXaPorcentaje(impuesto.base, impuesto.porcentaje);
         });
 
         this.valorImpuestos = total;
@@ -105,9 +111,17 @@ class Factura
         Object.assign(factura, jsonData);
         return factura;
     }
+    getPorcentajeImpuesto(id) {
+        let impuesto = this.impuestos.find( value => value.id === id)
+        return impuesto ? impuesto.porcentaje : 0;
+    }
 }
 
 let factura = new Factura();
+
+function valorXaPorcentaje(valor, porcentaje) {
+    return redondear2Decimales((valor * porcentaje) / 100.00);
+}
 
 $(document).ready(function () {
 
@@ -235,13 +249,14 @@ function cerrarModalAgregarItem() {
     $(".modal-backdrop").remove();
 }
 
-function ItemFactura(titulo, descripcion, valorUnitario, cantidad, impuesto) {
+function ItemFactura(titulo, descripcion, valorUnitario, cantidad, impuesto, porcentajeImpuesto) {
     this.titulo = titulo;
     this.descripcion = descripcion;
     this.valorUnitario = valorUnitario;
     this.cantidad = cantidad;
     this.impuesto = impuesto;
     this.valorTotal = valorUnitario * cantidad;
+    this.valorImpuesto = valorXaPorcentaje(this.valorTotal, porcentajeImpuesto);
 }
 
 function getItemXaTabla(itemFactura) {
@@ -308,7 +323,8 @@ function armaTotales() {
 
     factura.impuestos.forEach(impuesto => {
         if(impuesto.base > 0)
-            totales.push({nombre:impuesto.nombre, valor: factura.valorXaPorcentaje(impuesto.base, impuesto.porcentaje)});
+            totales.push({nombre:impuesto.nombre, valor: impuesto.valor});
+            //totales.push({nombre:impuesto.nombre, valor: valorXaPorcentaje(impuesto.base, impuesto.porcentaje)});
     });
 
     if(factura.isAplicaAIU) {
@@ -372,6 +388,7 @@ function cargaImpuestosEnFactura() {
             let impuesto = JSON.parse(opcion.value);
             impuesto.nombre = opcion.text;
             impuesto.base = 0;
+            impuesto.valor = 0;
             impuestos.push(impuesto);
         }
     }

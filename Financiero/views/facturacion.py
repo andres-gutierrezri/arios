@@ -90,6 +90,7 @@ class FacturaCrearView(AbstractEvaLoggedView):
             factura_enc.subtotal = factura['subtotal']
             factura_enc.can_items = factura['cantidadItems']
             factura_enc.valor_impuesto = factura['valorImpuestos']
+            factura_enc.base_impuesto = factura['baseImpuestos']
             factura_enc.porcentaje_administracion = factura['porcentajeAdministracion']
             factura_enc.porcentaje_imprevistos = factura['porcentajeImprevistos'] != 0
             factura_enc.porcentaje_utilidad = factura['porcentajeUtilidad']
@@ -119,6 +120,8 @@ class FacturaCrearView(AbstractEvaLoggedView):
                 factura_det.descripcion = item['descripcion']
                 factura_det.valor_unitario = item['valorUnitario']
                 factura_det.cantidad = item['cantidad']
+                factura_det.valor_total = item['valorTotal']
+                factura_det.valor_impuesto = item['valorImpuesto']
                 if item['impuesto'] != 0:
                     factura_det.impuesto_id = item['impuesto']
 
@@ -134,6 +137,7 @@ class FacturaCrearView(AbstractEvaLoggedView):
                 factura_imp.factura_encabezado_id = factura_enc.id
                 factura_imp.impuesto_id = impuesto['id']
                 factura_imp.valor_base = impuesto['base']
+                factura_imp.valor_impuesto = impuesto['valor']
 
                 factura_imp.save()
             # endregion
@@ -264,20 +268,21 @@ class FacturaDetalleView(AbstractEvaLoggedView):
                 values('id', 'estado', 'subtotal', 'amortizacion', 'total', cliente=F('tercero_id'),
                        fechaVencimiento=F('fecha_vencimiento'), cantidadItems=F('can_items'),
                        numeroFactura=F('numero_factura'), valorImpuestos=F('valor_impuesto'),
+                       baseImpuestos=F('base_impuesto'),
                        porcentajeAdministracion=F('porcentaje_administracion'),
                        porcentajeImprevistos=F('porcentaje_imprevistos'), porcentajeUtilidad=F('porcentaje_utilidad'),)\
                 .get(id=id_factura, empresa_id=get_id_empresa_global(request))
 
             items_factura = list(FacturaDetalle.objects
                                  .values('titulo', 'descripcion', 'cantidad', 'impuesto',
-                                         valorUnitario=F('valor_unitario'),
-                                         valorTotal=ExpressionWrapper(F('valor_unitario') * F('cantidad'),
-                                                                      output_field=DecimalField()))
+                                         valorUnitario=F('valor_unitario'), valorTotal=F('valor_total'),
+                                         valorImpuesto=F('valor_impuesto'))
                                  .filter(factura_encabezado_id=id_factura))
 
             impuestos_factura = list(FacturaImpuesto.objects
                                      .values('impuesto', porcentaje=F('impuesto__porcentaje'),
-                                             nombre=F('impuesto__nombre'), base=F('valor_base'))
+                                             nombre=F('impuesto__nombre'), base=F('valor_base'),
+                                             valor=F('valor_impuesto'))
                                      .filter(factura_encabezado_id=id_factura))
 
             for impuesto in impuestos_factura:
