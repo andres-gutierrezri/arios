@@ -16,6 +16,7 @@ Including another URLconf
 
 from django.urls import path
 from Administracion.views import terceros, administracion, inicio_sesion, empresas, grupos_permisos, procesos
+from Administracion.views.Terceros import proveedores
 from Administracion.views.seleccion_empresa import SeleccionEmpresaModalView
 
 app_name = 'Administracion'
@@ -57,4 +58,7 @@ urlpatterns = [
     path('proveedor/registro', terceros.RegistroProveedorView.as_view(), name='proveedor-registro'),
     path('proveedor/politica-confidencialidad', terceros.PoliticaDeCofidencialidadView.as_view(),
          name='proveedor-politica-cofidencialidad'),
+    path('proveedor/perfil', proveedores.PerfilProveedorView.as_view(), name='proveedor-perfil'),
+    path('proveedor/perfil/informacion-basica', proveedores.PerfilInformacionBasicaView.as_view(),
+         name='proveedor-perfil-informacion-basica'),
 ]
