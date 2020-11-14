@@ -1,0 +1,137 @@
+{% extends 'Administracion/_common/base_administracion.html' %}
+{% load static %}
+{% load eva_tags %}
+<title>{% block titulo %} Información Básica {% endblock %}</title>
+{% block styles %}
+<!-- DEMO related CSS below -->
+	<link rel="stylesheet" media="screen, print" href="{%static 'EVA/Plantilla/css/fa-brands.css' %}">
+	<!-- page related CSS below -->
+	<link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/bootstrap-datepicker/bootstrap-datepicker.css' %}">
+{% endblock styles%}
+
+{% block main %}
+    <div class="panel-container show">
+        <div class="header">
+             <h1 class="header-title">
+                <i class='far fa-handshake'></i> Información Básica
+                 <br>
+                 <br>
+             </h1>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-xl-10  col-lg-11 col-md-12">
+                <div id="panel-1" class="panel">
+                    <div class="panel-container show">
+                        <div class="panel-content">
+                            <div class="panel-group">
+                                <div class="panel-body">
+                                    <form action="{% url 'Administracion:proveedor-perfil-informacion-basica' %}" id="informacion-basica-form" method="post" class="needs-validation" novalidate>
+                                        {% csrf_token %}
+                                        <input hidden value="{{ json_tipo_identificacion }}" id="json_tipo_identificacion">
+                                        <div class="form-row">
+                                            <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                                {% input_text_tag 'nombre' 'Nombre' placeholder="Ingrese el nombre" maxlength="100" required="" value=valores.nombre mensaje_validacion='Por favor ingrese un nombre' invalido=errores.nombre %}
+                                            </div>
+                                            <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                                {% select_tag tipo_identificacion 'tipo_identificacion' 'Seleccione un tipo de identificación' texto_label="Tipo de identificación" value=colaborador.tipo_identificacion_id required="" mensaje_validacion='Por favor seleccione un tipo de identificación' invalido=errores.tipo_identificacion %}
+                                            </div>
+                                            <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                                {% input_text_tag 'nit' 'NIT' placeholder="Ingrese el NIT"  maxlength="100" required="" value=valores.nit mensaje_validacion='Por favor ingrese el el nit.' invalido=errores.numero_contrato %}
+                                            </div>
+                                        </div>
+                                        <div class="contenedor-con-borde representante-legal">
+                                            <h4>Representante Legal</h4>
+                                            <div class="form-row">
+                                                <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                                    {% input_text_tag 'nombre_rl' 'Nombre' placeholder="Ingrese el nombre" maxlength="100" required="" value=valores.nombre mensaje_validacion='Por favor ingrese un nombre' invalido=errores.nombre %}
+                                                </div>
+                                                <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                                    {% select_tag tipo_identificacion_personas 'tipo_identificacion_personas' 'Seleccione un tipo de identificación' texto_label="Tipo de identificación" value=colaborador.tipo_identificacion_id required="" mensaje_validacion='Por favor seleccione un tipo de identificación' invalido=errores.tipo_identificacion %}
+                                                </div>
+                                                <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                                    {% input_text_tag 'nit_rl' 'Número de Identificación' placeholder="Ingrese número de identificación"  maxlength="100" required="" value=valores.nit mensaje_validacion='Por favor ingrese el el nit.' invalido=errores.numero_contrato %}
+                                                </div>
+                                                <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                                    {% select_tag paises 'pais_rl' 'Seleccione un país' texto_label="País de Expedición" required="" value=objeto.pais_id  mensaje_validacion='Por favor seleccione un país' invalido=errores.pais %}
+                                                </div>
+                                                <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                                    {% select_tag departamentos 'departamento_rl' 'Seleccione un departamento' texto_label="Departamento de Expedición" required="" value=objeto.departamento_id  mensaje_validacion='Por favor seleccione un departamento' %}
+                                                </div>
+                                                <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                                    {% select_tag municipios 'ciudad_rl' 'Seleccione una ciudad' texto_label="Ciudad de Expedición" required="" value=objeto.ciudad_id  mensaje_validacion='Por favor seleccione un departamento' %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="contenedor-con-borde">
+                                            <h4>Ubicación</h4>
+                                            <div class="form-row">
+                                                <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                                    {% select_tag paises 'pais_id' 'Seleccione un país' texto_label="País" required="" value=objeto.pais_id  mensaje_validacion='Por favor seleccione un país' invalido=errores.pais %}
+                                                </div>
+                                                <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                                    {% select_tag departamentos 'departamento_id' 'Seleccione un departamento' texto_label="Departamento" required="" value=objeto.departamento_id  mensaje_validacion='Por favor seleccione un departamento' %}
+                                                </div>
+                                                <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                                    {% select_tag municipios 'ciudad_id' 'Seleccione una ciudad' texto_label="Ciudad" required="" value=objeto.ciudad_id  mensaje_validacion='Por favor seleccione un departamento' %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="form-row">
+                                            <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                                {% input_text_tag 'fijo_principal' 'Teléfono Fijo Principal' placeholder="Ingrese el número de Teléfono" maxlength="100" required="" value=valores.fijo_principal mensaje_validacion='Por favor ingrese un número' invalido=errores.fijo_principal %}
+                                            </div>
+                                            <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                                {% input_text_tag 'movil_principal' 'Teléfono Movil Principal' placeholder="Ingrese el número de Teléfono" maxlength="100" required="" value=valores.movil_principal mensaje_validacion='Por favor ingrese un número' invalido=errores.movil_principal %}
+                                            </div>
+                                            <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                                {% input_text_tag 'fijo_auxiliar' 'Teléfono Fijo Auxiliar' placeholder="Ingrese el número de Teléfono" maxlength="100" value=valores.fijo_auxiliar mensaje_validacion='Por favor ingrese un número' invalido=errores.fijo_auxiliar %}
+                                            </div>
+                                            <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                                {% input_text_tag 'movil_auxiliar' 'Teléfono Movil Auxiliar' placeholder="Ingrese el número de Teléfono" maxlength="100" value=valores.movil_auxiliar mensaje_validacion='Por favor ingrese un número' invalido=errores.movil_auxiliar %}
+                                            </div>
+                                            <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                                {% input_email_tag 'correo_pincipal' 'Correo electrónico Principal' placeholder="Ingrese el correo electrónico" required="" maxlength="100" value=valores.email_principal mensaje_validacion='Por favor digite el correo electrónico principal.' invalido=errores.email_principal %}
+                                            </div>
+                                            <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                                {% input_email_tag 'correo_auxiliar' 'Correo electrónico Auxiliar' placeholder="Ingrese el correo electrónico" maxlength="100" value=valores.email_auxiliar mensaje_validacion='Por favor digite el correo electrónico auxiliar.' invalido=errores.email_auxiliar %}
+                                            </div>
+                                            <div class="form-group col-md-6" id="div_inicio_actividad">
+                                                {% input_date_tag 'fecha_inicio_actividad' 'Fecha de Inicio de Actividad' placeholder="Seleccione una fecha"  autocomplete="off" required="" value=valores.fecha_inicio_actividad mensaje_validacion='Por favor seleccione una fecha.' invalido=errores.fecha_inicio_actividad %}
+                                            </div>
+                                            <div class="form-group col-md-6" id="div_fecha_constitucion">
+                                                {% input_date_tag 'fecha_constitucion' 'Fecha de Constitución' placeholder="Seleccione una fecha"  autocomplete="off" required="" value=valores.fecha_constitucion mensaje_validacion='Por favor seleccione una fecha.' invalido=errores.fecha_constitucion %}
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div>
+                                                <button id="guardar" class="btn btn-primary btn-block"> Guardar </button>
+                                            </div>
+                                            <div style="padding-left: 15px">
+                                                <a href="{% url 'Administracion:proveedor-perfil' %}" class="btn btn-danger btn-block">Cancelar</a>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock main %}
+
+{% block scripts %}
+    <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
+    <script src="{% static 'Administracion/js/select_divipol.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
+	<script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
+    <script src="{% static 'Proyectos/js/Contratos/selectDependiente.js' %}"></script>
+    <script src="{% static 'Administracion/js/Tercero/proveedor.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js' %}"></script>
+    <script src="{% static 'TalentoHumano/js/date_picker.js' %}"></script>
+{% endblock scripts%}
