@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 from typing import List, Optional
 
@@ -16,6 +16,7 @@ from django.urls import reverse
 from Administracion.models import Tercero, Impuesto, ConsecutivoDocumento, TipoDocumento
 from Administracion.utils import get_id_empresa_global
 from EVA import settings
+from EVA.General import app_date_now
 from EVA.General.conversiones import valor_pesos_a_letras
 from EVA.General.jsonencoders import AriosJSONEncoder
 from EVA.views.index import AbstractEvaLoggedView
@@ -101,8 +102,8 @@ class FacturaCrearView(AbstractEvaLoggedView):
                 factura_enc.usuario_crea_id = request.user.id
             factura_enc.usuario_modifica = request.user
             factura_enc.estado = factura['estado']
-            factura_enc.fecha_vencimiento = datetime.now()
-            factura_enc.fecha_creacion = datetime.now()
+            factura_enc.fecha_vencimiento = app_date_now() + timedelta(45)
+            factura_enc.fecha_creacion = app_date_now()
             factura_enc.numero_factura = None
             factura_enc.total = factura['total']
             factura_enc.total_letras = valor_pesos_a_letras(factura_enc.total)
