@@ -1,0 +1,20 @@
+{% load static %}
+<div class="col-xl-4">
+    <div id="c_{{ objeto.id }}" class="card border shadow-0 mb-g shadow-sm-hover" data-filter-tags="{{ nombre | lower }}">
+        <div class="card-body border-faded border-top-0 border-left-0 border-right-0 rounded-top">
+            <div class="d-flex flex-row align-items-center">
+                <div class="info-card-text flex-1">
+                    {{ objeto.nombre }}
+                </div>
+                <div class="info-card-text flex-1" style="text-align: end" >
+                    <a class="far fa-2x fa-edit" href="{{ objeto.url }}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0 collapse show">
+            <div class="p-3">
+                <a  class="mt-1 d-block fs-sm fw-400 text-dark"> {{ objeto }} </a>
+            </div>
+        </div>
+    </div>
+</div>
