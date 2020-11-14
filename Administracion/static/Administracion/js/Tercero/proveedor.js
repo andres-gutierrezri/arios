@@ -79,3 +79,37 @@ function guardarRegistro() {
         EVANotificacion.toast.error('Falló el registro');
     })
 }
+
+let divRepresentanteLegal = $( '.representante-legal');
+let selectTipoIdentificacion = $('#tipo_identificacion_select_id');
+let nombreRazonSocial = $('#nombre_id');
+let divFechaConstitucion = $('#div_fecha_constitucion');
+let inputFechaConstitucion = $('#fecha_constitucion_id')
+let divInicioActividad = $('#div_inicio_actividad');
+let inputInicioActividad = $('#fecha_inicio_actividad_id')
+
+selectTipoIdentificacion.change(function () {
+    let tiposIdentificacion = JSON.parse($('#json_tipo_identificacion').val());
+    tiposIdentificacion.forEach(function (obj) {
+        if(parseInt(obj.id) === parseInt(selectTipoIdentificacion.val())){
+            if (obj.tipo_nit === true){
+                divRepresentanteLegal.show();
+                nombreRazonSocial.prev("label").text('Razón Social');
+                nombreRazonSocial.attr('placeholder', 'Ingrese la razón social');
+                divFechaConstitucion.show();
+                inputFechaConstitucion.attr('required', 'true');
+                divInicioActividad.hide();
+                inputInicioActividad.removeAttr('required', 'true')
+                return false;
+            }
+        }else{
+            divRepresentanteLegal.hide();
+            nombreRazonSocial.prev("label").text('Nombre');
+            nombreRazonSocial.attr('placeholder', 'Ingrese el nombre')
+            divFechaConstitucion.hide();
+            inputFechaConstitucion.removeAttr('required', 'true');
+            divInicioActividad.show();
+            inputInicioActividad.attr('required', 'true')
+        }
+    });
+});
