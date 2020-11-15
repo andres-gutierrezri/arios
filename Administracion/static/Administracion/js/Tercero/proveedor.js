@@ -1,6 +1,14 @@
 
 'use strict';
 
+let divRepresentanteLegal = $( '.representante-legal');
+let selectTipoIdentificacion = $('#tipo_identificacion_select_id');
+let nombreRazonSocial = $('#nombre_id');
+let divFechaConstitucion = $('#div_fecha_constitucion');
+let inputFechaConstitucion = $('#fecha_constitucion_id')
+let divInicioActividad = $('#div_inicio_actividad');
+let inputInicioActividad = $('#fecha_inicio_actividad_id')
+
 class DatosRegistro
 {
     constructor() {
@@ -28,6 +36,7 @@ class DatosRegistro
 }
 
 $(document).ready(function () {
+    validarTipoIdentificacion();
     configurarFormulario();
 });
 
@@ -80,15 +89,11 @@ function guardarRegistro() {
     })
 }
 
-let divRepresentanteLegal = $( '.representante-legal');
-let selectTipoIdentificacion = $('#tipo_identificacion_select_id');
-let nombreRazonSocial = $('#nombre_id');
-let divFechaConstitucion = $('#div_fecha_constitucion');
-let inputFechaConstitucion = $('#fecha_constitucion_id')
-let divInicioActividad = $('#div_inicio_actividad');
-let inputInicioActividad = $('#fecha_inicio_actividad_id')
+selectTipoIdentificacion.change(
+    validarTipoIdentificacion()
+);
 
-selectTipoIdentificacion.change(function () {
+function validarTipoIdentificacion() {
     let tiposIdentificacion = JSON.parse($('#json_tipo_identificacion').val());
     tiposIdentificacion.forEach(function (obj) {
         if(parseInt(obj.id) === parseInt(selectTipoIdentificacion.val())){
@@ -98,8 +103,10 @@ selectTipoIdentificacion.change(function () {
                 nombreRazonSocial.attr('placeholder', 'Ingrese la razón social');
                 divFechaConstitucion.show();
                 inputFechaConstitucion.attr('required', 'true');
+                inputFechaConstitucion.removeAttr('hidden', 'true')
                 divInicioActividad.hide();
                 inputInicioActividad.removeAttr('required', 'true')
+                inputInicioActividad.attr('hidden', 'true')
                 return false;
             }
         }else{
@@ -108,8 +115,10 @@ selectTipoIdentificacion.change(function () {
             nombreRazonSocial.attr('placeholder', 'Ingrese el nombre')
             divFechaConstitucion.hide();
             inputFechaConstitucion.removeAttr('required', 'true');
+            inputFechaConstitucion.attr('hidden', 'true')
             divInicioActividad.show();
             inputInicioActividad.attr('required', 'true')
+            inputInicioActividad.removeAttr('hidden', 'true')
         }
     });
-});
+}
