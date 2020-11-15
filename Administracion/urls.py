@@ -53,7 +53,6 @@ urlpatterns = [
          name='grupos-permisos-eliminar'),
     path('procesos', procesos.ProcesosView.as_view(), name='procesos'),
     path('proveedor/index', terceros.IndexProveedorView.as_view(), name='proveedor-index'),
-    path('proveedor/index', terceros.IndexProveedorView.as_view(), name='asereje'),
     path('proveedor/iniciar-sesion', terceros.InicioSesionProveedorView.as_view(), name='proveedor-iniciar-sesion'),
     path('proveedor/registro', terceros.RegistroProveedorView.as_view(), name='proveedor-registro'),
     path('proveedor/politica-confidencialidad', terceros.PoliticaDeCofidencialidadView.as_view(),
