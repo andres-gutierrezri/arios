@@ -58,8 +58,9 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False, blank=False)
     fecha_modificacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Modificación', null=True,
                                               blank=False)
-    tipo_identificacion = models.ForeignKey(TipoIdentificacion, on_delete=models.DO_NOTHING,
-                                            verbose_name='Tipo de identificación', null=True, blank=False)
+    tipo_identificacion = models.ForeignKey(TipoIdentificacion, on_delete=models.DO_NOTHING, null=True, blank=False,
+                                            verbose_name='Tipo de identificación',
+                                            related_name='tercero_tipo_identificacion')
     ciudad = models.ForeignKey(Municipio, on_delete=models.DO_NOTHING, verbose_name='Ciudad', null=True, blank=True,
                                related_name='proveedor_ciudad')
     centro_poblado = models.ForeignKey(CentroPoblado, on_delete=models.DO_NOTHING,
@@ -80,6 +81,9 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     correo_principal = models.CharField(max_length=30, verbose_name='Correo Principal', null=True, blank=True)
     correo_auxiliar = models.CharField(max_length=30, verbose_name='Correo Auxiliar', null=True, blank=True)
     nombre_rl = models.CharField(max_length=100, verbose_name='Nombre del Representante Legal', null=True, blank=True)
+    tipo_identificacion_rl = models.ForeignKey(TipoIdentificacion, on_delete=models.DO_NOTHING,
+                                               verbose_name='Tipo de identificación del Representante Legal',
+                                               null=True, blank=False, related_name='proveedor_rl_tipo_identificacion')
     identificacion_rl = models.CharField(max_length=100, verbose_name='Identificación del Representante Legal',
                                          null=True, blank=True)
     lugar_expedicion_rl = models.ForeignKey(Municipio, on_delete=models.DO_NOTHING, null=True, blank=True,
