@@ -325,7 +325,6 @@ function getFilaTotales(nombre, valor) {
                                 <div class="fs-lg text-truncate text-truncate-lg">Agregar</div>
                             </div>
                             <a class="dropdown-item" href="javascript:abrirModalAgregarAmortizacion();">Amortización</a>
-                            <a class="dropdown-item" href="javascript:abrirModalAgregarAIU();">AIU</a>
                         </div>
                     </div> <b>${nombre}</b></td><td class="text-right">${numToDecimalStr(valor)}
                 </td></tr>`
