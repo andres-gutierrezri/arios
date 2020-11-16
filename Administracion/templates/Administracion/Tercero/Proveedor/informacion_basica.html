@@ -51,7 +51,7 @@
                                                     {% select_tag tipo_identificacion_personas 'tipo_identificacion_personas' 'Seleccione un tipo de identificación' texto_label="Tipo de identificación" value=colaborador.tipo_identificacion_id required="" mensaje_validacion='Por favor seleccione un tipo de identificación' invalido=errores.tipo_identificacion %}
                                                 </div>
                                                 <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                                                    {% input_text_tag 'nit_rl' 'Número de Identificación' placeholder="Ingrese número de identificación"  maxlength="100" required="" value=valores.nit mensaje_validacion='Por favor ingrese el el nit.' invalido=errores.numero_contrato %}
+                                                    {% input_text_tag 'identificacion_rl' 'Número de Identificación' placeholder="Ingrese número de identificación"  maxlength="100" required="" value=valores.nit mensaje_validacion='Por favor ingrese el el nit.' invalido=errores.numero_contrato %}
                                                 </div>
                                                 <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
                                                     {% select_tag paises 'pais_rl' 'Seleccione un país' texto_label="País de Expedición" required="" value=objeto.pais_id  mensaje_validacion='Por favor seleccione un país' invalido=errores.pais %}
@@ -60,7 +60,7 @@
                                                     {% select_tag departamentos 'departamento_rl' 'Seleccione un departamento' texto_label="Departamento de Expedición" required="" value=objeto.departamento_id  mensaje_validacion='Por favor seleccione un departamento' %}
                                                 </div>
                                                 <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                                                    {% select_tag municipios 'ciudad_rl' 'Seleccione una ciudad' texto_label="Ciudad de Expedición" required="" value=objeto.ciudad_id  mensaje_validacion='Por favor seleccione un departamento' %}
+                                                    {% select_tag municipios 'municipio_rl' 'Seleccione una municipio' texto_label="Ciudad de Expedición" required="" value=objeto.ciudad_id  mensaje_validacion='Por favor seleccione un departamento' %}
                                                 </div>
                                             </div>
                                         </div>
@@ -69,13 +69,13 @@
                                             <h4>Ubicación</h4>
                                             <div class="form-row">
                                                 <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                                                    {% select_tag paises 'pais_id' 'Seleccione un país' texto_label="País" required="" value=objeto.pais_id  mensaje_validacion='Por favor seleccione un país' invalido=errores.pais %}
+                                                    {% select_tag paises 'pais' 'Seleccione un país' texto_label="País" required="" value=objeto.pais_id  mensaje_validacion='Por favor seleccione un país' invalido=errores.pais %}
                                                 </div>
                                                 <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                                                    {% select_tag departamentos 'departamento_id' 'Seleccione un departamento' texto_label="Departamento" required="" value=objeto.departamento_id  mensaje_validacion='Por favor seleccione un departamento' %}
+                                                    {% select_tag departamentos 'departamento' 'Seleccione un departamento' texto_label="Departamento" required="" value=objeto.departamento_id  mensaje_validacion='Por favor seleccione un departamento' %}
                                                 </div>
                                                 <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                                                    {% select_tag municipios 'ciudad_id' 'Seleccione una ciudad' texto_label="Ciudad" required="" value=objeto.ciudad_id  mensaje_validacion='Por favor seleccione un departamento' %}
+                                                    {% select_tag municipios 'municipio' 'Seleccione una municipio' texto_label="Municipio" required="" value=objeto.ciudad_id  mensaje_validacion='Por favor seleccione un departamento' %}
                                                 </div>
                                             </div>
                                         </div>
@@ -130,7 +130,7 @@
     <script src="{% static 'Administracion/js/select_divipol.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
 	<script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
-    <script src="{% static 'Proyectos/js/Contratos/selectDependiente.js' %}"></script>
+    <script src="{% static 'Administracion/js/selecctoresMultiplesDivipol.js' %}"></script>
     <script src="{% static 'Administracion/js/Tercero/proveedor.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js' %}"></script>
     <script src="{% static 'TalentoHumano/js/date_picker.js' %}"></script>
