@@ -29,7 +29,8 @@ class FacturasView(AbstractEvaLoggedView):
         page = request.GET.get('page', 1)
         page2 = request.GET.get('page2', 1)
         empresa_id = get_id_empresa_global(request)
-        facturas = FacturaEncabezado.objects.filter(empresa_id=empresa_id).exclude(estado=0).order_by('-numero_factura')
+        facturas = FacturaEncabezado.objects.filter(empresa_id=empresa_id).exclude(estado=0).order_by('-fecha_creacion',
+                                                                                                      '-numero_factura')
         borradores = FacturaEncabezado.objects.filter(estado=0, empresa_id=empresa_id).order_by('-id')
 
         facturas_page = paginar(facturas, page, 10)
