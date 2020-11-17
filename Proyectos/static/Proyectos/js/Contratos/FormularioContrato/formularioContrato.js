@@ -137,4 +137,12 @@ $('#valor_vigencia_id').change(function () {
     validarCambioValor();
 });
 
+$('#valor_con_iva_id').change(function () {
+    validarMinMaxInputMaskPorInput([this]);
+    sumarCombinacionFormaDePago($('#porcentaje_valor_id'))
+});
+
+$('#valor_sin_iva_id').change(function () {
+    validarMinMaxInputMaskPorInput([this]);
+});
 
