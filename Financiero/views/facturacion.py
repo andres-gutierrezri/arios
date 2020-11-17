@@ -274,8 +274,9 @@ class FacturaCrearView(AbstractEvaLoggedView):
 
             plantilla = get_template('Financiero/Facturacion/Facturas/correo.html')
 
-            email = EmailMessage(asunto,  plantilla.render(info_factura), from_email, [info_factura['tercero__correo_facelec']],
-                                 ['asesorsistemas@arios-ing.com'])
+            email = EmailMessage(asunto,  plantilla.render(info_factura), from_email,
+                                 [info_factura['tercero__correo_facelec']],
+                                 ['contaduria@arios-ing.com'])
             email.attach_file(ruta_adjunto)
             email.content_subtype = "html"
             valor = email.send()
