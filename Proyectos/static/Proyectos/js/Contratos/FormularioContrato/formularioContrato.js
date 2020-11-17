@@ -116,6 +116,26 @@ $(document).ready(function () {
         botonSiguiente.removeAttr('onclick', '$("#guardar").click()');
     });
 });
+function validarCambioValor() {
+    let form = document.getElementById("contrato-form");
+    validarMinMaxInputMask(form)
+}
+
+$('#valor_id').change(function () {
+    validarCambioValor();
+});
+
+$('#valor_con_iva_id').change(function () {
+    validarCambioValor();
+});
+
+$('#valor_sin_iva_id').change(function () {
+    validarCambioValor();
+});
+
+$('#valor_vigencia_id').change(function () {
+    validarCambioValor();
+});
 
 $('#valor_con_iva_id').change(function () {
     validarMinMaxInputMaskPorInput([this]);

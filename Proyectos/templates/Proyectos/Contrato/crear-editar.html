@@ -78,7 +78,7 @@
                                                                     {% input_number_tag 'plazo_ejecucion' 'Plazo de Ejecución (Meses)' placeholder="Ingrese el plazo de ejecución"  min='0' max="2147483647" onInput="validarLongitud(10,this)" required="" value=contrato.plazo_ejecucion mensaje_validacion='Por favor ingrese el plazo de ejecución' invalido=errores.plazo_ejecución %}
                                                                 </div>
                                                                 <div class="form-group col-xl-3 col-lg-4 col-md-6 col-sm-6">
-                                                                    {% input_currency_tag 'valor' 'Valor' removeMaskOnSubmit=True placeholder="Ingrese el valor"  min='0' max="99999999999999.99" step="0.01" onInput="validarLongitud(16,this)" required="" value=valor_contrato mensaje_validacion='Por favor ingrese el valor' invalido=errores.valor %}
+                                                                    {% input_currency_tag 'valor' 'Valor' removeMaskOnSubmit=True placeholder="Ingrese el valor"  min='0' max="99999999999999.99" step="0.01" required="" value=valor_contrato mensaje_validacion='Por favor ingrese el valor' invalido=errores.valor %}
                                                                 </div>
 
                                                                 <div class="form-group col-xl-3 col-lg-4 col-md-6 col-sm-6">
@@ -91,7 +91,7 @@
                                                                     {% select_tag procesos 'proceso_id' 'Seleccione un proceso' texto_label="Proceso a cargo" value=contrato.proceso_a_cargo_id  mensaje_validacion='Por favor seleccione un proceso' %}
                                                                 </div>
                                                                 <div class="form-group col-xl-3 col-lg-4 col-md-6 col-sm-6">
-                                                                        {% select_tag colaboradores 'residente_id' 'Seleccione un colaborador' texto_label="Residente" value=contrato.residente_id  mensaje_validacion='Por favor seleccione un colaborador' %}
+                                                                        {% select_tag residentes 'residente_id' 'Seleccione un colaborador' texto_label="Residente" value=contrato.residente_id  mensaje_validacion='Por favor seleccione un colaborador' %}
                                                                 </div>
                                                                 <div class="form-group col-xl-3 col-lg-4 col-md-6 col-sm-6">
                                                                     {% input_number_tag 'periodicidad_informes' 'Periodicidad de Informes(Meses)' placeholder="Ingrese la periodicidad de informes en meses" min='0' max="2147483647" onInput="validarLongitud(10,this)" required="" value=contrato.periodicidad_informes mensaje_validacion='Por favor ingrese un valor' invalido=errores.periodicidad_informes %}
@@ -206,7 +206,7 @@
                                                                         {% input_number_tag 'anho_vigencia' 'Año' placeholder="Ingrese el año de vigencia" min='2000' max="4000" onInput="validarLongitud(4,this)" required="" value=contrato.acta_parcial mensaje_validacion='Por favor ingrese el año (Mínimo año: 2000)' %}
                                                                     </div>
                                                                     <div class="form-group col-md-5">
-                                                                        {% input_currency_tag 'valor_vigencia' "Valor" placeholder="Ingrese el valor de vigencia" required="" min="0.01" max="9999999999.99" step="0.01" removeMaskOnSubmit=True %}
+                                                                        {% input_currency_tag 'valor_vigencia' "Valor" placeholder="Ingrese el valor de vigencia" required="" min="0.01" max="99999999999999.99" step="0.01" removeMaskOnSubmit=True %}
                                                                     </div>
                                                                     <div class="col-md-1" style="padding-top:30px">
                                                                         <a class="far fa-2x far fa-plus-circle" id="agregar_vigencia" href="#" onclick="agregarVigencia()" title="" data-original-title="Agregar Vigencia" style=""></a>
