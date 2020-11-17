@@ -4,3 +4,4 @@ from .models import Empresa, Proceso, TipoIdentificacion, TipoContrato, Persona,
 from .consecutivos import TipoDocumento, ConsecutivoDocumento
 from .gestion_permisos import PermisosFuncionalidad
 from .parametros import Parametro
+from .proveedor import ActividadEconomicaTercero
