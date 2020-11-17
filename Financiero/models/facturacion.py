@@ -33,6 +33,22 @@ class ResolucionFacturacion(models.Model):
 
 
 class FacturaEncabezado(models.Model, ModelDjangoExtensiones):
+    class Estado(models.IntegerChoices):
+        BORRADOR = 0
+        CREADA = 1
+        ERROR_ARMANANDO_FE = 2, 'Error Armando FE'
+        ERROR_ENVIANDO_DIAN = 3, 'Error Enviando a la DIAN'
+        RECHAZADA_DIAN = 4, 'Rechazada DIAN'
+        APROBADA_DIAN = 5, 'Aprobada DIAN'
+        ERROR_ARMANDO_AD = 6, 'Error Armando AD'
+        ERROR_GENERANDO_RG = 7, 'Error Generando RG'
+        ERROR_ARMANDO_ZIP = 8, 'Error Armando ZIP'
+        ERROR_ENVIADO_CORREO = 9.
+        ENVIADA_CLIENTE = 10, 'Enviada al Cliente'
+        ACUSE_RECIBO_CLIENTE = 11
+        RECHAZADA_CLIENTE = 12
+        ACEPTADA_CLIENTE = 13
+
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, verbose_name='Empresa', null=False, blank=False)
     tercero = models.ForeignKey(Tercero, on_delete=models.CASCADE, verbose_name='Tercero', null=False, blank=False)
     resolucion = models.ForeignKey(ResolucionFacturacion, on_delete=models.CASCADE,
@@ -60,7 +76,7 @@ class FacturaEncabezado(models.Model, ModelDjangoExtensiones):
                                      blank=False, related_name='FacturaCrea')
     usuario_modifica = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario Modifica", null=True,
                                          blank=False, related_name='FacturaModifica')
-    estado = models.SmallIntegerField(verbose_name='Estado', null=False, blank=False)
+    estado = models.IntegerField(choices=Estado.choices, verbose_name='Estado', null=False, blank=False)
     total = models.DecimalField(verbose_name='Total', max_digits=12, decimal_places=2, null=False)
     cufe = models.CharField(verbose_name='CUFE', max_length=96, null=True, blank=True)
     total_letras = models.CharField(verbose_name='Total en Letras', max_length=250, null=False, blank=False)

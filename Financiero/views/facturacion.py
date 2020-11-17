@@ -227,10 +227,19 @@ class FacturaCrearView(AbstractEvaLoggedView):
     def generar_factura_electronica(id_factura: int):
         response = requests.post(f'{settings.EVA_URL_BASE_FACELEC}{id_factura}/enviar')
         if response.status_code == requests.codes.ok:
-            FacturaCrearView.enviar_correo(id_factura)
+            respuesta = response.json()
+            if respuesta['estado'] == FacturaEncabezado.Estado.APROBADA_DIAN:
+                info_factura = FacturaEncabezado()
+                info_factura.id = id_factura
+                if FacturaCrearView.enviar_correo(id_factura):
+                    info_factura.estado = FacturaEncabezado.Estado.ENVIADA_CLIENTE
+                else:
+                    info_factura.estado = FacturaEncabezado.Estado.ERROR_ENVIADO_CORREO
+
+                info_factura.save(update_fields=['estado'])
 
     @staticmethod
-    def enviar_correo(id_factura: int):
+    def enviar_correo(id_factura: int) -> bool:
 
         try:
             info_factura = FacturaEncabezado.objects.\
@@ -254,8 +263,11 @@ class FacturaCrearView(AbstractEvaLoggedView):
             email.content_subtype = "html"
             valor = email.send()
             print(valor)
-        except FacturaEncabezado.DoesNotExist:
-            return {'estado': 'error', 'mensaje': 'No se encuentra información del borrador en el sistema'}
+        except:
+            return False
+
+        return True
+
 
 
 class FacturaEditarView(AbstractEvaLoggedView):

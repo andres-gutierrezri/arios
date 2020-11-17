@@ -38,7 +38,7 @@
                     <div class="tab-pane fade show active" id="tab_generadas" role="tabpanel">
                         <div class="table-responsive">
                             <table class="table table-bordered w-100" id="tabla-facturas">
-                                <thead>
+                                <thead  class="bg-primary-600">
                                     <tr>
                                         <th>Número</th>
                                         <th>Nombre cliente</th>
@@ -57,7 +57,7 @@
                                             <td>{{ factura.tercero.nombre}}</td>
                                             <td>{{ factura.can_items }}</td>
                                             <td class="text-right">{{ factura.total_factura | intcomma:False }}</td>
-                                            <td><span class="badge badge-primary">Activa</span></td>
+                                            <td><span class="badge badge-primary badge-pill">{{ factura.get_estado_display }}</span></td>
                                             <td>{{ factura.fecha_creacion |date:'Y-m-d' }}</td>
                                             <td>{{ factura.usuario_crea.username}}</td>
                                             <td>
@@ -73,7 +73,7 @@
                     <div class="tab-pane fade" id="tab_borradores" role="tabpanel">
                         <div class="table-responsive">
                             <table class="table table-bordered w-100" id="tabla-facturas">
-                                <thead>
+                                <thead  class="bg-primary-600">
                                     <tr>
                                         <th>Id Borrador</th>
                                         <th>Nombre cliente</th>
