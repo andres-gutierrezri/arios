@@ -175,6 +175,10 @@ function combinacionesFormasDePago(valor) {
             inputLiquidacion.removeAttr('disabled', true);
             divFormasDePago.show();
 
+            inputAnticipo.inputmask({alias:'evaCurrency', removeMaskOnSubmit:true});
+            inputLiquidacion.inputmask({alias:'evaCurrency', removeMaskOnSubmit:true});
+            inputActasParciales.inputmask({alias:'evaCurrency', removeMaskOnSubmit:true});
+
             divAnticipo.removeClass('col-md-6');
             divAnticipo.addClass('col-md-4');
             divActasParciales.removeClass('col-md-6');
@@ -193,6 +197,14 @@ function combinacionesFormasDePago(valor) {
             inputLiquidacion.removeAttr('disabled', true);
             divFormasDePago.show();
 
+            inputActasParciales.inputmask('remove');
+            inputActasParciales.removeAttr('data-inputmask');
+            inputActasParciales.removeClass('inputmask');
+
+            inputAnticipo.inputmask({alias:'evaCurrency', removeMaskOnSubmit:true});
+            inputLiquidacion.inputmask({alias:'evaCurrency', removeMaskOnSubmit:true});
+            inputActasParciales.inputmask({alias:'evaCurrency', removeMaskOnSubmit:true});
+
             divAnticipo.removeClass('col-md-4');
             divAnticipo.addClass('col-md-6');
             divLiquidacion.removeClass('col-md-4');
@@ -209,6 +221,14 @@ function combinacionesFormasDePago(valor) {
             inputLiquidacion.removeAttr('disabled', true);
             divFormasDePago.show();
 
+            inputAnticipo.inputmask('remove');
+            inputAnticipo.removeAttr('data-inputmask');
+            inputAnticipo.removeClass('inputmask');
+
+            inputAnticipo.inputmask({alias:'evaCurrency', removeMaskOnSubmit:true});
+            inputLiquidacion.inputmask({alias:'evaCurrency', removeMaskOnSubmit:true});
+            inputActasParciales.inputmask({alias:'evaCurrency', removeMaskOnSubmit:true});
+
             divActasParciales.removeClass('col-md-4');
             divActasParciales.addClass('col-md-6');
             divLiquidacion.removeClass('col-md-4');
@@ -217,6 +237,18 @@ function combinacionesFormasDePago(valor) {
         }else{
             divAnticipo.show();
             divActasParciales.show();
+
+            inputLiquidacion.inputmask('remove');
+            inputAnticipo.inputmask('remove');
+            inputActasParciales.inputmask('remove');
+
+            inputAnticipo.removeAttr('data-inputmask');
+            inputLiquidacion.removeAttr('data-inputmask');
+            inputActasParciales.removeAttr('data-inputmask');
+
+            inputAnticipo.removeClass('inputmask');
+            inputLiquidacion.removeClass('inputmask');
+            inputActasParciales.removeClass('inputmask');
 
             inputAnticipo.removeAttr('required', true);
             inputActasParciales.removeAttr('required', true);
