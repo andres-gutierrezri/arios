@@ -1,14 +1,13 @@
-from datetime import datetime, timedelta
 import json
+from datetime import timedelta
 from typing import List, Optional
 
 import requests
 from django.contrib import messages
 from django.core.mail import EmailMessage
-from django.db import transaction
-from django.db.models import F, DecimalField, ExpressionWrapper
+from django.db.models import F
 from django.db.transaction import atomic
-from django.http import JsonResponse, HttpResponse, FileResponse
+from django.http import JsonResponse, FileResponse
 from django.shortcuts import render, redirect
 from django.template.loader import get_template
 from django.urls import reverse
@@ -19,19 +18,25 @@ from EVA import settings
 from EVA.General import app_date_now
 from EVA.General.conversiones import valor_pesos_a_letras, isostring_to_datetime
 from EVA.General.jsonencoders import AriosJSONEncoder
+from EVA.General.utilidades import paginar
 from EVA.views.index import AbstractEvaLoggedView
 from Financiero.models import FacturaEncabezado, ResolucionFacturacion, FacturaDetalle
 from Financiero.models.facturacion import FacturaImpuesto
-from Financiero.reportes.facturacion.factura import FacturaPdf
 
 
 class FacturasView(AbstractEvaLoggedView):
     def get(self, request):
+        page = request.GET.get('page', 1)
+        page2 = request.GET.get('page2', 1)
         empresa_id = get_id_empresa_global(request)
-        facturas = FacturaEncabezado.objects.filter(empresa_id=empresa_id).exclude(estado=0).order_by('-fecha_creacion')
-        borradores = FacturaEncabezado.objects.filter(estado=0, empresa_id=empresa_id).order_by('-fecha_creacion')
-        return render(request, 'Financiero/Facturacion/Facturas/index.html', {'facturas': facturas,
-                                                                              'borradores': borradores,
+        facturas = FacturaEncabezado.objects.filter(empresa_id=empresa_id).exclude(estado=0).order_by('-numero_factura')
+        borradores = FacturaEncabezado.objects.filter(estado=0, empresa_id=empresa_id).order_by('-id')
+
+        facturas_page = paginar(facturas, page, 10)
+        borradores_page = paginar(borradores, page2, 10)
+        borradores_page.nombre_parametro = 'page2'
+        return render(request, 'Financiero/Facturacion/Facturas/index.html', {'facturas': facturas_page,
+                                                                              'borradores': borradores_page,
                                                                               'menu_actual': 'facturas'})
 
 
