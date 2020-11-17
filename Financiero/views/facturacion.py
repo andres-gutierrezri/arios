@@ -77,7 +77,7 @@ class FacturaCrearView(AbstractEvaLoggedView):
             return {"estado": "error", "mensaje": error_validacion}
         # endregion
 
-        if factura['estado'] == 0:
+        if factura['estado'] == FacturaEncabezado.Estado.BORRADOR:
             # region Factura encabezado.
             factura_enc = FacturaEncabezado()
             factura_enc.empresa_id = empresa_id
@@ -154,7 +154,7 @@ class FacturaCrearView(AbstractEvaLoggedView):
 
             return {'estado': 'OK', 'datos': {'factura_id': factura_enc.id}}
         else:
-            factura_borrador.estado = 1
+            factura_borrador.estado = FacturaEncabezado.Estado.CREADA
             factura_borrador.numero_factura = ConsecutivoDocumento \
                 .get_consecutivo_documento(TipoDocumento.FACTURA, factura_borrador.empresa_id)
             factura_borrador.save(update_fields=['estado', 'numero_factura'])
@@ -166,13 +166,30 @@ class FacturaCrearView(AbstractEvaLoggedView):
     def validaciones_factura(factura: dict, factura_borrador: FacturaEncabezado) -> Optional[str]:
 
         # region Valida borrador
-        if factura_borrador is not None and factura_borrador.estado != 0:
+        if factura_borrador is not None and factura_borrador.estado != FacturaEncabezado.Estado.BORRADOR:
             return 'Ya no es un borrador de factura y no se puede modificar'
         # endregion
 
         # region Valida cliente
         try:
-            Tercero.objects.get(id=factura['cliente'])
+            tercero = Tercero.objects.get(id=factura['cliente'])
+            mensaje_error = ''
+            if factura['estado'] == FacturaEncabezado.Estado.CREADA:
+                if tercero.regimen_fiscal is None:
+                    mensaje_error += 'Regimen fiscal, '
+                if tercero.responsabilidades_fiscales is None:
+                    mensaje_error += 'Responsabilidad fiscal, '
+                if tercero.tipo_persona is None:
+                    mensaje_error += 'Tipo persona, '
+                if tercero.tributos is None:
+                    mensaje_error += 'Tributos, '
+                if tercero.correo_facelec is None:
+                    mensaje_error += 'Correo facturación, '
+                if tercero.correo_facelec is None:
+                    mensaje_error += 'Código postal, '
+
+                if len(mensaje_error) > 0:
+                    return 'No se puede crear factura al cliente, le faltan estos datos:\n' + mensaje_error[0:-2]
         except Tercero.DoesNotExist:
             return 'El cliente seleccionado no existe.'
         # endregion
@@ -267,7 +284,6 @@ class FacturaCrearView(AbstractEvaLoggedView):
             return False
 
         return True
-
 
 
 class FacturaEditarView(AbstractEvaLoggedView):
