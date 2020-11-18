@@ -66,10 +66,10 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     direccion = models.CharField(max_length=100, verbose_name='Dirección', null=False, blank=False)
     telefono = models.CharField(max_length=30, verbose_name='Teléfono', null=False, blank=False)
     fax = models.CharField(max_length=30, verbose_name='fax', null=True, blank=True)
-    tipo_persona = models.SmallIntegerField(verbose_name='Tipo de Persona', null=False, blank=False)
+    tipo_persona = models.SmallIntegerField(verbose_name='Tipo de Persona', null=False, blank=False, default=1)
     responsabilidades_fiscales = models.CharField(max_length=200, verbose_name='Responsabilidades Fiscales', null=True,
                                                   blank=True)
-    regimen_fiscal = models.SmallIntegerField(verbose_name='Régimen Fiscal', null=False, blank=False)
+    regimen_fiscal = models.SmallIntegerField(verbose_name='Régimen Fiscal', null=True, blank=True)
     tributos = models.CharField(max_length=10, verbose_name='Tributo', null=True, blank=True)
     correo_facelec = models.EmailField(max_length=100, verbose_name='Correo Facturación Electrónica', null=True,
                                        blank=True)
