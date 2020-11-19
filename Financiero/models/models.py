@@ -16,13 +16,21 @@ class EntidadBancaria(models.Model):
         verbose_name_plural = 'Entidades Bancarias'
 
 
+class ActividadEconomicaManger(ManagerGeneral):
+    def get_xa_select_actividades_con_codigo(self) -> List:
+        datos = []
+        for obj in super().get_queryset():
+            datos.append({'campo_valor': obj.id, 'campo_texto': obj})
+        return datos
+
+
 class ActividadEconomica(models.Model):
-    objects = ManagerGeneral()
-    nombre = models.CharField(verbose_name='Nombre', max_length=100, null=False, blank=False)
-    codigo_ciiu = models.CharField(verbose_name='Codigo CIIU', max_length=100, null=False, blank=False)
+    objects = ActividadEconomicaManger()
+    nombre = models.CharField(verbose_name='Nombre', max_length=200, null=False, blank=False)
+    codigo_ciiu = models.CharField(verbose_name='Codigo CIIU', max_length=10, null=False, blank=False)
 
     def __str__(self):
-        return self.nombre
+        return '{0} - {1}'.format(self.codigo_ciiu, self.nombre)
 
     class Meta:
         verbose_name = 'Actividad Económica'
