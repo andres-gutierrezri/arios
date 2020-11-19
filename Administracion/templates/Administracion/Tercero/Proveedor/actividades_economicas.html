@@ -15,7 +15,7 @@
     <div class="panel-container show">
         <div class="header">
              <h1 class="header-title">
-                <i class='far fa-handshake'></i> Actividades Económicas
+                <i class="far fa-dollar-sign"></i> Actividades Económicas
                  <br>
                  <br>
              </h1>
@@ -27,54 +27,57 @@
                         <div class="panel-content">
                             <div class="panel-group">
                                 <div class="panel-body">
-                                    <form action="{% url 'Administracion:proveedor-perfil-informacion-basica' %}" id="informacion-basica-form" method="post" class="needs-validation" novalidate>
+                                    <form action="{% url 'Administracion:proveedor-perfil-actividades-economicas' %}" id="actividades-economicas-form" method="post" class="needs-validation" novalidate>
                                         {% csrf_token %}
                                         <input hidden value="{{ json_tipo_identificacion }}" id="json_tipo_identificacion">
+                                        <input hidden value="{{ datos_regimenes }}" id="json_datos_regimenes">
                                         <div class="form-row">
                                             <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                                                {% input_text_tag 'actividad_principal' 'Código de Actividad Principal' placeholder="Ingrese el código" maxlength="100" required="" value=proveedor.nombre mensaje_validacion='Por favor ingrese un nombre' invalido=errores.nombre %}
+                                                {% select_tag actividades_economicas 'actividad_principal' 'Seleccione una actividad' texto_label="Actividad Principal" required="" value=proveedor.actividad_principal_id  mensaje_validacion='Por favor seleccione una actividad' %}
                                             </div>
                                             <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                                                {% input_text_tag 'actividad_secundaria' 'Código de Actividad Secundaria' placeholder="Ingrese el código" maxlength="100" value=proveedor.nombre mensaje_validacion='Por favor ingrese un nombre' invalido=errores.nombre %}
+                                                {% select_tag actividades_economicas 'actividad_secundiaria' 'Seleccione una actividad' texto_label="Actividad Secundaria" value=proveedor.actividad_secundaria_id  mensaje_validacion='Por favor seleccione una actividad' %}
                                             </div>
                                             <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                                                {% input_text_tag 'otra_actividad' 'Otra Actividad' placeholder="Ingrese el código" maxlength="100" value=proveedor.nombre mensaje_validacion='Por favor ingrese un nombre' invalido=errores.nombre %}
+                                                {% select_tag actividades_economicas 'otra_actividad' 'Seleccione una actividad' texto_label="Otra Actividad" value=proveedor.otra_actividad_id  mensaje_validacion='Por favor seleccione una actividad' %}
                                             </div>
-                                            <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                                                {% input_text_tag 'nit' 'NIT (Sin Dígito de Verificación)' placeholder="Ingrese el NIT"  maxlength="100" required="" value=proveedor.identificacion mensaje_validacion='Por favor ingrese el el nit.' invalido=errores.numero_contrato %}
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                                                {% select_tag regimenes 'regimen' 'Seleccione un Régimen' texto_label="Régimen al que pertenece" required="" value=proveedor.regimen_id  mensaje_validacion='Por favor seleccione un departamento' %}
                                             </div>
-                                            <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                                                {% select_tag regimenes 'regimen' 'Seleccione un régimen' texto_label="Régimen al que pertenece" required="" value=proveedor.ciudad_id  mensaje_validacion='Por favor seleccione un departamento' %}
-                                            </div>
-                                            <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                                                {% select_tag tipo_contribuyente 'tipo_contribuyente' 'Seleccione un tipo' texto_label="Tipo de Contribuyente" required="" value=proveedor.ciudad_id  mensaje_validacion='Por favor seleccione un departamento' %}
+                                            <div class="form-group col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                                                {% select_tag tipos_contribuyente 'tipo_contribuyente' 'Seleccione un tipo' texto_label="Tipo de Contribuyente" required="" value=proveedor.tipo_contribuyente_id  mensaje_validacion='Por favor seleccione un departamento' %}
                                             </div>
                                             <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
                                                 <div class="custom-control custom-checkbox">
-                                                    <input type="checkbox" class="custom-control-input" id="excento_iyc_id" name="excento_iyc">
-                                                    <label class="custom-control-label" for="garantia_extensiva">Excento de Industria y Comercio</label>
+                                                    <input type="checkbox" class="custom-control-input" id="check_excento_iyc_id" name="excento_iyc" {% if proveedor.numero_resolucion %}checked{% endif %}>
+                                                    <label class="custom-control-label" for="check_excento_iyc_id">Excento de Industria y Comercio</label>
                                                 </div><br>
                                                 <div id="div_excento_iyc">
-                                                    {% input_text_tag 'resolucion' 'Número de Resolución' placeholder="Ingrese un número"  maxlength="100" required="" value=proveedor.identificacion mensaje_validacion='Por favor ingrese el el nit.' invalido=errores.numero_contrato %}
+                                                    {% input_text_tag 'resolucion' 'Número de Resolución' placeholder="Ingrese un número"  maxlength="100" value=proveedor.numero_resolucion mensaje_validacion='Por favor ingrese el el nit.' invalido=errores.numero_contrato %}
                                                 </div>
                                             </div>
                                             <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
                                                 <div class="custom-control custom-checkbox">
-                                                    <input type="checkbox" class="custom-control-input" id="contibuyente_iyc_id" name="contibuyente_iyc">
-                                                    <label class="custom-control-label" for="garantia_extensiva">Contribuyente Industria y Comercio</label>
+                                                    <input type="checkbox" class="custom-control-input" id="check_contribuyente_iyc_id" name="contibuyente_iyc" {% if proveedor.contribuyente_iyc %}checked{% endif %}>
+                                                    <label class="custom-control-label" for="check_contribuyente_iyc_id">Contribuyente Industria y Comercio</label>
                                                 </div><br>
                                                 <div id="div_contibuyente_iyc">
-                                                    {% input_text_tag 'contribuyente_iyc' 'Contribuyente Industria y Comercio' placeholder="Ingrese un valor"  maxlength="100" required="" value=proveedor.identificacion mensaje_validacion='Por favor ingrese el el nit.' invalido=errores.numero_contrato %}
+                                                    {% input_text_tag 'contribuyente_iyc' 'Contribuyente Industria y Comercio' placeholder="Ingrese un valor"  maxlength="100" value=proveedor.contribuyente_iyc mensaje_validacion='Por favor ingrese el el nit.' invalido=errores.numero_contrato %}
                                                 </div>
                                             </div>
-                                            <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                            <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6 entidad_publica">
                                                 <div class="custom-control custom-checkbox">
-                                                    <input type="checkbox" class="custom-control-input" id="entidad_publica_id" name="entidad_publica">
-                                                    <label class="custom-control-label" for="garantia_extensiva">Entidad Pública</label>
+                                                    <input type="checkbox" class="custom-control-input" id="check_entidad_publica_id" name="entidad_publica" {% if proveedor.entidad_publica %}checked{% endif %}>
+                                                    <label class="custom-control-label" for="check_entidad_publica_id">Entidad Pública</label>
                                                 </div><br>
                                                 <div id="div_entidad_publica">
-                                                    {% input_text_tag 'entidad_publica' 'Entidad Pública' placeholder="Seleccione una opción" maxlength="100" required="" value=proveedor.identificacion mensaje_validacion='Por favor ingrese el el nit.' invalido=errores.numero_contrato %}
+                                                    {% select_tag entidades_publicas 'entidad_publica' 'Seleccione un opción' texto_label="Entidad Pública" value=proveedor.entidad_publica mensaje_validacion='Por favor seleccione un departamento' %}
                                                 </div>
+                                            </div>
+                                            <div class="form-group col-md-12">
+                                                {% input_textarea_tag 'bienes_servicios' 'Bienes o Servicios que Ofrece' placeholder="Describa los bienes o servicios que ofrece" maxlength="500" required="" value=proveedor.bienes_servicios mensaje_validacion='Por favor ingrese el objeto del contrato.' invalido=errores.objeto_del_contrato %}
                                             </div>
                                         </div>
                                         <div class="form-row">
@@ -98,11 +101,8 @@
 
 {% block scripts %}
     <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
-    <script src="{% static 'Administracion/js/select_divipol.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
 	<script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
-    <script src="{% static 'Administracion/js/selecctoresMultiplesDivipol.js' %}"></script>
     <script src="{% static 'Administracion/js/Tercero/proveedor.js' %}"></script>
-    <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js' %}"></script>
-    <script src="{% static 'TalentoHumano/js/date_picker.js' %}"></script>
+    <script src="{% static 'Administracion/js/Tercero/actividadesEconomicas.js' %}"></script>
 {% endblock scripts%}
