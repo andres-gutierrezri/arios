@@ -60,4 +60,6 @@ urlpatterns = [
     path('proveedor/perfil', proveedores.PerfilProveedorView.as_view(), name='proveedor-perfil'),
     path('proveedor/perfil/informacion-basica', proveedores.PerfilInformacionBasicaView.as_view(),
          name='proveedor-perfil-informacion-basica'),
+    path('proveedor/perfil/actividades-economicas', proveedores.PerfilActividadesEconomicasView.as_view(),
+         name='proveedor-perfil-actividades-economicas'),
 ]

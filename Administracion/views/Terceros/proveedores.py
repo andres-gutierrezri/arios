@@ -4,11 +4,16 @@ from django.urls import reverse
 
 from Administracion.models import TipoIdentificacion, Pais, Tercero, Departamento, Municipio
 from EVA.views.index import AbstractEvaLoggedProveedorView
+from Financiero.models.models import ActividadEconomica, TipoContribuyente, Regimen, ProveedorActividadEconomica
 
 
 class PerfilProveedorView(AbstractEvaLoggedProveedorView):
     def get(self, request):
-        opciones = [{'id': 1, 'nombre': 'Información Básica', 'url': '/administracion/proveedor/perfil/informacion-basica'}]
+        opciones = [{'id': 1, 'nombre': 'Información Básica',
+                     'url': '/administracion/proveedor/perfil/informacion-basica'},
+                    {'id': 2, 'nombre': 'Actividades Económicas',
+                     'url': '/administracion/proveedor/perfil/actividades-economicas'},
+                    ]
         return render(request, 'Administracion/Tercero/Proveedor/perfil.html',
                       {'opciones': opciones})
 
@@ -61,6 +66,34 @@ class PerfilInformacionBasicaView(AbstractEvaLoggedProveedorView):
             return redirect(reverse('Administracion:proveedor-perfil'))
 
 
+class PerfilActividadesEconomicasView(AbstractEvaLoggedProveedorView):
+    def get(self, request):
+
+        return render(request, 'Administracion/Tercero/Proveedor/actividades_economicas.html',
+                      datos_xa_render_actividades_economicas(request))
+
+    def post(self, request):
+        update_fields = ('actividad_principal', 'actividad_secundaria', 'otra_actividad', 'regimen', 'contribuyente_iyc',
+                         'tipo_contribuyente', 'numero_resolucion', 'contribuyente_iyc', 'entidad_publica', 'proveedor',
+                         'bienes_servicios', 'proveedor')
+        proveedor = Tercero.objects.get(usuario=request.user)
+        proveedor_ae = ProveedorActividadEconomica.from_dictionary(request.POST)
+        proveedor_ae.proveedor = proveedor
+
+        try:
+            registro = ProveedorActividadEconomica.objects.filter(proveedor=proveedor)
+            if registro:
+                proveedor_ae.id = registro.first().id
+                proveedor_ae.save(update_fields=update_fields)
+            else:
+                proveedor_ae.save()
+            messages.success(self.request, 'Se ha guardado la información básica correctamente.')
+            return redirect(reverse('Administracion:proveedor-perfil'))
+        except:
+            messages.error(self.request, 'Ha ocurrido un error al actualizar la información.')
+            return redirect(reverse('Administracion:proveedor-perfil'))
+
+
 def datos_xa_render_informacion_basica(request):
     tipo_identificacion = TipoIdentificacion.objects.get_xa_select_activos()
     tipo_identificacion_personas = TipoIdentificacion.objects.get_xa_select_personas_activos()
@@ -86,4 +119,20 @@ def datos_xa_render_informacion_basica(request):
              'json_tipo_identificacion': json_tipo_identificacion, 'paises': paises, 'proveedor': proveedor,
              'departamentos': departamentos, 'municipios': municipios, 'departamentos_rl': departamentos_rl,
              'municipios_rl': municipios_rl}
+    return datos
+
+
+def datos_xa_render_actividades_economicas(request):
+    proveedor = ProveedorActividadEconomica.objects.get(proveedor__usuario=request.user)
+    actividades_economicas = ActividadEconomica.objects.get_xa_select_actividades_con_codigo()
+    regimenes = Regimen.objects.get_xa_select_activos()
+    tipos_contribuyente = TipoContribuyente.objects.get_xa_select_activos()
+    datos_regimenes = Regimen.objects.get_activos_like_json()
+    entidades_publicas = [{'campo_valor': '1', 'campo_texto': 'Nacional'},
+                          {'campo_valor': '2', 'campo_texto': 'Departamental'},
+                          {'campo_valor': '3', 'campo_texto': 'Municipal'}]
+
+    datos = {'actividades_economicas': actividades_economicas, 'regimenes': regimenes,
+             'tipos_contribuyente': tipos_contribuyente, 'datos_regimenes': datos_regimenes,
+             'entidades_publicas': entidades_publicas, 'proveedor': proveedor}
     return datos
