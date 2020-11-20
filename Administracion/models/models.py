@@ -20,11 +20,11 @@ class Empresa(models.Model, ModelDjangoExtensiones):
     subempresa = models.BooleanField(verbose_name='Subempresa', null=False, blank=False)
     empresa_ppal = models.ForeignKey('self', on_delete=models.DO_NOTHING, verbose_name='Empresa Ppal', null=True
                                      , blank=False)
-    tipo_persona = models.SmallIntegerField(verbose_name='Tipo de Persona', null=False, blank=False)
+    tipo_persona = models.SmallIntegerField(verbose_name='Tipo de Persona', null=False, blank=False, default=1)
     matricula_mercantil = models.CharField(max_length=20, verbose_name='Matricula Mercantil', null=True, blank=True)
     responsabilidades_fiscales = models.CharField(max_length=200, verbose_name='Responsabilidades Fiscales', null=True,
                                                   blank=True)
-    regimen_fiscal = models.SmallIntegerField(verbose_name='Régimen Fiscal', null=False, blank=False)
+    regimen_fiscal = models.SmallIntegerField(verbose_name='Régimen Fiscal', null=False, blank=False, default=48)
     tributos = models.CharField(max_length=10, verbose_name='Tributo', null=True, blank=True)
     codigo_postal = models.CharField(max_length=10, verbose_name='Código Postal', null=True, blank=True)
     direccion = models.CharField(max_length=300, verbose_name='Dirección', null=True, blank=True)
