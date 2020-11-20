@@ -1,5 +1,9 @@
+import json
+from typing import List
+
 from django.db import models
 
+from Administracion.models import Tercero
 from EVA.General.modelmanagers import ManagerGeneral
 
 
