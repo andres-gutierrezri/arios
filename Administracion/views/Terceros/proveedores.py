@@ -1,10 +1,19 @@
+import json
+import os
+from sqlite3 import IntegrityError
+
 from django.contrib import messages
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
 from Administracion.models import TipoIdentificacion, Pais, Tercero, Departamento, Municipio
+from Administracion.models.models import SubtipoProductoServicio, ProductoServicio
+from Administracion.models.terceros import ProveedorProductoServicio
+from EVA.General import app_datetime_now
 from EVA.views.index import AbstractEvaLoggedProveedorView
-from Financiero.models.models import ActividadEconomica, TipoContribuyente, Regimen, ProveedorActividadEconomica
+from Financiero.models.models import ActividadEconomica, TipoContribuyente, Regimen, ProveedorActividadEconomica, \
+    EntidadBancariaTercero, EntidadBancaria, TipoCuentaBancaria
 
 
 class PerfilProveedorView(AbstractEvaLoggedProveedorView):
@@ -13,6 +22,10 @@ class PerfilProveedorView(AbstractEvaLoggedProveedorView):
                      'url': '/administracion/proveedor/perfil/informacion-basica'},
                     {'id': 2, 'nombre': 'Actividades Económicas',
                      'url': '/administracion/proveedor/perfil/actividades-economicas'},
+                    {'id': 3, 'nombre': 'Entidades Bancarias',
+                     'url': '/administracion/proveedor/perfil/entidades-bancarias'},
+                    {'id': 4, 'nombre': 'Productos y Servicios',
+                     'url': '/administracion/proveedor/perfil/productos-servicios'},
                     ]
         return render(request, 'Administracion/Tercero/Proveedor/perfil.html',
                       {'opciones': opciones})
@@ -94,6 +107,119 @@ class PerfilActividadesEconomicasView(AbstractEvaLoggedProveedorView):
             return redirect(reverse('Administracion:proveedor-perfil'))
 
 
+class EntidadesBancariasPerfilView(AbstractEvaLoggedProveedorView):
+    def get(self, request):
+        entidades_bancarias = EntidadBancariaTercero.objects.filter(Tercero__usuario=request.user)
+        return render(request, 'Administracion/Tercero/Proveedor/entidades_bancarias.html',
+                      {'entidades_bancarias': entidades_bancarias, 'fecha': app_datetime_now()})
+
+
+class EntidadBancariaCrearView(AbstractEvaLoggedProveedorView):
+    def get(self, request):
+        return render(request, 'Administracion/Tercero/Proveedor/_modal_gestionar_entidad_bancaria.html',
+                      datos_xa_render_entidades_bancarias(request))
+
+    def post(self, request):
+        entidad_proveedor = EntidadBancariaTercero.from_dictionary(request.POST)
+        entidad_proveedor.Tercero = Tercero.objects.get(usuario=request.user)
+        entidad_proveedor.certificacion = request.FILES.get('certificacion', '')
+        try:
+            entidad_proveedor.save()
+        except:
+            return JsonResponse({"estado": "error", "mensaje": "Ha ocurrido un error al guardar la información"})
+
+        messages.success(self.request, 'Se ha creado la entidad correctamente.')
+        return JsonResponse({"estado": "OK"})
+
+
+class EntidadBancariaEditarView(AbstractEvaLoggedProveedorView):
+    def get(self, request, id):
+        entidad_bancaria = EntidadBancariaTercero.objects.get(id=id)
+        return render(request, 'Administracion/Tercero/Proveedor/_modal_gestionar_entidad_bancaria.html',
+                      datos_xa_render_entidades_bancarias(request, entidad_bancaria))
+
+    def post(self, request, id):
+        update_fields = ['tipo_cuenta', 'entidad_bancaria']
+        entidad_proveedor = EntidadBancariaTercero.from_dictionary(request.POST)
+        entidad_proveedor.id = id
+        entidad_proveedor.certificacion = request.FILES.get('certificacion', '')
+        entidad_proveedor.Tercero = Tercero.objects.get(usuario=request.user)
+        try:
+            if entidad_proveedor.certificacion:
+                update_fields.append('certificacion')
+            entidad_proveedor.save(update_fields=update_fields)
+        except:
+            return JsonResponse({"estado": "error", "mensaje": "Ha ocurrido un error al guardar la información"})
+
+        messages.success(self.request, 'Se ha actualizado la entidad correctamente.')
+        return JsonResponse({"estado": "OK"})
+
+
+class EntidadBancariaEliminarView(AbstractEvaLoggedProveedorView):
+    def post(self, request, id):
+        entidad_proveedor = EntidadBancariaTercero.objects.get(id=id)
+        try:
+            entidad_proveedor.delete()
+            messages.success(request, 'Se ha eliminado la entidad correctamente')
+            return JsonResponse({"estado": "OK"})
+
+        except IntegrityError:
+            return JsonResponse({"estado": "error",
+                                 "mensaje": "Ha ocurrido un error al realizar la acción Vista"})
+
+
+class VerCertificacionView(AbstractEvaLoggedProveedorView):
+    def get(self, request, id):
+        entidad_bancaria = EntidadBancariaTercero.objects.get(id=id)
+        if entidad_bancaria.certificacion:
+            extension = os.path.splitext(entidad_bancaria.certificacion.url)[1]
+            mime_types = {'.docx': 'application/msword', '.xlsx': 'application/vnd.ms-excel',
+                          '.pptx': 'application/vnd.ms-powerpoint',
+                          '.xlsm': 'application/vnd.ms-excel.sheet.macroenabled.12',
+                          '.dwg': 'application/octet-stream'
+                          }
+
+            mime_type = mime_types.get(extension, 'application/pdf')
+
+            response = HttpResponse(entidad_bancaria.certificacion, content_type=mime_type)
+            response['Content-Disposition'] = 'inline; filename="{0} - {1}{2}"'\
+                .format(entidad_bancaria.entidad_bancaria.nombre, entidad_bancaria.tipo_cuenta.nombre, extension)
+        else:
+            messages.error(self.request, 'Ha ocurrido un error al realizar esta acción.')
+            response = redirect(reverse('Administracion:proveedor-perfil-entidades-bancarias'))
+
+        return response
+
+
+class PerfilProductosServiciosView(AbstractEvaLoggedProveedorView):
+    def get(self, request):
+        return render(request, 'Administracion/Tercero/Proveedor/productos_servicios.html',
+                      datos_xa_render_productos_servicios(request))
+
+    def post(self, request):
+        contador = request.POST.get('contador')
+        proveedor = Tercero.objects.get(usuario=request.user)
+        try:
+            ProveedorProductoServicio.objects.filter(proveedor=proveedor).delete()
+            if contador:
+                cn = 0
+                while cn < int(contador):
+                    datos = request.POST.getlist('producto_servicio_{0}'.format(cn), '')
+                    if datos != '':
+                        for dt in datos:
+                            ProveedorProductoServicio.objects.create(proveedor=proveedor, producto_servicio_id=dt)
+                    cn += 1
+            else:
+                datos = request.POST.getlist('producto_servicio_0', '')
+                if datos != '':
+                    for dt in datos:
+                        ProveedorProductoServicio.objects.create(proveedor=proveedor, producto_servicio_id=dt)
+        except:
+            messages.success(self.request, 'Ha ocurrido un error al guardar los datos')
+
+        return redirect(reverse('Administracion:proveedor-perfil'))
+
+
 def datos_xa_render_informacion_basica(request):
     tipo_identificacion = TipoIdentificacion.objects.get_xa_select_activos()
     tipo_identificacion_personas = TipoIdentificacion.objects.get_xa_select_personas_activos()
@@ -135,4 +261,68 @@ def datos_xa_render_actividades_economicas(request):
     datos = {'actividades_economicas': actividades_economicas, 'regimenes': regimenes,
              'tipos_contribuyente': tipos_contribuyente, 'datos_regimenes': datos_regimenes,
              'entidades_publicas': entidades_publicas, 'proveedor': proveedor}
+    return datos
+
+
+def datos_xa_render_entidades_bancarias(request, objeto=None):
+    datos = EntidadBancariaTercero.objects.filter(Tercero__usuario=request.user)
+    datos_proveedor = []
+    if datos:
+        for d in datos:
+            datos_proveedor.append({'tipo_cuenta_id': d.tipo_cuenta_id,
+                                    'tipo_cuenta_nombre': d.tipo_cuenta.nombre,
+                                    'entidad_bancaria_id': d.entidad_bancaria_id,
+                                    'entidad_bancaria_nombre': d.entidad_bancaria.nombre,
+                                    'id': d.id})
+        datos_proveedor = json.dumps(datos_proveedor)
+
+    tipos_cuentas = TipoCuentaBancaria.objects.get_xa_select_activos()
+    entidades_bancarias = EntidadBancaria.objects.get_xa_select_activos()
+    datos = {'entidades_bancarias': entidades_bancarias, 'tipos_cuentas': tipos_cuentas,
+             'datos_proveedor': datos_proveedor, 'objeto': objeto}
+    return datos
+
+
+def datos_xa_render_productos_servicios(request):
+    tipos_productos_servicios = [{'campo_valor': 1, 'campo_texto': 'Producto'},
+                                 {'campo_valor': 2, 'campo_texto': 'Servicio'}]
+    subtipos_productos_servicios = SubtipoProductoServicio.objects.get_xa_select_activos()
+    productos_servicios = ProductoServicio.objects.get_xa_select_activos()
+    proveedor = Tercero.objects.get(usuario=request.user)
+    selecciones = ProveedorProductoServicio.objects.filter(proveedor=proveedor)
+    lista_selecciones = []
+    contador = 0
+    for dt in selecciones:
+        coincidencia = False
+        for ls in lista_selecciones:
+            if dt.producto_servicio.subtipo_producto_servicio_id == ls['subtipo_producto_servicio']:
+                coincidencia = True
+        if not coincidencia:
+            subtipos = ProveedorProductoServicio\
+                .objects.filter(proveedor=proveedor, producto_servicio__subtipo_producto_servicio=dt.
+                                producto_servicio.subtipo_producto_servicio)
+            lista_pro_ser = []
+            for st in subtipos:
+                lista_pro_ser.append(st.producto_servicio_id)
+            lista_selecciones\
+                .append({'tipo_producto_servicio': 2 if dt.producto_servicio.subtipo_producto_servicio.es_servicio else 1,
+                         'nombre_tipos': 'tipo_producto_servicio_{0}'.format(contador),
+                         'onchange_tipos': 'cambioTipoProductoServicio({0})'.format(contador),
+                         'subtipo_producto_servicio': dt.producto_servicio.subtipo_producto_servicio_id,
+                         'nombre_subtipos': 'subtipo_producto_servicio_{0}'.format(contador),
+                         'onchange_subtipos': 'cambioSubtipoProductoServicio({0})'.format(contador),
+                         'datos_subtipos': SubtipoProductoServicio.objects.get_xa_select_activos()
+                        .filter(es_servicio=dt.producto_servicio.subtipo_producto_servicio.es_servicio),
+                         'productos_servicios': lista_pro_ser,
+                         'nombre_producto_servicio': 'producto_servicio_{0}'.format(contador),
+                         'datos_productos_servicios': ProductoServicio.objects.get_xa_select_activos()
+                        .filter(subtipo_producto_servicio=dt.producto_servicio.subtipo_producto_servicio),
+                         'contador': contador})
+            contador += 1
+
+    datos = {'tipos_productos_servicios': tipos_productos_servicios,
+             'subtipos_productos_servicios': subtipos_productos_servicios,
+             'productos_servicios': productos_servicios,
+             'selecciones': lista_selecciones,
+             'contador': contador}
     return datos
