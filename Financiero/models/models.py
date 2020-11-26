@@ -4,11 +4,20 @@ from typing import List
 from django.db import models
 
 from Administracion.models import Tercero
+from EVA import settings
 from EVA.General.modelmanagers import ManagerGeneral
 
 
+class EntidadBancariaManger(ManagerGeneral):
+    def get_like_json(self):
+        datos = []
+        for elemento in self.get_x_estado(True, False):
+            datos.append({'id': elemento.id, 'nombre': elemento.nombre})
+        return json.dumps(datos)
+
+
 class EntidadBancaria(models.Model):
-    objects = ManagerGeneral()
+    objects = EntidadBancariaManger()
     nombre = models.CharField(verbose_name='Nombre', max_length=100, null=False, blank=False)
     codigo_banco = models.CharField(verbose_name='Código del Banco', max_length=100, null=False, blank=False)
 
@@ -18,6 +27,27 @@ class EntidadBancaria(models.Model):
     class Meta:
         verbose_name = 'Entidad Bancaria'
         verbose_name_plural = 'Entidades Bancarias'
+
+
+class TipoCuentaBancariaManger(ManagerGeneral):
+    def get_like_json(self):
+        datos = []
+        for elemento in self.get_x_estado(True, False):
+            datos.append({'id': elemento.id, 'nombre': elemento.nombre})
+        return json.dumps(datos)
+
+
+class TipoCuentaBancaria(models.Model):
+    objects = TipoCuentaBancariaManger()
+    nombre = models.CharField(verbose_name='Nombre', max_length=100, null=False, blank=False)
+    descripcion = models.CharField(verbose_name='Descrición', max_length=100, null=False, blank=False)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name = 'Tipo de Cuenta Bancaria'
+        verbose_name_plural = 'Tipos de Cuentas Bancarisas'
 
 
 class ActividadEconomicaManger(ManagerGeneral):
@@ -133,3 +163,38 @@ class ProveedorActividadEconomica(models.Model):
         proveedor_ae.bienes_servicios = datos.get('bienes_servicios', '')
 
         return proveedor_ae
+
+
+def custom_upload_to(instance, filename):
+    return '{2}/Proveedores/CertificacionesBancarias/{0}/{1}'\
+        .format(instance.Tercero.nombre, filename, settings.EVA_PRIVATE_MEDIA)
+
+
+class EntidadBancariaTercero(models.Model):
+    objects = ManagerGeneral()
+    tercero = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, name='Tercero', blank=False, null=False)
+    entidad_bancaria = models.ForeignKey(EntidadBancaria, on_delete=models.DO_NOTHING, verbose_name='Entidad Bancaria',
+                                         null=False, blank=False)
+    tipo_cuenta = models.ForeignKey(TipoCuentaBancaria, on_delete=models.DO_NOTHING, verbose_name='Tipo Cuenta',
+                                    null=False, blank=False)
+    certificacion = models.FileField(upload_to=custom_upload_to, blank=True, max_length=250)
+
+    def __str__(self):
+        return 'Entidad Bancaria de {0}'.format(self.tercero)
+
+    class Meta:
+        verbose_name = 'Entidad Bancaria del Tercero'
+        verbose_name_plural = 'Entidades Bancarias de los Terceros'
+
+    @staticmethod
+    def from_dictionary(datos: dict) -> 'EntidadBancariaTercero':
+        """
+        Crea una instancia de Entidad Bancaria Tercero con los datos pasados en el diccionario.
+        :param datos: Diccionario con los datos para crear el registro de Entidad Bancaria Tercero.
+        :return: Instacia de entidad Entidad Bancaria Tercero con la información especificada en el diccionario.
+        """
+        entidad_tercero = EntidadBancariaTercero()
+        entidad_tercero.tipo_cuenta_id = datos.get('tipo_cuenta', '')
+        entidad_tercero.entidad_bancaria_id = datos.get('entidad_bancaria', '')
+
+        return entidad_tercero
