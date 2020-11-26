@@ -1,5 +1,5 @@
 {% if texto_label %}
-    <label for="{{ nombre }}_select_id">{{ texto_label }}</label>
+    <label for="{{ nombre }}_select_id" {% if id_label %}id="{{ id_label }}_label_id"{% endif %}>{{ texto_label }}</label>
 {% endif %}
 <select class="select2 form-control" id="{{ id }}" name="{{ nombre }}" {{ propiedades }}>
 
