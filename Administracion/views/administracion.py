@@ -5,7 +5,8 @@ from django.http import JsonResponse
 from django.shortcuts import render
 
 from Administracion.models import Municipio, CentroPoblado, Departamento
-from EVA.views.index import AbstractEvaLoggedView
+from Administracion.models.models import SubtipoProductoServicio, ProductoServicio
+from EVA.views.index import AbstractEvaLoggedView, AbstractEvaLoggedProveedorView
 
 
 class PrincipalView(AbstractEvaLoggedView):
@@ -41,3 +42,33 @@ class CargarCentroPobladoSelectJsonView(AbstractEvaLoggedView):
             return JsonResponse(cpoblados_json, safe=False)
         except:
             return JsonResponse({"Error": "True"})
+
+
+PRODUCTO = 1
+SERVICIO = 2
+
+
+class CargarSubtiposProductoServicio(AbstractEvaLoggedProveedorView):
+    def get(self, request, id):
+        try:
+            if id == PRODUCTO:
+                respuesta = SubtipoProductoServicio.objects.filter(es_servicio=False).order_by('nombre')
+            else:
+                respuesta = SubtipoProductoServicio.objects.filter(es_servicio=True).order_by('nombre')
+
+            respuesta_json = [rsp.to_dict(campos=['id', 'nombre']) for rsp in respuesta]
+            return JsonResponse(respuesta_json, safe=False)
+        except:
+            return JsonResponse({"Error": "True"})
+
+
+class CargarProductosServicios(AbstractEvaLoggedProveedorView):
+    def get(self, request, id):
+        try:
+            productos_servicios = ProductoServicio.objects.filter(subtipo_producto_servicio_id=id).order_by('nombre')
+            productos_servicios_json = [ps.to_dict(campos=['id', 'nombre']) for ps in productos_servicios]
+            return JsonResponse(productos_servicios_json, safe=False)
+        except:
+            return JsonResponse({"Error": "True"})
+
+
