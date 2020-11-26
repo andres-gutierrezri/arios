@@ -249,17 +249,47 @@ class Impuesto(models.Model, ModelDjangoExtensiones):
         verbose_name_plural = 'Impuestos'
 
 
-class ServiciosBienes(models.Model):
-    objects = ManagerGeneral()
+class SubtipoProductoServicioManger(ManagerGeneral):
+    def get_subtipo_productos_like_json(self):
+        datos = []
+        for elemento in self.get_x_estado(True, False).filter(es_servicio=False):
+            datos.append({'id': elemento.id, 'nombre': elemento.nombre})
+        return json.dumps(datos)
+
+    def get_subtipo_servicios_like_json(self):
+        datos = []
+        for elemento in self.get_x_estado(True, False).filter(es_servicio=True):
+            datos.append({'id': elemento.id, 'nombre': elemento.nombre})
+        return json.dumps(datos)
+
+
+class SubtipoProductoServicio(models.Model, ModelDjangoExtensiones):
+    objects = SubtipoProductoServicioManger()
     nombre = models.CharField(verbose_name="Nombre", max_length=100, null=False, blank=False)
     descripcion = models.CharField(verbose_name="Descripción", max_length=300, null=False, blank=False)
+    es_servicio = models.BooleanField(verbose_name="Es Servicio", null=False, blank=False)
 
     def __str__(self):
         return self.nombre
 
     class Meta:
-        verbose_name = 'Servicio y Bien'
-        verbose_name_plural = 'Servicios y Bienes'
+        verbose_name = 'Subtipo Producto Servicio'
+        verbose_name_plural = 'Subtipos Productos Servicios'
+
+
+class ProductoServicio(models.Model, ModelDjangoExtensiones):
+    objects = ManagerGeneral()
+    nombre = models.CharField(verbose_name="Nombre", max_length=100, null=False, blank=False)
+    descripcion = models.CharField(verbose_name="Descripción", max_length=300, null=False, blank=False)
+    subtipo_producto_servicio = models.ForeignKey(SubtipoProductoServicio, on_delete=models.DO_NOTHING, null=False,
+                                                  verbose_name="Subtipo de Producto o Servicio", blank=False)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name = 'Producto y Servicio'
+        verbose_name_plural = 'Productos y Servicios'
 
 
 class TextoDocumento(models.Model):

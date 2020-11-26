@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 
 from django.contrib.auth.models import User
@@ -5,7 +6,7 @@ from django.db import models
 from django.db.models import QuerySet
 
 from EVA.General.modelmanagers import ManagerGeneral
-from .models import Empresa, TipoIdentificacion, Persona
+from .models import Empresa, TipoIdentificacion, Persona, ProductoServicio
 from .divipol import CentroPoblado, Municipio
 from EVA.General.modeljson import ModelDjangoExtensiones
 
@@ -182,3 +183,32 @@ class Certificacion(models.Model):
     class Meta:
         verbose_name = 'Certificación'
         verbose_name_plural = 'Certifiacaiones'
+
+
+class ProveedorProductoServicioManger(ManagerGeneral):
+    def get_activos_like_json(self):
+        datos = []
+        for elemento in self.get_x_estado(True, False):
+            if elemento.producto_servicio.subtipo_producto_servicio.es_servicio:
+                tipo_producto_servicio = 2
+            else:
+                tipo_producto_servicio = 1
+            datos.append({'tipo_producto_servicio': tipo_producto_servicio,
+                          'subtipo_producto_servicio': elemento.producto_servicio.subtipo_producto_servicio_id,
+                          'producto_servicio': elemento.producto_servicio_id})
+        return json.dumps(datos)
+
+
+class ProveedorProductoServicio(models.Model, ModelDjangoExtensiones):
+    objects = ProveedorProductoServicioManger()
+    producto_servicio = models.ForeignKey(ProductoServicio, on_delete=models.DO_NOTHING,
+                                          verbose_name="Producto o Servicio", null=False, blank=False)
+    proveedor = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING,
+                                  verbose_name="Proveedor", null=False, blank=False)
+
+    def __str__(self):
+        return '{0}-{1}'.format(self.proveedor, self.producto_servicio)
+
+    class Meta:
+        verbose_name = 'Proveedor Producto o Servicio'
+        verbose_name_plural = 'Proveedores Productos o Servicios'
