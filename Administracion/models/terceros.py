@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import QuerySet
 
+from EVA import settings
 from EVA.General.modelmanagers import ManagerGeneral
 from .models import Empresa, TipoIdentificacion, Persona, ProductoServicio
 from .divipol import CentroPoblado, Municipio
@@ -142,8 +143,16 @@ class UsuarioTercero(Persona):
         verbose_name_plural = 'Usuarios Terceros'
 
 
+class TipoDocumentoTerceroManager(ManagerGeneral):
+    def get_xa_select_activos_aplica_natural(self) -> QuerySet:
+        return self.get_xa_select_activos().filter(aplica_natural=True)
+
+    def get_xa_select_activos_aplica_juridica(self) -> QuerySet:
+        return self.get_xa_select_activos().filter(aplica_juridica=True)
+
+
 class TipoDocumentoTercero(models.Model):
-    objects = ManagerGeneral()
+    objects = TipoDocumentoTerceroManager()
     nombre = models.CharField(verbose_name='Nombre', max_length=100, null=False, blank=False)
     aplica_natural = models.BooleanField(verbose_name='Aplica Natural', null=False, blank=False)
     aplica_juridica = models.BooleanField(verbose_name='Aplica Jurídica', null=False, blank=False)
