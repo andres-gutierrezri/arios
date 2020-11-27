@@ -1,0 +1,34 @@
+{% load eva_tags %}
+{% load static %}
+
+<form id="documentos_form" method="post" class="needs-validation" novalidate>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header p-b-0">
+                <h4 class="modal-title">
+                    {% if documento %}Editar Documento{% else %}Agregar Documento{% endif %}
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% csrf_token %}
+                <div class="form-row">
+                    {% if not documento %}
+                    <div class="form-group col-12">
+                        {% select_tag tipos_documentos 'tipo_documento' 'Seleccione un tipo de documento' texto_label="Tipo de Documento" required="" value=documento.tipo_documento_id mensaje_validacion='Por favor seleccione una opción' %}
+                    </div>
+                    {% endif %}
+                    <div class="form-group col-12">
+                        {% input_file_tag 'documento' 'Documento' placeholder="Seleccione un archivo" invalido=errores.logo accept=".docx, .pdf" mensaje_validacion='Por favor seleccione un archivo'%}
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-danger btn-pills">Cancelar</button>
+                <button id="guardar" type="submit" class="btn btn-primary btn-pills">{% if objeto %} Guardar {% else %} Cargar {% endif %} </button>
+            </div>
+        </div>
+    </div>
+</form>
