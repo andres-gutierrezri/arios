@@ -40,7 +40,7 @@ function enviarFormulario(url) {
     })
 }
 
-function abrirModalGestionarEntidadBancaria(url, opcion) {
+function abrirModalGestionarEntidadBancaria(url) {
     $('#gestionar_entidad_bancaria').load(url, function (responseText) {
         try {
             if (responseText.includes("<!DOCTYPE html>")) {
