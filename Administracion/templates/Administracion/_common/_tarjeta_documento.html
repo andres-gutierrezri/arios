@@ -1,0 +1,20 @@
+{% load static %}
+<div class="col-xl-4">
+    <div id="c_{{ objeto.id }}" class="card border shadow-0 mb-g shadow-sm-hover" data-filter-tags="{{ objeto.documento.nombre | lower }}">
+        <div class="card-body border-faded border-top-0 border-left-0 border-right-0 rounded-top">
+            <div class="d-flex flex-row align-items-center">
+                <div class="info-card-text flex-1">
+                    <h4>{{ objeto.tipo_documento }}</h4>
+                </div>
+                <div class="info-card-text flex-1" style="text-align: end" >
+                    <a class="far fa-2x far fa-edit" href="javascript:abrirModalGestionarDocumentos('{% url 'Administracion:proveedor-perfil-documento-editar' objeto.id %}')"  data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar Documento"></a>                </div>
+            </div>
+        </div>
+        <div class="card-body p-0 collapse show">
+            <div class="p-3" style="text-align: center;">
+                <h5>Ver Documento Cargado</h5>
+                <a class="far fa-2x fa-custom fa-eye" style="text-decoration: none !important;" href="{% url 'Administracion:proveedor-perfil-ver-documento' objeto.id %}" target="_blank" data-original-title="Ver" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="Ver Documento Cargado"></a>
+            </div>
+        </div>
+    </div>
+</div>

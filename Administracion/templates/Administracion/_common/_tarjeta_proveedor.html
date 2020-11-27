@@ -1,6 +1,6 @@
 {% load static %}
 <div class="col-xl-4">
-    <div id="c_{{ objeto.id }}" class="card border shadow-0 mb-g shadow-sm-hover" data-filter-tags="{{ nombre | lower }}">
+    <div id="c_{{ objeto.id }}" class="card border shadow-0 mb-g shadow-sm-hover">
         <div class="card-body border-faded border-top-0 border-left-0 border-right-0 rounded-top">
             <div class="d-flex flex-row align-items-center">
                 <div class="info-card-text flex-1">
@@ -12,8 +12,24 @@
             </div>
         </div>
         <div class="card-body p-0 collapse show">
-            <div class="p-3">
-                <a  class="mt-1 d-block fs-sm fw-400 text-dark"> {{ objeto }} </a>
+            <div class="p-3" style="display: block">
+                <h5>
+                    {% for d in objeto.datos %}
+                        {% if d.valor_campo %}
+                            <small class="mt-0 mb-3 text-muted">
+                                <b>{{ d.nombre_campo }}</b>: {{ d.valor_campo }}
+                                {% if d.archivo %}
+                                    <a class="far fa-eye" href="{{ d.archivo }}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ver Archivo"></a>
+                                {% endif %}
+                            </small>
+                        {% endif %}
+                    {% endfor %}
+                </h5>
+            </div>
+        </div>
+        <div class="card-body p-0 collapse show">
+            <div>
+                <a  class="mt-1 d-block fs-sm fw-400 text-dark">  </a>
             </div>
         </div>
     </div>
