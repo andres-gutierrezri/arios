@@ -156,20 +156,26 @@ class TipoDocumentoTercero(models.Model):
         verbose_name_plural = 'Tipos de Documentos Terceros'
 
 
+def custom_upload_to(instance, filename):
+    return '{2}/Proveedores/Documentos/{0}/{1}'\
+        .format(instance.Tercero.nombre, filename, settings.EVA_PRIVATE_MEDIA)
+
+
 class DocumentoTercero(models.Model):
     objects = ManagerGeneral()
-    nombre_documento = models.CharField(verbose_name='Nombre', max_length=100, null=False, blank=False)
+    documento = models.FileField(upload_to=custom_upload_to, verbose_name='Documento', null=False, blank=False)
     tipo_documento = models.ForeignKey(TipoDocumentoTercero, on_delete=models.DO_NOTHING, blank=False, null=False)
     tercero = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, name='Tercero', blank=False, null=False)
-    fecha_crea = models.DateTimeField(name='Fecha de Creación', blank=False, null=False)
+    fecha_crea = models.DateTimeField(auto_now_add=True, name='Fecha de Creación', blank=False, null=False)
     estado = models.BooleanField(name='Estado', blank=False, null=False)
 
     def __str__(self):
-        return self.nombre_documento
+        return '{0}-{1}'.format(self.tipo_documento, self.Tercero)
 
     class Meta:
-        verbose_name = 'Tipo de Contribuyente'
-        verbose_name_plural = 'Tipos de Contribuyentes'
+        verbose_name = 'Documento Tercero'
+        verbose_name_plural = 'Documentos Terceros'
+        unique_together = ('tipo_documento', 'Tercero')
 
 
 class Certificacion(models.Model):
