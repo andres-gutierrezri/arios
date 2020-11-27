@@ -18,14 +18,22 @@ from Financiero.models.models import ActividadEconomica, TipoContribuyente, Regi
 
 class PerfilProveedorView(AbstractEvaLoggedProveedorView):
     def get(self, request):
+        proveedor = Tercero.objects.get(usuario=request.user)
+        informacion_basica = generar_datos_informacion_basica(proveedor)
+        actividades_economicas = generar_datos_actividades_economicas(proveedor)
+        entidades_bancarias = generar_datos_entidades_bancarias(proveedor)
+        bienes_servicios = generar_datos_bienes_servicios(proveedor)
+        documentos = generar_datos_documentos(proveedor)
         opciones = [{'id': 1, 'nombre': 'Información Básica',
-                     'url': '/administracion/proveedor/perfil/informacion-basica'},
+                     'url': '/administracion/proveedor/perfil/informacion-basica', 'datos': informacion_basica},
                     {'id': 2, 'nombre': 'Actividades Económicas',
-                     'url': '/administracion/proveedor/perfil/actividades-economicas'},
+                     'url': '/administracion/proveedor/perfil/actividades-economicas', 'datos': actividades_economicas},
                     {'id': 3, 'nombre': 'Entidades Bancarias',
-                     'url': '/administracion/proveedor/perfil/entidades-bancarias'},
-                    {'id': 4, 'nombre': 'Productos y Servicios',
-                     'url': '/administracion/proveedor/perfil/productos-servicios'},
+                     'url': '/administracion/proveedor/perfil/entidades-bancarias', 'datos': entidades_bancarias},
+                    {'id': 4, 'nombre': 'Bienes y Servicios',
+                     'url': '/administracion/proveedor/perfil/productos-servicios', 'datos': bienes_servicios},
+                    {'id': 5, 'nombre': 'Documentos',
+                     'url': '/administracion/proveedor/perfil/documentos', 'datos': documentos},
                     ]
         return render(request, 'Administracion/Tercero/Proveedor/perfil.html',
                       {'opciones': opciones})
@@ -81,7 +89,6 @@ class PerfilInformacionBasicaView(AbstractEvaLoggedProveedorView):
 
 class PerfilActividadesEconomicasView(AbstractEvaLoggedProveedorView):
     def get(self, request):
-
         return render(request, 'Administracion/Tercero/Proveedor/actividades_economicas.html',
                       datos_xa_render_actividades_economicas(request))
 
@@ -116,7 +123,8 @@ class EntidadesBancariasPerfilView(AbstractEvaLoggedProveedorView):
 
 class EntidadBancariaCrearView(AbstractEvaLoggedProveedorView):
     def get(self, request):
-        return render(request, 'Administracion/Tercero/Proveedor/_modal_gestionar_entidad_bancaria.html',
+        return render(request,
+                      'Administracion/_common/_modal_gestionar_entidad_bancaria.html',
                       datos_xa_render_entidades_bancarias(request))
 
     def post(self, request):
@@ -135,7 +143,8 @@ class EntidadBancariaCrearView(AbstractEvaLoggedProveedorView):
 class EntidadBancariaEditarView(AbstractEvaLoggedProveedorView):
     def get(self, request, id):
         entidad_bancaria = EntidadBancariaTercero.objects.get(id=id)
-        return render(request, 'Administracion/Tercero/Proveedor/_modal_gestionar_entidad_bancaria.html',
+        return render(request,
+                      'Administracion/_common/_modal_gestionar_entidad_bancaria.html',
                       datos_xa_render_entidades_bancarias(request, entidad_bancaria))
 
     def post(self, request, id):
@@ -326,3 +335,88 @@ def datos_xa_render_productos_servicios(request):
              'selecciones': lista_selecciones,
              'contador': contador}
     return datos
+
+
+def datos_xa_render_documentos(request, documento: DocumentoTercero = None):
+    proveedor = Tercero.objects.get(usuario=request.user)
+    if proveedor.tipo_identificacion.tipo_nit:
+        tipos_documentos = TipoDocumentoTercero.objects.get_xa_select_activos_aplica_juridica()
+    else:
+        tipos_documentos = TipoDocumentoTercero.objects.get_xa_select_activos_aplica_natural()
+
+    documentos_actuales = DocumentoTercero.objects.filter(Tercero__usuario=request.user)
+    lista_tipos_documentos = []
+    for td in tipos_documentos:
+        coincidencia = False
+        for da in documentos_actuales:
+            if da.tipo_documento_id == td['campo_valor']:
+                coincidencia = True
+        if not coincidencia:
+            lista_tipos_documentos.append(td)
+
+    return {'tipos_documentos': lista_tipos_documentos, 'documento': documento}
+
+
+def generar_datos_informacion_basica(proveedor):
+    return [{'nombre_campo': 'Nombre', 'valor_campo': proveedor.nombre},
+            {'nombre_campo': 'Tipo de Identificación', 'valor_campo': proveedor.tipo_identificacion.nombre},
+            {'nombre_campo': 'Identificación', 'valor_campo': proveedor.identificacion},
+            {'nombre_campo': 'Ubicación', 'valor_campo':
+                '{1} - {2} - {0}'.format(proveedor.ciudad.departamento.pais.nombre.capitalize(),
+                                         proveedor.ciudad.departamento.nombre.capitalize(),
+                                         proveedor.ciudad.nombre.capitalize())},
+            {'nombre_campo': 'Teléfono Fijo Principal', 'valor_campo': proveedor.telefono_fijo_principal},
+            {'nombre_campo': 'Teléfono Movil Principal', 'valor_campo': proveedor.telefono_movil_principal},
+            {'nombre_campo': 'Teléfono Fijo Auxiliar', 'valor_campo': proveedor.telefono_fijo_auxiliar},
+            {'nombre_campo': 'Teléfono Movil Auxiliar', 'valor_campo': proveedor.telefono_movil_auxiliar},
+            {'nombre_campo': 'Correo Electrónico Principal', 'valor_campo': proveedor.correo_principal},
+            {'nombre_campo': 'Correo Electrónico Auxiliar', 'valor_campo': proveedor.correo_auxiliar},
+            {'nombre_campo': 'Fecha de Inicio de Actividad', 'valor_campo':
+                datetime_to_string(proveedor.fecha_inicio_actividad)},
+            {'nombre_campo': 'Fecha de Constitución', 'valor_campo':
+                datetime_to_string(proveedor.fecha_inicio_actividad)},
+            ]
+
+
+def generar_datos_actividades_economicas(proveedor):
+    ae = ProveedorActividadEconomica.objects.get(proveedor=proveedor)
+    return [{'nombre_campo': 'Actividad Principal', 'valor_campo': ae.actividad_principal},
+            {'nombre_campo': 'Actividad Secundaria', 'valor_campo': ae.actividad_secundaria},
+            {'nombre_campo': 'Otra Actividad', 'valor_campo': ae.otra_actividad},
+            {'nombre_campo': 'Régimen', 'valor_campo': ae.regimen},
+            {'nombre_campo': 'Tipo de Contribuyente', 'valor_campo': ae.tipo_contribuyente},
+            {'nombre_campo': 'Excento de Industria y Comercio: # Res', 'valor_campo': ae.numero_resolucion},
+            {'nombre_campo': 'Contribuyente Industria y Comercio', 'valor_campo': ae.contribuyente_iyc},
+            {'nombre_campo': 'Entidad Pública', 'valor_campo': ae.entidad_publica},
+            {'nombre_campo': 'Bienes y Servicios', 'valor_campo': ae.bienes_servicios},
+            ]
+
+
+def generar_datos_entidades_bancarias(proveedor):
+    entidades_bancarias = EntidadBancariaTercero.objects.filter(Tercero=proveedor)
+    lista_entidades = []
+    for eb in entidades_bancarias:
+        lista_entidades.append({'nombre_campo': eb.tipo_cuenta, 'valor_campo': eb.entidad_bancaria,
+                                'archivo': '/administracion/proveedor/perfil/ver-certificacion/{0}/'.format(eb.id)})
+    return lista_entidades
+
+
+def generar_datos_bienes_servicios(proveedor):
+    productos_servicios = ProveedorProductoServicio.objects.filter(proveedor=proveedor)
+    lista_productos_servicios = []
+    for ps in productos_servicios:
+        lista_productos_servicios\
+            .append({'nombre_campo': 'Servicio' if ps.producto_servicio.subtipo_producto_servicio.es_servicio
+                     else "Producto", 'valor_campo': '{0} - {1}'
+                    .format(ps.producto_servicio.subtipo_producto_servicio, ps.producto_servicio)})
+    return lista_productos_servicios
+
+
+def generar_datos_documentos(proveedor):
+    documentos = DocumentoTercero.objects.filter(Tercero=proveedor)
+    lista_documentos = []
+    for doc in documentos:
+        lista_documentos\
+            .append({'nombre_campo': doc.tipo_documento, 'valor_campo': 'Ver',
+                     'archivo': '/administracion/proveedor/perfil/ver-documento/{0}/'.format(doc.id)})
+    return lista_documentos
