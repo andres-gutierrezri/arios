@@ -177,7 +177,7 @@ class EntidadBancariaTercero(models.Model):
                                          null=False, blank=False)
     tipo_cuenta = models.ForeignKey(TipoCuentaBancaria, on_delete=models.DO_NOTHING, verbose_name='Tipo Cuenta',
                                     null=False, blank=False)
-    certificacion = models.FileField(upload_to=custom_upload_to, blank=True, max_length=250)
+    certificacion = models.FileField(upload_to=custom_upload_to, blank=False, null=False)
 
     def __str__(self):
         return 'Entidad Bancaria de {0}'.format(self.tercero)
