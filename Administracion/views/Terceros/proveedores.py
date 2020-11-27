@@ -9,8 +9,9 @@ from django.urls import reverse
 
 from Administracion.models import TipoIdentificacion, Pais, Tercero, Departamento, Municipio
 from Administracion.models.models import SubtipoProductoServicio, ProductoServicio
-from Administracion.models.terceros import ProveedorProductoServicio
+from Administracion.models.terceros import ProveedorProductoServicio, TipoDocumentoTercero, DocumentoTercero
 from EVA.General import app_datetime_now
+from EVA.General.conversiones import datetime_to_string
 from EVA.views.index import AbstractEvaLoggedProveedorView
 from Financiero.models.models import ActividadEconomica, TipoContribuyente, Regimen, ProveedorActividadEconomica, \
     EntidadBancariaTercero, EntidadBancaria, TipoCuentaBancaria
@@ -229,6 +230,84 @@ class PerfilProductosServiciosView(AbstractEvaLoggedProveedorView):
         return redirect(reverse('Administracion:proveedor-perfil'))
 
 
+class PerfilDocumentosView(AbstractEvaLoggedProveedorView):
+    def get(self, request):
+        proveedor = Tercero.objects.get(usuario=request.user)
+
+        if proveedor.tipo_identificacion.tipo_nit:
+            documentos = DocumentoTercero.objects.filter(Tercero=proveedor, tipo_documento__aplica_juridica=True)
+        else:
+            documentos = DocumentoTercero.objects.filter(Tercero=proveedor, tipo_documento__aplica_natural=True)
+        agregar = verificar_documentos_proveedor(proveedor, documentos)
+        return render(request, 'Administracion/Tercero/Proveedor/documentos.html', {'documentos': documentos,
+                                                                                    'agregar': agregar})
+
+
+class DocumentoCrearView(AbstractEvaLoggedProveedorView):
+    def get(self, request):
+        return render(request, 'Administracion/_common/_modal_gestionar_documento.html',
+                      datos_xa_render_documentos(request))
+
+    def post(self, request):
+        proveedor = Tercero.objects.get(usuario=request.user)
+        documento = DocumentoTercero()
+        documento.tipo_documento_id = request.POST.get('tipo_documento', '')
+        documento.Tercero = proveedor
+        documento.documento = request.FILES.get('documento', '')
+        documento.Estado = True
+        try:
+            documento.save()
+        except:
+            return JsonResponse({"estado": "error", "mensaje": "Ha ocurrido un error al guardar la información"})
+
+        messages.success(self.request, 'Se ha cargado el documento {0} correctamente.'
+                         .format(documento.tipo_documento.nombre))
+        return JsonResponse({"estado": "OK"})
+
+
+class DocumentoEditarView(AbstractEvaLoggedProveedorView):
+    def get(self, request, id):
+        documento = DocumentoTercero.objects.get(id=id)
+        return render(request, 'Administracion/_common/_modal_gestionar_documento.html',
+                      datos_xa_render_documentos(request, documento))
+
+    def post(self, request, id):
+        update_fields = ['documento']
+        documento = DocumentoTercero.objects.get(id=id)
+        documento.documento = request.FILES.get('documento', '')
+        try:
+            documento.save(update_fields=update_fields)
+        except:
+            return JsonResponse({"estado": "error", "mensaje": "Ha ocurrido un error al guardar la información"})
+
+        messages.success(self.request, 'Se ha cargado el documento {0} correctamente.'
+                         .format(documento.tipo_documento.nombre))
+        return JsonResponse({"estado": "OK"})
+
+
+class VerDocumentoView(AbstractEvaLoggedProveedorView):
+    def get(self, request, id):
+        documento = DocumentoTercero.objects.get(id=id)
+        if documento.documento:
+            extension = os.path.splitext(documento.documento.url)[1]
+            mime_types = {'.docx': 'application/msword', '.xlsx': 'application/vnd.ms-excel',
+                          '.pptx': 'application/vnd.ms-powerpoint',
+                          '.xlsm': 'application/vnd.ms-excel.sheet.macroenabled.12',
+                          '.dwg': 'application/octet-stream'
+                          }
+
+            mime_type = mime_types.get(extension, 'application/pdf')
+
+            response = HttpResponse(documento.documento, content_type=mime_type)
+            response['Content-Disposition'] = 'inline; filename="{0} - {1}{2}"'\
+                .format(documento.Tercero.nombre, documento.tipo_documento.nombre, extension)
+        else:
+            messages.error(self.request, 'Ha ocurrido un error al realizar esta acción.')
+            response = redirect(reverse('Administracion:proveedor-perfil-documentos'))
+
+        return response
+
+
 def datos_xa_render_informacion_basica(request):
     tipo_identificacion = TipoIdentificacion.objects.get_xa_select_activos()
     tipo_identificacion_personas = TipoIdentificacion.objects.get_xa_select_personas_activos()
@@ -258,7 +337,9 @@ def datos_xa_render_informacion_basica(request):
 
 
 def datos_xa_render_actividades_economicas(request):
-    proveedor = ProveedorActividadEconomica.objects.get(proveedor__usuario=request.user)
+    proveedor = ProveedorActividadEconomica.objects.filter(proveedor__usuario=request.user)
+    if proveedor:
+        proveedor = proveedor.first()
     actividades_economicas = ActividadEconomica.objects.get_xa_select_actividades_con_codigo()
     regimenes = Regimen.objects.get_xa_select_activos()
     tipos_contribuyente = TipoContribuyente.objects.get_xa_select_activos()
@@ -355,6 +436,22 @@ def datos_xa_render_documentos(request, documento: DocumentoTercero = None):
             lista_tipos_documentos.append(td)
 
     return {'tipos_documentos': lista_tipos_documentos, 'documento': documento}
+
+
+def verificar_documentos_proveedor(proveedor, documentos):
+    if proveedor.tipo_identificacion.tipo_nit:
+        tipos_documentos = TipoDocumentoTercero.objects.filter(aplica_juridica=True)
+    else:
+        tipos_documentos = TipoDocumentoTercero.objects.filter(aplica_natural=True)
+    respuesta = True
+    contador = 0
+    for td in tipos_documentos:
+        for dc in documentos:
+            if td == dc.tipo_documento:
+                contador += 1
+    if contador == len(tipos_documentos):
+        respuesta = False
+    return respuesta
 
 
 def generar_datos_informacion_basica(proveedor):
