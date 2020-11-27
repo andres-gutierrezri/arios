@@ -78,5 +78,12 @@ urlpatterns = [
          name='subtipos-producto-servicio-json'),
     path('subtipo-producto-servicio/<int:id>/producto-servicio/json', administracion.CargarProductosServicios.as_view(),
          name='productos-servicios-json'),
+    path('proveedor/perfil/documentos', proveedores.PerfilDocumentosView.as_view(), name='proveedor-perfil-documentos'),
+    path('proveedor/perfil/documentos/add', proveedores.DocumentoCrearView.as_view(),
+         name='proveedor-perfil-documento-crear'),
+    path('proveedor/perfil/documentos/<int:id>/', proveedores.DocumentoEditarView.as_view(),
+         name='proveedor-perfil-documento-editar'),
+    path('proveedor/perfil/ver-documento/<int:id>/', proveedores.VerDocumentoView.as_view(),
+         name='proveedor-perfil-ver-documento'),
 
 ]
