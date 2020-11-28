@@ -25,6 +25,14 @@ class PerfilProveedorView(AbstractEvaLoggedProveedorView):
         entidades_bancarias = generar_datos_entidades_bancarias(proveedor)
         bienes_servicios = generar_datos_bienes_servicios(proveedor)
         documentos = generar_datos_documentos(proveedor)
+
+        total = 0
+        total = total + 20 if informacion_basica else total
+        total = total + 20 if actividades_economicas else total
+        total = total + 20 if entidades_bancarias else total
+        total = total + 20 if bienes_servicios else total
+        total = total + 20 if documentos else total
+
         opciones = [{'id': 1, 'nombre': 'Información Básica',
                      'url': '/administracion/proveedor/perfil/informacion-basica', 'datos': informacion_basica},
                     {'id': 2, 'nombre': 'Actividades Económicas',
@@ -37,7 +45,7 @@ class PerfilProveedorView(AbstractEvaLoggedProveedorView):
                      'url': '/administracion/proveedor/perfil/documentos', 'datos': documentos},
                     ]
         return render(request, 'Administracion/Tercero/Proveedor/perfil.html',
-                      {'opciones': opciones})
+                      {'opciones': opciones, 'total': total})
 
 
 class PerfilInformacionBasicaView(AbstractEvaLoggedProveedorView):
