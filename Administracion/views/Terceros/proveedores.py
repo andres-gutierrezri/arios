@@ -125,7 +125,7 @@ class PerfilActividadesEconomicasView(AbstractEvaLoggedProveedorView):
 
 class EntidadesBancariasPerfilView(AbstractEvaLoggedProveedorView):
     def get(self, request):
-        entidades_bancarias = EntidadBancariaTercero.objects.filter(Tercero__usuario=request.user)
+        entidades_bancarias = EntidadBancariaTercero.objects.filter(tercero__usuario=request.user)
         return render(request, 'Administracion/Tercero/Proveedor/entidades_bancarias.html',
                       {'entidades_bancarias': entidades_bancarias, 'fecha': app_datetime_now()})
 
@@ -138,7 +138,7 @@ class EntidadBancariaCrearView(AbstractEvaLoggedProveedorView):
 
     def post(self, request):
         entidad_proveedor = EntidadBancariaTercero.from_dictionary(request.POST)
-        entidad_proveedor.Tercero = Tercero.objects.get(usuario=request.user)
+        entidad_proveedor.tercero = Tercero.objects.get(usuario=request.user)
         entidad_proveedor.certificacion = request.FILES.get('certificacion', '')
         try:
             entidad_proveedor.save()
@@ -161,7 +161,7 @@ class EntidadBancariaEditarView(AbstractEvaLoggedProveedorView):
         entidad_proveedor = EntidadBancariaTercero.from_dictionary(request.POST)
         entidad_proveedor.id = id
         entidad_proveedor.certificacion = request.FILES.get('certificacion', '')
-        entidad_proveedor.Tercero = Tercero.objects.get(usuario=request.user)
+        entidad_proveedor.tercero = Tercero.objects.get(usuario=request.user)
         try:
             if entidad_proveedor.certificacion:
                 update_fields.append('certificacion')
@@ -243,9 +243,9 @@ class PerfilDocumentosView(AbstractEvaLoggedProveedorView):
         proveedor = Tercero.objects.get(usuario=request.user)
 
         if proveedor.tipo_identificacion.tipo_nit:
-            documentos = DocumentoTercero.objects.filter(Tercero=proveedor, tipo_documento__aplica_juridica=True)
+            documentos = DocumentoTercero.objects.filter(tercero=proveedor, tipo_documento__aplica_juridica=True)
         else:
-            documentos = DocumentoTercero.objects.filter(Tercero=proveedor, tipo_documento__aplica_natural=True)
+            documentos = DocumentoTercero.objects.filter(tercero=proveedor, tipo_documento__aplica_natural=True)
         agregar = verificar_documentos_proveedor(proveedor, documentos)
         return render(request, 'Administracion/Tercero/Proveedor/documentos.html', {'documentos': documentos,
                                                                                     'agregar': agregar})
@@ -260,7 +260,7 @@ class DocumentoCrearView(AbstractEvaLoggedProveedorView):
         proveedor = Tercero.objects.get(usuario=request.user)
         documento = DocumentoTercero()
         documento.tipo_documento_id = request.POST.get('tipo_documento', '')
-        documento.Tercero = proveedor
+        documento.tercero = proveedor
         documento.documento = request.FILES.get('documento', '')
         documento.Estado = True
         try:
@@ -308,7 +308,7 @@ class VerDocumentoView(AbstractEvaLoggedProveedorView):
 
             response = HttpResponse(documento.documento, content_type=mime_type)
             response['Content-Disposition'] = 'inline; filename="{0} - {1}{2}"'\
-                .format(documento.Tercero.nombre, documento.tipo_documento.nombre, extension)
+                .format(documento.tercero.nombre, documento.tipo_documento.nombre, extension)
         else:
             messages.error(self.request, 'Ha ocurrido un error al realizar esta acción.')
             response = redirect(reverse('Administracion:proveedor-perfil-documentos'))
@@ -363,7 +363,7 @@ def datos_xa_render_actividades_economicas(request):
 
 
 def datos_xa_render_entidades_bancarias(request, objeto=None):
-    datos = EntidadBancariaTercero.objects.filter(Tercero__usuario=request.user)
+    datos = EntidadBancariaTercero.objects.filter(tercero__usuario=request.user)
     datos_proveedor = []
     if datos:
         for d in datos:
@@ -433,7 +433,7 @@ def datos_xa_render_documentos(request, documento: DocumentoTercero = None):
     else:
         tipos_documentos = TipoDocumentoTercero.objects.get_xa_select_activos_aplica_natural()
 
-    documentos_actuales = DocumentoTercero.objects.filter(Tercero__usuario=request.user)
+    documentos_actuales = DocumentoTercero.objects.filter(tercero__usuario=request.user)
     lista_tipos_documentos = []
     for td in tipos_documentos:
         coincidencia = False
@@ -498,7 +498,7 @@ def generar_datos_actividades_economicas(proveedor):
 
 
 def generar_datos_entidades_bancarias(proveedor):
-    entidades_bancarias = EntidadBancariaTercero.objects.filter(Tercero=proveedor)
+    entidades_bancarias = EntidadBancariaTercero.objects.filter(tercero=proveedor)
     lista_entidades = []
     for eb in entidades_bancarias:
         lista_entidades.append({'nombre_campo': eb.tipo_cuenta, 'valor_campo': eb.entidad_bancaria,
@@ -518,7 +518,7 @@ def generar_datos_bienes_servicios(proveedor):
 
 
 def generar_datos_documentos(proveedor):
-    documentos = DocumentoTercero.objects.filter(Tercero=proveedor)
+    documentos = DocumentoTercero.objects.filter(tercero=proveedor)
     lista_documentos = []
     for doc in documentos:
         lista_documentos\

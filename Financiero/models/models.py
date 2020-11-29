@@ -167,12 +167,12 @@ class ProveedorActividadEconomica(models.Model):
 
 def custom_upload_to(instance, filename):
     return '{2}/Proveedores/CertificacionesBancarias/{0}/{1}'\
-        .format(instance.Tercero.nombre, filename, settings.EVA_PRIVATE_MEDIA)
+        .format(instance.tercero.nombre, filename, settings.EVA_PRIVATE_MEDIA)
 
 
 class EntidadBancariaTercero(models.Model):
     objects = ManagerGeneral()
-    tercero = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, name='Tercero', blank=False, null=False)
+    tercero = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, verbose_name='Tercero', blank=False, null=False)
     entidad_bancaria = models.ForeignKey(EntidadBancaria, on_delete=models.DO_NOTHING, verbose_name='Entidad Bancaria',
                                          null=False, blank=False)
     tipo_cuenta = models.ForeignKey(TipoCuentaBancaria, on_delete=models.DO_NOTHING, verbose_name='Tipo Cuenta',

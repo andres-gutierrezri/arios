@@ -294,7 +294,7 @@ class ProductoServicio(models.Model, ModelDjangoExtensiones):
 
 class TextoDocumento(models.Model):
     objects = ManagerGeneral()
-    titulo = models.CharField(name='Título', max_length=100, blank=False, null=False)
+    titulo = models.CharField(verbose_name='Título', max_length=100, blank=False, null=False)
     texto1 = models.TextField(verbose_name='Texto 1', null=False, blank=False)
     texto2 = models.TextField(verbose_name='Texto 2', null=True, blank=True)
     texto3 = models.TextField(verbose_name='Texto 3', null=True, blank=True)
