@@ -464,13 +464,15 @@ def verificar_documentos_proveedor(proveedor, documentos):
 
 
 def generar_datos_informacion_basica(proveedor):
+    ubicacion = ''
+    if proveedor.ciudad:
+        ubicacion = '{1} - {2} - {0}'.format(proveedor.ciudad.departamento.pais.nombre.capitalize(),
+                                             proveedor.ciudad.departamento.nombre.capitalize(),
+                                             proveedor.ciudad.nombre.capitalize())
     return [{'nombre_campo': 'Nombre', 'valor_campo': proveedor.nombre},
             {'nombre_campo': 'Tipo de Identificación', 'valor_campo': proveedor.tipo_identificacion.nombre},
             {'nombre_campo': 'Identificación', 'valor_campo': proveedor.identificacion},
-            {'nombre_campo': 'Ubicación', 'valor_campo':
-                '{1} - {2} - {0}'.format(proveedor.ciudad.departamento.pais.nombre.capitalize(),
-                                         proveedor.ciudad.departamento.nombre.capitalize(),
-                                         proveedor.ciudad.nombre.capitalize())},
+            {'nombre_campo': 'Ubicación', 'valor_campo': ubicacion},
             {'nombre_campo': 'Teléfono Fijo Principal', 'valor_campo': proveedor.telefono_fijo_principal},
             {'nombre_campo': 'Teléfono Movil Principal', 'valor_campo': proveedor.telefono_movil_principal},
             {'nombre_campo': 'Teléfono Fijo Auxiliar', 'valor_campo': proveedor.telefono_fijo_auxiliar},
@@ -478,9 +480,9 @@ def generar_datos_informacion_basica(proveedor):
             {'nombre_campo': 'Correo Electrónico Principal', 'valor_campo': proveedor.correo_principal},
             {'nombre_campo': 'Correo Electrónico Auxiliar', 'valor_campo': proveedor.correo_auxiliar},
             {'nombre_campo': 'Fecha de Inicio de Actividad', 'valor_campo':
-                datetime_to_string(proveedor.fecha_inicio_actividad)},
+                datetime_to_string(proveedor.fecha_inicio_actividad) if proveedor.fecha_inicio_actividad else ''},
             {'nombre_campo': 'Fecha de Constitución', 'valor_campo':
-                datetime_to_string(proveedor.fecha_inicio_actividad)},
+                datetime_to_string(proveedor.fecha_inicio_actividad) if proveedor.fecha_inicio_actividad else ''},
             ]
 
 
