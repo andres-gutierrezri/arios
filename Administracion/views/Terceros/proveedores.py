@@ -485,17 +485,21 @@ def generar_datos_informacion_basica(proveedor):
 
 
 def generar_datos_actividades_economicas(proveedor):
-    ae = ProveedorActividadEconomica.objects.get(proveedor=proveedor)
-    return [{'nombre_campo': 'Actividad Principal', 'valor_campo': ae.actividad_principal},
-            {'nombre_campo': 'Actividad Secundaria', 'valor_campo': ae.actividad_secundaria},
-            {'nombre_campo': 'Otra Actividad', 'valor_campo': ae.otra_actividad},
-            {'nombre_campo': 'Régimen', 'valor_campo': ae.regimen},
-            {'nombre_campo': 'Tipo de Contribuyente', 'valor_campo': ae.tipo_contribuyente},
-            {'nombre_campo': 'Excento de Industria y Comercio: # Res', 'valor_campo': ae.numero_resolucion},
-            {'nombre_campo': 'Contribuyente Industria y Comercio', 'valor_campo': ae.contribuyente_iyc},
-            {'nombre_campo': 'Entidad Pública', 'valor_campo': ae.entidad_publica},
-            {'nombre_campo': 'Bienes y Servicios', 'valor_campo': ae.bienes_servicios},
-            ]
+    ae = ProveedorActividadEconomica.objects.filter(proveedor=proveedor)
+    respuesta = ''
+    if ae:
+        ae = ae.first()
+        respuesta = [{'nombre_campo': 'Actividad Principal', 'valor_campo': ae.actividad_principal},
+                     {'nombre_campo': 'Actividad Secundaria', 'valor_campo': ae.actividad_secundaria},
+                     {'nombre_campo': 'Otra Actividad', 'valor_campo': ae.otra_actividad},
+                     {'nombre_campo': 'Régimen', 'valor_campo': ae.regimen},
+                     {'nombre_campo': 'Tipo de Contribuyente', 'valor_campo': ae.tipo_contribuyente},
+                     {'nombre_campo': 'Excento de Industria y Comercio: # Res', 'valor_campo': ae.numero_resolucion},
+                     {'nombre_campo': 'Contribuyente Industria y Comercio', 'valor_campo': ae.contribuyente_iyc},
+                     {'nombre_campo': 'Entidad Pública', 'valor_campo': ae.entidad_publica},
+                     {'nombre_campo': 'Bienes y Servicios', 'valor_campo': ae.bienes_servicios},
+                     ]
+    return respuesta
 
 
 def generar_datos_entidades_bancarias(proveedor):
