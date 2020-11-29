@@ -167,29 +167,29 @@ class TipoDocumentoTercero(models.Model):
 
 def custom_upload_to(instance, filename):
     return '{2}/Proveedores/Documentos/{0}/{1}'\
-        .format(instance.Tercero.nombre, filename, settings.EVA_PRIVATE_MEDIA)
+        .format(instance.tercero.nombre, filename, settings.EVA_PRIVATE_MEDIA)
 
 
 class DocumentoTercero(models.Model):
     objects = ManagerGeneral()
     documento = models.FileField(upload_to=custom_upload_to, verbose_name='Documento', null=False, blank=False)
     tipo_documento = models.ForeignKey(TipoDocumentoTercero, on_delete=models.DO_NOTHING, blank=False, null=False)
-    tercero = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, name='Tercero', blank=False, null=False)
-    fecha_crea = models.DateTimeField(auto_now_add=True, name='Fecha de Creación', blank=False, null=False)
-    estado = models.BooleanField(name='Estado', blank=False, null=False)
+    tercero = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, verbose_name='Tercero', blank=False, null=False)
+    fecha_crea = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', blank=False, null=False)
+    estado = models.BooleanField(verbose_name='Estado', blank=False, null=False)
 
     def __str__(self):
-        return '{0}-{1}'.format(self.tipo_documento, self.Tercero)
+        return '{0}-{1}'.format(self.tipo_documento, self.tercero)
 
     class Meta:
         verbose_name = 'Documento Tercero'
         verbose_name_plural = 'Documentos Terceros'
-        unique_together = ('tipo_documento', 'Tercero')
+        unique_together = ('tipo_documento', 'tercero')
 
 
 class Certificacion(models.Model):
     objects = ManagerGeneral()
-    tercero = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, name='Tercero', blank=False, null=False)
+    tercero = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, verbose_name='Tercero', blank=False, null=False)
     fecha_crea = models.DateField(verbose_name='Fecha de Creación', null=False, blank=False)
 
     def __str__(self):
