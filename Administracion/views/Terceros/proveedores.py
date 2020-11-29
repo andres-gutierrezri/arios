@@ -232,8 +232,9 @@ class PerfilProductosServiciosView(AbstractEvaLoggedProveedorView):
                 if datos != '':
                     for dt in datos:
                         ProveedorProductoServicio.objects.create(proveedor=proveedor, producto_servicio_id=dt)
+            messages.success(self.request, 'Se han guardado los productos y servicios correctamente.')
         except:
-            messages.success(self.request, 'Ha ocurrido un error al guardar los datos')
+            messages.error(self.request, 'Ha ocurrido un error al guardar los datos')
 
         return redirect(reverse('Administracion:proveedor-perfil'))
 
