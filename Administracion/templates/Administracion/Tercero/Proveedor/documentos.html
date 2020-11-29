@@ -18,7 +18,7 @@
     <div class="panel-container show">
         <div class="header">
             <h1 class="header-title">
-                <i class='far fa-user'></i> Documentos <span class='fw-300'></span><a class="far fa-arrow-circle-left"  href="{% url 'Administracion:proveedor-perfil' %}" data-toggle="tooltip" title="" data-original-title="Volver"></a>
+                <i class='fal fa-file-alt'></i> Documentos <span class='fw-300'></span><a class="far fa-arrow-circle-left"  href="{% url 'Administracion:proveedor-perfil' %}" data-toggle="tooltip" title="" data-original-title="Volver"></a>
                 <br>
                 <br>
             </h1>
@@ -41,9 +41,13 @@
                             <div class="panel-group">
                                 <div class="panel-body">
                                     <div class="row" id="js-contacts">
-                                        {% for dc in documentos %}
-                                            {% include 'Administracion/_common/_tarjeta_documento.html' with objeto=dc %}
-                                        {% endfor %}
+                                        {% if documentos %}
+                                            {% for dc in documentos %}
+                                                {% include 'Administracion/_common/_tarjeta_documento.html' with objeto=dc %}
+                                            {% endfor %}
+                                        {% else %}
+                                            <div class="w-100" style="text-align: center"><h1>No hay documentos cargados</h1></div>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
