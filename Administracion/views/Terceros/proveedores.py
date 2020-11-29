@@ -27,7 +27,8 @@ class PerfilProveedorView(AbstractEvaLoggedProveedorView):
         documentos = generar_datos_documentos(proveedor)
 
         total = 0
-        total = total + 20 if informacion_basica else total
+        total = total + 10 if proveedor.ciudad else total
+        total = total + 10 if informacion_basica else total
         total = total + 20 if actividades_economicas else total
         total = total + 20 if entidades_bancarias else total
         total = total + 20 if bienes_servicios else total
@@ -39,7 +40,7 @@ class PerfilProveedorView(AbstractEvaLoggedProveedorView):
                      'url': '/administracion/proveedor/perfil/actividades-economicas', 'datos': actividades_economicas},
                     {'id': 3, 'nombre': 'Entidades Bancarias',
                      'url': '/administracion/proveedor/perfil/entidades-bancarias', 'datos': entidades_bancarias},
-                    {'id': 4, 'nombre': 'Bienes y Servicios',
+                    {'id': 4, 'nombre': 'Productos y Servicios',
                      'url': '/administracion/proveedor/perfil/productos-servicios', 'datos': bienes_servicios},
                     {'id': 5, 'nombre': 'Documentos',
                      'url': '/administracion/proveedor/perfil/documentos', 'datos': documentos},
@@ -263,7 +264,7 @@ class DocumentoCrearView(AbstractEvaLoggedProveedorView):
         documento.tipo_documento_id = request.POST.get('tipo_documento', '')
         documento.tercero = proveedor
         documento.documento = request.FILES.get('documento', '')
-        documento.Estado = True
+        documento.estado = True
         try:
             documento.save()
         except:
