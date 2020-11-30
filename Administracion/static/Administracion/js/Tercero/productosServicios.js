@@ -6,14 +6,13 @@ let divContenedor = $('#div_contenedor');
 let contador = 0;
 
 $(document).ready(function() {
-    if ($('#selecciones').val() === ''){
-        cargarSelects()
-    }
-    activarSelect2()
     let contadorServer = $('#contadorServer');
     if (contadorServer.val() !== ''){
         contador = parseInt(contadorServer.val())
         $('#contadorJS').val(contador + 1)
+    }
+    if ($('#selecciones').val() === '[]'){
+        agregarProductoServicio();
     }
 });
 
