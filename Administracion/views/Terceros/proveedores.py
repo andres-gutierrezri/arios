@@ -46,7 +46,7 @@ class PerfilProveedorView(AbstractEvaLoggedProveedorView):
                      'url': '/administracion/proveedor/perfil/documentos', 'datos': documentos},
                     ]
         return render(request, 'Administracion/Tercero/Proveedor/perfil.html',
-                      {'opciones': opciones, 'total': total})
+                      {'opciones': opciones, 'total': total, 'tipo_nit': proveedor.tipo_identificacion.tipo_nit})
 
 
 class PerfilInformacionBasicaView(AbstractEvaLoggedProveedorView):
@@ -466,10 +466,15 @@ def verificar_documentos_proveedor(proveedor, documentos):
 
 def generar_datos_informacion_basica(proveedor):
     ubicacion = ''
+    fecha_exp_rl = ''
     if proveedor.ciudad:
         ubicacion = '{1} - {2} - {0}'.format(proveedor.ciudad.departamento.pais.nombre.capitalize(),
                                              proveedor.ciudad.departamento.nombre.capitalize(),
                                              proveedor.ciudad.nombre.capitalize())
+    if proveedor.lugar_expedicion_rl:
+        fecha_exp_rl = '{1} - {2} - {0}'.format(proveedor.lugar_expedicion_rl.departamento.pais.nombre.capitalize(),
+                                                proveedor.lugar_expedicion_rl.departamento.nombre.capitalize(),
+                                                proveedor.lugar_expedicion_rl.nombre.capitalize())
     return [{'nombre_campo': 'Nombre', 'valor_campo': proveedor.nombre},
             {'nombre_campo': 'Tipo de Identificación', 'valor_campo': proveedor.tipo_identificacion.nombre},
             {'nombre_campo': 'Identificación', 'valor_campo': proveedor.identificacion},
@@ -480,10 +485,18 @@ def generar_datos_informacion_basica(proveedor):
             {'nombre_campo': 'Teléfono Movil Auxiliar', 'valor_campo': proveedor.telefono_movil_auxiliar},
             {'nombre_campo': 'Correo Electrónico Principal', 'valor_campo': proveedor.correo_principal},
             {'nombre_campo': 'Correo Electrónico Auxiliar', 'valor_campo': proveedor.correo_auxiliar},
-            {'nombre_campo': 'Fecha de Inicio de Actividad', 'valor_campo':
+            {'nombre_campo': 'Fecha de Inicio de Actividad', 'validar': True, 'tipo_nit': False, 'valor_campo':
                 datetime_to_string(proveedor.fecha_inicio_actividad) if proveedor.fecha_inicio_actividad else ''},
-            {'nombre_campo': 'Fecha de Constitución', 'valor_campo':
+            {'nombre_campo': 'Fecha de Constitución', 'validar': True, 'tipo_nit': True, 'valor_campo':
                 datetime_to_string(proveedor.fecha_inicio_actividad) if proveedor.fecha_inicio_actividad else ''},
+            {'nombre_campo': 'Fecha de Expedición del Documento del Representante Legal', 'valor_campo': fecha_exp_rl,
+             'tipo_nit': True, 'validar': True},
+            {'nombre_campo': 'Nombre del Representante Legal', 'valor_campo': proveedor.nombre_rl, 'validar': True,
+             'tipo_nit': True},
+            {'nombre_campo': 'Tipo de Identificación del Representante Legal', 'tipo_nit': True, 'validar': True,
+             'valor_campo': proveedor.identificacion_rl},
+            {'nombre_campo': 'Identificación del Representante Legal', 'tipo_nit': True, 'validar': True,
+             'valor_campo': proveedor.identificacion_rl}
             ]
 
 
