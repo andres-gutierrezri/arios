@@ -10,7 +10,7 @@ let divInicioActividad = $('#div_inicio_actividad');
 let inputInicioActividad = $('#fecha_inicio_actividad_id')
 
 let inputNombreRL = $('#nombre_rl_id');
-let selectTipoIdentificacionRL = $('#tipo_identificacion_personas_select_id');
+let selectTipoIdentificacionRL = $('#tipo_identificacion_rl_select_id');
 let inputIdentificacionRL = $('#identificacion_rl_id');
 
 let selectRLPais = $('#pais_rl_select_id');
