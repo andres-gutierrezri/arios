@@ -352,3 +352,14 @@ class FacturaImprimirView(AbstractEvaLoggedView):
         except FacturaEncabezado.DoesNotExist:
             messages.error(self.request, 'No se encontró la factura solicitada.')
             return redirect(reverse('Financiero:factura-index'))
+
+
+class FacturaEnviarCorreo(AbstractEvaLoggedView):
+
+    def get(self, request, id_factura):
+        if FacturaCrearView.enviar_correo(id_factura):
+            return JsonResponse({"estado": "OK", "mensaje": 'Factura enviada al cliente'})
+        else:
+            return JsonResponse({"estado": "error", "mensaje": 'La factura no existe.'})
+
+
