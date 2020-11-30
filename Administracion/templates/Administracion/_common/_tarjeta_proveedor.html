@@ -17,12 +17,23 @@
                     {% if objeto.datos %}
                         {% for d in objeto.datos %}
                             {% if d.valor_campo %}
-                                <small class="mt-0 mb-3 text-muted">
-                                    <b>{{ d.nombre_campo }}</b>: {{ d.valor_campo }}
-                                    {% if d.archivo %}
-                                        <a class="far fa-eye" href="{{ d.archivo }}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ver Archivo"></a>
+                                {% if d.validar %}
+                                    {% if tipo_nit == d.tipo_nit %}
+                                        <small class="mt-0 mb-3 text-muted">
+                                            <b>{{ d.nombre_campo }}</b>: {{ d.valor_campo }}
+                                            {% if d.archivo %}
+                                                <a class="far fa-eye" href="{{ d.archivo }}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ver Archivo"></a>
+                                            {% endif %}
+                                        </small>
                                     {% endif %}
-                                </small>
+                                {% else %}
+                                    <small class="mt-0 mb-3 text-muted">
+                                        <b>{{ d.nombre_campo }}</b>: {{ d.valor_campo }}
+                                        {% if d.archivo %}
+                                            <a class="far fa-eye" href="{{ d.archivo }}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ver Archivo"></a>
+                                        {% endif %}
+                                    </small>
+                                {% endif %}
                             {% endif %}
                         {% endfor %}
                     {% else %}
