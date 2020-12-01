@@ -19,4 +19,5 @@ permisos = [Permiso('index', None),
             Permiso('grupos-permisos-crear', ['auth.add_group']),
             Permiso('grupos-permisos-editar', ['auth.change_group']),
             Permiso('grupos-permisos-eliminar', ['auth.delete_group']),
+            Permiso('proveedor-solicitudes', ['Administracion.view_proveedor']),
             ]
