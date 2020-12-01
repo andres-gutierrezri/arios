@@ -111,3 +111,32 @@ function validarTipoIdentificacion() {
         }
     });
 }
+
+function enviarSolicitudProveedor(idProveedor) {
+    Swal.fire({
+        title: '¿Está seguro de enviar la solicitud?',
+        text: "Una vez enviada la solicitud, no podrá seguir editando los campos hasta que sea aprobada o rechazada.",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '¡Sí, Enviar!',
+        cancelButtonText: 'Cancelar'
+    }).then(result => {
+        if (result.value) {
+            $.ajax({
+                url: "/administracion/proveedor/solicitudes/" + idProveedor + "/enviar",
+                type: 'POST',
+                context: document.body,
+                success: function (data) {
+                    if(data.estado === "OK") {
+                        location.reload();
+                    }else if(data.estado === "ERROR"){
+                        EVANotificacion.toast.error(data.mensaje);
+                    }
+                },
+                failure: function (errMsg) {
+                    location.reload();
+                }
+            });
+        }
+    });
+}
