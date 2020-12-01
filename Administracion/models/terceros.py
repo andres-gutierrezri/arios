@@ -228,3 +228,17 @@ class ProveedorProductoServicio(models.Model, ModelDjangoExtensiones):
     class Meta:
         verbose_name = 'Proveedor Producto o Servicio'
         verbose_name_plural = 'Proveedores Productos o Servicios'
+
+
+class SolicitudProveedor(models.Model):
+    proveedor = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING,
+                                  verbose_name="Proveedor", null=False, blank=False)
+    fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', blank=False, null=False)
+    estado = models.BooleanField(verbose_name='Estado', blank=False, null=False)
+
+    def __str__(self):
+        return '{0}'.format(self.proveedor)
+
+    class Meta:
+        verbose_name = 'Solicitud Proveedor'
+        verbose_name_plural = 'Solicitudes Proveedores'
