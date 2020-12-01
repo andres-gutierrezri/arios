@@ -47,6 +47,24 @@
         </ul>
     </li>
     {% endif %}
+    {% if perms.Administracion.view_proveedor %}
+    <li {% if menu_actual|first == 'proveedores' %} class="active" {% endif %}>
+        <a href="#" title="Proveedores" data-filter-tags="proveedores">
+            <i class="fal fa-hand-holding-box"></i>
+            <span class="nav-link-text" > Proveedores</span>
+        </a>
+        <ul>
+            {% if perms.Administracion.view_proveedor %}
+            <li {% if menu_actual|last == 'solicitudes_proveedor' %} class="active" {% endif %}>
+                <a href="{% url 'Administracion:proveedor-solicitudes' %}" title="Solicitudes de Proveedor" data-filter-tags="solicitudes proveedor">
+                    <i class="fal fa-list-alt"></i>
+                    <span class="nav-link-text" data-i18n="nav.administracion_proveedores_solicitud">Solicitudes de Proveeedor</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </li>
+    {% endif %}
 {% else %}
     <li {% if menu_actual == 'perfil' %} class="active" {% endif %}>
         <a href="{% url 'Administracion:proveedor-perfil' %}" title="Mi Perfil" data-filter-tags="proveedor perfil">
