@@ -9,10 +9,11 @@ from django.urls import reverse
 
 from Administracion.models import TipoIdentificacion, Pais, Tercero, Departamento, Municipio
 from Administracion.models.models import SubtipoProductoServicio, ProductoServicio
-from Administracion.models.terceros import ProveedorProductoServicio, TipoDocumentoTercero, DocumentoTercero
+from Administracion.models.terceros import ProveedorProductoServicio, TipoDocumentoTercero, DocumentoTercero, \
+    SolicitudProveedor
 from EVA.General import app_datetime_now
 from EVA.General.conversiones import datetime_to_string
-from EVA.views.index import AbstractEvaLoggedProveedorView
+from EVA.views.index import AbstractEvaLoggedProveedorView, AbstractEvaLoggedView
 from Financiero.models.models import ActividadEconomica, TipoContribuyente, Regimen, ProveedorActividadEconomica, \
     EntidadBancariaTercero, EntidadBancaria, TipoCuentaBancaria
 
@@ -284,18 +285,16 @@ class DocumentoEditarView(AbstractEvaLoggedProveedorView):
         return render(request, 'Administracion/_common/_modal_gestionar_documento.html',
                       datos_xa_render_documentos(request, documento))
 
-    def post(self, request, id):
-        update_fields = ['documento']
-        documento = DocumentoTercero.objects.get(id=id)
-        documento.documento = request.FILES.get('documento', '')
-        try:
-            documento.save(update_fields=update_fields)
-        except:
-            return JsonResponse({"estado": "error", "mensaje": "Ha ocurrido un error al guardar la información"})
 
-        messages.success(self.request, 'Se ha cargado el documento {0} correctamente.'
-                         .format(documento.tipo_documento.nombre))
-        return JsonResponse({"estado": "OK"})
+class EnviarSolicitudProveedorView(AbstractEvaLoggedView):
+    def post(self, request, id):
+        try:
+            proveedor = Tercero.objects.get(id=id)
+            SolicitudProveedor.objects.create(proveedor=proveedor, fecha_creacion=app_datetime_now(), estado=True)
+            messages.success(self.request, 'Se ha enviado la solicitud correctamente')
+            return JsonResponse({"estado": "OK"})
+        except:
+            return JsonResponse({"estado": "ERROR", "mensaje": "Ha ocurrido un error al realizar la solicitud"})
 
 
 class VerDocumentoView(AbstractEvaLoggedProveedorView):
@@ -319,6 +318,26 @@ class VerDocumentoView(AbstractEvaLoggedProveedorView):
             response = redirect(reverse('Administracion:proveedor-perfil-documentos'))
 
         return response
+
+
+class SolicitudesProveedorView(AbstractEvaLoggedView):
+    def get(self, request):
+        solicitudes = SolicitudProveedor.objects.all()
+        return render(request, 'Administracion/Tercero/Proveedor/solicitudes_proveedores.html',
+                      {'solicitudes': solicitudes})
+
+    def post(self, request):
+        update_fields = ['documento']
+        documento = DocumentoTercero.objects.get(id=id)
+        documento.documento = request.FILES.get('documento', '')
+        try:
+            documento.save(update_fields=update_fields)
+        except:
+            return JsonResponse({"estado": "error", "mensaje": "Ha ocurrido un error al guardar la información"})
+
+        messages.success(self.request, 'Se ha cargado el documento {0} correctamente.'
+                         .format(documento.tipo_documento.nombre))
+        return JsonResponse({"estado": "OK"})
 
 
 def datos_xa_render_informacion_basica(request):
