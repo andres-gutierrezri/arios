@@ -135,7 +135,7 @@ class IndexProveedorView(AbstractEvaLoggedProveedorView):
                 messages.success(request, 'Ha iniciado sesión como {0}'.format(request.user.email))
             else:
                 return redirect(reverse('Administracion:iniciar-sesion'))
-        return render(request, 'EVA/index.html')
+        return render(request, 'Administracion/index.html')
 
 
 class InicioSesionProveedorView(View):
