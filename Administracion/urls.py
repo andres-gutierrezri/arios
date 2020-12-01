@@ -85,5 +85,8 @@ urlpatterns = [
          name='proveedor-perfil-documento-editar'),
     path('proveedor/perfil/ver-documento/<int:id>/', proveedores.VerDocumentoView.as_view(),
          name='proveedor-perfil-ver-documento'),
-
+    path('proveedor/solicitudes/', proveedores.SolicitudesProveedorView.as_view(),
+         name='proveedor-solicitudes'),
+    path('proveedor/solicitudes/<int:id>/enviar', proveedores.EnviarSolicitudProveedorView.as_view(),
+         name='proveedor-solicitudes-enviar'),
 ]
