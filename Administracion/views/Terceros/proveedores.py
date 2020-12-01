@@ -34,6 +34,8 @@ class PerfilProveedorView(AbstractEvaLoggedProveedorView):
         total = total + 20 if bienes_servicios else total
         total = total + 20 if documentos else total
 
+        btn_enviar = True if total == 100 else False
+
         opciones = [{'id': 1, 'nombre': 'Información Básica',
                      'url': '/administracion/proveedor/perfil/informacion-basica', 'datos': informacion_basica},
                     {'id': 2, 'nombre': 'Actividades Económicas',
@@ -46,7 +48,8 @@ class PerfilProveedorView(AbstractEvaLoggedProveedorView):
                      'url': '/administracion/proveedor/perfil/documentos', 'datos': documentos},
                     ]
         return render(request, 'Administracion/Tercero/Proveedor/perfil.html',
-                      {'opciones': opciones, 'total': total, 'tipo_nit': proveedor.tipo_identificacion.tipo_nit})
+                      {'opciones': opciones, 'total': total, 'btn_enviar': btn_enviar,
+                       'tipo_nit': proveedor.tipo_identificacion.tipo_nit, 'proveedor_id': proveedor.id})
 
 
 class PerfilInformacionBasicaView(AbstractEvaLoggedProveedorView):
