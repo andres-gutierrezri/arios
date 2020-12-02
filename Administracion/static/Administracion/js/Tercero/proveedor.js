@@ -140,3 +140,19 @@ function enviarSolicitudProveedor(idProveedor) {
         }
     });
 }
+
+function abrir_modal_aprobar_rechazar(url) {
+    $('#accion_proveedor').load(url, function (responseText) {
+        try {
+            if (responseText.includes("<!DOCTYPE html>")) {
+                EVANotificacion.toast.error('No tiene permisos para acceder a esta funcionalidad');
+                return false;
+            }
+            $(this).modal('show');
+            agregarValidacionFormularios();
+        } catch (err) {
+            console.log(err);
+            EVANotificacion.toast.error('Ha ocurrido un error al cargar el archivo');
+        }
+    });
+}
