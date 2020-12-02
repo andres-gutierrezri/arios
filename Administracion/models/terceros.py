@@ -234,7 +234,9 @@ class SolicitudProveedor(models.Model):
     proveedor = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING,
                                   verbose_name="Proveedor", null=False, blank=False)
     fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', blank=False, null=False)
+    comentarios = models.CharField(max_length=300, verbose_name='Comentarios', blank=False, null=False)
     estado = models.BooleanField(verbose_name='Estado', blank=False, null=False)
+    aprobado = models.BooleanField(verbose_name='Aprobado', blank=False, null=False)
 
     def __str__(self):
         return '{0}'.format(self.proveedor)
