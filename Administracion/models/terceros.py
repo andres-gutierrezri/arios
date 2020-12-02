@@ -101,6 +101,7 @@ class Tercero(models.Model, ModelDjangoExtensiones):
         tercero.telefono = datos.get('telefono', '')
         tercero.fax = datos.get('fax', '')
         tercero.direccion = datos.get('direccion', '')
+        tercero.digito_verificacion = datos.get('digito_verificacion')
 
         return tercero
 

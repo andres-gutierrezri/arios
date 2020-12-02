@@ -62,7 +62,8 @@ class TerceroEditarView(AbstractEvaLoggedView):
 
     def post(self, request, id):
         update_fields = ['nombre', 'identificacion', 'tipo_identificacion_id', 'estado',
-                         'fecha_modificacion', 'tipo_tercero_id', 'centro_poblado_id', 'telefono', 'fax', 'direccion']
+                         'fecha_modificacion', 'tipo_tercero_id', 'centro_poblado_id', 'telefono', 'fax', 'direccion',
+                         'digito_verificacion']
 
         tercero = Tercero.from_dictionary(request.POST)
         tercero.empresa_id = get_id_empresa_global(request)
