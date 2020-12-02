@@ -322,6 +322,53 @@ class SolicitudesProveedorView(AbstractEvaLoggedView):
         return JsonResponse({"estado": "OK"})
 
 
+class PerfilProveedorSolicitud(AbstractEvaLoggedView):
+    def get(self, request, id):
+        proveedor = Tercero.objects.get(id=id)
+        datos_proveedor = generar_datos_proveedor(proveedor)
+
+        opciones = datos_proveedor['opciones']
+        return render(request, 'Administracion/Tercero/Proveedor/perfil.html',
+                      {'opciones': opciones, 'tipo_nit': proveedor.tipo_identificacion.tipo_nit,
+                       'solicitud_proveedor': proveedor})
+
+
+APROBADO = 1
+RECHAZADO = 2
+
+
+class ProveedorSolicitudAprobarRechazar(AbstractEvaLoggedView):
+    def get(self, request, id):
+        proveedor = Tercero.objects.get(id=id)
+        opciones = [{'texto': 'Aprobar', 'valor': 1},
+                    {'texto': 'Rechazar', 'valor': 2}]
+        return render(request, 'Administracion/_common/_modal_aprobar_rechazar_proveedor.html',
+                      {'proveedor': proveedor, 'opciones': opciones})
+
+    def post(self, request, id):
+        try:
+            solicitud = SolicitudProveedor.objects.get(proveedor_id=id, estado=True)
+            opcion = request.POST.get('opcion', '')
+            comentario = request.POST.get('comentario', '')
+            solicitud.aprobado = True if opcion == APROBADO else False
+            solicitud.comentarios = comentario
+            solicitud.estado = False
+            solicitud.save(update_fields=['aprobado', 'comentarios', 'estado'])
+            Certificacion.objects.create(tercero=solicitud.proveedor, fecha_crea=app_datetime_now())
+            messages.success(self.request, 'Se ha aprobado la solicitud correctamente.')
+        except:
+            messages.error(self.request, 'Ha ocurrido un error al realizar la acción.')
+
+        return redirect(reverse('Administracion:proveedor-solicitudes'))
+
+
+class ProveedorIndexView(AbstractEvaLoggedView):
+    def get(self, request):
+        proveedores = Tercero.objects.filter(tipo_tercero_id=TipoTercero.PROVEEDOR)
+        return render(request, 'Administracion/Tercero/Proveedor/index.html',
+                      {'proveedores': proveedores})
+
+
 def datos_xa_render_informacion_basica(request):
     tipo_identificacion = TipoIdentificacion.objects.get_xa_select_activos()
     tipo_identificacion_personas = TipoIdentificacion.objects.get_xa_select_personas_activos()
