@@ -25,5 +25,4 @@ function actdesInputDV(activar) {
             divIdentificacion.addClass('col-md-6')
         }
     }
-    console.log('Entro por acá');
 }
