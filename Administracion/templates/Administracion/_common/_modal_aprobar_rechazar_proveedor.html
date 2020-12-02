@@ -1,0 +1,36 @@
+{% load eva_tags %}
+{% load static %}
+
+<form action="{% url 'Administracion:proveedor-solicitudes-aprobar-rechazar' proveedor.id %}" id="empresas-form" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    Proveedor: {{ proveedor.nombre }}
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% csrf_token %}
+                <p class="mb-3">¿Qué desea hacer con la solicitud del proveedor?</p>
+                <div class="form-row">
+                    <div class="form-group col-12">
+                        {% input_select_radio_tag 'opcion' '' opciones required="" mensaje_validacion='Por favor seleccione una opción' invalido=errores.comentario %}
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-12">
+                        {% input_textarea_tag 'comentario' 'Comentarios' maxlength="300" placeholder="Describa la razón de la aprobación o rechazo" required="" mensaje_validacion='Por favor escriba un comentario' invalido=errores.comentario %}
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-danger btn-pills">Cancelar</button>
+                <button id="guardar" type="submit" class="btn btn-primary btn-pills"> Confirmar </button>
+            </div>
+        </div>
+    </div>
+</form>
