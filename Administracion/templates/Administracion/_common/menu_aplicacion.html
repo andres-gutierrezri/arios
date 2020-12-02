@@ -50,7 +50,7 @@
     {% if perms.Administracion.view_proveedor %}
     <li {% if menu_actual|first == 'proveedores' %} class="active" {% endif %}>
         <a href="#" title="Proveedores" data-filter-tags="proveedores">
-            <i class="fal fa-hand-holding-box"></i>
+            <i class="fal far fa-hand-receiving"></i>
             <span class="nav-link-text" > Proveedores</span>
         </a>
         <ul>
@@ -59,6 +59,14 @@
                 <a href="{% url 'Administracion:proveedor-solicitudes' %}" title="Solicitudes de Proveedor" data-filter-tags="solicitudes proveedor">
                     <i class="fal fa-list-alt"></i>
                     <span class="nav-link-text" data-i18n="nav.administracion_proveedores_solicitud">Solicitudes de Proveeedor</span>
+                </a>
+            </li>
+            {% endif %}
+            {% if perms.Administracion.view_proveedor %}
+            <li {% if menu_actual|last == 'proveedores' %} class="active" {% endif %}>
+                <a href="{% url 'Administracion:proveedor-administracion-index' %}" title="Solicitudes de Proveedor" data-filter-tags="solicitudes proveedor">
+                    <i class="fal far fa-hand-receiving"></i>
+                    <span class="nav-link-text" data-i18n="nav.administracion_proveedores_solicitud">Proveeedores</span>
                 </a>
             </li>
             {% endif %}
