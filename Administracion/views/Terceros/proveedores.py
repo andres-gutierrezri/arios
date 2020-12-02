@@ -10,7 +10,7 @@ from django.urls import reverse
 from Administracion.models import TipoIdentificacion, Pais, Tercero, Departamento, Municipio
 from Administracion.models.models import SubtipoProductoServicio, ProductoServicio
 from Administracion.models.terceros import ProveedorProductoServicio, TipoDocumentoTercero, DocumentoTercero, \
-    SolicitudProveedor
+    SolicitudProveedor, TipoTercero, Certificacion
 from EVA.General import app_datetime_now
 from EVA.General.conversiones import datetime_to_string
 from EVA.views.index import AbstractEvaLoggedProveedorView, AbstractEvaLoggedView
