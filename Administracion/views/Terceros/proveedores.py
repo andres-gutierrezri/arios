@@ -304,7 +304,7 @@ class VerDocumentoView(AbstractEvaLoggedProveedorView):
 
 class SolicitudesProveedorView(AbstractEvaLoggedView):
     def get(self, request):
-        solicitudes = SolicitudProveedor.objects.all()
+        solicitudes = SolicitudProveedor.objects.filter(estado=True)
         return render(request, 'Administracion/Tercero/Proveedor/solicitudes_proveedores.html',
                       {'solicitudes': solicitudes})
 
