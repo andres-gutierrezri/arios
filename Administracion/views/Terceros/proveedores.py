@@ -273,7 +273,8 @@ class EnviarSolicitudProveedorView(AbstractEvaLoggedView):
     def post(self, request, id):
         try:
             proveedor = Tercero.objects.get(id=id)
-            SolicitudProveedor.objects.create(proveedor=proveedor, fecha_creacion=app_datetime_now(), estado=True)
+            SolicitudProveedor.objects.create(proveedor=proveedor, fecha_creacion=app_datetime_now(), aprobado=False,
+                                              estado=True)
             messages.success(self.request, 'Se ha enviado la solicitud correctamente')
             return JsonResponse({"estado": "OK"})
         except:
@@ -351,12 +352,21 @@ class ProveedorSolicitudAprobarRechazar(AbstractEvaLoggedView):
             solicitud = SolicitudProveedor.objects.get(proveedor_id=id, estado=True)
             opcion = request.POST.get('opcion', '')
             comentario = request.POST.get('comentario', '')
-            solicitud.aprobado = True if opcion == APROBADO else False
+            solicitud.aprobado = True if int(opcion) == APROBADO else False
             solicitud.comentarios = comentario
             solicitud.estado = False
             solicitud.save(update_fields=['aprobado', 'comentarios', 'estado'])
-            Certificacion.objects.create(tercero=solicitud.proveedor, fecha_crea=app_datetime_now())
-            messages.success(self.request, 'Se ha aprobado la solicitud correctamente.')
+            if solicitud.aprobado:
+                Certificacion.objects.filter(tercero=solicitud.proveedor).update(estado=False)
+                Certificacion.objects.create(tercero=solicitud.proveedor, fecha_crea=app_datetime_now(), estado=True)
+            messages.success(self.request, 'Se ha {0} la solicitud correctamente.'
+                             .format('aprobado' if solicitud.aprobado else 'rechazado'))
+
+            titulo = 'Solicitud Aprobada' if solicitud.aprobado else 'Solicitud Rechazada'
+            crear_notificacion_por_evento(EventoDesencadenador.RESPUESTA_SOLICITUD_PROVEEDOR, solicitud.id,
+                                          contenido={'titulo': titulo,
+                                                     'mensaje': comentario,
+                                                     'usuario': solicitud.proveedor.usuario_id})
         except:
             messages.error(self.request, 'Ha ocurrido un error al realizar la acción.')
 
