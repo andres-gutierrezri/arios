@@ -25,6 +25,7 @@ class PerfilProveedorView(AbstractEvaLoggedProveedorView):
 
         total = datos_proveedor['total']
         opciones = datos_proveedor['opciones']
+        perfil_activo = True if Certificacion.objects.filter(tercero=proveedor, estado=True) else False
 
         btn_enviar = True if total == 100 else False
         solicitud_activa = True if SolicitudProveedor.objects.filter(proveedor=proveedor, estado=True) else False
@@ -32,7 +33,7 @@ class PerfilProveedorView(AbstractEvaLoggedProveedorView):
         return render(request, 'Administracion/Tercero/Proveedor/perfil.html',
                       {'opciones': opciones, 'total': total, 'btn_enviar': btn_enviar,
                        'tipo_nit': proveedor.tipo_identificacion.tipo_nit, 'proveedor_id': proveedor.id,
-                       'solicitud_activa': solicitud_activa})
+                       'solicitud_activa': solicitud_activa, 'perfil_activo': perfil_activo})
 
 
 class PerfilInformacionBasicaView(AbstractEvaLoggedProveedorView):
