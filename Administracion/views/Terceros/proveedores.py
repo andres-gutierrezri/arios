@@ -16,6 +16,8 @@ from EVA.General.conversiones import datetime_to_string
 from EVA.views.index import AbstractEvaLoggedProveedorView, AbstractEvaLoggedView
 from Financiero.models.models import ActividadEconomica, TipoContribuyente, Regimen, ProveedorActividadEconomica, \
     EntidadBancariaTercero, EntidadBancaria, TipoCuentaBancaria
+from Notificaciones.models.models import EventoDesencadenador
+from Notificaciones.views.views import crear_notificacion_por_evento
 
 
 class PerfilProveedorView(AbstractEvaLoggedProveedorView):
@@ -378,6 +380,16 @@ class ProveedorIndexView(AbstractEvaLoggedView):
         proveedores = Tercero.objects.filter(tipo_tercero_id=TipoTercero.PROVEEDOR)
         return render(request, 'Administracion/Tercero/Proveedor/index.html',
                       {'proveedores': proveedores})
+
+
+class ProveedorEditarSolicitudView(AbstractEvaLoggedView):
+    def post(self, request, id):
+        try:
+            proveedor = Tercero.objects.get(id=id)
+        except:
+            messages.error(self.request, 'Ha ocurrido un error al realizar la acción.')
+
+        return redirect(reverse('Administracion:proveedor-solicitudes'))
 
 
 def datos_xa_render_informacion_basica(request):
