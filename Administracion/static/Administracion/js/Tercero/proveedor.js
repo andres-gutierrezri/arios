@@ -168,7 +168,7 @@ function modificarPerfilProveedor(idProveedor) {
     }).then(result => {
         if (result.value) {
             $.ajax({
-                url: "/administracion/proveedor/solicitudes/" + idProveedor + "/enviar",
+                url: "/administracion/proveedor/solicitudes/" + idProveedor + "/modificar",
                 type: 'POST',
                 context: document.body,
                 success: function (data) {
