@@ -156,3 +156,32 @@ function abrir_modal_aprobar_rechazar(url) {
         }
     });
 }
+
+function modificarPerfilProveedor(idProveedor) {
+    Swal.fire({
+        title: '¿Está seguro de modificar su perfil?',
+        text: "Si modifica su perfil, dejará de estar activo como proveedor hasta que envie la solicitud y sea aprobada nuevamente.",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '¡Sí, Continuar!',
+        cancelButtonText: 'Cancelar'
+    }).then(result => {
+        if (result.value) {
+            $.ajax({
+                url: "/administracion/proveedor/solicitudes/" + idProveedor + "/enviar",
+                type: 'POST',
+                context: document.body,
+                success: function (data) {
+                    if(data.estado === "OK") {
+                        location.reload();
+                    }else if(data.estado === "ERROR"){
+                        EVANotificacion.toast.error(data.mensaje);
+                    }
+                },
+                failure: function (errMsg) {
+                    location.reload();
+                }
+            });
+        }
+    });
+}
