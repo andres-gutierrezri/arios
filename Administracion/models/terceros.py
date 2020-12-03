@@ -1,6 +1,7 @@
 from datetime import datetime
 from django.db import models
 from django.db.models import QuerySet
+from django.http import QueryDict
 
 from EVA.General.modelmanagers import ManagerGeneral
 from .models import Empresa, TipoIdentificacion, Persona
@@ -83,7 +84,7 @@ class Tercero(models.Model, ModelDjangoExtensiones):
         verbose_name_plural = 'Terceros'
 
     @staticmethod
-    def from_dictionary(datos: dict) -> 'Tercero':
+    def from_dictionary(datos: QueryDict) -> 'Tercero':
         """
         Crea una instancia de Tercero con los datos pasados en el diccionario.
         :param datos: Diccionario con los datos para crear el tercero.
@@ -102,7 +103,13 @@ class Tercero(models.Model, ModelDjangoExtensiones):
         tercero.fax = datos.get('fax', '')
         tercero.direccion = datos.get('direccion', '')
         tercero.digito_verificacion = datos.get('digito_verificacion')
-
+        tercero.tipo_persona = datos.get('tipo_persona')
+        tercero.regimen_fiscal = datos.get('regimen_fiscal')
+        responsabilidades = datos.getlist('responsabilidades')
+        tercero.responsabilidades_fiscales = ';'.join(responsabilidades) if responsabilidades else ''
+        tercero.tributos = datos.get('tributo')
+        tercero.correo_facelec = datos.get('correo')
+        tercero.codigo_postal = datos.get('codigo_postal')
         return tercero
 
 

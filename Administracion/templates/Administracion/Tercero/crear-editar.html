@@ -87,6 +87,36 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="form-group">
+                                            <div class="form-row">
+                                                <div class="col-md-6">
+                                                    {% select_tag tipos_persona 'tipo_persona' 'Seleccione un tipo de persona' is_tupla=True texto_label="Tipo de Persona" value=tercero.tipo_persona required="" mensaje_validacion='Por favor seleccione un tipo de persona.' invalido=errores.tipo_persona %}
+                                                </div>
+                                                <div class="col-md-6">
+                                                    {% select_tag regimenes_fiscales 'regimen_fiscal' 'Seleccione un régimen fiscal' is_tupla=True texto_label="Régimen Fiscal" value=tercero.regimen_fiscal required="" mensaje_validacion='Por favor seleccione un régimen fiscal.' invalido=errores.regimen_fiscal %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="form-row">
+                                                <div class="col-md-6">
+                                                    {% select_multiple_tag responsabilidades 'responsabilidades' 'responsabilidades_id' 'Seleccione una responsabilidad fiscal' is_tupla=True texto_label="Responsabilidad Fiscal" value=responsabilidades_tercero required="" mensaje_validacion='Por favor seleccione una responsabilidad fiscal.' multiple='multiple' invalido=errores.responsabilidades %}
+                                                </div>
+                                                <div class="col-md-6">
+                                                    {% select_tag tributos 'tributo' 'Seleccione un tributo' is_tupla=True texto_label="Tributo" value=tercero.tributos required="" mensaje_validacion='Por favor seleccione un tributo.' invalido=errores.tributos%}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="form-row">
+                                                <div class="col-md-6">
+                                                    {% input_email_tag 'correo' 'Correo Electrónico' placeholder="Ingrese el correo electrónico" required="" maxlength="100" value=tercero.correo_facelec mensaje_validacion='Por favor digite el correo electrónico.' invalido=errores.correo_facelec %}
+                                                </div>
+                                                <div class="col-md-6">
+                                                    {% input_text_tag 'codigo_postal' 'Código Postal' placeholder="Ingrese el código postal" required="" maxlength="6" value=tercero.codigo_postal mensaje_validacion='Por favor digite el código postal.' invalido=errores.codigo_postal %}
+                                                </div>
+                                            </div>
+                                        </div>
                                         {% if opcion == 'editar' %}
                                              <div class="form-group">
                                                 <div class="form-row">
