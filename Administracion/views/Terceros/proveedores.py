@@ -313,19 +313,6 @@ class SolicitudesProveedorView(AbstractEvaLoggedView):
         return render(request, 'Administracion/Tercero/Proveedor/solicitudes_proveedores.html',
                       {'solicitudes': solicitudes})
 
-    def post(self, request):
-        update_fields = ['documento']
-        documento = DocumentoTercero.objects.get(id=id)
-        documento.documento = request.FILES.get('documento', '')
-        try:
-            documento.save(update_fields=update_fields)
-        except:
-            return JsonResponse({"estado": "error", "mensaje": "Ha ocurrido un error al guardar la información"})
-
-        messages.success(self.request, 'Se ha cargado el documento {0} correctamente.'
-                         .format(documento.tipo_documento.nombre))
-        return JsonResponse({"estado": "OK"})
-
 
 class PerfilProveedorSolicitud(AbstractEvaLoggedView):
     def get(self, request, id):
@@ -383,7 +370,7 @@ class ProveedorIndexView(AbstractEvaLoggedView):
                       {'proveedores': proveedores})
 
 
-class ProveedorEditarSolicitudView(AbstractEvaLoggedView):
+class ProveedorModificarSolicitudView(AbstractEvaLoggedProveedorView):
     def post(self, request, id):
         try:
             proveedor = Tercero.objects.get(id=id)

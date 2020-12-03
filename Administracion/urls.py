@@ -95,6 +95,6 @@ urlpatterns = [
          name='proveedor-solicitudes-aprobar-rechazar'),
     path('proveedores/index', proveedores.ProveedorIndexView.as_view(),
          name='proveedor-administracion-index'),
-    path('proveedores/solicitudes/editar', proveedores.ProveedorIndexView.as_view(),
-         name='proveedor-solicitudes-editar'),
+    path('proveedor/solicitudes/<int:id>/modificar', proveedores.ProveedorModificarSolicitudView.as_view(),
+         name='proveedor-solicitudes-modificar'),
 ]
