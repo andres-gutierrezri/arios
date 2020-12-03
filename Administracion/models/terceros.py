@@ -191,7 +191,8 @@ class DocumentoTercero(models.Model):
 class Certificacion(models.Model):
     objects = ManagerGeneral()
     tercero = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, verbose_name='Tercero', blank=False, null=False)
-    fecha_crea = models.DateField(verbose_name='Fecha de Creación', null=False, blank=False)
+    fecha_crea = models.DateTimeField(verbose_name='Fecha de Creación', null=False, blank=False)
+    estado = models.BooleanField(verbose_name='Estado', blank=False, null=False)
 
     def __str__(self):
         return 'Certificación de {0}'.format(self.tercero)
