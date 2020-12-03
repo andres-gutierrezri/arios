@@ -49,12 +49,16 @@
                         </div>
                     </div>
                     {% endif %}
-                    {% if btn_enviar and not solicitud_activa%}
+                    {% if btn_enviar and not solicitud_activa %}
                         <div class="panel-hdr">
                             <div class="col-md-10"></div>
                             <div class="col-md-2" style="float: right" >
                                 <small style="float: right">
-                                    <a href="javascript:enviarSolicitudProveedor({{ proveedor_id }})" class="btn btn-primary btn-block">Enviar Solicitud</a>
+                                    {% if perfil_activo %}
+                                        <a href="javascript:modificarPerfilProveedor({{ proveedor_id }})" class="btn btn-primary btn-block">Modificar Mi Perfil</a>
+                                    {% else %}
+                                        <a href="javascript:enviarSolicitudProveedor({{ proveedor_id }})" class="btn btn-primary btn-block">Enviar Solicitud</a>
+                                    {% endif %}
                                 </small>
                             </div>
                         </div>
