@@ -275,9 +275,10 @@ class EnviarSolicitudProveedorView(AbstractEvaLoggedView):
     def post(self, request, id):
         try:
             proveedor = Tercero.objects.get(id=id)
-            SolicitudProveedor.objects.create(proveedor=proveedor, fecha_creacion=app_datetime_now(), aprobado=False,
-                                              estado=True)
+            solicitud = SolicitudProveedor.objects.create(proveedor=proveedor, fecha_creacion=app_datetime_now(),
+                                                          aprobado=False, estado=True)
             messages.success(self.request, 'Se ha enviado la solicitud correctamente')
+            crear_notificacion_por_evento(EventoDesencadenador.SOLICITUD_APROBACION_PROVEEDOR, solicitud.id)
             return JsonResponse({"estado": "OK"})
         except:
             return JsonResponse({"estado": "ERROR", "mensaje": "Ha ocurrido un error al realizar la solicitud"})
