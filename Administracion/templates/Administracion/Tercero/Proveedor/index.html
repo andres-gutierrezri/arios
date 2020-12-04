@@ -42,6 +42,7 @@
                                                             <th>Correo</th>
                                                             <th>Estado</th>
                                                             <th>Fecha de Envío de Solicitud</th>
+                                                            <th>Acción</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -60,6 +61,9 @@
                                                                     {% endif %}
                                                                 </td>
                                                                 <td>{{ proveedor.fecha_creacion|date:'Y-m-d' }}</td>
+                                                                <td>
+                                                                    <a class="far fa-2x fa-edit" {% if proveedor.estado == True %} href="javascript:cambiarEstadoProveedor('{{ proveedor.id }}', 'desactivar')" data-original-title="Desactivar" {% else %} href="javascript:cambiarEstadoProveedor('{{ proveedor.id }}', 'activar')" data-original-title="Activar" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
+                                                                </td>
                                                             </tr>
                                                         {% endfor %}
                                                     </tbody>
@@ -77,13 +81,14 @@
 {% endblock %}
 {% block scripts %}
     <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
-    <script src="{% static 'TalentoHumano/js/confirmarEliminarTalentoHumano.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
-    <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
-    <script src="{% static 'TalentoHumano/js/filtro_entidad.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.export.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script>
-    <script src="{% static 'TalentoHumano/js/Entidades_CAFE/exportar_tabla.js' %}"></script>
-    <script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
+    <script src="{% static 'Administracion/js/Tercero/proveedorIndex.js' %}"></script>
+    <script>
+        $(document).ready(function() {
+            iniciarTablaExportar([0, 1, 2, 3, 4, 5]);
+        });
+    </script>
 {% endblock %}
