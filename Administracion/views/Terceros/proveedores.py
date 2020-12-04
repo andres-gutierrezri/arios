@@ -311,7 +311,7 @@ class SolicitudesProveedorView(AbstractEvaLoggedView):
     def get(self, request):
         solicitudes = SolicitudProveedor.objects.filter(estado=True)
         return render(request, 'Administracion/Tercero/Proveedor/solicitudes_proveedores.html',
-                      {'solicitudes': solicitudes})
+                      {'solicitudes': solicitudes, 'menu_actual': ['proveedores', 'solicitudes_proveedor']})
 
 
 class PerfilProveedorSolicitud(AbstractEvaLoggedView):
@@ -373,11 +373,13 @@ class ProveedorIndexView(AbstractEvaLoggedView):
 class ProveedorModificarSolicitudView(AbstractEvaLoggedProveedorView):
     def post(self, request, id):
         try:
-            proveedor = Tercero.objects.get(id=id)
-        except:
-            messages.error(self.request, 'Ha ocurrido un error al realizar la acción.')
+            SolicitudProveedor.objects.filter(proveedor_id=id).update(estado=False)
+            Certificacion.objects.filter(tercero_id=id).update(estado=False)
 
-        return redirect(reverse('Administracion:proveedor-solicitudes'))
+            messages.success(self.request, 'Ahora puedes modificar tu perfil.')
+            return JsonResponse({"estado": "OK"})
+        except:
+            return JsonResponse({"estado": "ERROR", "mensaje": "Ha ocurrido un error al realizar la solicitud"})
 
 
 def datos_xa_render_informacion_basica(request):
