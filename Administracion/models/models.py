@@ -18,8 +18,8 @@ class Empresa(models.Model, ModelDjangoExtensiones):
                              blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
     subempresa = models.BooleanField(verbose_name='Subempresa', null=False, blank=False)
-    empresa_ppal = models.ForeignKey('self', on_delete=models.DO_NOTHING, verbose_name='Empresa Ppal', null=True
-                                     , blank=False)
+    empresa_ppal = models.ForeignKey('self', on_delete=models.DO_NOTHING, verbose_name='Empresa Ppal', null=True,
+                                     blank=False)
     tipo_persona = models.SmallIntegerField(verbose_name='Tipo de Persona', null=False, blank=False, default=1)
     matricula_mercantil = models.CharField(max_length=20, verbose_name='Matricula Mercantil', null=True, blank=True)
     responsabilidades_fiscales = models.CharField(max_length=200, verbose_name='Responsabilidades Fiscales', null=True,
@@ -248,3 +248,19 @@ class Impuesto(models.Model, ModelDjangoExtensiones):
         verbose_name = 'Impuesto'
         verbose_name_plural = 'Impuestos'
 
+
+class UnidadMedida(models.Model):
+    objects = ManagerGeneral()
+
+    id = models.CharField(max_length=4, verbose_name="Id", primary_key=True, null=False, blank=False)
+    nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
+    sigla = models.CharField(max_length=5, verbose_name='Sigla', null=False, blank=False, unique=True)
+    estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
+    admite_decimales = models.BooleanField(verbose_name='Admite Decimales', null=False, blank=False, default=False)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name = 'Unidad de Medida'
+        verbose_name_plural = 'Unidades de Medida'
