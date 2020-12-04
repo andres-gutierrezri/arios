@@ -150,7 +150,8 @@ def datos_xa_render(opcion: str, tercero: Tercero = None) -> dict:
         datos['municipios'] = municipios
         datos['centros_poblados'] = centros_poblados
         datos['tercero'] = tercero
-        datos['responsabilidades_tercero'] = tercero.responsabilidades_fiscales.split(';')
+        datos['responsabilidades_tercero'] = tercero.responsabilidades_fiscales.split(';')\
+            if tercero.responsabilidades_fiscales else []
 
     return datos
 # endregion
