@@ -8,6 +8,7 @@
 	<!-- page related CSS below -->
 	<link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/smartwizard/smartwizard.css' %}">
 {% endblock styles%}
 
 {% block main %}
@@ -26,114 +27,118 @@
                         <div class="panel-content">
                             <div class="panel-group">
                                 <div class="panel-body">
-                                     {% if opcion == 'editar' %}
+                                    {% if opcion == 'editar' %}
                                     <form action="{% url 'Administracion:terceros-editar' tercero.id %}" id="tercero-form" method="post" class="needs-validation" novalidate>
-                                     {% else %}
+                                    {% else %}
                                     <form action="{% url 'Administracion:terceros-crear' %}" id="tercero-form" method="post" class="needs-validation" novalidate>
-                                     {% endif %}
+                                    {% endif %}
                                         {% csrf_token %}
-                                        <div class="form-group">
-                                            <div class="form-row">
-                                                <div class="col-md-6">
-                                                    {% input_text_tag 'nombre' 'Nombre' placeholder="Ingrese el nombre" required="" maxlength="100" value=tercero.nombre mensaje_validacion='Por favor digite el nombre.' invalido=errores.nombre %}
-                                                </div>
-                                                <div class="col-md-6">
-                                                    {% select_tag tipo_terceros 'tipo_tercero_id' 'Seleccione un tipo de tercero' texto_label='Tipo de tercero' value=tercero.tipo_tercero_id required='' mensaje_validacion='Por favor seleccione un tipo de tercero.' invalido=errores.tipo_tercero %}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="form-row">
-                                                <div class="col-md-6">
-                                                    {% select_tag tipos_identificacion 'tipo_identificacion_id' 'Seleccione un tipo de identificación' texto_label="Tipo de Identificación" value=tercero.tipo_identificacion_id required="" mensaje_validacion='Por favor seleccione un tipo de identificación.' invalido=errores.tipo_identificacion %}
-                                                </div>
-                                                <div class={% if opcion == 'editar' and 'NIT' in tercero.tipo_identificacion.sigla %} "col-md-5" {% else %} "col-md-6" {% endif %}>
-                                                    {% input_text_tag 'identificacion' 'Identificación' placeholder='Ingrese el número de identificación' required='' maxlength='15' value=tercero.identificacion mensaje_validacion='Por favor digite la identificación' invalido=errores.identificacion %}
-                                                </div>
-                                                {% if opcion == 'editar' and 'NIT' in tercero.tipo_identificacion.sigla %}
-                                                    <div class="col-md-1">
-                                                        {% input_number_tag 'digito_verificacion' 'DV' placeholder='Ingrese el DV' required='' min='0' max='9' value=tercero.digito_verificacion mensaje_validacion='Por favor ingrese el digito de verificación' invalido=errores.digito_verificacion %}
+                                        <div id="smartwizard">
+                                            <ul>
+                                                <li><a href="#step-0">Datos básicos</a></li>
+                                                <li><a href="#step-1">Datos Facturación</a></li>
+                                            </ul>
+                                            <div class="p-3">
+                                                <div id="step-0" class="">
+                                                    <div class="form-group">
+                                                        <div class="form-row">
+                                                            <div class="col-md-6">
+                                                                {% input_text_tag 'nombre' 'Nombre' placeholder="Ingrese el nombre" required="" maxlength="100" value=tercero.nombre mensaje_validacion='Por favor digite el nombre.' invalido=errores.nombre %}
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                {% select_tag tipo_terceros 'tipo_tercero_id' 'Seleccione un tipo de tercero' texto_label='Tipo de tercero' value=tercero.tipo_tercero_id required='' mensaje_validacion='Por favor seleccione un tipo de tercero.' invalido=errores.tipo_tercero %}
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="form-row">
-                                                <div class="col-md-6">
-                                                    {% input_text_tag 'telefono' 'Teléfono' placeholder='Ingrese un # de teléfono' required='' maxlength='30' value=tercero.telefono mensaje_validacion='Por favor digite un teléfono' invalido=errores.telefono %}
+                                                    <div class="form-group">
+                                                        <div class="form-row">
+                                                            <div class="col-md-6">
+                                                                {% select_tag tipos_identificacion 'tipo_identificacion_id' 'Seleccione un tipo de identificación' texto_label="Tipo de Identificación" value=tercero.tipo_identificacion_id required="" mensaje_validacion='Por favor seleccione un tipo de identificación.' invalido=errores.tipo_identificacion %}
+                                                            </div>
+                                                            <div class={% if opcion == 'editar' and 'NIT' in tercero.tipo_identificacion.sigla %} "col-md-5" {% else %} "col-md-6" {% endif %}>
+                                                                {% input_text_tag 'identificacion' 'Identificación' placeholder='Ingrese el número de identificación' required='' maxlength='15' value=tercero.identificacion mensaje_validacion='Por favor digite la identificación' invalido=errores.identificacion %}
+                                                            </div>
+                                                            {% if opcion == 'editar' and 'NIT' in tercero.tipo_identificacion.sigla %}
+                                                                <div class="col-md-1">
+                                                                    {% input_number_tag 'digito_verificacion' 'DV' placeholder='Ingrese el DV' required='' min='0' max='9' value=tercero.digito_verificacion mensaje_validacion='Por favor ingrese el digito de verificación' invalido=errores.digito_verificacion %}
+                                                                </div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <div class="form-row">
+                                                            <div class="col-md-6">
+                                                                {% input_text_tag 'telefono' 'Teléfono' placeholder='Ingrese un # de teléfono' required='' maxlength='30' value=tercero.telefono mensaje_validacion='Por favor digite un teléfono' invalido=errores.telefono %}
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                {% input_text_tag 'fax' 'Fax' placeholder='Ingrese un # de fax' maxlength='30' value=tercero.fax mensaje_validacion='Por favor digite un # de fax' invalido=errores.fax %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <div class="form-row">
+                                                            <div class="col-md-6">
+                                                                {% input_text_tag 'direccion' 'Dirección' placeholder='Ingrese la dirección' maxlength='100' value=tercero.direccion mensaje_validacion='Por favor digite una dirección' invalido=errores.direccion %}
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                             {% select_tag departamentos 'departamento_id' 'Seleccione un departamento' texto_label="Departamento" value=tercero.centro_poblado.municipio.departamento.id required="" mensaje_validacion='Por favor seleccione un departamento.'  %}
+                                                             </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <div class="form-row">
+                                                            <div class="col-md-6">
+                                                            {% select_tag municipios 'municipio_id' 'Seleccione un municipio' texto_label="Municipio" value=tercero.centro_poblado.municipio.id required="" mensaje_validacion='Por favor seleccione un municipio.'  %}
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                            {% select_tag centros_poblados 'centro_poblado_id' 'Seleccione un centro poblado' texto_label="Centro Poblado" value=tercero.centro_poblado.id required="" mensaje_validacion='Por favor seleccione un centro poblado.' invalido=errores.centro_poblado %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    {% if opcion == 'editar' %}
+                                                         <div class="form-group">
+                                                            <div class="form-row">
+                                                                <div class="col-md-6">
+                                                                    {% input_checkbox_tag 'estado' 'Estado' value=tercero.estado  %}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
                                                 </div>
-                                                <div class="col-md-6">
-                                                    {% input_text_tag 'fax' 'Fax' placeholder='Ingrese un # de fax' maxlength='30' value=tercero.fax mensaje_validacion='Por favor digite un # de fax' invalido=errores.fax %}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="form-row">
-                                                <div class="col-md-6">
-                                                    {% input_text_tag 'direccion' 'Dirección' placeholder='Ingrese la dirección' maxlength='100' value=tercero.direccion mensaje_validacion='Por favor digite una dirección' invalido=errores.direccion %}
-                                                </div>
-                                                <div class="col-md-6">
-                                                 {% select_tag departamentos 'departamento_id' 'Seleccione un departamento' texto_label="Departamento" value=tercero.centro_poblado.municipio.departamento.id required="" mensaje_validacion='Por favor seleccione un departamento.'  %}
-                                                 </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="form-row">
-                                                <div class="col-md-6">
-                                                {% select_tag municipios 'municipio_id' 'Seleccione un municipio' texto_label="Municipio" value=tercero.centro_poblado.municipio.id required="" mensaje_validacion='Por favor seleccione un municipio.'  %}
-                                                </div>
-                                                <div class="col-md-6">
-                                                {% select_tag centros_poblados 'centro_poblado_id' 'Seleccione un centro poblado' texto_label="Centro Poblado" value=tercero.centro_poblado.id required="" mensaje_validacion='Por favor seleccione un centro poblado.' invalido=errores.centro_poblado %}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="form-row">
-                                                <div class="col-md-6">
-                                                    {% select_tag tipos_persona 'tipo_persona' 'Seleccione un tipo de persona' is_tupla=True texto_label="Tipo de Persona" value=tercero.tipo_persona required="" mensaje_validacion='Por favor seleccione un tipo de persona.' invalido=errores.tipo_persona %}
-                                                </div>
-                                                <div class="col-md-6">
-                                                    {% select_tag regimenes_fiscales 'regimen_fiscal' 'Seleccione un régimen fiscal' is_tupla=True texto_label="Régimen Fiscal" value=tercero.regimen_fiscal required="" mensaje_validacion='Por favor seleccione un régimen fiscal.' invalido=errores.regimen_fiscal %}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="form-row">
-                                                <div class="col-md-6">
-                                                    {% select_multiple_tag responsabilidades 'responsabilidades' 'responsabilidades_id' 'Seleccione una responsabilidad fiscal' is_tupla=True texto_label="Responsabilidad Fiscal" value=responsabilidades_tercero required="" mensaje_validacion='Por favor seleccione una responsabilidad fiscal.' multiple='multiple' invalido=errores.responsabilidades %}
-                                                </div>
-                                                <div class="col-md-6">
-                                                    {% select_tag tributos 'tributo' 'Seleccione un tributo' is_tupla=True texto_label="Tributo" value=tercero.tributos required="" mensaje_validacion='Por favor seleccione un tributo.' invalido=errores.tributos%}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="form-row">
-                                                <div class="col-md-6">
-                                                    {% input_email_tag 'correo' 'Correo Electrónico' placeholder="Ingrese el correo electrónico" required="" maxlength="100" value=tercero.correo_facelec mensaje_validacion='Por favor digite el correo electrónico.' invalido=errores.correo_facelec %}
-                                                </div>
-                                                <div class="col-md-6">
-                                                    {% input_text_tag 'codigo_postal' 'Código Postal' placeholder="Ingrese el código postal" required="" maxlength="6" value=tercero.codigo_postal mensaje_validacion='Por favor digite el código postal.' invalido=errores.codigo_postal %}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {% if opcion == 'editar' %}
-                                             <div class="form-group">
-                                                <div class="form-row">
-                                                    <div class="col-md-6">
-                                                        {% input_checkbox_tag 'estado' 'Estado' value=tercero.estado  %}
+                                                <div id="step-1" class="">
+                                                    <div class="form-group">
+                                                        <div class="form-row">
+                                                            <div class="col-md-6">
+                                                                {% select_tag tipos_persona 'tipo_persona' 'Seleccione un tipo de persona' is_tupla=True texto_label="Tipo de Persona" value=tercero.tipo_persona required="" mensaje_validacion='Por favor seleccione un tipo de persona.' invalido=errores.tipo_persona %}
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                {% select_tag regimenes_fiscales 'regimen_fiscal' 'Seleccione un régimen fiscal' is_tupla=True texto_label="Régimen Fiscal" value=tercero.regimen_fiscal required="" mensaje_validacion='Por favor seleccione un régimen fiscal.' invalido=errores.regimen_fiscal %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <div class="form-row">
+                                                            <div class="col-md-6">
+                                                                {% select_multiple_tag responsabilidades 'responsabilidades' 'responsabilidades_id' 'Seleccione una responsabilidad fiscal' is_tupla=True texto_label="Responsabilidad Fiscal" value=responsabilidades_tercero required="" mensaje_validacion='Por favor seleccione una responsabilidad fiscal.' multiple='multiple' invalido=errores.responsabilidades %}
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                {% select_tag tributos 'tributo' 'Seleccione un tributo' is_tupla=True texto_label="Tributo" value=tercero.tributos required="" mensaje_validacion='Por favor seleccione un tributo.' invalido=errores.tributos%}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <div class="form-row">
+                                                            <div class="col-md-6">
+                                                                {% input_email_tag 'correo' 'Correo Electrónico' placeholder="Ingrese el correo electrónico" required="" maxlength="100" value=tercero.correo_facelec mensaje_validacion='Por favor digite el correo electrónico.' invalido=errores.correo_facelec %}
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                {% input_text_tag 'codigo_postal' 'Código Postal' placeholder="Ingrese el código postal" required="" maxlength="6" minlength="6" pattern='[0-9]{6,6}' value=tercero.codigo_postal mensaje_validacion='Por favor digite el código postal.' invalido=errores.codigo_postal %}
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        {% endif %}
-                                            <div class="form-row">
-                                                <div >
-                                                    <button id="guardar" class="btn btn-primary btn-block">{% if opcion == 'editar' %} Actualizar {% else %} Agregar {% endif %}</button>
-                                                </div>
-                                                <div style="padding-left: 15px">
-                                                    <a href="{% url 'Administracion:terceros' %}" class="btn btn-danger btn-block">Cancelar</a>
-                                                </div>
-                                            </div>
+                                        </div>
                                     </form>
                                 </div>
                             </div>
@@ -149,6 +154,7 @@
     <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
     <script src="{% static 'Administracion/js/select_divipol.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
-	<script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/smartwizard/smartwizard.js' %}"></script>
     <script src="{% static 'Administracion/js/Tercero/formTercero.js' %}"></script>
 {% endblock scripts%}

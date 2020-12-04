@@ -7,6 +7,7 @@ from EVA.General.modelmanagers import ManagerGeneral
 from .models import Empresa, TipoIdentificacion, Persona
 from .divipol import CentroPoblado
 from EVA.General.modeljson import ModelDjangoExtensiones
+from ..enumeraciones import TipoPersona
 
 
 class TipoTercero(models.Model):
@@ -74,7 +75,7 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     tributos = models.CharField(max_length=10, verbose_name='Tributo', null=True, blank=True)
     correo_facelec = models.EmailField(max_length=100, verbose_name='Correo Facturación Electrónica', null=True,
                                        blank=True)
-    codigo_postal = models.CharField(max_length=10, verbose_name='Código Postal', null=True, blank=True)
+    codigo_postal = models.CharField(max_length=6, verbose_name='Código Postal', null=True, blank=True)
 
     def __str__(self):
         return self.nombre
@@ -103,13 +104,16 @@ class Tercero(models.Model, ModelDjangoExtensiones):
         tercero.fax = datos.get('fax', '')
         tercero.direccion = datos.get('direccion', '')
         tercero.digito_verificacion = datos.get('digito_verificacion')
-        tercero.tipo_persona = datos.get('tipo_persona')
-        tercero.regimen_fiscal = datos.get('regimen_fiscal')
-        responsabilidades = datos.getlist('responsabilidades')
-        tercero.responsabilidades_fiscales = ';'.join(responsabilidades) if responsabilidades else ''
-        tercero.tributos = datos.get('tributo')
-        tercero.correo_facelec = datos.get('correo')
-        tercero.codigo_postal = datos.get('codigo_postal')
+        if int(tercero.tipo_tercero_id) == TipoTercero.CLIENTE:
+            tercero.tipo_persona = datos.get('tipo_persona')
+            tercero.regimen_fiscal = datos.get('regimen_fiscal')
+            responsabilidades = datos.getlist('responsabilidades')
+            tercero.responsabilidades_fiscales = ';'.join(responsabilidades) if responsabilidades else ''
+            tercero.tributos = datos.get('tributo')
+            tercero.correo_facelec = datos.get('correo')
+            tercero.codigo_postal = datos.get('codigo_postal')
+        else:
+            tercero.tipo_persona = TipoPersona.JURIDICA
         return tercero
 
 
