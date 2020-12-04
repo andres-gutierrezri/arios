@@ -43,8 +43,8 @@ class Factura
             (this.porcentajeUtilidad != null && this.porcentajeUtilidad !== 0));
     }
 
-    agregarItem(tituloItem, descripcionItem, valorUnitario, cantidad, impuesto) {
-        const item = new ItemFactura(tituloItem, descripcionItem, valorUnitario, cantidad, impuesto, this.getPorcentajeImpuesto(impuesto) );
+    agregarItem(tituloItem, descripcionItem, valorUnitario, cantidad, impuesto, unidadMedida) {
+        const item = new ItemFactura(tituloItem, descripcionItem, valorUnitario, cantidad, impuesto, this.getPorcentajeImpuesto(impuesto), unidadMedida );
         this.items.push(item);
         this.subtotal += item.valorTotal;
         this.cantidadItems++;
@@ -202,11 +202,16 @@ function configurarTablaDetalle() {
                     },
                     {
                         "targets": [2],
+                        "width": '10%',
+                        className: 'text-right'
+                    },
+                    {
+                        "targets": [3],
                         "width": '20%',
                          className: 'text-right'
                     },
                     {
-                        "targets": [3],
+                        "targets": [4],
                         "width": '20%',
                          className: 'text-right'
                     }],
@@ -264,7 +269,7 @@ function cerrarModalAgregarItem() {
     $(".modal-backdrop").remove();
 }
 
-function ItemFactura(titulo, descripcion, valorUnitario, cantidad, impuesto, porcentajeImpuesto) {
+function ItemFactura(titulo, descripcion, valorUnitario, cantidad, impuesto, porcentajeImpuesto, unidadMedida) {
     this.titulo = titulo;
     this.descripcion = descripcion;
     this.valorUnitario = valorUnitario;
@@ -272,12 +277,14 @@ function ItemFactura(titulo, descripcion, valorUnitario, cantidad, impuesto, por
     this.impuesto = impuesto;
     this.valorTotal = valorUnitario * cantidad;
     this.valorImpuesto = valorXaPorcentaje(this.valorTotal, porcentajeImpuesto);
+    this.unidadMedida = unidadMedida;
 }
 
 function getItemXaTabla(itemFactura) {
     return([
         `<b>${itemFactura.titulo}</b><br>${itemFactura.descripcion}`,
         numToDecimalStr(itemFactura.cantidad),
+        itemFactura.unidadMedida.descripcion,
         numToDecimalStr(itemFactura.valorUnitario),
         numToDecimalStr(itemFactura.valorTotal)
     ]);
@@ -291,8 +298,9 @@ function agregarItemFactura() {
     const cantidad = Number($('#cantidad_id').inputmask('unmaskedvalue'));
     const impuesto_seleccionado = $('#impuesto_select_id')[0].selectedOptions[0];
     const impuesto = impuesto_seleccionado.value !== '' ? JSON.parse(impuesto_seleccionado.value) : {id:0, porcentaje:0.00};
-
-    const itemFactura = factura.agregarItem(tituloItem, descripcionItem, valorUnitario, cantidad, impuesto.id);
+    const unidad_seleccionada = $('#unidad_medida_select_id')[0].selectedOptions[0];
+    const unidadMedida = unidad_seleccionada.value !== '' ? {id: unidad_seleccionada.value, descripcion: unidad_seleccionada.text} : {id:0, descripcion:''}
+    const itemFactura = factura.agregarItem(tituloItem, descripcionItem, valorUnitario, cantidad, impuesto.id, unidadMedida);
 
     tablaItems.row.add(getItemXaTabla(itemFactura)).node();
     tablaItems.draw(false);
@@ -314,9 +322,9 @@ function renderTotalFactura() {
 
 function getFilaTotales(nombre, valor) {
     if(nombre !== 'Subtotal')
-        return `<tr><td colspan="3" class="text-right"><b>${nombre}</b></td><td class="text-right">${numToDecimalStr(valor)}</td></tr>`;
+        return `<tr><td colspan="4" class="text-right"><b>${nombre}</b></td><td class="text-right">${numToDecimalStr(valor)}</td></tr>`;
     else
-        return `<tr><td colspan="3" class="text-right"><div class="btn-group dropup">
+        return `<tr><td colspan="4" class="text-right"><div class="btn-group dropup">
                         <button type="button" class="btn btn-warning rounded-circle btn-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fal fa-ellipsis-h-alt"></i>
                         </button>

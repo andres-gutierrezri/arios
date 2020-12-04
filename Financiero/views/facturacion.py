@@ -12,7 +12,7 @@ from django.shortcuts import render, redirect
 from django.template.loader import get_template
 from django.urls import reverse
 
-from Administracion.models import Tercero, Impuesto, ConsecutivoDocumento, TipoDocumento
+from Administracion.models import Tercero, Impuesto, ConsecutivoDocumento, TipoDocumento, UnidadMedida
 from Administracion.utils import get_id_empresa_global
 from EVA import settings
 from EVA.General import app_date_now
@@ -45,9 +45,10 @@ class FacturaCrearView(AbstractEvaLoggedView):
     def get(self, request):
         terceros = Tercero.objects.clientes_xa_select()
         impuestos = Impuesto.objects.get_xa_select_porcentaje()
-
+        unidades_medida = UnidadMedida.objects.get_xa_select()
         return render(request, 'Financiero/Facturacion/crear_factura.html',
-                      {'terceros': terceros, 'impuestos': impuestos, 'menu_actual': 'facturas'})
+                      {'terceros': terceros, 'impuestos': impuestos, 'unidades_medida': unidades_medida,
+                       'menu_actual': 'facturas'})
 
     def post(self, request):
         resultado = self.guardar_factura(request)
@@ -135,6 +136,7 @@ class FacturaCrearView(AbstractEvaLoggedView):
                 factura_det.valor_impuesto = item['valorImpuesto']
                 if item['impuesto'] != 0:
                     factura_det.impuesto_id = item['impuesto']
+                factura_det.unidad_medida_id = item['unidadMedida']['id']
 
                 factura_det.save()
             # endregion
@@ -293,13 +295,15 @@ class FacturaEditarView(AbstractEvaLoggedView):
         try:
             terceros = Tercero.objects.clientes_xa_select()
             impuestos = Impuesto.objects.get_xa_select_porcentaje()
+            unidades_medida = UnidadMedida.objects.get_xa_select()
             factura = FacturaEncabezado.objects.get(id=id_factura, empresa_id=get_id_empresa_global(request))
         except FacturaEncabezado.DoesNotExist:
             messages.error(self.request, 'No se encontró el borrador de factura solicitado.')
             return redirect(reverse('Financiero:factura-index'))
 
         return render(request, 'Financiero/Facturacion/crear_factura.html',
-                      {'terceros': terceros, 'impuestos': impuestos, 'factura': factura, 'menu_actual': 'facturas'})
+                      {'terceros': terceros, 'impuestos': impuestos, 'factura': factura,
+                       'unidades_medida': unidades_medida, 'menu_actual': 'facturas'})
 
 
 class FacturaDetalleView(AbstractEvaLoggedView):
@@ -315,10 +319,13 @@ class FacturaDetalleView(AbstractEvaLoggedView):
                 .get(id=id_factura, empresa_id=get_id_empresa_global(request))
 
             items_factura = list(FacturaDetalle.objects
-                                 .values('titulo', 'descripcion', 'cantidad', 'impuesto',
+                                 .values('titulo', 'descripcion', 'cantidad', 'impuesto','unidad_medida',
                                          valorUnitario=F('valor_unitario'), valorTotal=F('valor_total'),
-                                         valorImpuesto=F('valor_impuesto'))
+                                         valorImpuesto=F('valor_impuesto'), um_descripcion=F('unidad_medida__nombre'))
                                  .filter(factura_encabezado_id=id_factura))
+
+            for item in items_factura:
+                item['unidadMedida'] = {'id': item.pop('unidad_medida'), 'descripcion': item.pop('um_descripcion')}
 
             impuestos_factura = list(FacturaImpuesto.objects
                                      .values('impuesto', porcentaje=F('impuesto__porcentaje'),

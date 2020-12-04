@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from decimal import Decimal
 
-from Administracion.models import Impuesto, Empresa, Tercero
+from Administracion.models import Impuesto, Empresa, Tercero, UnidadMedida
 from EVA.General.modeljson import ModelDjangoExtensiones
 
 
@@ -150,6 +150,8 @@ class FacturaDetalle(models.Model):
     valor_impuesto = models.DecimalField(verbose_name='Valor Impuesto', max_digits=12, decimal_places=2, null=False,
                                          blank=False)
     impuesto = models.ForeignKey(Impuesto, on_delete=models.DO_NOTHING, verbose_name='Impuesto', null=True)
+    unidad_medida = models.ForeignKey(UnidadMedida, on_delete=models.DO_NOTHING, verbose_name='Unidad de Medida',
+                                      null=False, blank=False, default='94')
 
     def __str__(self):
         return 'Detalle Factura # {0})'.format(self.id)
