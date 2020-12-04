@@ -25,7 +25,11 @@
                     {% if solicitud_activa %}
                         <div class="col-6" style="text-align: end">Solicitud Enviada<span class='fw-300'></span></div>
                     {% else %}
-                        <div class="col-6" style="text-align: end">Completado {{ total }}%<span class='fw-300'></span></div>
+                        {% if perfil_activo %}
+                            <div class="col-6" style="text-align: end">Proveedor Activo<span class='fw-300'></span></div>
+                        {% else %}
+                            <div class="col-6" style="text-align: end">Completado {{ total }}%<span class='fw-300'></span></div>
+                        {% endif %}
                     {% endif %}
                 {% endif %}
 
