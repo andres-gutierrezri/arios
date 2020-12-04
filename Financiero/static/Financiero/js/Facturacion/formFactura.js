@@ -2,6 +2,9 @@
 
 let tablaItems;
 let cargandoBorrador = false;
+const inputObservaciones = $('#observaciones_id');
+let modificado = true;
+let observacionesModificado = false;
 class Factura
 {
     constructor() {
@@ -18,11 +21,12 @@ class Factura
         this.porcentajeImprevistos = 0.00;
         this.porcentajeUtilidad = 0.00;
         this.amortizacion = 0.00;
-        this.idAmortizacion = ''
+        this.idAmortizacion = '';
         this.fechaAmortizacion = new Date();
         this.items = [];
         this.impuestos = [];
         this.total = 0.00;
+        this.observaciones = '';
     }
 
     get totalAdministracion() {
@@ -144,6 +148,20 @@ $(document).ready(function () {
             dropdownParent: $('#agregar_item_modal')
         }
     );
+
+    inputObservaciones.blur(function (){
+        if(inputObservaciones.val() !== factura.observaciones){
+            factura.observaciones = inputObservaciones.val();
+            habilitarBotones(true, false);
+        } else {
+            habilitarBotones(observacionesModificado, !observacionesModificado);
+        }
+    });
+
+    inputObservaciones.focus(function (){
+        observacionesModificado = modificado;
+        habilitarBotones(true, false);
+    });
 
     configurarTablaDetalle();
     configurarFormularios();
@@ -519,6 +537,7 @@ function renderDatosCliente(datos) {
 function habilitarBotones(borrador, generar) {
     $('#btn_guardar_borrador').prop('disabled', !borrador);
     $('#btn_generar_factura').prop('disabled', !generar);
+    modificado = borrador;
 }
 
 function cargarBorrador() {
@@ -559,6 +578,7 @@ function renderBorrador() {
     });
     tablaItems.draw(false);
     renderTotalFactura();
+    inputObservaciones.val(factura.observaciones);
     const clienteSelect = $('#cliente_select_id');
     clienteSelect.val(factura.cliente).change();
     habilitarBotones(false, true);

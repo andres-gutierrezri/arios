@@ -118,7 +118,7 @@ class FacturaCrearView(AbstractEvaLoggedView):
             factura_enc.numero_factura = None
             factura_enc.total = factura['total']
             factura_enc.total_letras = valor_pesos_a_letras(factura_enc.total)
-
+            factura_enc.observaciones = factura['observaciones']
             factura_enc.save()
             factura['id'] = factura_enc.id
             # endregion
@@ -310,7 +310,7 @@ class FacturaDetalleView(AbstractEvaLoggedView):
     def get(self, request, id_factura):
         try:
             factura = FacturaEncabezado.objects.\
-                values('id', 'estado', 'subtotal', 'amortizacion', 'total', cliente=F('tercero_id'),
+                values('id', 'estado', 'subtotal', 'amortizacion', 'total', 'observaciones', cliente=F('tercero_id'),
                        fechaVencimiento=F('fecha_vencimiento'), cantidadItems=F('can_items'),
                        numeroFactura=F('numero_factura'), valorImpuestos=F('valor_impuesto'),
                        baseImpuestos=F('base_impuesto'),

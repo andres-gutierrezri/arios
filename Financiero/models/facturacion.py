@@ -89,6 +89,8 @@ class FacturaEncabezado(models.Model, ModelDjangoExtensiones):
     forma_pago = models.SmallIntegerField(verbose_name='Forma de pago', null=False, blank=False, default=2)
     medio_pago = models.SmallIntegerField(verbose_name='Medio de pago', null=False, blank=False, default=1)
 
+    observaciones = models.TextField(verbose_name='Observaciones', max_length=1000, null=True, blank=True)
+
     def __str__(self):
         return 'Factura # {0}'.format(self.numero_factura)
 
