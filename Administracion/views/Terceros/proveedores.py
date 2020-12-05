@@ -363,13 +363,6 @@ class ProveedorSolicitudAprobarRechazar(AbstractEvaLoggedView):
         return redirect(reverse('Administracion:proveedor-solicitudes'))
 
 
-class ProveedorIndexView(AbstractEvaLoggedView):
-    def get(self, request):
-        proveedores = Tercero.objects.filter(tipo_tercero_id=TipoTercero.PROVEEDOR)
-        return render(request, 'Administracion/Tercero/Proveedor/index.html',
-                      {'proveedores': proveedores})
-
-
 class ProveedorModificarSolicitudView(AbstractEvaLoggedProveedorView):
     def post(self, request, id):
         try:

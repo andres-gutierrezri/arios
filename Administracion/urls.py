@@ -16,7 +16,7 @@ Including another URLconf
 
 from django.urls import path
 from Administracion.views import terceros, administracion, inicio_sesion, empresas, grupos_permisos, procesos
-from Administracion.views.Terceros import proveedores
+from Administracion.views.Terceros import proveedores, gestion_proveedores
 from Administracion.views.seleccion_empresa import SeleccionEmpresaModalView
 
 app_name = 'Administracion'
@@ -93,8 +93,10 @@ urlpatterns = [
          name='proveedor-solicitudes-perfil'),
     path('proveedor/solicitudes/<int:id>/aprobar-rechazar', proveedores.ProveedorSolicitudAprobarRechazar.as_view(),
          name='proveedor-solicitudes-aprobar-rechazar'),
-    path('proveedores/index', proveedores.ProveedorIndexView.as_view(),
-         name='proveedor-administracion-index'),
     path('proveedor/solicitudes/<int:id>/modificar', proveedores.ProveedorModificarSolicitudView.as_view(),
          name='proveedor-solicitudes-modificar'),
+    path('proveedores/index', gestion_proveedores.ProveedorIndexView.as_view(),
+         name='proveedor-administracion-index'),
+    path('proveedores/<int:id>/cambiar-estado', gestion_proveedores.ActivarDesartivarProveedorView.as_view(),
+         name='proveedor-cambiar-estado'),
 ]
