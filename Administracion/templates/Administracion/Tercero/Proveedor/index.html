@@ -23,14 +23,31 @@
             <div class="row">
                 <div class="col-xl-12">
                     <div id="panel-1" class="panel">
+                        <div class="panel-hdr">
+                            <br>
+                            <form action="{% url 'Administracion:proveedor-administracion-index' %}" id="filtro-proveedores-form" method="get" class="needs-validation col-12" novalidate>
+                                <div class="row">
+                                    <div class="col-md-5">
+                                    </div>
+                                    <div class="col-md-2"  style="padding: 2px">
+                                        {% select_tag tipos_productos_servicios 'tipo_producto_servicio_' 'Seleccione una opción' required="" value=valor_tipo_producto_servicio onchange="cambioTipoProductoServicio('')" %}
+                                    </div>
+                                    <div class="col-md-2"  style="padding: 2px">
+                                        {% select_tag subtipos 'subtipo_producto_servicio_' 'Seleccione una opción' required="" value=valor_subtipo_producto_servicio onchange="cambioSubtipoProductoServicio('')" id_label=sl.nombre_subtipos %}
+                                    </div>
+                                    <div class="col-md-2"  style=" padding: 2px">
+                                        {% select_multiple_tag pro_serv 'producto_servicio_' 'producto_servicio_' 'Seleccione una opción' required="" value=valor_producto_servicio multiple=multiple id_label=sl.nombre_producto_servicio %}
+                                    </div>
+                                    <div class="col-md-1" style="float: right;">
+                                        <button id="filtrar" class="btn btn-primary btn-block">Filtrar</button>
+                                     </div>
+                                </div>
+                            </form>
+                        </div>
                         <div class="panel-container show">
                             <div class="panel-content">
                                     <div class="panel-group">
                                         <div class="panel-body">
-                                            <div class="form-group">
-                                                <div class="form-row">
-                                                 </div>
-                                             </div>
                                             <div class="table-responsive">
                                                 <table class="table table-bordered w-100" id="dataTable">
                                                     <thead>
@@ -49,10 +66,10 @@
                                                         {% for proveedor in proveedores %}
                                                             <tr>
                                                                 <td>{{ proveedor.nombre }}</td>
-                                                                <td>{{ proveedor.tipo_identificacion.sigla}} {{ solicitud.proveedor.identificacion}}</td>
-                                                                <td>{{ proveedor.ciudad | title }} - {{ solicitud.proveedor.ciudad.departamento | title }} - {{ solicitud.proveedor.ciudad.departamento.pais }}</td>
-                                                                <td>{{ proveedor.telefono_movil_principal }}</td>
-                                                                <td>{{ proveedor.telefono_movil_principal }}</td>
+                                                                <td>{{ proveedor.identificacion}}</td>
+                                                                <td>{{ proveedor.ubicacion }}</td>
+                                                                <td>{{ proveedor.telefono }}</td>
+                                                                <td>{{ proveedor.correo }}</td>
                                                                 <td>
                                                                     {% if proveedor.estado == True %}
                                                                     <span class="badge badge-primary">Activo</span>
@@ -62,7 +79,7 @@
                                                                 </td>
                                                                 <td>{{ proveedor.fecha_creacion|date:'Y-m-d' }}</td>
                                                                 <td>
-                                                                    <a class="far fa-2x fa-edit" {% if proveedor.estado == True %} href="javascript:cambiarEstadoProveedor('{{ proveedor.id }}', 'desactivar')" data-original-title="Desactivar" {% else %} href="javascript:cambiarEstadoProveedor('{{ proveedor.id }}', 'activar')" data-original-title="Activar" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
+                                                                    <a class="far fa-2x fa-edit" {% if proveedor.estado %} href="javascript:cambiarEstadoProveedor('{{ proveedor.id }}', 'desactivar')" data-original-title="Desactivar" {% else %} href="javascript:cambiarEstadoProveedor('{{ proveedor.id }}', 'activar')" data-original-title="Activar" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
                                                                 </td>
                                                             </tr>
                                                         {% endfor %}
@@ -86,6 +103,9 @@
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.export.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script>
     <script src="{% static 'Administracion/js/Tercero/proveedorIndex.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
+    <script src="{% static 'Administracion/js/Tercero/productosServicios.js' %}"></script>
     <script>
         $(document).ready(function() {
             iniciarTablaExportar([0, 1, 2, 3, 4, 5]);
