@@ -4,12 +4,12 @@
 function cambiarEstadoProveedor(idProveedor, opcion) {
     let titulo;
     let mensaje;
-    if (opcion === 'Activar'){
+    if (opcion === 'activar'){
         titulo = '¿Desea activar este proveedor?';
-        mensaje = 'Si lo activa, dejará de estar activo como proveedor.'
+        mensaje = 'Si lo activa, podrá estar disponible como proveedor.'
     }else{
         titulo = '¿Desea desactivar este proveedor?';
-        mensaje = 'Si lo desactiva, dejará de estar activo como proveedor.'
+        mensaje = 'Si lo desactiva, dejará de estar disponible como proveedor.'
     }
     Swal.fire({
         title: titulo,
