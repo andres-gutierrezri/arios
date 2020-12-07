@@ -68,16 +68,16 @@ def construir_lista_proveedores(ps):
             'fecha_creacion': ps.proveedor.fecha_creacion}
 
 
-class ActivarDesartivarProveedorView(AbstractEvaLoggedView):
+class ActivarDesactivarProveedorView(AbstractEvaLoggedView):
     def post(self, request, id):
         try:
             proveedor = Tercero.objects.get(id=id)
             proveedor.estado = False if proveedor.estado else True
             proveedor.save(update_fields=['estado'])
-
-            messages.success(request, 'Se ha eliminado la entidad correctamente')
+            texto = 'activado' if proveedor.estado else 'desactivado'
+            messages.success(request, 'Se ha ' + texto + ' el proveedor correctamente')
             return JsonResponse({"estado": "OK"})
 
         except IntegrityError:
             return JsonResponse({"estado": "error",
-                                 "mensaje": "Ha ocurrido un error al realizar la acción Vista"})
+                                 "mensaje": "Ha ocurrido un error al realizar la acción"})
