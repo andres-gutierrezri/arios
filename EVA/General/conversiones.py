@@ -25,6 +25,18 @@ def string_to_datetime(fecha_string: str) -> Optional[datetime]:
         return None
 
 
+def isostring_to_datetime(fecha_string: str) -> Optional[datetime]:
+    """
+    Convierte un string con una fecha en formato ISO a datetime.
+    :param fecha_string: string con formato "%Y-%m-%dT%H:%M:%S.%f%z"
+    :return: retorna el datetime en UTC, si falla la conversión retorna None.
+    """
+    try:
+        return datetime.strptime(fecha_string, "%Y-%m-%dT%H:%M:%S.%f%z").astimezone(pytz.timezone('UTC'))
+    except ValueError:
+        return None
+
+
 def string_to_date(fecha_string: str) -> Optional[date]:
     """
     Convierte un string a date

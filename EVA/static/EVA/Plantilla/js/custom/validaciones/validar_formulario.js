@@ -52,8 +52,17 @@ function validarLongitud(longitud, elemento){
 }
 
 function validarMinMaxInputMask(form) {
-    let valido = true;
     const inputs = form.getElementsByClassName('inputmask');
+    validarMinMaxInputMaskPorInput(inputs)
+}
+
+function limpiarFormulario(form) {
+    form.reset();
+    form.classList.remove('was-validated');
+}
+
+function validarMinMaxInputMaskPorInput(inputs) {
+    let valido = true;
     for(let i = 0; i < inputs.length; i++) {
         const valor = Number(inputs[i].inputmask.unmaskedvalue());
         if(valor < inputs[i].min || valor > inputs[i].max) {
@@ -68,9 +77,4 @@ function validarMinMaxInputMask(form) {
             inputs[i].setCustomValidity('');
     }
     return valido;
-}
-
-function limpiarFormulario(form) {
-    form.reset();
-    form.classList.remove('was-validated');
 }

@@ -166,3 +166,6 @@ EVA_PRIVATE_MEDIA = 'privado'
 # Por defecto se dejan las ip para el entorno de desarrollo.
 EVA_ACCESO_EXTERNO = os.environ.get('eva_acceso_externo', '127.0.0.1:8000')
 EVA_ACCESO_INTERNO = os.environ.get('eva_acceso_interno', '127.0.0.1:8000')
+
+EVA_RUTA_ARCHIVOS_FACTURA = os.environ.get('eva_ruta_archivos_factura', 'C:/AJAR/facelec/')
+EVA_URL_BASE_FACELEC = os.environ.get('eva_url_base_facelec', 'http://localhost:8080/api/facturacion/')

@@ -2,6 +2,9 @@
 
 let tablaItems;
 let cargandoBorrador = false;
+const inputObservaciones = $('#observaciones_id');
+let modificado = true;
+let observacionesModificado = false;
 class Factura
 {
     constructor() {
@@ -13,29 +16,29 @@ class Factura
         this.cantidadItems = 0;
         this.numeroFactura = 0;
         this.valorImpuestos = 0.00;
+        this.baseImpuestos = 0.00;
         this.porcentajeAdministracion = 0.00;
         this.porcentajeImprevistos = 0.00;
         this.porcentajeUtilidad = 0.00;
         this.amortizacion = 0.00;
+        this.idAmortizacion = '';
+        this.fechaAmortizacion = new Date();
         this.items = [];
         this.impuestos = [];
         this.total = 0.00;
-    }
-
-    valorXaPorcentaje(valor, porcentaje) {
-        return redondear2Decimales((valor * porcentaje) / 100.00);
+        this.observaciones = '';
     }
 
     get totalAdministracion() {
-        return(this.valorXaPorcentaje(this.subtotal, this.porcentajeAdministracion))
+        return(valorXaPorcentaje(this.subtotal, this.porcentajeAdministracion))
     }
 
     get totalImprevistos() {
-        return(this.valorXaPorcentaje(this.subtotal, this.porcentajeImprevistos))
+        return(valorXaPorcentaje(this.subtotal, this.porcentajeImprevistos))
     }
 
     get totalUtilidad() {
-        return(this.valorXaPorcentaje(this.subtotal, this.porcentajeUtilidad))
+        return(valorXaPorcentaje(this.subtotal, this.porcentajeUtilidad))
     }
 
     get isAplicaAIU() {
@@ -44,12 +47,12 @@ class Factura
             (this.porcentajeUtilidad != null && this.porcentajeUtilidad !== 0));
     }
 
-    agregarItem(tituloItem, descripcionItem, valorUnitario, cantidad, impuesto) {
-        const item = new ItemFactura(tituloItem, descripcionItem, valorUnitario, cantidad, impuesto );
+    agregarItem(tituloItem, descripcionItem, valorUnitario, cantidad, impuesto, unidadMedida) {
+        const item = new ItemFactura(tituloItem, descripcionItem, valorUnitario, cantidad, impuesto, this.getPorcentajeImpuesto(impuesto), unidadMedida );
         this.items.push(item);
         this.subtotal += item.valorTotal;
         this.cantidadItems++;
-        this.actualizarImpuesto(item.impuesto, item.valorTotal, true);
+        this.actualizarImpuesto(item, true);
         this.actualizarTotal();
         return(item);
     }
@@ -58,27 +61,36 @@ class Factura
          const item = this.items.splice(posicionItem, 1)[0];
          this.subtotal -= item.valorTotal;
          this.cantidadItems--;
-         this.actualizarImpuesto(item.impuesto, item.valorTotal, false);
+         this.actualizarImpuesto(item, false);
          this.actualizarTotal();
     }
 
-    actualizarImpuesto(id, valor, incrementa) {
-        const pos = this.impuestos.findIndex((value) => {
-            return value.id === id;
-        });
-        if(pos >= 0) {
-            if (incrementa)
-                this.impuestos[pos].base += valor;
-            else
-                this.impuestos[pos].base -= valor;
+    actualizarImpuesto(item, incrementa) {
+        let impuesto = this.impuestos.find( value => value.id === item.impuesto)
+
+        if(impuesto) {
+            if (incrementa) {
+                impuesto.base += item.valorTotal;
+                impuesto.valor += item.valorImpuesto;
+                this.valorImpuestos += item.valorImpuesto;
+                this.baseImpuestos += item.valorTotal;
+            }
+            else {
+                impuesto.base -= item.valorTotal;
+                impuesto.valor -= item.valorImpuesto;
+                this.valorImpuestos -= item.valorImpuesto;
+                this.baseImpuestos -= item.valorTotal;
+
+            }
+
         }
-        this.calcularTotalImpuestos();
+        //this.calcularTotalImpuestos();
     }
     calcularTotalImpuestos()
     {
         let total = 0.00;
         this.impuestos.forEach( impuesto => {
-            total += this.valorXaPorcentaje(impuesto.base, impuesto.porcentaje);
+            total += valorXaPorcentaje(impuesto.base, impuesto.porcentaje);
         });
 
         this.valorImpuestos = total;
@@ -95,8 +107,10 @@ class Factura
         this.actualizarTotal();
     }
 
-    setAmortizacion(amortizacion) {
+    setAmortizacion(amortizacion, id, fecha) {
        this.amortizacion = amortizacion;
+       this.idAmortizacion = id;
+       this.fechaAmortizacion = fecha;
        this.actualizarTotal();
     }
 
@@ -105,9 +119,20 @@ class Factura
         Object.assign(factura, jsonData);
         return factura;
     }
+    getPorcentajeImpuesto(id) {
+        let impuesto = this.impuestos.find( value => value.id === id)
+        return impuesto ? impuesto.porcentaje : 0;
+    }
 }
-
+let controls = {
+	leftArrow: '<i class="fal fa-angle-left" style="font-size: 1.25rem"></i>',
+	rightArrow: '<i class="fal fa-angle-right" style="font-size: 1.25rem"></i>'
+};
 let factura = new Factura();
+
+function valorXaPorcentaje(valor, porcentaje) {
+    return redondear2Decimales((valor * porcentaje) / 100.00);
+}
 
 $(document).ready(function () {
 
@@ -124,11 +149,33 @@ $(document).ready(function () {
         }
     );
 
+    inputObservaciones.blur(function (){
+        if(inputObservaciones.val() !== factura.observaciones){
+            factura.observaciones = inputObservaciones.val();
+            habilitarBotones(true, false);
+        } else {
+            habilitarBotones(observacionesModificado, !observacionesModificado);
+        }
+    });
+
+    inputObservaciones.focus(function (){
+        observacionesModificado = modificado;
+        habilitarBotones(true, false);
+    });
+
     configurarTablaDetalle();
     configurarFormularios();
     configurarBotones();
     cargaImpuestosEnFactura();
     cargarBorrador();
+
+    $('.fecha-control ').datepicker({
+		todayHighlight: true,
+		orientation: "bottom left",
+		templates: controls,
+		format: 'yyyy-mm-dd',
+		autoclose: true
+	});
 
 });
 
@@ -173,11 +220,16 @@ function configurarTablaDetalle() {
                     },
                     {
                         "targets": [2],
+                        "width": '10%',
+                        className: 'text-right'
+                    },
+                    {
+                        "targets": [3],
                         "width": '20%',
                          className: 'text-right'
                     },
                     {
-                        "targets": [3],
+                        "targets": [4],
                         "width": '20%',
                          className: 'text-right'
                     }],
@@ -235,19 +287,22 @@ function cerrarModalAgregarItem() {
     $(".modal-backdrop").remove();
 }
 
-function ItemFactura(titulo, descripcion, valorUnitario, cantidad, impuesto) {
+function ItemFactura(titulo, descripcion, valorUnitario, cantidad, impuesto, porcentajeImpuesto, unidadMedida) {
     this.titulo = titulo;
     this.descripcion = descripcion;
     this.valorUnitario = valorUnitario;
     this.cantidad = cantidad;
     this.impuesto = impuesto;
     this.valorTotal = valorUnitario * cantidad;
+    this.valorImpuesto = valorXaPorcentaje(this.valorTotal, porcentajeImpuesto);
+    this.unidadMedida = unidadMedida;
 }
 
 function getItemXaTabla(itemFactura) {
     return([
         `<b>${itemFactura.titulo}</b><br>${itemFactura.descripcion}`,
         numToDecimalStr(itemFactura.cantidad),
+        itemFactura.unidadMedida.descripcion,
         numToDecimalStr(itemFactura.valorUnitario),
         numToDecimalStr(itemFactura.valorTotal)
     ]);
@@ -261,8 +316,9 @@ function agregarItemFactura() {
     const cantidad = Number($('#cantidad_id').inputmask('unmaskedvalue'));
     const impuesto_seleccionado = $('#impuesto_select_id')[0].selectedOptions[0];
     const impuesto = impuesto_seleccionado.value !== '' ? JSON.parse(impuesto_seleccionado.value) : {id:0, porcentaje:0.00};
-
-    const itemFactura = factura.agregarItem(tituloItem, descripcionItem, valorUnitario, cantidad, impuesto.id);
+    const unidad_seleccionada = $('#unidad_medida_select_id')[0].selectedOptions[0];
+    const unidadMedida = unidad_seleccionada.value !== '' ? {id: unidad_seleccionada.value, descripcion: unidad_seleccionada.text} : {id:0, descripcion:''}
+    const itemFactura = factura.agregarItem(tituloItem, descripcionItem, valorUnitario, cantidad, impuesto.id, unidadMedida);
 
     tablaItems.row.add(getItemXaTabla(itemFactura)).node();
     tablaItems.draw(false);
@@ -284,9 +340,9 @@ function renderTotalFactura() {
 
 function getFilaTotales(nombre, valor) {
     if(nombre !== 'Subtotal')
-        return `<tr><td colspan="3" class="text-right"><b>${nombre}</b></td><td class="text-right">${numToDecimalStr(valor)}</td></tr>`;
+        return `<tr><td colspan="4" class="text-right"><b>${nombre}</b></td><td class="text-right">${numToDecimalStr(valor)}</td></tr>`;
     else
-        return `<tr><td colspan="3" class="text-right"><div class="btn-group dropup">
+        return `<tr><td colspan="4" class="text-right"><div class="btn-group dropup">
                         <button type="button" class="btn btn-warning rounded-circle btn-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fal fa-ellipsis-h-alt"></i>
                         </button>
@@ -295,7 +351,6 @@ function getFilaTotales(nombre, valor) {
                                 <div class="fs-lg text-truncate text-truncate-lg">Agregar</div>
                             </div>
                             <a class="dropdown-item" href="javascript:abrirModalAgregarAmortizacion();">Amortización</a>
-                            <a class="dropdown-item" href="javascript:abrirModalAgregarAIU();">AIU</a>
                         </div>
                     </div> <b>${nombre}</b></td><td class="text-right">${numToDecimalStr(valor)}
                 </td></tr>`
@@ -308,7 +363,8 @@ function armaTotales() {
 
     factura.impuestos.forEach(impuesto => {
         if(impuesto.base > 0)
-            totales.push({nombre:impuesto.nombre, valor: factura.valorXaPorcentaje(impuesto.base, impuesto.porcentaje)});
+            totales.push({nombre:impuesto.nombre, valor: impuesto.valor});
+            //totales.push({nombre:impuesto.nombre, valor: valorXaPorcentaje(impuesto.base, impuesto.porcentaje)});
     });
 
     if(factura.isAplicaAIU) {
@@ -352,7 +408,8 @@ function cerrarModalAgregarAIU() {
 
 function agregarAmortizacionFactura() {
 
-    factura.setAmortizacion(Number($('#valor_amortizacion_id').inputmask('unmaskedvalue')));
+    factura.setAmortizacion(Number($('#valor_amortizacion_id').inputmask('unmaskedvalue')),
+        $('#id_amortizacion_id').val(), new Date($('#fecha_amortizacion_id').val()));
 
     renderTotalFactura();
 }
@@ -372,6 +429,7 @@ function cargaImpuestosEnFactura() {
             let impuesto = JSON.parse(opcion.value);
             impuesto.nombre = opcion.text;
             impuesto.base = 0;
+            impuesto.valor = 0;
             impuestos.push(impuesto);
         }
     }
@@ -474,11 +532,13 @@ function renderDatosCliente(datos) {
     $('#cliente_direccion_id').val(datos.direccion);
     $('#cliente_telefono_id').val(datos.telefono);
     $('#cliente_fax_id').val(datos.fax);
+    $('#cliente_dv_id').val(datos.digito_verificacion);
 }
 
 function habilitarBotones(borrador, generar) {
     $('#btn_guardar_borrador').prop('disabled', !borrador);
     $('#btn_generar_factura').prop('disabled', !generar);
+    modificado = borrador;
 }
 
 function cargarBorrador() {
@@ -519,6 +579,7 @@ function renderBorrador() {
     });
     tablaItems.draw(false);
     renderTotalFactura();
+    inputObservaciones.val(factura.observaciones);
     const clienteSelect = $('#cliente_select_id');
     clienteSelect.val(factura.cliente).change();
     habilitarBotones(false, true);
