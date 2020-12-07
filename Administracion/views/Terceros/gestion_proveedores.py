@@ -51,7 +51,7 @@ class ProveedorIndexView(AbstractEvaLoggedView):
                        'valor_tipo_producto_servicio': tipo_producto_servicio,
                        'valor_subtipo_producto_servicio': subtipo_producto_servicio,
                        'valor_producto_servicio': valor_producto_servicio,
-                       'subtipos': subtipos, 'pro_serv': pro_serv})
+                       'subtipos': subtipos, 'pro_serv': pro_serv, 'productos_servicios': productos_servicios})
 
 
 def construir_lista_proveedores(ps):
