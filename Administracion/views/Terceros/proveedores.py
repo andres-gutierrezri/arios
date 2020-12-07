@@ -368,6 +368,7 @@ class ProveedorModificarSolicitudView(AbstractEvaLoggedProveedorView):
     def post(self, request, id):
         try:
             SolicitudProveedor.objects.filter(proveedor_id=id).update(estado=False)
+            Tercero.objects.filter(id=id).update(estado=False)
             Certificacion.objects.filter(tercero_id=id).update(estado=False)
 
             messages.success(self.request, 'Ahora puedes modificar tu perfil.')
