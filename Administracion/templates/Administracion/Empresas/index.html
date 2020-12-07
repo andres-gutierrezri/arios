@@ -49,7 +49,7 @@
                                                         {% for empresa in empresas %}
                                                             <tr>
                                                                 <td>{{ empresa.nombre }}</td>
-                                                                <td>{{ empresa.nit}}</td>
+                                                                <td>{{ empresa.nit}}-{{ empresa.digito_verificacion }}</td>
                                                                 <td><img class="empresa-logo-index" src="{{ empresa.logo.url }}" alt=""></td>
                                                                 <td>{% if empresa.estado == True %}
                                                                     <span class="badge badge-primary">Activo</span>

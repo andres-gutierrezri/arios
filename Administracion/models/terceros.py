@@ -3,11 +3,13 @@ from datetime import datetime
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import QuerySet
+from django.http import QueryDict
 
 from EVA.General.modelmanagers import ManagerGeneral
 from .models import Empresa, TipoIdentificacion, Persona
 from .divipol import CentroPoblado, Municipio
 from EVA.General.modeljson import ModelDjangoExtensiones
+from .enumeraciones import TipoPersona
 
 
 class TipoTercero(models.Model):
@@ -52,6 +54,7 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=True, blank=False)
     identificacion = models.CharField(max_length=20, verbose_name='Identificación', null=False, blank=False,
                                       unique=True)
+    digito_verificacion = models.SmallIntegerField(verbose_name='Digito de Verificación', null=True, blank=True)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
 
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, verbose_name='Empresa', null=True, blank=False)
@@ -67,6 +70,14 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     direccion = models.CharField(max_length=100, verbose_name='Dirección', null=True, blank=False)
     telefono = models.CharField(max_length=30, verbose_name='Teléfono', null=True, blank=False)
     fax = models.CharField(max_length=30, verbose_name='fax', null=True, blank=True)
+    tipo_persona = models.SmallIntegerField(verbose_name='Tipo de Persona', null=False, blank=False, default=1)
+    responsabilidades_fiscales = models.CharField(max_length=200, verbose_name='Responsabilidades Fiscales', null=True,
+                                                  blank=True)
+    regimen_fiscal = models.SmallIntegerField(verbose_name='Régimen Fiscal', null=True, blank=True)
+    tributos = models.CharField(max_length=10, verbose_name='Tributo', null=True, blank=True)
+    correo_facelec = models.EmailField(max_length=100, verbose_name='Correo Facturación Electrónica', null=True,
+                                       blank=True)
+    codigo_postal = models.CharField(max_length=6, verbose_name='Código Postal', null=True, blank=True)
     telefono_fijo_principal = models.CharField(max_length=30, verbose_name='Teléfono Fijo Principal',
                                                null=True, blank=True)
     telefono_fijo_auxiliar = models.CharField(max_length=30, verbose_name='Teléfono Fijo auxiliar',
@@ -100,7 +111,7 @@ class Tercero(models.Model, ModelDjangoExtensiones):
             return Empresa.get_default().to_dict()
 
     @staticmethod
-    def from_dictionary(datos: dict) -> 'Tercero':
+    def from_dictionary(datos: QueryDict) -> 'Tercero':
         """
         Crea una instancia de Tercero con los datos pasados en el diccionario.
         :param datos: Diccionario con los datos para crear el tercero.
@@ -118,7 +129,17 @@ class Tercero(models.Model, ModelDjangoExtensiones):
         tercero.telefono = datos.get('telefono', '')
         tercero.fax = datos.get('fax', '')
         tercero.direccion = datos.get('direccion', '')
-
+        tercero.digito_verificacion = datos.get('digito_verificacion')
+        if int(tercero.tipo_tercero_id) == TipoTercero.CLIENTE:
+            tercero.tipo_persona = datos.get('tipo_persona')
+            tercero.regimen_fiscal = datos.get('regimen_fiscal')
+            responsabilidades = datos.getlist('responsabilidades')
+            tercero.responsabilidades_fiscales = ';'.join(responsabilidades) if responsabilidades else ''
+            tercero.tributos = datos.get('tributo')
+            tercero.correo_facelec = datos.get('correo')
+            tercero.codigo_postal = datos.get('codigo_postal')
+        else:
+            tercero.tipo_persona = TipoPersona.JURIDICA
         return tercero
 
 
