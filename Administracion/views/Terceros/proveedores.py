@@ -318,11 +318,12 @@ class PerfilProveedorSolicitud(AbstractEvaLoggedView):
     def get(self, request, id):
         proveedor = Tercero.objects.get(id=id)
         datos_proveedor = generar_datos_proveedor(proveedor)
+        solicitud_activa = SolicitudProveedor.objects.filter(proveedor=proveedor, estado=True)
 
         opciones = datos_proveedor['opciones']
         return render(request, 'Administracion/Tercero/Proveedor/perfil.html',
                       {'opciones': opciones, 'tipo_nit': proveedor.tipo_identificacion.tipo_nit,
-                       'solicitud_proveedor': proveedor})
+                       'solicitud_proveedor': proveedor, 'solicitud_activa': solicitud_activa})
 
 
 APROBADO = 1
