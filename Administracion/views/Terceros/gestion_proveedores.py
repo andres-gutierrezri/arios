@@ -24,7 +24,12 @@ class ProveedorIndexView(AbstractEvaLoggedView):
             for sl in producto_servicio_filtro:
                 for ps in productos_servicios:
                     if int(sl) == ps.producto_servicio_id:
-                        lista_proveedores.append(construir_lista_proveedores(ps))
+                        existe = False
+                        for ls in lista_proveedores:
+                            if ls['id'] == ps.proveedor.id:
+                                existe = True
+                        if not existe:
+                            lista_proveedores.append(construir_lista_proveedores(ps))
 
                 proveedores.filter(producto_servicio_id=sl)
 
