@@ -1,5 +1,9 @@
+import json
+
 from django.db import models
 from django.db.models import QuerySet, F
+
+from EVA.General.jsonencoders import AriosJSONEncoder
 
 
 class ManagerGeneral(models.Manager):
@@ -19,6 +23,12 @@ class ManagerGeneral(models.Manager):
 
     def get_xa_select_inactivos(self) -> QuerySet:
         return self.get_x_estado(False, True)
+
+    def get_xa_select_activos_like_json(self) -> json:
+        datos = []
+        for dt in self.get_x_estado(True, True):
+            datos.append({'campo_valor': dt['campo_valor'], 'campo_texto': dt['campo_texto']})
+        return json.dumps(datos, cls=AriosJSONEncoder)
 
     def get_x_estado(self, estado: bool = None, xa_select: bool = False) -> QuerySet:
         filtro = {}

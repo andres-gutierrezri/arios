@@ -54,7 +54,11 @@
                                                 {% for tercero in terceros %}
                                                     <tr>
                                                         <td>{{ tercero.nombre }}</td>
-                                                        <td>{{ tercero.identificacion}}</td>
+                                                        {% if 'NIT' in tercero.tipo_identificacion.sigla %}
+                                                            <td>{{ tercero.identificacion}}-{{ tercero.digito_verificacion }}</td>
+                                                        {% else %}
+                                                            <td>{{ tercero.identificacion}}</td>
+                                                        {% endif %}
                                                         <td>{{ tercero.tipo_identificacion}}</td>
                                                         <td>
                                                             {% if tercero.estado == True %}

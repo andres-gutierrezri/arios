@@ -1,0 +1,26 @@
+{% load static %}
+{% load eva_tags %}
+<form id="form_amparo" novalidate>
+    <div class="modal fade"  tabindex="-1" id="agregar_amparo_modal" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header p-b-0">
+                    <h4 class="modal-title">
+                        Amparos
+                    </h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                    </button>
+                </div>
+                <div class="modal-body p-b-0">
+                    <div id="contenedor"></div>
+                    <div id="contenedor_inicial"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger btn-pills" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary btn-pills guardarAmparo">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

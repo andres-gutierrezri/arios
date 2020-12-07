@@ -5,9 +5,15 @@
     {% if texto_seleccion %}
         <option {% if primer_valor %}{% if primer_campo_valor %} value="{{ primer_campo_valor }}" {% else %} value="0" {% endif %} {% else %}value=""{% endif %}>{{ texto_seleccion }}</option>
     {% endif %}
-    {% for item in lista %}
-        <option value="{{ item.campo_valor }}" {% if item.campo_valor == valor %} selected {% endif %}>{{ item.campo_texto }}</option>
-    {% endfor %}
+    {% if is_tupla %}
+        {% for item in lista %}
+            <option value="{{ item.0 }}" {% if item.0 == valor %} selected {% endif %}>{{ item.1 }}</option>
+        {% endfor %}
+    {% else %}
+        {% for item in lista %}
+            <option value="{{ item.campo_valor }}" {% if item.campo_valor == valor %} selected {% endif %}>{{ item.campo_texto }}</option>
+        {% endfor %}
+    {% endif %}
 </select>
 {% if mensaje_validacion %}
 <div class="invalid-tooltip {% if modal %}invalid-tooltip-modal{% endif %}">{{ mensaje_validacion }}</div>

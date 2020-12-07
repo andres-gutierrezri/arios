@@ -5,12 +5,13 @@ from django.db import IntegrityError
 from django.http import JsonResponse
 from django.urls import reverse
 
+from Administracion.enumeraciones import RegimenFiscal, Tributos, ResponsabilidadesFiscales, TipoPersona
 from Administracion.utils import get_id_empresa_global
 from EVA.views.index import AbstractEvaLoggedView
 from datetime import datetime
 from django.shortcuts import render, redirect
 
-from Administracion.models import Empresa
+from Administracion.models import Empresa, Departamento, Municipio
 from Notificaciones.models.models import EventoDesencadenador
 from Notificaciones.views.views import crear_notificacion_por_evento
 from TalentoHumano.models import Colaborador
@@ -66,7 +67,8 @@ class EmpresaEditarView(AbstractEvaLoggedView):
         return render(request, 'Administracion/Empresas/crear-editar.html', datos_xa_render(self.OPCION, empresa))
 
     def post(self, request, id):
-        update_fields = ['nombre', 'nit', 'estado']
+        update_fields = ['nombre', 'nit', 'estado', 'direccion', 'municipio', 'digito_verificacion', 'tipo_persona',
+                         'regimen_fiscal', 'responsabilidades_fiscales', 'tributos', 'codigo_postal']
 
         empresa = Empresa.from_dictionary(request.POST)
         empresa.id = int(id)
@@ -117,8 +119,20 @@ def datos_xa_render(opcion: str, empresa: Empresa = None) -> dict:
     :param empresa: Es opcional si se requiere pre cargar datos.
     :return: Un diccionario con los datos.
     """
+    departamentos = Departamento.objects.get_xa_select_activos()
 
-    datos = {'empresa': empresa, 'opcion': opcion, 'menu_actual': 'empresas'}
+    datos = {'empresa': empresa, 'opcion': opcion, 'menu_actual': 'empresas',
+             'departamentos': departamentos,
+             'tipos_persona': TipoPersona.choices, 'regimenes_fiscales': RegimenFiscal.choices,
+             'responsabilidades': ResponsabilidadesFiscales.choices, 'tributos': Tributos.choices}
+
+    if empresa:
+        municipios = Municipio.objects.get_xa_select_activos()\
+            .filter(departamento_id=empresa.municipio.departamento_id)
+
+        datos['municipios'] = municipios
+        datos['responsabilidades_empresa'] = empresa.responsabilidades_fiscales.split(';')\
+            if empresa.responsabilidades_fiscales else []
 
     return datos
 

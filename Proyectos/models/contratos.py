@@ -155,6 +155,7 @@ class TipoGarantia(models.Model, ModelDjangoExtensiones):
     nombre = models.CharField(verbose_name="Nombre", max_length=50, blank=False, null=False)
     descripcion = models.CharField(verbose_name="Descripción", max_length=50, blank=False, null=False)
     aplica_valor_smmlv = models.BooleanField(verbose_name="Aplica Valor en SMMLV", blank=False, null=False)
+    aplica_amparos = models.BooleanField(verbose_name="Aplica Amparos", blank=False, null=False)
 
     def __str__(self):
         return self.nombre
@@ -180,3 +181,32 @@ class ContratoGarantia(models.Model, ModelDjangoExtensiones):
     class Meta:
         verbose_name = 'Contrato Garantía'
         verbose_name_plural = 'Contratos Garantías'
+
+
+class Amparos(models.Model, ModelDjangoExtensiones):
+    objects = ManagerGeneral()
+    nombre = models.CharField(verbose_name="Nombre", blank="False", null="False", max_length=100)
+    descripcion = models.CharField(verbose_name="Desripción", blank="False", null="False", max_length=100)
+    estado = models.BooleanField(verbose_name="Estado", blank="False", null="False")
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name = 'Amparo'
+        verbose_name_plural = 'Amparos'
+
+
+class GarantiaAmparos(models.Model, ModelDjangoExtensiones):
+    garantia = models.ForeignKey(ContratoGarantia, on_delete=models.DO_NOTHING, verbose_name="Contrato garantía",
+                                 blank=False, null=False)
+    amparo = models.ForeignKey(Amparos, on_delete=models.DO_NOTHING, verbose_name="Contrato garantía",
+                               blank=False, null=False)
+    limite_asegurado = models.CharField(verbose_name="Límite asegurado", blank="False", null="False", max_length=100)
+
+    def __str__(self):
+        return 'Amparo {0} del contrato: {1}'.format(self.amparo, self.garantia.contrato)
+
+    class Meta:
+        verbose_name = 'Amparo de Garantía'
+        verbose_name_plural = 'Amparos de Garantías'

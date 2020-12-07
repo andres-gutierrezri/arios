@@ -2,10 +2,15 @@
     <label for="{{ nombre }}_select_id" {% if id_label %}id="{{ id_label }}_label_id"{% endif %}>{{ texto_label }}</label>
 {% endif %}
 <select class="select2 form-control" id="{{ id }}" name="{{ nombre }}" {{ propiedades }}>
-
-    {% for item in lista %}
-        <option value="{{ item.campo_valor }}" {% for vlr in valor %} {% if vlr == item.campo_valor %} selected {% endif %} {% endfor %}>{{ item.campo_texto }}</option>
-    {% endfor %}
+    {% if is_tupla %}
+        {% for item in lista %}
+            <option value="{{ item.0 }}" {% for vlr in valor %} {% if vlr == item.0 %} selected {% endif %} {% endfor %}>{{ item.1 }}</option>
+        {% endfor %}
+    {% else %}
+        {% for item in lista %}
+            <option value="{{ item.campo_valor }}" {% for vlr in valor %} {% if vlr == item.campo_valor %} selected {% endif %} {% endfor %}>{{ item.campo_texto }}</option>
+        {% endfor %}
+    {% endif %}
 </select>
 {% if mensaje_validacion %}
 <div class="invalid-tooltip {% if modal %}invalid-tooltip-modal{% endif %}">{{ mensaje_validacion }}</div>

@@ -146,7 +146,7 @@
                                         {% if forma_pago.anticipo %}<br>- <b>Anticipo: </b>{{ forma_pago.anticipo }}%{% endif %}
                                         {% if forma_pago.actas_parciales %}<br>- <b>Actas Parciales: </b>{{ forma_pago.actas_parciales }}%{% endif %}
                                         {% if forma_pago.liquidacion %}<br>- <b>Liquidación: </b>{{ forma_pago.liquidacion }}%{% endif %}
-                                        {% if forma_pago.forma_pago == 0 %}<br>- <b>Satisfacción y Contraentrega: </b> 100%{% endif %}
+                                        {% if forma_pago.forma_pago == 0 %}<br>- <b>Contra Entrega y Satisfacción: </b> 100%{% endif %}
                                     </small>
                                     <small class="mt-0 mb-3 text-muted">
                                         <b>Vigencias: </b>
@@ -161,6 +161,8 @@
                             </div>
                         </div>
                     </div>
+                </div>
+                <div class="col-lg-12">
                     <div class="card mb-g">
                         <div class="row row-grid no-gutters">
                             <div class="col-12">
@@ -170,21 +172,45 @@
                                     </h2>
                                 </div>
                             </div>
-                            <div class="p-3">
+                            <div class="col-12 p-3">
                                 <h5>
                                     <small class="mt-0 mb-3 text-muted">
-                                        <b>Garantías: </b>
-                                        {% for gar in garantias %}
-                                            <br><b>Tipo: </b>{{ gar.tipo_garantia }}
-                                            {% if gar.tipo_garantia.aplica_valor_smmlv %}
-                                                <br><b>Valor Asegurado: </b> ${{ gar.porcentaje_asegurado }}
-                                            {% else %}
-                                                <br><b>Porcentaje Asegurado: </b>{{ gar.porcentaje_asegurado }}%
-                                            {% endif %}
-                                            <br><b>Vigencia: </b>{{ gar.vigencia }} Meses
-                                            <br><b>Extensiva: </b>{% if gar.extensiva %}Si{% else %}No{% endif %}
-                                            <br>
-                                        {% endfor %}
+                                        <div class="row">
+                                            {% for gar in garantias %}
+                                                <div class="col-lg-6">
+                                                <b>Garantía: </b>
+                                                <br><b>Tipo: </b>{{ gar.tipo_garantia }}
+                                                {% if gar.tipo_garantia.aplica_valor_smmlv %}
+                                                    <br><b>Valor SMMLV: </b> {{ gar.porcentaje_asegurado }}
+                                                {% else %}
+                                                    <br><b>Porcentaje Asegurado: </b>{{ gar.porcentaje_asegurado }}%
+                                                {% endif %}
+                                                {% if not gar.tipo_garantia.aplica_amparos_adiciones %}
+                                                    <br><b>Vigencia: </b>{{ gar.vigencia }} Meses
+                                                {% else %}
+                                                    <br><b>Vigencia: </b>Plazo de ejecución del contrato.
+                                                {% endif %}
+                                                <br><b>Extensiva: </b>{% if gar.extensiva %}Si{% else %}No{% endif %}
+                                                </div>
+                                                {% if not gar.tipo_garantia.aplica_amparos %}
+                                                    <div class="col-lg-6"></div>
+                                                    <div class="col-12"><br></div>
+                                                {% else %}
+                                                    <div class="col-lg-6">
+                                                        <b>Amparos y Límites: </b><br>
+                                                        {% for amparo in amparos %}
+                                                            {% if amparo.garantia == gar %}
+                                                                <b>Amparo: </b>{{ amparo.amparo }}
+                                                                <br><b>Límite Asegurado: </b>{{ amparo.limite_asegurado }}
+                                                                <br>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </div>
+                                                    <div class="col-12"><br></div>
+                                                {% endif %}
+                                                <br>
+                                            {% endfor %}
+                                        </div>
                                     </small>
                                 </h5>
                             </div>
