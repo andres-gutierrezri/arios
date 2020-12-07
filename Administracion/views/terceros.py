@@ -114,9 +114,10 @@ class TerceroDetalleView(AbstractEvaLoggedView):
     def get(self, request, id):
         try:
             tercero = Tercero.objects.get(id=id)
-            return JsonResponse({'estado': 'OK', 'datos': tercero.to_dict(campos=['id', 'identificacion',
-                                                                                  'direccion', 'telefono',
-                                                                                  'fax', 'correo'])})
+            return JsonResponse({'estado': 'OK', 'datos': tercero.
+                                to_dict(campos=['id', 'identificacion',
+                                                'direccion', 'telefono',
+                                                'fax', 'correo', 'digito_verificacion'])})
         except Tercero.DoesNotExist:
             return JsonResponse({"estado": "error", "mensaje": 'El cliente seleccionado no existe.'})
 

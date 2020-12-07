@@ -532,6 +532,7 @@ function renderDatosCliente(datos) {
     $('#cliente_direccion_id').val(datos.direccion);
     $('#cliente_telefono_id').val(datos.telefono);
     $('#cliente_fax_id').val(datos.fax);
+    $('#cliente_dv_id').val(datos.digito_verificacion);
 }
 
 function habilitarBotones(borrador, generar) {
