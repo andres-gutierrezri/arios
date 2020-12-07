@@ -20,7 +20,7 @@
         <div class="custom-file">
     {% endif %}
 
-    <input type="{{ tipo }}" id="{{ nombre }}_id" name="{{ nombre }}"  {% if is_fecha  %} value="{{ valor|date:'Y-m-d' }}" {% else %} value="{{ valor }}" {% endif %} {{ propiedades }}>
+    <input type="{{ tipo }}" id="{{ nombre }}_id" name="{{ nombre }}"  {% if is_fecha  %} value="{{ valor|date:'Y-m-d' }}" {% else %} value="{{ valor|default_if_none:'' }}" {% endif %} {{ propiedades }}>
 
     {% if tipo == 'file' %}
         <label class="custom-file-label" for="{{nombre}}_id">Seleccione un archivo</label>

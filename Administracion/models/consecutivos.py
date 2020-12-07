@@ -21,6 +21,11 @@ class TipoDocumento (models.Model):
     FACTURA = 1
     OFICIOS = 2
     CONTRATOS = 3
+    XML_FACTURA = 4
+    XML_NOTA_CREDITO = 5
+    XML_NOTA_DEBITO = 6
+    ZIP_ENVIO_DIAN = 7
+    XML_ATTACHED_DOCUMENT = 8
 
 
 class ConsecutivoDocumento (models.Model):
