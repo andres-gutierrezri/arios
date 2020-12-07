@@ -33,6 +33,9 @@ class ProveedorIndexView(AbstractEvaLoggedView):
             subtipos = SubtipoProductoServicio.objects.get_xa_select_activos().filter(es_servicio=es_servicio)
             pro_serv = ProductoServicio.objects.get_xa_select_activos()\
                 .filter(subtipo_producto_servicio__es_servicio=es_servicio)
+
+            tipo_producto_servicio = int(tipo_producto_servicio)
+            subtipo_producto_servicio = int(subtipo_producto_servicio)
         else:
             for pr in proveedores:
                 lista_proveedores.append(construir_lista_proveedores(pr))
@@ -45,8 +48,8 @@ class ProveedorIndexView(AbstractEvaLoggedView):
                       {'proveedores': lista_proveedores,
                        'menu_actual': ['proveedores', 'proveedores'],
                        'tipos_productos_servicios': tipos_productos_servicios,
-                       'valor_tipo_producto_servicio': int(tipo_producto_servicio),
-                       'valor_subtipo_producto_servicio': int(subtipo_producto_servicio),
+                       'valor_tipo_producto_servicio': tipo_producto_servicio,
+                       'valor_subtipo_producto_servicio': subtipo_producto_servicio,
                        'valor_producto_servicio': valor_producto_servicio,
                        'subtipos': subtipos, 'pro_serv': pro_serv})
 
