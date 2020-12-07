@@ -28,7 +28,7 @@ class Empresa(models.Model, ModelDjangoExtensiones):
     tributos = models.CharField(max_length=10, verbose_name='Tributo', null=True, blank=True)
     codigo_postal = models.CharField(max_length=10, verbose_name='Código Postal', null=True, blank=True)
     direccion = models.CharField(max_length=300, verbose_name='Dirección', null=True, blank=True)
-    municipio = models.ForeignKey(Municipio, verbose_name='Municipio', null=True, blank=True,
+    municipio = models.ForeignKey(Municipio, verbose_name='Municipio', null=False, blank=False,
                                   on_delete=models.DO_NOTHING)
 
     def __str__(self):
@@ -78,6 +78,15 @@ class Empresa(models.Model, ModelDjangoExtensiones):
         empresa.estado = datos.get('estado', '') == 'True'
         empresa.subempresa = datos.get('subempresa', 'False') == 'True'
         empresa.empresa_ppal_id = datos.get('empresa_ppal_id', '')
+        empresa.municipio_id = datos.get('municipio_id', '')
+        empresa.direccion = datos.get('direccion', '')
+        empresa.digito_verificacion = datos.get('digito_verificacion')
+        empresa.tipo_persona = datos.get('tipo_persona')
+        empresa.regimen_fiscal = datos.get('regimen_fiscal')
+        responsabilidades = datos.getlist('responsabilidades')
+        empresa.responsabilidades_fiscales = ';'.join(responsabilidades) if responsabilidades else ''
+        empresa.tributos = datos.get('tributo')
+        empresa.codigo_postal = datos.get('codigo_postal')
 
         return empresa
 
