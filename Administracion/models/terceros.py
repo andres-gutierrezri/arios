@@ -9,7 +9,7 @@ from EVA.General.modelmanagers import ManagerGeneral
 from .models import Empresa, TipoIdentificacion, Persona
 from .divipol import CentroPoblado, Municipio
 from EVA.General.modeljson import ModelDjangoExtensiones
-from .enumeraciones import TipoPersona
+from Administracion.enumeraciones import TipoPersona
 
 
 class TipoTercero(models.Model):
