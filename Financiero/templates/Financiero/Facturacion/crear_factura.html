@@ -6,6 +6,7 @@
 {% block styles %}
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/datagrid/datatables/datatables.bundle.css' %}">
 	<link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/bootstrap-datepicker/bootstrap-datepicker.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
 {% endblock styles%}
 
@@ -41,8 +42,11 @@
                                         <div class="col-sm-12 col-md-6 col-lg-6">
                                             {% select_tag terceros 'cliente' 'Seleccione el cliente' texto_label="Cliente:" requiered="" %}
                                         </div>
-                                        <div class="col-sm-12 col-md-6 col-lg-6">
+                                        <div class="col-sm-11 col-md-5 col-lg-5">
                                             {% input_text_tag 'cliente_nit' 'NIT:' readonly=""%}
+                                        </div>
+                                        <div class="col-sm-1 col-md-1 col-lg-1">
+                                            {% input_text_tag 'cliente_dv' 'DV:' readonly=""%}
                                         </div>
                                     </div>
                                 </div>
@@ -83,6 +87,7 @@
                                         <tr>
                                             <th>Descripción</th>
                                             <th>Cantidad</th>
+                                            <th>U/M</th>
                                             <th>Valor unitario</th>
                                             <th>Valor total</th>
                                         </tr>
@@ -92,15 +97,38 @@
                                     </tbody>
                                     <tfoot id="tableItemsFooter">
                                         <tr>
-                                            <td colspan="3" class="text-right"><b>SubTotal</b></td>
+                                            <td colspan="4" class="text-right"><b>SubTotal</b></td>
                                             <td class="text-right">0</td>
                                         </tr>
                                         <tr>
-                                            <td colspan="3" class="text-right"><b>Total</b></td>
+                                            <td colspan="4" class="text-right"><b>Total</b></td>
                                             <td class="text-right">0</td>
                                         </tr>
                                     </tfoot>
                                 </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xl-12">
+                    <div id="panel-observaciones" class="panel">
+                        <div class="panel-hdr">
+                            <h2>
+                                Observaciones
+                            </h2>
+                            <div class="panel-toolbar">
+                                <button class="btn btn-panel" data-action="panel-collapse" data-toggle="tooltip" data-offset="0,10" data-original-title="Collapse"></button>
+                            </div>
+                        </div>
+                        <div class="panel-container show">
+                            <div class="panel-content">
+                                <div class="form-row">
+                                    <div class="form-group col-12">
+                                        {% input_general_tag 'observaciones' texto_label="" type="textarea" placeholder="Ingrese aquí las observaciones si aplica." required="" minlength="15" maxlength="1000"%}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -126,6 +154,7 @@
     <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/inputmask/inputmask.bundle.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/inputmask.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/conversiones.js' %}"></script>
     <script src="{% static 'Financiero/js/Facturacion/formFactura.js' %}"></script>
 {% endblock scripts%}

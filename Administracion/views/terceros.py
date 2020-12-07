@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 
+from Administracion.enumeraciones import TipoPersona, RegimenFiscal, ResponsabilidadesFiscales, Tributos
 from Administracion.models import Tercero, TipoIdentificacion, TipoTercero, CentroPoblado, Empresa, Departamento, \
     Municipio
 from Administracion.utils import get_id_empresa_global
@@ -62,7 +63,9 @@ class TerceroEditarView(AbstractEvaLoggedView):
 
     def post(self, request, id):
         update_fields = ['nombre', 'identificacion', 'tipo_identificacion_id', 'estado',
-                         'fecha_modificacion', 'tipo_tercero_id', 'centro_poblado_id', 'telefono', 'fax', 'direccion']
+                         'fecha_modificacion', 'tipo_tercero_id', 'centro_poblado_id', 'telefono', 'fax', 'direccion',
+                         'digito_verificacion', 'tipo_persona', 'regimen_fiscal', 'responsabilidades_fiscales',
+                         'tributos', 'correo_facelec', 'codigo_postal']
 
         tercero = Tercero.from_dictionary(request.POST)
         tercero.empresa_id = get_id_empresa_global(request)
@@ -111,9 +114,10 @@ class TerceroDetalleView(AbstractEvaLoggedView):
     def get(self, request, id):
         try:
             tercero = Tercero.objects.get(id=id)
-            return JsonResponse({'estado': 'OK', 'datos': tercero.to_dict(campos=['id', 'identificacion',
-                                                                                  'direccion', 'telefono',
-                                                                                  'fax', 'correo'])})
+            return JsonResponse({'estado': 'OK', 'datos': tercero.
+                                to_dict(campos=['id', 'identificacion',
+                                                'direccion', 'telefono',
+                                                'fax', 'correo', 'digito_verificacion'])})
         except Tercero.DoesNotExist:
             return JsonResponse({"estado": "error", "mensaje": 'El cliente seleccionado no existe.'})
 
@@ -135,7 +139,9 @@ def datos_xa_render(opcion: str, tercero: Tercero = None) -> dict:
     departamentos = Departamento.objects.get_xa_select_activos()
 
     datos = {'empresas': empresas, 'tipos_identificacion': tipos_identificacion, 'tipo_terceros': tipo_terceros,
-             'departamentos': departamentos, 'opcion': opcion, 'menu_actual': 'terceros'}
+             'departamentos': departamentos, 'opcion': opcion, 'menu_actual': 'terceros',
+             'tipos_persona': TipoPersona.choices, 'regimenes_fiscales': RegimenFiscal.choices,
+             'responsabilidades': ResponsabilidadesFiscales.choices, 'tributos': Tributos.choices}
     if tercero:
         municipios = Municipio.objects.get_xa_select_activos()\
             .filter(departamento_id=tercero.centro_poblado.municipio.departamento_id)
@@ -145,6 +151,8 @@ def datos_xa_render(opcion: str, tercero: Tercero = None) -> dict:
         datos['municipios'] = municipios
         datos['centros_poblados'] = centros_poblados
         datos['tercero'] = tercero
+        datos['responsabilidades_tercero'] = tercero.responsabilidades_fiscales.split(';')\
+            if tercero.responsabilidades_fiscales else []
 
     return datos
 # endregion
