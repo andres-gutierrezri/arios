@@ -79,6 +79,7 @@
                                                                 </td>
                                                                 <td>{{ proveedor.fecha_creacion|date:'Y-m-d' }}</td>
                                                                 <td>
+                                                                    <a class="far fa-2x fa-eye" href="{% url 'Administracion:proveedor-solicitudes-perfil' proveedor.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ver Perfil"></a>
                                                                     <a class="far fa-2x fa-edit" {% if proveedor.estado %} href="javascript:cambiarEstadoProveedor('{{ proveedor.id }}', 'desactivar')" data-original-title="Desactivar" {% else %} href="javascript:cambiarEstadoProveedor('{{ proveedor.id }}', 'activar')" data-original-title="Activar" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
                                                                 </td>
                                                             </tr>
