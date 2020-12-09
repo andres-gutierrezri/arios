@@ -7,7 +7,8 @@ let nombreRazonSocial = $('#nombre_id');
 let divFechaConstitucion = $('#div_fecha_constitucion');
 let inputFechaConstitucion = $('#fecha_constitucion_id')
 let divInicioActividad = $('#div_inicio_actividad');
-let inputInicioActividad = $('#fecha_inicio_actividad_id')
+let inputInicioActividad = $('#fecha_inicio_actividad_id');
+let selectTipoPersona = $('#tipo_persona_select_id');
 
 let inputNombreRL = $('#nombre_rl_id');
 let selectTipoIdentificacionRL = $('#tipo_identificacion_rl_select_id');
@@ -23,6 +24,7 @@ let selectUbicacionMunicipio = $('#municipio_select_id');
 
 $(document).ready(function () {
     validarTipoIdentificacion();
+    validarTipoPersona();
 });
 
 selectRLPais.change(function (){
@@ -45,6 +47,28 @@ selectTipoIdentificacion.change(function (){
     validarTipoIdentificacion()
 });
 
+selectTipoPersona.change(function (){
+    validarTipoPersona();
+});
+
+function validarTipoPersona() {
+    if(selectTipoPersona.val() === '1'){
+        divFechaConstitucion.show();
+        inputFechaConstitucion.attr('required', 'true');
+        inputFechaConstitucion.removeAttr('hidden', 'true');
+        divInicioActividad.hide();
+        inputInicioActividad.removeAttr('required', 'true');
+        inputInicioActividad.attr('hidden', 'true');
+    }else{
+        divFechaConstitucion.hide();
+        inputFechaConstitucion.removeAttr('required', 'true');
+        inputFechaConstitucion.attr('hidden', 'true');
+        divInicioActividad.show();
+        inputInicioActividad.attr('required', 'true');
+        inputInicioActividad.removeAttr('hidden', 'true')
+    }
+}
+
 function validarTipoIdentificacion() {
     let tiposIdentificacion = JSON.parse($('#json_tipo_identificacion').val());
     tiposIdentificacion.forEach(function (obj) {
@@ -53,12 +77,6 @@ function validarTipoIdentificacion() {
                 divRepresentanteLegal.show();
                 nombreRazonSocial.prev("label").text('Razón Social');
                 nombreRazonSocial.attr('placeholder', 'Ingrese la razón social');
-                divFechaConstitucion.show();
-                inputFechaConstitucion.attr('required', 'true');
-                inputFechaConstitucion.removeAttr('hidden', 'true')
-                divInicioActividad.hide();
-                inputInicioActividad.removeAttr('required', 'true')
-                inputInicioActividad.attr('hidden', 'true')
 
                 inputNombreRL.attr('required', 'true');
                 inputNombreRL.removeAttr('hidden', 'true')
@@ -82,12 +100,6 @@ function validarTipoIdentificacion() {
             divRepresentanteLegal.hide();
             nombreRazonSocial.prev("label").text('Nombre');
             nombreRazonSocial.attr('placeholder', 'Ingrese el nombre')
-            divFechaConstitucion.hide();
-            inputFechaConstitucion.removeAttr('required', 'true');
-            inputFechaConstitucion.attr('hidden', 'true')
-            divInicioActividad.show();
-            inputInicioActividad.attr('required', 'true')
-            inputInicioActividad.removeAttr('hidden', 'true')
 
             inputNombreRL.removeAttr('required', 'true');
             inputNombreRL.attr('hidden', 'true')
