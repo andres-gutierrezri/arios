@@ -99,6 +99,9 @@
                                             <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
                                                 {% input_email_tag 'correo_auxiliar' 'Correo electrónico Auxiliar' placeholder="Ingrese el correo electrónico" maxlength="100" value=proveedor.correo_auxiliar mensaje_validacion='Por favor digite el correo electrónico auxiliar.' invalido=errores.email_auxiliar %}
                                             </div>
+                                            <div class="form-group col-md-6">
+                                                {% select_tag tipos_persona 'tipo_persona' 'Seleccione un tipo de persona' is_tupla=True texto_label="Tipo de Persona" value=proveedor.tipo_persona required="" mensaje_validacion='Por favor seleccione un tipo de persona.' invalido=errores.tipo_persona %}
+                                            </div>
                                             <div class="form-group col-md-6" id="div_inicio_actividad">
                                                 {% input_date_tag 'fecha_inicio_actividad' 'Fecha de Inicio de Actividad' placeholder="Seleccione una fecha"  autocomplete="off" required="" value=proveedor.fecha_inicio_actividad mensaje_validacion='Por favor seleccione una fecha.' invalido=errores.fecha_inicio_actividad %}
                                             </div>
