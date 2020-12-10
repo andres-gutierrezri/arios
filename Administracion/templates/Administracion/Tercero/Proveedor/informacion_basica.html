@@ -37,10 +37,25 @@
                                             <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
                                                 {% select_tag tipo_identificacion 'tipo_identificacion' 'Seleccione un tipo de identificación' texto_label="Tipo de identificación" value=proveedor.tipo_identificacion_id required="" mensaje_validacion='Por favor seleccione un tipo de identificación' invalido=errores.tipo_identificacion %}
                                             </div>
+                                            <div class="form-group {% if 'NIT' in proveedor.tipo_identificacion.sigla %} col-xl-3 col-lg-3 col-md-4 col-sm-4 {% else %} col-xl-4 col-lg-4 col-md-6 col-sm-6 {% endif %}">
+                                                {% input_text_tag 'identificacion' 'Identificación' placeholder='Ingrese el número de identificación' required='' maxlength='15' value=proveedor.identificacion mensaje_validacion='Por favor digite la identificación' invalido=errores.identificacion %}
+                                            </div>
+                                            {% if 'NIT' in proveedor.tipo_identificacion.sigla %}
+                                                <div class="form-group col-xl-1 col-lg-1 col-md-2 col-sm-2">
+                                                    {% input_number_tag 'digito_verificacion' 'DV' placeholder='Ingrese el DV' required='' min='0' max='9' value=proveedor.digito_verificacion mensaje_validacion='Por favor ingrese el digito de verificación' invalido=errores.digito_verificacion %}
+                                                </div>
+                                            {% endif %}
                                             <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                                                {% input_text_tag 'nit' 'NIT (Sin Dígito de Verificación)' placeholder="Ingrese el NIT"  maxlength="100" required="" value=proveedor.identificacion mensaje_validacion='Por favor ingrese el el nit.' invalido=errores.numero_contrato %}
+                                                {% select_tag tipos_persona 'tipo_persona' 'Seleccione un tipo de persona' is_tupla=True texto_label="Tipo de Persona" value=proveedor.tipo_persona required="" mensaje_validacion='Por favor seleccione un tipo de persona.' invalido=errores.tipo_persona %}
+                                            </div>
+                                            <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6" id="div_inicio_actividad">
+                                                {% input_date_tag 'fecha_inicio_actividad' 'Fecha de Inicio de Actividad' placeholder="Seleccione una fecha"  autocomplete="off" required="" value=proveedor.fecha_inicio_actividad mensaje_validacion='Por favor seleccione una fecha.' invalido=errores.fecha_inicio_actividad %}
+                                            </div>
+                                            <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6" id="div_fecha_constitucion">
+                                                {% input_date_tag 'fecha_constitucion' 'Fecha de Constitución' placeholder="Seleccione una fecha"  autocomplete="off" required="" value=proveedor.fecha_constitucion mensaje_validacion='Por favor seleccione una fecha.' invalido=errores.fecha_constitucion %}
                                             </div>
                                         </div>
+
                                         <div class="contenedor-con-borde representante-legal">
                                             <h4>Representante Legal</h4>
                                             <div class="form-row">
@@ -98,15 +113,6 @@
                                             </div>
                                             <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
                                                 {% input_email_tag 'correo_auxiliar' 'Correo electrónico Auxiliar' placeholder="Ingrese el correo electrónico" maxlength="100" value=proveedor.correo_auxiliar mensaje_validacion='Por favor digite el correo electrónico auxiliar.' invalido=errores.email_auxiliar %}
-                                            </div>
-                                            <div class="form-group col-md-6">
-                                                {% select_tag tipos_persona 'tipo_persona' 'Seleccione un tipo de persona' is_tupla=True texto_label="Tipo de Persona" value=proveedor.tipo_persona required="" mensaje_validacion='Por favor seleccione un tipo de persona.' invalido=errores.tipo_persona %}
-                                            </div>
-                                            <div class="form-group col-md-6" id="div_inicio_actividad">
-                                                {% input_date_tag 'fecha_inicio_actividad' 'Fecha de Inicio de Actividad' placeholder="Seleccione una fecha"  autocomplete="off" required="" value=proveedor.fecha_inicio_actividad mensaje_validacion='Por favor seleccione una fecha.' invalido=errores.fecha_inicio_actividad %}
-                                            </div>
-                                            <div class="form-group col-md-6" id="div_fecha_constitucion">
-                                                {% input_date_tag 'fecha_constitucion' 'Fecha de Constitución' placeholder="Seleccione una fecha"  autocomplete="off" required="" value=proveedor.fecha_constitucion mensaje_validacion='Por favor seleccione una fecha.' invalido=errores.fecha_constitucion %}
                                             </div>
                                         </div>
                                         <div class="form-row">
