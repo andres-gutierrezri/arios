@@ -7,6 +7,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
+from Administracion.enumeraciones import TipoPersona
 from Administracion.models import TipoIdentificacion, Pais, Tercero, Departamento, Municipio
 from Administracion.models.models import SubtipoProductoServicio, ProductoServicio
 from Administracion.models.terceros import ProveedorProductoServicio, TipoDocumentoTercero, DocumentoTercero, \
@@ -31,10 +32,11 @@ class PerfilProveedorView(AbstractEvaLoggedProveedorView):
 
         btn_enviar = True if total == 100 else False
         solicitud_activa = True if SolicitudProveedor.objects.filter(proveedor=proveedor, estado=True) else False
+        tipo_nit = True if proveedor.tipo_identificacion.sigla == 'NIT' else False
 
         return render(request, 'Administracion/Tercero/Proveedor/perfil.html',
                       {'opciones': opciones, 'total': total, 'btn_enviar': btn_enviar,
-                       'tipo_nit': proveedor.tipo_identificacion.tipo_nit, 'proveedor_id': proveedor.id,
+                       'tipo_nit': tipo_nit, 'proveedor_id': proveedor.id,
                        'solicitud_activa': solicitud_activa, 'perfil_activo': perfil_activo})
 
 
@@ -44,7 +46,7 @@ class PerfilInformacionBasicaView(AbstractEvaLoggedProveedorView):
                       datos_xa_render_informacion_basica(request))
 
     def post(self, request):
-        update_fields = ('nombre', 'tipo_identificacion_id', 'identificacion', 'ciudad', 'nombre_rl',
+        update_fields = ('nombre', 'tipo_identificacion_id', 'identificacion', 'ciudad', 'nombre_rl', 'tipo_persona',
                          'tipo_identificacion_rl', 'identificacion_rl', 'lugar_expedicion_rl', 'telefono_fijo_principal',
                          'telefono_movil_principal', 'telefono_fijo_auxiliar', 'telefono_movil_auxiliar',
                          'correo_principal', 'correo_auxiliar', 'fecha_inicio_actividad', 'fecha_constitucion')
@@ -70,6 +72,7 @@ class PerfilInformacionBasicaView(AbstractEvaLoggedProveedorView):
 
         proveedor.fecha_inicio_actividad = request.POST.get('fecha_inicio_actividad', '')
         proveedor.fecha_constitucion = request.POST.get('fecha_constitucion', '')
+        proveedor.tipo_persona = request.POST.get('tipo_persona', '')
 
         if not proveedor.fecha_inicio_actividad:
             proveedor.fecha_inicio_actividad = None
@@ -401,7 +404,7 @@ def datos_xa_render_informacion_basica(request):
     datos = {'tipo_identificacion': tipo_identificacion, 'tipo_identificacion_personas': tipo_identificacion_personas,
              'json_tipo_identificacion': json_tipo_identificacion, 'paises': paises, 'proveedor': proveedor,
              'departamentos': departamentos, 'municipios': municipios, 'departamentos_rl': departamentos_rl,
-             'municipios_rl': municipios_rl}
+             'municipios_rl': municipios_rl, 'tipos_persona': TipoPersona.choices}
     return datos
 
 
@@ -544,10 +547,13 @@ def generar_datos_informacion_basica(proveedor):
             {'nombre_campo': 'Teléfono Movil Auxiliar', 'valor_campo': proveedor.telefono_movil_auxiliar},
             {'nombre_campo': 'Correo Electrónico Principal', 'valor_campo': proveedor.correo_principal},
             {'nombre_campo': 'Correo Electrónico Auxiliar', 'valor_campo': proveedor.correo_auxiliar},
-            {'nombre_campo': 'Fecha de Inicio de Actividad', 'validar': True, 'tipo_nit': False, 'valor_campo':
-                datetime_to_string(proveedor.fecha_inicio_actividad) if proveedor.fecha_inicio_actividad else ''},
-            {'nombre_campo': 'Fecha de Constitución', 'validar': True, 'tipo_nit': True, 'valor_campo':
-                datetime_to_string(proveedor.fecha_inicio_actividad) if proveedor.fecha_inicio_actividad else ''},
+            {'nombre_campo': 'Tipo de Persona', 'valor_campo': 'Jurídica' if proveedor.tipo_persona == 1 else 'Natural'},
+            {'nombre_campo': 'Fecha de Inicio de Actividad', 'tipo_persona': 2, 'validar': True, 'valor_campo':
+                datetime_to_string(proveedor.fecha_inicio_actividad) if proveedor.fecha_inicio_actividad else '',
+             'tipo_persona_pro': proveedor.tipo_persona},
+            {'nombre_campo': 'Fecha de Constitución', 'tipo_persona': 1, 'validar': True, 'valor_campo':
+                datetime_to_string(proveedor.fecha_inicio_actividad) if proveedor.fecha_inicio_actividad else '',
+             'tipo_persona_pro': proveedor.tipo_persona},
             {'nombre_campo': 'Fecha de Expedición del Documento del Representante Legal', 'valor_campo': fecha_exp_rl,
              'tipo_nit': True, 'validar': True},
             {'nombre_campo': 'Nombre del Representante Legal', 'valor_campo': proveedor.nombre_rl, 'validar': True,
