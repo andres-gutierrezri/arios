@@ -3,6 +3,7 @@ import os
 from sqlite3 import IntegrityError
 
 from django.contrib import messages
+from django.core.exceptions import ValidationError
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -49,13 +50,15 @@ class PerfilInformacionBasicaView(AbstractEvaLoggedProveedorView):
         update_fields = ('nombre', 'tipo_identificacion_id', 'identificacion', 'ciudad', 'nombre_rl', 'tipo_persona',
                          'tipo_identificacion_rl', 'identificacion_rl', 'lugar_expedicion_rl', 'telefono_fijo_principal',
                          'telefono_movil_principal', 'telefono_fijo_auxiliar', 'telefono_movil_auxiliar',
-                         'correo_principal', 'correo_auxiliar', 'fecha_inicio_actividad', 'fecha_constitucion')
+                         'correo_principal', 'correo_auxiliar', 'fecha_inicio_actividad', 'fecha_constitucion',
+                         'digito_verificacion')
 
         proveedor = Tercero.objects.get(usuario=request.user)
 
         proveedor.nombre = request.POST.get('nombre', '')
         proveedor.tipo_identificacion_id = request.POST.get('tipo_identificacion', '')
-        proveedor.identificacion = request.POST.get('nit', '')
+        proveedor.identificacion = request.POST.get('identificacion', '')
+        proveedor.digito_verificacion = request.POST.get('digito_verificacion', '')
         proveedor.ciudad_id = request.POST.get('municipio', '')
 
         proveedor.nombre_rl = request.POST.get('nombre_rl', '')
@@ -81,12 +84,18 @@ class PerfilInformacionBasicaView(AbstractEvaLoggedProveedorView):
             proveedor.fecha_constitucion = None
 
         try:
-            proveedor.save(update_fields=update_fields)
-            messages.success(self.request, 'Se ha guardado la información básica correctamente.')
-            return redirect(reverse('Administracion:proveedor-perfil'))
-        except:
+            proveedor.full_clean(exclude=['centro_poblado', 'direccion', 'telefono'])
+        except ValidationError as errores:
+            if 'identificacion' in errores.message_dict:
+                messages.error(self.request, 'El número de identificación ingresado ya se encuentra registrado')
+                return render(request, 'Administracion/Tercero/Proveedor/informacion_basica.html',
+                              datos_xa_render_informacion_basica(request, proveedor, errores.message_dict))
             messages.error(self.request, 'Ha ocurrido un error al actualizar la información.')
             return redirect(reverse('Administracion:proveedor-perfil'))
+
+        proveedor.save(update_fields=update_fields)
+        messages.success(self.request, 'Se ha guardado la información básica correctamente.')
+        return redirect(reverse('Administracion:proveedor-perfil'))
 
 
 class PerfilActividadesEconomicasView(AbstractEvaLoggedProveedorView):
