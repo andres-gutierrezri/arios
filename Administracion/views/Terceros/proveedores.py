@@ -547,6 +547,9 @@ def generar_datos_informacion_basica(proveedor):
         fecha_exp_rl = '{1} - {2} - {0}'.format(proveedor.lugar_expedicion_rl.departamento.pais.nombre.capitalize(),
                                                 proveedor.lugar_expedicion_rl.departamento.nombre.capitalize(),
                                                 proveedor.lugar_expedicion_rl.nombre.capitalize())
+    if 'NIT' in proveedor.tipo_identificacion.sigla:
+        proveedor.identificacion = '{0}-{1}'.format(proveedor.identificacion, proveedor.digito_verificacion)
+
     return [{'nombre_campo': 'Nombre', 'valor_campo': proveedor.nombre},
             {'nombre_campo': 'Tipo de Identificación', 'valor_campo': proveedor.tipo_identificacion.nombre},
             {'nombre_campo': 'Identificación', 'valor_campo': proveedor.identificacion},
