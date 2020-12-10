@@ -12,7 +12,7 @@ from Administracion.enumeraciones import TipoPersona
 from Administracion.models import TipoIdentificacion, Pais, Tercero, Departamento, Municipio
 from Administracion.models.models import SubtipoProductoServicio, ProductoServicio
 from Administracion.models.terceros import ProveedorProductoServicio, TipoDocumentoTercero, DocumentoTercero, \
-    SolicitudProveedor, TipoTercero, Certificacion
+    SolicitudProveedor, Certificacion
 from EVA.General import app_datetime_now
 from EVA.General.conversiones import datetime_to_string
 from EVA.views.index import AbstractEvaLoggedProveedorView, AbstractEvaLoggedView
@@ -389,12 +389,13 @@ class ProveedorModificarSolicitudView(AbstractEvaLoggedProveedorView):
             return JsonResponse({"estado": "ERROR", "mensaje": "Ha ocurrido un error al realizar la solicitud"})
 
 
-def datos_xa_render_informacion_basica(request):
+def datos_xa_render_informacion_basica(request, proveedor: Tercero = None, errores=None):
     tipo_identificacion = TipoIdentificacion.objects.get_xa_select_activos()
     tipo_identificacion_personas = TipoIdentificacion.objects.get_xa_select_personas_activos()
     json_tipo_identificacion = TipoIdentificacion.objects.get_activos_like_json()
     paises = Pais.objects.get_xa_select_activos()
-    proveedor = Tercero.objects.get(usuario=request.user)
+    if not proveedor:
+        proveedor = Tercero.objects.get(usuario=request.user)
 
     departamentos = ''
     municipios = ''
@@ -413,7 +414,7 @@ def datos_xa_render_informacion_basica(request):
     datos = {'tipo_identificacion': tipo_identificacion, 'tipo_identificacion_personas': tipo_identificacion_personas,
              'json_tipo_identificacion': json_tipo_identificacion, 'paises': paises, 'proveedor': proveedor,
              'departamentos': departamentos, 'municipios': municipios, 'departamentos_rl': departamentos_rl,
-             'municipios_rl': municipios_rl, 'tipos_persona': TipoPersona.choices}
+             'municipios_rl': municipios_rl, 'tipos_persona': TipoPersona.choices, 'errores': errores}
     return datos
 
 
