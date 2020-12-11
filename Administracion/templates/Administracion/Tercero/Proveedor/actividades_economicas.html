@@ -29,8 +29,6 @@
                                 <div class="panel-body">
                                     <form action="{% url 'Administracion:proveedor-perfil-actividades-economicas' %}" id="actividades-economicas-form" method="post" class="needs-validation" novalidate>
                                         {% csrf_token %}
-                                        <input hidden value="{{ json_tipo_identificacion }}" id="json_tipo_identificacion">
-                                        <input hidden value="{{ datos_regimenes }}" id="json_datos_regimenes">
                                         <div class="form-row">
                                             <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
                                                 {% select_tag actividades_economicas 'actividad_principal' 'Seleccione una actividad' texto_label="Actividad Principal" required="" value=proveedor.actividad_principal_id  mensaje_validacion='Por favor seleccione una actividad' %}
@@ -67,7 +65,8 @@
                                                     {% input_text_tag 'contribuyente_iyc' 'Contribuyente Industria y Comercio' placeholder="Ingrese un valor"  maxlength="100" value=proveedor.contribuyente_iyc mensaje_validacion='Por favor ingrese el el nit.' invalido=errores.numero_contrato %}
                                                 </div>
                                             </div>
-                                            <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6 entidad_publica">
+                                            {% if entidad_publica %}
+                                            <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
                                                 <div class="custom-control custom-checkbox">
                                                     <input type="checkbox" class="custom-control-input" id="check_entidad_publica_id" name="entidad_publica" {% if proveedor.entidad_publica %}checked{% endif %}>
                                                     <label class="custom-control-label" for="check_entidad_publica_id">Entidad Pública</label>
@@ -76,6 +75,7 @@
                                                     {% select_tag entidades_publicas 'entidad_publica' 'Seleccione un opción' texto_label="Entidad Pública" value=proveedor.entidad_publica mensaje_validacion='Por favor seleccione un departamento' %}
                                                 </div>
                                             </div>
+                                            {% endif %}
                                             <div class="form-group col-md-12">
                                                 {% input_textarea_tag 'bienes_servicios' 'Bienes o Servicios que Ofrece' placeholder="Describa los bienes o servicios que ofrece" maxlength="500" required="" value=proveedor.bienes_servicios mensaje_validacion='Por favor ingrese el objeto del contrato.' invalido=errores.objeto_del_contrato %}
                                             </div>
