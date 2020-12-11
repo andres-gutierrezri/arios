@@ -245,7 +245,7 @@ class PerfilDocumentosView(AbstractEvaLoggedProveedorView):
     def get(self, request):
         proveedor = Tercero.objects.get(usuario=request.user)
 
-        if proveedor.tipo_identificacion.tipo_nit:
+        if proveedor.tipo_persona == PERSONA_JURIDICA:
             documentos = DocumentoTercero.objects.filter(tercero=proveedor, tipo_documento__aplica_juridica=True)
         else:
             documentos = DocumentoTercero.objects.filter(tercero=proveedor, tipo_documento__aplica_natural=True)
@@ -418,10 +418,15 @@ def datos_xa_render_informacion_basica(request, proveedor: Tercero = None, error
     return datos
 
 
+PERSONA_JURIDICA = 1
+PERSONA_NATURAL = 2
+
+
 def datos_xa_render_actividades_economicas(request):
-    proveedor = ProveedorActividadEconomica.objects.filter(proveedor__usuario=request.user)
-    if proveedor:
-        proveedor = proveedor.first()
+    proveedor = Tercero.objects.get(usuario=request.user)
+    proveedor_actec = ProveedorActividadEconomica.objects.filter(proveedor=proveedor)
+    if proveedor_actec:
+        proveedor_actec = proveedor_actec.first()
     actividades_economicas = ActividadEconomica.objects.get_xa_select_actividades_con_codigo()
     regimenes = Regimen.objects.get_xa_select_activos()
     tipos_contribuyente = TipoContribuyente.objects.get_xa_select_activos()
@@ -430,9 +435,12 @@ def datos_xa_render_actividades_economicas(request):
                           {'campo_valor': '2', 'campo_texto': 'Departamental'},
                           {'campo_valor': '3', 'campo_texto': 'Municipal'}]
 
+    entidad_publica = True if PERSONA_JURIDICA == proveedor.tipo_persona else False
+
     datos = {'actividades_economicas': actividades_economicas, 'regimenes': regimenes,
              'tipos_contribuyente': tipos_contribuyente, 'datos_regimenes': datos_regimenes,
-             'entidades_publicas': entidades_publicas, 'proveedor': proveedor}
+             'entidades_publicas': entidades_publicas, 'proveedor': proveedor_actec,
+             'entidad_publica': entidad_publica}
     return datos
 
 
@@ -502,7 +510,7 @@ def datos_xa_render_productos_servicios(request):
 
 def datos_xa_render_documentos(request, documento: DocumentoTercero = None):
     proveedor = Tercero.objects.get(usuario=request.user)
-    if proveedor.tipo_identificacion.tipo_nit:
+    if proveedor.tipo_persona == PERSONA_JURIDICA:
         tipos_documentos = TipoDocumentoTercero.objects.get_xa_select_activos_aplica_juridica()
     else:
         tipos_documentos = TipoDocumentoTercero.objects.get_xa_select_activos_aplica_natural()
@@ -521,7 +529,7 @@ def datos_xa_render_documentos(request, documento: DocumentoTercero = None):
 
 
 def verificar_documentos_proveedor(proveedor, documentos):
-    if proveedor.tipo_identificacion.tipo_nit:
+    if proveedor.tipo_persona == PERSONA_JURIDICA:
         tipos_documentos = TipoDocumentoTercero.objects.filter(aplica_juridica=True)
     else:
         tipos_documentos = TipoDocumentoTercero.objects.filter(aplica_natural=True)
@@ -638,6 +646,10 @@ def generar_datos_proveedor(proveedor):
     entidades_bancarias = generar_datos_entidades_bancarias(proveedor)
     bienes_servicios = generar_datos_bienes_servicios(proveedor)
     documentos = generar_datos_documentos(proveedor)
+    if proveedor.tipo_persona == PERSONA_JURIDICA:
+        lista_documentos = len(TipoDocumentoTercero.objects.filter(aplica_juridica=True))
+    else:
+        lista_documentos = len(TipoDocumentoTercero.objects.filter(aplica_juridica=True))
 
     total = 0
     total = total + 10 if proveedor.ciudad else total
@@ -645,7 +657,7 @@ def generar_datos_proveedor(proveedor):
     total = total + 20 if actividades_economicas else total
     total = total + 20 if entidades_bancarias else total
     total = total + 20 if bienes_servicios else total
-    total = total + 20 if documentos else total
+    total = total + 20 if len(documentos) == lista_documentos else total
 
     opciones = [{'id': 1, 'nombre': 'Información Básica',
                  'url': '/administracion/proveedor/perfil/informacion-basica',
