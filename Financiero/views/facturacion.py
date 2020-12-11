@@ -279,7 +279,7 @@ class FacturaCrearView(AbstractEvaLoggedView):
 
             email = EmailMessage(asunto,  plantilla.render(info_factura), from_email,
                                  [info_factura['tercero__correo_facelec']],
-                                 ['asesorsistemas@arios-ing.com'])
+                                 ['contaduria@arios-ing.com'])
             email.attach_file(ruta_adjunto)
             email.content_subtype = "html"
             valor = email.send()
@@ -437,7 +437,7 @@ class FacturaAnularView(AbstractEvaLoggedView):
 
             email = EmailMessage(asunto,  plantilla.render(info_factura), from_email,
                                  [info_factura['tercero__correo_facelec']],
-                                 ['asesorsistemas@arios-ing.com'])
+                                 ['contaduria@arios-ing.com'])
             email.attach_file(ruta_adjunto)
             email.content_subtype = "html"
             valor = email.send()
