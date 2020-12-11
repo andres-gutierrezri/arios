@@ -57,11 +57,14 @@
                                             <td>{{ factura.tercero.nombre}}</td>
                                             <td>{{ factura.can_items }}</td>
                                             <td class="text-right">{{ factura.total_factura | intcomma:False }}</td>
-                                            <td><span class="badge badge-primary badge-pill">{{ factura.get_estado_display }}</span></td>
+                                            <td><span class="badge {% if factura.estado >= 30 %}badge-warning{% else %}badge-primary{% endif %} badge-pill">{{ factura.get_estado_display }}</span></td>
                                             <td>{{ factura.fecha_creacion |date:'Y-m-d' }}</td>
                                             <td>{{ factura.usuario_crea.username}}</td>
                                             <td>
                                                 <a class="far fa-2x fa-eye" href="{% url 'Financiero:factura-imprimir' factura.id %}"></a>
+                                                {% if perms.Financeiro.delete_facturaencabezado and factura.estado == 10 %}
+                                                  <a class="far fa-2x fa-times-circle color-danger-900" id="eliminar_{{ factura.id }}" href="javascript:void(0);"  onclick="anularFacturaModal({{ factura.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-danger-900"></div></div>' data-toggle="tooltip" title="" data-original-title="Anular"></a>
+                                                {% endif %}
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -111,14 +114,12 @@
         </div>
     </div>
 
-    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='administracion/terceros' %}
+    {% include 'Financiero/Facturacion/_anular_modal.html'%}
 {% endblock %}
 {% block scripts %}
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
-    <script src="{% static 'Administracion/js/confirmarEliminar.js' %}"></script>
-    <script src="{% static 'Administracion/js/select_divipol.js' %}"></script>
-    <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
-    <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script>
-    <script src="{% static 'Administracion/js/Tercero/exportar_tabla.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
+    <script src="{% static 'Financiero/js/Facturacion/indexFactura.js' %}"></script>
+
 {% endblock %}

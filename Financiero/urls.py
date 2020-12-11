@@ -17,7 +17,7 @@ Including another URLconf
 from django.urls import path
 
 from Financiero.views import PrincipalView, FacturaCrearView, FacturasView, FacturaEditarView, FacturaDetalleView, \
-    FacturaImprimirView, flujo_caja_general, FacturaEnviarCorreo
+    FacturaImprimirView, flujo_caja_general, FacturaEnviarCorreo, FacturaAnularView
 from Financiero.views import subtipos_movimientos, flujo_caja_contratos, categorias_movimientos, flujo_caja_procesos, \
     flujo_caja_consolidado
 
@@ -31,6 +31,7 @@ urlpatterns = [
     path('facturas/<int:id_factura>/json', FacturaDetalleView.as_view(), name='factura-detalle'),
     path('facturas/<int:id_factura>/imprimir', FacturaImprimirView.as_view(), name='factura-imprimir'),
     path('facturas/<int:id_factura>/enviar-correo', FacturaEnviarCorreo.as_view(), name='factura-enviar-correo'),
+    path('facturas/<int:id_factura>/anular', FacturaAnularView.as_view(), name='factura-anular'),
     path('subtipos-movimientos/', subtipos_movimientos.SubtiposMovimientosView.as_view(),
          name='subtipo-movimiento-index'),
     path('subtipos-movimientos/add', subtipos_movimientos.SubtipoMovimientoCrearView.as_view(),
