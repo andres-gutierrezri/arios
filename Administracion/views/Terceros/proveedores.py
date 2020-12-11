@@ -247,11 +247,16 @@ class PerfilDocumentosView(AbstractEvaLoggedProveedorView):
 
         if proveedor.tipo_persona == PERSONA_JURIDICA:
             documentos = DocumentoTercero.objects.filter(tercero=proveedor, tipo_documento__aplica_juridica=True)
+            tipos_documentos = TipoDocumentoTercero.objects.filter(aplica_juridica=True)
         else:
             documentos = DocumentoTercero.objects.filter(tercero=proveedor, tipo_documento__aplica_natural=True)
+            tipos_documentos = TipoDocumentoTercero.objects.filter(aplica_natural=True)
+
         agregar = verificar_documentos_proveedor(proveedor, documentos)
         return render(request, 'Administracion/Tercero/Proveedor/documentos.html', {'documentos': documentos,
-                                                                                    'agregar': agregar})
+                                                                                    'agregar': agregar,
+                                                                                    'n_documentos': len(documentos),
+                                                                                    'n_tipos': len(tipos_documentos)})
 
 
 class DocumentoCrearView(AbstractEvaLoggedProveedorView):

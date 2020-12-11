@@ -19,6 +19,9 @@
         <div class="header">
             <h1 class="header-title">
                 <i class='fal fa-file-alt'></i> Documentos <span class='fw-300'></span><a class="far fa-arrow-circle-left"  href="{% url 'Administracion:proveedor-perfil' %}" data-toggle="tooltip" title="" data-original-title="Volver"></a>
+                <div style="float: right">
+                    {% if  n_documentos == n_tipos %}Documentos Completos{% else %}{{ n_documentos }} de {{ n_tipos }} Documentos Cargados{% endif %}
+                </div>
                 <br>
                 <br>
             </h1>
