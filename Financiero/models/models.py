@@ -125,10 +125,6 @@ class ProveedorActividadEconomica(models.Model):
                                              related_name='proveedor_actividad_secundaria')
     otra_actividad = models.ForeignKey(ActividadEconomica, on_delete=models.DO_NOTHING, null=True, blank=True,
                                        verbose_name='Otra Actividad', related_name='proveedor_otra_atividad')
-    regimen = models.ForeignKey(Regimen, on_delete=models.DO_NOTHING, null=False, blank=False,
-                                verbose_name='Régimen')
-    tipo_contribuyente = models.ForeignKey(TipoContribuyente, on_delete=models.DO_NOTHING, null=False, blank=False,
-                                           verbose_name='Tipo Contribuyente')
     numero_resolucion = models.CharField(verbose_name='Número de Resolución', max_length=100, null=True, blank=True)
     contribuyente_iyc = models.CharField(verbose_name='Contribuyente de Industria y Comercio', max_length=100,
                                          null=True, blank=True)
@@ -155,8 +151,6 @@ class ProveedorActividadEconomica(models.Model):
         proveedor_ae.actividad_principal_id = datos.get('actividad_principal', '')
         proveedor_ae.actividad_secundaria_id = datos.get('actividad_secundaria', '')
         proveedor_ae.otra_actividad_id = datos.get('otra_actividad', '')
-        proveedor_ae.regimen_id = datos.get('regimen', '')
-        proveedor_ae.tipo_contribuyente_id = datos.get('tipo_contribuyente', '')
         proveedor_ae.numero_resolucion = datos.get('resolucion', '')
         proveedor_ae.contribuyente_iyc = datos.get('contribuyente_iyc', '')
         proveedor_ae.entidad_publica = datos.get('entidad_publica', '')
