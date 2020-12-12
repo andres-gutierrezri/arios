@@ -614,7 +614,7 @@ def generar_datos_actividades_economicas(proveedor):
         reg_fisc = proveedor.regimen_fiscal
         regimen_fiscal = ''
         for d in RegimenFiscal.choices:
-            if d == reg_fisc:
+            if d[0] == reg_fisc:
                 regimen_fiscal = d[1]
                 break
 
