@@ -28,7 +28,7 @@ class PerfilProveedorView(AbstractEvaLoggedProveedorView):
         datos_proveedor = generar_datos_proveedor(proveedor)
 
         total = datos_proveedor['total']
-        opciones = datos_proveedor['opciones']
+
         perfil_activo = True if Certificacion.objects.filter(tercero=proveedor, estado=True) else False
 
         btn_enviar = True if total == 100 else False
@@ -36,9 +36,10 @@ class PerfilProveedorView(AbstractEvaLoggedProveedorView):
         tipo_nit = True if proveedor.tipo_identificacion.sigla == 'NIT' else False
 
         return render(request, 'Administracion/Tercero/Proveedor/perfil.html',
-                      {'opciones': opciones, 'total': total, 'btn_enviar': btn_enviar,
+                      {'datos_proveedor': datos_proveedor, 'total': total, 'btn_enviar': btn_enviar,
                        'tipo_nit': tipo_nit, 'proveedor_id': proveedor.id,
-                       'solicitud_activa': solicitud_activa, 'perfil_activo': perfil_activo})
+                       'solicitud_activa': solicitud_activa, 'perfil_activo': perfil_activo,
+                       })
 
 
 class PerfilInformacionBasicaView(AbstractEvaLoggedProveedorView):
@@ -664,20 +665,19 @@ def generar_datos_proveedor(proveedor):
     total = total + 20 if bienes_servicios else total
     total = total + 20 if len(documentos) == lista_documentos else total
 
-    opciones = [{'id': 1, 'nombre': 'Información Básica',
-                 'url': '/administracion/proveedor/perfil/informacion-basica',
-                 'datos': informacion_basica},
-                {'id': 2, 'nombre': 'Actividades Económicas',
-                 'url': '/administracion/proveedor/perfil/actividades-economicas',
-                 'datos': actividades_economicas},
-                {'id': 3, 'nombre': 'Entidades Bancarias',
-                 'url': '/administracion/proveedor/perfil/entidades-bancarias',
-                 'datos': entidades_bancarias},
-                {'id': 4, 'nombre': 'Productos y Servicios',
-                 'url': '/administracion/proveedor/perfil/productos-servicios',
-                 'datos': bienes_servicios},
-                {'id': 5, 'nombre': 'Documentos',
-                 'url': '/administracion/proveedor/perfil/documentos', 'datos': documentos},
-                ]
+    informacion_basica = {'id': 1, 'nombre': 'Información Básica',
+                          'url': '/administracion/proveedor/perfil/informacion-basica',
+                          'datos': informacion_basica}
+    actividades_economicas = {'id': 2, 'nombre': 'Actividades Económicas',
+                              'url': '/administracion/proveedor/perfil/actividades-economicas',
+                              'datos': actividades_economicas}
+    entidades_bancarias = {'id': 3, 'nombre': 'Entidades Bancarias',
+                           'url': '/administracion/proveedor/perfil/entidades-bancarias',
+                           'datos': entidades_bancarias}
+    bienes_servicios = {'id': 4, 'nombre': 'Productos y Servicios',
+                        'url': '/administracion/proveedor/perfil/productos-servicios',
+                        'datos': bienes_servicios}
+    documentos = {'id': 5, 'nombre': 'Documentos',
+                  'url': '/administracion/proveedor/perfil/documentos', 'datos': documentos}
 
     return {'total': total, 'opciones': opciones}

@@ -74,9 +74,17 @@
                             <div class="panel-group">
                                 <div class="panel-body">
                                     <div class="row" id="js-contacts">
-                                        {% for op in opciones %}
-                                            {% include 'Administracion/_common/_tarjeta_proveedor.html' with objeto=op %}
-                                        {% endfor %}
+                                        <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                            {% include 'Administracion/_common/_tarjeta_proveedor.html' with objeto=datos_proveedor.informacion_basica %}
+                                        </div>
+                                        <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                            {% include 'Administracion/_common/_tarjeta_proveedor.html' with objeto=datos_proveedor.actividades_economicas %}
+                                            {% include 'Administracion/_common/_tarjeta_proveedor.html' with objeto=datos_proveedor.documentos %}
+                                        </div>
+                                        <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                            {% include 'Administracion/_common/_tarjeta_proveedor.html' with objeto=datos_proveedor.entidades_bancarias %}
+                                            {% include 'Administracion/_common/_tarjeta_proveedor.html' with objeto=datos_proveedor.bienes_servicios %}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
