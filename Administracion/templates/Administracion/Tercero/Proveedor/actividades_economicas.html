@@ -41,11 +41,14 @@
                                             </div>
                                         </div>
                                         <div class="form-row">
-                                            <div class="form-group col-xl-6 col-lg-6 col-md-6 col-sm-6">
-                                                {% select_tag regimenes 'regimen' 'Seleccione un Régimen' texto_label="Régimen al que pertenece" required="" value=proveedor.regimen_id  mensaje_validacion='Por favor seleccione un departamento' %}
+                                            <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                                {% select_tag regimenes_fiscales 'regimen_fiscal' 'Seleccione un régimen fiscal' is_tupla=True texto_label="Régimen Fiscal" value=proveedor.proveedor.regimen_fiscal required="" mensaje_validacion='Por favor seleccione un régimen fiscal.' invalido=errores.regimen_fiscal %}
                                             </div>
-                                            <div class="form-group col-xl-6 col-lg-6 col-md-6 col-sm-6">
-                                                {% select_tag tipos_contribuyente 'tipo_contribuyente' 'Seleccione un tipo' texto_label="Tipo de Contribuyente" required="" value=proveedor.tipo_contribuyente_id  mensaje_validacion='Por favor seleccione un departamento' %}
+                                            <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                                {% select_multiple_tag responsabilidades 'responsabilidades' 'responsabilidades_id' 'Seleccione una responsabilidad fiscal' is_tupla=True texto_label="Responsabilidad Fiscal" value=responsabilidades_tercero required="" mensaje_validacion='Por favor seleccione una responsabilidad fiscal.' multiple='multiple' invalido=errores.responsabilidades %}
+                                            </div>
+                                            <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                                {% select_tag tributos 'tributo' 'Seleccione un tributo' is_tupla=True texto_label="Tributo" value=proveedor.proveedor.tributos required="" mensaje_validacion='Por favor seleccione un tributo.' invalido=errores.tributos%}
                                             </div>
                                             <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
                                                 <div class="custom-control custom-checkbox">
