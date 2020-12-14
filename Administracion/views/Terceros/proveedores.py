@@ -314,7 +314,16 @@ class EnviarSolicitudProveedorView(AbstractEvaLoggedView):
             solicitud = SolicitudProveedor.objects.create(proveedor=proveedor, fecha_creacion=app_datetime_now(),
                                                           aprobado=False, estado=True)
             messages.success(self.request, 'Se ha enviado la solicitud correctamente')
-            crear_notificacion_por_evento(EventoDesencadenador.SOLICITUD_APROBACION_PROVEEDOR, solicitud.id)
+            if Certificacion.objects.filter(tercero=proveedor):
+                titulo = 'Un proveedor ha modificado su perfil.'
+                comentario = 'El proveedor {0} ha modificado su perfil'.format(proveedor.nombre)
+                crear_notificacion_por_evento(EventoDesencadenador.SOLICITUD_APROBACION_PROVEEDOR, solicitud.id,
+                                              contenido={'titulo': titulo,
+                                                         'mensaje': comentario})
+
+            else:
+                crear_notificacion_por_evento(EventoDesencadenador.SOLICITUD_APROBACION_PROVEEDOR, solicitud.id)
+
             return JsonResponse({"estado": "OK"})
         except:
             return JsonResponse({"estado": "ERROR", "mensaje": "Ha ocurrido un error al realizar la solicitud"})
