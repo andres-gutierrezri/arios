@@ -21,7 +21,7 @@ from Administracion.models import Tercero, TipoIdentificacion, TipoTercero, Cent
     Municipio
 from Administracion.utils import get_id_empresa_global
 from EVA.views.index import AbstractEvaLoggedView, AbstractEvaLoggedProveedorView
-from Notificaciones.models.models import EventoDesencadenador
+from Notificaciones.models.models import EventoDesencadenador, SeleccionDeNotificacionARecibir
 from Notificaciones.views.correo_electronico import enviar_correo
 from Notificaciones.views.views import crear_notificacion_por_evento
 from TalentoHumano.models import Colaborador
@@ -229,6 +229,9 @@ class RegistroProveedorView(View):
             usuario.save()
             tercero.usuario = usuario
             tercero.save()
+            SeleccionDeNotificacionARecibir\
+                .objects.create(envio_x_email=True, estado=True, usuario=usuario,
+                                evento_desencadenador_id=EventoDesencadenador.RESPUESTA_SOLICITUD_PROVEEDOR)
             dominio = request.get_host()
             uidb64 = urlsafe_base64_encode(force_bytes(usuario.pk))
             token = default_token_generator.make_token(usuario)
