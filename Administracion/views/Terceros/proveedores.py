@@ -48,11 +48,12 @@ class PerfilInformacionBasicaView(AbstractEvaLoggedProveedorView):
                       datos_xa_render_informacion_basica(request))
 
     def post(self, request):
-        update_fields = ('nombre', 'tipo_identificacion_id', 'identificacion', 'ciudad', 'nombre_rl', 'tipo_persona',
-                         'tipo_identificacion_rl', 'identificacion_rl', 'lugar_expedicion_rl', 'telefono_fijo_principal',
+        update_fields = ['nombre', 'tipo_identificacion_id', 'identificacion', 'ciudad', 'tipo_persona',
                          'telefono_movil_principal', 'telefono_fijo_auxiliar', 'telefono_movil_auxiliar',
                          'correo_principal', 'correo_auxiliar', 'fecha_inicio_actividad', 'fecha_constitucion',
-                         'digito_verificacion')
+                         'telefono_fijo_principal']
+
+        exclude = ['centro_poblado', 'direccion', 'telefono']
 
         proveedor = Tercero.objects.get(usuario=request.user)
 
@@ -62,10 +63,22 @@ class PerfilInformacionBasicaView(AbstractEvaLoggedProveedorView):
         proveedor.digito_verificacion = request.POST.get('digito_verificacion', '')
         proveedor.ciudad_id = request.POST.get('municipio', '')
 
-        proveedor.nombre_rl = request.POST.get('nombre_rl', '')
-        proveedor.tipo_identificacion_rl_id = request.POST.get('tipo_identificacion_rl', '')
-        proveedor.identificacion_rl = request.POST.get('identificacion_rl', '')
-        proveedor.lugar_expedicion_rl_id = request.POST.get('municipio_rl', '')
+        if 'NIT' in proveedor.tipo_identificacion.sigla:
+            update_fields.append('digito_verificacion')
+        else:
+            exclude.append('digito_verificacion')
+
+        if proveedor.tipo_persona == PERSONA_JURIDICA:
+            update_fields.append('nombre_rl')
+            update_fields.append('tipo_identificacion_rl')
+            update_fields.append('identificacion_rl')
+            update_fields.append('lugar_expedicion_rl')
+            proveedor.nombre_rl = request.POST.get('nombre_rl', '')
+            proveedor.tipo_identificacion_rl_id = request.POST.get('tipo_identificacion_rl', '')
+            proveedor.identificacion_rl = request.POST.get('identificacion_rl', '')
+            proveedor.lugar_expedicion_rl_id = request.POST.get('municipio_rl', '')
+        else:
+            exclude.append('tipo_identificacion_rl')
 
         proveedor.telefono_fijo_principal = request.POST.get('fijo_principal', '')
         proveedor.telefono_movil_principal = request.POST.get('movil_principal', '')
@@ -85,7 +98,7 @@ class PerfilInformacionBasicaView(AbstractEvaLoggedProveedorView):
             proveedor.fecha_constitucion = None
 
         try:
-            proveedor.full_clean(exclude=['centro_poblado', 'direccion', 'telefono'])
+            proveedor.full_clean(exclude=exclude)
         except ValidationError as errores:
             if 'identificacion' in errores.message_dict:
                 messages.error(self.request, 'El número de identificación ingresado ya se encuentra registrado')
