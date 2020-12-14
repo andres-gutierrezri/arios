@@ -26,18 +26,14 @@ class PerfilProveedorView(AbstractEvaLoggedProveedorView):
     def get(self, request):
         proveedor = Tercero.objects.get(usuario=request.user)
         datos_proveedor = generar_datos_proveedor(proveedor)
-
         total = datos_proveedor['total']
-
         perfil_activo = True if Certificacion.objects.filter(tercero=proveedor, estado=True) else False
-
         btn_enviar = True if total == 100 else False
         solicitud_activa = True if SolicitudProveedor.objects.filter(proveedor=proveedor, estado=True) else False
-        tipo_nit = True if proveedor.tipo_identificacion.sigla == 'NIT' else False
 
         return render(request, 'Administracion/Tercero/Proveedor/perfil.html',
                       {'datos_proveedor': datos_proveedor, 'total': total, 'btn_enviar': btn_enviar,
-                       'tipo_nit': tipo_nit, 'proveedor_id': proveedor.id,
+                       'proveedor_id': proveedor.id, 'tipo_persona_pro': proveedor.tipo_persona,
                        'solicitud_activa': solicitud_activa, 'perfil_activo': perfil_activo,
                        })
 
@@ -613,12 +609,12 @@ def generar_datos_informacion_basica(proveedor):
                 datetime_to_string(proveedor.fecha_inicio_actividad) if proveedor.fecha_inicio_actividad else '',
              'tipo_persona_pro': proveedor.tipo_persona},
             {'nombre_campo': 'Fecha de Expedición del Documento del Representante Legal', 'valor_campo': fecha_exp_rl,
-             'tipo_nit': True, 'validar': True},
+             'tipo_persona': 1, 'validar': True},
             {'nombre_campo': 'Nombre del Representante Legal', 'valor_campo': proveedor.nombre_rl, 'validar': True,
-             'tipo_nit': True},
-            {'nombre_campo': 'Tipo de Identificación del Representante Legal', 'tipo_nit': True, 'validar': True,
+             'tipo_persona': 1},
+            {'nombre_campo': 'Tipo de Identificación del Representante Legal', 'tipo_persona': 1, 'validar': True,
              'valor_campo': proveedor.identificacion_rl},
-            {'nombre_campo': 'Identificación del Representante Legal', 'tipo_nit': True, 'validar': True,
+            {'nombre_campo': 'Identificación del Representante Legal', 'tipo_persona': 1, 'validar': True,
              'valor_campo': proveedor.identificacion_rl}
             ]
 
