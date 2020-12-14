@@ -133,7 +133,7 @@ class PerfilActividadesEconomicasView(AbstractEvaLoggedProveedorView):
             else:
                 proveedor_ae.save()
             proveedor.save(update_fields=('responsabilidades_fiscales', 'regimen_fiscal', 'tributos'))
-            messages.success(self.request, 'Se ha guardado la información básica correctamente.')
+            messages.success(self.request, 'Se ha guardado la información de actividades económicas correctamente.')
             return redirect(reverse('Administracion:proveedor-perfil'))
         except:
             messages.error(self.request, 'Ha ocurrido un error al actualizar la información.')
