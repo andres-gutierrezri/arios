@@ -260,9 +260,7 @@ class PoliticaDeCofidencialidadView(View):
     def get(self, request):
         if request.user.is_authenticated:
             return redirect(reverse('eva-index'))
-        tipo_identificacion = TipoIdentificacion.objects.get_xa_select_activos()
-        return render(request, 'Administracion/Tercero/Proveedor/politica_cofidencialidad.html',
-                      {'tipo_identificacion': tipo_identificacion})
+        return render(request, 'Administracion/_common/_modal_politica_de_confidencialidad.html')
 
 # region Métodos de ayuda
 
