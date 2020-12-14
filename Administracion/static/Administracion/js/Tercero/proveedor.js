@@ -24,6 +24,7 @@ let selectUbicacionMunicipio = $('#municipio_select_id');
 
 $(document).ready(function () {
     validarTipoPersona();
+    validarDV();
 });
 
 selectRLPais.change(function (){
@@ -43,13 +44,17 @@ selectUbicacionDepartamento.change(function (){
 });
 
 selectTipoIdentificacion.change(function (){
-    const tipoId =$('#tipo_identificacion_select_id option:selected').text();
-    actdesInputDV(tipoId.includes('Tributaria'));
+    validarDV();
 });
 
 selectTipoPersona.change(function (){
     validarTipoPersona();
 });
+
+function validarDV() {
+    const tipoId =$('#tipo_identificacion_select_id option:selected').text();
+    actdesInputDV(tipoId.includes('Tributaria'));
+}
 
 function validarTipoPersona() {
     if(selectTipoPersona.val() === '1'){
