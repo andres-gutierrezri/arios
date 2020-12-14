@@ -366,7 +366,7 @@ class PerfilProveedorSolicitud(AbstractEvaLoggedView):
 
         return render(request, 'Administracion/Tercero/Proveedor/perfil.html',
                       {'datos_proveedor': datos_proveedor, 'solicitud_proveedor': proveedor,
-                       'solicitud_activa': solicitud_activa})
+                       'solicitud_activa': solicitud_activa, 'tipo_persona_pro': proveedor.tipo_persona})
 
 
 APROBADO = 1
