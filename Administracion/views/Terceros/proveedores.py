@@ -699,6 +699,10 @@ def generar_datos_bienes_servicios(proveedor):
 
 def generar_datos_documentos(proveedor):
     documentos = DocumentoTercero.objects.filter(tercero=proveedor)
+    if proveedor.tipo_persona == PERSONA_JURIDICA:
+        documentos = documentos.filter(tipo_documento__aplica_juridica=True)
+    else:
+        documentos = documentos.filter(tipo_documento__aplica_natural=True)
     lista_documentos = []
     for doc in documentos:
         lista_documentos\
