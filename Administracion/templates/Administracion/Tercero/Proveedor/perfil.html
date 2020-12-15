@@ -73,6 +73,7 @@
                                         <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
                                             {% include 'Administracion/_common/_tarjeta_proveedor.html' with objeto=datos_proveedor.entidades_bancarias %}
                                             {% include 'Administracion/_common/_tarjeta_proveedor.html' with objeto=datos_proveedor.bienes_servicios %}
+                                            {% include 'Administracion/Tercero/Proveedor/tarjeta_estado_proveedor.html' %}
                                         </div>
                                     </div>
                                     <div class="form-row justify-content-end">
@@ -109,4 +110,5 @@
     <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
     <script src="{% static 'Administracion/js/Tercero/entidadesBancarias.js' %}"></script>
     <script src="{% static 'Administracion/js/Tercero/proveedor.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/easypiechart/easypiechart.bundle.js' %}"></script>
 {% endblock scripts%}
