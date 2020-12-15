@@ -1,13 +1,28 @@
-<b> Factura de Venta Electrónica </b>
+{% if nota_credito %}
+    <b> Nota Crédito </b>
+{% else %}
+    <b> Factura de Venta Electrónica </b>
+{% endif %}
 <br><br>
 Estimado cliente: {{ tercero__nombre }}
 <br>
-<div style="max-width: 800px;padding:20px;background:#ededed;border-radius:5px">
-Adjunto enviamos la factura electrónica de venta {{ resolucion__prefijo }}{{ numero_factura }} con su respectiva representación gráfica.
-<br>
-    <a target="_blank" href='https://catalogo-vpfe.dian.gov.co/document/searchqr?documentkey={{ cufe }}'>Ver en la DIAN</a>
-    <br>
-</div>
+{% if nota_credito %}
+    <div style="max-width: 800px;padding:20px;background:#ededed;border-radius:5px">
+        Adjunto enviamos la nota crédito NC{{ numero_factura }} con su respectiva representación gráfica que anula la factura electrónica de venta {{ resolucion__prefijo }}{{ numero_factura }}
+        <br>
+        <a target="_blank" href='https://catalogo-vpfe.dian.gov.co/document/searchqr?documentkey={{ cude }}'>Ver en la DIAN</a>
+        <br>
+    </div>
+
+{% else %}
+    <div style="max-width: 800px;padding:20px;background:#ededed;border-radius:5px">
+        Adjunto enviamos la factura electrónica de venta {{ resolucion__prefijo }}{{ numero_factura }} con su respectiva representación gráfica.
+        <br>
+        <a target="_blank" href='https://catalogo-vpfe.dian.gov.co/document/searchqr?documentkey={{ cufe }}'>Ver en la DIAN</a>
+        <br>
+    </div>
+{% endif %}
+
 <br>
 <i>
     <div style="background-color: #f9f9f9; text-align:center; font-family:'Lato','Helvetica Neue',Helvetica,Arial,sans-serif; padding:10px 5px; font-size:12px; line-height:1.2; color:#666666">

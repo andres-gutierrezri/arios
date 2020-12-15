@@ -349,9 +349,11 @@ class FacturaImprimirView(AbstractEvaLoggedView):
     def get(self, request, id_factura):
         try:
             factura = FacturaEncabezado.objects.get(id=id_factura, empresa_id=get_id_empresa_global(request))
-            if factura.nombre_archivo_ad:
+            nombre_archivo = factura.nombre_archivo_ad_nc \
+                if factura.estado == FacturaEncabezado.Estado.ENVIADA_CLIENTE_NC else factura.nombre_archivo_ad
+            if nombre_archivo:
                 ruta_adjunto = f"{settings.EVA_RUTA_ARCHIVOS_FACTURA}{factura.empresa.nit}/" \
-                               f"{factura.nombre_archivo_ad.replace('xml', 'pdf')}"
+                               f"{nombre_archivo.replace('xml', 'pdf')}"
                 return FileResponse(open(ruta_adjunto, 'rb'), filename="factura {0}.pdf".format(factura.id))
             else:
                 messages.error(self.request, 'No se encontró la representación grafica para la factura.')
@@ -370,3 +372,77 @@ class FacturaEnviarCorreo(AbstractEvaLoggedView):
             return JsonResponse({"estado": "error", "mensaje": 'La factura no existe.'})
 
 
+class FacturaAnularView(AbstractEvaLoggedView):
+    def post(self, request, id_factura):
+        resultado = self.anular_factura(request, id_factura)
+        if resultado['estado'] == 'OK' and 'id_factura' in resultado:
+            self.generar_nota_credito(resultado['id_factura'])
+
+        return JsonResponse(resultado)
+
+    @atomic
+    def anular_factura(self, request, factura_id) -> dict:
+        empresa_id = get_id_empresa_global(request)
+        body_unicode = request.body.decode('utf-8')
+        datos = json.loads(body_unicode)
+
+        if factura_id != 0:
+            try:
+                factura = FacturaEncabezado.objects.get(id=factura_id, empresa_id=empresa_id)
+            except FacturaEncabezado.DoesNotExist:
+                return {'estado': 'error', 'mensaje': 'No se encuentra información de la factura en el sistema'}
+
+            factura.estado = FacturaEncabezado.Estado.ANULADA
+            factura.motivo_anulacion = datos['motivoAnulacion']
+            factura.observaciones_anulacion = datos['observacionesAnulacion']
+            factura.fecha_anulacion = app_date_now()
+            factura.save(update_fields=['estado', 'motivo_anulacion', 'observaciones_anulacion', 'fecha_anulacion'])
+
+            return {'estado': 'OK', 'datos': {'factura_numero': factura.numero_factura},
+                    'id_factura': factura.id}
+
+    @staticmethod
+    def generar_nota_credito(id_factura: int):
+        response = requests.post(f'{settings.EVA_URL_BASE_FACELEC}{id_factura}/anular')
+        if response.status_code == requests.codes.ok:
+            respuesta = response.json()
+            if respuesta['estado'] == FacturaEncabezado.Estado.APROBADA_DIAN_NC:
+                info_factura = FacturaEncabezado()
+                info_factura.id = id_factura
+                if FacturaAnularView.enviar_correo(id_factura):
+                    info_factura.estado = FacturaEncabezado.Estado.ENVIADA_CLIENTE_NC
+                else:
+                    info_factura.estado = FacturaEncabezado.Estado.ERROR_ENVIADO_CORREO_NC
+
+                info_factura.save(update_fields=['estado'])
+
+    @staticmethod
+    def enviar_correo(id_factura: int) -> bool:
+
+        try:
+            info_factura = FacturaEncabezado.objects.\
+                values('resolucion__prefijo', 'numero_factura', 'empresa__nombre', 'empresa__nit', 'tercero__nombre',
+                       'tercero__correo_facelec', 'nombre_archivo_ad_nc', 'cude').get(id=id_factura)
+
+            asunto = f"{info_factura['empresa__nit']}; {info_factura['empresa__nombre']}; " \
+                     f"NC{info_factura['numero_factura']}; 91; " \
+                     f"{info_factura['empresa__nombre']}"
+            info_factura['nota_credito'] = True
+            from_email = '"Facturación {}" <noreply@arios-ing.com>'.format(info_factura['empresa__nombre'])
+
+            ruta_adjunto = f"{settings.EVA_RUTA_ARCHIVOS_FACTURA}{info_factura['empresa__nit']}/" \
+                           f"{info_factura['nombre_archivo_ad_nc'].replace('xml', 'zip')}"
+
+            plantilla = get_template('Financiero/Facturacion/Facturas/correo.html')
+
+            email = EmailMessage(asunto,  plantilla.render(info_factura), from_email,
+                                 [info_factura['tercero__correo_facelec']],
+                                 ['contaduria@arios-ing.com'])
+            email.attach_file(ruta_adjunto)
+            email.content_subtype = "html"
+            valor = email.send()
+            print(valor)
+        except:
+            return False
+
+        return True

@@ -48,6 +48,19 @@ class FacturaEncabezado(models.Model, ModelDjangoExtensiones):
         ACUSE_RECIBO_CLIENTE = 11
         RECHAZADA_CLIENTE = 12
         ACEPTADA_CLIENTE = 13
+        ANULADA = 31
+        ERROR_ARMANANDO_NC = 32, 'Error Armando NC'
+        ERROR_ENVIANDO_DIAN_NC = 33, 'Error Enviando a la DIAN NC'
+        RECHAZADA_DIAN_NC = 34, 'Rechazada DIAN NC'
+        APROBADA_DIAN_NC = 35, 'Aprobada DIAN NC'
+        ERROR_ARMANDO_AD_NC = 36, 'Error Armando AD NC'
+        ERROR_GENERANDO_RG_NC = 37, 'Error Generando RG NC'
+        ERROR_ARMANDO_ZIP_NC = 38, 'Error Armando ZIP NC'
+        ERROR_ENVIADO_CORREO_NC = 39.
+        ENVIADA_CLIENTE_NC = 40, 'NC Enviada al Cliente'
+        ACUSE_RECIBO_CLIENTE_NC = 41
+        RECHAZADA_CLIENTE_NC = 42
+        ACEPTADA_CLIENTE_NC = 43
 
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, verbose_name='Empresa', null=False, blank=False)
     tercero = models.ForeignKey(Tercero, on_delete=models.CASCADE, verbose_name='Tercero', null=False, blank=False)
@@ -90,6 +103,18 @@ class FacturaEncabezado(models.Model, ModelDjangoExtensiones):
     medio_pago = models.SmallIntegerField(verbose_name='Medio de pago', null=False, blank=False, default=1)
 
     observaciones = models.TextField(verbose_name='Observaciones', max_length=1000, null=True, blank=True)
+    fecha_anulacion = models.DateField(verbose_name='Fecha de Anulación', null=True, blank=True)
+
+    nombre_archivo_nc = models.CharField(verbose_name='Nombre del archivo de la nota crédito', max_length=50,
+                                         null=True, blank=True)
+    nombre_archivo_zip_nc = models.CharField(verbose_name='Nombre del archivo ZIP validado NC', max_length=50,
+                                             null=True, blank=True)
+    nombre_archivo_ad_nc = models.CharField(verbose_name='Nombre del archivo Attached Documen NCt', max_length=50,
+                                            null=True, blank=True)
+    motivo_anulacion = models.TextField(verbose_name='Motivo anulación', max_length=1000, null=True, blank=True)
+    cude = models.CharField(verbose_name='CUFE', max_length=96, null=True, blank=True)
+    observaciones_anulacion = models.TextField(verbose_name='Observaciones Anulacion', max_length=1000, null=True,
+                                               blank=True)
 
     def __str__(self):
         return 'Factura # {0}'.format(self.numero_factura)
