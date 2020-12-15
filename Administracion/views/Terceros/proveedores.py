@@ -302,6 +302,18 @@ class DocumentoEditarView(AbstractEvaLoggedProveedorView):
         return render(request, 'Administracion/_common/_modal_gestionar_documento.html',
                       datos_xa_render_documentos(request, documento))
 
+    def post(self, request, id):
+        documento = DocumentoTercero.objects.get(id=id)
+        documento.documento = request.FILES.get('documento', '')
+        try:
+            documento.save(update_fields=['documento'])
+        except:
+            return JsonResponse({"estado": "error", "mensaje": "Ha ocurrido un error al guardar la información"})
+
+        messages.success(self.request, 'Se ha cargado el documento {0} correctamente.'
+                         .format(documento.tipo_documento.nombre))
+        return JsonResponse({"estado": "OK"})
+
 
 class EnviarSolicitudProveedorView(AbstractEvaLoggedView):
     def post(self, request, id):
