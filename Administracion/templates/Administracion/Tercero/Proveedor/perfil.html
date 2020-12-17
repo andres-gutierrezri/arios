@@ -78,7 +78,9 @@
                                                 {% include 'Administracion/_common/_tarjeta_proveedor.html' with objeto=datos_proveedor.bienes_servicios %}
                                             </div>
                                             <div id="cuarto_div">
-                                                {% include 'Administracion/Tercero/Proveedor/tarjeta_estado_proveedor.html' %}
+                                                {% if proveedor_id %}
+                                                    {% include 'Administracion/Tercero/Proveedor/tarjeta_estado_proveedor.html' %}
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </div>
