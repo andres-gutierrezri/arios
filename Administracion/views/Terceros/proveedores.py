@@ -405,6 +405,7 @@ class ProveedorSolicitudAprobarRechazar(AbstractEvaLoggedView):
             if solicitud.aprobado:
                 Certificacion.objects.filter(tercero=solicitud.proveedor).update(estado=False)
                 Certificacion.objects.create(tercero=solicitud.proveedor, fecha_crea=app_datetime_now(), estado=True)
+                Tercero.objects.filter(id=id).update(estado=True)
             messages.success(self.request, 'Se ha {0} la solicitud correctamente.'
                              .format('aprobado' if solicitud.aprobado else 'rechazado'))
 
