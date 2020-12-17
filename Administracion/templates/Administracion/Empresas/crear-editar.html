@@ -88,6 +88,9 @@
                                         <div class="form-group">
                                             <div class="form-row">
                                                 <div class="col-md-6">
+                                                    {% input_text_tag 'matricula_mercantil' 'Matrícula Mercantil' placeholder='Ingrese la matrícula mercantil' maxlength='20' value=empresa.matricula_mercantil mensaje_validacion='Por favor digitee la matrícula mercantil' invalido=errores.matricula_mercantil %}
+                                                </div>
+                                                <div class="col-md-6">
                                                     {% input_file_tag 'logo' 'Logo de la Empresa' placeholder="Seleccione el logo de la Empresa"  invalido=errores.logo accept="image/png, .jpeg, .jpg, image/gif"  %}
                                                 </div>
                                             </div>

@@ -87,6 +87,7 @@ class Empresa(models.Model, ModelDjangoExtensiones):
         empresa.responsabilidades_fiscales = ';'.join(responsabilidades) if responsabilidades else ''
         empresa.tributos = datos.get('tributo')
         empresa.codigo_postal = datos.get('codigo_postal')
+        empresa.matricula_mercantil = datos.get('matricula_mercantil', '')
 
         return empresa
 

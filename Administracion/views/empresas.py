@@ -68,7 +68,8 @@ class EmpresaEditarView(AbstractEvaLoggedView):
 
     def post(self, request, id):
         update_fields = ['nombre', 'nit', 'estado', 'direccion', 'municipio', 'digito_verificacion', 'tipo_persona',
-                         'regimen_fiscal', 'responsabilidades_fiscales', 'tributos', 'codigo_postal']
+                         'regimen_fiscal', 'responsabilidades_fiscales', 'tributos', 'codigo_postal',
+                         'matricula_mercantil']
 
         empresa = Empresa.from_dictionary(request.POST)
         empresa.id = int(id)
