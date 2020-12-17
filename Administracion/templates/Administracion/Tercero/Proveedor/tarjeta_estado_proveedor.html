@@ -9,7 +9,7 @@
             <div id="update-chart" class="d-flex flex-column align-items-center">
                 <div class="row">
                     <div class="col-md-4 align-items-center">
-                        <div class="js-easy-pie-chart color-primary-900 position-relative d-flex align-items-center justify-content-center" data-percent="{{ total }}" data-piesize="100%" data-linewidth="15" data-trackcolor="#ffffff" data-scalelength="0">
+                        <div class="js-easy-pie-chart color-primary-900 position-relative d-flex align-items-center justify-content-center" data-percent="{{ total }}" data-piesize="100%" data-linewidth="15" data-trackcolor="#ccbfdf" data-scalelength="0">
                             <div class="d-flex flex-column align-items-center justify-content-center position-absolute pos-left pos-right pos-top pos-bottom fw-300 fs-xl">
                                 <span class="js-percent d-block text-dark">{{ total }}</span>
                                 <div class="d-block fs-xs text-dark opacity-70">
@@ -20,7 +20,18 @@
                     </div>
                     <div class="col-md-8">
                         <div class="mt-2 mb-1 fs-xs text-primary">
-                            <b>Estado: </b>{% if datos_estado.estado == True %}<span class="badge badge-primary">Activo</span>{% else %}<span class="badge badge-secondary">Inactivo</span>{% endif %}<br>
+                            <b>Proveedor: </b>{% if datos_estado.estado == True %}<span class="badge badge-primary">Activo</span>{% else %}<span class="badge badge-secondary">Inactivo</span>{% endif %}<br>
+                            {% if solicitud_activa %}
+                                <b>Estado: </b>Solicitud Enviada<br>
+                            {% else %}
+                                {% if perfil_activo %}
+                                    <b>Estado: </b>Proveedor Activo<br>
+                                {% elif not datos_estado.estado_solicitud %}
+                                    <b>Estado: </b>Diligenciamiento Perfil<br>
+                                {% else %}
+                                    <b>Estado: </b>Solicitud Rechazada<br>
+                                {% endif %}
+                            {% endif %}
                             {% if datos_estado.ultima_act %}
                                 <b>Última Aprobación:</b> {{ datos_estado.ultima_act |date:'Y-m-d h:m'}}<br>
                             {% endif %}

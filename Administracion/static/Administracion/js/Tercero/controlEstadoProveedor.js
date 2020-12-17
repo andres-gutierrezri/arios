@@ -54,6 +54,7 @@ function ejecutarChart() {
     grafico.find('span').html(grafico.attr('data-percent'))
     grafico.easyPieChart({
         barColor: '#563d7c',
+        trackColor: '#ccbfdf',
         scaleLength: 0,
         lineWidth: 15,
         lineCap: 'square'
