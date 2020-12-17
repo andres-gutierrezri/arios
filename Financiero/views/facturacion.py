@@ -22,6 +22,7 @@ from EVA.General.utilidades import paginar
 from EVA.views.index import AbstractEvaLoggedView
 from Financiero.models import FacturaEncabezado, ResolucionFacturacion, FacturaDetalle
 from Financiero.models.facturacion import FacturaImpuesto
+from Financiero.parametros import ParametrosFinancieros
 
 
 class FacturasView(AbstractEvaLoggedView):
@@ -264,7 +265,11 @@ class FacturaCrearView(AbstractEvaLoggedView):
         try:
             info_factura = FacturaEncabezado.objects.\
                 values('resolucion__prefijo', 'numero_factura', 'empresa__nombre', 'empresa__nit', 'tercero__nombre',
-                       'tercero__correo_facelec', 'nombre_archivo_ad', 'cufe').get(id=id_factura)
+                       'tercero__correo_facelec', 'nombre_archivo_ad', 'cufe', 'empresa_id').get(id=id_factura)
+
+            correo_copia = ParametrosFinancieros.get_params_facelec(info_factura['empresa_id']).get_correo_copia()
+            if correo_copia is None or correo_copia == '':
+                correo_copia = 'asesorsistemas@arios-ing.com'
 
             asunto = f"{info_factura['empresa__nit']}; {info_factura['empresa__nombre']}; " \
                      f"{info_factura['resolucion__prefijo']}{info_factura['numero_factura']}; 01; " \
@@ -279,7 +284,7 @@ class FacturaCrearView(AbstractEvaLoggedView):
 
             email = EmailMessage(asunto,  plantilla.render(info_factura), from_email,
                                  [info_factura['tercero__correo_facelec']],
-                                 ['contaduria@arios-ing.com'])
+                                 [correo_copia])
             email.attach_file(ruta_adjunto)
             email.content_subtype = "html"
             valor = email.send()
@@ -422,7 +427,11 @@ class FacturaAnularView(AbstractEvaLoggedView):
         try:
             info_factura = FacturaEncabezado.objects.\
                 values('resolucion__prefijo', 'numero_factura', 'empresa__nombre', 'empresa__nit', 'tercero__nombre',
-                       'tercero__correo_facelec', 'nombre_archivo_ad_nc', 'cude').get(id=id_factura)
+                       'tercero__correo_facelec', 'nombre_archivo_ad_nc', 'cude', 'empresa_id').get(id=id_factura)
+
+            correo_copia = ParametrosFinancieros.get_params_facelec(info_factura['empresa_id']).get_correo_copia()
+            if correo_copia is None or correo_copia == '':
+                correo_copia = 'asesorsistemas@arios-ing.com'
 
             asunto = f"{info_factura['empresa__nit']}; {info_factura['empresa__nombre']}; " \
                      f"NC{info_factura['numero_factura']}; 91; " \
@@ -437,7 +446,7 @@ class FacturaAnularView(AbstractEvaLoggedView):
 
             email = EmailMessage(asunto,  plantilla.render(info_factura), from_email,
                                  [info_factura['tercero__correo_facelec']],
-                                 ['contaduria@arios-ing.com'])
+                                 [correo_copia])
             email.attach_file(ruta_adjunto)
             email.content_subtype = "html"
             valor = email.send()
