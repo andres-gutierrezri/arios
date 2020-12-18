@@ -59,3 +59,38 @@ function anularFactura() {
         idFacturaAnular = null;
     });
 }
+
+function generarNotaDebito(idFacturaND) {
+    if(idFacturaND == null)
+        return;
+
+    EVANotificacion.modal.cargando("Generando Nota Débito.");
+
+    $.ajax({
+            url: `/financiero/facturas/${idFacturaND}/nota-debito`,
+            context: document.body,
+            type: 'POST',
+            data: '',
+            contentType: "application/json; charset=utf-8;",
+            dataType: "json",
+    }).done(function(response) {
+        if(response.hasOwnProperty('estado')){
+            if (response.estado === 'OK') {
+                EVANotificacion.toast.exitoso(`Se generó la nota débito exitosamente`);
+                setTimeout(() => window.location.reload(), 3000);
+
+            } else {
+                if (response.hasOwnProperty('mensaje'))
+                    EVANotificacion.toast.error(response.mensaje);
+                else
+                    EVANotificacion.toast.error("Error no esperado.");
+            }
+        }
+
+    }).fail(function () {
+        EVANotificacion.toast.error('Falló la generación de la nota débito');
+    }).always(function () {
+        EVANotificacion.modal.cerrar();
+        idFacturaAnular = null;
+    });
+}

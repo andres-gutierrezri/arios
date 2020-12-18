@@ -455,3 +455,30 @@ class FacturaAnularView(AbstractEvaLoggedView):
             return False
 
         return True
+
+
+class FacturaNotaDebitoView(AbstractEvaLoggedView):
+    def post(self, request, id_factura):
+        resultado = self.nota_debito(request, id_factura)
+        if resultado['estado'] == 'OK' and 'id_factura' in resultado:
+            self.generar_nota_debito(resultado['id_factura'])
+
+        return JsonResponse(resultado)
+
+    @atomic
+    def nota_debito(self, request, factura_id) -> dict:
+        empresa_id = get_id_empresa_global(request)
+
+        if factura_id != 0:
+            try:
+                factura = FacturaEncabezado.objects.get(id=factura_id, empresa_id=empresa_id)
+            except FacturaEncabezado.DoesNotExist:
+                return {'estado': 'error', 'mensaje': 'No se encuentra información de la factura en el sistema'}
+
+            return {'estado': 'OK', 'datos': {'factura_numero': factura.numero_factura},
+                    'id_factura': factura.id}
+
+    @staticmethod
+    def generar_nota_debito(id_factura: int):
+        response = requests.post(f'{settings.EVA_URL_BASE_FACELEC}{id_factura}/notadebito')
+        return True
