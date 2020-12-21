@@ -1,0 +1,89 @@
+{% extends 'Administracion/_common/base_administracion.html' %}
+{% load static %}
+{% load eva_tags %}
+<title>{% block titulo %}Proveedores{% endblock %}</title>
+{% block styles %}
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/datagrid/datatables/datatables.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/sweetalert2/sweetalert2.bundle.css'%}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/theme-demo.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
+{% endblock styles %}
+
+{% block main %}
+
+    <div class="panel-container show">
+            <div class="header">
+                 <h1 class="header-title">
+                    <i class='far fa-hand-receiving'></i> Proveedores <span class='fw-300'></span>
+                     <br>
+                     <br>
+                 </h1>
+            </div>
+            <div class="row">
+                <div class="col-xl-12">
+                    <div id="panel-1" class="panel">
+                        <div class="panel-container show">
+                            <div class="panel-content">
+                                    <div class="panel-group">
+                                        <div class="panel-body">
+                                            <div class="form-group">
+                                                <div class="form-row">
+                                                 </div>
+                                             </div>
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered w-100" id="dataTable">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Nombre</th>
+                                                            <th>Identificación</th>
+                                                            <th>Ubicación</th>
+                                                            <th>Teléfono</th>
+                                                            <th>Correo</th>
+                                                            <th>Estado</th>
+                                                            <th>Fecha de Envío de Solicitud</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for proveedor in proveedores %}
+                                                            <tr>
+                                                                <td>{{ proveedor.nombre }}</td>
+                                                                <td>{{ proveedor.tipo_identificacion.sigla}} {{ solicitud.proveedor.identificacion}}</td>
+                                                                <td>{{ proveedor.ciudad | title }} - {{ solicitud.proveedor.ciudad.departamento | title }} - {{ solicitud.proveedor.ciudad.departamento.pais }}</td>
+                                                                <td>{{ proveedor.telefono_movil_principal }}</td>
+                                                                <td>{{ proveedor.telefono_movil_principal }}</td>
+                                                                <td>
+                                                                    {% if proveedor.estado == True %}
+                                                                    <span class="badge badge-primary">Activo</span>
+                                                                    {% else %}
+                                                                    <span class="badge badge-secondary">Inactivo</span>
+                                                                    {% endif %}
+                                                                </td>
+                                                                <td>{{ proveedor.fecha_creacion|date:'Y-m-d' }}</td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer small text-muted">Actualizado: {{ fecha }}</div>
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
+    <script src="{% static 'TalentoHumano/js/confirmarEliminarTalentoHumano.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
+    <script src="{% static 'TalentoHumano/js/filtro_entidad.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.export.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script>
+    <script src="{% static 'TalentoHumano/js/Entidades_CAFE/exportar_tabla.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
+{% endblock %}

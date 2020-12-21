@@ -9,44 +9,33 @@ from django.urls import reverse
 
 from Administracion.models import TipoIdentificacion, Pais, Tercero, Departamento, Municipio
 from Administracion.models.models import SubtipoProductoServicio, ProductoServicio
-from Administracion.models.terceros import ProveedorProductoServicio, TipoDocumentoTercero, DocumentoTercero
+from Administracion.models.terceros import ProveedorProductoServicio, TipoDocumentoTercero, DocumentoTercero, \
+    SolicitudProveedor, TipoTercero, Certificacion
 from EVA.General import app_datetime_now
 from EVA.General.conversiones import datetime_to_string
-from EVA.views.index import AbstractEvaLoggedProveedorView
+from EVA.views.index import AbstractEvaLoggedProveedorView, AbstractEvaLoggedView
 from Financiero.models.models import ActividadEconomica, TipoContribuyente, Regimen, ProveedorActividadEconomica, \
     EntidadBancariaTercero, EntidadBancaria, TipoCuentaBancaria
+from Notificaciones.models.models import EventoDesencadenador
+from Notificaciones.views.views import crear_notificacion_por_evento
 
 
 class PerfilProveedorView(AbstractEvaLoggedProveedorView):
     def get(self, request):
         proveedor = Tercero.objects.get(usuario=request.user)
-        informacion_basica = generar_datos_informacion_basica(proveedor)
-        actividades_economicas = generar_datos_actividades_economicas(proveedor)
-        entidades_bancarias = generar_datos_entidades_bancarias(proveedor)
-        bienes_servicios = generar_datos_bienes_servicios(proveedor)
-        documentos = generar_datos_documentos(proveedor)
+        datos_proveedor = generar_datos_proveedor(proveedor)
 
-        total = 0
-        total = total + 10 if proveedor.ciudad else total
-        total = total + 10 if informacion_basica else total
-        total = total + 20 if actividades_economicas else total
-        total = total + 20 if entidades_bancarias else total
-        total = total + 20 if bienes_servicios else total
-        total = total + 20 if documentos else total
+        total = datos_proveedor['total']
+        opciones = datos_proveedor['opciones']
+        perfil_activo = True if Certificacion.objects.filter(tercero=proveedor, estado=True) else False
 
-        opciones = [{'id': 1, 'nombre': 'Información Básica',
-                     'url': '/administracion/proveedor/perfil/informacion-basica', 'datos': informacion_basica},
-                    {'id': 2, 'nombre': 'Actividades Económicas',
-                     'url': '/administracion/proveedor/perfil/actividades-economicas', 'datos': actividades_economicas},
-                    {'id': 3, 'nombre': 'Entidades Bancarias',
-                     'url': '/administracion/proveedor/perfil/entidades-bancarias', 'datos': entidades_bancarias},
-                    {'id': 4, 'nombre': 'Productos y Servicios',
-                     'url': '/administracion/proveedor/perfil/productos-servicios', 'datos': bienes_servicios},
-                    {'id': 5, 'nombre': 'Documentos',
-                     'url': '/administracion/proveedor/perfil/documentos', 'datos': documentos},
-                    ]
+        btn_enviar = True if total == 100 else False
+        solicitud_activa = True if SolicitudProveedor.objects.filter(proveedor=proveedor, estado=True) else False
+
         return render(request, 'Administracion/Tercero/Proveedor/perfil.html',
-                      {'opciones': opciones, 'total': total, 'tipo_nit': proveedor.tipo_identificacion.tipo_nit})
+                      {'opciones': opciones, 'total': total, 'btn_enviar': btn_enviar,
+                       'tipo_nit': proveedor.tipo_identificacion.tipo_nit, 'proveedor_id': proveedor.id,
+                       'solicitud_activa': solicitud_activa, 'perfil_activo': perfil_activo})
 
 
 class PerfilInformacionBasicaView(AbstractEvaLoggedProveedorView):
@@ -281,18 +270,18 @@ class DocumentoEditarView(AbstractEvaLoggedProveedorView):
         return render(request, 'Administracion/_common/_modal_gestionar_documento.html',
                       datos_xa_render_documentos(request, documento))
 
-    def post(self, request, id):
-        update_fields = ['documento']
-        documento = DocumentoTercero.objects.get(id=id)
-        documento.documento = request.FILES.get('documento', '')
-        try:
-            documento.save(update_fields=update_fields)
-        except:
-            return JsonResponse({"estado": "error", "mensaje": "Ha ocurrido un error al guardar la información"})
 
-        messages.success(self.request, 'Se ha cargado el documento {0} correctamente.'
-                         .format(documento.tipo_documento.nombre))
-        return JsonResponse({"estado": "OK"})
+class EnviarSolicitudProveedorView(AbstractEvaLoggedView):
+    def post(self, request, id):
+        try:
+            proveedor = Tercero.objects.get(id=id)
+            solicitud = SolicitudProveedor.objects.create(proveedor=proveedor, fecha_creacion=app_datetime_now(),
+                                                          aprobado=False, estado=True)
+            messages.success(self.request, 'Se ha enviado la solicitud correctamente')
+            crear_notificacion_por_evento(EventoDesencadenador.SOLICITUD_APROBACION_PROVEEDOR, solicitud.id)
+            return JsonResponse({"estado": "OK"})
+        except:
+            return JsonResponse({"estado": "ERROR", "mensaje": "Ha ocurrido un error al realizar la solicitud"})
 
 
 class VerDocumentoView(AbstractEvaLoggedProveedorView):
@@ -316,6 +305,81 @@ class VerDocumentoView(AbstractEvaLoggedProveedorView):
             response = redirect(reverse('Administracion:proveedor-perfil-documentos'))
 
         return response
+
+
+class SolicitudesProveedorView(AbstractEvaLoggedView):
+    def get(self, request):
+        solicitudes = SolicitudProveedor.objects.filter(estado=True)
+        return render(request, 'Administracion/Tercero/Proveedor/solicitudes_proveedores.html',
+                      {'solicitudes': solicitudes, 'menu_actual': ['proveedores', 'solicitudes_proveedor']})
+
+
+class PerfilProveedorSolicitud(AbstractEvaLoggedView):
+    def get(self, request, id):
+        proveedor = Tercero.objects.get(id=id)
+        datos_proveedor = generar_datos_proveedor(proveedor)
+
+        opciones = datos_proveedor['opciones']
+        return render(request, 'Administracion/Tercero/Proveedor/perfil.html',
+                      {'opciones': opciones, 'tipo_nit': proveedor.tipo_identificacion.tipo_nit,
+                       'solicitud_proveedor': proveedor})
+
+
+APROBADO = 1
+RECHAZADO = 2
+
+
+class ProveedorSolicitudAprobarRechazar(AbstractEvaLoggedView):
+    def get(self, request, id):
+        proveedor = Tercero.objects.get(id=id)
+        opciones = [{'texto': 'Aprobar', 'valor': 1},
+                    {'texto': 'Rechazar', 'valor': 2}]
+        return render(request, 'Administracion/_common/_modal_aprobar_rechazar_proveedor.html',
+                      {'proveedor': proveedor, 'opciones': opciones})
+
+    def post(self, request, id):
+        try:
+            solicitud = SolicitudProveedor.objects.get(proveedor_id=id, estado=True)
+            opcion = request.POST.get('opcion', '')
+            comentario = request.POST.get('comentario', '')
+            solicitud.aprobado = True if int(opcion) == APROBADO else False
+            solicitud.comentarios = comentario
+            solicitud.estado = False
+            solicitud.save(update_fields=['aprobado', 'comentarios', 'estado'])
+            if solicitud.aprobado:
+                Certificacion.objects.filter(tercero=solicitud.proveedor).update(estado=False)
+                Certificacion.objects.create(tercero=solicitud.proveedor, fecha_crea=app_datetime_now(), estado=True)
+            messages.success(self.request, 'Se ha {0} la solicitud correctamente.'
+                             .format('aprobado' if solicitud.aprobado else 'rechazado'))
+
+            titulo = 'Solicitud Aprobada' if solicitud.aprobado else 'Solicitud Rechazada'
+            crear_notificacion_por_evento(EventoDesencadenador.RESPUESTA_SOLICITUD_PROVEEDOR, solicitud.id,
+                                          contenido={'titulo': titulo,
+                                                     'mensaje': comentario,
+                                                     'usuario': solicitud.proveedor.usuario_id})
+        except:
+            messages.error(self.request, 'Ha ocurrido un error al realizar la acción.')
+
+        return redirect(reverse('Administracion:proveedor-solicitudes'))
+
+
+class ProveedorIndexView(AbstractEvaLoggedView):
+    def get(self, request):
+        proveedores = Tercero.objects.filter(tipo_tercero_id=TipoTercero.PROVEEDOR)
+        return render(request, 'Administracion/Tercero/Proveedor/index.html',
+                      {'proveedores': proveedores})
+
+
+class ProveedorModificarSolicitudView(AbstractEvaLoggedProveedorView):
+    def post(self, request, id):
+        try:
+            SolicitudProveedor.objects.filter(proveedor_id=id).update(estado=False)
+            Certificacion.objects.filter(tercero_id=id).update(estado=False)
+
+            messages.success(self.request, 'Ahora puedes modificar tu perfil.')
+            return JsonResponse({"estado": "OK"})
+        except:
+            return JsonResponse({"estado": "ERROR", "mensaje": "Ha ocurrido un error al realizar la solicitud"})
 
 
 def datos_xa_render_informacion_basica(request):
@@ -552,3 +616,37 @@ def generar_datos_documentos(proveedor):
             .append({'nombre_campo': doc.tipo_documento, 'valor_campo': 'Ver',
                      'archivo': '/administracion/proveedor/perfil/ver-documento/{0}/'.format(doc.id)})
     return lista_documentos
+
+
+def generar_datos_proveedor(proveedor):
+    informacion_basica = generar_datos_informacion_basica(proveedor)
+    actividades_economicas = generar_datos_actividades_economicas(proveedor)
+    entidades_bancarias = generar_datos_entidades_bancarias(proveedor)
+    bienes_servicios = generar_datos_bienes_servicios(proveedor)
+    documentos = generar_datos_documentos(proveedor)
+
+    total = 0
+    total = total + 10 if proveedor.ciudad else total
+    total = total + 10 if informacion_basica else total
+    total = total + 20 if actividades_economicas else total
+    total = total + 20 if entidades_bancarias else total
+    total = total + 20 if bienes_servicios else total
+    total = total + 20 if documentos else total
+
+    opciones = [{'id': 1, 'nombre': 'Información Básica',
+                 'url': '/administracion/proveedor/perfil/informacion-basica',
+                 'datos': informacion_basica},
+                {'id': 2, 'nombre': 'Actividades Económicas',
+                 'url': '/administracion/proveedor/perfil/actividades-economicas',
+                 'datos': actividades_economicas},
+                {'id': 3, 'nombre': 'Entidades Bancarias',
+                 'url': '/administracion/proveedor/perfil/entidades-bancarias',
+                 'datos': entidades_bancarias},
+                {'id': 4, 'nombre': 'Productos y Servicios',
+                 'url': '/administracion/proveedor/perfil/productos-servicios',
+                 'datos': bienes_servicios},
+                {'id': 5, 'nombre': 'Documentos',
+                 'url': '/administracion/proveedor/perfil/documentos', 'datos': documentos},
+                ]
+
+    return {'total': total, 'opciones': opciones}

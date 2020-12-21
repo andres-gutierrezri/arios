@@ -18,15 +18,55 @@
     <div class="panel-container show">
         <div class="header">
             <h1 class="header-title row">
-                <div class="col-6"><i class='far fa-user'></i> Mi Perfil <span class='fw-300'></span></div>
-                <div class="col-6" style="text-align: end">Completado {{ total }}%<span class='fw-300'></span></div>
-                <br>
+                {% if solicitud_proveedor %}
+                    <div class="col-6"><i class='fal fa-hand-holding-box'></i>  Proveedor: {{ solicitud_proveedor.nombre }} <span class='fw-300'></span></div>
+                {% else %}
+                    <div class="col-6"><i class='far fa-user'></i> Mi Perfil <span class='fw-300'></span></div>
+                    {% if solicitud_activa %}
+                        <div class="col-6" style="text-align: end">Solicitud Enviada<span class='fw-300'></span></div>
+                    {% else %}
+                        {% if perfil_activo %}
+                            <div class="col-6" style="text-align: end">Proveedor Activo<span class='fw-300'></span></div>
+                        {% else %}
+                            <div class="col-6" style="text-align: end">Completado {{ total }}%<span class='fw-300'></span></div>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+
                 <br>
             </h1>
         </div>
         <div class="row">
             <div class="col-xl-12">
                 <div id="panel-1" class="panel">
+                    {% if solicitud_proveedor %}
+                    <div class="panel-hdr">
+                        <div class="col-md-10">
+                            <small>
+                                 <a class="far fa-3x fa-arrow-circle-left"  href="javascript:history.back()" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Volver"></a>
+                            </small>
+                        </div>
+                        <div class="col-md-2" style="float: right" >
+                            <small style="float: right">
+                                <a href="javascript:abrir_modal_aprobar_rechazar('{% url 'Administracion:proveedor-solicitudes-aprobar-rechazar' solicitud_proveedor.id %}')" class="btn btn-primary btn-block">Aprobar/Rechazar</a>
+                            </small>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if btn_enviar and not solicitud_activa %}
+                        <div class="panel-hdr">
+                            <div class="col-md-10"></div>
+                            <div class="col-md-2" style="float: right" >
+                                <small style="float: right">
+                                    {% if perfil_activo %}
+                                        <a href="javascript:modificarPerfilProveedor({{ proveedor_id }})" class="btn btn-primary btn-block">Modificar Mi Perfil</a>
+                                    {% else %}
+                                        <a href="javascript:enviarSolicitudProveedor({{ proveedor_id }})" class="btn btn-primary btn-block">Enviar Solicitud</a>
+                                    {% endif %}
+                                </small>
+                            </div>
+                        </div>
+                    {% endif %}
                     <div class="panel-container show">
                         <div class="panel-content">
                             <div class="panel-group">
@@ -44,6 +84,7 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" tabindex="-1" id="accion_proveedor" role="dialog"></div>
 {% endblock main%}
 
 {% block scripts %}
@@ -54,4 +95,5 @@
     <script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
     <script src="{% static 'Administracion/js/Tercero/entidadesBancarias.js' %}"></script>
+    <script src="{% static 'Administracion/js/Tercero/proveedor.js' %}"></script>
 {% endblock scripts%}

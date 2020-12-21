@@ -111,3 +111,77 @@ function validarTipoIdentificacion() {
         }
     });
 }
+
+function enviarSolicitudProveedor(idProveedor) {
+    Swal.fire({
+        title: '¿Está seguro de enviar la solicitud?',
+        text: "Una vez enviada la solicitud, no podrá seguir editando los campos hasta que sea aprobada o rechazada.",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '¡Sí, Enviar!',
+        cancelButtonText: 'Cancelar'
+    }).then(result => {
+        if (result.value) {
+            $.ajax({
+                url: "/administracion/proveedor/solicitudes/" + idProveedor + "/enviar",
+                type: 'POST',
+                context: document.body,
+                success: function (data) {
+                    if(data.estado === "OK") {
+                        location.reload();
+                    }else if(data.estado === "ERROR"){
+                        EVANotificacion.toast.error(data.mensaje);
+                    }
+                },
+                failure: function (errMsg) {
+                    location.reload();
+                }
+            });
+        }
+    });
+}
+
+function abrir_modal_aprobar_rechazar(url) {
+    $('#accion_proveedor').load(url, function (responseText) {
+        try {
+            if (responseText.includes("<!DOCTYPE html>")) {
+                EVANotificacion.toast.error('No tiene permisos para acceder a esta funcionalidad');
+                return false;
+            }
+            $(this).modal('show');
+            agregarValidacionFormularios();
+        } catch (err) {
+            console.log(err);
+            EVANotificacion.toast.error('Ha ocurrido un error al cargar el archivo');
+        }
+    });
+}
+
+function modificarPerfilProveedor(idProveedor) {
+    Swal.fire({
+        title: '¿Está seguro de modificar su perfil?',
+        text: "Si modifica su perfil, dejará de estar activo como proveedor hasta que envie la solicitud y sea aprobada nuevamente.",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '¡Sí, Continuar!',
+        cancelButtonText: 'Cancelar'
+    }).then(result => {
+        if (result.value) {
+            $.ajax({
+                url: "/administracion/proveedor/solicitudes/" + idProveedor + "/modificar",
+                type: 'POST',
+                context: document.body,
+                success: function (data) {
+                    if(data.estado === "OK") {
+                        location.reload();
+                    }else if(data.estado === "ERROR"){
+                        EVANotificacion.toast.error(data.mensaje);
+                    }
+                },
+                failure: function (errMsg) {
+                    location.reload();
+                }
+            });
+        }
+    });
+}
