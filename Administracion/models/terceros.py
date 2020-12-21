@@ -1,4 +1,6 @@
 from datetime import datetime
+
+from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import QuerySet
 from django.http import QueryDict
@@ -49,7 +51,7 @@ class TerceroManger(ManagerGeneral):
 class Tercero(models.Model, ModelDjangoExtensiones):
     objects = TerceroManger()
 
-    nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
+    nombre = models.CharField(max_length=100, verbose_name='Nombre', null=True, blank=False)
     identificacion = models.CharField(max_length=20, verbose_name='Identificación', null=False, blank=False,
                                       unique=True)
     digito_verificacion = models.SmallIntegerField(verbose_name='Digito de Verificación', null=True, blank=True)
@@ -65,8 +67,8 @@ class Tercero(models.Model, ModelDjangoExtensiones):
                                        verbose_name='Centro poblado', null=True, blank=False)
     tipo_tercero = models.ForeignKey(TipoTercero, on_delete=models.DO_NOTHING, verbose_name='Tipo Tercero', null=True,
                                      blank=False)
-    direccion = models.CharField(max_length=100, verbose_name='Dirección', null=False, blank=False)
-    telefono = models.CharField(max_length=30, verbose_name='Teléfono', null=False, blank=False)
+    direccion = models.CharField(max_length=100, verbose_name='Dirección', null=True, blank=False)
+    telefono = models.CharField(max_length=30, verbose_name='Teléfono', null=True, blank=False)
     fax = models.CharField(max_length=30, verbose_name='fax', null=True, blank=True)
     tipo_persona = models.SmallIntegerField(verbose_name='Tipo de Persona', null=False, blank=False, default=1)
     responsabilidades_fiscales = models.CharField(max_length=200, verbose_name='Responsabilidades Fiscales', null=True,
@@ -93,6 +95,7 @@ class Tercero(models.Model, ModelDjangoExtensiones):
                                             verbose_name='Lugar de Expedicion del Id del RL', null=True, blank=True)
     fecha_constitucion = models.DateTimeField(verbose_name='Fecha de Constitución', null=True, blank=True)
     fecha_inicio_actividad = models.DateTimeField(verbose_name='Fecha de Inicio de Actividad', null=True, blank=True)
+    usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario', null=True, blank=True)
 
     def __str__(self):
         return self.nombre
@@ -100,6 +103,12 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     class Meta:
         verbose_name = 'Tercero'
         verbose_name_plural = 'Terceros'
+
+    def empresa_to_dict(self):
+        if self.empresa:
+            return self.empresa.to_dict()
+        else:
+            return Empresa.get_default().to_dict()
 
     @staticmethod
     def from_dictionary(datos: QueryDict) -> 'Tercero':

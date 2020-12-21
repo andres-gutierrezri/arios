@@ -46,3 +46,17 @@ def actualizar_empresa_sesion(request):
         return False
 
     return True
+
+
+class AbstractEvaLoggedProveedorView(View):
+    def dispatch(self, *args, **kwargs):
+        if self.request.user.is_authenticated:
+            if not validar_permisos(self.request.user, self.request.resolver_match.app_name,
+                                    self.request.resolver_match.url_name):
+
+                messages.error(self.request, 'No tiene permisos para acceder a esta funcionalidad')
+                return redirect(reverse('Administracion:proveedor-index'))
+
+            return super(AbstractEvaLoggedProveedorView, self).dispatch(*args, **kwargs)
+        else:
+            return redirect(reverse('administracion:proveedor-iniciar-sesion'))
