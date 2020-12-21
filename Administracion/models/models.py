@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import QuerySet, F, Value, CharField
@@ -138,11 +140,23 @@ class Rango(models.Model):
         verbose_name_plural = 'Rangos'
 
 
+class TipoIdentificacionManager(ManagerGeneral):
+    def get_xa_select_personas_activos(self) -> json:
+        return self.get_x_estado(True, True).filter(tipo_nit=False)
+
+    def get_activos_like_json(self):
+        datos = []
+        for elemento in self.get_x_estado(True, False):
+            datos.append({'id': elemento.id, 'tipo_nit': elemento.tipo_nit})
+        return json.dumps(datos)
+
+
 class TipoIdentificacion(models.Model):
-    objects = ManagerGeneral()
+    objects = TipoIdentificacionManager()
     
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     sigla = models.TextField(max_length=5, verbose_name='Sigla', null=False, blank=False, unique=True)
+    tipo_nit = models.BooleanField(verbose_name='Tipo NIT', null=False, blank=False, default=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
 
     def __str__(self):
@@ -259,6 +273,34 @@ class Impuesto(models.Model, ModelDjangoExtensiones):
         verbose_name_plural = 'Impuestos'
 
 
+class SubtipoProductoServicioManger(ManagerGeneral):
+    def get_subtipo_productos_like_json(self):
+        datos = []
+        for elemento in self.get_x_estado(True, False).filter(es_servicio=False):
+            datos.append({'id': elemento.id, 'nombre': elemento.nombre})
+        return json.dumps(datos)
+
+    def get_subtipo_servicios_like_json(self):
+        datos = []
+        for elemento in self.get_x_estado(True, False).filter(es_servicio=True):
+            datos.append({'id': elemento.id, 'nombre': elemento.nombre})
+        return json.dumps(datos)
+
+
+class SubtipoProductoServicio(models.Model, ModelDjangoExtensiones):
+    objects = SubtipoProductoServicioManger()
+    nombre = models.CharField(verbose_name="Nombre", max_length=100, null=False, blank=False)
+    descripcion = models.CharField(verbose_name="Descripción", max_length=300, null=False, blank=False)
+    es_servicio = models.BooleanField(verbose_name="Es Servicio", null=False, blank=False)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name = 'Subtipo Producto Servicio'
+        verbose_name_plural = 'Subtipos Productos Servicios'
+
+
 class UnidadMedida(models.Model):
     objects = ManagerGeneral()
 
@@ -275,22 +317,25 @@ class UnidadMedida(models.Model):
         verbose_name = 'Unidad de Medida'
         verbose_name_plural = 'Unidades de Medida'
 
-class ServiciosBienes(models.Model):
+
+class ProductoServicio(models.Model, ModelDjangoExtensiones):
     objects = ManagerGeneral()
     nombre = models.CharField(verbose_name="Nombre", max_length=100, null=False, blank=False)
     descripcion = models.CharField(verbose_name="Descripción", max_length=300, null=False, blank=False)
+    subtipo_producto_servicio = models.ForeignKey(SubtipoProductoServicio, on_delete=models.DO_NOTHING, null=False,
+                                                  verbose_name="Subtipo de Producto o Servicio", blank=False)
 
     def __str__(self):
         return self.nombre
 
     class Meta:
-        verbose_name = 'Servicio y Bien'
-        verbose_name_plural = 'Servicios y Bienes'
+        verbose_name = 'Producto y Servicio'
+        verbose_name_plural = 'Productos y Servicios'
 
 
 class TextoDocumento(models.Model):
     objects = ManagerGeneral()
-    titulo = models.CharField(name='Título', max_length=100, blank=False, null=False)
+    titulo = models.CharField(verbose_name='Título', max_length=100, blank=False, null=False)
     texto1 = models.TextField(verbose_name='Texto 1', null=False, blank=False)
     texto2 = models.TextField(verbose_name='Texto 2', null=True, blank=True)
     texto3 = models.TextField(verbose_name='Texto 3', null=True, blank=True)

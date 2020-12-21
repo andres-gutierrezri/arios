@@ -1,0 +1,71 @@
+{% extends 'Administracion/_common/base_administracion.html' %}
+{% load static %}
+{% load eva_tags %}
+<title>{% block titulo %} Documentos {% endblock %}</title>
+{% block styles %}
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-brands.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-solid.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/sweetalert2/sweetalert2.bundle.css'%}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/theme-demo.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
+    <link rel="mask-icon" href="{% static 'EVA/Plantilla/img/favicon/safari-pinned-tab.svg' %}" color="#5bbad5">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/bootstrap-datepicker/bootstrap-datepicker.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'TalentoHumano/css/seleccionEmpresas.css' %}">
+{% endblock styles %}
+
+{% block main %}
+    <div class="panel-container show">
+        <div class="header">
+            <h1 class="header-title">
+                <i class='fal fa-file-alt'></i> Documentos <span class='fw-300'></span><a class="far fa-arrow-circle-left"  href="{% url 'Administracion:proveedor-perfil' %}" data-toggle="tooltip" title="" data-original-title="Volver"></a>
+                <br>
+                <br>
+            </h1>
+        </div>
+        <div class="row">
+            <div class="col-xl-12">
+                <div id="panel-1" class="panel">
+                    {% if agregar %}
+                        <div class="panel-hdr">
+                            <br>
+                            <div class="col-md-10">
+                                <small>
+                                    <a class="far fa-3x far fa-plus-circle" href="javascript:abrirModalGestionarDocumentos('{% url 'Administracion:proveedor-perfil-documento-crear' %}')"  data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar Documento"></a>
+                                </small>
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="panel-container show">
+                        <div class="panel-content">
+                            <div class="panel-group">
+                                <div class="panel-body">
+                                    <div class="row" id="js-contacts">
+                                        {% if documentos %}
+                                            {% for dc in documentos %}
+                                                {% include 'Administracion/_common/_tarjeta_documento.html' with objeto=dc %}
+                                            {% endfor %}
+                                        {% else %}
+                                            <div class="w-100" style="text-align: center"><h1>No hay documentos cargados</h1></div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" tabindex="-1" id="gestionar_documentos" role="dialog"></div>
+{% endblock main%}
+
+{% block scripts %}
+    <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
+    <script src="{% static 'Administracion/js/Tercero/documentos.js' %}"></script>
+{% endblock scripts%}

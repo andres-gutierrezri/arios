@@ -16,6 +16,7 @@ Including another URLconf
 
 from django.urls import path
 from Administracion.views import terceros, administracion, inicio_sesion, empresas, grupos_permisos, procesos
+from Administracion.views.Terceros import proveedores
 from Administracion.views.seleccion_empresa import SeleccionEmpresaModalView
 
 app_name = 'Administracion'
@@ -52,9 +53,37 @@ urlpatterns = [
          name='grupos-permisos-eliminar'),
     path('procesos', procesos.ProcesosView.as_view(), name='procesos'),
     path('proveedor/index', terceros.IndexProveedorView.as_view(), name='proveedor-index'),
-    path('proveedor/index', terceros.IndexProveedorView.as_view(), name='asereje'),
     path('proveedor/iniciar-sesion', terceros.InicioSesionProveedorView.as_view(), name='proveedor-iniciar-sesion'),
     path('proveedor/registro', terceros.RegistroProveedorView.as_view(), name='proveedor-registro'),
     path('proveedor/politica-confidencialidad', terceros.PoliticaDeCofidencialidadView.as_view(),
          name='proveedor-politica-cofidencialidad'),
+    path('proveedor/perfil', proveedores.PerfilProveedorView.as_view(), name='proveedor-perfil'),
+    path('proveedor/perfil/informacion-basica', proveedores.PerfilInformacionBasicaView.as_view(),
+         name='proveedor-perfil-informacion-basica'),
+    path('proveedor/perfil/actividades-economicas', proveedores.PerfilActividadesEconomicasView.as_view(),
+         name='proveedor-perfil-actividades-economicas'),
+    path('proveedor/perfil/entidades-bancarias', proveedores.EntidadesBancariasPerfilView.as_view(),
+         name='proveedor-perfil-entidades-bancarias'),
+    path('proveedor/perfil/entidad-bancaria/add', proveedores.EntidadBancariaCrearView.as_view(),
+         name='proveedor-perfil-entidad-bancaria-crear'),
+    path('proveedor/perfil/entidad-bancaria/<int:id>/', proveedores.EntidadBancariaEditarView.as_view(),
+         name='proveedor-perfil-entidad-bancaria-editar'),
+    path('proveedor/perfil/entidad-bancaria/<int:id>/delete', proveedores.EntidadBancariaEliminarView.as_view(),
+         name='proveedor-perfil-entidad-bancaria-eliminar'),
+    path('proveedor/perfil/ver-certificacion/<int:id>/', proveedores.VerCertificacionView.as_view(),
+         name='proveedor-perfil-ver-certificacion'),
+    path('proveedor/perfil/productos-servicios', proveedores.PerfilProductosServiciosView.as_view(),
+         name='proveedor-perfil-productos-servicios'),
+    path('producto-servicio/<int:id>/subtipos/json', administracion.CargarSubtiposProductoServicio.as_view(),
+         name='subtipos-producto-servicio-json'),
+    path('subtipo-producto-servicio/<int:id>/producto-servicio/json', administracion.CargarProductosServicios.as_view(),
+         name='productos-servicios-json'),
+    path('proveedor/perfil/documentos', proveedores.PerfilDocumentosView.as_view(), name='proveedor-perfil-documentos'),
+    path('proveedor/perfil/documentos/add', proveedores.DocumentoCrearView.as_view(),
+         name='proveedor-perfil-documento-crear'),
+    path('proveedor/perfil/documentos/<int:id>/', proveedores.DocumentoEditarView.as_view(),
+         name='proveedor-perfil-documento-editar'),
+    path('proveedor/perfil/ver-documento/<int:id>/', proveedores.VerDocumentoView.as_view(),
+         name='proveedor-perfil-ver-documento'),
+
 ]

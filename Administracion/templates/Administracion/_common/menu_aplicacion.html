@@ -1,50 +1,59 @@
-{% if perms.Administracion.view_tercero %}
-<li {% if menu_actual == 'terceros' %} class="active" {% endif %}>
-    <a href="{% url 'Administracion:terceros' %}" title="Terceros" data-filter-tags="terceros">
-        <i class="far fa-handshake"></i>
-        <span class="nav-link-text" data-i18n="nav.administracion_terceros">Terceros</span>
-    </a>
-</li>
-{% endif %}
-{% if perms.Administracion.view_empresa %}
-    <li{% if menu_actual == 'empresas' %} class="active" {% endif %}>
-        <a href="{% url 'Administracion:empresas' %}" title="Empresas" data-filter-tags="empresas">
-            <i class="far fa-briefcase"></i>
-            <span class="nav-link-text" data-i18n="nav.administracion_empresas">Empresas</span>
+{% if request.session.colaborador %}
+    {% if perms.Administracion.view_tercero %}
+    <li {% if menu_actual == 'terceros' %} class="active" {% endif %}>
+        <a href="{% url 'Administracion:terceros' %}" title="Terceros" data-filter-tags="terceros">
+            <i class="far fa-handshake"></i>
+            <span class="nav-link-text" data-i18n="nav.administracion_terceros">Terceros</span>
         </a>
     </li>
-<li {% if menu_actual == 'subempresas' %} class="active" {% endif %} style="padding-left: 15px">
-    <a href="{% url 'Administracion:sub-empresas' %}" title="Sub-empresas" data-filter-tags="sub-empresas">
-        <i class="far fa-sitemap"></i>
-        <span class="nav-link-text" data-i18n="nav.administracion_empresas">Sub-empresas</span>
-    </a>
-</li>
-{% endif %}
-{% if perms.auth.view_group %}
-<li {% if menu_actual == 'grupos-permisos' %} class="active" {% endif %}>
-    <a href="{% url 'Administracion:grupos-permisos' %}" title="Grupos de Permisos" data-filter-tags="grupos permisos">
-        <i class="fal fa-tasks"></i>
-        <span class="nav-link-text" data-i18n="nav.administracion_grupos_permisos">Grupos de Permisos</span>
-    </a>
-</li>
-{% endif %}
-{% if perms.Administracion.view_proceso %}
-<li {% if menu_actual|first == 'procesos' %} class="active" {% endif %}>
-    <a href="#" title="Procesos" data-filter-tags="procesos">
-        <i class="fal fa-code-branch"></i>
-        <span class="nav-link-text" > Procesos</span>
-    </a>
-    <ul>
-        {% if perms.Administracion.view_proceso %}
-        <li {% if menu_actual|last == 'flujos_de_caja' %} class="active" {% endif %}>
-            <a href="{% url 'Administracion:procesos' %}" title="Flujos de Caja" data-filter-tags="flujos caja">
-                <i class="subheader-icon fal fa-usd-square"></i>
-                <span class="nav-link-text" data-i18n="nav.administracion_procesos_flujos_de_caja">Flujos de Caja</span>
+    {% endif %}
+    {% if perms.Administracion.view_empresa %}
+        <li{% if menu_actual == 'empresas' %} class="active" {% endif %}>
+            <a href="{% url 'Administracion:empresas' %}" title="Empresas" data-filter-tags="empresas">
+                <i class="far fa-briefcase"></i>
+                <span class="nav-link-text" data-i18n="nav.administracion_empresas">Empresas</span>
             </a>
         </li>
-        {% endif %}
-    </ul>
-</li>
+    <li {% if menu_actual == 'subempresas' %} class="active" {% endif %} style="padding-left: 15px">
+        <a href="{% url 'Administracion:sub-empresas' %}" title="Sub-empresas" data-filter-tags="sub-empresas">
+            <i class="far fa-sitemap"></i>
+            <span class="nav-link-text" data-i18n="nav.administracion_empresas">Sub-empresas</span>
+        </a>
+    </li>
+    {% endif %}
+    {% if perms.auth.view_group %}
+    <li {% if menu_actual == 'grupos-permisos' %} class="active" {% endif %}>
+        <a href="{% url 'Administracion:grupos-permisos' %}" title="Grupos de Permisos" data-filter-tags="grupos permisos">
+            <i class="fal fa-tasks"></i>
+            <span class="nav-link-text" data-i18n="nav.administracion_grupos_permisos">Grupos de Permisos</span>
+        </a>
+    </li>
+    {% endif %}
+    {% if perms.Administracion.view_proceso %}
+    <li {% if menu_actual|first == 'procesos' %} class="active" {% endif %}>
+        <a href="#" title="Procesos" data-filter-tags="procesos">
+            <i class="fal fa-code-branch"></i>
+            <span class="nav-link-text" > Procesos</span>
+        </a>
+        <ul>
+            {% if perms.Administracion.view_proceso %}
+            <li {% if menu_actual|last == 'flujos_de_caja' %} class="active" {% endif %}>
+                <a href="{% url 'Administracion:procesos' %}" title="Flujos de Caja" data-filter-tags="flujos caja">
+                    <i class="subheader-icon fal fa-usd-square"></i>
+                    <span class="nav-link-text" data-i18n="nav.administracion_procesos_flujos_de_caja">Flujos de Caja</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </li>
+    {% endif %}
+{% else %}
+    <li {% if menu_actual == 'perfil' %} class="active" {% endif %}>
+        <a href="{% url 'Administracion:proveedor-perfil' %}" title="Mi Perfil" data-filter-tags="proveedor perfil">
+            <i class="fal fa-address-card"></i>
+            <span class="nav-link-text" data-i18n="nav.administracion_proveedor_perfil">Mi Perfil</span>
+        </a>
+    </li>
 {% endif %}
 
 

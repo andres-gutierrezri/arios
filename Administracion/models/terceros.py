@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 
 from django.contrib.auth.models import User
@@ -5,8 +6,9 @@ from django.db import models
 from django.db.models import QuerySet
 from django.http import QueryDict
 
+from EVA import settings
 from EVA.General.modelmanagers import ManagerGeneral
-from .models import Empresa, TipoIdentificacion, Persona
+from .models import Empresa, TipoIdentificacion, Persona, ProductoServicio
 from .divipol import CentroPoblado, Municipio
 from EVA.General.modeljson import ModelDjangoExtensiones
 from Administracion.enumeraciones import TipoPersona
@@ -61,8 +63,11 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False, blank=False)
     fecha_modificacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Modificación', null=True,
                                               blank=False)
-    tipo_identificacion = models.ForeignKey(TipoIdentificacion, on_delete=models.DO_NOTHING,
-                                            verbose_name='Tipo de identificación', null=True, blank=False)
+    tipo_identificacion = models.ForeignKey(TipoIdentificacion, on_delete=models.DO_NOTHING, null=True, blank=False,
+                                            verbose_name='Tipo de identificación',
+                                            related_name='tercero_tipo_identificacion')
+    ciudad = models.ForeignKey(Municipio, on_delete=models.DO_NOTHING, verbose_name='Ciudad', null=True, blank=True,
+                               related_name='proveedor_ciudad')
     centro_poblado = models.ForeignKey(CentroPoblado, on_delete=models.DO_NOTHING,
                                        verbose_name='Centro poblado', null=True, blank=False)
     tipo_tercero = models.ForeignKey(TipoTercero, on_delete=models.DO_NOTHING, verbose_name='Tipo Tercero', null=True,
@@ -89,10 +94,14 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     correo_principal = models.CharField(max_length=30, verbose_name='Correo Principal', null=True, blank=True)
     correo_auxiliar = models.CharField(max_length=30, verbose_name='Correo Auxiliar', null=True, blank=True)
     nombre_rl = models.CharField(max_length=100, verbose_name='Nombre del Representante Legal', null=True, blank=True)
+    tipo_identificacion_rl = models.ForeignKey(TipoIdentificacion, on_delete=models.DO_NOTHING,
+                                               verbose_name='Tipo de identificación del Representante Legal',
+                                               null=True, blank=False, related_name='proveedor_rl_tipo_identificacion')
     identificacion_rl = models.CharField(max_length=100, verbose_name='Identificación del Representante Legal',
                                          null=True, blank=True)
-    lugar_expedicion_rl = models.ForeignKey(Municipio, on_delete=models.DO_NOTHING,
-                                            verbose_name='Lugar de Expedicion del Id del RL', null=True, blank=True)
+    lugar_expedicion_rl = models.ForeignKey(Municipio, on_delete=models.DO_NOTHING, null=True, blank=True,
+                                            related_name='proveedor_rl_lugar_expedicion',
+                                            verbose_name='Lugar de Expedicion del Id del RL')
     fecha_constitucion = models.DateTimeField(verbose_name='Fecha de Constitución', null=True, blank=True)
     fecha_inicio_actividad = models.DateTimeField(verbose_name='Fecha de Inicio de Actividad', null=True, blank=True)
     usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario', null=True, blank=True)
@@ -155,8 +164,16 @@ class UsuarioTercero(Persona):
         verbose_name_plural = 'Usuarios Terceros'
 
 
+class TipoDocumentoTerceroManager(ManagerGeneral):
+    def get_xa_select_activos_aplica_natural(self) -> QuerySet:
+        return self.get_xa_select_activos().filter(aplica_natural=True)
+
+    def get_xa_select_activos_aplica_juridica(self) -> QuerySet:
+        return self.get_xa_select_activos().filter(aplica_juridica=True)
+
+
 class TipoDocumentoTercero(models.Model):
-    objects = ManagerGeneral()
+    objects = TipoDocumentoTerceroManager()
     nombre = models.CharField(verbose_name='Nombre', max_length=100, null=False, blank=False)
     aplica_natural = models.BooleanField(verbose_name='Aplica Natural', null=False, blank=False)
     aplica_juridica = models.BooleanField(verbose_name='Aplica Jurídica', null=False, blank=False)
@@ -169,25 +186,31 @@ class TipoDocumentoTercero(models.Model):
         verbose_name_plural = 'Tipos de Documentos Terceros'
 
 
+def custom_upload_to(instance, filename):
+    return '{2}/Proveedores/Documentos/{0}/{1}'\
+        .format(instance.tercero.nombre, filename, settings.EVA_PRIVATE_MEDIA)
+
+
 class DocumentoTercero(models.Model):
     objects = ManagerGeneral()
-    nombre_documento = models.CharField(verbose_name='Nombre', max_length=100, null=False, blank=False)
+    documento = models.FileField(upload_to=custom_upload_to, verbose_name='Documento', null=False, blank=False)
     tipo_documento = models.ForeignKey(TipoDocumentoTercero, on_delete=models.DO_NOTHING, blank=False, null=False)
-    tercero = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, name='Tercero', blank=False, null=False)
-    fecha_crea = models.DateTimeField(name='Fecha de Creación', blank=False, null=False)
-    estado = models.BooleanField(name='Estado', blank=False, null=False)
+    tercero = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, verbose_name='Tercero', blank=False, null=False)
+    fecha_crea = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', blank=False, null=False)
+    estado = models.BooleanField(verbose_name='Estado', blank=False, null=False)
 
     def __str__(self):
-        return self.nombre_documento
+        return '{0}-{1}'.format(self.tipo_documento, self.tercero)
 
     class Meta:
-        verbose_name = 'Tipo de Contribuyente'
-        verbose_name_plural = 'Tipos de Contribuyentes'
+        verbose_name = 'Documento Tercero'
+        verbose_name_plural = 'Documentos Terceros'
+        unique_together = ('tipo_documento', 'tercero')
 
 
 class Certificacion(models.Model):
     objects = ManagerGeneral()
-    tercero = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, name='Tercero', blank=False, null=False)
+    tercero = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, verbose_name='Tercero', blank=False, null=False)
     fecha_crea = models.DateField(verbose_name='Fecha de Creación', null=False, blank=False)
 
     def __str__(self):
@@ -196,3 +219,32 @@ class Certificacion(models.Model):
     class Meta:
         verbose_name = 'Certificación'
         verbose_name_plural = 'Certifiacaiones'
+
+
+class ProveedorProductoServicioManger(ManagerGeneral):
+    def get_activos_like_json(self):
+        datos = []
+        for elemento in self.get_x_estado(True, False):
+            if elemento.producto_servicio.subtipo_producto_servicio.es_servicio:
+                tipo_producto_servicio = 2
+            else:
+                tipo_producto_servicio = 1
+            datos.append({'tipo_producto_servicio': tipo_producto_servicio,
+                          'subtipo_producto_servicio': elemento.producto_servicio.subtipo_producto_servicio_id,
+                          'producto_servicio': elemento.producto_servicio_id})
+        return json.dumps(datos)
+
+
+class ProveedorProductoServicio(models.Model, ModelDjangoExtensiones):
+    objects = ProveedorProductoServicioManger()
+    producto_servicio = models.ForeignKey(ProductoServicio, on_delete=models.DO_NOTHING,
+                                          verbose_name="Producto o Servicio", null=False, blank=False)
+    proveedor = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING,
+                                  verbose_name="Proveedor", null=False, blank=False)
+
+    def __str__(self):
+        return '{0}-{1}'.format(self.proveedor, self.producto_servicio)
+
+    class Meta:
+        verbose_name = 'Proveedor Producto o Servicio'
+        verbose_name_plural = 'Proveedores Productos o Servicios'

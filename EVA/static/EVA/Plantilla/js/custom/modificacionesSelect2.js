@@ -1,4 +1,8 @@
 $(document).ready(function () {
+    activarSelect2();
+});
+
+function activarSelect2(){
     $('.select2').select2({
         "language": {
             noResults: function () {
@@ -12,4 +16,4 @@ $(document).ready(function () {
             }
         },
     });
-});
+}

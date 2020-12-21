@@ -14,9 +14,10 @@ def select_tag(lista, nombre, texto_seleccion, is_tupla=False, **kwargs):
     primer_valor = kwargs.pop('primer_valor', None)
     primer_campo_valor = kwargs.pop('primer_campo_valor', None)
     modal = kwargs.pop('modal', False)
+    id_label = kwargs.pop('id_label', None)
     return {'lista': lista, 'nombre': nombre, 'texto_seleccion': texto_seleccion, 'texto_label': texto_label,
             'propiedades': propiedades_to_str(kwargs), 'mensaje_validacion': mensaje_validacion, 'valor': valor,
-            'primer_valor': primer_valor, 'primer_campo_valor': primer_campo_valor, 'modal': modal,
+            'primer_valor': primer_valor, 'primer_campo_valor': primer_campo_valor, 'modal': modal, 'id_label': id_label,
             'is_tupla': is_tupla}
 
 
@@ -28,9 +29,10 @@ def select_multiple_tag(lista, nombre, id,  texto_seleccion, is_tupla=False, **k
     valor = kwargs.pop('value', None)
     primer_valor = kwargs.pop('primer_valor', None)
     modal = kwargs.pop('modal', False)
+    id_label = kwargs.pop('id_label', None)
     return {'lista': lista, 'nombre': nombre, 'texto_seleccion': texto_seleccion, 'texto_label': texto_label,
             'propiedades': propiedades_to_str(kwargs), 'mensaje_validacion': mensaje_validacion, 'valor': valor,
-            'primer_valor': primer_valor, 'id': id, 'modal': modal, 'is_tupla': is_tupla}
+            'primer_valor': primer_valor, 'id': id, 'modal': modal, 'id_label': id_label, 'is_tupla': is_tupla}
 
 
 @register.inclusion_tag('EVA/_general_tags/_input_general_tag.html')

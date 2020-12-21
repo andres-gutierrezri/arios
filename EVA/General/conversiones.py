@@ -49,6 +49,18 @@ def string_to_date(fecha_string: str) -> Optional[date]:
         return None
 
 
+def datetime_to_string(fecha) -> str:
+    """
+    Convierte una fecha a string con formato AAAA-MM-DD.
+    :param fecha: fecha con formato date o datetime
+    :return: retorna la fecha en string, Si falla la conversión, retorna vacío.
+    """
+    try:
+        return fecha.strftime("%Y-%m-%d")
+    except ValueError:
+        return ''
+
+
 def obtener_fecha_inicio_de_mes(anho, mes):
     return datetime.strptime('{0}-{1}-1'.format(anho, mes), "%Y-%m-%d").astimezone(pytz.timezone(settings.TIME_ZONE)) \
         .astimezone(pytz.timezone('UTC'))

@@ -211,6 +211,12 @@ class RegistroProveedorView(View):
         tercero.telefono_movil_principal = datos_registro['celular']
         tercero.correo_principal = correo
         tercero.empresa_id = 1
+        tercero.nombre_rl = ''
+        tercero.identificacion_rl = ''
+        tercero.telefono_fijo_principal = ''
+        tercero.telefono_fijo_auxiliar = ''
+        tercero.telefono_movil_auxiliar = ''
+        tercero.correo_auxiliar = ''
 
         if User.objects.filter(email=correo):
             return JsonResponse({'estado': 'ERROR', 'mensaje': 'El correo ingresado ya se encuentra registrado'})
