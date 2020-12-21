@@ -1,7 +1,7 @@
 {% extends 'Administracion/_common/base_administracion.html' %}
 {% load static %}
 {% load eva_tags %}
-<title>{% block titulo %}Mi Perfil{% endblock %}</title>
+<title>{% block titulo %}{% if solicitud_proveedor %}Perfil del Proveedor{% else %}Mi Perfil{% endif %}{% endblock %}</title>
 {% block styles %}
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-brands.css' %}">
@@ -47,9 +47,11 @@
                             </small>
                         </div>
                         <div class="col-md-2" style="float: right" >
-                            <small style="float: right">
-                                <a href="javascript:abrir_modal_aprobar_rechazar('{% url 'Administracion:proveedor-solicitudes-aprobar-rechazar' solicitud_proveedor.id %}')" class="btn btn-primary btn-block">Aprobar/Rechazar</a>
-                            </small>
+                            {% if solicitud_activa %}
+                                <small style="float: right">
+                                    <a href="javascript:abrir_modal_aprobar_rechazar('{% url 'Administracion:proveedor-solicitudes-aprobar-rechazar' solicitud_proveedor.id %}')" class="btn btn-primary btn-block">Aprobar/Rechazar</a>
+                                </small>
+                            {% endif %}
                         </div>
                     </div>
                     {% endif %}

@@ -318,11 +318,12 @@ class PerfilProveedorSolicitud(AbstractEvaLoggedView):
     def get(self, request, id):
         proveedor = Tercero.objects.get(id=id)
         datos_proveedor = generar_datos_proveedor(proveedor)
+        solicitud_activa = SolicitudProveedor.objects.filter(proveedor=proveedor, estado=True)
 
         opciones = datos_proveedor['opciones']
         return render(request, 'Administracion/Tercero/Proveedor/perfil.html',
                       {'opciones': opciones, 'tipo_nit': proveedor.tipo_identificacion.tipo_nit,
-                       'solicitud_proveedor': proveedor})
+                       'solicitud_proveedor': proveedor, 'solicitud_activa': solicitud_activa})
 
 
 APROBADO = 1
@@ -363,17 +364,11 @@ class ProveedorSolicitudAprobarRechazar(AbstractEvaLoggedView):
         return redirect(reverse('Administracion:proveedor-solicitudes'))
 
 
-class ProveedorIndexView(AbstractEvaLoggedView):
-    def get(self, request):
-        proveedores = Tercero.objects.filter(tipo_tercero_id=TipoTercero.PROVEEDOR)
-        return render(request, 'Administracion/Tercero/Proveedor/index.html',
-                      {'proveedores': proveedores})
-
-
 class ProveedorModificarSolicitudView(AbstractEvaLoggedProveedorView):
     def post(self, request, id):
         try:
             SolicitudProveedor.objects.filter(proveedor_id=id).update(estado=False)
+            Tercero.objects.filter(id=id).update(estado=False)
             Certificacion.objects.filter(tercero_id=id).update(estado=False)
 
             messages.success(self.request, 'Ahora puedes modificar tu perfil.')

@@ -20,4 +20,6 @@ permisos = [Permiso('index', None),
             Permiso('grupos-permisos-editar', ['auth.change_group']),
             Permiso('grupos-permisos-eliminar', ['auth.delete_group']),
             Permiso('proveedor-solicitudes', ['Administracion.view_proveedor']),
+            Permiso('proveedor-cambiar-estado', ['Administracion.view_proveedor']),
+            Permiso('proveedor-administracion-index', ['Administracion.view_proveedor']),
             ]
