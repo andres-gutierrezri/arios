@@ -487,7 +487,6 @@ def datos_xa_render_actividades_economicas(request):
     if proveedor_actec:
         proveedor_actec = proveedor_actec.first()
     actividades_economicas = ActividadEconomica.objects.get_xa_select_actividades_con_codigo()
-    datos_regimenes = Regimen.objects.get_activos_like_json()
     entidades_publicas = [{'campo_valor': '1', 'campo_texto': 'Nacional'},
                           {'campo_valor': '2', 'campo_texto': 'Departamental'},
                           {'campo_valor': '3', 'campo_texto': 'Municipal'}]
@@ -497,7 +496,7 @@ def datos_xa_render_actividades_economicas(request):
     responsabilidades_tercero = proveedor.responsabilidades_fiscales.split(';') \
         if proveedor.responsabilidades_fiscales else []
 
-    datos = {'actividades_economicas': actividades_economicas, 'datos_regimenes': datos_regimenes,
+    datos = {'actividades_economicas': actividades_economicas,
              'entidades_publicas': entidades_publicas, 'proveedor': proveedor_actec,
              'entidad_publica': entidad_publica, 'regimenes_fiscales': RegimenFiscal.choices,
              'responsabilidades': ResponsabilidadesFiscales.choices, 'tributos': Tributos.choices,
