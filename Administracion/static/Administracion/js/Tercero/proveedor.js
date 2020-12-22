@@ -62,58 +62,20 @@ function validarTipoPersona() {
         nombreRazonSocial.prev("label").text('Razón Social');
         nombreRazonSocial.attr('placeholder', 'Ingrese la razón social');
         divFechaConstitucion.show();
-        inputFechaConstitucion.attr('required', 'true');
-        inputFechaConstitucion.removeAttr('hidden', 'true')
         divInicioActividad.hide();
-        inputInicioActividad.removeAttr('required', 'true')
-        inputInicioActividad.attr('hidden', 'true')
+        ocultarCamposFormulario([inputInicioActividad])
+        mostrarCamposFormulario([inputFechaConstitucion, inputNombreRL, selectTipoIdentificacionRL,
+            inputIdentificacionRL, selectRLPais, selectRLDepartamento, selectRLMunicipio])
 
-        inputNombreRL.attr('required', 'true');
-        inputNombreRL.removeAttr('hidden', 'true')
-        selectTipoIdentificacionRL.attr('required', 'true');
-        selectTipoIdentificacionRL.removeAttr('hidden', 'true')
-        inputIdentificacionRL.attr('required', 'true');
-        inputIdentificacionRL.removeAttr('hidden', 'true')
-        selectRLPais.attr('required', 'true');
-        selectRLPais.removeAttr('hidden', 'true')
-        selectRLDepartamento.attr('required', 'true');
-        selectRLDepartamento.removeAttr('hidden', 'true')
-        selectRLMunicipio.attr('required', 'true');
-        selectRLMunicipio.removeAttr('hidden', 'true')
-
-        selectRLPais.attr('required', 'true');
-        selectRLDepartamento.attr('required', 'true');
-        selectRLMunicipio.attr('required', 'true');
     }else{
         divRepresentanteLegal.hide();
         nombreRazonSocial.prev("label").text('Nombre');
         nombreRazonSocial.attr('placeholder', 'Ingrese el nombre')
         divFechaConstitucion.hide();
-        inputFechaConstitucion.removeAttr('required', 'true');
-        inputFechaConstitucion.attr('hidden', 'true')
         divInicioActividad.show();
-        inputInicioActividad.attr('required', 'true')
-        inputInicioActividad.removeAttr('hidden', 'true')
-
-        inputNombreRL.removeAttr('required', 'true');
-        inputNombreRL.attr('hidden', 'true')
-        selectTipoIdentificacionRL.removeAttr('required', 'true');
-        selectTipoIdentificacionRL.attr('hidden', 'true')
-        inputIdentificacionRL.removeAttr('required', 'true');
-        inputIdentificacionRL.attr('hidden', 'true')
-        selectRLPais.removeAttr('required', 'true');
-        selectRLPais.attr('hidden', 'true')
-        selectRLDepartamento.removeAttr('required', 'true');
-        selectRLDepartamento.attr('hidden', 'true')
-        selectRLMunicipio.removeAttr('required', 'true');
-        selectRLMunicipio.attr('hidden', 'true')
-
-        selectTipoIdentificacionRL.removeAttr('required', 'true');
-        inputIdentificacionRL.removeAttr('required', 'true');
-
-        selectRLPais.removeAttr('required', 'true');
-        selectRLDepartamento.removeAttr('required', 'true');
-        selectRLMunicipio.removeAttr('required', 'true');
+        mostrarCamposFormulario([inputInicioActividad])
+        ocultarCamposFormulario([inputFechaConstitucion, inputNombreRL, selectTipoIdentificacionRL,
+            inputIdentificacionRL, selectRLPais, selectRLDepartamento, selectRLMunicipio])
     }
 }
 
