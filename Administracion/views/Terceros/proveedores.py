@@ -3,14 +3,16 @@ import os
 from sqlite3 import IntegrityError
 
 from django.contrib import messages
+from django.core.exceptions import ValidationError
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
+from Administracion.enumeraciones import TipoPersona, RegimenFiscal, ResponsabilidadesFiscales, Tributos
 from Administracion.models import TipoIdentificacion, Pais, Tercero, Departamento, Municipio
 from Administracion.models.models import SubtipoProductoServicio, ProductoServicio
 from Administracion.models.terceros import ProveedorProductoServicio, TipoDocumentoTercero, DocumentoTercero, \
-    SolicitudProveedor, TipoTercero, Certificacion
+    SolicitudProveedor, Certificacion
 from EVA.General import app_datetime_now
 from EVA.General.conversiones import datetime_to_string
 from EVA.views.index import AbstractEvaLoggedProveedorView, AbstractEvaLoggedView
@@ -24,18 +26,16 @@ class PerfilProveedorView(AbstractEvaLoggedProveedorView):
     def get(self, request):
         proveedor = Tercero.objects.get(usuario=request.user)
         datos_proveedor = generar_datos_proveedor(proveedor)
-
         total = datos_proveedor['total']
-        opciones = datos_proveedor['opciones']
         perfil_activo = True if Certificacion.objects.filter(tercero=proveedor, estado=True) else False
-
         btn_enviar = True if total == 100 else False
         solicitud_activa = True if SolicitudProveedor.objects.filter(proveedor=proveedor, estado=True) else False
 
         return render(request, 'Administracion/Tercero/Proveedor/perfil.html',
-                      {'opciones': opciones, 'total': total, 'btn_enviar': btn_enviar,
-                       'tipo_nit': proveedor.tipo_identificacion.tipo_nit, 'proveedor_id': proveedor.id,
-                       'solicitud_activa': solicitud_activa, 'perfil_activo': perfil_activo})
+                      {'datos_proveedor': datos_proveedor, 'total': total, 'btn_enviar': btn_enviar,
+                       'proveedor_id': proveedor.id, 'tipo_persona_pro': proveedor.tipo_persona,
+                       'solicitud_activa': solicitud_activa, 'perfil_activo': perfil_activo,
+                       })
 
 
 class PerfilInformacionBasicaView(AbstractEvaLoggedProveedorView):
@@ -44,22 +44,37 @@ class PerfilInformacionBasicaView(AbstractEvaLoggedProveedorView):
                       datos_xa_render_informacion_basica(request))
 
     def post(self, request):
-        update_fields = ('nombre', 'tipo_identificacion_id', 'identificacion', 'ciudad', 'nombre_rl',
-                         'tipo_identificacion_rl', 'identificacion_rl', 'lugar_expedicion_rl', 'telefono_fijo_principal',
+        update_fields = ['nombre', 'tipo_identificacion_id', 'identificacion', 'ciudad', 'tipo_persona',
                          'telefono_movil_principal', 'telefono_fijo_auxiliar', 'telefono_movil_auxiliar',
-                         'correo_principal', 'correo_auxiliar', 'fecha_inicio_actividad', 'fecha_constitucion')
+                         'correo_principal', 'correo_auxiliar', 'fecha_inicio_actividad', 'fecha_constitucion',
+                         'telefono_fijo_principal']
+
+        exclude = ['centro_poblado', 'direccion', 'telefono']
 
         proveedor = Tercero.objects.get(usuario=request.user)
 
         proveedor.nombre = request.POST.get('nombre', '')
         proveedor.tipo_identificacion_id = request.POST.get('tipo_identificacion', '')
-        proveedor.identificacion = request.POST.get('nit', '')
+        proveedor.identificacion = request.POST.get('identificacion', '')
+        proveedor.digito_verificacion = request.POST.get('digito_verificacion', '')
         proveedor.ciudad_id = request.POST.get('municipio', '')
 
-        proveedor.nombre_rl = request.POST.get('nombre_rl', '')
-        proveedor.tipo_identificacion_rl_id = request.POST.get('tipo_identificacion_rl', '')
-        proveedor.identificacion_rl = request.POST.get('identificacion_rl', '')
-        proveedor.lugar_expedicion_rl_id = request.POST.get('municipio_rl', '')
+        if 'NIT' in proveedor.tipo_identificacion.sigla:
+            update_fields.append('digito_verificacion')
+        else:
+            exclude.append('digito_verificacion')
+
+        if proveedor.tipo_persona == PERSONA_JURIDICA:
+            update_fields.append('nombre_rl')
+            update_fields.append('tipo_identificacion_rl')
+            update_fields.append('identificacion_rl')
+            update_fields.append('lugar_expedicion_rl')
+            proveedor.nombre_rl = request.POST.get('nombre_rl', '')
+            proveedor.tipo_identificacion_rl_id = request.POST.get('tipo_identificacion_rl', '')
+            proveedor.identificacion_rl = request.POST.get('identificacion_rl', '')
+            proveedor.lugar_expedicion_rl_id = request.POST.get('municipio_rl', '')
+        else:
+            exclude.append('tipo_identificacion_rl')
 
         proveedor.telefono_fijo_principal = request.POST.get('fijo_principal', '')
         proveedor.telefono_movil_principal = request.POST.get('movil_principal', '')
@@ -70,6 +85,7 @@ class PerfilInformacionBasicaView(AbstractEvaLoggedProveedorView):
 
         proveedor.fecha_inicio_actividad = request.POST.get('fecha_inicio_actividad', '')
         proveedor.fecha_constitucion = request.POST.get('fecha_constitucion', '')
+        proveedor.tipo_persona = request.POST.get('tipo_persona', '')
 
         if not proveedor.fecha_inicio_actividad:
             proveedor.fecha_inicio_actividad = None
@@ -78,12 +94,18 @@ class PerfilInformacionBasicaView(AbstractEvaLoggedProveedorView):
             proveedor.fecha_constitucion = None
 
         try:
-            proveedor.save(update_fields=update_fields)
-            messages.success(self.request, 'Se ha guardado la información básica correctamente.')
-            return redirect(reverse('Administracion:proveedor-perfil'))
-        except:
+            proveedor.full_clean(exclude=exclude)
+        except ValidationError as errores:
+            if 'identificacion' in errores.message_dict:
+                messages.error(self.request, 'El número de identificación ingresado ya se encuentra registrado')
+                return render(request, 'Administracion/Tercero/Proveedor/informacion_basica.html',
+                              datos_xa_render_informacion_basica(request, proveedor, errores.message_dict))
             messages.error(self.request, 'Ha ocurrido un error al actualizar la información.')
             return redirect(reverse('Administracion:proveedor-perfil'))
+
+        proveedor.save(update_fields=update_fields)
+        messages.success(self.request, 'Se ha guardado la información básica correctamente.')
+        return redirect(reverse('Administracion:proveedor-perfil'))
 
 
 class PerfilActividadesEconomicasView(AbstractEvaLoggedProveedorView):
@@ -92,12 +114,16 @@ class PerfilActividadesEconomicasView(AbstractEvaLoggedProveedorView):
                       datos_xa_render_actividades_economicas(request))
 
     def post(self, request):
-        update_fields = ('actividad_principal', 'actividad_secundaria', 'otra_actividad', 'regimen', 'contribuyente_iyc',
-                         'tipo_contribuyente', 'numero_resolucion', 'contribuyente_iyc', 'entidad_publica', 'proveedor',
+        update_fields = ('actividad_principal', 'actividad_secundaria', 'otra_actividad', 'contribuyente_iyc',
+                         'numero_resolucion', 'contribuyente_iyc', 'entidad_publica', 'proveedor',
                          'bienes_servicios', 'proveedor')
         proveedor = Tercero.objects.get(usuario=request.user)
         proveedor_ae = ProveedorActividadEconomica.from_dictionary(request.POST)
         proveedor_ae.proveedor = proveedor
+        proveedor.regimen_fiscal = request.POST.get('regimen_fiscal')
+        responsabilidades = request.POST.getlist('responsabilidades')
+        proveedor.responsabilidades_fiscales = ';'.join(responsabilidades) if responsabilidades else ''
+        proveedor.tributos = request.POST.get('tributo')
 
         try:
             registro = ProveedorActividadEconomica.objects.filter(proveedor=proveedor)
@@ -106,7 +132,8 @@ class PerfilActividadesEconomicasView(AbstractEvaLoggedProveedorView):
                 proveedor_ae.save(update_fields=update_fields)
             else:
                 proveedor_ae.save()
-            messages.success(self.request, 'Se ha guardado la información básica correctamente.')
+            proveedor.save(update_fields=('responsabilidades_fiscales', 'regimen_fiscal', 'tributos'))
+            messages.success(self.request, 'Se ha guardado la información de actividades económicas correctamente.')
             return redirect(reverse('Administracion:proveedor-perfil'))
         except:
             messages.error(self.request, 'Ha ocurrido un error al actualizar la información.')
@@ -233,13 +260,18 @@ class PerfilDocumentosView(AbstractEvaLoggedProveedorView):
     def get(self, request):
         proveedor = Tercero.objects.get(usuario=request.user)
 
-        if proveedor.tipo_identificacion.tipo_nit:
+        if proveedor.tipo_persona == PERSONA_JURIDICA:
             documentos = DocumentoTercero.objects.filter(tercero=proveedor, tipo_documento__aplica_juridica=True)
+            tipos_documentos = TipoDocumentoTercero.objects.filter(aplica_juridica=True)
         else:
             documentos = DocumentoTercero.objects.filter(tercero=proveedor, tipo_documento__aplica_natural=True)
+            tipos_documentos = TipoDocumentoTercero.objects.filter(aplica_natural=True)
+
         agregar = verificar_documentos_proveedor(proveedor, documentos)
         return render(request, 'Administracion/Tercero/Proveedor/documentos.html', {'documentos': documentos,
-                                                                                    'agregar': agregar})
+                                                                                    'agregar': agregar,
+                                                                                    'n_documentos': len(documentos),
+                                                                                    'n_tipos': len(tipos_documentos)})
 
 
 class DocumentoCrearView(AbstractEvaLoggedProveedorView):
@@ -270,15 +302,39 @@ class DocumentoEditarView(AbstractEvaLoggedProveedorView):
         return render(request, 'Administracion/_common/_modal_gestionar_documento.html',
                       datos_xa_render_documentos(request, documento))
 
+    def post(self, request, id):
+        documento = DocumentoTercero.objects.get(id=id)
+        documento.documento = request.FILES.get('documento', '')
+        try:
+            documento.save(update_fields=['documento'])
+        except:
+            return JsonResponse({"estado": "error", "mensaje": "Ha ocurrido un error al guardar la información"})
+
+        messages.success(self.request, 'Se ha cargado el documento {0} correctamente.'
+                         .format(documento.tipo_documento.nombre))
+        return JsonResponse({"estado": "OK"})
+
 
 class EnviarSolicitudProveedorView(AbstractEvaLoggedView):
     def post(self, request, id):
         try:
             proveedor = Tercero.objects.get(id=id)
-            solicitud = SolicitudProveedor.objects.create(proveedor=proveedor, fecha_creacion=app_datetime_now(),
-                                                          aprobado=False, estado=True)
-            messages.success(self.request, 'Se ha enviado la solicitud correctamente')
-            crear_notificacion_por_evento(EventoDesencadenador.SOLICITUD_APROBACION_PROVEEDOR, solicitud.id)
+            if SolicitudProveedor.objects.filter(proveedor=proveedor, estado=True):
+                messages.warning(self.request, 'Ya se ha enviado una solicitud.')
+            else:
+                solicitud = SolicitudProveedor.objects.create(proveedor=proveedor, fecha_creacion=app_datetime_now(),
+                                                              aprobado=False, estado=True)
+                messages.success(self.request, 'Se ha enviado la solicitud correctamente')
+                if Certificacion.objects.filter(tercero=proveedor):
+                    titulo = 'Un proveedor ha modificado su perfil.'
+                    comentario = 'El proveedor {0} ha modificado su perfil'.format(proveedor.nombre)
+                    crear_notificacion_por_evento(EventoDesencadenador.SOLICITUD_APROBACION_PROVEEDOR, solicitud.id,
+                                                  contenido={'titulo': titulo,
+                                                             'mensaje': comentario})
+
+                else:
+                    crear_notificacion_por_evento(EventoDesencadenador.SOLICITUD_APROBACION_PROVEEDOR, solicitud.id)
+
             return JsonResponse({"estado": "OK"})
         except:
             return JsonResponse({"estado": "ERROR", "mensaje": "Ha ocurrido un error al realizar la solicitud"})
@@ -320,10 +376,9 @@ class PerfilProveedorSolicitud(AbstractEvaLoggedView):
         datos_proveedor = generar_datos_proveedor(proveedor)
         solicitud_activa = SolicitudProveedor.objects.filter(proveedor=proveedor, estado=True)
 
-        opciones = datos_proveedor['opciones']
         return render(request, 'Administracion/Tercero/Proveedor/perfil.html',
-                      {'opciones': opciones, 'tipo_nit': proveedor.tipo_identificacion.tipo_nit,
-                       'solicitud_proveedor': proveedor, 'solicitud_activa': solicitud_activa})
+                      {'datos_proveedor': datos_proveedor, 'solicitud_proveedor': proveedor,
+                       'solicitud_activa': solicitud_activa, 'tipo_persona_pro': proveedor.tipo_persona})
 
 
 APROBADO = 1
@@ -377,12 +432,13 @@ class ProveedorModificarSolicitudView(AbstractEvaLoggedProveedorView):
             return JsonResponse({"estado": "ERROR", "mensaje": "Ha ocurrido un error al realizar la solicitud"})
 
 
-def datos_xa_render_informacion_basica(request):
+def datos_xa_render_informacion_basica(request, proveedor: Tercero = None, errores=None):
     tipo_identificacion = TipoIdentificacion.objects.get_xa_select_activos()
     tipo_identificacion_personas = TipoIdentificacion.objects.get_xa_select_personas_activos()
     json_tipo_identificacion = TipoIdentificacion.objects.get_activos_like_json()
     paises = Pais.objects.get_xa_select_activos()
-    proveedor = Tercero.objects.get(usuario=request.user)
+    if not proveedor:
+        proveedor = Tercero.objects.get(usuario=request.user)
 
     departamentos = ''
     municipios = ''
@@ -401,25 +457,35 @@ def datos_xa_render_informacion_basica(request):
     datos = {'tipo_identificacion': tipo_identificacion, 'tipo_identificacion_personas': tipo_identificacion_personas,
              'json_tipo_identificacion': json_tipo_identificacion, 'paises': paises, 'proveedor': proveedor,
              'departamentos': departamentos, 'municipios': municipios, 'departamentos_rl': departamentos_rl,
-             'municipios_rl': municipios_rl}
+             'municipios_rl': municipios_rl, 'tipos_persona': TipoPersona.choices, 'errores': errores}
     return datos
 
 
+PERSONA_JURIDICA = 1
+PERSONA_NATURAL = 2
+
+
 def datos_xa_render_actividades_economicas(request):
-    proveedor = ProveedorActividadEconomica.objects.filter(proveedor__usuario=request.user)
-    if proveedor:
-        proveedor = proveedor.first()
+    proveedor = Tercero.objects.get(usuario=request.user)
+    proveedor_actec = ProveedorActividadEconomica.objects.filter(proveedor=proveedor)
+    if proveedor_actec:
+        proveedor_actec = proveedor_actec.first()
     actividades_economicas = ActividadEconomica.objects.get_xa_select_actividades_con_codigo()
-    regimenes = Regimen.objects.get_xa_select_activos()
-    tipos_contribuyente = TipoContribuyente.objects.get_xa_select_activos()
     datos_regimenes = Regimen.objects.get_activos_like_json()
     entidades_publicas = [{'campo_valor': '1', 'campo_texto': 'Nacional'},
                           {'campo_valor': '2', 'campo_texto': 'Departamental'},
                           {'campo_valor': '3', 'campo_texto': 'Municipal'}]
 
-    datos = {'actividades_economicas': actividades_economicas, 'regimenes': regimenes,
-             'tipos_contribuyente': tipos_contribuyente, 'datos_regimenes': datos_regimenes,
-             'entidades_publicas': entidades_publicas, 'proveedor': proveedor}
+    entidad_publica = True if PERSONA_JURIDICA == proveedor.tipo_persona else False
+
+    responsabilidades_tercero = proveedor.responsabilidades_fiscales.split(';') \
+        if proveedor.responsabilidades_fiscales else []
+
+    datos = {'actividades_economicas': actividades_economicas, 'datos_regimenes': datos_regimenes,
+             'entidades_publicas': entidades_publicas, 'proveedor': proveedor_actec,
+             'entidad_publica': entidad_publica, 'regimenes_fiscales': RegimenFiscal.choices,
+             'responsabilidades': ResponsabilidadesFiscales.choices, 'tributos': Tributos.choices,
+             'responsabilidades_tercero': responsabilidades_tercero}
     return datos
 
 
@@ -489,7 +555,7 @@ def datos_xa_render_productos_servicios(request):
 
 def datos_xa_render_documentos(request, documento: DocumentoTercero = None):
     proveedor = Tercero.objects.get(usuario=request.user)
-    if proveedor.tipo_identificacion.tipo_nit:
+    if proveedor.tipo_persona == PERSONA_JURIDICA:
         tipos_documentos = TipoDocumentoTercero.objects.get_xa_select_activos_aplica_juridica()
     else:
         tipos_documentos = TipoDocumentoTercero.objects.get_xa_select_activos_aplica_natural()
@@ -508,7 +574,7 @@ def datos_xa_render_documentos(request, documento: DocumentoTercero = None):
 
 
 def verificar_documentos_proveedor(proveedor, documentos):
-    if proveedor.tipo_identificacion.tipo_nit:
+    if proveedor.tipo_persona == PERSONA_JURIDICA:
         tipos_documentos = TipoDocumentoTercero.objects.filter(aplica_juridica=True)
     else:
         tipos_documentos = TipoDocumentoTercero.objects.filter(aplica_natural=True)
@@ -534,6 +600,9 @@ def generar_datos_informacion_basica(proveedor):
         fecha_exp_rl = '{1} - {2} - {0}'.format(proveedor.lugar_expedicion_rl.departamento.pais.nombre.capitalize(),
                                                 proveedor.lugar_expedicion_rl.departamento.nombre.capitalize(),
                                                 proveedor.lugar_expedicion_rl.nombre.capitalize())
+    if 'NIT' in proveedor.tipo_identificacion.sigla:
+        proveedor.identificacion = '{0}-{1}'.format(proveedor.identificacion, proveedor.digito_verificacion)
+
     return [{'nombre_campo': 'Nombre', 'valor_campo': proveedor.nombre},
             {'nombre_campo': 'Tipo de Identificación', 'valor_campo': proveedor.tipo_identificacion.nombre},
             {'nombre_campo': 'Identificación', 'valor_campo': proveedor.identificacion},
@@ -544,17 +613,20 @@ def generar_datos_informacion_basica(proveedor):
             {'nombre_campo': 'Teléfono Movil Auxiliar', 'valor_campo': proveedor.telefono_movil_auxiliar},
             {'nombre_campo': 'Correo Electrónico Principal', 'valor_campo': proveedor.correo_principal},
             {'nombre_campo': 'Correo Electrónico Auxiliar', 'valor_campo': proveedor.correo_auxiliar},
-            {'nombre_campo': 'Fecha de Inicio de Actividad', 'validar': True, 'tipo_nit': False, 'valor_campo':
-                datetime_to_string(proveedor.fecha_inicio_actividad) if proveedor.fecha_inicio_actividad else ''},
-            {'nombre_campo': 'Fecha de Constitución', 'validar': True, 'tipo_nit': True, 'valor_campo':
-                datetime_to_string(proveedor.fecha_inicio_actividad) if proveedor.fecha_inicio_actividad else ''},
+            {'nombre_campo': 'Tipo de Persona', 'valor_campo': 'Jurídica' if proveedor.tipo_persona == 1 else 'Natural'},
+            {'nombre_campo': 'Fecha de Inicio de Actividad', 'tipo_persona': 2, 'validar': True, 'valor_campo':
+                datetime_to_string(proveedor.fecha_inicio_actividad) if proveedor.fecha_inicio_actividad else '',
+             'tipo_persona_pro': proveedor.tipo_persona},
+            {'nombre_campo': 'Fecha de Constitución', 'tipo_persona': 1, 'validar': True, 'valor_campo':
+                datetime_to_string(proveedor.fecha_inicio_actividad) if proveedor.fecha_inicio_actividad else '',
+             'tipo_persona_pro': proveedor.tipo_persona},
             {'nombre_campo': 'Fecha de Expedición del Documento del Representante Legal', 'valor_campo': fecha_exp_rl,
-             'tipo_nit': True, 'validar': True},
+             'tipo_persona': 1, 'validar': True},
             {'nombre_campo': 'Nombre del Representante Legal', 'valor_campo': proveedor.nombre_rl, 'validar': True,
-             'tipo_nit': True},
-            {'nombre_campo': 'Tipo de Identificación del Representante Legal', 'tipo_nit': True, 'validar': True,
+             'tipo_persona': 1},
+            {'nombre_campo': 'Tipo de Identificación del Representante Legal', 'tipo_persona': 1, 'validar': True,
              'valor_campo': proveedor.identificacion_rl},
-            {'nombre_campo': 'Identificación del Representante Legal', 'tipo_nit': True, 'validar': True,
+            {'nombre_campo': 'Identificación del Representante Legal', 'tipo_persona': 1, 'validar': True,
              'valor_campo': proveedor.identificacion_rl}
             ]
 
@@ -570,11 +642,33 @@ def generar_datos_actividades_economicas(proveedor):
             entidad_publica = 'Departamental'
         else:
             entidad_publica = 'Municipal'
+
+        reg_fisc = proveedor.regimen_fiscal
+        regimen_fiscal = ''
+        for d in RegimenFiscal.choices:
+            if d[0] == reg_fisc:
+                regimen_fiscal = d[1]
+                break
+
+        resp_fiscal = proveedor.responsabilidades_fiscales
+        datos_resp_fiscal = ''
+        for sel in resp_fiscal.split(';'):
+            for op in ResponsabilidadesFiscales.choices:
+                if op[0] == sel:
+                    datos_resp_fiscal += ', ' + op[1] if datos_resp_fiscal else op[1]
+
+        trib = proveedor.tributos
+        tributos = ''
+        for tr in Tributos.choices:
+            if tr[0] == trib:
+                tributos = tr[1]
+                break
         respuesta = [{'nombre_campo': 'Actividad Principal', 'valor_campo': ae.actividad_principal},
                      {'nombre_campo': 'Actividad Secundaria', 'valor_campo': ae.actividad_secundaria},
                      {'nombre_campo': 'Otra Actividad', 'valor_campo': ae.otra_actividad},
-                     {'nombre_campo': 'Régimen', 'valor_campo': ae.regimen},
-                     {'nombre_campo': 'Tipo de Contribuyente', 'valor_campo': ae.tipo_contribuyente},
+                     {'nombre_campo': 'Régimen Fiscal', 'valor_campo': regimen_fiscal},
+                     {'nombre_campo': 'Responsabilidad Fiscal', 'valor_campo': datos_resp_fiscal},
+                     {'nombre_campo': 'Tributo', 'valor_campo': tributos},
                      {'nombre_campo': 'Excento de Industria y Comercio: # Res', 'valor_campo': ae.numero_resolucion},
                      {'nombre_campo': 'Contribuyente Industria y Comercio', 'valor_campo': ae.contribuyente_iyc},
                      {'nombre_campo': 'Entidad Pública', 'valor_campo': entidad_publica},
@@ -605,6 +699,10 @@ def generar_datos_bienes_servicios(proveedor):
 
 def generar_datos_documentos(proveedor):
     documentos = DocumentoTercero.objects.filter(tercero=proveedor)
+    if proveedor.tipo_persona == PERSONA_JURIDICA:
+        documentos = documentos.filter(tipo_documento__aplica_juridica=True)
+    else:
+        documentos = documentos.filter(tipo_documento__aplica_natural=True)
     lista_documentos = []
     for doc in documentos:
         lista_documentos\
@@ -619,6 +717,10 @@ def generar_datos_proveedor(proveedor):
     entidades_bancarias = generar_datos_entidades_bancarias(proveedor)
     bienes_servicios = generar_datos_bienes_servicios(proveedor)
     documentos = generar_datos_documentos(proveedor)
+    if proveedor.tipo_persona == PERSONA_JURIDICA:
+        lista_documentos = len(TipoDocumentoTercero.objects.filter(aplica_juridica=True))
+    else:
+        lista_documentos = len(TipoDocumentoTercero.objects.filter(aplica_juridica=True))
 
     total = 0
     total = total + 10 if proveedor.ciudad else total
@@ -626,22 +728,22 @@ def generar_datos_proveedor(proveedor):
     total = total + 20 if actividades_economicas else total
     total = total + 20 if entidades_bancarias else total
     total = total + 20 if bienes_servicios else total
-    total = total + 20 if documentos else total
+    total = total + 20 if len(documentos) == lista_documentos else total
 
-    opciones = [{'id': 1, 'nombre': 'Información Básica',
-                 'url': '/administracion/proveedor/perfil/informacion-basica',
-                 'datos': informacion_basica},
-                {'id': 2, 'nombre': 'Actividades Económicas',
-                 'url': '/administracion/proveedor/perfil/actividades-economicas',
-                 'datos': actividades_economicas},
-                {'id': 3, 'nombre': 'Entidades Bancarias',
-                 'url': '/administracion/proveedor/perfil/entidades-bancarias',
-                 'datos': entidades_bancarias},
-                {'id': 4, 'nombre': 'Productos y Servicios',
-                 'url': '/administracion/proveedor/perfil/productos-servicios',
-                 'datos': bienes_servicios},
-                {'id': 5, 'nombre': 'Documentos',
-                 'url': '/administracion/proveedor/perfil/documentos', 'datos': documentos},
-                ]
+    informacion_basica = {'id': 1, 'nombre': 'Información Básica',
+                          'url': '/administracion/proveedor/perfil/informacion-basica',
+                          'datos': informacion_basica}
+    actividades_economicas = {'id': 2, 'nombre': 'Actividades Económicas',
+                              'url': '/administracion/proveedor/perfil/actividades-economicas',
+                              'datos': actividades_economicas}
+    entidades_bancarias = {'id': 3, 'nombre': 'Entidades Bancarias',
+                           'url': '/administracion/proveedor/perfil/entidades-bancarias',
+                           'datos': entidades_bancarias}
+    bienes_servicios = {'id': 4, 'nombre': 'Productos y Servicios',
+                        'url': '/administracion/proveedor/perfil/productos-servicios',
+                        'datos': bienes_servicios}
+    documentos = {'id': 5, 'nombre': 'Documentos',
+                  'url': '/administracion/proveedor/perfil/documentos', 'datos': documentos}
 
-    return {'total': total, 'opciones': opciones}
+    return {'total': total, 'informacion_basica': informacion_basica, 'actividades_economicas': actividades_economicas,
+            'entidades_bancarias': entidades_bancarias, 'bienes_servicios': bienes_servicios, 'documentos': documentos}

@@ -27,7 +27,7 @@
                                 <div class="panel-body">
                                     <div class="table-responsive">
                                         <table class="table table-bordered w-100" id="dataTable">
-                                            <thead>
+                                            <thead class="bg-primary-600">
                                                 <tr>
                                                     <th>Nombre</th>
                                                     <th>Identificación</th>
@@ -56,7 +56,7 @@
                                                         </td>
                                                         <td>{{ solicitud.fecha_creacion|date:'Y-m-d' }}</td>
                                                         <td>
-                                                            <a class="far fa-2x fa-eye" href="{% url 'Administracion:proveedor-solicitudes-perfil' solicitud.proveedor_id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ver Perfil"></a>
+                                                            <a class="far fa-2x fa-check-square" href="{% url 'Administracion:proveedor-solicitudes-perfil' solicitud.proveedor_id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Aprobar/Rechazar"></a>
                                                         </td>
                                                     </tr>
                                                 {% endfor %}

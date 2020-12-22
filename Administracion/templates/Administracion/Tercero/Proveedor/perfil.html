@@ -32,7 +32,6 @@
                         {% endif %}
                     {% endif %}
                 {% endif %}
-
                 <br>
             </h1>
         </div>
@@ -46,37 +45,49 @@
                                  <a class="far fa-3x fa-arrow-circle-left"  href="javascript:history.back()" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Volver"></a>
                             </small>
                         </div>
+                        <div class="col-md-2"></div>
+                    </div>
+                {% endif %}
+                {% if btn_enviar and perfil_activo and not solicitud_activa %}
+                    <div class="panel-hdr">
+                        <div class="col-md-10"></div>
                         <div class="col-md-2" style="float: right" >
-                            {% if solicitud_activa %}
-                                <small style="float: right">
-                                    <a href="javascript:abrir_modal_aprobar_rechazar('{% url 'Administracion:proveedor-solicitudes-aprobar-rechazar' solicitud_proveedor.id %}')" class="btn btn-primary btn-block">Aprobar/Rechazar</a>
-                                </small>
-                            {% endif %}
+                            <small style="float: right">
+                                <a href="javascript:modificarPerfilProveedor({{ proveedor_id }})" class="btn btn-primary btn-pills btn-block">Modificar Mi Perfil</a>
+                            </small>
                         </div>
                     </div>
-                    {% endif %}
-                    {% if btn_enviar and not solicitud_activa %}
-                        <div class="panel-hdr">
-                            <div class="col-md-10"></div>
-                            <div class="col-md-2" style="float: right" >
-                                <small style="float: right">
-                                    {% if perfil_activo %}
-                                        <a href="javascript:modificarPerfilProveedor({{ proveedor_id }})" class="btn btn-primary btn-block">Modificar Mi Perfil</a>
-                                    {% else %}
-                                        <a href="javascript:enviarSolicitudProveedor({{ proveedor_id }})" class="btn btn-primary btn-block">Enviar Solicitud</a>
-                                    {% endif %}
-                                </small>
-                            </div>
-                        </div>
-                    {% endif %}
+                {% endif %}
                     <div class="panel-container show">
                         <div class="panel-content">
                             <div class="panel-group">
                                 <div class="panel-body">
                                     <div class="row" id="js-contacts">
-                                        {% for op in opciones %}
-                                            {% include 'Administracion/_common/_tarjeta_proveedor.html' with objeto=op %}
-                                        {% endfor %}
+                                        <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                            {% include 'Administracion/_common/_tarjeta_proveedor.html' with objeto=datos_proveedor.informacion_basica %}
+                                        </div>
+                                        <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                            {% include 'Administracion/_common/_tarjeta_proveedor.html' with objeto=datos_proveedor.actividades_economicas %}
+                                            {% include 'Administracion/_common/_tarjeta_proveedor.html' with objeto=datos_proveedor.documentos %}
+                                        </div>
+                                        <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                            {% include 'Administracion/_common/_tarjeta_proveedor.html' with objeto=datos_proveedor.entidades_bancarias %}
+                                            {% include 'Administracion/_common/_tarjeta_proveedor.html' with objeto=datos_proveedor.bienes_servicios %}
+                                        </div>
+                                    </div>
+                                    <div class="form-row justify-content-end">
+                                        <div class="pl-2">
+                                            {% if solicitud_proveedor %}
+                                                {% if solicitud_activa %}
+                                                    <small style="float: right">
+                                                        <a href="javascript:abrir_modal_aprobar_rechazar('{% url 'Administracion:proveedor-solicitudes-aprobar-rechazar' solicitud_proveedor.id %}')" class="btn btn-primary btn-pills btn-block">Aprobar/Rechazar</a>
+                                                    </small>
+                                                {% endif %}
+                                            {% endif %}
+                                            {% if btn_enviar and not perfil_activo and not solicitud_activa %}
+                                                <a href="javascript:enviarSolicitudProveedor({{ proveedor_id }})" class="btn btn-primary btn-pills btn-block">Enviar Solicitud</a>
+                                            {% endif %}
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -21,7 +21,7 @@ from Administracion.models import Tercero, TipoIdentificacion, TipoTercero, Cent
     Municipio
 from Administracion.utils import get_id_empresa_global
 from EVA.views.index import AbstractEvaLoggedView, AbstractEvaLoggedProveedorView
-from Notificaciones.models.models import EventoDesencadenador
+from Notificaciones.models.models import EventoDesencadenador, SeleccionDeNotificacionARecibir
 from Notificaciones.views.correo_electronico import enviar_correo
 from Notificaciones.views.views import crear_notificacion_por_evento
 from TalentoHumano.models import Colaborador
@@ -208,6 +208,7 @@ class RegistroProveedorView(View):
         tercero.tipo_tercero_id = TipoTercero.objects.get(nombre='Proveedor').id
         tercero.tipo_identificacion_id = datos_registro['tipoIdentificacion']
         tercero.identificacion = identificacion
+        tercero.tipo_persona = 1 if tercero.tipo_identificacion.sigla == 'NIT' else 2
         tercero.telefono_movil_principal = datos_registro['celular']
         tercero.correo_principal = correo
         tercero.empresa_id = 1
@@ -228,6 +229,9 @@ class RegistroProveedorView(View):
             usuario.save()
             tercero.usuario = usuario
             tercero.save()
+            SeleccionDeNotificacionARecibir\
+                .objects.create(envio_x_email=True, estado=True, usuario=usuario,
+                                evento_desencadenador_id=EventoDesencadenador.RESPUESTA_SOLICITUD_PROVEEDOR)
             dominio = request.get_host()
             uidb64 = urlsafe_base64_encode(force_bytes(usuario.pk))
             token = default_token_generator.make_token(usuario)
@@ -256,9 +260,7 @@ class PoliticaDeCofidencialidadView(View):
     def get(self, request):
         if request.user.is_authenticated:
             return redirect(reverse('eva-index'))
-        tipo_identificacion = TipoIdentificacion.objects.get_xa_select_activos()
-        return render(request, 'Administracion/Tercero/Proveedor/politica_cofidencialidad.html',
-                      {'tipo_identificacion': tipo_identificacion})
+        return render(request, 'Administracion/_common/_modal_politica_de_confidencialidad.html')
 
 # region Métodos de ayuda
 

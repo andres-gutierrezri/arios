@@ -59,12 +59,12 @@
                                             {% endfor %}
                                         {% endif %}
                                         <div id="div_contenedor"></div>
-                                        <div class="form-row">
-                                            <div >
-                                                <button id="guardar" class="btn btn-primary btn-block"> Guardar </button>
+                                        <div class="form-row justify-content-end">
+                                             <div>
+                                                <a href="{% url 'Administracion:proveedor-perfil' %}" class="btn btn-danger btn-pills btn-block">Cancelar</a>
                                             </div>
-                                            <div style="padding-left: 15px">
-                                                <a href="{% url 'Administracion:proveedor-perfil' %}" class="btn btn-danger btn-block">Cancelar</a>
+                                            <div class="pl-2">
+                                                <button id="guardar" class="btn btn-primary btn-pills btn-block"> Guardar </button>
                                             </div>
                                         </div>
                                     </form>

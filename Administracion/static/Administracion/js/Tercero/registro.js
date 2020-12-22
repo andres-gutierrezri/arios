@@ -79,3 +79,14 @@ function guardarRegistro() {
         EVANotificacion.toast.error('Falló el registro');
     })
 }
+
+function verPoliticaconFidencialidad () {
+    $.ajax({
+        url: document.location.origin + "/administracion/proveedor/politica-confidencialidad",
+        context: document.body
+    }).done(function (response) {
+        let mTerminosCondiciones = $('#modal_terminos_condiciones')
+        mTerminosCondiciones.html(response);
+        mTerminosCondiciones.modal('show');
+    });
+}
