@@ -48,6 +48,7 @@ class FacturaEncabezado(models.Model, ModelDjangoExtensiones):
         ACUSE_RECIBO_CLIENTE = 11
         RECHAZADA_CLIENTE = 12
         ACEPTADA_CLIENTE = 13
+        ENVIADA_MODO_HABILITACION = 14, 'Enviada en Modo Habilitación'
         ANULADA = 31
         ERROR_ARMANANDO_NC = 32, 'Error Armando NC'
         ERROR_ENVIANDO_DIAN_NC = 33, 'Error Enviando a la DIAN NC'
@@ -61,6 +62,9 @@ class FacturaEncabezado(models.Model, ModelDjangoExtensiones):
         ACUSE_RECIBO_CLIENTE_NC = 41
         RECHAZADA_CLIENTE_NC = 42
         ACEPTADA_CLIENTE_NC = 43
+        ENVIADA_MODO_HABILITACION_NC = 44, 'Enviada en Modo Habilitación NC'
+        NOTA_DEBITO = 60
+
 
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, verbose_name='Empresa', null=False, blank=False)
     tercero = models.ForeignKey(Tercero, on_delete=models.CASCADE, verbose_name='Tercero', null=False, blank=False)

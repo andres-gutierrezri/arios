@@ -32,18 +32,22 @@ class ParametrosFacelec:
     SOFTWARE_ID = 'SOFTWARE_ID'
     SOFTWARE_PIN = 'SOFTWARE_PIN'
     TEST_SET_ID = 'TEST_SET_ID'
-    RUTA_FIRMA_ELECTRONICA = 'RUTA_FIRMA_ELECTRONICA'
     AMBIENTE = 'AMBIENTE'
     EN_HABILITACION = 'EN_HABILITACION'
+    USUARIO_CERTIFICADO = 'USUARIO_CERTIFICADO'
+    CLAVE_CERTIFICADO = 'CLAVE_CERTIFICADO'
+    CORREO_COPIA = 'CORREO_COPIA'
 
     def __init__(self):
         self.__correo: str = ''
         self.__software_id: str = ''
         self.__software_pin: str = ''
         self.__test_set_id: str = ''
-        self.__ruta_firma_elecronica: str = ''
         self.__ambiente: str = '2'
         self.__en_habilitacion: bool = False
+        self.__usuario_certificado: str = ''
+        self.__clave_certificado: str = ''
+        self.__correo_copia: str = ''
 
     def get_correo(self) -> str:
         return self.__correo
@@ -69,12 +73,6 @@ class ParametrosFacelec:
     def set_test_set_id(self, test_set_id: str):
         self.__test_set_id = test_set_id
 
-    def get_ruta_firma_elecronica(self) -> str:
-        return self.__ruta_firma_elecronica
-
-    def set_ruta_firma_elecronica(self, ruta_firma_elecronica: str):
-        self.__ruta_firma_elecronica = ruta_firma_elecronica
-
     def get_ambiente(self) -> str:
         return self.__ambiente
 
@@ -86,6 +84,24 @@ class ParametrosFacelec:
 
     def set_en_habilitacion(self, en_habilitacion: bool):
         self.__en_habilitacion = en_habilitacion
+
+    def get_usuario_certificado(self) -> str:
+        return self.__usuario_certificado
+
+    def set_usuario_certificado(self, usuario_certificado: str):
+        self.__usuario_certificado = usuario_certificado
+
+    def get_clave_certificado(self) -> str:
+        return self.__usuario_certificado
+
+    def set_clave_certificado(self, clave_certificado: str):
+        self.__usuario_certificado = clave_certificado
+
+    def get_correo_copia(self) -> str:
+        return self.__correo
+
+    def set_correo_copia(self, correo_copia: str):
+        self.__correo = correo_copia
 
 
 class ParametrosFinancieros:
@@ -125,12 +141,17 @@ class ParametrosFinancieros:
                     parametros.set_software_pin(parametro.valor)
                 elif parametro.nombre == ParametrosFacelec.TEST_SET_ID:
                     parametros.set_test_set_id(parametro.valor)
-                elif parametro.nombre == ParametrosFacelec.RUTA_FIRMA_ELECTRONICA:
-                    parametros.set_ruta_firma_elecronica(parametro.valor)
                 elif parametro.nombre == ParametrosFacelec.AMBIENTE:
                     parametros.set_ambiente(parametro.valor)
                 elif parametro.nombre == ParametrosFacelec.EN_HABILITACION:
                     parametros.set_en_habilitacion(parametro.valor.lower() == 'true')
+                elif parametro.nombre == ParametrosFacelec.USUARIO_CERTIFICADO:
+                    parametros.set_usuario_certificado(parametro.valor)
+                elif parametro.nombre == ParametrosFacelec.CLAVE_CERTIFICADO:
+                    parametros.set_clave_certificado(parametro.valor)
+                elif parametro.nombre == ParametrosFacelec.CORREO_COPIA:
+                    parametros.set_correo_copia(parametro.valor)
+
             except ValueError:
 
                 pass
