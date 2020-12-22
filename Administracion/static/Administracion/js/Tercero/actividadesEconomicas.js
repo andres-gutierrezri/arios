@@ -1,15 +1,15 @@
 
 'use strict';
 
-let checkExcentoIyc = $('#check_excento_iyc_id');
-let checkContibuyenteIyc = $('#check_contribuyente_iyc_id');
-let checkEntidadPublica = $('#check_entidad_publica_id');
-let inputNumeroResolucion = $('#resolucion_id');
-let inputContribuyenteIyc = $('#contribuyente_iyc_id');
-let selectEntidadPublica = $('#entidad_publica_select_id');
-let divExcentoIyc = $('#div_excento_iyc');
-let divContibuyenteIyc = $('#div_contibuyente_iyc');
-let divEntidadPublica = $('#div_entidad_publica');
+const checkExcentoIyc = $('#check_excento_iyc_id');
+const checkContibuyenteIyc = $('#check_contribuyente_iyc_id');
+const checkEntidadPublica = $('#check_entidad_publica_id');
+const inputNumeroResolucion = $('#resolucion_id');
+const inputContribuyenteIyc = $('#contribuyente_iyc_id');
+const selectEntidadPublica = $('#entidad_publica_select_id');
+const divExcentoIyc = $('#div_excento_iyc');
+const divContibuyenteIyc = $('#div_contibuyente_iyc');
+const divEntidadPublica = $('#div_entidad_publica');
 
 $(document).ready(function () {
     validarExcentoIyc();

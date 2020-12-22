@@ -1,8 +1,8 @@
 
 'use strict';
 
-let URLDomain = document.location.origin+"/";
-let divContenedor = $('#div_contenedor');
+const URLDomain = document.location.origin+"/";
+const divContenedor = $('#div_contenedor');
 let contador = 0;
 
 $(document).ready(function() {
