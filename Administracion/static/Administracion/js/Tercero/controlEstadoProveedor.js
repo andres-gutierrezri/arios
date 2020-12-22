@@ -25,38 +25,17 @@ function validarTamano() {
 
 const primerDiv = $('#primer_div')
 const segundoDiv = $('#segundo_div')
-const tercerDiv = $('#tercer_div')
-const cuartoDiv = $('#cuarto_div')
 
 function configuracionNormal() {
     if (primerDiv.html() !== '') {
-        tercerDiv.append(primerDiv.html())
-        cuartoDiv.append(segundoDiv.html())
+        segundoDiv.append(primerDiv.html())
         primerDiv.html('')
-        segundoDiv.html('')
-        ejecutarChart()
     }
 }
 
 function configuracionMediana() {
-    if (tercerDiv.html() !== '') {
-        primerDiv.append(tercerDiv.html())
-        segundoDiv.append(cuartoDiv.html())
-        tercerDiv.html('')
-        cuartoDiv.html('')
-        ejecutarChart()
+    if (segundoDiv.html() !== '') {
+        primerDiv.append(segundoDiv.html())
+        segundoDiv.html('')
     }
-}
-
-function ejecutarChart() {
-    const grafico = $('.js-easy-pie-chart');
-    grafico.find('canvas').remove();
-    grafico.find('span').html(grafico.attr('data-percent'))
-    grafico.easyPieChart({
-        barColor: '#563d7c',
-        trackColor: '#ccbfdf',
-        scaleLength: 0,
-        lineWidth: 15,
-        lineCap: 'square'
-    });
 }
