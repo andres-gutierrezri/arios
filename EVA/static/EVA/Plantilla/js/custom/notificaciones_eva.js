@@ -38,6 +38,17 @@ const EVANotificacion = {
                 text: mensaje
             });
         },
+        confirmacion(tipo, titulo, mensaje, texto_confirmacion, ruta_confirmacion) {
+            Swal.fire({
+                title: tipo,
+                text: mensaje,
+                type: tipo,
+                confirmButtonText: texto_confirmacion,
+                closeOnConfirm: true
+            }).then(function () {
+                $(location).attr('href', ruta_confirmacion);
+            })
+        },
         exitoso(mensaje) {
             this.general('success', mensaje);
         },
