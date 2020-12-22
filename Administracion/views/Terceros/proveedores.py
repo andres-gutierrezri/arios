@@ -18,7 +18,7 @@ from EVA.General.conversiones import datetime_to_string
 from EVA.views.index import AbstractEvaLoggedProveedorView, AbstractEvaLoggedView
 from Financiero.models.models import ActividadEconomica, TipoContribuyente, Regimen, ProveedorActividadEconomica, \
     EntidadBancariaTercero, EntidadBancaria, TipoCuentaBancaria
-from Notificaciones.models.models import EventoDesencadenador
+from Notificaciones.models.models import EventoDesencadenador, Notificacion, DestinatarioNotificacion
 from Notificaciones.views.views import crear_notificacion_por_evento
 
 
@@ -27,6 +27,20 @@ class PerfilProveedorView(AbstractEvaLoggedProveedorView):
         proveedor = Tercero.objects.get(usuario=request.user)
         datos_proveedor = generar_datos_proveedor(proveedor)
         total = datos_proveedor['total']
+        
+        datos_estado = {'estado': proveedor.estado}
+        certificaciones = Certificacion.objects.filter(tercero=proveedor).order_by('-id')
+
+        rechazos = DestinatarioNotificacion\
+            .objects.filter(usuario=proveedor.usuario).order_by('-id')[:1]
+
+        if certificaciones:
+            datos_estado.update({'ultima_act': certificaciones.first().fecha_crea})
+
+        if rechazos and not proveedor.estado:
+            if 'Rechazada' in rechazos.first().notificacion.titulo:
+                datos_estado.update({'estado_solicitud': rechazos.first().notificacion.mensaje})
+
         perfil_activo = True if Certificacion.objects.filter(tercero=proveedor, estado=True) else False
         btn_enviar = True if total == 100 else False
         solicitud_activa = True if SolicitudProveedor.objects.filter(proveedor=proveedor, estado=True) else False
@@ -35,6 +49,7 @@ class PerfilProveedorView(AbstractEvaLoggedProveedorView):
                       {'datos_proveedor': datos_proveedor, 'total': total, 'btn_enviar': btn_enviar,
                        'proveedor_id': proveedor.id, 'tipo_persona_pro': proveedor.tipo_persona,
                        'solicitud_activa': solicitud_activa, 'perfil_activo': perfil_activo,
+                       'datos_estado': datos_estado
                        })
 
 
@@ -405,6 +420,7 @@ class ProveedorSolicitudAprobarRechazar(AbstractEvaLoggedView):
             if solicitud.aprobado:
                 Certificacion.objects.filter(tercero=solicitud.proveedor).update(estado=False)
                 Certificacion.objects.create(tercero=solicitud.proveedor, fecha_crea=app_datetime_now(), estado=True)
+                Tercero.objects.filter(id=id).update(estado=True)
             messages.success(self.request, 'Se ha {0} la solicitud correctamente.'
                              .format('aprobado' if solicitud.aprobado else 'rechazado'))
 
