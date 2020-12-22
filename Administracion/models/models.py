@@ -332,18 +332,3 @@ class ProductoServicio(models.Model, ModelDjangoExtensiones):
         verbose_name = 'Producto y Servicio'
         verbose_name_plural = 'Productos y Servicios'
 
-
-class TextoDocumento(models.Model):
-    objects = ManagerGeneral()
-    titulo = models.CharField(verbose_name='Título', max_length=100, blank=False, null=False)
-    texto1 = models.TextField(verbose_name='Texto 1', null=False, blank=False)
-    texto2 = models.TextField(verbose_name='Texto 2', null=True, blank=True)
-    texto3 = models.TextField(verbose_name='Texto 3', null=True, blank=True)
-    firma = models.CharField(verbose_name='Firma', max_length=100, null=True, blank=True)
-
-    def __str__(self):
-        return self.titulo
-
-    class Meta:
-        verbose_name = 'Texto de Documento'
-        verbose_name_plural = 'Textos de Documentos'

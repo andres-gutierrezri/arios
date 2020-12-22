@@ -71,51 +71,6 @@ class ActividadEconomica(models.Model):
         verbose_name_plural = 'Actividades Económicas'
 
 
-class TipoPersona(models.Model):
-    objects = ManagerGeneral()
-    nombre = models.CharField(verbose_name='Nombre', max_length=100, null=False, blank=False)
-
-    def __str__(self):
-        return self.nombre
-
-    class Meta:
-        verbose_name = 'Tipo de Persona'
-        verbose_name_plural = 'Tipos de Personas'
-
-
-class TipoContribuyente(models.Model):
-    objects = ManagerGeneral()
-    nombre = models.CharField(verbose_name='Nombre', max_length=100, null=False, blank=False)
-
-    def __str__(self):
-        return self.nombre
-
-    class Meta:
-        verbose_name = 'Tipo de Contribuyente'
-        verbose_name_plural = 'Tipos de Contribuyentes'
-
-
-class RegimenManager(ManagerGeneral):
-    def get_activos_like_json(self):
-        datos = []
-        for elemento in self.get_x_estado(True, False):
-            datos.append({'id': elemento.id, 'aplica_publica': elemento.aplica_publica})
-        return json.dumps(datos)
-
-
-class Regimen(models.Model):
-    objects = RegimenManager()
-    nombre = models.CharField(verbose_name='Nombre', max_length=100, null=False, blank=False)
-    aplica_publica = models.BooleanField(verbose_name='Apica Entidad Pública', null=False, blank=False)
-
-    def __str__(self):
-        return self.nombre
-
-    class Meta:
-        verbose_name = 'Régimen'
-        verbose_name_plural = 'Regímenes'
-
-
 class ProveedorActividadEconomica(models.Model):
     actividad_principal = models.ForeignKey(ActividadEconomica, on_delete=models.DO_NOTHING, null=False, blank=False,
                                             verbose_name='Actividad Principal',
