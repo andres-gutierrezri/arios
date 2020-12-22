@@ -57,7 +57,8 @@ function guardarRegistro() {
     }).done(function(response) {
         if(response.hasOwnProperty('estado')){
             if (response.estado === 'OK') {
-                EVANotificacion.modal.confirmacion('success', "Registro Exitoso!",
+                EVANotificacion.modal
+                    .confirmacionBotonMensaje("Registro Exitoso!",
                     `Revise el correo electrónico ${response.datos.correo} para continuar con el proceso`,
                     "Ir al inicio de sesión", '/administracion/proveedor/iniciar-sesion')
             }else if (response.estado === 'ERROR') {

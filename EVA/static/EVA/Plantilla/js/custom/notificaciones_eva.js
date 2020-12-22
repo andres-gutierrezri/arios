@@ -38,17 +38,6 @@ const EVANotificacion = {
                 text: mensaje
             });
         },
-        confirmacion(tipo, titulo, mensaje, texto_confirmacion, ruta_confirmacion) {
-            Swal.fire({
-                title: tipo,
-                text: mensaje,
-                type: tipo,
-                confirmButtonText: texto_confirmacion,
-                closeOnConfirm: true
-            }).then(function () {
-                $(location).attr('href', ruta_confirmacion);
-            })
-        },
         exitoso(mensaje) {
             this.general('success', mensaje);
         },
@@ -63,6 +52,17 @@ const EVANotificacion = {
         },
         cerrar() {
             Swal.close();
+        },
+        confirmacionBotonMensaje(titulo, mensaje, texto_confirmacion, ruta_confirmacion) {
+            Swal.fire({
+                title: titulo,
+                text: mensaje,
+                type: "success",
+                confirmButtonText: texto_confirmacion,
+                closeOnConfirm: true
+            }).then(function () {
+                $(location).attr('href', ruta_confirmacion);
+            })
         },
     },
 
