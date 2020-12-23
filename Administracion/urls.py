@@ -16,7 +16,7 @@ Including another URLconf
 
 from django.urls import path
 from Administracion.views import terceros, administracion, inicio_sesion, empresas, grupos_permisos, procesos
-from Administracion.views.Terceros import proveedores, gestion_proveedores
+from Administracion.views.Proveedores import proveedores, gestion_proveedores
 from Administracion.views.seleccion_empresa import SeleccionEmpresaModalView
 
 app_name = 'Administracion'
