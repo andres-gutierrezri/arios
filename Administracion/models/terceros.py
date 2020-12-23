@@ -80,7 +80,7 @@ class Tercero(models.Model, ModelDjangoExtensiones):
                                                   blank=True)
     regimen_fiscal = models.SmallIntegerField(verbose_name='Régimen Fiscal', null=True, blank=True)
     tributos = models.CharField(max_length=10, verbose_name='Tributo', null=True, blank=True)
-    correo_facelec = models.EmailField(max_length=100, verbose_name='Correo Facturación Electrónica', null=True,
+    correo_facelec = models.EmailField(max_length=254, verbose_name='Correo Facturación Electrónica', null=True,
                                        blank=True)
     codigo_postal = models.CharField(max_length=6, verbose_name='Código Postal', null=True, blank=True)
     telefono_fijo_principal = models.CharField(max_length=30, verbose_name='Teléfono Fijo Principal',
@@ -91,8 +91,8 @@ class Tercero(models.Model, ModelDjangoExtensiones):
                                                 null=True, blank=True)
     telefono_movil_auxiliar = models.CharField(max_length=30, verbose_name='Teléfono Movil Auxiliar',
                                                null=True, blank=True)
-    correo_principal = models.CharField(max_length=30, verbose_name='Correo Principal', null=True, blank=True)
-    correo_auxiliar = models.CharField(max_length=30, verbose_name='Correo Auxiliar', null=True, blank=True)
+    correo_principal = models.CharField(max_length=254, verbose_name='Correo Principal', null=True, blank=True)
+    correo_auxiliar = models.CharField(max_length=254, verbose_name='Correo Auxiliar', null=True, blank=True)
     nombre_rl = models.CharField(max_length=100, verbose_name='Nombre del Representante Legal', null=True, blank=True)
     tipo_identificacion_rl = models.ForeignKey(TipoIdentificacion, on_delete=models.DO_NOTHING,
                                                verbose_name='Tipo de identificación del Representante Legal',
@@ -189,7 +189,7 @@ class TipoDocumentoTercero(models.Model):
 
 def custom_upload_to(instance, filename):
     return '{2}/Proveedores/Documentos/{0}/{1}'\
-        .format(instance.tercero.nombre, filename, settings.EVA_PRIVATE_MEDIA)
+        .format(instance.tercero.nombre[:10], filename, settings.EVA_PRIVATE_MEDIA)
 
 
 class DocumentoTercero(models.Model):
