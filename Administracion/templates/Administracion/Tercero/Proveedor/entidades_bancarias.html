@@ -1,7 +1,7 @@
 {% extends 'Administracion/_common/base_administracion.html' %}
 {% load static %}
 {% load eva_tags %}
-<title>{% block titulo %} Entidades Bancarias {% endblock %}</title>
+<title>{% block titulo %} Información Bancaria {% endblock %}</title>
 {% block styles %}
 <!-- DEMO related CSS below -->
 	<link rel="stylesheet" media="screen, print" href="{%static 'EVA/Plantilla/css/fa-brands.css' %}">
@@ -16,7 +16,7 @@
     <div class="panel-container show">
         <div class="header">
              <h1 class="header-title">
-                 <i class='far fa-handshake'></i> Entidades Bancarias  <a class="far fa-arrow-circle-left"  href="{% url 'Administracion:proveedor-perfil' %}" data-toggle="tooltip" title="" data-original-title="Volver"></a>
+                 <i class='far fa-handshake'></i> Información Bancaria <a class="far fa-arrow-circle-left"  href="{% url 'Administracion:proveedor-perfil' %}" data-toggle="tooltip" title="" data-original-title="Volver"></a>
                  <br>
                  <br>
              </h1>

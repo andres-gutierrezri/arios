@@ -751,7 +751,7 @@ def generar_datos_proveedor(proveedor):
     actividades_economicas = {'id': 2, 'nombre': 'Actividades Económicas',
                               'url': '/administracion/proveedor/perfil/actividades-economicas',
                               'datos': actividades_economicas}
-    entidades_bancarias = {'id': 3, 'nombre': 'Entidades Bancarias',
+    entidades_bancarias = {'id': 3, 'nombre': 'Información Bancaria',
                            'url': '/administracion/proveedor/perfil/entidades-bancarias',
                            'datos': entidades_bancarias}
     bienes_servicios = {'id': 4, 'nombre': 'Productos y Servicios',
