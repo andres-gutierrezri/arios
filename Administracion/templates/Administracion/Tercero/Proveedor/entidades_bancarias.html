@@ -16,7 +16,7 @@
     <div class="panel-container show">
         <div class="header">
              <h1 class="header-title">
-                 <i class='far fa-handshake'></i> Información Bancaria <a class="far fa-arrow-circle-left"  href="{% url 'Administracion:proveedor-perfil' %}" data-toggle="tooltip" title="" data-original-title="Volver"></a>
+                 <i class='far fa-handshake'></i> Información Bancaria
                  <br>
                  <br>
              </h1>
@@ -29,6 +29,11 @@
                         <div class="col-md-10">
                             <small>
                                 <a class="far fa-3x far fa-plus-circle" href="javascript:abrirModalGestionarEntidadBancaria('{% url 'Administracion:proveedor-perfil-entidad-bancaria-crear' %}', 'CREAR')"  data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar Entidad Bancaria"></a>
+                            </small>
+                        </div>
+                        <div class="col-md-2" style="float: right" >
+                            <small style="float: right">
+                                <a href="javascript:history.back()" class="btn btn-primary btn-pills btn-block">Volver al Perfil</a>
                             </small>
                         </div>
                     </div>
