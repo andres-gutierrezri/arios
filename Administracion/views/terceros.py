@@ -200,7 +200,7 @@ class RegistroProveedorView(View):
         correo = datos_registro['correo']
         identificacion = datos_registro['identificacion']
 
-        usuario = Colaborador.crear_usuario(nombre, 'proveedor', correo)
+        usuario = Colaborador.crear_usuario(nombre if len(nombre) < 20 else nombre[:20], 'proveedor', correo)
 
         tercero = Tercero()
         tercero.nombre = nombre
