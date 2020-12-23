@@ -34,7 +34,7 @@
                                 {% input_text_tag 'nombre' 'Nombre o Razón Social' placeholder="Ingrese el nombre o razón social" value=datos.nombre required="" maxlength="100" mensaje_validacion='Por favor digite el nombre' invalido=errores.nombre %}
                             </div>
                             <div class="form-group col-xl-6 col-lg-6 col-md-12 col-sm-12">
-                               {% select_tag tipo_identificacion 'tipo_identificacion' 'Seleccione un tipo de identificación' texto_label="Tipo de Identificación" value=datos.tipo_identificacion_id required="" mensaje_validacion='Por favor seleccione un país' invalido=errores.tipo_identificacion %}
+                               {% select_tag tipo_identificacion 'tipo_identificacion' 'Seleccione un tipo de identificación' texto_label="Tipo de Identificación" value=datos.tipo_identificacion_id required="" mensaje_validacion='Por favor seleccione un típo de identificación' invalido=errores.tipo_identificacion %}
                             </div>
                             <div class="form-group col-xl-6 col-lg-6 col-md-12 col-sm-12">
                                 {% input_text_tag 'identificacion' 'Número de Identificación' placeholder="Ingrese un número" value=datos.identificacion required="" maxlength="20" mensaje_validacion='Por favor digite un número' invalido=errores.identificacion mensaje_invalido=errores.identificacion %}
