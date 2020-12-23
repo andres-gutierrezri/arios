@@ -10,7 +10,7 @@ if IS_DEPLOYED:
 else:
     DATABASE_DICT = {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'EVA',
+        'NAME': 'EVAHouse',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
         'HOST': '127.0.0.1',
