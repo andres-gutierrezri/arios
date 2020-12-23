@@ -68,6 +68,10 @@ function cargarProductosServicios(idTipo, pos) {
 
         }
     });
+    let valor = $(`#tipo_producto_servicio_${pos}_select_id`).val();
+    if(valor !== '') {
+        cambioLabelSelects(valor, pos)
+    }
 }
 
 function cargarSubProductosSubServicios(idProductoServicio, pos) {
