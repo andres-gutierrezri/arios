@@ -677,12 +677,6 @@ def generar_datos_actividades_economicas(proveedor):
                 if op[0] == sel:
                     datos_resp_fiscal += ', ' + op[1] if datos_resp_fiscal else op[1]
 
-        trib = proveedor.tributos
-        tributos = ''
-        for tr in Tributos.choices:
-            if tr[0] == trib:
-                tributos = tr[1]
-                break
         respuesta = [{'nombre_campo': 'Actividad Principal', 'valor_campo': ae.actividad_principal},
                      {'nombre_campo': 'Actividad Secundaria', 'valor_campo': ae.actividad_secundaria},
                      {'nombre_campo': 'Otra Actividad', 'valor_campo': ae.otra_actividad},
