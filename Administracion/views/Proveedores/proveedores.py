@@ -700,12 +700,22 @@ def generar_datos_entidades_bancarias(proveedor):
 
 def generar_datos_bienes_servicios(proveedor):
     productos_servicios = ProveedorProductoServicio.objects.filter(proveedor=proveedor)
-    lista_productos_servicios = []
-    for ps in productos_servicios:
-        lista_productos_servicios\
-            .append({'nombre_campo': 'Servicio' if ps.subproducto_subservicio.producto_servicio.es_servicio
-                     else "Producto", 'valor_campo': '{0} - {1}'
-                    .format(ps.subproducto_subservicio.producto_servicio, ps.subproducto_subservicio)})
+    lista_servicios = ''
+    for ps in productos_servicios.filter(subproducto_subservicio__producto_servicio__es_servicio=True):
+        if lista_servicios != '':
+            lista_servicios += ', ' + ps.subproducto_subservicio.nombre
+        else:
+            lista_servicios = ps.subproducto_subservicio.nombre
+
+    lista_productos = ''
+    for ps in productos_servicios.filter(subproducto_subservicio__producto_servicio__es_servicio=False):
+        if lista_productos != '':
+            lista_productos += ', ' + ps.subproducto_subservicio.nombre
+        else:
+            lista_productos = ps.subproducto_subservicio.nombre
+
+    lista_productos_servicios = [{'nombre_campo': 'Productos', 'valor_campo': lista_productos},
+                                 {'nombre_campo': 'Servicios', 'valor_campo': lista_servicios}]
     return lista_productos_servicios
 
 
