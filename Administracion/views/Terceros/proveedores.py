@@ -687,8 +687,6 @@ def generar_datos_actividades_economicas(proveedor):
                      {'nombre_campo': 'Actividad Secundaria', 'valor_campo': ae.actividad_secundaria},
                      {'nombre_campo': 'Otra Actividad', 'valor_campo': ae.otra_actividad},
                      {'nombre_campo': 'Régimen Fiscal', 'valor_campo': regimen_fiscal},
-                     {'nombre_campo': 'Responsabilidad Fiscal', 'valor_campo': datos_resp_fiscal},
-                     {'nombre_campo': 'Tributo', 'valor_campo': tributos},
                      {'nombre_campo': 'Excento de Industria y Comercio: # Res', 'valor_campo': ae.numero_resolucion},
                      {'nombre_campo': 'Contribuyente Industria y Comercio', 'valor_campo': ae.contribuyente_iyc},
                      {'nombre_campo': 'Entidad Pública', 'valor_campo': entidad_publica},
