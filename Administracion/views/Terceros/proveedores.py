@@ -16,8 +16,9 @@ from Administracion.models.terceros import ProveedorProductoServicio, TipoDocume
 from EVA.General import app_datetime_now
 from EVA.General.conversiones import datetime_to_string
 from EVA.views.index import AbstractEvaLoggedProveedorView, AbstractEvaLoggedView
+from Financiero.enumeraciones import TipoCuentaBancaria
 from Financiero.models.models import ActividadEconomica, ProveedorActividadEconomica, \
-    EntidadBancariaTercero, EntidadBancaria, TipoCuentaBancaria
+    EntidadBancariaTercero, EntidadBancaria
 from Notificaciones.models.models import EventoDesencadenador, Notificacion, DestinatarioNotificacion
 from Notificaciones.views.views import crear_notificacion_por_evento
 
@@ -172,6 +173,7 @@ class EntidadBancariaCrearView(AbstractEvaLoggedProveedorView):
         entidad_proveedor = EntidadBancariaTercero.from_dictionary(request.POST)
         entidad_proveedor.tercero = Tercero.objects.get(usuario=request.user)
         entidad_proveedor.certificacion = request.FILES.get('certificacion', '')
+        entidad_proveedor.numero_cuenta = request.POST.get('numero_cuenta', '')
         try:
             entidad_proveedor.save()
         except:
@@ -189,16 +191,17 @@ class EntidadBancariaEditarView(AbstractEvaLoggedProveedorView):
                       datos_xa_render_entidades_bancarias(request, entidad_bancaria))
 
     def post(self, request, id):
-        update_fields = ['tipo_cuenta', 'entidad_bancaria']
+        update_fields = ['tipo_cuenta', 'entidad_bancaria', 'numero_cuenta']
         entidad_proveedor = EntidadBancariaTercero.from_dictionary(request.POST)
         entidad_proveedor.id = id
         entidad_proveedor.certificacion = request.FILES.get('certificacion', '')
         entidad_proveedor.tercero = Tercero.objects.get(usuario=request.user)
+        entidad_proveedor.numero_cuenta = request.POST.get('numero_cuenta', '')
         try:
             if entidad_proveedor.certificacion:
                 update_fields.append('certificacion')
             entidad_proveedor.save(update_fields=update_fields)
-        except:
+        except Exception as e:
             return JsonResponse({"estado": "error", "mensaje": "Ha ocurrido un error al guardar la información"})
 
         messages.success(self.request, 'Se ha actualizado la entidad correctamente.')
@@ -232,8 +235,9 @@ class VerCertificacionView(AbstractEvaLoggedProveedorView):
             mime_type = mime_types.get(extension, 'application/pdf')
 
             response = HttpResponse(entidad_bancaria.certificacion, content_type=mime_type)
-            response['Content-Disposition'] = 'inline; filename="{0} - {1}{2}"'\
-                .format(entidad_bancaria.entidad_bancaria.nombre, entidad_bancaria.tipo_cuenta.nombre, extension)
+            response['Content-Disposition'] = 'inline; filename="{0} - Cuenta {1}{2}"'\
+                .format(entidad_bancaria.entidad_bancaria.nombre,
+                        'Corriente' if entidad_bancaria.tipo_cuenta == 1 else 'de Ahorros', extension)
         else:
             messages.error(self.request, 'Ha ocurrido un error al realizar esta acción.')
             response = redirect(reverse('Administracion:proveedor-perfil-entidades-bancarias'))
@@ -509,16 +513,16 @@ def datos_xa_render_entidades_bancarias(request, objeto=None):
     datos_proveedor = []
     if datos:
         for d in datos:
-            datos_proveedor.append({'tipo_cuenta_id': d.tipo_cuenta_id,
-                                    'tipo_cuenta_nombre': d.tipo_cuenta.nombre,
+            datos_proveedor.append({'tipo_cuenta_id': d.tipo_cuenta,
+                                    'tipo_cuenta_nombre': 'Cuenta Corriente'
+                                    if d.tipo_cuenta == 1 else 'Cuenta de Ahorros',
                                     'entidad_bancaria_id': d.entidad_bancaria_id,
                                     'entidad_bancaria_nombre': d.entidad_bancaria.nombre,
                                     'id': d.id})
         datos_proveedor = json.dumps(datos_proveedor)
 
-    tipos_cuentas = TipoCuentaBancaria.objects.get_xa_select_activos()
     entidades_bancarias = EntidadBancaria.objects.get_xa_select_activos()
-    datos = {'entidades_bancarias': entidades_bancarias, 'tipos_cuentas': tipos_cuentas,
+    datos = {'entidades_bancarias': entidades_bancarias, 'tipos_cuentas': TipoCuentaBancaria.choices,
              'datos_proveedor': datos_proveedor, 'objeto': objeto}
     return datos
 

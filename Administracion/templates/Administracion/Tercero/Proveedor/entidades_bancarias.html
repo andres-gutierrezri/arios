@@ -42,6 +42,7 @@
                                                 <tr>
                                                     <th>Tipo de Cuenta</th>
                                                     <th>Entidad Bancaria</th>
+                                                    <th>Número de Cuenta</th>
                                                     <th>Certificación Bancaria</th>
                                                     <th>Acciones</th>
                                                 </tr>
@@ -49,8 +50,9 @@
                                             <tbody>
                                                 {% for eb in entidades_bancarias %}
                                                     <tr>
-                                                        <td>{{ eb.tipo_cuenta}}</td>
+                                                        <td>{% if eb.tipo_cuenta == 1 %}Cuenta Corriente{% else %}Cuenta de Ahorros{% endif %}</td>
                                                         <td>{{ eb.entidad_bancaria }}</td>
+                                                        <td>{{ eb.numero_cuenta }}</td>
                                                         <td>
                                                             <a class="far fa-2x fa-custom fa-eye" style="text-decoration: none !important;" href="{% url 'Administracion:proveedor-perfil-ver-certificacion' eb.id %}" target="_blank" data-original-title="Ver" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
                                                         </td>
