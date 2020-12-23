@@ -47,10 +47,10 @@
                                                         {% select_tag tipos_productos_servicios sl.nombre_tipos 'Seleccione una opción' value=sl.tipo_producto_servicio texto_label="Producto/Servicio" requiered="" onchange=sl.onchange_tipos %}
                                                     </div>
                                                     <div class="form-group col-3">
-                                                        {% select_tag sl.datos_subtipos sl.nombre_subtipos 'Seleccione una opción' value=sl.subtipo_producto_servicio texto_label="Subtipos de Productos" requiered="" onchange=sl.onchange_subtipos id_label=sl.nombre_subtipos %}
+                                                        {% select_tag sl.datos_productos_servicios sl.nombre_producto_servicio 'Seleccione una opción' value=sl.producto_servicio texto_label="Subtipos de Productos" requiered="" onchange=sl.onchange_producto_servicio id_label=sl.nombre_producto_servicio %}
                                                     </div>
                                                     <div class="form-group col-5">
-                                                        {% select_multiple_tag sl.datos_productos_servicios sl.nombre_producto_servicio sl.nombre_producto_servicio 'Seleccione una opción' value=sl.productos_servicios texto_label="Productos" requiered="" multiple=multiple id_label=sl.nombre_producto_servicio %}
+                                                        {% select_multiple_tag sl.datos_subproductos_subservicios sl.nombre_subproducto_subservicio sl.nombre_subproducto_subservicio 'Seleccione una opción' value=sl.subproductos_subservicios texto_label="Productos" requiered="" multiple=multiple id_label=sl.nombre_subproducto_subservicio %}
                                                     </div>
                                                     <div class="form-group col-1" style="padding-top:30px">
                                                         <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_${contador}" href="javascript:eliminarProductoServicio({{ sl.contador }});" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>

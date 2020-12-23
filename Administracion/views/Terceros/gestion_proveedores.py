@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 
 from Administracion.models import Tercero
-from Administracion.models.models import SubtipoProductoServicio, ProductoServicio
+from Administracion.models.models import ProductoServicio, SubproductoSubservicio
 from Administracion.models.terceros import ProveedorProductoServicio
 from EVA.views.index import AbstractEvaLoggedView
 
@@ -35,9 +35,9 @@ class ProveedorIndexView(AbstractEvaLoggedView):
 
             messages.success(request, 'Se han encontrado {0} coincidencias'.format(len(lista_proveedores)))
             es_servicio = True if tipo_producto_servicio == 1 else False
-            subtipos = SubtipoProductoServicio.objects.get_xa_select_activos().filter(es_servicio=es_servicio)
-            pro_serv = ProductoServicio.objects.get_xa_select_activos()\
-                .filter(subtipo_producto_servicio__es_servicio=es_servicio)
+            subtipos = ProductoServicio.objects.get_xa_select_activos().filter(es_servicio=es_servicio)
+            pro_serv = SubproductoSubservicio.objects.get_xa_select_activos()\
+                .filter(producto_servicio__es_servicio=es_servicio)
 
             tipo_producto_servicio = int(tipo_producto_servicio)
             subtipo_producto_servicio = int(subtipo_producto_servicio)

@@ -287,7 +287,7 @@ class SubtipoProductoServicioManger(ManagerGeneral):
         return json.dumps(datos)
 
 
-class SubtipoProductoServicio(models.Model, ModelDjangoExtensiones):
+class ProductoServicio(models.Model, ModelDjangoExtensiones):
     objects = SubtipoProductoServicioManger()
     nombre = models.CharField(verbose_name="Nombre", max_length=100, null=False, blank=False)
     descripcion = models.CharField(verbose_name="Descripción", max_length=300, null=False, blank=False)
@@ -297,8 +297,8 @@ class SubtipoProductoServicio(models.Model, ModelDjangoExtensiones):
         return self.nombre
 
     class Meta:
-        verbose_name = 'Subtipo Producto Servicio'
-        verbose_name_plural = 'Subtipos Productos Servicios'
+        verbose_name = 'Producto Servicio'
+        verbose_name_plural = 'Productos Servicios'
 
 
 class UnidadMedida(models.Model):
@@ -318,17 +318,17 @@ class UnidadMedida(models.Model):
         verbose_name_plural = 'Unidades de Medida'
 
 
-class ProductoServicio(models.Model, ModelDjangoExtensiones):
+class SubproductoSubservicio(models.Model, ModelDjangoExtensiones):
     objects = ManagerGeneral()
     nombre = models.CharField(verbose_name="Nombre", max_length=100, null=False, blank=False)
     descripcion = models.CharField(verbose_name="Descripción", max_length=300, null=False, blank=False)
-    subtipo_producto_servicio = models.ForeignKey(SubtipoProductoServicio, on_delete=models.DO_NOTHING, null=False,
-                                                  verbose_name="Subtipo de Producto o Servicio", blank=False)
+    producto_servicio = models.ForeignKey(ProductoServicio, on_delete=models.DO_NOTHING, null=False,
+                                          verbose_name="Producto o Servicio", blank=False)
 
     def __str__(self):
         return self.nombre
 
     class Meta:
-        verbose_name = 'Producto y Servicio'
-        verbose_name_plural = 'Productos y Servicios'
+        verbose_name = 'Subproducto y Subservicio'
+        verbose_name_plural = 'Subproductos y Subservicios'
 

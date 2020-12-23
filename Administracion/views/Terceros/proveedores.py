@@ -10,7 +10,7 @@ from django.urls import reverse
 
 from Administracion.enumeraciones import TipoPersona, RegimenFiscal, ResponsabilidadesFiscales, Tributos
 from Administracion.models import TipoIdentificacion, Pais, Tercero, Departamento, Municipio
-from Administracion.models.models import SubtipoProductoServicio, ProductoServicio
+from Administracion.models.models import SubproductoSubservicio, ProductoServicio
 from Administracion.models.terceros import ProveedorProductoServicio, TipoDocumentoTercero, DocumentoTercero, \
     SolicitudProveedor, Certificacion
 from EVA.General import app_datetime_now
@@ -258,10 +258,11 @@ class PerfilProductosServiciosView(AbstractEvaLoggedProveedorView):
             if contador:
                 cn = 0
                 while cn < int(contador):
-                    datos = request.POST.getlist('producto_servicio_{0}'.format(cn), '')
+                    datos = request.POST.getlist('subproducto_subservicio_{0}'.format(cn), '')
                     if datos != '':
                         for dt in datos:
-                            ProveedorProductoServicio.objects.create(proveedor=proveedor, producto_servicio_id=dt)
+                            ProveedorProductoServicio.objects.create(proveedor=proveedor,
+                                                                     subproducto_subservicio_id=dt)
                     cn += 1
             else:
                 datos = request.POST.getlist('producto_servicio_0', '')
@@ -530,8 +531,8 @@ def datos_xa_render_entidades_bancarias(request, objeto=None):
 def datos_xa_render_productos_servicios(request):
     tipos_productos_servicios = [{'campo_valor': 1, 'campo_texto': 'Producto'},
                                  {'campo_valor': 2, 'campo_texto': 'Servicio'}]
-    subtipos_productos_servicios = SubtipoProductoServicio.objects.get_xa_select_activos()
     productos_servicios = ProductoServicio.objects.get_xa_select_activos()
+    subproductos_subservicios = ProductoServicio.objects.get_xa_select_activos()
     proveedor = Tercero.objects.get(usuario=request.user)
     selecciones = ProveedorProductoServicio.objects.filter(proveedor=proveedor)
     lista_selecciones = []
@@ -539,34 +540,34 @@ def datos_xa_render_productos_servicios(request):
     for dt in selecciones:
         coincidencia = False
         for ls in lista_selecciones:
-            if dt.producto_servicio.subtipo_producto_servicio_id == ls['subtipo_producto_servicio']:
+            if dt.subproducto_subservicio.producto_servicio_id == ls['producto_servicio']:
                 coincidencia = True
         if not coincidencia:
-            subtipos = ProveedorProductoServicio\
-                .objects.filter(proveedor=proveedor, producto_servicio__subtipo_producto_servicio=dt.
-                                producto_servicio.subtipo_producto_servicio)
-            lista_pro_ser = []
-            for st in subtipos:
-                lista_pro_ser.append(st.producto_servicio_id)
+            subpro_subserv = ProveedorProductoServicio\
+                .objects.filter(proveedor=proveedor, subproducto_subservicio__producto_servicio=dt.
+                                subproducto_subservicio.producto_servicio)
+            lista_subpro_subser = []
+            for ps in subpro_subserv:
+                lista_subpro_subser.append(ps.subproducto_subservicio_id)
             lista_selecciones\
-                .append({'tipo_producto_servicio': 2 if dt.producto_servicio.subtipo_producto_servicio.es_servicio else 1,
+                .append({'tipo_producto_servicio': 2 if dt.subproducto_subservicio.producto_servicio.es_servicio else 1,
                          'nombre_tipos': 'tipo_producto_servicio_{0}'.format(contador),
                          'onchange_tipos': 'cambioTipoProductoServicio({0})'.format(contador),
-                         'subtipo_producto_servicio': dt.producto_servicio.subtipo_producto_servicio_id,
-                         'nombre_subtipos': 'subtipo_producto_servicio_{0}'.format(contador),
-                         'onchange_subtipos': 'cambioSubtipoProductoServicio({0})'.format(contador),
-                         'datos_subtipos': SubtipoProductoServicio.objects.get_xa_select_activos()
-                        .filter(es_servicio=dt.producto_servicio.subtipo_producto_servicio.es_servicio),
-                         'productos_servicios': lista_pro_ser,
+                         'producto_servicio': dt.subproducto_subservicio.producto_servicio_id,
                          'nombre_producto_servicio': 'producto_servicio_{0}'.format(contador),
+                         'onchange_producto_servicio': 'cambioProductoServicio({0})'.format(contador),
                          'datos_productos_servicios': ProductoServicio.objects.get_xa_select_activos()
-                        .filter(subtipo_producto_servicio=dt.producto_servicio.subtipo_producto_servicio),
+                        .filter(es_servicio=dt.subproducto_subservicio.producto_servicio.es_servicio),
+                         'subproductos_subservicios': lista_subpro_subser,
+                         'nombre_subproducto_subservicio': 'subproducto_subservicio_{0}'.format(contador),
+                         'datos_subproductos_subservicios': SubproductoSubservicio.objects.get_xa_select_activos()
+                        .filter(producto_servicio=dt.subproducto_subservicio.producto_servicio),
                          'contador': contador})
             contador += 1
 
     datos = {'tipos_productos_servicios': tipos_productos_servicios,
-             'subtipos_productos_servicios': subtipos_productos_servicios,
              'productos_servicios': productos_servicios,
+             'subproductos_subservicios': subproductos_subservicios,
              'selecciones': lista_selecciones,
              'contador': contador}
     return datos
@@ -710,9 +711,9 @@ def generar_datos_bienes_servicios(proveedor):
     lista_productos_servicios = []
     for ps in productos_servicios:
         lista_productos_servicios\
-            .append({'nombre_campo': 'Servicio' if ps.producto_servicio.subtipo_producto_servicio.es_servicio
+            .append({'nombre_campo': 'Servicio' if ps.subproducto_subservicio.producto_servicio.es_servicio
                      else "Producto", 'valor_campo': '{0} - {1}'
-                    .format(ps.producto_servicio.subtipo_producto_servicio, ps.producto_servicio)})
+                    .format(ps.subproducto_subservicio.producto_servicio, ps.subproducto_subservicio)})
     return lista_productos_servicios
 
 
