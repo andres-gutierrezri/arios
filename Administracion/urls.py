@@ -35,7 +35,7 @@ urlpatterns = [
     path('municipios/<int:id>/centros-poblados/json', administracion.CargarCentroPobladoSelectJsonView.as_view(),
          name='centros-poblados-json'),
     path('iniciar-sesion', inicio_sesion.IniciarSesionView.as_view(), name='iniciar-sesion'),
-    path('close-sesion', inicio_sesion.CerrarSesion.as_view(), name='cerrar-sesion'),
+    path('cerrar-sesion', inicio_sesion.CerrarSesion.as_view(), name='cerrar-sesion'),
     path('olvido-contrasena', inicio_sesion.OlvidoContrasenaView.as_view(), name='olvido-contrasena'),
     path('empresas/', empresas.EmpresaView.as_view(), name='empresas'),
     path('empresas/add', empresas.EmpresaCrearView.as_view(), name='empresas-crear'),
