@@ -55,7 +55,9 @@
                                 <div class="panel-body">
                                     <div class="row" id="js-contacts">
                                         <div class="form-group col-xl-4 col-lg-6 col-md-6 col-sm-6">
-                                            {% include 'Administracion/Tercero/Proveedor/tarjeta_estado_proveedor.html' %}
+                                            {% if not solicitud_proveedor %}
+                                                {% include 'Administracion/Tercero/Proveedor/tarjeta_estado_proveedor.html' %}
+                                            {% endif %}
                                             {% include 'Administracion/_common/_tarjeta_proveedor.html' with objeto=datos_proveedor.informacion_basica %}
                                             <div id="primer_div"></div>
                                         </div>
