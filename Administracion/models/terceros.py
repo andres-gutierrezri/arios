@@ -105,6 +105,7 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     fecha_constitucion = models.DateTimeField(verbose_name='Fecha de Constitución', null=True, blank=True)
     fecha_inicio_actividad = models.DateTimeField(verbose_name='Fecha de Inicio de Actividad', null=True, blank=True)
     usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario', null=True, blank=True)
+    es_vigente = models.BooleanField(verbose_name='Es Vigente', null=False, blank=False)
 
     def __str__(self):
         return self.nombre
@@ -140,6 +141,7 @@ class Tercero(models.Model, ModelDjangoExtensiones):
         tercero.fax = datos.get('fax', '')
         tercero.direccion = datos.get('direccion', '')
         tercero.digito_verificacion = datos.get('digito_verificacion')
+        tercero.es_vigente = True
         if int(tercero.tipo_tercero_id) == TipoTercero.CLIENTE:
             tercero.tipo_persona = datos.get('tipo_persona')
             tercero.regimen_fiscal = datos.get('regimen_fiscal')
@@ -198,6 +200,7 @@ class DocumentoTercero(models.Model):
     tipo_documento = models.ForeignKey(TipoDocumentoTercero, on_delete=models.DO_NOTHING, blank=False, null=False)
     tercero = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, verbose_name='Tercero', blank=False, null=False)
     fecha_crea = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', blank=False, null=False)
+    es_vigente = models.BooleanField(verbose_name='Es Vigente', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', blank=False, null=False)
 
     def __str__(self):
@@ -243,6 +246,7 @@ class ProveedorProductoServicio(models.Model, ModelDjangoExtensiones):
                                                 verbose_name="Subproducto o Subservicio", null=False, blank=False)
     proveedor = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING,
                                   verbose_name="Proveedor", null=False, blank=False)
+    es_vigente = models.BooleanField(verbose_name='Es Vigente', null=False, blank=False)
 
     def __str__(self):
         return '{0}-{1}'.format(self.proveedor, self.subproducto_subservicio)

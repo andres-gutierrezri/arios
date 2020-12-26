@@ -74,6 +74,7 @@ class ProveedorActividadEconomica(models.Model):
     proveedor = models.OneToOneField(Tercero, on_delete=models.DO_NOTHING, verbose_name='Usuario',
                                      null=False, blank=False)
     bienes_servicios = models.TextField(verbose_name='Bienes y Servicios que Ofrece', null=False, blank=False)
+    es_vigente = models.BooleanField(verbose_name='Es Vigente', null=False, blank=False)
 
     def __str__(self):
         return 'Información de la Actividad Economica del usuario {0}'.format(self.proveedor.usuario.get_full_name())
@@ -114,6 +115,7 @@ class EntidadBancariaTercero(models.Model):
     tipo_cuenta = models.SmallIntegerField(verbose_name='Tipo de Cuenta', null=False, blank=False, default=1)
     numero_cuenta = models.BigIntegerField(verbose_name='Número de Cuenta', null=False, blank=False)
     certificacion = models.FileField(upload_to=custom_upload_to, blank=False, null=False)
+    es_vigente = models.BooleanField(verbose_name='Es Vigente', null=False, blank=False)
 
     def __str__(self):
         return 'Entidad Bancaria de {0}'.format(self.tercero)
