@@ -19,13 +19,14 @@ from EVA.views.index import AbstractEvaLoggedProveedorView, AbstractEvaLoggedVie
 from Financiero.enumeraciones import TipoCuentaBancaria
 from Financiero.models.models import ActividadEconomica, ProveedorActividadEconomica, \
     EntidadBancariaTercero, EntidadBancaria
-from Notificaciones.models.models import EventoDesencadenador, Notificacion, DestinatarioNotificacion
+from Notificaciones.models.models import EventoDesencadenador, DestinatarioNotificacion
 from Notificaciones.views.views import crear_notificacion_por_evento
 
 
 class PerfilProveedorView(AbstractEvaLoggedProveedorView):
     def get(self, request):
-        proveedor = Tercero.objects.get(usuario=request.user)
+        print(request.user)
+        proveedor = Tercero.objects.get(usuario=request.user, es_vigente=True)
         datos_proveedor = generar_datos_proveedor(proveedor)
         total = datos_proveedor['total']
         
@@ -447,9 +448,34 @@ class ProveedorModificarSolicitudView(AbstractEvaLoggedProveedorView):
             Tercero.objects.filter(id=id).update(estado=False)
             Certificacion.objects.filter(tercero_id=id).update(estado=False)
 
+            tercero = Tercero.objects.get(id=id)
+            tercero.es_vigente = False
+            tercero.save()
+
+            documentos = DocumentoTercero.objects.filter(tercero=tercero)
+            for doc in documentos:
+                doc.es_vigente = False
+                doc.save()
+
+            actividades_economicas = ProveedorActividadEconomica.objects.get(proveedor=tercero)
+            actividades_economicas.es_vigente = False
+            actividades_economicas.save()
+
+            informacion_bancaria = EntidadBancariaTercero.objects.filter(tercero=tercero)
+            for ib in informacion_bancaria:
+                ib.es_vigente = False
+                ib.save()
+
+            productos_servicios = ProveedorProductoServicio.objects.filter(proveedor=tercero)
+            for ps in productos_servicios:
+                ps.es_vigente = False
+                ps.save()
+
             messages.success(self.request, 'Ahora puedes modificar tu perfil.')
             return JsonResponse({"estado": "OK"})
-        except:
+
+        except Exception as e:
+            print(e)
             return JsonResponse({"estado": "ERROR", "mensaje": "Ha ocurrido un error al realizar la solicitud"})
 
 
