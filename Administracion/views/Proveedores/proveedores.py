@@ -146,7 +146,6 @@ class PerfilActividadesEconomicasView(AbstractEvaLoggedProveedorView):
         proveedor = filtro_estado_proveedor(request)
         proveedor_ae = ProveedorActividadEconomica.from_dictionary(request.POST)
         proveedor_ae.proveedor = proveedor
-        proveedor_ae.es_vigente = proveedor.es_vigente
         proveedor.regimen_fiscal = request.POST.get('regimen_fiscal')
         responsabilidades = request.POST.getlist('responsabilidades')
         proveedor.responsabilidades_fiscales = ';'.join(responsabilidades) if responsabilidades else ''
@@ -187,7 +186,6 @@ class EntidadBancariaCrearView(AbstractEvaLoggedProveedorView):
         entidad_proveedor.tercero = filtro_estado_proveedor(request)
         entidad_proveedor.certificacion = request.FILES.get('certificacion', '')
         entidad_proveedor.numero_cuenta = request.POST.get('numero_cuenta', '')
-        entidad_proveedor.es_vigente = entidad_proveedor.tercero.es_vigente
         try:
             entidad_proveedor.save()
         except:
@@ -211,7 +209,6 @@ class EntidadBancariaEditarView(AbstractEvaLoggedProveedorView):
         entidad_proveedor.certificacion = request.FILES.get('certificacion', '')
         entidad_proveedor.tercero = filtro_estado_proveedor(request)
         entidad_proveedor.numero_cuenta = request.POST.get('numero_cuenta', '')
-        entidad_proveedor.es_vigente = entidad_proveedor.tercero.es_vigente
         try:
             if entidad_proveedor.certificacion:
                 update_fields.append('certificacion')
@@ -277,14 +274,13 @@ class PerfilProductosServiciosView(AbstractEvaLoggedProveedorView):
                     if datos != '':
                         for dt in datos:
                             ProveedorProductoServicio.objects.create(proveedor=proveedor,
-                                                                     es_vigente=proveedor.es_vigente,
                                                                      subproducto_subservicio_id=dt)
                     cn += 1
             else:
                 datos = request.POST.getlist('producto_servicio_0', '')
                 if datos != '':
                     for dt in datos:
-                        ProveedorProductoServicio.objects.create(proveedor=proveedor, es_vigente=proveedor.es_vigente,
+                        ProveedorProductoServicio.objects.create(proveedor=proveedor,
                                                                  producto_servicio_id=dt)
             messages.success(self.request, 'Se han guardado los productos y servicios correctamente.')
         except:
@@ -298,11 +294,11 @@ class PerfilDocumentosView(AbstractEvaLoggedProveedorView):
         proveedor = filtro_estado_proveedor(request)
 
         if proveedor.tipo_persona == PERSONA_JURIDICA:
-            documentos = DocumentoTercero.objects.filter(tercero=proveedor, es_vigente=proveedor.es_vigente,
+            documentos = DocumentoTercero.objects.filter(tercero=proveedor,
                                                          tipo_documento__aplica_juridica=True)
             tipos_documentos = TipoDocumentoTercero.objects.filter(aplica_juridica=True)
         else:
-            documentos = DocumentoTercero.objects.filter(tercero=proveedor, es_vigente=proveedor.es_vigente,
+            documentos = DocumentoTercero.objects.filter(tercero=proveedor,
                                                          tipo_documento__aplica_natural=True)
             tipos_documentos = TipoDocumentoTercero.objects.filter(aplica_natural=True)
 
@@ -324,7 +320,6 @@ class DocumentoCrearView(AbstractEvaLoggedProveedorView):
         documento.tipo_documento_id = request.POST.get('tipo_documento', '')
         documento.tercero = proveedor
         documento.documento = request.FILES.get('documento', '')
-        documento.es_vigente = proveedor.es_vigente
         documento.estado = True
         try:
             documento.save()
@@ -360,12 +355,13 @@ class EnviarSolicitudProveedorView(AbstractEvaLoggedView):
         try:
             proveedor = Tercero.objects.get(id=id)
             proveedor.estado_proveedor = EstadosProveedor.SOLICITUD_ENVIADA
+            proveedor.estado = False
             if SolicitudProveedor.objects.filter(proveedor=proveedor, estado=True):
                 messages.warning(self.request, 'Ya se ha enviado una solicitud.')
             else:
                 solicitud = SolicitudProveedor.objects.create(proveedor=proveedor, fecha_creacion=app_datetime_now(),
                                                               aprobado=False, estado=True)
-                proveedor.save(update_fields=['estado_proveedor'])
+                proveedor.save(update_fields=['estado_proveedor', 'estado'])
                 messages.success(self.request, 'Se ha enviado la solicitud correctamente')
                 if Certificacion.objects.filter(tercero=proveedor):
                     titulo = 'Un proveedor ha modificado su perfil.'
@@ -435,6 +431,7 @@ class ProveedorSolicitudAprobarRechazar(AbstractEvaLoggedView):
         return render(request, 'Administracion/_common/_modal_aprobar_rechazar_proveedor.html',
                       {'proveedor': proveedor, 'opciones': opciones})
 
+    @transaction.atomic
     def post(self, request, id):
         try:
             solicitud = SolicitudProveedor.objects.get(proveedor_id=id, estado=True)
@@ -447,7 +444,17 @@ class ProveedorSolicitudAprobarRechazar(AbstractEvaLoggedView):
             if solicitud.aprobado:
                 Certificacion.objects.filter(tercero=solicitud.proveedor).update(estado=False)
                 Certificacion.objects.create(tercero=solicitud.proveedor, fecha_crea=app_datetime_now(), estado=True)
-                Tercero.objects.filter(id=id).update(estado=True, estado_proveedor=EstadosProveedor.ACTIVO)
+
+                proveedor_anterior = Tercero.objects.filter(identificacion=solicitud.proveedor.identificacion)
+
+                if len(proveedor_anterior) == 2:
+                    proveedor_anterior.get(es_vigente=True).delete()
+
+                Tercero.objects.filter(id=id).update(estado=True, es_vigente=True,
+                                                     estado_proveedor=EstadosProveedor.ACTIVO)
+            else:
+                Tercero.objects.filter(id=id).update(estado_proveedor=EstadosProveedor.RECHAZADO)
+
             messages.success(self.request, 'Se ha {0} la solicitud correctamente.'
                              .format('aprobado' if solicitud.aprobado else 'rechazado'))
 
@@ -471,16 +478,13 @@ class ProveedorModificarSolicitudView(AbstractEvaLoggedProveedorView):
 
             tercero = Tercero.objects.get(id=id)
             doble_tercero = duplicar_registro_proveedor(tercero)
-            duplicar_registro_proveedor(ProveedorActividadEconomica.objects.get(proveedor_id=id, es_vigente=True))
-            duplicar_registro_proveedor(Certificacion.objects)
-
-            for doc in DocumentoTercero.objects.filter(tercero_id=id, es_vigente=True):
+            duplicar_registro_proveedor(ProveedorActividadEconomica.objects.get(proveedor_id=id),
+                                        doble_tercero)
+            for doc in DocumentoTercero.objects.filter(tercero_id=id):
                 duplicar_registro_proveedor(doc, doble_tercero)
-
-            for ib in EntidadBancariaTercero.objects.filter(tercero_id=id, es_vigente=True):
+            for ib in EntidadBancariaTercero.objects.filter(tercero_id=id):
                 duplicar_registro_proveedor(ib, doble_tercero)
-
-            for ps in ProveedorProductoServicio.objects.filter(proveedor_id=id, es_vigente=True):
+            for ps in ProveedorProductoServicio.objects.filter(proveedor_id=id):
                 duplicar_registro_proveedor(ps, doble_tercero)
 
             messages.success(self.request, 'Ahora puedes modificar tu perfil.')
@@ -494,8 +498,10 @@ class ProveedorModificarSolicitudView(AbstractEvaLoggedProveedorView):
 def duplicar_registro_proveedor(objeto, duplicado=None):
     if duplicado:
         objeto.tercero = duplicado
-    objeto.pk = None
-    objeto.es_vigente = False
+        objeto.proveedor = duplicado
+    else:
+        objeto.es_vigente = False
+    objeto.id = None
     objeto.save()
     return objeto
 
@@ -748,7 +754,7 @@ def generar_datos_actividades_economicas(proveedor):
 
 
 def generar_datos_entidades_bancarias(proveedor):
-    entidades_bancarias = EntidadBancariaTercero.objects.filter(tercero=proveedor, es_vigente=proveedor.es_vigente)
+    entidades_bancarias = EntidadBancariaTercero.objects.filter(tercero=proveedor)
     lista_entidades = []
     for eb in entidades_bancarias:
         for tc in TipoCuentaBancaria.choices:
