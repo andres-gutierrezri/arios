@@ -54,8 +54,7 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     objects = TerceroManger()
 
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=True, blank=False)
-    identificacion = models.CharField(max_length=20, verbose_name='Identificación', null=False, blank=False,
-                                      unique=True)
+    identificacion = models.CharField(max_length=20, verbose_name='Identificación', null=False, blank=False)
     digito_verificacion = models.SmallIntegerField(verbose_name='Digito de Verificación', null=True, blank=True)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
 
@@ -105,6 +104,7 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     fecha_constitucion = models.DateTimeField(verbose_name='Fecha de Constitución', null=True, blank=True)
     fecha_inicio_actividad = models.DateTimeField(verbose_name='Fecha de Inicio de Actividad', null=True, blank=True)
     usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario', null=True, blank=True)
+    estado_proveedor = models.SmallIntegerField(verbose_name='Estado del Proveedor', null=True, blank=True)
     es_vigente = models.BooleanField(verbose_name='Es Vigente', null=False, blank=False)
 
     def __str__(self):
@@ -113,6 +113,7 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     class Meta:
         verbose_name = 'Tercero'
         verbose_name_plural = 'Terceros'
+        unique_together = ('identificacion', 'es_vigente')
         permissions = [("view_proveedores", "Can view proveedores")]
 
     def empresa_to_dict(self):
@@ -209,7 +210,7 @@ class DocumentoTercero(models.Model):
     class Meta:
         verbose_name = 'Documento Tercero'
         verbose_name_plural = 'Documentos Terceros'
-        unique_together = ('tipo_documento', 'tercero')
+        unique_together = ('tipo_documento', 'tercero', 'es_vigente')
 
 
 class Certificacion(models.Model):
