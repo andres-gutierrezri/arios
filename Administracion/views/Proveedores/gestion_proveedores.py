@@ -11,7 +11,7 @@ from EVA.views.index import AbstractEvaLoggedView
 
 class ProveedorIndexView(AbstractEvaLoggedView):
     def get(self, request):
-        proveedores = ProveedorProductoServicio.objects.distinct('proveedor')
+        proveedores = ProveedorProductoServicio.objects.distinct('proveedor').filter(proveedor__es_vigente=True)
         producto_servicio_filtro = request.GET.getlist('producto_servicio_', [])
         tipo_producto_servicio = request.GET.get('tipo_producto_servicio_', '')
         subtipo_producto_servicio = request.GET.get('subtipo_producto_servicio_', '')
