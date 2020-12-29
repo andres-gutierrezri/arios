@@ -71,10 +71,9 @@ class ProveedorActividadEconomica(models.Model):
     contribuyente_iyc = models.CharField(verbose_name='Contribuyente de Industria y Comercio', max_length=100,
                                          null=True, blank=True)
     entidad_publica = models.CharField(verbose_name='Número de Resolución', max_length=100, null=True, blank=True)
-    proveedor = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, verbose_name='Usuario',
-                                     null=False, blank=False)
+    proveedor = models.ForeignKey(Tercero, on_delete=models.CASCADE, verbose_name='Usuario',
+                                  null=False, blank=False)
     bienes_servicios = models.TextField(verbose_name='Bienes y Servicios que Ofrece', null=False, blank=False)
-    es_vigente = models.BooleanField(verbose_name='Es Vigente', null=False, blank=False)
 
     def __str__(self):
         return 'Información de la Actividad Economica del usuario {0}'.format(self.proveedor.usuario.get_full_name())
@@ -82,7 +81,6 @@ class ProveedorActividadEconomica(models.Model):
     class Meta:
         verbose_name = 'Actividad Económica del Proveedor'
         verbose_name_plural = 'Actividades Económicas de Los Proveedores'
-        unique_together = ('proveedor', 'es_vigente')
 
     @staticmethod
     def from_dictionary(datos: dict) -> 'ProveedorActividadEconomica':
@@ -110,13 +108,12 @@ def custom_upload_to(instance, filename):
 
 class EntidadBancariaTercero(models.Model):
     objects = ManagerGeneral()
-    tercero = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, verbose_name='Tercero', blank=False, null=False)
+    tercero = models.ForeignKey(Tercero, on_delete=models.CASCADE, verbose_name='Tercero', blank=False, null=False)
     entidad_bancaria = models.ForeignKey(EntidadBancaria, on_delete=models.DO_NOTHING, verbose_name='Entidad Bancaria',
                                          null=False, blank=False)
     tipo_cuenta = models.SmallIntegerField(verbose_name='Tipo de Cuenta', null=False, blank=False, default=1)
     numero_cuenta = models.BigIntegerField(verbose_name='Número de Cuenta', null=False, blank=False)
     certificacion = models.FileField(upload_to=custom_upload_to, blank=False, null=False)
-    es_vigente = models.BooleanField(verbose_name='Es Vigente', null=False, blank=False)
 
     def __str__(self):
         return 'Entidad Bancaria de {0}'.format(self.tercero)

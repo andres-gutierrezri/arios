@@ -113,7 +113,6 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     class Meta:
         verbose_name = 'Tercero'
         verbose_name_plural = 'Terceros'
-        unique_together = ('identificacion', 'es_vigente')
         permissions = [("view_proveedores", "Can view proveedores")]
 
     def empresa_to_dict(self):
@@ -199,9 +198,8 @@ class DocumentoTercero(models.Model):
     objects = ManagerGeneral()
     documento = models.FileField(upload_to=custom_upload_to, verbose_name='Documento', null=False, blank=False)
     tipo_documento = models.ForeignKey(TipoDocumentoTercero, on_delete=models.DO_NOTHING, blank=False, null=False)
-    tercero = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, verbose_name='Tercero', blank=False, null=False)
+    tercero = models.ForeignKey(Tercero, on_delete=models.CASCADE, verbose_name='Tercero', blank=False, null=False)
     fecha_crea = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', blank=False, null=False)
-    es_vigente = models.BooleanField(verbose_name='Es Vigente', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', blank=False, null=False)
 
     def __str__(self):
@@ -210,12 +208,12 @@ class DocumentoTercero(models.Model):
     class Meta:
         verbose_name = 'Documento Tercero'
         verbose_name_plural = 'Documentos Terceros'
-        unique_together = ('tipo_documento', 'tercero', 'es_vigente')
+        unique_together = ('tipo_documento', 'tercero')
 
 
 class Certificacion(models.Model):
     objects = ManagerGeneral()
-    tercero = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, verbose_name='Tercero', blank=False, null=False)
+    tercero = models.ForeignKey(Tercero, on_delete=models.CASCADE, verbose_name='Tercero', blank=False, null=False)
     fecha_crea = models.DateTimeField(verbose_name='Fecha de Creación', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', blank=False, null=False)
 
@@ -245,9 +243,8 @@ class ProveedorProductoServicio(models.Model, ModelDjangoExtensiones):
     objects = ProveedorProductoServicioManger()
     subproducto_subservicio = models.ForeignKey(SubproductoSubservicio, on_delete=models.DO_NOTHING,
                                                 verbose_name="Subproducto o Subservicio", null=False, blank=False)
-    proveedor = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING,
+    proveedor = models.ForeignKey(Tercero, on_delete=models.CASCADE,
                                   verbose_name="Proveedor", null=False, blank=False)
-    es_vigente = models.BooleanField(verbose_name='Es Vigente', null=False, blank=False)
 
     def __str__(self):
         return '{0}-{1}'.format(self.proveedor, self.subproducto_subservicio)
@@ -258,7 +255,7 @@ class ProveedorProductoServicio(models.Model, ModelDjangoExtensiones):
 
 
 class SolicitudProveedor(models.Model):
-    proveedor = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING,
+    proveedor = models.ForeignKey(Tercero, on_delete=models.CASCADE,
                                   verbose_name="Proveedor", null=False, blank=False)
     fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', blank=False, null=False)
     comentarios = models.CharField(max_length=300, verbose_name='Comentarios', blank=False, null=False)
