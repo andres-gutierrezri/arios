@@ -71,7 +71,7 @@ class ProveedorActividadEconomica(models.Model):
     contribuyente_iyc = models.CharField(verbose_name='Contribuyente de Industria y Comercio', max_length=100,
                                          null=True, blank=True)
     entidad_publica = models.CharField(verbose_name='Número de Resolución', max_length=100, null=True, blank=True)
-    proveedor = models.OneToOneField(Tercero, on_delete=models.DO_NOTHING, verbose_name='Usuario',
+    proveedor = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, verbose_name='Usuario',
                                      null=False, blank=False)
     bienes_servicios = models.TextField(verbose_name='Bienes y Servicios que Ofrece', null=False, blank=False)
     es_vigente = models.BooleanField(verbose_name='Es Vigente', null=False, blank=False)
@@ -82,6 +82,7 @@ class ProveedorActividadEconomica(models.Model):
     class Meta:
         verbose_name = 'Actividad Económica del Proveedor'
         verbose_name_plural = 'Actividades Económicas de Los Proveedores'
+        unique_together = ('proveedor', 'es_vigente')
 
     @staticmethod
     def from_dictionary(datos: dict) -> 'ProveedorActividadEconomica':
