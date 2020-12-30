@@ -194,7 +194,7 @@ def custom_upload_to(instance, filename):
         .format(instance.tercero.nombre[:10], filename, settings.EVA_PRIVATE_MEDIA)
 
 
-class DocumentoTercero(models.Model):
+class DocumentoTercero(models.Model, ModelDjangoExtensiones):
     objects = ManagerGeneral()
     documento = models.FileField(upload_to=custom_upload_to, verbose_name='Documento', null=False, blank=False)
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=True, blank=True)

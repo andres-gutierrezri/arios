@@ -5,6 +5,7 @@ from django.db import models
 
 from Administracion.models import Tercero
 from EVA import settings
+from EVA.General.modeljson import ModelDjangoExtensiones
 from EVA.General.modelmanagers import ManagerGeneral
 
 
@@ -58,7 +59,7 @@ class ActividadEconomica(models.Model):
         verbose_name_plural = 'Actividades Económicas'
 
 
-class ProveedorActividadEconomica(models.Model):
+class ProveedorActividadEconomica(models.Model, ModelDjangoExtensiones):
     actividad_principal = models.ForeignKey(ActividadEconomica, on_delete=models.DO_NOTHING, null=False, blank=False,
                                             verbose_name='Actividad Principal',
                                             related_name='proveedor_actividad_principal')
@@ -106,7 +107,7 @@ def custom_upload_to(instance, filename):
         .format(instance.tercero.nombre[10], filename, settings.EVA_PRIVATE_MEDIA)
 
 
-class EntidadBancariaTercero(models.Model):
+class EntidadBancariaTercero(models.Model, ModelDjangoExtensiones):
     objects = ManagerGeneral()
     tercero = models.ForeignKey(Tercero, on_delete=models.CASCADE, verbose_name='Tercero', blank=False, null=False)
     entidad_bancaria = models.ForeignKey(EntidadBancaria, on_delete=models.DO_NOTHING, verbose_name='Entidad Bancaria',
