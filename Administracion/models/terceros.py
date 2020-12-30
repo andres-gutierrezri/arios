@@ -198,7 +198,7 @@ class DocumentoTercero(models.Model):
     objects = ManagerGeneral()
     documento = models.FileField(upload_to=custom_upload_to, verbose_name='Documento', null=False, blank=False)
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=True, blank=True)
-    tipo_documento = models.ForeignKey(TipoDocumentoTercero, on_delete=models.DO_NOTHING, blank=False, null=False)
+    tipo_documento = models.ForeignKey(TipoDocumentoTercero, on_delete=models.DO_NOTHING, blank=False, null=True)
     tercero = models.ForeignKey(Tercero, on_delete=models.CASCADE, verbose_name='Tercero', blank=False, null=False)
     fecha_crea = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', blank=False, null=False)
     estado = models.BooleanField(verbose_name='Estado', blank=False, null=False)
