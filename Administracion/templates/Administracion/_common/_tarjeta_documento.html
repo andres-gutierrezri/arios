@@ -4,10 +4,16 @@
         <div class="card-body border-faded border-top-0 border-left-0 border-right-0 rounded-top">
             <div class="d-flex flex-row align-items-center">
                 <div class="info-card-text flex-1">
-                    <h4>{{ objeto.tipo_documento }}</h4>
+                    <h4>{% if objeto.tipo_documento %}{{ objeto.tipo_documento }}{% else %}{{ objeto.nombre }}{% endif %}</h4>
                 </div>
                 <div class="info-card-text flex-1" style="text-align: end" >
-                    <a class="far fa-2x far fa-edit" href="javascript:abrirModalGestionarDocumentos('{% url 'Administracion:proveedor-perfil-documento-editar' objeto.id %}')"  data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar Documento"></a>                </div>
+                    {% if objeto.tipo_documento %}
+                        <a class="far fa-2x far fa-edit" href="javascript:abrirModalGestionarDocumentos('{% url 'Administracion:proveedor-perfil-documento-editar' objeto.id %}')"  data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar Documento"></a>
+                    {% else %}
+                        <a class="far fa-2x far fa-edit" href="javascript:abrirModalGestionarDocumentos('{% url 'Administracion:proveedor-perfil-documento-adicional-editar' objeto.id %}')"  data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                        <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ eb.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ objeto.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+                    {% endif %}
+                </div>
             </div>
         </div>
         <div class="card-body p-0 collapse show">
