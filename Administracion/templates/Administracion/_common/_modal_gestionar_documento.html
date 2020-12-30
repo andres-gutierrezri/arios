@@ -15,24 +15,28 @@
             <div class="modal-body">
                 {% csrf_token %}
                 <div class="form-row">
-                    {% if not documento and not agregar_adicional%}
+                    {% if not documento and not documento_adicional %}
                     <div class="form-group col-12">
                         {% select_tag tipos_documentos 'tipo_documento' 'Seleccione un tipo de documento' texto_label="Tipo de Documento" required="" value=documento.tipo_documento_id mensaje_validacion='Por favor seleccione una opción' %}
                     </div>
                     {% endif %}
                     {% if documento_adicional %}
                         <div class="form-group col-12">
-                            {% input_text_tag 'nombre' 'Nombre' placeholder="Ingrese el nombre" required="" maxlength="100" value=tercero.nombre mensaje_validacion='Por favor digite el nombre.' invalido=errores.nombre %}
+                            {% input_text_tag 'nombre' 'Nombre' placeholder="Ingrese el nombre" required="" maxlength="100" value=documento.nombre mensaje_validacion='Por favor digite el nombre.' invalido=errores.nombre %}
                         </div>
                     {% endif %}
                     <div class="form-group col-12">
-                        {% input_file_tag 'documento' 'Documento' placeholder="Seleccione un archivo" invalido=errores.logo accept=".docx, .pdf" mensaje_validacion='Por favor seleccione un archivo'%}
+                        {% if documento %}
+                            {% input_file_tag 'documento' 'Documento' placeholder="Seleccione un archivo" invalido=errores.logo accept=".docx, .pdf" mensaje_validacion='Por favor seleccione un archivo'%}
+                        {% else %}
+                            {% input_file_tag 'documento' 'Documento' placeholder="Seleccione un archivo" required="" invalido=errores.logo accept=".docx, .pdf" mensaje_validacion='Por favor seleccione un archivo'%}
+                        {% endif %}
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button data-dismiss="modal" class="btn btn-danger btn-pills">Cancelar</button>
-                <button id="guardar" type="submit" class="btn btn-primary btn-pills">{% if objeto %} Guardar {% else %} Cargar {% endif %} </button>
+                <button id="guardar" type="submit" class="btn btn-primary btn-pills">{% if objeto or documento%} Guardar {% else %} Cargar {% endif %} </button>
             </div>
         </div>
     </div>
