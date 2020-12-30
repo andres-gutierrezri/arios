@@ -39,7 +39,7 @@ class PerfilProveedorView(AbstractEvaLoggedProveedorView):
         certificaciones = Certificacion.objects.filter(tercero=proveedor).order_by('-id')
         if not certificaciones and not proveedor.es_vigente:
             certificaciones = Certificacion.objects\
-                .filter(tercero__identificacion=proveedor.identificacion).order_by('-id')
+                .filter(tercero__usuario=proveedor.usuario).order_by('-id')
 
         rechazos = DestinatarioNotificacion\
             .objects.filter(usuario=proveedor.usuario).order_by('-id')[:1]
@@ -425,7 +425,7 @@ class EnviarSolicitudProveedorView(AbstractEvaLoggedView):
                                                               aprobado=False, estado=True)
                 proveedor.save(update_fields=['estado_proveedor', 'estado'])
                 messages.success(self.request, 'Se ha enviado la solicitud correctamente')
-                if Certificacion.objects.filter(tercero=proveedor):
+                if Certificacion.objects.filter(tercero__usuario=proveedor.usuario):
                     titulo = 'Un proveedor ha modificado su perfil.'
                     comentario = 'El proveedor {0} ha modificado su perfil'.format(proveedor.nombre)
                     crear_notificacion_por_evento(EventoDesencadenador.SOLICITUD_APROBACION_PROVEEDOR, solicitud.id,
@@ -508,7 +508,7 @@ class ProveedorSolicitudAprobarRechazar(AbstractEvaLoggedView):
                 Certificacion.objects.filter(tercero=solicitud.proveedor).update(estado=False)
                 Certificacion.objects.create(tercero=solicitud.proveedor, fecha_crea=app_datetime_now(), estado=True)
 
-                proveedor_anterior = Tercero.objects.filter(identificacion=solicitud.proveedor.identificacion)
+                proveedor_anterior = Tercero.objects.filter(usuario=solicitud.proveedor.usuario)
 
                 if len(proveedor_anterior) == 2:
                     proveedor_anterior.get(es_vigente=True).delete()
