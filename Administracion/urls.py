@@ -102,5 +102,9 @@ urlpatterns = [
     path('proveedor/perfil/documentos-adicionales', proveedores.PerfilDocumentosAdicionalesView.as_view(),
          name='proveedor-perfil-documentos-adicionales'),
     path('proveedor/perfil/documentos-adicionales/add', proveedores.DocumentoAdicionalCrearView.as_view(),
-         name='proveedor-perfil-documento-adicional-crear')
+         name='proveedor-perfil-documento-adicional-crear'),
+    path('proveedor/perfil/documentos-adicionales/<int:id>/', proveedores.DocumentoAdicionalEditarView.as_view(),
+         name='proveedor-perfil-documento-adicional-editar'),
+    path('proveedor/perfil/documentos-adicionales/<int:id>/delete', proveedores.DocumentoAdicionalEliminarView.as_view(),
+         name='proveedor-perfil-documento-adicional-eliminar'),
 ]
