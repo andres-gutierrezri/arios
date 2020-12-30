@@ -427,7 +427,8 @@ class EnviarSolicitudProveedorView(AbstractEvaLoggedView):
                 messages.success(self.request, 'Se ha enviado la solicitud correctamente')
                 if Certificacion.objects.filter(tercero__usuario=proveedor.usuario):
                     titulo = 'Un proveedor ha modificado su perfil.'
-                    comentario = 'El proveedor {0} ha modificado su perfil'.format(proveedor.nombre)
+                    comentario = generar_comentario_solicitud(proveedor)
+                    # comentario = 'El proveedor {0} ha modificado su perfil'.format(proveedor.nombre)
                     crear_notificacion_por_evento(EventoDesencadenador.SOLICITUD_APROBACION_PROVEEDOR, solicitud.id,
                                                   contenido={'titulo': titulo,
                                                              'mensaje': comentario})
@@ -917,3 +918,58 @@ def generar_datos_proveedor(proveedor):
     return {'total': total, 'informacion_basica': informacion_basica, 'actividades_economicas': actividades_economicas,
             'entidades_bancarias': entidades_bancarias, 'bienes_servicios': bienes_servicios, 'documentos': documentos,
             'documentos_adicionales': documentos_adicionales}
+
+
+def generar_comentario_solicitud(proveedor):
+    proveedor_vigente = Tercero.objects.get(usuario=proveedor.usuario, es_vigente=True)
+    proveedor_editado = Tercero.objects.get(usuario=proveedor.usuario, es_vigente=False)
+    print('Comparación General: ',
+          proveedor_vigente.comparar(proveedor_editado,
+                                     excluir=['id', 'es_vigente', 'estado', 'fecha_creacion',
+                                              'fecha_modificacion', 'estado_proveedor']))
+
+    av = ProveedorActividadEconomica.objects.get(proveedor=proveedor_vigente)
+    ae = ProveedorActividadEconomica.objects.get(proveedor=proveedor_editado)
+    print('Comparación Actividades Económicas: ', av.comparar(ae, excluir=['id', 'proveedor']))
+
+    ebv = EntidadBancariaTercero.objects.filter(tercero=proveedor_vigente)
+    ebe = EntidadBancariaTercero.objects.filter(tercero=proveedor_editado)
+
+    cambios = validar_cambios_proveedor(ebv, ebe)
+    print('cambios Entidades Bancarias: ', cambios)
+
+    bsv = ProveedorProductoServicio.objects.filter(proveedor=proveedor_vigente)
+    bse = ProveedorProductoServicio.objects.filter(proveedor=proveedor_editado)
+
+    cambios = validar_cambios_proveedor(bsv, bse)
+    print('cambios Productos y Servicios: ', cambios)
+
+    drv = DocumentoTercero.objects.filter(tercero=proveedor_vigente, tipo_documento__isnull=False)
+    dre = DocumentoTercero.objects.filter(tercero=proveedor_editado, tipo_documento__isnull=False)
+
+    cambios = validar_cambios_proveedor(drv, dre)
+    print('cambios Documentos Requeridos: ', cambios)
+
+    dav = DocumentoTercero.objects.filter(tercero=proveedor_vigente, tipo_documento__isnull=True)
+    dae = DocumentoTercero.objects.filter(tercero=proveedor_editado, tipo_documento__isnull=True)
+
+    cambios = validar_cambios_proveedor(dav, dae)
+    print('cambios Documentos Adicionales: ', cambios)
+
+    return 'comentario'
+
+
+def validar_cambios_proveedor(objeto_vigente, objeto_editado):
+    cambios = False
+    if len(objeto_vigente) != len(objeto_editado):
+        cambios = True
+    else:
+        for obv in objeto_vigente:
+            coincidencia = False
+            for obe in objeto_editado:
+                if obv.comparar(obe, excluir=['id', 'proveedor', 'tercero']):
+                    coincidencia = True
+                    break
+            if not coincidencia:
+                cambios = True
+    return cambios
