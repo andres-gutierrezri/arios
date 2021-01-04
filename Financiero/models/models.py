@@ -106,7 +106,7 @@ class ProveedorActividadEconomica(models.Model, ModelDjangoExtensiones):
 
 def custom_upload_to(instance, filename):
     return '{2}/Proveedores/CertificacionesBancarias/{0}/{1}'\
-        .format(instance.tercero.nombre[10], filename, settings.EVA_PRIVATE_MEDIA)
+        .format(instance.tercero.nombre[:10], filename, settings.EVA_PRIVATE_MEDIA)
 
 
 class EntidadBancariaTercero(models.Model, ModelDjangoExtensiones):
