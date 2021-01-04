@@ -53,7 +53,7 @@ selectTipoPersona.change(function (){
 
 function validarDV() {
     const tipoId =$('#tipo_identificacion_select_id option:selected').text();
-    actdesInputDV(tipoId.includes('Tributaria'));
+    actdesInputDV(tipoId.includes('NIT'));
 }
 
 function validarTipoPersona() {
