@@ -51,3 +51,13 @@ class EstadosProveedor(models.TextChoices):
     EDICION_PERFIL = 6, 'Edición del Perfil'
 
 
+class TipoContribuyente(models.IntegerChoices):
+
+    CONTRIBUYENTE_MICRO = 1, 'Contribuyente Micro'
+    CONTRIBUYENTE_PEQUENO = 2, 'Contribuyente Pequeño'
+    CONTRIBUYENTE_MEDIANO = 3, 'Contribuyente Mediano'
+    CONTRIBUYENTE_MEDIANO_ALTO = 4, 'Contribuyente Mediano Alto'
+    GRAN_CONTRIBUYENTE = 5, 'Gran Contribuyente'
+
+
+

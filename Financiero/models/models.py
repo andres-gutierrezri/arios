@@ -68,6 +68,7 @@ class ProveedorActividadEconomica(models.Model, ModelDjangoExtensiones):
                                              related_name='proveedor_actividad_secundaria')
     otra_actividad = models.ForeignKey(ActividadEconomica, on_delete=models.DO_NOTHING, null=True, blank=True,
                                        verbose_name='Otra Actividad', related_name='proveedor_otra_atividad')
+    tipo_contribuyente = models.SmallIntegerField(verbose_name='Tipo Contribuyente', null=False, blank=False)
     numero_resolucion = models.CharField(verbose_name='Número de Resolución', max_length=100, null=True, blank=True)
     contribuyente_iyc = models.CharField(verbose_name='Contribuyente de Industria y Comercio', max_length=100,
                                          null=True, blank=True)
@@ -94,6 +95,7 @@ class ProveedorActividadEconomica(models.Model, ModelDjangoExtensiones):
         proveedor_ae.actividad_principal_id = datos.get('actividad_principal', '')
         proveedor_ae.actividad_secundaria_id = datos.get('actividad_secundaria', '')
         proveedor_ae.otra_actividad_id = datos.get('otra_actividad', '')
+        proveedor_ae.tipo_contribuyente = datos.get('tipo_contribuyente', '')
         proveedor_ae.numero_resolucion = datos.get('resolucion', '')
         proveedor_ae.contribuyente_iyc = datos.get('contribuyente_iyc', '')
         proveedor_ae.entidad_publica = datos.get('entidad_publica', '')
