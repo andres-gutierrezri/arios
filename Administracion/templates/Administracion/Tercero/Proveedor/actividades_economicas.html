@@ -41,14 +41,11 @@
                                             </div>
                                         </div>
                                         <div class="form-row">
-                                            <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                            <div class="form-group col-xl-6 col-lg-6 col-md-6 col-sm-6">
                                                 {% select_tag regimenes_fiscales 'regimen_fiscal' 'Seleccione un régimen fiscal' is_tupla=True texto_label="Régimen Fiscal" value=proveedor.proveedor.regimen_fiscal required="" mensaje_validacion='Por favor seleccione un régimen fiscal.' invalido=errores.regimen_fiscal %}
                                             </div>
-                                            <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                                                {% select_multiple_tag responsabilidades 'responsabilidades' 'responsabilidades_id' 'Seleccione una responsabilidad fiscal' is_tupla=True texto_label="Responsabilidad Fiscal" value=responsabilidades_tercero required="" mensaje_validacion='Por favor seleccione una responsabilidad fiscal.' multiple='multiple' invalido=errores.responsabilidades %}
-                                            </div>
-                                            <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                                                {% select_tag tributos 'tributo' 'Seleccione un tributo' is_tupla=True texto_label="Tributo" value=proveedor.proveedor.tributos required="" mensaje_validacion='Por favor seleccione un tributo.' invalido=errores.tributos%}
+                                            <div class="form-group col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                                                {% select_tag tipos_contribuyentes 'tipo_contribuyente' 'Seleccione un tipo de contribuyente' is_tupla=True texto_label="Tipo de Contribuyente" value=proveedor.tipo_contribuyente required="" mensaje_validacion='Por favor seleccione un tipo de contribuyente.' invalido=errores.tipo_contribuyente %}
                                             </div>
                                             <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
                                                 <div class="custom-control custom-checkbox">
@@ -106,6 +103,5 @@
     <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
 	<script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
-    <script src="{% static 'Administracion/js/Tercero/proveedor.js' %}"></script>
     <script src="{% static 'Administracion/js/Tercero/actividadesEconomicas.js' %}"></script>
 {% endblock scripts%}
