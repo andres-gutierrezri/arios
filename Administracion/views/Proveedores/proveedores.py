@@ -929,42 +929,55 @@ def generar_datos_proveedor(proveedor):
 
 
 def generar_comentario_solicitud(proveedor):
-    proveedor_vigente = Tercero.objects.get(usuario=proveedor.usuario, es_vigente=True)
-    proveedor_editado = Tercero.objects.get(usuario=proveedor.usuario, es_vigente=False)
-    print('Comparación General: ',
-          proveedor_vigente.comparar(proveedor_editado,
-                                     excluir=['id', 'es_vigente', 'estado', 'fecha_creacion',
-                                              'fecha_modificacion', 'estado_proveedor']))
+    proveedor = Tercero.objects.filter(usuario=proveedor.usuario)
+    proveedor_vigente = proveedor.get(es_vigente=True)
+    proveedor_editado = proveedor.get(es_vigente=False)
+    modificaciones = ''
+    if not proveedor_vigente.comparar(proveedor_editado, excluir=['id', 'es_vigente', 'estado', 'fecha_creacion',
+                                                                  'fecha_modificacion', 'estado_proveedor',
+                                                                  'regimen_fiscal']):
+        modificaciones += 'Información Básica, '
 
     av = ProveedorActividadEconomica.objects.get(proveedor=proveedor_vigente)
     ae = ProveedorActividadEconomica.objects.get(proveedor=proveedor_editado)
-    print('Comparación Actividades Económicas: ', av.comparar(ae, excluir=['id', 'proveedor']))
+    if not av.comparar(ae, excluir=['id', 'proveedor']) or \
+            proveedor_vigente.regimen_fiscal != proveedor_editado.regimen_fiscal:
+        modificaciones += 'Actividades Económicas, '
 
     ebv = EntidadBancariaTercero.objects.filter(tercero=proveedor_vigente)
     ebe = EntidadBancariaTercero.objects.filter(tercero=proveedor_editado)
 
-    cambios = validar_cambios_proveedor(ebv, ebe)
-    print('cambios Entidades Bancarias: ', cambios)
+    if validar_cambios_proveedor(ebv, ebe):
+        modificaciones += 'Entidades Bancarias, '
 
     bsv = ProveedorProductoServicio.objects.filter(proveedor=proveedor_vigente)
     bse = ProveedorProductoServicio.objects.filter(proveedor=proveedor_editado)
 
-    cambios = validar_cambios_proveedor(bsv, bse)
-    print('cambios Productos y Servicios: ', cambios)
+    if validar_cambios_proveedor(bsv, bse):
+        modificaciones += 'Productos y Servicios, '
 
     drv = DocumentoTercero.objects.filter(tercero=proveedor_vigente, tipo_documento__isnull=False)
     dre = DocumentoTercero.objects.filter(tercero=proveedor_editado, tipo_documento__isnull=False)
 
-    cambios = validar_cambios_proveedor(drv, dre)
-    print('cambios Documentos Requeridos: ', cambios)
+    if validar_cambios_proveedor(drv, dre):
+        modificaciones += 'Documentos Requeridos, '
 
     dav = DocumentoTercero.objects.filter(tercero=proveedor_vigente, tipo_documento__isnull=True)
     dae = DocumentoTercero.objects.filter(tercero=proveedor_editado, tipo_documento__isnull=True)
 
-    cambios = validar_cambios_proveedor(dav, dae)
-    print('cambios Documentos Adicionales: ', cambios)
+    if validar_cambios_proveedor(dav, dae):
+        modificaciones += 'Documentos Adicionales.'
 
-    return 'comentario'
+    if modificaciones != '':
+        if modificaciones[-1] == ' ':
+            temp = len(modificaciones)
+            comentario = 'Realizó cambios en {0}.'.format(modificaciones[:temp - 2])
+        else:
+            comentario = 'Realizó cambios en {0}'.format(modificaciones)
+    else:
+        comentario = 'No realizó modificaciones en su perfil.'
+
+    return comentario
 
 
 def validar_cambios_proveedor(objeto_vigente, objeto_editado):
