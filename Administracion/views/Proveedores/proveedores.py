@@ -899,21 +899,22 @@ def generar_datos_proveedor(proveedor):
 
     informacion_basica = {'id': 1, 'nombre': 'Información Básica',
                           'url': '/administracion/proveedor/perfil/informacion-basica',
-                          'datos': informacion_basica}
+                          'datos': informacion_basica, 'completo': True if proveedor.ciudad else False}
     actividades_economicas = {'id': 2, 'nombre': 'Actividades Económicas',
                               'url': '/administracion/proveedor/perfil/actividades-economicas',
-                              'datos': actividades_economicas}
+                              'datos': actividades_economicas, 'completo': True if actividades_economicas else False}
     documentos = {'id': 3, 'nombre': 'Documentos', 'url': '/administracion/proveedor/perfil/documentos',
-                  'datos': documentos}
+                  'datos': documentos, 'completo': True if documentos else False}
     entidades_bancarias = {'id': 4, 'nombre': 'Información Bancaria',
                            'url': '/administracion/proveedor/perfil/entidades-bancarias',
-                           'datos': entidades_bancarias}
+                           'datos': entidades_bancarias, 'completo': True if entidades_bancarias else False}
     bienes_servicios = {'id': 5, 'nombre': 'Productos y Servicios',
                         'url': '/administracion/proveedor/perfil/productos-servicios',
-                        'datos': bienes_servicios}
+                        'datos': bienes_servicios, 'completo': True if bienes_servicios else False}
     documentos_adicionales = {'id': 6, 'nombre': 'Certificaciones y Documentos Adicionales',
                               'url': '/administracion/proveedor/perfil/documentos-adicionales',
-                              'datos': documentos_adicionales}
+                              'datos': documentos_adicionales,
+                              'completo': True if len(documentos) == lista_documentos else False}
 
     return {'total': total, 'informacion_basica': informacion_basica, 'actividades_economicas': actividades_economicas,
             'entidades_bancarias': entidades_bancarias, 'bienes_servicios': bienes_servicios, 'documentos': documentos,
