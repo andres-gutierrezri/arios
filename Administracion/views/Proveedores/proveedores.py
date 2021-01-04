@@ -426,9 +426,11 @@ class EnviarSolicitudProveedorView(AbstractEvaLoggedView):
                 proveedor.save(update_fields=['estado_proveedor', 'estado'])
                 messages.success(self.request, 'Se ha enviado la solicitud correctamente')
                 if Certificacion.objects.filter(tercero__usuario=proveedor.usuario):
-                    titulo = 'Un proveedor ha modificado su perfil.'
                     comentario = generar_comentario_solicitud(proveedor)
-                    # comentario = 'El proveedor {0} ha modificado su perfil'.format(proveedor.nombre)
+                    proveedor.modificaciones = comentario
+                    proveedor.save(update_fields=['modificaciones'])
+                    titulo = 'El proveedor {0} ha modificado su perfil.'.format(proveedor.nombre)
+
                     crear_notificacion_por_evento(EventoDesencadenador.SOLICITUD_APROBACION_PROVEEDOR, solicitud.id,
                                                   contenido={'titulo': titulo,
                                                              'mensaje': comentario})
@@ -477,10 +479,16 @@ class PerfilProveedorSolicitud(AbstractEvaLoggedView):
         proveedor = Tercero.objects.get(id=id)
         datos_proveedor = generar_datos_proveedor(proveedor)
         solicitud_activa = SolicitudProveedor.objects.filter(proveedor=proveedor, estado=True)
+        modificaciones_perfil = ''
+        if proveedor.modificaciones:
+            modificaciones_perfil = {'id': 0, 'nombre': 'Modificaciones Recientes',
+                                     'datos': [{'nombre_campo': 'Cambios',
+                                               'valor_campo': proveedor.modificaciones}]}
 
         return render(request, 'Administracion/Tercero/Proveedor/perfil.html',
                       {'datos_proveedor': datos_proveedor, 'solicitud_proveedor': proveedor,
-                       'solicitud_activa': solicitud_activa, 'tipo_persona_pro': proveedor.tipo_persona})
+                       'solicitud_activa': solicitud_activa, 'tipo_persona_pro': proveedor.tipo_persona,
+                       'modificaciones_perfil': modificaciones_perfil})
 
 
 APROBADO = 1
