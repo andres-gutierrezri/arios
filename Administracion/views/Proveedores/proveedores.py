@@ -805,13 +805,6 @@ def generar_datos_actividades_economicas(proveedor):
                 tipo_contribuyente = tc[1]
                 break
 
-        resp_fiscal = proveedor.responsabilidades_fiscales
-        datos_resp_fiscal = ''
-        for sel in resp_fiscal.split(';'):
-            for op in ResponsabilidadesFiscales.choices:
-                if op[0] == sel:
-                    datos_resp_fiscal += ', ' + op[1] if datos_resp_fiscal else op[1]
-
         respuesta = [{'nombre_campo': 'Actividad Principal', 'valor_campo': ae.actividad_principal},
                      {'nombre_campo': 'Actividad Secundaria', 'valor_campo': ae.actividad_secundaria},
                      {'nombre_campo': 'Otra Actividad', 'valor_campo': ae.otra_actividad},

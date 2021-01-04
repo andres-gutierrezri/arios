@@ -18,9 +18,9 @@
     <div class="panel-container show">
         <div class="header">
             <h1 class="header-title">
-                <i class='fal fa-file-alt'></i> {% if n_documentos %} Documentos {% else %} Certificaciones y Documentos Adicionales {% endif %}<span class='fw-300'></span>
+                <i class='fal fa-file-alt'></i> {% if n_documentos or n_documentos == 0 %} Documentos {% else %} Certificaciones y Documentos Adicionales {% endif %}<span class='fw-300'></span>
                 <div style="float: right">
-                    {% if n_documentos %}
+                    {% if n_documentos >= 0 %}
                         {% if  n_documentos == n_tipos %}Documentos Completos{% else %}{{ n_documentos }} de {{ n_tipos }} Documentos Cargados{% endif %}
                     {% endif %}
                 </div>
