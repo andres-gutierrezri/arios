@@ -1,9 +1,12 @@
 {% load static %}
 <div id="c_{{ objeto.id }}" class="card border shadow-0 mb-g shadow-sm-hover">
-    <div class="card-body border-faded border-top-0 border-left-0 border-right-0 rounded-top {% if not objeto.completo %}alert-primary{% endif %}">
+    <div class="card-body border-faded border-top-0 border-left-0 border-right-0 rounded-top {% if not objeto.completo and not objeto.id == 0 %}alert-primary{% endif %}">
         <div class="d-flex flex-row align-items-center">
             <div class="info-card-text flex-1">
-                <b>{{ objeto.id }}. </b>{{ objeto.nombre }}
+                {% if objeto.id != 0 %}
+                <b>{{ objeto.id }}. </b>
+                {% endif %}
+                {{ objeto.nombre }}
             </div>
             {% if not solicitud_activa and not solicitud_proveedor and not perfil_activo %}
                 <div class="info-card-text flex-1" style="text-align: end" >
