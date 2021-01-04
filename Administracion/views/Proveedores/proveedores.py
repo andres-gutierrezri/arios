@@ -903,15 +903,14 @@ def generar_datos_proveedor(proveedor):
     actividades_economicas = {'id': 2, 'nombre': 'Actividades Económicas',
                               'url': '/administracion/proveedor/perfil/actividades-economicas',
                               'datos': actividades_economicas}
-    entidades_bancarias = {'id': 3, 'nombre': 'Información Bancaria',
+    documentos = {'id': 3, 'nombre': 'Documentos', 'url': '/administracion/proveedor/perfil/documentos',
+                  'datos': documentos}
+    entidades_bancarias = {'id': 4, 'nombre': 'Información Bancaria',
                            'url': '/administracion/proveedor/perfil/entidades-bancarias',
                            'datos': entidades_bancarias}
-    bienes_servicios = {'id': 4, 'nombre': 'Productos y Servicios',
+    bienes_servicios = {'id': 5, 'nombre': 'Productos y Servicios',
                         'url': '/administracion/proveedor/perfil/productos-servicios',
                         'datos': bienes_servicios}
-    documentos = {'id': 5, 'nombre': 'Documentos',
-                  'url': '/administracion/proveedor/perfil/documentos', 'datos': documentos}
-
     documentos_adicionales = {'id': 6, 'nombre': 'Certificaciones y Documentos Adicionales',
                               'url': '/administracion/proveedor/perfil/documentos-adicionales',
                               'datos': documentos_adicionales}
