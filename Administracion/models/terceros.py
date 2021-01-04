@@ -105,6 +105,7 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     fecha_inicio_actividad = models.DateTimeField(verbose_name='Fecha de Inicio de Actividad', null=True, blank=True)
     usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario', null=True, blank=True)
     estado_proveedor = models.SmallIntegerField(verbose_name='Estado del Proveedor', null=True, blank=True)
+    modificaciones = models.TextField(verbose_name='Modificaciones', null=True, blank=True)
     es_vigente = models.BooleanField(verbose_name='Es Vigente', null=False, blank=False)
 
     def __str__(self):
