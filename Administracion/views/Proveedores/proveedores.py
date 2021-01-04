@@ -10,7 +10,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 
 from Administracion.enumeraciones import TipoPersona, RegimenFiscal, ResponsabilidadesFiscales, Tributos, \
-    EstadosProveedor
+    EstadosProveedor, TipoContribuyente
 from Administracion.models import TipoIdentificacion, Pais, Tercero, Departamento, Municipio
 from Administracion.models.models import SubproductoSubservicio, ProductoServicio
 from Administracion.models.terceros import ProveedorProductoServicio, TipoDocumentoTercero, DocumentoTercero, \
@@ -142,14 +142,11 @@ class PerfilActividadesEconomicasView(AbstractEvaLoggedProveedorView):
     def post(self, request):
         update_fields = ('actividad_principal', 'actividad_secundaria', 'otra_actividad', 'contribuyente_iyc',
                          'numero_resolucion', 'contribuyente_iyc', 'entidad_publica', 'proveedor',
-                         'bienes_servicios', 'proveedor')
+                         'bienes_servicios', 'proveedor', 'tipo_contribuyente')
         proveedor = filtro_estado_proveedor(request)
         proveedor_ae = ProveedorActividadEconomica.from_dictionary(request.POST)
         proveedor_ae.proveedor = proveedor
         proveedor.regimen_fiscal = request.POST.get('regimen_fiscal')
-        responsabilidades = request.POST.getlist('responsabilidades')
-        proveedor.responsabilidades_fiscales = ';'.join(responsabilidades) if responsabilidades else ''
-        proveedor.tributos = request.POST.get('tributo')
 
         try:
             registro = ProveedorActividadEconomica.objects.filter(proveedor=proveedor)
@@ -158,11 +155,10 @@ class PerfilActividadesEconomicasView(AbstractEvaLoggedProveedorView):
                 proveedor_ae.save(update_fields=update_fields)
             else:
                 proveedor_ae.save()
-            proveedor.save(update_fields=('responsabilidades_fiscales', 'regimen_fiscal', 'tributos'))
+            proveedor.save(update_fields=['regimen_fiscal'])
             messages.success(self.request, 'Se ha guardado la información de actividades económicas correctamente.')
             return redirect(reverse('Administracion:proveedor-perfil'))
-        except Exception as e:
-            print(e)
+        except:
             messages.error(self.request, 'Ha ocurrido un error al actualizar la información.')
             return redirect(reverse('Administracion:proveedor-perfil'))
 
@@ -633,14 +629,10 @@ def datos_xa_render_actividades_economicas(request):
 
     entidad_publica = True if PERSONA_JURIDICA == proveedor.tipo_persona else False
 
-    responsabilidades_tercero = proveedor.responsabilidades_fiscales.split(';') \
-        if proveedor.responsabilidades_fiscales else []
-
     datos = {'actividades_economicas': actividades_economicas,
              'entidades_publicas': entidades_publicas, 'proveedor': proveedor_actec,
              'entidad_publica': entidad_publica, 'regimenes_fiscales': RegimenFiscal.choices,
-             'responsabilidades': ResponsabilidadesFiscales.choices, 'tributos': Tributos.choices,
-             'responsabilidades_tercero': responsabilidades_tercero}
+             'tipos_contribuyentes': TipoContribuyente.choices}
     return datos
 
 
@@ -806,6 +798,13 @@ def generar_datos_actividades_economicas(proveedor):
                 regimen_fiscal = d[1]
                 break
 
+        tip_cont = ae.tipo_contribuyente
+        tipo_contribuyente = ''
+        for tc in TipoContribuyente.choices:
+            if tc[0] == tip_cont:
+                tipo_contribuyente = tc[1]
+                break
+
         resp_fiscal = proveedor.responsabilidades_fiscales
         datos_resp_fiscal = ''
         for sel in resp_fiscal.split(';'):
@@ -817,6 +816,7 @@ def generar_datos_actividades_economicas(proveedor):
                      {'nombre_campo': 'Actividad Secundaria', 'valor_campo': ae.actividad_secundaria},
                      {'nombre_campo': 'Otra Actividad', 'valor_campo': ae.otra_actividad},
                      {'nombre_campo': 'Régimen Fiscal', 'valor_campo': regimen_fiscal},
+                     {'nombre_campo': 'Tipo de Contribuyente', 'valor_campo': tipo_contribuyente},
                      {'nombre_campo': 'Excento de Industria y Comercio: # Res', 'valor_campo': ae.numero_resolucion},
                      {'nombre_campo': 'Contribuyente Industria y Comercio', 'valor_campo': ae.contribuyente_iyc},
                      {'nombre_campo': 'Entidad Pública', 'valor_campo': entidad_publica},
