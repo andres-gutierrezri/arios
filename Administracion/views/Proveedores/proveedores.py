@@ -299,9 +299,11 @@ class PerfilDocumentosView(AbstractEvaLoggedProveedorView):
             tipos_documentos = TipoDocumentoTercero.objects.filter(aplica_natural=True)
 
         agregar = verificar_documentos_proveedor(proveedor, documentos)
+        porcentaje = 100 / len(tipos_documentos) * len(documentos)
         return render(request, 'Administracion/Tercero/Proveedor/documentos.html', {'documentos': documentos,
                                                                                     'agregar': agregar,
                                                                                     'n_documentos': len(documentos),
+                                                                                    'porcentaje': porcentaje,
                                                                                     'n_tipos': len(tipos_documentos)})
 
 
