@@ -21,7 +21,7 @@ function actdesInputDV(activar) {
     const inputDV = $('#digito_verificacion_id');
     if(activar) {
         divIdentificacion.removeClass('col-xl-6 col-lg-6 col-md-12 col-sm-12');
-        divIdentificacion.addClass('col-xl-5 col-lg-5 col-md-10 col-sm-10');
+        divIdentificacion.addClass('col-xl-4 col-lg-4 col-md-9 col-sm-9');
         inputDV.parent().show();
         inputDV.removeAttr('hidden', 'true');
         inputDV.attr('required', 'true');
@@ -31,7 +31,7 @@ function actdesInputDV(activar) {
             inputDV.parent().hide();
             inputDV.attr('hidden', 'true');
             inputDV.removeAttr('required', 'true');
-            divIdentificacion.removeClass('col-xl-5 col-lg-5 col-md-4 col-sm-10');
+            divIdentificacion.removeClass('col-xl-4 col-lg-4 col-md-9 col-sm-9');
             divIdentificacion.addClass('col-xl-6 col-lg-6 col-md-12 col-sm-12');
         }
     }

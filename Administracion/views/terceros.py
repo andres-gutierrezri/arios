@@ -209,6 +209,7 @@ class RegistroProveedorView(View):
         tercero.tipo_tercero_id = TipoTercero.objects.get(nombre='Proveedor').id
         tercero.tipo_identificacion_id = datos_registro['tipoIdentificacion']
         tercero.identificacion = identificacion
+        tercero.digito_verificacion = datos_registro['digitoVerificacion']
         tercero.tipo_persona = 1 if tercero.tipo_identificacion.sigla == 'NIT' else 2
         tercero.telefono_movil_principal = datos_registro['celular']
         tercero.correo_principal = correo

@@ -36,10 +36,10 @@
                             <div class="form-group col-xl-6 col-lg-6 col-md-12 col-sm-12">
                                 {% select_tag tipo_identificacion 'tipo_identificacion' 'Seleccione un tipo de identificación' texto_label="Tipo de identificación" value=proveedor.tipo_identificacion_id required="" mensaje_validacion='Por favor seleccione un tipo de identificación' invalido=errores.tipo_identificacion %}
                             </div>
-                            <div class="form-group col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                            <div class="form-group col-xl-4 col-lg-4 col-md-12 col-sm-12">
                                 {% input_text_tag 'identificacion' 'Identificación' placeholder='Ingrese el número de identificación' required='' maxlength='15' value=proveedor.identificacion mensaje_validacion='Por favor digite la identificación' invalido=errores.identificacion %}
                             </div>
-                            <div class="form-group col-xl-1 col-lg-1 col-md-2 col-sm-2" style="display: none">
+                            <div class="form-group col-xl-2 col-lg-2 col-md-3 col-sm-3" style="display: none">
                                 {% input_number_tag 'digito_verificacion' 'DV' placeholder='Ingrese el DV' required='' min='0' max='9' value=proveedor.digito_verificacion mensaje_validacion='Por favor ingrese el digito de verificación' invalido=errores.digito_verificacion %}
                             </div>
                             <div class="form-group col-xl-6 col-lg-6 col-md-12 col-sm-12">
