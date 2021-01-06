@@ -181,6 +181,7 @@ class TipoDocumentoTercero(models.Model):
     nombre = models.CharField(verbose_name='Nombre', max_length=100, null=False, blank=False)
     aplica_natural = models.BooleanField(verbose_name='Aplica Natural', null=False, blank=False)
     aplica_juridica = models.BooleanField(verbose_name='Aplica Jurídica', null=False, blank=False)
+    obligatorio = models.BooleanField(verbose_name='Obligatorio', null=False, blank=False)
 
     def __str__(self):
         return self.nombre
