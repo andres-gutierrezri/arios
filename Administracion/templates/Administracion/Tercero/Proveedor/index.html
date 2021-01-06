@@ -80,10 +80,12 @@
                                                                 </td>
                                                                 <td>{{ proveedor.fecha_creacion|date:'Y-m-d' }}</td>
                                                                 <td>
-                                                                    {% if proveedor.estado == True %}
-                                                                    <span class="badge badge-primary">Activo</span>
+                                                                    {% if proveedor.estado == True and not proveedor.editando %}
+                                                                        <span class="badge badge-primary">Activo</span>
+                                                                    {% elif proveedor.editando %}
+                                                                        <span class="badge badge-warning">Editando Perfil</span>
                                                                     {% else %}
-                                                                    <span class="badge badge-secondary">Inactivo</span>
+                                                                        <span class="badge badge-secondary">Inactivo</span>
                                                                     {% endif %}
                                                                 </td>
                                                                 <td>

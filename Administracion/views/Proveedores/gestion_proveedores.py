@@ -12,6 +12,7 @@ from EVA.views.index import AbstractEvaLoggedView
 class ProveedorIndexView(AbstractEvaLoggedView):
     def get(self, request):
         proveedores = ProveedorProductoServicio.objects.distinct('proveedor').filter(proveedor__es_vigente=True)
+        proveedores_editando = Tercero.objects.filter(es_vigente=False)
         producto_servicio_filtro = request.GET.getlist('producto_servicio_', [])
         tipo_producto_servicio = request.GET.get('tipo_producto_servicio_', '')
         subtipo_producto_servicio = request.GET.get('subtipo_producto_servicio_', '')
@@ -51,6 +52,7 @@ class ProveedorIndexView(AbstractEvaLoggedView):
                                      {'campo_valor': 2, 'campo_texto': 'Servicio'}]
         return render(request, 'Administracion/Tercero/Proveedor/index.html',
                       {'proveedores': lista_proveedores,
+                       'proveedores_editando': proveedores_editando,
                        'menu_actual': ['proveedores', 'proveedores'],
                        'tipos_productos_servicios': tipos_productos_servicios,
                        'valor_tipo_producto_servicio': tipo_producto_servicio,
@@ -70,6 +72,7 @@ def construir_lista_proveedores(ps):
             'telefono': ps.proveedor.telefono_movil_principal,
             'correo': ps.proveedor.correo_principal,
             'estado': ps.proveedor.estado,
+            'editando': True if Tercero.objects.filter(usuario=ps.proveedor.usuario, es_vigente=False) else False,
             'fecha_creacion': ps.proveedor.fecha_creacion}
 
 
