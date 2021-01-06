@@ -300,19 +300,21 @@ class PerfilDocumentosView(AbstractEvaLoggedProveedorView):
 
         agregar = verificar_documentos_proveedor(proveedor, documentos)
         porcentaje = 100 / len(tipos_documentos) * len(documentos)
-        doc_oblig = 0
-        tip_oblig = 0
+        n_doc_oblig = 0
+        n_tip_oblig = 0
         for doc in documentos:
             if doc.tipo_documento.obligatorio:
-                doc_oblig += 1
+                n_doc_oblig += 1
         for tip_doc in tipos_documentos:
             if tip_doc.obligatorio:
-                tip_oblig += 1
+                n_tip_oblig += 1
 
         return render(request, 'Administracion/Tercero/Proveedor/documentos.html', {'documentos': documentos,
                                                                                     'agregar': agregar,
                                                                                     'n_documentos': len(documentos),
+                                                                                    'n_doc_oblig': n_doc_oblig,
                                                                                     'porcentaje': porcentaje,
+                                                                                    'n_tip_oblig': n_tip_oblig,
                                                                                     'n_tipos': len(tipos_documentos)})
 
 
