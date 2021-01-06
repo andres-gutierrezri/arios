@@ -150,7 +150,7 @@ class InicioSesionProveedorView(View):
                 messages.success(request, 'Ha iniciado sesión como {0}'.format(request.user.email))
             else:
                 return redirect(reverse('Administracion:iniciar-sesion'))
-        return render(request, 'Administracion/Tercero/Proveedor/inicio-sesion.html')
+        return render(request, 'Administracion/Tercero/Proveedor/Autenticacion/inicio-sesion.html')
 
     def post(self, request):
         if request.user.is_authenticated:
@@ -238,14 +238,15 @@ class RegistroProveedorView(View):
             dominio = request.get_host()
             uidb64 = urlsafe_base64_encode(force_bytes(usuario.pk))
             token = default_token_generator.make_token(usuario)
-            ruta = 'http://{0}/password-reset-confirm/{1}/{2}'.format(dominio, uidb64, token)
+            ruta = 'http://{0}/password-assign-proveedor/{1}/{2}'.format(dominio, uidb64, token)
 
             mensaje = "<p>Hola {0}, " \
                       "Te estamos enviando este correo para que asignes una contraseña a tu " \
                       "cuenta de proveedor en EVA.</p>" \
                       "<p>Tu usuario es: {1}</p>" \
-                      "<p>El siguiente enlace te llevará a EVA donde puedes realizar el cambio:</p>" \
-                      "<a href={2}>Ir a EVA para asignación de la contraseña nueva</a>"\
+                      "<p>El siguiente enlace te llevará a EVA donde puedes realizar la " \
+                      "asignación de tu contraseña:</p>" \
+                      "<a href={2}>Ir a EVA para asignar una contraseña</a>"\
                 .format(tercero.nombre, usuario.email, ruta)
 
             enviar_correo({'nombre': tercero.nombre,
