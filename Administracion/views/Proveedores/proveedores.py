@@ -720,8 +720,11 @@ def datos_xa_render_documentos(request, documento: DocumentoTercero = None):
         tipos_documentos = TipoDocumentoTercero.objects.get_xa_select_activos_aplica_juridica()
     else:
         tipos_documentos = TipoDocumentoTercero.objects.get_xa_select_activos_aplica_natural()
-
-    documentos_actuales = DocumentoTercero.objects.filter(tercero__usuario=request.user)
+    proveedor_vigente = Tercero.objects.filter(usuario=request.user)
+    if len(proveedor_vigente) > 1:
+        documentos_actuales = DocumentoTercero.objects.filter(tercero__usuario=request.user, tercero__es_vigente=False)
+    else:
+        documentos_actuales = DocumentoTercero.objects.filter(tercero__usuario=request.user)
     lista_tipos_documentos = []
     for td in tipos_documentos:
         coincidencia = False
