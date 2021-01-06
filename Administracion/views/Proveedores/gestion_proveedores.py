@@ -3,6 +3,7 @@ from django.db import IntegrityError
 from django.http import JsonResponse
 from django.shortcuts import render
 
+from Administracion.enumeraciones import EstadosProveedor
 from Administracion.models import Tercero
 from Administracion.models.models import ProductoServicio, SubproductoSubservicio
 from Administracion.models.terceros import ProveedorProductoServicio
@@ -80,8 +81,10 @@ class ActivarDesactivarProveedorView(AbstractEvaLoggedView):
     def post(self, request, id):
         try:
             proveedor = Tercero.objects.get(id=id)
+            proveedor.estado_proveedor = EstadosProveedor.DESACTIVADO_X_ADMINISTRADOR\
+                if proveedor.estado else EstadosProveedor.ACTIVO
             proveedor.estado = False if proveedor.estado else True
-            proveedor.save(update_fields=['estado'])
+            proveedor.save(update_fields=['estado', 'estado_proveedor'])
             texto = 'activado' if proveedor.estado else 'desactivado'
             messages.success(request, 'Se ha ' + texto + ' el proveedor correctamente')
             return JsonResponse({"estado": "OK"})
