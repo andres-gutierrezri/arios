@@ -84,6 +84,7 @@ class PerfilInformacionBasicaView(AbstractEvaLoggedProveedorView):
         proveedor.digito_verificacion = request.POST.get('digito_verificacion', '')
         proveedor.ciudad_id = request.POST.get('municipio', '')
         proveedor.estado_proveedor = EstadosProveedor.DILIGENCIAMIENTO_PERFIL
+        proveedor.tipo_persona = request.POST.get('tipo_persona', '')
 
         if 'NIT' in proveedor.tipo_identificacion.sigla:
             update_fields.append('digito_verificacion')
@@ -111,7 +112,6 @@ class PerfilInformacionBasicaView(AbstractEvaLoggedProveedorView):
 
         proveedor.fecha_inicio_actividad = request.POST.get('fecha_inicio_actividad', '')
         proveedor.fecha_constitucion = request.POST.get('fecha_constitucion', '')
-        proveedor.tipo_persona = request.POST.get('tipo_persona', '')
 
         if not proveedor.fecha_inicio_actividad:
             proveedor.fecha_inicio_actividad = None
