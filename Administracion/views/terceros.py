@@ -200,6 +200,7 @@ class RegistroProveedorView(View):
         nombre = datos_registro['nombre']
         correo = datos_registro['correo']
         identificacion = datos_registro['identificacion']
+        digito_verificacion = datos_registro['digitoVerificacion'] if datos_registro['digitoVerificacion'] else None
 
         usuario = Colaborador.crear_usuario(nombre if len(nombre) < 20 else nombre[:20], 'proveedor', correo)
 
@@ -209,7 +210,7 @@ class RegistroProveedorView(View):
         tercero.tipo_tercero_id = TipoTercero.objects.get(nombre='Proveedor').id
         tercero.tipo_identificacion_id = datos_registro['tipoIdentificacion']
         tercero.identificacion = identificacion
-        tercero.digito_verificacion = datos_registro['digitoVerificacion']
+        tercero.digito_verificacion = digito_verificacion
         tercero.tipo_persona = 1 if tercero.tipo_identificacion.sigla == 'NIT' else 2
         tercero.telefono_movil_principal = datos_registro['celular']
         tercero.correo_principal = correo
