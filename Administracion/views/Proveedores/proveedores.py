@@ -9,7 +9,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
-from Administracion.enumeraciones import TipoPersona, RegimenFiscal, ResponsabilidadesFiscales, Tributos, \
+from Administracion.enumeraciones import TipoPersona, RegimenFiscal, \
     EstadosProveedor, TipoContribuyente
 from Administracion.models import TipoIdentificacion, Pais, Tercero, Departamento, Municipio
 from Administracion.models.models import SubproductoSubservicio, ProductoServicio
@@ -300,6 +300,15 @@ class PerfilDocumentosView(AbstractEvaLoggedProveedorView):
 
         agregar = verificar_documentos_proveedor(proveedor, documentos)
         porcentaje = 100 / len(tipos_documentos) * len(documentos)
+        doc_oblig = 0
+        tip_oblig = 0
+        for doc in documentos:
+            if doc.tipo_documento.obligatorio:
+                doc_oblig += 1
+        for tip_doc in tipos_documentos:
+            if tip_doc.obligatorio:
+                tip_oblig += 1
+
         return render(request, 'Administracion/Tercero/Proveedor/documentos.html', {'documentos': documentos,
                                                                                     'agregar': agregar,
                                                                                     'n_documentos': len(documentos),
@@ -887,9 +896,24 @@ def generar_datos_proveedor(proveedor):
     documentos = generar_datos_documentos(proveedor)
     documentos_adicionales = generar_datos_documentos_adicionales(proveedor)
     if proveedor.tipo_persona == PERSONA_JURIDICA:
-        lista_documentos = len(TipoDocumentoTercero.objects.filter(aplica_juridica=True))
+        lista_documentos = TipoDocumentoTercero.objects.filter(aplica_juridica=True)
     else:
-        lista_documentos = len(TipoDocumentoTercero.objects.filter(aplica_juridica=True))
+        lista_documentos = TipoDocumentoTercero.objects.filter(aplica_juridica=True)
+    n_tipos = 0
+    n_documentos = 0
+
+    for ld in lista_documentos:
+        if ld.obligatorio:
+            n_tipos += 1
+
+    docs = DocumentoTercero.objects.filter(tercero=proveedor)
+    for doc in docs:
+        if proveedor.tipo_persona == TipoPersona.NATURAL:
+            if doc.tipo_documento.obligatorio:
+                n_documentos += 1
+        else:
+            if doc.tipo_documento.obligatorio:
+                n_documentos += 1
 
     total = 0
     total = total + 10 if proveedor.ciudad else total
@@ -897,7 +921,7 @@ def generar_datos_proveedor(proveedor):
     total = total + 20 if actividades_economicas else total
     total = total + 20 if entidades_bancarias else total
     total = total + 20 if bienes_servicios else total
-    total = total + 20 if len(documentos) == lista_documentos else total
+    total = total + 20 if n_documentos == n_tipos else total
 
     informacion_basica = {'id': 1, 'nombre': 'Información Básica',
                           'url': '/administracion/proveedor/perfil/informacion-basica',
