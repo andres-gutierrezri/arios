@@ -912,11 +912,13 @@ def generar_datos_proveedor(proveedor):
     docs = DocumentoTercero.objects.filter(tercero=proveedor)
     for doc in docs:
         if proveedor.tipo_persona == TipoPersona.NATURAL:
-            if doc.tipo_documento.obligatorio:
-                n_documentos += 1
+            if doc.tipo_documento:
+                if doc.tipo_documento.obligatorio:
+                    n_documentos += 1
         else:
-            if doc.tipo_documento.obligatorio:
-                n_documentos += 1
+            if doc.tipo_documento:
+                if doc.tipo_documento.obligatorio:
+                    n_documentos += 1
 
     total = 0
     total = total + 10 if proveedor.ciudad else total
@@ -943,7 +945,7 @@ def generar_datos_proveedor(proveedor):
     documentos_adicionales = {'id': 6, 'nombre': 'Certificaciones y Documentos Adicionales',
                               'url': '/administracion/proveedor/perfil/documentos-adicionales',
                               'datos': documentos_adicionales,
-                              'completo': True if len(documentos) == lista_documentos else False}
+                              'completo': True}
 
     return {'total': total, 'informacion_basica': informacion_basica, 'actividades_economicas': actividades_economicas,
             'entidades_bancarias': entidades_bancarias, 'bienes_servicios': bienes_servicios, 'documentos': documentos,
