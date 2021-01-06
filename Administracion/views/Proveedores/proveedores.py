@@ -838,7 +838,8 @@ def generar_datos_entidades_bancarias(proveedor):
         for tc in TipoCuentaBancaria.choices:
             if eb.tipo_cuenta == int(tc[0]):
                 lista_entidades\
-                    .append({'nombre_campo': tc[1], 'valor_campo': eb.entidad_bancaria,
+                    .append({'nombre_campo': tc[1],
+                             'valor_campo': '{0} - N. {1}'.format(eb.entidad_bancaria, eb.numero_cuenta),
                              'archivo': '/administracion/proveedor/perfil/ver-certificacion/{0}/'.format(eb.id)})
     return lista_entidades
 
