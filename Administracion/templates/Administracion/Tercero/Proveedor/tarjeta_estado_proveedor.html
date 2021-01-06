@@ -6,30 +6,61 @@
 <div id="panel-6" class="panel">
     <div class="panel-container show">
         <div class="panel-content">
+            {% if estado_doc %}
+                <div class="info-card-text flex-1">
+                    <h4><b>Documentos</b></h4>
+                </div>
+            {% endif %}
             <div id="update-chart" class="d-flex flex-column align-items-center">
-                <div class="row">
-                    <div class="col-md-4 align-items-center">
-                        <div class="js-easy-pie-chart {% if total == 100 and not datos_estado.estado_solicitud %}color-primary-900{% elif datos_estado.estado_solicitud %}color-danger-500{% else %}color-primary-200{% endif %} position-relative d-flex align-items-center justify-content-center" data-percent="{{ total }}" data-piesize="100%" data-linewidth="15" data-trackcolor="#EDEDED" data-scalelength="0">
-                            <div class="d-flex flex-column align-items-center justify-content-center position-absolute pos-left pos-right pos-top pos-bottom fw-300 fs-xl">
-                                <span class="js-percent d-block text-dark">{{ total }}</span>
-                                <div class="d-block fs-xs text-dark opacity-70">
-                                    <small>Completado</small>
+                <div class="row w-100">
+                    <div class="col-md-6 p-0 align-items-center">
+                        {% if n_doc_obl and n_doc_obl == n_tip_obl %}
+                            <div class="js-easy-pie-chart color-primary-900 position-relative d-flex align-items-center justify-content-center" data-percent="{{ total }}" data-piesize="100%" data-linewidth="15" data-trackcolor="#EDEDED" data-scalelength="0">
+                                <div class="d-flex flex-column align-items-center justify-content-center position-absolute pos-left pos-right pos-top pos-bottom fw-300 fs-xl">
+                                    <span class="js-percent d-block text-dark">{{ total }}</span>
+                                    <div class="d-block fs-xs text-dark opacity-70">
+                                        <small>Completado</small>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        {% else %}
+                            <div class="js-easy-pie-chart {% if total == 100 and not datos_estado.estado_solicitud %}color-primary-900{% elif datos_estado.estado_solicitud %}color-danger-500{% else %}color-primary-200{% endif %} position-relative d-flex align-items-center justify-content-center" data-percent="{{ total }}" data-piesize="100%" data-linewidth="15" data-trackcolor="#EDEDED" data-scalelength="0">
+                                <div class="d-flex flex-column align-items-center justify-content-center position-absolute pos-left pos-right pos-top pos-bottom fw-300 fs-xl">
+                                    <span class="js-percent d-block text-dark">{{ total }}</span>
+                                    <div class="d-block fs-xs text-dark opacity-70">
+                                        <small>Completado</small>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
                     </div>
-                    <div class="col-md-8">
-                        <div class="mt-2 mb-1 fs-xs text-primary">
-                            <b>Proveedor: </b>{% if datos_estado.estado == True %}<span class="badge badge-primary">Activo</span>{% else %}<span class="badge badge-secondary">Inactivo</span>{% endif %}<br>
-                            <b>Estado: </b>{{ datos_estado.estado_descripcion }}<br>
-                            {% if datos_estado.ultima_act %}
-                                <b>Última Aprobación:</b> {{ datos_estado.ultima_act |date:'Y-m-d h:m'}}<br>
-                            {% endif %}
-                            {% if datos_estado.estado_solicitud %}
-                                <b>Causa del Rechazo: </b>{{ datos_estado.estado_solicitud }}
-                            {% endif %}
+                    {% if estado_doc %}
+                        <div class="col-md-6 p-0">
+                            <div class="mt-2 mb-1 m-l-20 fs-xs text-primary">
+                                <b>Estado: </b>
+                                {% if doc_cargados ==  doc_pendientes or n_doc_obl == n_tip_obl %}
+                                    <span class="badge badge-primary">Completado</span><br>
+                                {% else %}
+                                    <span class="badge badge-secondary">Incompletos</span><br>
+                                {% endif %}
+                                <b>Documentos Cargados: </b>{{ doc_cargados }} de {{ doc_pendientes }}<br>
+                                <b>Documentos Obligatorios: </b>{{ n_doc_obl }} de {{ n_tip_obl }}<br>
+                            </div>
                         </div>
-                    </div>
+                    {% else %}
+                        <div class="col-md-6">
+                            <div class="mt-2 mb-1 fs-xs text-primary">
+                                <b>Proveedor: </b>{% if datos_estado.estado == True %}<span class="badge badge-primary">Activo</span>{% else %}<span class="badge badge-secondary">Inactivo</span>{% endif %}<br>
+                                <b>Estado: </b>{{ datos_estado.estado_descripcion }}<br>
+                                {% if datos_estado.ultima_act %}
+                                    <b>Última Aprobación:</b> {{ datos_estado.ultima_act |date:'Y-m-d h:m'}}<br>
+                                {% endif %}
+                                {% if datos_estado.estado_solicitud %}
+                                    <b>Causa del Rechazo: </b>{{ datos_estado.estado_solicitud }}
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

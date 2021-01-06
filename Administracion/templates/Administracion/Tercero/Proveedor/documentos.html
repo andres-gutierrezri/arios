@@ -19,12 +19,6 @@
         <div class="header">
             <h1 class="header-title">
                 <i class='fal fa-file-alt'></i> {% if n_documentos or n_documentos == 0 %} Documentos {% else %} Certificaciones y Documentos Adicionales {% endif %}<span class='fw-300'></span>
-                <div style="float: right">
-                    {% if n_documentos >= 0 %}
-                        {% if  n_documentos == n_tipos %}Documentos Completos{% else %}{{ n_documentos }} de {{ n_tipos }} Documentos Cargados{% endif %}
-                    {% endif %}
-                </div>
-                <br>
                 <br>
             </h1>
         </div>
@@ -57,15 +51,19 @@
                             <div class="panel-group">
                                 <div class="panel-body">
                                     <div class="row" id="js-contacts">
-                                        <div class="form-group col-xl-4 col-lg-6 col-md-6 col-sm-6">
-                                            {% include 'Administracion/Tercero/Proveedor/tarjeta_estado_proveedor.html' with total=porcentaje %}
+                                        <div class="form-group col-xl-4 col-lg-4 col-md-6">
+                                            {% if n_documentos or n_documentos == 0 %}
+                                                {% include 'Administracion/Tercero/Proveedor/tarjeta_estado_proveedor.html' with total=porcentaje estado_doc=True doc_pendientes=n_tipos doc_cargados=n_documentos %}
+                                            {% endif %}
                                         </div>
                                         {% if documentos %}
                                             {% for dc in documentos %}
                                                 {% include 'Administracion/_common/_tarjeta_documento.html' with objeto=dc %}
                                             {% endfor %}
                                         {% else %}
-                                            <div class="w-100" style="text-align: center"><h1>No hay documentos cargados</h1></div>
+                                            {% if not n_documentos and n_documentos != 0 %}
+                                                <div class="w-100" style="text-align: center"><h1>No hay documentos cargados</h1></div>
+                                            {% endif %}
                                         {% endif %}
                                     </div>
                                 </div>
