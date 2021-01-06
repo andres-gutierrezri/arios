@@ -768,8 +768,8 @@ def generar_datos_informacion_basica(proveedor):
         proveedor.identificacion = '{0}-{1}'.format(proveedor.identificacion, proveedor.digito_verificacion)
 
     return [{'nombre_campo': 'Nombre', 'valor_campo': proveedor.nombre},
-            {'nombre_campo': 'Tipo de Identificación', 'valor_campo': proveedor.tipo_identificacion.nombre},
-            {'nombre_campo': 'Identificación', 'valor_campo': proveedor.identificacion},
+            {'nombre_campo': 'Identificación', 'valor_campo':
+                '{0} {1}'.format(proveedor.tipo_identificacion.sigla, proveedor.identificacion)},
             {'nombre_campo': 'Ubicación', 'valor_campo': ubicacion},
             {'nombre_campo': 'Teléfono Fijo Principal', 'valor_campo': proveedor.telefono_fijo_principal},
             {'nombre_campo': 'Teléfono Movil Principal', 'valor_campo': proveedor.telefono_movil_principal},
@@ -788,10 +788,8 @@ def generar_datos_informacion_basica(proveedor):
              'tipo_persona': 1, 'validar': True},
             {'nombre_campo': 'Nombre del Representante Legal', 'valor_campo': proveedor.nombre_rl, 'validar': True,
              'tipo_persona': 1},
-            {'nombre_campo': 'Tipo de Identificación del Representante Legal', 'tipo_persona': 1, 'validar': True,
-             'valor_campo': proveedor.identificacion_rl},
             {'nombre_campo': 'Identificación del Representante Legal', 'tipo_persona': 1, 'validar': True,
-             'valor_campo': proveedor.identificacion_rl}
+             'valor_campo': '{0} {1}'.format(proveedor.tipo_identificacion_rl.sigla, proveedor.identificacion_rl)}
             ]
 
 
