@@ -789,7 +789,9 @@ def generar_datos_informacion_basica(proveedor):
             {'nombre_campo': 'Nombre del Representante Legal', 'valor_campo': proveedor.nombre_rl, 'validar': True,
              'tipo_persona': 1},
             {'nombre_campo': 'Identificación del Representante Legal', 'tipo_persona': 1, 'validar': True,
-             'valor_campo': '{0} {1}'.format(proveedor.tipo_identificacion_rl.sigla, proveedor.identificacion_rl)}
+             'valor_campo':
+                 '{0} {1}'.format(proveedor.tipo_identificacion_rl.sigla if proveedor.tipo_identificacion_rl else '',
+                                  proveedor.identificacion_rl) if proveedor.tipo_identificacion_rl else ''}
             ]
 
 
