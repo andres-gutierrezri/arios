@@ -107,4 +107,6 @@ urlpatterns = [
          name='proveedor-perfil-documento-adicional-editar'),
     path('proveedor/perfil/documentos-adicionales/<int:id>/delete', proveedores.DocumentoAdicionalEliminarView.as_view(),
          name='proveedor-perfil-documento-adicional-eliminar'),
+    path('olvido-contrasena-proveedor', inicio_sesion.OlvidoContrasenaProveedorView.as_view(),
+         name='olvido-contrasena-proveedor'),
 ]
