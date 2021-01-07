@@ -90,8 +90,7 @@ class PerfilInformacionBasicaView(AbstractEvaLoggedProveedorView):
             update_fields.append('digito_verificacion')
         else:
             exclude.append('digito_verificacion')
-
-        if proveedor.tipo_persona == PERSONA_JURIDICA:
+        if int(proveedor.tipo_persona) == PERSONA_JURIDICA:
             update_fields.append('nombre_rl')
             update_fields.append('tipo_identificacion_rl')
             update_fields.append('identificacion_rl')
