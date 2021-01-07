@@ -1,2 +1,2 @@
-from .utilidades import app_date_now, app_datetime_now
+from .utilidades import app_date_now, app_datetime_now, obtener_reporte
 from .conversiones import tiempo_transcurrido
