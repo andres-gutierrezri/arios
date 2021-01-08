@@ -59,7 +59,7 @@ class PerfilProveedorView(AbstractEvaLoggedProveedorView):
                       {'datos_proveedor': datos_proveedor, 'total': total, 'btn_enviar': btn_enviar,
                        'proveedor_id': proveedor.id, 'tipo_persona_pro': proveedor.tipo_persona,
                        'solicitud_activa': solicitud_activa, 'perfil_activo': perfil_activo,
-                       'datos_estado': datos_estado
+                       'datos_estado': datos_estado, 'menu_actual': 'perfil'
                        })
 
 
