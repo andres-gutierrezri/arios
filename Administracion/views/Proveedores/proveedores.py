@@ -528,7 +528,9 @@ class ProveedorSolicitudAprobarRechazar(AbstractEvaLoggedView):
                 proveedor_anterior = Tercero.objects.filter(usuario=solicitud.proveedor.usuario)
 
                 if len(proveedor_anterior) == 2:
-                    proveedor_anterior.get(es_vigente=True).delete()
+                    proveedor_anterior = proveedor_anterior.get(es_vigente=True)
+                    Certificacion.objects.filter(tercero=proveedor_anterior).update(tercero=id, estado=False)
+                    proveedor_anterior.delete()
 
                 Tercero.objects.filter(id=id).update(estado=True, es_vigente=True,
                                                      estado_proveedor=EstadosProveedor.ACTIVO)
