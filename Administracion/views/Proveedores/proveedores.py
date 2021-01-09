@@ -15,7 +15,7 @@ from Administracion.models import TipoIdentificacion, Pais, Tercero, Departament
 from Administracion.models.models import SubproductoSubservicio, ProductoServicio
 from Administracion.models.terceros import ProveedorProductoServicio, TipoDocumentoTercero, DocumentoTercero, \
     SolicitudProveedor, Certificacion
-from EVA.General import app_datetime_now
+from EVA.General import app_datetime_now, obtener_reporte
 from EVA.General.conversiones import datetime_to_string
 from EVA.views.index import AbstractEvaLoggedProveedorView, AbstractEvaLoggedView
 from Financiero.enumeraciones import TipoCuentaBancaria
@@ -572,6 +572,28 @@ class ProveedorModificarSolicitudView(AbstractEvaLoggedProveedorView):
 
         except:
             return JsonResponse({"estado": "ERROR", "mensaje": "Ha ocurrido un error al realizar la solicitud"})
+
+
+class CertificacionesView(AbstractEvaLoggedProveedorView):
+    def get(self, request):
+        proveedor = Tercero.objects.get(usuario=request.user, es_vigente=True)
+        certificaciones = Certificacion.objects.filter(tercero=proveedor)
+        return render(request, 'Administracion/Tercero/Proveedor/certificaciones.html',
+                      {'certificaciones': certificaciones,
+                       'fecha': app_datetime_now(),
+                       'menu_actual': 'certificaciones'})
+
+
+class GenerarCertificacionView(AbstractEvaLoggedProveedorView):
+    def get(self, request, id):
+        reporte = obtener_reporte('CertificadoProveedor.pdf', {'id_certificado': id})
+        if reporte:
+            http_response = HttpResponse(reporte, 'application/pdf')
+            http_response['Content-Disposition'] = 'inline; filename="Certificado de proveedor.pdf"'
+            return http_response
+        else:
+            messages.error(self.request, 'No se pudo generar la certificación')
+            return redirect(reverse('Administracion:proveedor-certificaciones'))
 
 
 @transaction.atomic

@@ -109,4 +109,7 @@ urlpatterns = [
          name='proveedor-perfil-documento-adicional-eliminar'),
     path('olvido-contrasena-proveedor', inicio_sesion.OlvidoContrasenaProveedorView.as_view(),
          name='olvido-contrasena-proveedor'),
+    path('proveedores/certificaciones', proveedores.CertificacionesView.as_view(), name='proveedor-certificaciones'),
+    path('proveedores/certificacion/generar/<int:id>', proveedores.GenerarCertificacionView.as_view(),
+         name='proveedor-generar-certificacion'),
 ]
