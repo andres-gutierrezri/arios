@@ -350,6 +350,68 @@ class DocumentoEditarView(AbstractEvaLoggedProveedorView):
         return JsonResponse({"estado": "OK"})
 
 
+class PerfilDocumentosAdicionalesView(AbstractEvaLoggedProveedorView):
+    def get(self, request):
+        proveedor = filtro_estado_proveedor(request)
+        documentos = DocumentoTercero.objects.filter(tercero=proveedor, tipo_documento=None)
+        return render(request, 'Administracion/Tercero/Proveedor/documentos.html', {'documentos': documentos,
+                                                                                    'agregar_adicional': True})
+
+
+class DocumentoAdicionalCrearView(AbstractEvaLoggedProveedorView):
+    def get(self, request):
+        return render(request, 'Administracion/_common/_modal_gestionar_documento.html', {'documento_adicional': True})
+
+    def post(self, request):
+        proveedor = filtro_estado_proveedor(request)
+        documento = DocumentoTercero()
+        documento.nombre = request.POST.get('nombre', '')
+        documento.tercero = proveedor
+        documento.documento = request.FILES.get('documento', '')
+        documento.estado = True
+        try:
+            documento.save()
+        except:
+            return JsonResponse({"estado": "error", "mensaje": "Ha ocurrido un error al guardar la información"})
+
+        messages.success(self.request, 'Se ha cargado el documento {0} correctamente.'
+                         .format(documento.nombre))
+        return JsonResponse({"estado": "OK"})
+
+
+class DocumentoAdicionalEditarView(AbstractEvaLoggedProveedorView):
+    def get(self, request, id):
+        documento = DocumentoTercero.objects.get(id=id)
+        return render(request, 'Administracion/_common/_modal_gestionar_documento.html',
+                      {'documento_adicional': True, 'documento': documento})
+
+    def post(self, request, id):
+        documento = DocumentoTercero.objects.get(id=id)
+        documento.nombre = request.POST.get('nombre', '')
+        documento.documento = request.FILES.get('documento', '')
+        try:
+            documento.save(update_fields=['documento', 'nombre'])
+        except:
+            return JsonResponse({"estado": "error", "mensaje": "Ha ocurrido un error al guardar la información"})
+
+        messages.success(self.request, 'Se ha cargado el documento {0} correctamente.'
+                         .format(documento.nombre))
+        return JsonResponse({"estado": "OK"})
+
+
+class DocumentoAdicionalEliminarView(AbstractEvaLoggedProveedorView):
+    def post(self, request, id):
+        documento = DocumentoTercero.objects.get(id=id)
+        try:
+            documento.delete()
+            messages.success(request, 'Se ha eliminado el documento correctamente')
+            return JsonResponse({"estado": "OK"})
+
+        except IntegrityError:
+            return JsonResponse({"estado": "error",
+                                 "mensaje": "Ha ocurrido un error al realizar la acción"})
+
+
 class EnviarSolicitudProveedorView(AbstractEvaLoggedView):
     def post(self, request, id):
         try:
@@ -393,7 +455,8 @@ class VerDocumentoView(AbstractEvaLoggedProveedorView):
 
             response = HttpResponse(documento.documento, content_type=mime_type)
             response['Content-Disposition'] = 'inline; filename="{0} - {1}{2}"'\
-                .format(documento.tercero.nombre, documento.tipo_documento.nombre, extension)
+                .format(documento.tercero.nombre,
+                        documento.tipo_documento.nombre if documento.tipo_documento else documento.nombre, extension)
         else:
             messages.error(self.request, 'Ha ocurrido un error al realizar esta acción.')
             response = redirect(reverse('Administracion:proveedor-perfil-documentos'))
@@ -802,12 +865,23 @@ def generar_datos_documentos(proveedor):
     return lista_documentos
 
 
+def generar_datos_documentos_adicionales(proveedor):
+    documentos = DocumentoTercero.objects.filter(tercero=proveedor, tipo_documento=None)
+    lista_documentos = []
+    for doc in documentos:
+        lista_documentos\
+            .append({'nombre_campo': doc.nombre, 'valor_campo': 'Ver',
+                     'archivo': '/administracion/proveedor/perfil/ver-documento/{0}/'.format(doc.id)})
+    return lista_documentos
+
+
 def generar_datos_proveedor(proveedor):
     informacion_basica = generar_datos_informacion_basica(proveedor)
     actividades_economicas = generar_datos_actividades_economicas(proveedor)
     entidades_bancarias = generar_datos_entidades_bancarias(proveedor)
     bienes_servicios = generar_datos_bienes_servicios(proveedor)
     documentos = generar_datos_documentos(proveedor)
+    documentos_adicionales = generar_datos_documentos_adicionales(proveedor)
     if proveedor.tipo_persona == PERSONA_JURIDICA:
         lista_documentos = len(TipoDocumentoTercero.objects.filter(aplica_juridica=True))
     else:
@@ -836,5 +910,10 @@ def generar_datos_proveedor(proveedor):
     documentos = {'id': 5, 'nombre': 'Documentos',
                   'url': '/administracion/proveedor/perfil/documentos', 'datos': documentos}
 
+    documentos_adicionales = {'id': 6, 'nombre': 'Certificaciones y Documentos Adicionales',
+                              'url': '/administracion/proveedor/perfil/documentos-adicionales',
+                              'datos': documentos_adicionales}
+
     return {'total': total, 'informacion_basica': informacion_basica, 'actividades_economicas': actividades_economicas,
-            'entidades_bancarias': entidades_bancarias, 'bienes_servicios': bienes_servicios, 'documentos': documentos}
+            'entidades_bancarias': entidades_bancarias, 'bienes_servicios': bienes_servicios, 'documentos': documentos,
+            'documentos_adicionales': documentos_adicionales}

@@ -18,9 +18,11 @@
     <div class="panel-container show">
         <div class="header">
             <h1 class="header-title">
-                <i class='fal fa-file-alt'></i> Documentos <span class='fw-300'></span>
+                <i class='fal fa-file-alt'></i> {% if n_documentos %} Documentos {% else %} Certificaciones y Documentos Adicionales {% endif %}<span class='fw-300'></span>
                 <div style="float: right">
-                    {% if  n_documentos == n_tipos %}Documentos Completos{% else %}{{ n_documentos }} de {{ n_tipos }} Documentos Cargados{% endif %}
+                    {% if n_documentos %}
+                        {% if  n_documentos == n_tipos %}Documentos Completos{% else %}{{ n_documentos }} de {{ n_tipos }} Documentos Cargados{% endif %}
+                    {% endif %}
                 </div>
                 <br>
                 <br>
@@ -35,6 +37,11 @@
                             {% if agregar %}
                                 <small>
                                     <a class="far fa-3x far fa-plus-circle" href="javascript:abrirModalGestionarDocumentos('{% url 'Administracion:proveedor-perfil-documento-crear' %}')"  data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar Documento"></a>
+                                </small>
+                            {% endif %}
+                            {% if agregar_adicional %}
+                                <small>
+                                    <a class="far fa-3x far fa-plus-circle" href="javascript:abrirModalGestionarDocumentos('{% url 'Administracion:proveedor-perfil-documento-adicional-crear' %}')"  data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar Documento"></a>
                                 </small>
                             {% endif %}
                         </div>
@@ -67,6 +74,7 @@
         </div>
     </div>
     <div class="modal fade" tabindex="-1" id="gestionar_documentos" role="dialog"></div>
+    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='administracion/proveedor/perfil/documentos-adicionales' %}
 {% endblock main%}
 
 {% block scripts %}
@@ -74,6 +82,7 @@
     <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
+    <script src="{% static 'Administracion/js/confirmarEliminar.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
     <script src="{% static 'Administracion/js/Tercero/documentos.js' %}"></script>
 {% endblock scripts%}

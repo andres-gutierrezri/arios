@@ -69,6 +69,11 @@
                                             <div id="segundo_div">
                                                 {% include 'Administracion/_common/_tarjeta_proveedor.html' with objeto=datos_proveedor.entidades_bancarias %}
                                                 {% include 'Administracion/_common/_tarjeta_proveedor.html' with objeto=datos_proveedor.bienes_servicios %}
+                                                {% if datos_proveedor.documentos_adicionales.datos and solicitud_proveedor %}
+                                                    {% include 'Administracion/_common/_tarjeta_proveedor.html' with objeto=datos_proveedor.documentos_adicionales %}
+                                                {% elif not solicitud_proveedor %}
+                                                    {% include 'Administracion/_common/_tarjeta_proveedor.html' with objeto=datos_proveedor.documentos_adicionales %}
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </div>
