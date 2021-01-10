@@ -127,7 +127,8 @@ function abrir_modal_aprobar_rechazar(url) {
 function modificarPerfilProveedor(idProveedor) {
     Swal.fire({
         title: '¿Está seguro de modificar su perfil?',
-        text: "Si modifica su perfil, dejará de estar activo como proveedor hasta que envie la solicitud y sea aprobada nuevamente.",
+        text: "Si modifica su perfil, la información aprobada será la que se encuentre vigente." +
+            "Los camibios realizados solo seran validos hasta que envíe la solicitud nuevamente y sea aprobada.",
         type: 'warning',
         showCancelButton: true,
         confirmButtonText: '¡Sí, Continuar!',

@@ -54,8 +54,7 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     objects = TerceroManger()
 
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=True, blank=False)
-    identificacion = models.CharField(max_length=20, verbose_name='Identificación', null=False, blank=False,
-                                      unique=True)
+    identificacion = models.CharField(max_length=20, verbose_name='Identificación', null=False, blank=False)
     digito_verificacion = models.SmallIntegerField(verbose_name='Digito de Verificación', null=True, blank=True)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
 
@@ -105,6 +104,8 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     fecha_constitucion = models.DateTimeField(verbose_name='Fecha de Constitución', null=True, blank=True)
     fecha_inicio_actividad = models.DateTimeField(verbose_name='Fecha de Inicio de Actividad', null=True, blank=True)
     usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario', null=True, blank=True)
+    estado_proveedor = models.SmallIntegerField(verbose_name='Estado del Proveedor', null=True, blank=True)
+    es_vigente = models.BooleanField(verbose_name='Es Vigente', null=False, blank=False)
 
     def __str__(self):
         return self.nombre
@@ -140,6 +141,7 @@ class Tercero(models.Model, ModelDjangoExtensiones):
         tercero.fax = datos.get('fax', '')
         tercero.direccion = datos.get('direccion', '')
         tercero.digito_verificacion = datos.get('digito_verificacion')
+        tercero.es_vigente = True
         if int(tercero.tipo_tercero_id) == TipoTercero.CLIENTE:
             tercero.tipo_persona = datos.get('tipo_persona')
             tercero.regimen_fiscal = datos.get('regimen_fiscal')
@@ -196,7 +198,7 @@ class DocumentoTercero(models.Model):
     objects = ManagerGeneral()
     documento = models.FileField(upload_to=custom_upload_to, verbose_name='Documento', null=False, blank=False)
     tipo_documento = models.ForeignKey(TipoDocumentoTercero, on_delete=models.DO_NOTHING, blank=False, null=False)
-    tercero = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, verbose_name='Tercero', blank=False, null=False)
+    tercero = models.ForeignKey(Tercero, on_delete=models.CASCADE, verbose_name='Tercero', blank=False, null=False)
     fecha_crea = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', blank=False, null=False)
     estado = models.BooleanField(verbose_name='Estado', blank=False, null=False)
 
@@ -211,7 +213,7 @@ class DocumentoTercero(models.Model):
 
 class Certificacion(models.Model):
     objects = ManagerGeneral()
-    tercero = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, verbose_name='Tercero', blank=False, null=False)
+    tercero = models.ForeignKey(Tercero, on_delete=models.CASCADE, verbose_name='Tercero', blank=False, null=False)
     fecha_crea = models.DateTimeField(verbose_name='Fecha de Creación', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', blank=False, null=False)
 
@@ -241,7 +243,7 @@ class ProveedorProductoServicio(models.Model, ModelDjangoExtensiones):
     objects = ProveedorProductoServicioManger()
     subproducto_subservicio = models.ForeignKey(SubproductoSubservicio, on_delete=models.DO_NOTHING,
                                                 verbose_name="Subproducto o Subservicio", null=False, blank=False)
-    proveedor = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING,
+    proveedor = models.ForeignKey(Tercero, on_delete=models.CASCADE,
                                   verbose_name="Proveedor", null=False, blank=False)
 
     def __str__(self):
@@ -253,7 +255,7 @@ class ProveedorProductoServicio(models.Model, ModelDjangoExtensiones):
 
 
 class SolicitudProveedor(models.Model):
-    proveedor = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING,
+    proveedor = models.ForeignKey(Tercero, on_delete=models.CASCADE,
                                   verbose_name="Proveedor", null=False, blank=False)
     fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', blank=False, null=False)
     comentarios = models.CharField(max_length=300, verbose_name='Comentarios', blank=False, null=False)

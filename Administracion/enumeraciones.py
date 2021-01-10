@@ -40,4 +40,14 @@ class Tributos(models.TextChoices):
     # PERSONALIZADO = 'ZZ', 'Nombre de la figura tributaria'  # Personalizado
 
 
+class EstadosProveedor(models.TextChoices):
+
+    INACTIVO = 0, 'Proveedor Inactivo'
+    ACTIVO = 1, ' Proveedor Activo'
+    DILIGENCIAMIENTO_PERFIL = 2, 'Diligenciamiento de Perfil'
+    REGISTRADO = 3, 'Registrado'
+    RECHAZADO = 4, 'Rechazado'
+    SOLICITUD_ENVIADA = 5, 'Solicitud Enviada'
+    EDICION_PERFIL = 6, 'Edición del Perfil'
+
 

@@ -71,8 +71,8 @@ class ProveedorActividadEconomica(models.Model):
     contribuyente_iyc = models.CharField(verbose_name='Contribuyente de Industria y Comercio', max_length=100,
                                          null=True, blank=True)
     entidad_publica = models.CharField(verbose_name='Número de Resolución', max_length=100, null=True, blank=True)
-    proveedor = models.OneToOneField(Tercero, on_delete=models.DO_NOTHING, verbose_name='Usuario',
-                                     null=False, blank=False)
+    proveedor = models.ForeignKey(Tercero, on_delete=models.CASCADE, verbose_name='Usuario',
+                                  null=False, blank=False)
     bienes_servicios = models.TextField(verbose_name='Bienes y Servicios que Ofrece', null=False, blank=False)
 
     def __str__(self):
@@ -108,7 +108,7 @@ def custom_upload_to(instance, filename):
 
 class EntidadBancariaTercero(models.Model):
     objects = ManagerGeneral()
-    tercero = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, verbose_name='Tercero', blank=False, null=False)
+    tercero = models.ForeignKey(Tercero, on_delete=models.CASCADE, verbose_name='Tercero', blank=False, null=False)
     entidad_bancaria = models.ForeignKey(EntidadBancaria, on_delete=models.DO_NOTHING, verbose_name='Entidad Bancaria',
                                          null=False, blank=False)
     tipo_cuenta = models.SmallIntegerField(verbose_name='Tipo de Cuenta', null=False, blank=False, default=1)

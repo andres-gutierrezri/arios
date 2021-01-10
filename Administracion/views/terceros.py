@@ -16,7 +16,8 @@ from django.views import View
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
-from Administracion.enumeraciones import TipoPersona, RegimenFiscal, ResponsabilidadesFiscales, Tributos
+from Administracion.enumeraciones import TipoPersona, RegimenFiscal, ResponsabilidadesFiscales, Tributos, \
+    EstadosProveedor
 from Administracion.models import Tercero, TipoIdentificacion, TipoTercero, CentroPoblado, Empresa, Departamento, \
     Municipio
 from Administracion.utils import get_id_empresa_global
@@ -218,6 +219,8 @@ class RegistroProveedorView(View):
         tercero.telefono_fijo_auxiliar = ''
         tercero.telefono_movil_auxiliar = ''
         tercero.correo_auxiliar = ''
+        tercero.es_vigente = True
+        tercero.estado_proveedor = EstadosProveedor.REGISTRADO
 
         if User.objects.filter(email=correo):
             return JsonResponse({'estado': 'ERROR', 'mensaje': 'El correo ingresado ya se encuentra registrado'})

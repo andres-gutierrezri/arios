@@ -21,17 +21,7 @@
                     <div class="col-md-8">
                         <div class="mt-2 mb-1 fs-xs text-primary">
                             <b>Proveedor: </b>{% if datos_estado.estado == True %}<span class="badge badge-primary">Activo</span>{% else %}<span class="badge badge-secondary">Inactivo</span>{% endif %}<br>
-                            {% if solicitud_activa %}
-                                <b>Estado: </b>Solicitud Enviada<br>
-                            {% else %}
-                                {% if perfil_activo %}
-                                    <b>Estado: </b>Proveedor Activo<br>
-                                {% elif not datos_estado.estado_solicitud %}
-                                    <b>Estado: </b>Diligenciamiento Perfil<br>
-                                {% else %}
-                                    <b>Estado: </b>Solicitud Rechazada<br>
-                                {% endif %}
-                            {% endif %}
+                            <b>Estado: </b>{{ datos_estado.estado_descripcion }}<br>
                             {% if datos_estado.ultima_act %}
                                 <b>Última Aprobación:</b> {{ datos_estado.ultima_act |date:'Y-m-d h:m'}}<br>
                             {% endif %}
