@@ -1,8 +1,8 @@
 
 'use strict';
 
-let URLDomain = document.location.origin+"/";
-let divContenedor = $('#div_contenedor');
+const URLDomain = document.location.origin+"/";
+const divContenedor = $('#div_contenedor');
 let contador = 0;
 
 $(document).ready(function() {
@@ -19,48 +19,48 @@ $(document).ready(function() {
 function cambioTipoProductoServicio(pos){
     let valor = $(`#tipo_producto_servicio_${pos}_select_id`).val();
     if(valor !== '') {
-        cargarSubtiposProductosServicios(valor, pos)
+        cargarProductosServicios(valor, pos)
         cambioLabelSelects(valor, pos)
     }
 }
 
-function cambioSubtipoProductoServicio(pos){
-    let valor = $(`#subtipo_producto_servicio_${pos}_select_id`).val();
+function cambioProductoServicio(pos){
+    let valor = $(`#producto_servicio_${pos}_select_id`).val();
     if(valor !== '') {
-        cargarProductosServicios(valor, pos)
+        cargarSubProductosSubServicios(valor, pos)
     }
 }
 
 function cambioLabelSelects(valor, pos) {
-    let labelSubtipoProductoServicio = $(`#subtipo_producto_servicio_${pos}_label_id`);
     let labelProductoServicio = $(`#producto_servicio_${pos}_label_id`);
+    let labelSubproductoSubservicio = $(`#subproducto_subservicio_${pos}_label_id`);
     if (valor === '1'){
-        labelSubtipoProductoServicio.text('Subtipos de Productos')
         labelProductoServicio.text('Productos')
+        labelSubproductoSubservicio.text('Subproductos')
     }else if (valor === '2'){
-        labelSubtipoProductoServicio.text('Subtipos de Servicios')
         labelProductoServicio.text('Servicios')
+        labelSubproductoSubservicio.text('Subservicios')
     }
 }
 
-function cargarSubtiposProductosServicios(idProductoServicio, pos) {
-    let subtipoProductoServicio = $(`#subtipo_producto_servicio_${pos}_select_id`);
-    let productoServicio = $(`#producto_servicio_${pos}`);
+function cargarProductosServicios(idTipo, pos) {
+    let productoServicio = $(`#producto_servicio_${pos}_select_id`);
+    let subproductoSubservicio = $(`#subproducto_subservicio_${pos}`);
     $.ajax({
-        url: URLDomain + "administracion/producto-servicio/" + idProductoServicio + "/subtipos/json",
+        url: URLDomain + "administracion/proveedor/" + idTipo + "/producto-servicio/json",
         type: 'GET',
         context: document.body,
         success: function (data) {
             if (data.length > 0) {
-                subtipoProductoServicio.empty();
                 productoServicio.empty();
-                subtipoProductoServicio.append('<option value="">Seleccione una opción</option>');
+                subproductoSubservicio.empty();
+                productoServicio.append('<option value="">Seleccione una opción</option>');
                 for (let i = 0; i < data.length; i++) {
-                    subtipoProductoServicio.append('<option value="' + data[i].id + '">' + data[i].nombre + '</option>');
+                    productoServicio.append('<option value="' + data[i].id + '">' + data[i].nombre + '</option>');
                 }
             } else {
-                subtipoProductoServicio.empty();
-                subtipoProductoServicio.append('<option value="">Seleccione una opción</option>');
+                productoServicio.empty();
+                productoServicio.append('<option value="">Seleccione una opción</option>');
             }
         },
         failure: function (errMsg) {
@@ -68,12 +68,16 @@ function cargarSubtiposProductosServicios(idProductoServicio, pos) {
 
         }
     });
+    let valor = $(`#tipo_producto_servicio_${pos}_select_id`).val();
+    if(valor !== '') {
+        cambioLabelSelects(valor, pos)
+    }
 }
 
-function cargarProductosServicios(idSubtipoProductoServicio, pos) {
-    let productoServicio = $(`#producto_servicio_${pos}`);
+function cargarSubProductosSubServicios(idProductoServicio, pos) {
+    let productoServicio = $(`#subproducto_subservicio_${pos}`);
     $.ajax({
-        url: URLDomain + "administracion/subtipo-producto-servicio/" + idSubtipoProductoServicio + "/producto-servicio/json",
+        url: URLDomain + "administracion/proveedor/" + idProductoServicio + "/subproducto-subservicio/json",
         type: 'GET',
         context: document.body,
         success: function (data) {
@@ -123,11 +127,11 @@ function cargarSelects() {
                                               false, `onchange="cambioTipoProductoServicio(${contador})"`,  opciones)}
                           </div>
                           <div class="form-group col-3">
-                              ${generarSelect('subtipo_producto_servicio', 'Subtipo de Producto', 
-                                             false, `onchange="cambioSubtipoProductoServicio(${contador})"`)}
+                              ${generarSelect('producto_servicio', 'Producto', 
+                                             false, `onchange="cambioProductoServicio(${contador})"`)}
                           </div>
                           <div class="form-group col-5">
-                              ${generarSelect('producto_servicio', 'Producto', true, '')}
+                              ${generarSelect('subproducto_subservicio', 'SubProducto', true, '')}
                           </div>
                           <div class="form-group col-1" style="padding-top:30px">
                             <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_${contador}" href="javascript:eliminarProductoServicio(${contador});" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>

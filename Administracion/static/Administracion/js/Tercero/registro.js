@@ -57,15 +57,10 @@ function guardarRegistro() {
     }).done(function(response) {
         if(response.hasOwnProperty('estado')){
             if (response.estado === 'OK') {
-                Swal.fire({
-                    title: "Registro Exitoso!",
-                    text: `Revise el correo electrónico ${response.datos.correo} para continuar con el proceso`,
-                    type: "success",
-                    confirmButtonText: "Ir al inicio de sesión",
-                    closeOnConfirm: true
-                }).then(function () {
-                    $(location).attr('href', '/administracion/proveedor/iniciar-sesion');
-                })
+                EVANotificacion.modal
+                    .confirmacionBotonMensaje("Registro Exitoso!",
+                    `Revise el correo electrónico ${response.datos.correo} para continuar con el proceso`,
+                    "Ir al inicio de sesión", '/administracion/proveedor/iniciar-sesion')
             }else if (response.estado === 'ERROR') {
                 EVANotificacion.modal.error(response.mensaje)
             } else {

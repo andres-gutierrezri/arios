@@ -15,13 +15,16 @@
             <div class="modal-body">
                 {% csrf_token %}
                 <div class="form-row">
-                    <div class="form-group col-4">
-                        {% select_tag tipos_cuentas 'tipo_cuenta' 'Seleccione un tipo' texto_label="Tipo de Cuenta" required="" value=objeto.tipo_cuenta_id mensaje_validacion='Por favor seleccione una opción' %}
+                    <div class="form-group col-6">
+                        {% select_tag tipos_cuentas 'tipo_cuenta' 'Seleccione un tipo' is_tupla=True texto_label="Tipo de Cuenta" required="" value=objeto.tipo_cuenta mensaje_validacion='Por favor seleccione una opción' %}
                     </div>
-                    <div class="form-group col-4">
+                    <div class="form-group col-6">
                         {% select_tag entidades_bancarias 'entidad_bancaria' 'Seleccione una entidad' texto_label="Entidad Bancaria" required="" value=objeto.entidad_bancaria_id mensaje_validacion='Por favor seleccione una opción' %}
                     </div>
-                    <div class="form-group col-4">
+                    <div class="form-group col-12">
+                        {% input_number_tag 'numero_cuenta' 'Número de Cuenta' placeholder='Ingrese el número de cuenta' required='' min='0' max='9223372036854775807' value=objeto.numero_cuenta mensaje_validacion='Por favor ingrese un número' invalido=errores.numero_cuenta %}
+                    </div>
+                    <div class="form-group col-12">
                         {% if objeto %}
                             {% input_file_tag 'certificacion' 'Certificación Bancaria' placeholder="Seleccione un archivo" invalido=errores.logo accept=".docx, .pdf" mensaje_validacion='Por favor seleccione un archivo'%}
                         {% else %}

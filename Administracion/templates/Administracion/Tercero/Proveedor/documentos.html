@@ -18,7 +18,7 @@
     <div class="panel-container show">
         <div class="header">
             <h1 class="header-title">
-                <i class='fal fa-file-alt'></i> Documentos <span class='fw-300'></span><a class="far fa-arrow-circle-left"  href="{% url 'Administracion:proveedor-perfil' %}" data-toggle="tooltip" title="" data-original-title="Volver"></a>
+                <i class='fal fa-file-alt'></i> Documentos <span class='fw-300'></span>
                 <div style="float: right">
                     {% if  n_documentos == n_tipos %}Documentos Completos{% else %}{{ n_documentos }} de {{ n_tipos }} Documentos Cargados{% endif %}
                 </div>
@@ -29,16 +29,22 @@
         <div class="row">
             <div class="col-xl-12">
                 <div id="panel-1" class="panel">
-                    {% if agregar %}
-                        <div class="panel-hdr">
-                            <br>
-                            <div class="col-md-10">
+                    <div class="panel-hdr">
+                        <br>
+                        <div class="col-md-10">
+                            {% if agregar %}
                                 <small>
                                     <a class="far fa-3x far fa-plus-circle" href="javascript:abrirModalGestionarDocumentos('{% url 'Administracion:proveedor-perfil-documento-crear' %}')"  data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar Documento"></a>
                                 </small>
-                            </div>
+                            {% endif %}
                         </div>
-                    {% endif %}
+                        <div class="col-md-2" style="float: right" >
+                            <small style="float: right">
+                                <a href="javascript:history.back()" class="btn btn-primary btn-pills btn-block">Volver al Perfil</a>
+                            </small>
+                        </div>
+                    </div>
+
                     <div class="panel-container show">
                         <div class="panel-content">
                             <div class="panel-group">
@@ -65,7 +71,6 @@
 
 {% block scripts %}
     <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
-    <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>

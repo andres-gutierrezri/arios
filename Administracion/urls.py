@@ -16,7 +16,7 @@ Including another URLconf
 
 from django.urls import path
 from Administracion.views import terceros, administracion, inicio_sesion, empresas, grupos_permisos, procesos
-from Administracion.views.Terceros import proveedores, gestion_proveedores
+from Administracion.views.Proveedores import proveedores, gestion_proveedores
 from Administracion.views.seleccion_empresa import SeleccionEmpresaModalView
 
 app_name = 'Administracion'
@@ -74,10 +74,10 @@ urlpatterns = [
          name='proveedor-perfil-ver-certificacion'),
     path('proveedor/perfil/productos-servicios', proveedores.PerfilProductosServiciosView.as_view(),
          name='proveedor-perfil-productos-servicios'),
-    path('producto-servicio/<int:id>/subtipos/json', administracion.CargarSubtiposProductoServicio.as_view(),
-         name='subtipos-producto-servicio-json'),
-    path('subtipo-producto-servicio/<int:id>/producto-servicio/json', administracion.CargarProductosServicios.as_view(),
-         name='productos-servicios-json'),
+    path('proveedor/<int:id>/producto-servicio/json', administracion.CargarProductoServicio.as_view(),
+         name='proveedor-producto-servicio-json'),
+    path('proveedor/<int:id>/subproducto-subservicio/json', administracion.CargarSubProductosSubServicios.as_view(),
+         name='proveedor-subproducto-subservicios-json'),
     path('proveedor/perfil/documentos', proveedores.PerfilDocumentosView.as_view(), name='proveedor-perfil-documentos'),
     path('proveedor/perfil/documentos/add', proveedores.DocumentoCrearView.as_view(),
          name='proveedor-perfil-documento-crear'),

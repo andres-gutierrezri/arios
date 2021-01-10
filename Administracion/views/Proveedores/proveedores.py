@@ -10,14 +10,15 @@ from django.urls import reverse
 
 from Administracion.enumeraciones import TipoPersona, RegimenFiscal, ResponsabilidadesFiscales, Tributos
 from Administracion.models import TipoIdentificacion, Pais, Tercero, Departamento, Municipio
-from Administracion.models.models import SubtipoProductoServicio, ProductoServicio
+from Administracion.models.models import SubproductoSubservicio, ProductoServicio
 from Administracion.models.terceros import ProveedorProductoServicio, TipoDocumentoTercero, DocumentoTercero, \
     SolicitudProveedor, Certificacion
 from EVA.General import app_datetime_now
 from EVA.General.conversiones import datetime_to_string
 from EVA.views.index import AbstractEvaLoggedProveedorView, AbstractEvaLoggedView
-from Financiero.models.models import ActividadEconomica, TipoContribuyente, Regimen, ProveedorActividadEconomica, \
-    EntidadBancariaTercero, EntidadBancaria, TipoCuentaBancaria
+from Financiero.enumeraciones import TipoCuentaBancaria
+from Financiero.models.models import ActividadEconomica, ProveedorActividadEconomica, \
+    EntidadBancariaTercero, EntidadBancaria
 from Notificaciones.models.models import EventoDesencadenador, Notificacion, DestinatarioNotificacion
 from Notificaciones.views.views import crear_notificacion_por_evento
 
@@ -172,6 +173,7 @@ class EntidadBancariaCrearView(AbstractEvaLoggedProveedorView):
         entidad_proveedor = EntidadBancariaTercero.from_dictionary(request.POST)
         entidad_proveedor.tercero = Tercero.objects.get(usuario=request.user)
         entidad_proveedor.certificacion = request.FILES.get('certificacion', '')
+        entidad_proveedor.numero_cuenta = request.POST.get('numero_cuenta', '')
         try:
             entidad_proveedor.save()
         except:
@@ -189,16 +191,17 @@ class EntidadBancariaEditarView(AbstractEvaLoggedProveedorView):
                       datos_xa_render_entidades_bancarias(request, entidad_bancaria))
 
     def post(self, request, id):
-        update_fields = ['tipo_cuenta', 'entidad_bancaria']
+        update_fields = ['tipo_cuenta', 'entidad_bancaria', 'numero_cuenta']
         entidad_proveedor = EntidadBancariaTercero.from_dictionary(request.POST)
         entidad_proveedor.id = id
         entidad_proveedor.certificacion = request.FILES.get('certificacion', '')
         entidad_proveedor.tercero = Tercero.objects.get(usuario=request.user)
+        entidad_proveedor.numero_cuenta = request.POST.get('numero_cuenta', '')
         try:
             if entidad_proveedor.certificacion:
                 update_fields.append('certificacion')
             entidad_proveedor.save(update_fields=update_fields)
-        except:
+        except Exception as e:
             return JsonResponse({"estado": "error", "mensaje": "Ha ocurrido un error al guardar la información"})
 
         messages.success(self.request, 'Se ha actualizado la entidad correctamente.')
@@ -232,8 +235,9 @@ class VerCertificacionView(AbstractEvaLoggedProveedorView):
             mime_type = mime_types.get(extension, 'application/pdf')
 
             response = HttpResponse(entidad_bancaria.certificacion, content_type=mime_type)
-            response['Content-Disposition'] = 'inline; filename="{0} - {1}{2}"'\
-                .format(entidad_bancaria.entidad_bancaria.nombre, entidad_bancaria.tipo_cuenta.nombre, extension)
+            response['Content-Disposition'] = 'inline; filename="{0} - Cuenta {1}{2}"'\
+                .format(entidad_bancaria.entidad_bancaria.nombre,
+                        'Corriente' if entidad_bancaria.tipo_cuenta == 1 else 'de Ahorros', extension)
         else:
             messages.error(self.request, 'Ha ocurrido un error al realizar esta acción.')
             response = redirect(reverse('Administracion:proveedor-perfil-entidades-bancarias'))
@@ -254,10 +258,11 @@ class PerfilProductosServiciosView(AbstractEvaLoggedProveedorView):
             if contador:
                 cn = 0
                 while cn < int(contador):
-                    datos = request.POST.getlist('producto_servicio_{0}'.format(cn), '')
+                    datos = request.POST.getlist('subproducto_subservicio_{0}'.format(cn), '')
                     if datos != '':
                         for dt in datos:
-                            ProveedorProductoServicio.objects.create(proveedor=proveedor, producto_servicio_id=dt)
+                            ProveedorProductoServicio.objects.create(proveedor=proveedor,
+                                                                     subproducto_subservicio_id=dt)
                     cn += 1
             else:
                 datos = request.POST.getlist('producto_servicio_0', '')
@@ -487,7 +492,6 @@ def datos_xa_render_actividades_economicas(request):
     if proveedor_actec:
         proveedor_actec = proveedor_actec.first()
     actividades_economicas = ActividadEconomica.objects.get_xa_select_actividades_con_codigo()
-    datos_regimenes = Regimen.objects.get_activos_like_json()
     entidades_publicas = [{'campo_valor': '1', 'campo_texto': 'Nacional'},
                           {'campo_valor': '2', 'campo_texto': 'Departamental'},
                           {'campo_valor': '3', 'campo_texto': 'Municipal'}]
@@ -497,7 +501,7 @@ def datos_xa_render_actividades_economicas(request):
     responsabilidades_tercero = proveedor.responsabilidades_fiscales.split(';') \
         if proveedor.responsabilidades_fiscales else []
 
-    datos = {'actividades_economicas': actividades_economicas, 'datos_regimenes': datos_regimenes,
+    datos = {'actividades_economicas': actividades_economicas,
              'entidades_publicas': entidades_publicas, 'proveedor': proveedor_actec,
              'entidad_publica': entidad_publica, 'regimenes_fiscales': RegimenFiscal.choices,
              'responsabilidades': ResponsabilidadesFiscales.choices, 'tributos': Tributos.choices,
@@ -510,16 +514,16 @@ def datos_xa_render_entidades_bancarias(request, objeto=None):
     datos_proveedor = []
     if datos:
         for d in datos:
-            datos_proveedor.append({'tipo_cuenta_id': d.tipo_cuenta_id,
-                                    'tipo_cuenta_nombre': d.tipo_cuenta.nombre,
+            datos_proveedor.append({'tipo_cuenta_id': d.tipo_cuenta,
+                                    'tipo_cuenta_nombre': 'Cuenta Corriente'
+                                    if d.tipo_cuenta == 1 else 'Cuenta de Ahorros',
                                     'entidad_bancaria_id': d.entidad_bancaria_id,
                                     'entidad_bancaria_nombre': d.entidad_bancaria.nombre,
                                     'id': d.id})
         datos_proveedor = json.dumps(datos_proveedor)
 
-    tipos_cuentas = TipoCuentaBancaria.objects.get_xa_select_activos()
     entidades_bancarias = EntidadBancaria.objects.get_xa_select_activos()
-    datos = {'entidades_bancarias': entidades_bancarias, 'tipos_cuentas': tipos_cuentas,
+    datos = {'entidades_bancarias': entidades_bancarias, 'tipos_cuentas': TipoCuentaBancaria.choices,
              'datos_proveedor': datos_proveedor, 'objeto': objeto}
     return datos
 
@@ -527,8 +531,8 @@ def datos_xa_render_entidades_bancarias(request, objeto=None):
 def datos_xa_render_productos_servicios(request):
     tipos_productos_servicios = [{'campo_valor': 1, 'campo_texto': 'Producto'},
                                  {'campo_valor': 2, 'campo_texto': 'Servicio'}]
-    subtipos_productos_servicios = SubtipoProductoServicio.objects.get_xa_select_activos()
     productos_servicios = ProductoServicio.objects.get_xa_select_activos()
+    subproductos_subservicios = ProductoServicio.objects.get_xa_select_activos()
     proveedor = Tercero.objects.get(usuario=request.user)
     selecciones = ProveedorProductoServicio.objects.filter(proveedor=proveedor)
     lista_selecciones = []
@@ -536,34 +540,34 @@ def datos_xa_render_productos_servicios(request):
     for dt in selecciones:
         coincidencia = False
         for ls in lista_selecciones:
-            if dt.producto_servicio.subtipo_producto_servicio_id == ls['subtipo_producto_servicio']:
+            if dt.subproducto_subservicio.producto_servicio_id == ls['producto_servicio']:
                 coincidencia = True
         if not coincidencia:
-            subtipos = ProveedorProductoServicio\
-                .objects.filter(proveedor=proveedor, producto_servicio__subtipo_producto_servicio=dt.
-                                producto_servicio.subtipo_producto_servicio)
-            lista_pro_ser = []
-            for st in subtipos:
-                lista_pro_ser.append(st.producto_servicio_id)
+            subpro_subserv = ProveedorProductoServicio\
+                .objects.filter(proveedor=proveedor, subproducto_subservicio__producto_servicio=dt.
+                                subproducto_subservicio.producto_servicio)
+            lista_subpro_subser = []
+            for ps in subpro_subserv:
+                lista_subpro_subser.append(ps.subproducto_subservicio_id)
             lista_selecciones\
-                .append({'tipo_producto_servicio': 2 if dt.producto_servicio.subtipo_producto_servicio.es_servicio else 1,
+                .append({'tipo_producto_servicio': 2 if dt.subproducto_subservicio.producto_servicio.es_servicio else 1,
                          'nombre_tipos': 'tipo_producto_servicio_{0}'.format(contador),
                          'onchange_tipos': 'cambioTipoProductoServicio({0})'.format(contador),
-                         'subtipo_producto_servicio': dt.producto_servicio.subtipo_producto_servicio_id,
-                         'nombre_subtipos': 'subtipo_producto_servicio_{0}'.format(contador),
-                         'onchange_subtipos': 'cambioSubtipoProductoServicio({0})'.format(contador),
-                         'datos_subtipos': SubtipoProductoServicio.objects.get_xa_select_activos()
-                        .filter(es_servicio=dt.producto_servicio.subtipo_producto_servicio.es_servicio),
-                         'productos_servicios': lista_pro_ser,
+                         'producto_servicio': dt.subproducto_subservicio.producto_servicio_id,
                          'nombre_producto_servicio': 'producto_servicio_{0}'.format(contador),
+                         'onchange_producto_servicio': 'cambioProductoServicio({0})'.format(contador),
                          'datos_productos_servicios': ProductoServicio.objects.get_xa_select_activos()
-                        .filter(subtipo_producto_servicio=dt.producto_servicio.subtipo_producto_servicio),
+                        .filter(es_servicio=dt.subproducto_subservicio.producto_servicio.es_servicio),
+                         'subproductos_subservicios': lista_subpro_subser,
+                         'nombre_subproducto_subservicio': 'subproducto_subservicio_{0}'.format(contador),
+                         'datos_subproductos_subservicios': SubproductoSubservicio.objects.get_xa_select_activos()
+                        .filter(producto_servicio=dt.subproducto_subservicio.producto_servicio),
                          'contador': contador})
             contador += 1
 
     datos = {'tipos_productos_servicios': tipos_productos_servicios,
-             'subtipos_productos_servicios': subtipos_productos_servicios,
              'productos_servicios': productos_servicios,
+             'subproductos_subservicios': subproductos_subservicios,
              'selecciones': lista_selecciones,
              'contador': contador}
     return datos
@@ -673,18 +677,10 @@ def generar_datos_actividades_economicas(proveedor):
                 if op[0] == sel:
                     datos_resp_fiscal += ', ' + op[1] if datos_resp_fiscal else op[1]
 
-        trib = proveedor.tributos
-        tributos = ''
-        for tr in Tributos.choices:
-            if tr[0] == trib:
-                tributos = tr[1]
-                break
         respuesta = [{'nombre_campo': 'Actividad Principal', 'valor_campo': ae.actividad_principal},
                      {'nombre_campo': 'Actividad Secundaria', 'valor_campo': ae.actividad_secundaria},
                      {'nombre_campo': 'Otra Actividad', 'valor_campo': ae.otra_actividad},
                      {'nombre_campo': 'Régimen Fiscal', 'valor_campo': regimen_fiscal},
-                     {'nombre_campo': 'Responsabilidad Fiscal', 'valor_campo': datos_resp_fiscal},
-                     {'nombre_campo': 'Tributo', 'valor_campo': tributos},
                      {'nombre_campo': 'Excento de Industria y Comercio: # Res', 'valor_campo': ae.numero_resolucion},
                      {'nombre_campo': 'Contribuyente Industria y Comercio', 'valor_campo': ae.contribuyente_iyc},
                      {'nombre_campo': 'Entidad Pública', 'valor_campo': entidad_publica},
@@ -704,12 +700,24 @@ def generar_datos_entidades_bancarias(proveedor):
 
 def generar_datos_bienes_servicios(proveedor):
     productos_servicios = ProveedorProductoServicio.objects.filter(proveedor=proveedor)
+    lista_servicios = ''
+    for ps in productos_servicios.filter(subproducto_subservicio__producto_servicio__es_servicio=True):
+        if lista_servicios != '':
+            lista_servicios += ', ' + ps.subproducto_subservicio.nombre
+        else:
+            lista_servicios = ps.subproducto_subservicio.nombre
+
+    lista_productos = ''
+    for ps in productos_servicios.filter(subproducto_subservicio__producto_servicio__es_servicio=False):
+        if lista_productos != '':
+            lista_productos += ', ' + ps.subproducto_subservicio.nombre
+        else:
+            lista_productos = ps.subproducto_subservicio.nombre
     lista_productos_servicios = []
-    for ps in productos_servicios:
-        lista_productos_servicios\
-            .append({'nombre_campo': 'Servicio' if ps.producto_servicio.subtipo_producto_servicio.es_servicio
-                     else "Producto", 'valor_campo': '{0} - {1}'
-                    .format(ps.producto_servicio.subtipo_producto_servicio, ps.producto_servicio)})
+    if lista_servicios or lista_productos:
+        lista_productos_servicios = [{'nombre_campo': 'Productos', 'valor_campo': lista_productos},
+                                     {'nombre_campo': 'Servicios', 'valor_campo': lista_servicios}]
+
     return lista_productos_servicios
 
 
@@ -752,7 +760,7 @@ def generar_datos_proveedor(proveedor):
     actividades_economicas = {'id': 2, 'nombre': 'Actividades Económicas',
                               'url': '/administracion/proveedor/perfil/actividades-economicas',
                               'datos': actividades_economicas}
-    entidades_bancarias = {'id': 3, 'nombre': 'Entidades Bancarias',
+    entidades_bancarias = {'id': 3, 'nombre': 'Información Bancaria',
                            'url': '/administracion/proveedor/perfil/entidades-bancarias',
                            'datos': entidades_bancarias}
     bienes_servicios = {'id': 4, 'nombre': 'Productos y Servicios',

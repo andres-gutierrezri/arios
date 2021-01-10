@@ -37,19 +37,6 @@ class TipoCuentaBancariaManger(ManagerGeneral):
         return json.dumps(datos)
 
 
-class TipoCuentaBancaria(models.Model):
-    objects = TipoCuentaBancariaManger()
-    nombre = models.CharField(verbose_name='Nombre', max_length=100, null=False, blank=False)
-    descripcion = models.CharField(verbose_name='Descrición', max_length=100, null=False, blank=False)
-
-    def __str__(self):
-        return self.nombre
-
-    class Meta:
-        verbose_name = 'Tipo de Cuenta Bancaria'
-        verbose_name_plural = 'Tipos de Cuentas Bancarisas'
-
-
 class ActividadEconomicaManger(ManagerGeneral):
     def get_xa_select_actividades_con_codigo(self) -> List:
         datos = []
@@ -69,51 +56,6 @@ class ActividadEconomica(models.Model):
     class Meta:
         verbose_name = 'Actividad Económica'
         verbose_name_plural = 'Actividades Económicas'
-
-
-class TipoPersona(models.Model):
-    objects = ManagerGeneral()
-    nombre = models.CharField(verbose_name='Nombre', max_length=100, null=False, blank=False)
-
-    def __str__(self):
-        return self.nombre
-
-    class Meta:
-        verbose_name = 'Tipo de Persona'
-        verbose_name_plural = 'Tipos de Personas'
-
-
-class TipoContribuyente(models.Model):
-    objects = ManagerGeneral()
-    nombre = models.CharField(verbose_name='Nombre', max_length=100, null=False, blank=False)
-
-    def __str__(self):
-        return self.nombre
-
-    class Meta:
-        verbose_name = 'Tipo de Contribuyente'
-        verbose_name_plural = 'Tipos de Contribuyentes'
-
-
-class RegimenManager(ManagerGeneral):
-    def get_activos_like_json(self):
-        datos = []
-        for elemento in self.get_x_estado(True, False):
-            datos.append({'id': elemento.id, 'aplica_publica': elemento.aplica_publica})
-        return json.dumps(datos)
-
-
-class Regimen(models.Model):
-    objects = RegimenManager()
-    nombre = models.CharField(verbose_name='Nombre', max_length=100, null=False, blank=False)
-    aplica_publica = models.BooleanField(verbose_name='Apica Entidad Pública', null=False, blank=False)
-
-    def __str__(self):
-        return self.nombre
-
-    class Meta:
-        verbose_name = 'Régimen'
-        verbose_name_plural = 'Regímenes'
 
 
 class ProveedorActividadEconomica(models.Model):
@@ -161,7 +103,7 @@ class ProveedorActividadEconomica(models.Model):
 
 def custom_upload_to(instance, filename):
     return '{2}/Proveedores/CertificacionesBancarias/{0}/{1}'\
-        .format(instance.tercero.nombre, filename, settings.EVA_PRIVATE_MEDIA)
+        .format(instance.tercero.nombre[10], filename, settings.EVA_PRIVATE_MEDIA)
 
 
 class EntidadBancariaTercero(models.Model):
@@ -169,8 +111,8 @@ class EntidadBancariaTercero(models.Model):
     tercero = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING, verbose_name='Tercero', blank=False, null=False)
     entidad_bancaria = models.ForeignKey(EntidadBancaria, on_delete=models.DO_NOTHING, verbose_name='Entidad Bancaria',
                                          null=False, blank=False)
-    tipo_cuenta = models.ForeignKey(TipoCuentaBancaria, on_delete=models.DO_NOTHING, verbose_name='Tipo Cuenta',
-                                    null=False, blank=False)
+    tipo_cuenta = models.SmallIntegerField(verbose_name='Tipo de Cuenta', null=False, blank=False, default=1)
+    numero_cuenta = models.BigIntegerField(verbose_name='Número de Cuenta', null=False, blank=False)
     certificacion = models.FileField(upload_to=custom_upload_to, blank=False, null=False)
 
     def __str__(self):
@@ -188,7 +130,7 @@ class EntidadBancariaTercero(models.Model):
         :return: Instacia de entidad Entidad Bancaria Tercero con la información especificada en el diccionario.
         """
         entidad_tercero = EntidadBancariaTercero()
-        entidad_tercero.tipo_cuenta_id = datos.get('tipo_cuenta', '')
+        entidad_tercero.tipo_cuenta = datos.get('tipo_cuenta', '')
         entidad_tercero.entidad_bancaria_id = datos.get('entidad_bancaria', '')
 
         return entidad_tercero

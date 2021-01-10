@@ -53,6 +53,17 @@ const EVANotificacion = {
         cerrar() {
             Swal.close();
         },
+        confirmacionBotonMensaje(titulo, mensaje, texto_confirmacion, ruta_confirmacion) {
+            Swal.fire({
+                title: titulo,
+                text: mensaje,
+                type: "success",
+                confirmButtonText: texto_confirmacion,
+                closeOnConfirm: true
+            }).then(function () {
+                $(location).attr('href', ruta_confirmacion);
+            })
+        },
     },
 
     toast:{

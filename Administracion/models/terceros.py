@@ -8,7 +8,7 @@ from django.http import QueryDict
 
 from EVA import settings
 from EVA.General.modelmanagers import ManagerGeneral
-from .models import Empresa, TipoIdentificacion, Persona, ProductoServicio
+from .models import Empresa, TipoIdentificacion, Persona, SubproductoSubservicio
 from .divipol import CentroPoblado, Municipio
 from EVA.General.modeljson import ModelDjangoExtensiones
 from Administracion.enumeraciones import TipoPersona
@@ -80,7 +80,7 @@ class Tercero(models.Model, ModelDjangoExtensiones):
                                                   blank=True)
     regimen_fiscal = models.SmallIntegerField(verbose_name='Régimen Fiscal', null=True, blank=True)
     tributos = models.CharField(max_length=10, verbose_name='Tributo', null=True, blank=True)
-    correo_facelec = models.EmailField(max_length=100, verbose_name='Correo Facturación Electrónica', null=True,
+    correo_facelec = models.EmailField(max_length=254, verbose_name='Correo Facturación Electrónica', null=True,
                                        blank=True)
     codigo_postal = models.CharField(max_length=6, verbose_name='Código Postal', null=True, blank=True)
     telefono_fijo_principal = models.CharField(max_length=30, verbose_name='Teléfono Fijo Principal',
@@ -91,8 +91,8 @@ class Tercero(models.Model, ModelDjangoExtensiones):
                                                 null=True, blank=True)
     telefono_movil_auxiliar = models.CharField(max_length=30, verbose_name='Teléfono Movil Auxiliar',
                                                null=True, blank=True)
-    correo_principal = models.CharField(max_length=30, verbose_name='Correo Principal', null=True, blank=True)
-    correo_auxiliar = models.CharField(max_length=30, verbose_name='Correo Auxiliar', null=True, blank=True)
+    correo_principal = models.CharField(max_length=254, verbose_name='Correo Principal', null=True, blank=True)
+    correo_auxiliar = models.CharField(max_length=254, verbose_name='Correo Auxiliar', null=True, blank=True)
     nombre_rl = models.CharField(max_length=100, verbose_name='Nombre del Representante Legal', null=True, blank=True)
     tipo_identificacion_rl = models.ForeignKey(TipoIdentificacion, on_delete=models.DO_NOTHING,
                                                verbose_name='Tipo de identificación del Representante Legal',
@@ -189,7 +189,7 @@ class TipoDocumentoTercero(models.Model):
 
 def custom_upload_to(instance, filename):
     return '{2}/Proveedores/Documentos/{0}/{1}'\
-        .format(instance.tercero.nombre, filename, settings.EVA_PRIVATE_MEDIA)
+        .format(instance.tercero.nombre[:10], filename, settings.EVA_PRIVATE_MEDIA)
 
 
 class DocumentoTercero(models.Model):
@@ -227,25 +227,25 @@ class ProveedorProductoServicioManger(ManagerGeneral):
     def get_activos_like_json(self):
         datos = []
         for elemento in self.get_x_estado(True, False):
-            if elemento.producto_servicio.subtipo_producto_servicio.es_servicio:
+            if elemento.subproducto_subservicio.producto_servicio.es_servicio:
                 tipo_producto_servicio = 2
             else:
                 tipo_producto_servicio = 1
             datos.append({'tipo_producto_servicio': tipo_producto_servicio,
-                          'subtipo_producto_servicio': elemento.producto_servicio.subtipo_producto_servicio_id,
-                          'producto_servicio': elemento.producto_servicio_id})
+                          'producto_servicio': elemento.subproducto_subservicio.producto_servicio_id,
+                          'subproducto_subservicio': elemento.subproducto_subservicio_id})
         return json.dumps(datos)
 
 
 class ProveedorProductoServicio(models.Model, ModelDjangoExtensiones):
     objects = ProveedorProductoServicioManger()
-    producto_servicio = models.ForeignKey(ProductoServicio, on_delete=models.DO_NOTHING,
-                                          verbose_name="Producto o Servicio", null=False, blank=False)
+    subproducto_subservicio = models.ForeignKey(SubproductoSubservicio, on_delete=models.DO_NOTHING,
+                                                verbose_name="Subproducto o Subservicio", null=False, blank=False)
     proveedor = models.ForeignKey(Tercero, on_delete=models.DO_NOTHING,
                                   verbose_name="Proveedor", null=False, blank=False)
 
     def __str__(self):
-        return '{0}-{1}'.format(self.proveedor, self.producto_servicio)
+        return '{0}-{1}'.format(self.proveedor, self.subproducto_subservicio)
 
     class Meta:
         verbose_name = 'Proveedor Producto o Servicio'
