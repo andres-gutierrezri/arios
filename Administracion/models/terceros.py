@@ -105,6 +105,7 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     fecha_inicio_actividad = models.DateTimeField(verbose_name='Fecha de Inicio de Actividad', null=True, blank=True)
     usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario', null=True, blank=True)
     estado_proveedor = models.SmallIntegerField(verbose_name='Estado del Proveedor', null=True, blank=True)
+    modificaciones = models.TextField(verbose_name='Modificaciones', null=True, blank=True)
     es_vigente = models.BooleanField(verbose_name='Es Vigente', null=False, blank=False)
 
     def __str__(self):
@@ -180,6 +181,7 @@ class TipoDocumentoTercero(models.Model):
     nombre = models.CharField(verbose_name='Nombre', max_length=100, null=False, blank=False)
     aplica_natural = models.BooleanField(verbose_name='Aplica Natural', null=False, blank=False)
     aplica_juridica = models.BooleanField(verbose_name='Aplica Jurídica', null=False, blank=False)
+    obligatorio = models.BooleanField(verbose_name='Obligatorio', null=False, blank=False)
 
     def __str__(self):
         return self.nombre
@@ -194,7 +196,7 @@ def custom_upload_to(instance, filename):
         .format(instance.tercero.nombre[:10], filename, settings.EVA_PRIVATE_MEDIA)
 
 
-class DocumentoTercero(models.Model):
+class DocumentoTercero(models.Model, ModelDjangoExtensiones):
     objects = ManagerGeneral()
     documento = models.FileField(upload_to=custom_upload_to, verbose_name='Documento', null=False, blank=False)
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=True, blank=True)

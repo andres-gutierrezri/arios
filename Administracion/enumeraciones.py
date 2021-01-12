@@ -49,5 +49,16 @@ class EstadosProveedor(models.TextChoices):
     RECHAZADO = 4, 'Rechazado'
     SOLICITUD_ENVIADA = 5, 'Solicitud Enviada'
     EDICION_PERFIL = 6, 'Edición del Perfil'
+    DESACTIVADO_X_ADMINISTRADOR = 7, 'Desactivado por el Administrador'
+
+
+class TipoContribuyente(models.IntegerChoices):
+
+    CONTRIBUYENTE_MICRO = 1, 'Contribuyente Micro'
+    CONTRIBUYENTE_PEQUENO = 2, 'Contribuyente Pequeño'
+    CONTRIBUYENTE_MEDIANO = 3, 'Contribuyente Mediano'
+    CONTRIBUYENTE_MEDIANO_ALTO = 4, 'Contribuyente Mediano Alto'
+    GRAN_CONTRIBUYENTE = 5, 'Gran Contribuyente'
+
 
 

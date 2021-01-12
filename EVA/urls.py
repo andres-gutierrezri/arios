@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, reverse_lazy
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
@@ -37,4 +37,22 @@ urlpatterns = [
          name="password_reset_confirm"),
     path('financiero/', include('Financiero.urls', namespace='financiero')),
     path('gestion-documental/', include('GestionDocumental.urls', namespace='gestion-documental')),
+    path('password-assign-proveedor/<uidb64>/<token>/',
+         auth_views.PasswordResetConfirmView
+         .as_view(success_url=reverse_lazy('password_assign_complete_proveedor'),
+                  template_name='Administracion/Tercero/Proveedor/Autenticacion/password_assign.html'),
+         name="password_assign_proveedor",),
+    path('password-assign-complete-proveedor/',
+         auth_views.PasswordResetCompleteView.as_view(
+             template_name='Administracion/Tercero/Proveedor/Autenticacion/password_assign_complete.html'),
+         name="password_assign_complete_proveedor",),
+    path('password-reset-confirm-proveedor/<uidb64>/<token>/',
+         auth_views.PasswordResetConfirmView
+         .as_view(success_url=reverse_lazy('password_reset_complete_proveedor'),
+                  template_name='Administracion/Tercero/Proveedor/Autenticacion/password_reset_confirm.html'),
+         name="password_reset_confirm_proveedor"),
+    path('password-reset-complete-proveedor/',
+         auth_views.PasswordResetCompleteView.as_view(
+             template_name='Administracion/Tercero/Proveedor/Autenticacion/password_reset_complete.html'),
+         name="password_reset_complete_proveedor",),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

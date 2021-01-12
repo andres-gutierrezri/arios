@@ -5,6 +5,7 @@ from django.db import models
 
 from Administracion.models import Tercero
 from EVA import settings
+from EVA.General.modeljson import ModelDjangoExtensiones
 from EVA.General.modelmanagers import ManagerGeneral
 
 
@@ -58,7 +59,7 @@ class ActividadEconomica(models.Model):
         verbose_name_plural = 'Actividades Económicas'
 
 
-class ProveedorActividadEconomica(models.Model):
+class ProveedorActividadEconomica(models.Model, ModelDjangoExtensiones):
     actividad_principal = models.ForeignKey(ActividadEconomica, on_delete=models.DO_NOTHING, null=False, blank=False,
                                             verbose_name='Actividad Principal',
                                             related_name='proveedor_actividad_principal')
@@ -67,6 +68,7 @@ class ProveedorActividadEconomica(models.Model):
                                              related_name='proveedor_actividad_secundaria')
     otra_actividad = models.ForeignKey(ActividadEconomica, on_delete=models.DO_NOTHING, null=True, blank=True,
                                        verbose_name='Otra Actividad', related_name='proveedor_otra_atividad')
+    tipo_contribuyente = models.SmallIntegerField(verbose_name='Tipo Contribuyente', null=False, blank=False)
     numero_resolucion = models.CharField(verbose_name='Número de Resolución', max_length=100, null=True, blank=True)
     contribuyente_iyc = models.CharField(verbose_name='Contribuyente de Industria y Comercio', max_length=100,
                                          null=True, blank=True)
@@ -93,6 +95,7 @@ class ProveedorActividadEconomica(models.Model):
         proveedor_ae.actividad_principal_id = datos.get('actividad_principal', '')
         proveedor_ae.actividad_secundaria_id = datos.get('actividad_secundaria', '')
         proveedor_ae.otra_actividad_id = datos.get('otra_actividad', '')
+        proveedor_ae.tipo_contribuyente = datos.get('tipo_contribuyente', '')
         proveedor_ae.numero_resolucion = datos.get('resolucion', '')
         proveedor_ae.contribuyente_iyc = datos.get('contribuyente_iyc', '')
         proveedor_ae.entidad_publica = datos.get('entidad_publica', '')
@@ -103,10 +106,10 @@ class ProveedorActividadEconomica(models.Model):
 
 def custom_upload_to(instance, filename):
     return '{2}/Proveedores/CertificacionesBancarias/{0}/{1}'\
-        .format(instance.tercero.nombre[10], filename, settings.EVA_PRIVATE_MEDIA)
+        .format(instance.tercero.nombre[:10], filename, settings.EVA_PRIVATE_MEDIA)
 
 
-class EntidadBancariaTercero(models.Model):
+class EntidadBancariaTercero(models.Model, ModelDjangoExtensiones):
     objects = ManagerGeneral()
     tercero = models.ForeignKey(Tercero, on_delete=models.CASCADE, verbose_name='Tercero', blank=False, null=False)
     entidad_bancaria = models.ForeignKey(EntidadBancaria, on_delete=models.DO_NOTHING, verbose_name='Entidad Bancaria',

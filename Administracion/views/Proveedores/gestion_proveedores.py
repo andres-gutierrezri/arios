@@ -3,6 +3,7 @@ from django.db import IntegrityError
 from django.http import JsonResponse
 from django.shortcuts import render
 
+from Administracion.enumeraciones import EstadosProveedor
 from Administracion.models import Tercero
 from Administracion.models.models import ProductoServicio, SubproductoSubservicio
 from Administracion.models.terceros import ProveedorProductoServicio
@@ -12,6 +13,7 @@ from EVA.views.index import AbstractEvaLoggedView
 class ProveedorIndexView(AbstractEvaLoggedView):
     def get(self, request):
         proveedores = ProveedorProductoServicio.objects.distinct('proveedor').filter(proveedor__es_vigente=True)
+        proveedores_editando = Tercero.objects.filter(es_vigente=False)
         producto_servicio_filtro = request.GET.getlist('producto_servicio_', [])
         tipo_producto_servicio = request.GET.get('tipo_producto_servicio_', '')
         subtipo_producto_servicio = request.GET.get('subtipo_producto_servicio_', '')
@@ -51,6 +53,7 @@ class ProveedorIndexView(AbstractEvaLoggedView):
                                      {'campo_valor': 2, 'campo_texto': 'Servicio'}]
         return render(request, 'Administracion/Tercero/Proveedor/index.html',
                       {'proveedores': lista_proveedores,
+                       'proveedores_editando': proveedores_editando,
                        'menu_actual': ['proveedores', 'proveedores'],
                        'tipos_productos_servicios': tipos_productos_servicios,
                        'valor_tipo_producto_servicio': tipo_producto_servicio,
@@ -70,6 +73,7 @@ def construir_lista_proveedores(ps):
             'telefono': ps.proveedor.telefono_movil_principal,
             'correo': ps.proveedor.correo_principal,
             'estado': ps.proveedor.estado,
+            'editando': True if Tercero.objects.filter(usuario=ps.proveedor.usuario, es_vigente=False) else False,
             'fecha_creacion': ps.proveedor.fecha_creacion}
 
 
@@ -77,8 +81,10 @@ class ActivarDesactivarProveedorView(AbstractEvaLoggedView):
     def post(self, request, id):
         try:
             proveedor = Tercero.objects.get(id=id)
+            proveedor.estado_proveedor = EstadosProveedor.DESACTIVADO_X_ADMINISTRADOR\
+                if proveedor.estado else EstadosProveedor.ACTIVO
             proveedor.estado = False if proveedor.estado else True
-            proveedor.save(update_fields=['estado'])
+            proveedor.save(update_fields=['estado', 'estado_proveedor'])
             texto = 'activado' if proveedor.estado else 'desactivado'
             messages.success(request, 'Se ha ' + texto + ' el proveedor correctamente')
             return JsonResponse({"estado": "OK"})

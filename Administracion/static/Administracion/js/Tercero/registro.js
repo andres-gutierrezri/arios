@@ -7,6 +7,7 @@ class DatosRegistro
         this.nombre= '';
         this.tipoIdentificacion= '';
         this.identificacion= '';
+        this.digitoVerificacion= '';
         this.correo= '';
         this.celular= '';
     }
@@ -18,6 +19,9 @@ class DatosRegistro
     }
     setIdentificacion(identificacion) {
        this.identificacion = identificacion;
+    }
+    setDigitoVerificacion(digitoVerificacion) {
+       this.digitoVerificacion = digitoVerificacion;
     }
     setCorreo(correo) {
        this.correo = correo;
@@ -39,6 +43,7 @@ function configurarFormulario() {
         datosRegistros.setNombre($('#nombre_id').val());
         datosRegistros.setTipoIdentificacion($('#tipo_identificacion_select_id').val());
         datosRegistros.setIdentificacion($('#identificacion_id').val());
+        datosRegistros.setDigitoVerificacion($('#digito_verificacion_id').val());
         datosRegistros.setCorreo($('#correo_id').val());
         datosRegistros.setCelular($('#celular_id').val());
         guardarRegistro();

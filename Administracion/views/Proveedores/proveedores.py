@@ -9,8 +9,8 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
-from Administracion.enumeraciones import TipoPersona, RegimenFiscal, ResponsabilidadesFiscales, Tributos, \
-    EstadosProveedor
+from Administracion.enumeraciones import TipoPersona, RegimenFiscal, \
+    EstadosProveedor, TipoContribuyente
 from Administracion.models import TipoIdentificacion, Pais, Tercero, Departamento, Municipio
 from Administracion.models.models import SubproductoSubservicio, ProductoServicio
 from Administracion.models.terceros import ProveedorProductoServicio, TipoDocumentoTercero, DocumentoTercero, \
@@ -39,7 +39,7 @@ class PerfilProveedorView(AbstractEvaLoggedProveedorView):
         certificaciones = Certificacion.objects.filter(tercero=proveedor).order_by('-id')
         if not certificaciones and not proveedor.es_vigente:
             certificaciones = Certificacion.objects\
-                .filter(tercero__identificacion=proveedor.identificacion).order_by('-id')
+                .filter(tercero__usuario=proveedor.usuario).order_by('-id')
 
         rechazos = DestinatarioNotificacion\
             .objects.filter(usuario=proveedor.usuario).order_by('-id')[:1]
@@ -84,13 +84,13 @@ class PerfilInformacionBasicaView(AbstractEvaLoggedProveedorView):
         proveedor.digito_verificacion = request.POST.get('digito_verificacion', '')
         proveedor.ciudad_id = request.POST.get('municipio', '')
         proveedor.estado_proveedor = EstadosProveedor.DILIGENCIAMIENTO_PERFIL
+        proveedor.tipo_persona = request.POST.get('tipo_persona', '')
 
         if 'NIT' in proveedor.tipo_identificacion.sigla:
             update_fields.append('digito_verificacion')
         else:
             exclude.append('digito_verificacion')
-
-        if proveedor.tipo_persona == PERSONA_JURIDICA:
+        if int(proveedor.tipo_persona) == PERSONA_JURIDICA:
             update_fields.append('nombre_rl')
             update_fields.append('tipo_identificacion_rl')
             update_fields.append('identificacion_rl')
@@ -111,7 +111,6 @@ class PerfilInformacionBasicaView(AbstractEvaLoggedProveedorView):
 
         proveedor.fecha_inicio_actividad = request.POST.get('fecha_inicio_actividad', '')
         proveedor.fecha_constitucion = request.POST.get('fecha_constitucion', '')
-        proveedor.tipo_persona = request.POST.get('tipo_persona', '')
 
         if not proveedor.fecha_inicio_actividad:
             proveedor.fecha_inicio_actividad = None
@@ -142,14 +141,11 @@ class PerfilActividadesEconomicasView(AbstractEvaLoggedProveedorView):
     def post(self, request):
         update_fields = ('actividad_principal', 'actividad_secundaria', 'otra_actividad', 'contribuyente_iyc',
                          'numero_resolucion', 'contribuyente_iyc', 'entidad_publica', 'proveedor',
-                         'bienes_servicios', 'proveedor')
+                         'bienes_servicios', 'proveedor', 'tipo_contribuyente')
         proveedor = filtro_estado_proveedor(request)
         proveedor_ae = ProveedorActividadEconomica.from_dictionary(request.POST)
         proveedor_ae.proveedor = proveedor
         proveedor.regimen_fiscal = request.POST.get('regimen_fiscal')
-        responsabilidades = request.POST.getlist('responsabilidades')
-        proveedor.responsabilidades_fiscales = ';'.join(responsabilidades) if responsabilidades else ''
-        proveedor.tributos = request.POST.get('tributo')
 
         try:
             registro = ProveedorActividadEconomica.objects.filter(proveedor=proveedor)
@@ -158,11 +154,10 @@ class PerfilActividadesEconomicasView(AbstractEvaLoggedProveedorView):
                 proveedor_ae.save(update_fields=update_fields)
             else:
                 proveedor_ae.save()
-            proveedor.save(update_fields=('responsabilidades_fiscales', 'regimen_fiscal', 'tributos'))
+            proveedor.save(update_fields=['regimen_fiscal'])
             messages.success(self.request, 'Se ha guardado la información de actividades económicas correctamente.')
             return redirect(reverse('Administracion:proveedor-perfil'))
-        except Exception as e:
-            print(e)
+        except:
             messages.error(self.request, 'Ha ocurrido un error al actualizar la información.')
             return redirect(reverse('Administracion:proveedor-perfil'))
 
@@ -303,9 +298,22 @@ class PerfilDocumentosView(AbstractEvaLoggedProveedorView):
             tipos_documentos = TipoDocumentoTercero.objects.filter(aplica_natural=True)
 
         agregar = verificar_documentos_proveedor(proveedor, documentos)
+        porcentaje = 100 / len(tipos_documentos) * len(documentos)
+        n_doc_oblig = 0
+        n_tip_oblig = 0
+        for doc in documentos:
+            if doc.tipo_documento.obligatorio:
+                n_doc_oblig += 1
+        for tip_doc in tipos_documentos:
+            if tip_doc.obligatorio:
+                n_tip_oblig += 1
+
         return render(request, 'Administracion/Tercero/Proveedor/documentos.html', {'documentos': documentos,
                                                                                     'agregar': agregar,
                                                                                     'n_documentos': len(documentos),
+                                                                                    'n_doc_oblig': n_doc_oblig,
+                                                                                    'porcentaje': porcentaje,
+                                                                                    'n_tip_oblig': n_tip_oblig,
                                                                                     'n_tipos': len(tipos_documentos)})
 
 
@@ -425,9 +433,12 @@ class EnviarSolicitudProveedorView(AbstractEvaLoggedView):
                                                               aprobado=False, estado=True)
                 proveedor.save(update_fields=['estado_proveedor', 'estado'])
                 messages.success(self.request, 'Se ha enviado la solicitud correctamente')
-                if Certificacion.objects.filter(tercero=proveedor):
-                    titulo = 'Un proveedor ha modificado su perfil.'
-                    comentario = 'El proveedor {0} ha modificado su perfil'.format(proveedor.nombre)
+                if Certificacion.objects.filter(tercero__usuario=proveedor.usuario):
+                    comentario = generar_comentario_solicitud(proveedor)
+                    proveedor.modificaciones = comentario
+                    proveedor.save(update_fields=['modificaciones'])
+                    titulo = 'El proveedor {0} ha modificado su perfil.'.format(proveedor.nombre)
+
                     crear_notificacion_por_evento(EventoDesencadenador.SOLICITUD_APROBACION_PROVEEDOR, solicitud.id,
                                                   contenido={'titulo': titulo,
                                                              'mensaje': comentario})
@@ -476,10 +487,16 @@ class PerfilProveedorSolicitud(AbstractEvaLoggedView):
         proveedor = Tercero.objects.get(id=id)
         datos_proveedor = generar_datos_proveedor(proveedor)
         solicitud_activa = SolicitudProveedor.objects.filter(proveedor=proveedor, estado=True)
+        modificaciones_perfil = ''
+        if proveedor.modificaciones:
+            modificaciones_perfil = {'id': 0, 'nombre': 'Modificaciones Recientes',
+                                     'datos': [{'nombre_campo': 'Cambios',
+                                               'valor_campo': proveedor.modificaciones}]}
 
         return render(request, 'Administracion/Tercero/Proveedor/perfil.html',
                       {'datos_proveedor': datos_proveedor, 'solicitud_proveedor': proveedor,
-                       'solicitud_activa': solicitud_activa, 'tipo_persona_pro': proveedor.tipo_persona})
+                       'solicitud_activa': solicitud_activa, 'tipo_persona_pro': proveedor.tipo_persona,
+                       'modificaciones_perfil': modificaciones_perfil})
 
 
 APROBADO = 1
@@ -508,7 +525,7 @@ class ProveedorSolicitudAprobarRechazar(AbstractEvaLoggedView):
                 Certificacion.objects.filter(tercero=solicitud.proveedor).update(estado=False)
                 Certificacion.objects.create(tercero=solicitud.proveedor, fecha_crea=app_datetime_now(), estado=True)
 
-                proveedor_anterior = Tercero.objects.filter(identificacion=solicitud.proveedor.identificacion)
+                proveedor_anterior = Tercero.objects.filter(usuario=solicitud.proveedor.usuario)
 
                 if len(proveedor_anterior) == 2:
                     proveedor_anterior.get(es_vigente=True).delete()
@@ -624,14 +641,10 @@ def datos_xa_render_actividades_economicas(request):
 
     entidad_publica = True if PERSONA_JURIDICA == proveedor.tipo_persona else False
 
-    responsabilidades_tercero = proveedor.responsabilidades_fiscales.split(';') \
-        if proveedor.responsabilidades_fiscales else []
-
     datos = {'actividades_economicas': actividades_economicas,
              'entidades_publicas': entidades_publicas, 'proveedor': proveedor_actec,
              'entidad_publica': entidad_publica, 'regimenes_fiscales': RegimenFiscal.choices,
-             'responsabilidades': ResponsabilidadesFiscales.choices, 'tributos': Tributos.choices,
-             'responsabilidades_tercero': responsabilidades_tercero}
+             'tipos_contribuyentes': TipoContribuyente.choices}
     return datos
 
 
@@ -706,8 +719,11 @@ def datos_xa_render_documentos(request, documento: DocumentoTercero = None):
         tipos_documentos = TipoDocumentoTercero.objects.get_xa_select_activos_aplica_juridica()
     else:
         tipos_documentos = TipoDocumentoTercero.objects.get_xa_select_activos_aplica_natural()
-
-    documentos_actuales = DocumentoTercero.objects.filter(tercero__usuario=request.user)
+    proveedor_vigente = Tercero.objects.filter(usuario=request.user)
+    if len(proveedor_vigente) > 1:
+        documentos_actuales = DocumentoTercero.objects.filter(tercero__usuario=request.user, tercero__es_vigente=False)
+    else:
+        documentos_actuales = DocumentoTercero.objects.filter(tercero__usuario=request.user)
     lista_tipos_documentos = []
     for td in tipos_documentos:
         coincidencia = False
@@ -751,8 +767,8 @@ def generar_datos_informacion_basica(proveedor):
         proveedor.identificacion = '{0}-{1}'.format(proveedor.identificacion, proveedor.digito_verificacion)
 
     return [{'nombre_campo': 'Nombre', 'valor_campo': proveedor.nombre},
-            {'nombre_campo': 'Tipo de Identificación', 'valor_campo': proveedor.tipo_identificacion.nombre},
-            {'nombre_campo': 'Identificación', 'valor_campo': proveedor.identificacion},
+            {'nombre_campo': 'Identificación', 'valor_campo':
+                '{0} {1}'.format(proveedor.tipo_identificacion.sigla, proveedor.identificacion)},
             {'nombre_campo': 'Ubicación', 'valor_campo': ubicacion},
             {'nombre_campo': 'Teléfono Fijo Principal', 'valor_campo': proveedor.telefono_fijo_principal},
             {'nombre_campo': 'Teléfono Movil Principal', 'valor_campo': proveedor.telefono_movil_principal},
@@ -771,10 +787,10 @@ def generar_datos_informacion_basica(proveedor):
              'tipo_persona': 1, 'validar': True},
             {'nombre_campo': 'Nombre del Representante Legal', 'valor_campo': proveedor.nombre_rl, 'validar': True,
              'tipo_persona': 1},
-            {'nombre_campo': 'Tipo de Identificación del Representante Legal', 'tipo_persona': 1, 'validar': True,
-             'valor_campo': proveedor.identificacion_rl},
             {'nombre_campo': 'Identificación del Representante Legal', 'tipo_persona': 1, 'validar': True,
-             'valor_campo': proveedor.identificacion_rl}
+             'valor_campo':
+                 '{0} {1}'.format(proveedor.tipo_identificacion_rl.sigla if proveedor.tipo_identificacion_rl else '',
+                                  proveedor.identificacion_rl) if proveedor.tipo_identificacion_rl else ''}
             ]
 
 
@@ -797,17 +813,18 @@ def generar_datos_actividades_economicas(proveedor):
                 regimen_fiscal = d[1]
                 break
 
-        resp_fiscal = proveedor.responsabilidades_fiscales
-        datos_resp_fiscal = ''
-        for sel in resp_fiscal.split(';'):
-            for op in ResponsabilidadesFiscales.choices:
-                if op[0] == sel:
-                    datos_resp_fiscal += ', ' + op[1] if datos_resp_fiscal else op[1]
+        tip_cont = ae.tipo_contribuyente
+        tipo_contribuyente = ''
+        for tc in TipoContribuyente.choices:
+            if tc[0] == tip_cont:
+                tipo_contribuyente = tc[1]
+                break
 
         respuesta = [{'nombre_campo': 'Actividad Principal', 'valor_campo': ae.actividad_principal},
                      {'nombre_campo': 'Actividad Secundaria', 'valor_campo': ae.actividad_secundaria},
                      {'nombre_campo': 'Otra Actividad', 'valor_campo': ae.otra_actividad},
                      {'nombre_campo': 'Régimen Fiscal', 'valor_campo': regimen_fiscal},
+                     {'nombre_campo': 'Tipo de Contribuyente', 'valor_campo': tipo_contribuyente},
                      {'nombre_campo': 'Excento de Industria y Comercio: # Res', 'valor_campo': ae.numero_resolucion},
                      {'nombre_campo': 'Contribuyente Industria y Comercio', 'valor_campo': ae.contribuyente_iyc},
                      {'nombre_campo': 'Entidad Pública', 'valor_campo': entidad_publica},
@@ -823,7 +840,8 @@ def generar_datos_entidades_bancarias(proveedor):
         for tc in TipoCuentaBancaria.choices:
             if eb.tipo_cuenta == int(tc[0]):
                 lista_entidades\
-                    .append({'nombre_campo': tc[1], 'valor_campo': eb.entidad_bancaria,
+                    .append({'nombre_campo': tc[1],
+                             'valor_campo': '{0} - N. {1}'.format(eb.entidad_bancaria, eb.numero_cuenta),
                              'archivo': '/administracion/proveedor/perfil/ver-certificacion/{0}/'.format(eb.id)})
     return lista_entidades
 
@@ -883,9 +901,26 @@ def generar_datos_proveedor(proveedor):
     documentos = generar_datos_documentos(proveedor)
     documentos_adicionales = generar_datos_documentos_adicionales(proveedor)
     if proveedor.tipo_persona == PERSONA_JURIDICA:
-        lista_documentos = len(TipoDocumentoTercero.objects.filter(aplica_juridica=True))
+        lista_documentos = TipoDocumentoTercero.objects.filter(aplica_juridica=True)
     else:
-        lista_documentos = len(TipoDocumentoTercero.objects.filter(aplica_juridica=True))
+        lista_documentos = TipoDocumentoTercero.objects.filter(aplica_juridica=True)
+    n_tipos = 0
+    n_documentos = 0
+
+    for ld in lista_documentos:
+        if ld.obligatorio:
+            n_tipos += 1
+
+    docs = DocumentoTercero.objects.filter(tercero=proveedor)
+    for doc in docs:
+        if proveedor.tipo_persona == TipoPersona.NATURAL:
+            if doc.tipo_documento:
+                if doc.tipo_documento.obligatorio:
+                    n_documentos += 1
+        else:
+            if doc.tipo_documento:
+                if doc.tipo_documento.obligatorio:
+                    n_documentos += 1
 
     total = 0
     total = total + 10 if proveedor.ciudad else total
@@ -893,27 +928,95 @@ def generar_datos_proveedor(proveedor):
     total = total + 20 if actividades_economicas else total
     total = total + 20 if entidades_bancarias else total
     total = total + 20 if bienes_servicios else total
-    total = total + 20 if len(documentos) == lista_documentos else total
+    total = total + 20 if n_documentos == n_tipos else total
 
     informacion_basica = {'id': 1, 'nombre': 'Información Básica',
                           'url': '/administracion/proveedor/perfil/informacion-basica',
-                          'datos': informacion_basica}
+                          'datos': informacion_basica, 'completo': True if proveedor.ciudad else False}
     actividades_economicas = {'id': 2, 'nombre': 'Actividades Económicas',
                               'url': '/administracion/proveedor/perfil/actividades-economicas',
-                              'datos': actividades_economicas}
-    entidades_bancarias = {'id': 3, 'nombre': 'Información Bancaria',
+                              'datos': actividades_economicas, 'completo': True if actividades_economicas else False}
+    documentos = {'id': 3, 'nombre': 'Documentos', 'url': '/administracion/proveedor/perfil/documentos',
+                  'datos': documentos, 'completo': True if documentos else False}
+    entidades_bancarias = {'id': 4, 'nombre': 'Información Bancaria',
                            'url': '/administracion/proveedor/perfil/entidades-bancarias',
-                           'datos': entidades_bancarias}
-    bienes_servicios = {'id': 4, 'nombre': 'Productos y Servicios',
+                           'datos': entidades_bancarias, 'completo': True if entidades_bancarias else False}
+    bienes_servicios = {'id': 5, 'nombre': 'Productos y Servicios',
                         'url': '/administracion/proveedor/perfil/productos-servicios',
-                        'datos': bienes_servicios}
-    documentos = {'id': 5, 'nombre': 'Documentos',
-                  'url': '/administracion/proveedor/perfil/documentos', 'datos': documentos}
-
+                        'datos': bienes_servicios, 'completo': True if bienes_servicios else False}
     documentos_adicionales = {'id': 6, 'nombre': 'Certificaciones y Documentos Adicionales',
                               'url': '/administracion/proveedor/perfil/documentos-adicionales',
-                              'datos': documentos_adicionales}
+                              'datos': documentos_adicionales,
+                              'completo': True}
 
     return {'total': total, 'informacion_basica': informacion_basica, 'actividades_economicas': actividades_economicas,
             'entidades_bancarias': entidades_bancarias, 'bienes_servicios': bienes_servicios, 'documentos': documentos,
             'documentos_adicionales': documentos_adicionales}
+
+
+def generar_comentario_solicitud(proveedor):
+    proveedor = Tercero.objects.filter(usuario=proveedor.usuario)
+    proveedor_vigente = proveedor.get(es_vigente=True)
+    proveedor_editado = proveedor.get(es_vigente=False)
+    modificaciones = ''
+    if not proveedor_vigente.comparar(proveedor_editado, excluir=['id', 'es_vigente', 'estado', 'fecha_creacion',
+                                                                  'fecha_modificacion', 'estado_proveedor',
+                                                                  'regimen_fiscal']):
+        modificaciones += 'Información Básica, '
+
+    av = ProveedorActividadEconomica.objects.get(proveedor=proveedor_vigente)
+    ae = ProveedorActividadEconomica.objects.get(proveedor=proveedor_editado)
+    if not av.comparar(ae, excluir=['id', 'proveedor']) or \
+            proveedor_vigente.regimen_fiscal != proveedor_editado.regimen_fiscal:
+        modificaciones += 'Actividades Económicas, '
+
+    ebv = EntidadBancariaTercero.objects.filter(tercero=proveedor_vigente)
+    ebe = EntidadBancariaTercero.objects.filter(tercero=proveedor_editado)
+
+    if validar_cambios_proveedor(ebv, ebe):
+        modificaciones += 'Entidades Bancarias, '
+
+    bsv = ProveedorProductoServicio.objects.filter(proveedor=proveedor_vigente)
+    bse = ProveedorProductoServicio.objects.filter(proveedor=proveedor_editado)
+
+    if validar_cambios_proveedor(bsv, bse):
+        modificaciones += 'Productos y Servicios, '
+
+    drv = DocumentoTercero.objects.filter(tercero=proveedor_vigente, tipo_documento__isnull=False)
+    dre = DocumentoTercero.objects.filter(tercero=proveedor_editado, tipo_documento__isnull=False)
+
+    if validar_cambios_proveedor(drv, dre):
+        modificaciones += 'Documentos Requeridos, '
+
+    dav = DocumentoTercero.objects.filter(tercero=proveedor_vigente, tipo_documento__isnull=True)
+    dae = DocumentoTercero.objects.filter(tercero=proveedor_editado, tipo_documento__isnull=True)
+
+    if validar_cambios_proveedor(dav, dae):
+        modificaciones += 'Documentos Adicionales.'
+
+    if modificaciones != '':
+        if modificaciones[-1] == ' ':
+            temp = len(modificaciones)
+            comentario = 'Realizó cambios en {0}.'.format(modificaciones[:temp - 2])
+        else:
+            comentario = 'Realizó cambios en {0}'.format(modificaciones)
+    else:
+        comentario = 'No realizó modificaciones en su perfil.'
+
+    return comentario
+
+
+def validar_cambios_proveedor(objeto_vigente, objeto_editado):
+    cambios = False
+    if len(objeto_vigente) != len(objeto_editado):
+        cambios = True
+    else:
+        for obv in objeto_vigente:
+            coincidencia = False
+            for obe in objeto_editado:
+                if obv.comparar(obe, excluir=['id', 'proveedor', 'tercero']):
+                    coincidencia = True
+                    break
+            if not coincidencia:
+                cambios = True
+    return cambios
