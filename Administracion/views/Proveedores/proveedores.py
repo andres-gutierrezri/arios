@@ -15,7 +15,7 @@ from Administracion.models import TipoIdentificacion, Pais, Tercero, Departament
 from Administracion.models.models import SubproductoSubservicio, ProductoServicio
 from Administracion.models.terceros import ProveedorProductoServicio, TipoDocumentoTercero, DocumentoTercero, \
     SolicitudProveedor, Certificacion
-from EVA.General import app_datetime_now
+from EVA.General import app_datetime_now, obtener_reporte
 from EVA.General.conversiones import datetime_to_string
 from EVA.views.index import AbstractEvaLoggedProveedorView, AbstractEvaLoggedView
 from Financiero.enumeraciones import TipoCuentaBancaria
@@ -59,7 +59,7 @@ class PerfilProveedorView(AbstractEvaLoggedProveedorView):
                       {'datos_proveedor': datos_proveedor, 'total': total, 'btn_enviar': btn_enviar,
                        'proveedor_id': proveedor.id, 'tipo_persona_pro': proveedor.tipo_persona,
                        'solicitud_activa': solicitud_activa, 'perfil_activo': perfil_activo,
-                       'datos_estado': datos_estado
+                       'datos_estado': datos_estado, 'menu_actual': 'perfil'
                        })
 
 
@@ -528,7 +528,9 @@ class ProveedorSolicitudAprobarRechazar(AbstractEvaLoggedView):
                 proveedor_anterior = Tercero.objects.filter(usuario=solicitud.proveedor.usuario)
 
                 if len(proveedor_anterior) == 2:
-                    proveedor_anterior.get(es_vigente=True).delete()
+                    proveedor_anterior = proveedor_anterior.get(es_vigente=True)
+                    Certificacion.objects.filter(tercero=proveedor_anterior).update(tercero=id, estado=False)
+                    proveedor_anterior.delete()
 
                 Tercero.objects.filter(id=id).update(estado=True, es_vigente=True,
                                                      estado_proveedor=EstadosProveedor.ACTIVO)
@@ -572,6 +574,28 @@ class ProveedorModificarSolicitudView(AbstractEvaLoggedProveedorView):
 
         except:
             return JsonResponse({"estado": "ERROR", "mensaje": "Ha ocurrido un error al realizar la solicitud"})
+
+
+class CertificacionesView(AbstractEvaLoggedProveedorView):
+    def get(self, request):
+        proveedor = Tercero.objects.get(usuario=request.user, es_vigente=True)
+        certificaciones = Certificacion.objects.filter(tercero=proveedor)
+        return render(request, 'Administracion/Tercero/Proveedor/certificaciones.html',
+                      {'certificaciones': certificaciones,
+                       'fecha': app_datetime_now(),
+                       'menu_actual': 'certificaciones'})
+
+
+class GenerarCertificacionView(AbstractEvaLoggedProveedorView):
+    def get(self, request, id):
+        reporte = obtener_reporte('CertificadoProveedor.pdf', {'id_certificado': id})
+        if reporte:
+            http_response = HttpResponse(reporte, 'application/pdf')
+            http_response['Content-Disposition'] = 'inline; filename="Certificado de proveedor.pdf"'
+            return http_response
+        else:
+            messages.error(self.request, 'No se pudo generar la certificación')
+            return redirect(reverse('Administracion:proveedor-certificaciones'))
 
 
 @transaction.atomic

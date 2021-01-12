@@ -80,6 +80,12 @@
             <span class="nav-link-text" data-i18n="nav.administracion_proveedor_perfil">Mi Perfil</span>
         </a>
     </li>
+    <li {% if menu_actual == 'certificaciones' %} class="active" {% endif %}>
+        <a href="{% url 'Administracion:proveedor-certificaciones' %}" title="Certificaciones" data-filter-tags="proveedor certificaciones">
+            <i class="fal fa-file-alt"></i>
+            <span class="nav-link-text" data-i18n="nav.administracion_proveedor_certificaciones">Certificaciones</span>
+        </a>
+    </li>
 {% endif %}
 
 
