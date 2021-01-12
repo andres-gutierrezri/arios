@@ -1,7 +1,10 @@
 from datetime import datetime, date
 import pytz
+import requests
 from django.core.paginator import Paginator, Page
 from django.utils.timesince import timesince
+
+from EVA import settings
 
 
 def app_date_now() -> date:
@@ -76,3 +79,11 @@ def obtener_num_paginacion(paginator, pagina):
         paginas += range(cantidad - 4, cantidad + 1)
 
     return paginas
+
+
+def obtener_reporte(nombre: str, parametros: dict):
+    response = requests.get(f'{settings.JASPERSERVER_URL}{nombre}', parametros,
+                            auth=(settings.JASPERSERVER_USUARIO, settings.JASPERSERVER_CLAVE))
+    if response.status_code == requests.codes.ok:
+        return response.content
+    return None

@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.core.mail import EmailMessage
 from django.db.models import F
 from django.db.transaction import atomic
-from django.http import JsonResponse, FileResponse
+from django.http import JsonResponse, FileResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.template.loader import get_template
 from django.urls import reverse
@@ -15,7 +15,7 @@ from django.urls import reverse
 from Administracion.models import Tercero, Impuesto, ConsecutivoDocumento, TipoDocumento, UnidadMedida
 from Administracion.utils import get_id_empresa_global
 from EVA import settings
-from EVA.General import app_date_now
+from EVA.General import app_date_now, obtener_reporte
 from EVA.General.conversiones import valor_pesos_a_letras, isostring_to_datetime
 from EVA.General.jsonencoders import AriosJSONEncoder
 from EVA.General.utilidades import paginar
@@ -360,8 +360,17 @@ class FacturaImprimirView(AbstractEvaLoggedView):
                 ruta_adjunto = f"{settings.EVA_RUTA_ARCHIVOS_FACTURA}{factura.empresa.nit}/" \
                                f"{nombre_archivo.replace('xml', 'pdf')}"
                 return FileResponse(open(ruta_adjunto, 'rb'), filename="factura {0}.pdf".format(factura.id))
+            elif factura.estado == FacturaEncabezado.Estado.BORRADOR:
+                reporte = obtener_reporte(f'RGFE_{factura.empresa.nit}.pdf', {'IdFactura': factura.id})
+                if reporte:
+                    http_response = HttpResponse(reporte, 'application/pdf')
+                    http_response['Content-Disposition'] = 'inline; filename="Borrador Factura {0}.pdf"'.format(factura.id)
+                    return http_response
+                else:
+                    messages.error(self.request, f'No se pudo generar representación gráfica para el borrador con id = {factura.id}.')
+                    return redirect(reverse('Financiero:factura-index'))
             else:
-                messages.error(self.request, 'No se encontró la representación grafica para la factura.')
+                messages.error(self.request, 'No se encontró la representación gráfica para la factura.')
                 return redirect(reverse('Financiero:factura-index'))
         except FacturaEncabezado.DoesNotExist:
             messages.error(self.request, 'No se encontró la factura solicitada.')
