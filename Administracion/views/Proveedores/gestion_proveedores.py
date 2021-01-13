@@ -12,69 +12,43 @@ from EVA.views.index import AbstractEvaLoggedView
 
 class ProveedorIndexView(AbstractEvaLoggedView):
     def get(self, request):
-        proveedores = ProveedorProductoServicio.objects.distinct('proveedor').filter(proveedor__es_vigente=True)
-        proveedores_editando = Tercero.objects.filter(es_vigente=False)
-        producto_servicio_filtro = request.GET.getlist('producto_servicio_', [])
         tipo_producto_servicio = request.GET.get('tipo_producto_servicio_', '')
-        subtipo_producto_servicio = request.GET.get('subtipo_producto_servicio_', '')
+        producto_servicio = request.GET.get('producto_servicio_', '')
+        subproducto_subservicio = request.GET.getlist('subproducto_subservicio_', [])
+        productos_servicios = []
+        subproductos_subservicios = []
+        all_productos_servicios = ProveedorProductoServicio.objects.all()
+        proveedores_pro_serv = ProveedorProductoServicio.objects.distinct('proveedor')\
+            .filter(proveedor__es_vigente=True)
 
-        productos_servicios = ProveedorProductoServicio.objects.all()
-        lista_proveedores = []
-        subtipos = []
-        pro_serv = []
-        if producto_servicio_filtro:
-            for sl in producto_servicio_filtro:
-                for ps in productos_servicios:
-                    if int(sl) == ps.producto_servicio_id:
-                        existe = False
-                        for ls in lista_proveedores:
-                            if ls['id'] == ps.proveedor.id:
-                                existe = True
-                        if not existe:
-                            lista_proveedores.append(construir_lista_proveedores(ps))
+        if subproducto_subservicio:
+            proveedores_pro_serv = proveedores_pro_serv.filter(subproducto_subservicio_id__in=subproducto_subservicio)
 
-                proveedores.filter(producto_servicio_id=sl)
-
-            messages.success(request, 'Se han encontrado {0} coincidencias'.format(len(lista_proveedores)))
-            es_servicio = True if tipo_producto_servicio == 1 else False
-            subtipos = ProductoServicio.objects.get_xa_select_activos().filter(es_servicio=es_servicio)
-            pro_serv = SubproductoSubservicio.objects.get_xa_select_activos()\
-                .filter(producto_servicio__es_servicio=es_servicio)
+            messages.success(request, 'Se han encontrado {0} coincidencias'.format(len(proveedores_pro_serv)))
+            es_servicio = True if tipo_producto_servicio == '2' else False
+            productos_servicios = ProductoServicio.objects.get_xa_select_activos().filter(es_servicio=es_servicio)
+            subproductos_subservicios = SubproductoSubservicio.objects.get_xa_select_activos()\
+                .filter(producto_servicio_id=producto_servicio)
 
             tipo_producto_servicio = int(tipo_producto_servicio)
-            subtipo_producto_servicio = int(subtipo_producto_servicio)
-        else:
-            for pr in proveedores:
-                lista_proveedores.append(construir_lista_proveedores(pr))
-        valor_producto_servicio = []
-        for ps in producto_servicio_filtro:
-            valor_producto_servicio.append(int(ps))
+            producto_servicio = int(producto_servicio)
+
+        valor_subproducto_subservicio = []
+        for ps in subproducto_subservicio:
+            valor_subproducto_subservicio.append(int(ps))
         tipos_productos_servicios = [{'campo_valor': 1, 'campo_texto': 'Producto'},
                                      {'campo_valor': 2, 'campo_texto': 'Servicio'}]
+
         return render(request, 'Administracion/Tercero/Proveedor/index.html',
-                      {'proveedores': lista_proveedores,
-                       'proveedores_editando': proveedores_editando,
+                      {'proveedores_pro_serv': proveedores_pro_serv,
                        'menu_actual': ['proveedores', 'proveedores'],
                        'tipos_productos_servicios': tipos_productos_servicios,
+                       'productos_servicios': productos_servicios,
+                       'subproductos_subservicios': subproductos_subservicios,
                        'valor_tipo_producto_servicio': tipo_producto_servicio,
-                       'valor_subtipo_producto_servicio': subtipo_producto_servicio,
-                       'valor_producto_servicio': valor_producto_servicio,
-                       'subtipos': subtipos, 'pro_serv': pro_serv, 'productos_servicios': productos_servicios})
-
-
-def construir_lista_proveedores(ps):
-    return {'id': ps.proveedor.id, 'nombre': ps.proveedor.nombre,
-            'identificacion': '{0} {1}'.format(ps.proveedor.tipo_identificacion,
-                                               ps.proveedor.identificacion),
-            'ubicacion': '{0}-{1}-{2}'.format(
-                ps.proveedor.ciudad.departamento.pais,
-                ps.proveedor.ciudad.departamento,
-                ps.proveedor.ciudad),
-            'telefono': ps.proveedor.telefono_movil_principal,
-            'correo': ps.proveedor.correo_principal,
-            'estado': ps.proveedor.estado,
-            'editando': True if Tercero.objects.filter(usuario=ps.proveedor.usuario, es_vigente=False) else False,
-            'fecha_creacion': ps.proveedor.fecha_creacion}
+                       'valor_producto_servicio': producto_servicio,
+                       'valor_subproducto_subservicio': valor_subproducto_subservicio,
+                       'all_productos_servicios': all_productos_servicios})
 
 
 class ActivarDesactivarProveedorView(AbstractEvaLoggedView):
