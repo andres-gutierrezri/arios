@@ -262,21 +262,25 @@ class PerfilProductosServiciosView(AbstractEvaLoggedProveedorView):
         proveedor = filtro_estado_proveedor(request)
         try:
             ProveedorProductoServicio.objects.filter(proveedor=proveedor).delete()
+            lista_selecciones = []
             if contador:
                 cn = 0
                 while cn < int(contador):
                     datos = request.POST.getlist('subproducto_subservicio_{0}'.format(cn), '')
                     if datos != '':
                         for dt in datos:
-                            ProveedorProductoServicio.objects.create(proveedor=proveedor,
-                                                                     subproducto_subservicio_id=dt)
+                            lista_selecciones.append(dt)
                     cn += 1
             else:
                 datos = request.POST.getlist('producto_servicio_0', '')
                 if datos != '':
                     for dt in datos:
-                        ProveedorProductoServicio.objects.create(proveedor=proveedor,
-                                                                 producto_servicio_id=dt)
+                        lista_selecciones.append(dt)
+
+            for lista_selec in set(lista_selecciones):
+                ProveedorProductoServicio.objects.create(proveedor=proveedor,
+                                                         subproducto_subservicio_id=lista_selec)
+
             messages.success(self.request, 'Se han guardado los productos y servicios correctamente.')
         except:
             messages.error(self.request, 'Ha ocurrido un error al guardar los datos')
