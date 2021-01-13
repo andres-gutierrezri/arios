@@ -740,9 +740,9 @@ def datos_xa_render_productos_servicios(request):
 def datos_xa_render_documentos(request, documento: DocumentoTercero = None):
     proveedor = filtro_estado_proveedor(request)
     if proveedor.tipo_persona == PERSONA_JURIDICA:
-        tipos_documentos = TipoDocumentoTercero.objects.get_xa_select_activos_aplica_juridica()
+        tipos_documentos = TipoDocumentoTercero.objects.get_xa_select_con_opcionales_aplica_juridica()
     else:
-        tipos_documentos = TipoDocumentoTercero.objects.get_xa_select_activos_aplica_natural()
+        tipos_documentos = TipoDocumentoTercero.objects.get_xa_select_con_opcionales_aplica_natural()
     proveedor_vigente = Tercero.objects.filter(usuario=request.user)
     if len(proveedor_vigente) > 1:
         documentos_actuales = DocumentoTercero.objects.filter(tercero__usuario=request.user, tercero__es_vigente=False)

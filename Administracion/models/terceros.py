@@ -168,12 +168,28 @@ class UsuarioTercero(Persona):
         verbose_name_plural = 'Usuarios Terceros'
 
 
+def get_xa_select_con_opcionales(datos):
+    opciones = []
+    for d in datos:
+        if d.obligatorio:
+            opciones.append({'campo_valor': d.id, 'campo_texto': d.nombre})
+        else:
+            opciones.append({'campo_valor': d.id, 'campo_texto': '{0} (Opcional)'.format(d.nombre)})
+    return opciones
+
+
 class TipoDocumentoTerceroManager(ManagerGeneral):
     def get_xa_select_activos_aplica_natural(self) -> QuerySet:
         return self.get_xa_select_activos().filter(aplica_natural=True)
 
     def get_xa_select_activos_aplica_juridica(self) -> QuerySet:
         return self.get_xa_select_activos().filter(aplica_juridica=True)
+
+    def get_xa_select_con_opcionales_aplica_natural(self):
+        return get_xa_select_con_opcionales(self.filter(aplica_natural=True))
+
+    def get_xa_select_con_opcionales_aplica_juridica(self):
+        return get_xa_select_con_opcionales(self.filter(aplica_juridica=True))
 
 
 class TipoDocumentoTercero(models.Model):
