@@ -13,7 +13,7 @@ selectTipoIdentificacion.change(function (){
 });
 function validarDV() {
     const tipoId =$('#tipo_identificacion_select_id option:selected').text();
-    actdesInputDV(tipoId.includes('NIT'));
+    actdesInputDV(tipoId.includes('Tributaria'));
 }
 
 function actdesInputDV(activar) {
