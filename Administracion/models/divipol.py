@@ -42,6 +42,10 @@ class Municipio(BaseDivipol):
         verbose_name = 'Municipio'
         verbose_name_plural = 'Municipios'
 
+    def obtener_pais_dpto_mun(self):
+        return '{0} - {1} - {2}'.format(self.departamento.pais.nombre.capitalize(),
+                                        self.departamento.nombre.capitalize(), self.nombre.capitalize())
+
 
 class CentroPoblado(BaseDivipol):
     municipio = models.ForeignKey(Municipio, on_delete=models.CASCADE, verbose_name='Municipio', null=True, blank=False)
