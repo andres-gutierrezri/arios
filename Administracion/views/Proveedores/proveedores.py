@@ -1,3 +1,4 @@
+import ast
 import json
 import os
 from sqlite3 import IntegrityError
@@ -438,14 +439,14 @@ class EnviarSolicitudProveedorView(AbstractEvaLoggedView):
                 proveedor.save(update_fields=['estado_proveedor', 'estado'])
                 messages.success(self.request, 'Se ha enviado la solicitud correctamente')
                 if Certificacion.objects.filter(tercero__usuario=proveedor.usuario):
-                    comentario = generar_comentario_solicitud(proveedor)
-                    proveedor.modificaciones = comentario
+                    cambios = generar_comentario_cambios_tarjeta_solicitud(proveedor)
+                    proveedor.modificaciones = cambios
                     proveedor.save(update_fields=['modificaciones'])
                     titulo = 'El proveedor {0} ha modificado su perfil.'.format(proveedor.nombre)
 
                     crear_notificacion_por_evento(EventoDesencadenador.SOLICITUD_APROBACION_PROVEEDOR, solicitud.id,
                                                   contenido={'titulo': titulo,
-                                                             'mensaje': comentario})
+                                                             'mensaje': cambios['comentario']})
 
                 else:
                     crear_notificacion_por_evento(EventoDesencadenador.SOLICITUD_APROBACION_PROVEEDOR, solicitud.id)
@@ -492,15 +493,19 @@ class PerfilProveedorSolicitud(AbstractEvaLoggedView):
         datos_proveedor = generar_datos_proveedor(proveedor)
         solicitud_activa = SolicitudProveedor.objects.filter(proveedor=proveedor, estado=True)
         modificaciones_perfil = ''
+        modificaciones_tarjetas = ''
         if proveedor.modificaciones:
+            cambios = ast.literal_eval(proveedor.modificaciones)
+            modificaciones_tarjetas = cambios['modificaciones_tarjetas']
             modificaciones_perfil = {'id': 0, 'nombre': 'Modificaciones Recientes',
                                      'datos': [{'nombre_campo': 'Cambios',
-                                               'valor_campo': proveedor.modificaciones}]}
+                                               'valor_campo': cambios['comentario']}]}
 
         return render(request, 'Administracion/Tercero/Proveedor/perfil.html',
                       {'datos_proveedor': datos_proveedor, 'solicitud_proveedor': proveedor,
                        'solicitud_activa': solicitud_activa, 'tipo_persona_pro': proveedor.tipo_persona,
-                       'modificaciones_perfil': modificaciones_perfil})
+                       'modificaciones_perfil': modificaciones_perfil,
+                       'modificaciones_tarjetas': modificaciones_tarjetas})
 
 
 APROBADO = 1
@@ -958,23 +963,26 @@ def generar_datos_proveedor(proveedor):
     total = total + 20 if bienes_servicios else total
     total = total + 20 if n_documentos == n_tipos else total
 
-    informacion_basica = {'id': 1, 'nombre': 'Información Básica',
+    cambios = ast.literal_eval(proveedor.modificaciones)['modificaciones_tarjetas']
+
+    informacion_basica = {'id': 1, 'nombre': 'Información Básica', 'modificado': True if 1 in cambios else False,
                           'url': '/administracion/proveedor/perfil/informacion-basica',
                           'datos': informacion_basica, 'completo': True if proveedor.ciudad else False}
-    actividades_economicas = {'id': 2, 'nombre': 'Actividades Económicas',
+    actividades_economicas = {'id': 2, 'nombre': 'Actividades Económicas', 'modificado': True if 2 in cambios else False,
                               'url': '/administracion/proveedor/perfil/actividades-economicas',
                               'datos': actividades_economicas, 'completo': True if actividades_economicas else False}
     documentos = {'id': 3, 'nombre': 'Documentos', 'url': '/administracion/proveedor/perfil/documentos',
-                  'datos': documentos, 'completo': True if documentos else False}
-    entidades_bancarias = {'id': 4, 'nombre': 'Información Bancaria',
+                  'datos': documentos, 'completo': True if documentos else False,
+                  'modificado': True if 3 in cambios else False}
+    entidades_bancarias = {'id': 4, 'nombre': 'Información Bancaria', 'modificado': True if 4 in cambios else False,
                            'url': '/administracion/proveedor/perfil/entidades-bancarias',
                            'datos': entidades_bancarias, 'completo': True if entidades_bancarias else False}
-    bienes_servicios = {'id': 5, 'nombre': 'Productos y Servicios',
+    bienes_servicios = {'id': 5, 'nombre': 'Productos y Servicios', 'modificado': True if 5 in cambios else False,
                         'url': '/administracion/proveedor/perfil/productos-servicios',
                         'datos': bienes_servicios, 'completo': True if bienes_servicios else False}
     documentos_adicionales = {'id': 6, 'nombre': 'Certificaciones y Documentos Adicionales',
                               'url': '/administracion/proveedor/perfil/documentos-adicionales',
-                              'datos': documentos_adicionales,
+                              'datos': documentos_adicionales, 'modificado': True if 6 in cambios else False,
                               'completo': True}
 
     return {'total': total, 'informacion_basica': informacion_basica, 'actividades_economicas': actividades_economicas,
@@ -982,45 +990,52 @@ def generar_datos_proveedor(proveedor):
             'documentos_adicionales': documentos_adicionales}
 
 
-def generar_comentario_solicitud(proveedor):
+def generar_comentario_cambios_tarjeta_solicitud(proveedor):
     proveedor = Tercero.objects.filter(usuario=proveedor.usuario)
     proveedor_vigente = proveedor.get(es_vigente=True)
     proveedor_editado = proveedor.get(es_vigente=False)
     modificaciones = ''
+    lista_tarjeta_modificaciones = []
     if not proveedor_vigente.comparar(proveedor_editado, excluir=['id', 'es_vigente', 'estado', 'fecha_creacion',
                                                                   'fecha_modificacion', 'estado_proveedor',
                                                                   'regimen_fiscal']):
         modificaciones += 'Información Básica, '
+        lista_tarjeta_modificaciones.append(1)
 
     av = ProveedorActividadEconomica.objects.get(proveedor=proveedor_vigente)
     ae = ProveedorActividadEconomica.objects.get(proveedor=proveedor_editado)
     if not av.comparar(ae, excluir=['id', 'proveedor']) or \
             proveedor_vigente.regimen_fiscal != proveedor_editado.regimen_fiscal:
         modificaciones += 'Actividades Económicas, '
+        lista_tarjeta_modificaciones.append(2)
 
     ebv = EntidadBancariaTercero.objects.filter(tercero=proveedor_vigente)
     ebe = EntidadBancariaTercero.objects.filter(tercero=proveedor_editado)
 
     if validar_cambios_proveedor(ebv, ebe):
         modificaciones += 'Entidades Bancarias, '
+        lista_tarjeta_modificaciones.append(4)
 
     bsv = ProveedorProductoServicio.objects.filter(proveedor=proveedor_vigente)
     bse = ProveedorProductoServicio.objects.filter(proveedor=proveedor_editado)
 
     if validar_cambios_proveedor(bsv, bse):
         modificaciones += 'Productos y Servicios, '
+        lista_tarjeta_modificaciones.append(5)
 
     drv = DocumentoTercero.objects.filter(tercero=proveedor_vigente, tipo_documento__isnull=False)
     dre = DocumentoTercero.objects.filter(tercero=proveedor_editado, tipo_documento__isnull=False)
 
     if validar_cambios_proveedor(drv, dre):
         modificaciones += 'Documentos Requeridos, '
+        lista_tarjeta_modificaciones.append(3)
 
     dav = DocumentoTercero.objects.filter(tercero=proveedor_vigente, tipo_documento__isnull=True)
     dae = DocumentoTercero.objects.filter(tercero=proveedor_editado, tipo_documento__isnull=True)
 
     if validar_cambios_proveedor(dav, dae):
         modificaciones += 'Documentos Adicionales.'
+        lista_tarjeta_modificaciones.append(6)
 
     if modificaciones != '':
         if modificaciones[-1] == ' ':
@@ -1031,7 +1046,7 @@ def generar_comentario_solicitud(proveedor):
     else:
         comentario = 'No realizó modificaciones en su perfil.'
 
-    return comentario
+    return {'comentario': comentario, 'modificaciones_tarjetas': lista_tarjeta_modificaciones}
 
 
 def validar_cambios_proveedor(objeto_vigente, objeto_editado):
