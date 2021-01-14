@@ -881,25 +881,29 @@ def generar_datos_entidades_bancarias(proveedor):
 
 def generar_datos_bienes_servicios(proveedor):
     productos_servicios = ProveedorProductoServicio.objects.filter(proveedor=proveedor)
-    lista_servicios = ''
-    for ps in productos_servicios.filter(subproducto_subservicio__producto_servicio__es_servicio=True):
-        if lista_servicios != '':
-            lista_servicios += ', ' + ps.subproducto_subservicio.nombre
-        else:
-            lista_servicios = ps.subproducto_subservicio.nombre
+    productos = productos_servicios.filter(subproducto_subservicio__producto_servicio__es_servicio=False)
+    servicios = productos_servicios.filter(subproducto_subservicio__producto_servicio__es_servicio=True)
 
-    lista_productos = ''
-    for ps in productos_servicios.filter(subproducto_subservicio__producto_servicio__es_servicio=False):
-        if lista_productos != '':
-            lista_productos += ', ' + ps.subproducto_subservicio.nombre
-        else:
-            lista_productos = ps.subproducto_subservicio.nombre
-    lista_productos_servicios = []
-    if lista_servicios or lista_productos:
-        lista_productos_servicios = [{'nombre_campo': 'Productos', 'valor_campo': lista_productos},
-                                     {'nombre_campo': 'Servicios', 'valor_campo': lista_servicios}]
+    l_productos = obtener_pro_ser_con_sub(productos)
+    l_servicios = obtener_pro_ser_con_sub(servicios)
+
+    lista_productos_servicios = ''
+    if l_productos or l_servicios:
+        lista_productos_servicios = [{'nombre_campo': 'Productos', 'valor_campo': l_productos},
+                                     {'nombre_campo': 'Servicios', 'valor_campo': l_servicios}]
 
     return lista_productos_servicios
+
+
+def obtener_pro_ser_con_sub(objeto):
+    lista_datos = []
+    for ob in objeto.distinct('subproducto_subservicio__producto_servicio'):
+        lista_subdatos = []
+        for sub_ob in objeto:
+            if sub_ob.subproducto_subservicio.producto_servicio == ob.subproducto_subservicio.producto_servicio:
+                lista_subdatos.append(sub_ob.subproducto_subservicio.nombre)
+        lista_datos.append({'objeto': ob.subproducto_subservicio.producto_servicio.nombre, 'sub': lista_subdatos})
+    return lista_datos
 
 
 def generar_datos_documentos(proveedor):
