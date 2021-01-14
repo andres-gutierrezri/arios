@@ -160,7 +160,7 @@ class InicioSesionProveedorView(View):
         else:
             correo = request.POST.get('correo', '')
             password = request.POST.get('password', '')
-            usuario = User.objects.filter(email=correo)
+            usuario = User.objects.filter(email=correo, username__icontains='proveedor')
             if usuario:
                 try:
                     user = authenticate(username=usuario.first().username, password=password)
