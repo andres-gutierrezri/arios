@@ -730,6 +730,10 @@ def datos_xa_render_productos_servicios(request):
                          'onchange_tipos': 'cambioTipoProductoServicio({0})'.format(contador),
                          'producto_servicio': dt.subproducto_subservicio.producto_servicio_id,
                          'nombre_producto_servicio': 'producto_servicio_{0}'.format(contador),
+                         'label_producto_servicio': 'Servicio'
+                         if dt.subproducto_subservicio.producto_servicio.es_servicio else 'Producto',
+                         'label_subproducto_subservicio': 'Subservicio'
+                         if dt.subproducto_subservicio.producto_servicio.es_servicio else 'Subproducto',
                          'onchange_producto_servicio': 'cambioProductoServicio({0})'.format(contador),
                          'datos_productos_servicios': ProductoServicio.objects.get_xa_select_activos()
                         .filter(es_servicio=dt.subproducto_subservicio.producto_servicio.es_servicio),
