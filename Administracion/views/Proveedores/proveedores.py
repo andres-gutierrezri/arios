@@ -782,13 +782,13 @@ def verificar_documentos_proveedor(proveedor, documentos):
 
 def generar_datos_informacion_basica(proveedor):
     ubicacion = ''
-    fecha_exp_rl = ''
+    lugar_exp_rl = ''
     if proveedor.ciudad:
         ubicacion = '{1} - {2} - {0}'.format(proveedor.ciudad.departamento.pais.nombre.capitalize(),
                                              proveedor.ciudad.departamento.nombre.capitalize(),
                                              proveedor.ciudad.nombre.capitalize())
     if proveedor.lugar_expedicion_rl:
-        fecha_exp_rl = '{1} - {2} - {0}'.format(proveedor.lugar_expedicion_rl.departamento.pais.nombre.capitalize(),
+        lugar_exp_rl = '{1} - {2} - {0}'.format(proveedor.lugar_expedicion_rl.departamento.pais.nombre.capitalize(),
                                                 proveedor.lugar_expedicion_rl.departamento.nombre.capitalize(),
                                                 proveedor.lugar_expedicion_rl.nombre.capitalize())
     if 'NIT' in proveedor.tipo_identificacion.sigla:
@@ -811,7 +811,7 @@ def generar_datos_informacion_basica(proveedor):
             {'nombre_campo': 'Fecha de Constitución', 'tipo_persona': 1, 'validar': True, 'valor_campo':
                 datetime_to_string(proveedor.fecha_inicio_actividad) if proveedor.fecha_inicio_actividad else '',
              'tipo_persona_pro': proveedor.tipo_persona},
-            {'nombre_campo': 'Fecha de Expedición del Documento del Representante Legal', 'valor_campo': fecha_exp_rl,
+            {'nombre_campo': 'Lugar de Expedición del Documento del Representante Legal', 'valor_campo': lugar_exp_rl,
              'tipo_persona': 1, 'validar': True},
             {'nombre_campo': 'Nombre del Representante Legal', 'valor_campo': proveedor.nombre_rl, 'validar': True,
              'tipo_persona': 1},
