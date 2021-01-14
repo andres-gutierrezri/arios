@@ -1004,7 +1004,7 @@ def generar_comentario_cambios_tarjeta_solicitud(proveedor):
     lista_tarjeta_modificaciones = []
     if not proveedor_vigente.comparar(proveedor_editado, excluir=['id', 'es_vigente', 'estado', 'fecha_creacion',
                                                                   'fecha_modificacion', 'estado_proveedor',
-                                                                  'regimen_fiscal']):
+                                                                  'regimen_fiscal', 'modificaciones']):
         modificaciones += 'Información Básica, '
         lista_tarjeta_modificaciones.append(1)
 
