@@ -568,17 +568,19 @@ class ProveedorModificarSolicitudView(AbstractEvaLoggedProveedorView):
             Tercero.objects.filter(id=id).update(estado_proveedor=EstadosProveedor.EDICION_PERFIL)
 
             tercero = Tercero.objects.get(id=id)
-            doble_tercero = duplicar_registro_proveedor(tercero)
-            duplicar_registro_proveedor(ProveedorActividadEconomica.objects.get(proveedor_id=id),
-                                        doble_tercero)
-            for doc in DocumentoTercero.objects.filter(tercero_id=id):
-                duplicar_registro_proveedor(doc, doble_tercero)
-            for ib in EntidadBancariaTercero.objects.filter(tercero_id=id):
-                duplicar_registro_proveedor(ib, doble_tercero)
-            for ps in ProveedorProductoServicio.objects.filter(proveedor_id=id):
-                duplicar_registro_proveedor(ps, doble_tercero)
-
-            messages.success(self.request, 'Ahora puedes modificar tu perfil.')
+            if len(Tercero.objects.filter(usuario=tercero.usuario)) == 1:
+                doble_tercero = duplicar_registro_proveedor(tercero)
+                duplicar_registro_proveedor(ProveedorActividadEconomica.objects.get(proveedor_id=id),
+                                            doble_tercero)
+                for doc in DocumentoTercero.objects.filter(tercero_id=id):
+                    duplicar_registro_proveedor(doc, doble_tercero)
+                for ib in EntidadBancariaTercero.objects.filter(tercero_id=id):
+                    duplicar_registro_proveedor(ib, doble_tercero)
+                for ps in ProveedorProductoServicio.objects.filter(proveedor_id=id):
+                    duplicar_registro_proveedor(ps, doble_tercero)
+                messages.success(self.request, 'Ahora puedes modificar tu perfil.')
+            else:
+                messages.success(self.request, 'Ya estás modificando tu perfil.')
             return JsonResponse({"estado": "OK"})
 
         except:
