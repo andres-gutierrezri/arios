@@ -9,6 +9,8 @@ from Administracion.models.models import ProductoServicio, SubproductoSubservici
 from Administracion.models.terceros import ProveedorProductoServicio
 from EVA.views.index import AbstractEvaLoggedView
 
+SOLICITUD_ENVIADA = 5
+
 
 class ProveedorIndexView(AbstractEvaLoggedView):
     def get(self, request):
@@ -19,7 +21,8 @@ class ProveedorIndexView(AbstractEvaLoggedView):
         subproductos_subservicios = []
         all_productos_servicios = ProveedorProductoServicio.objects.all()
         proveedores_pro_serv = ProveedorProductoServicio.objects.distinct('proveedor')\
-            .filter(proveedor__es_vigente=True)
+            .filter(proveedor__es_vigente=True)\
+            .exclude(proveedor__estado_proveedor=EstadosProveedor.DILIGENCIAMIENTO_PERFIL)
 
         if subproducto_subservicio:
             proveedores_pro_serv = proveedores_pro_serv.filter(subproducto_subservicio_id__in=subproducto_subservicio)
@@ -39,8 +42,24 @@ class ProveedorIndexView(AbstractEvaLoggedView):
         tipos_productos_servicios = [{'campo_valor': 1, 'campo_texto': 'Producto'},
                                      {'campo_valor': 2, 'campo_texto': 'Servicio'}]
 
+        lista_proveedores_activos = []
+        for pps in proveedores_pro_serv:
+            coincidencia = False
+            for pro in Tercero.objects.filter(es_vigente=False):
+                if pps.proveedor.usuario == pro.usuario and pro.estado_proveedor == SOLICITUD_ENVIADA:
+                    coincidencia = True
+            if not coincidencia:
+                lista_proveedores_activos.append(pps)
+
+        if tipo_producto_servicio == 2:
+            label_producto_servicio = 'Servicio'
+            label_subproducto_subservicio = 'Subservicio'
+        else:
+            label_producto_servicio = 'Producto'
+            label_subproducto_subservicio = 'Subproducto '
+
         return render(request, 'Administracion/Tercero/Proveedor/index.html',
-                      {'proveedores_pro_serv': proveedores_pro_serv,
+                      {'proveedores_pro_serv': lista_proveedores_activos,
                        'menu_actual': ['proveedores', 'proveedores'],
                        'tipos_productos_servicios': tipos_productos_servicios,
                        'productos_servicios': productos_servicios,
@@ -48,7 +67,9 @@ class ProveedorIndexView(AbstractEvaLoggedView):
                        'valor_tipo_producto_servicio': tipo_producto_servicio,
                        'valor_producto_servicio': producto_servicio,
                        'valor_subproducto_subservicio': valor_subproducto_subservicio,
-                       'all_productos_servicios': all_productos_servicios})
+                       'all_productos_servicios': all_productos_servicios,
+                       'label_producto_servicio': label_producto_servicio,
+                       'label_subproducto_subservicio': label_subproducto_subservicio})
 
 
 class ActivarDesactivarProveedorView(AbstractEvaLoggedView):
