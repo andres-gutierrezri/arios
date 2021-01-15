@@ -30,7 +30,7 @@ from TalentoHumano.models import Colaborador
 
 class TerceroView(AbstractEvaLoggedView):
     def get(self, request):
-        terceros = Tercero.objects.all()
+        terceros = Tercero.objects.exclude(tipo_tercero=TipoTercero.PROVEEDOR)
         fecha = datetime.now()
         return render(request, 'Administracion/Tercero/index.html', {'terceros': terceros, 'fecha': fecha,
                                                                      'menu_actual': 'terceros'})
@@ -281,7 +281,7 @@ def datos_xa_render(opcion: str, tercero: Tercero = None) -> dict:
     empresas = Empresa.objects \
         .filter(estado=True).values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
     tipos_identificacion = TipoIdentificacion.objects.get_xa_select_activos()
-    tipo_terceros = TipoTercero.objects.get_xa_select_activos()
+    tipo_terceros = TipoTercero.objects.get_xa_select_activos().exclude(id=TipoTercero.PROVEEDOR)
     departamentos = Departamento.objects.get_xa_select_activos()
 
     datos = {'empresas': empresas, 'tipos_identificacion': tipos_identificacion, 'tipo_terceros': tipo_terceros,
