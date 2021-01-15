@@ -973,7 +973,7 @@ def generar_datos_proveedor(proveedor):
     total = total + 20 if bienes_servicios else total
     total = total + 20 if n_documentos == n_tipos else total
 
-    cambios = ast.literal_eval(proveedor.modificaciones)['modificaciones_tarjetas']
+    cambios = ast.literal_eval(proveedor.modificaciones)['modificaciones_tarjetas'] if proveedor.modificaciones else []
 
     informacion_basica = {'id': 1, 'nombre': 'Información Básica', 'modificado': True if 1 in cambios else False,
                           'url': '/administracion/proveedor/perfil/informacion-basica',
