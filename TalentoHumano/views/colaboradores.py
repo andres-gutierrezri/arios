@@ -164,12 +164,13 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
                          'tipo_contrato_id', 'lugar_nacimiento_id', 'rango_id', 'fecha_nacimiento',
                          'identificacion', 'tipo_identificacion_id', 'fecha_expedicion', 'genero', 'telefono',
                          'estado', 'nombre_contacto', 'grupo_sanguineo', 'telefono_contacto', 'parentesco',
-                         'fecha_modificacion', 'usuario_actualiza', 'empresa']
+                         'fecha_modificacion', 'usuario_actualiza', 'empresa', 'empresa_sesion_id']
 
         colaborador = Colaborador.from_dictionary(request.POST)
         colaborador.usuario_actualiza = request.user
         contratos = request.POST.getlist('contrato_id[]', None)
         colaborador.empresa_id = request.POST.get('empresa_id')
+        colaborador.empresa_sesion_id = colaborador.empresa_id
 
         colaborador.id = int(id)
         colaborador.foto_perfil = request.FILES.get('foto_perfil', None)
@@ -241,8 +242,8 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
                 colaborador.usuario.save(update_fields=cambios_usuario)
 
             colaborador.save(update_fields=update_fields)
-            ColaboradorEmpresa.objects.filter(colaborador=colaborador).delete()
-            ColaboradorEmpresa.objects.create(colaborador=colaborador, empresa_id=get_id_empresa_global(request))
+            ColaboradorEmpresa.objects.filter(colaborador=colaborador, empresa=colaborador_db.empresa).delete()
+            ColaboradorEmpresa.objects.create(colaborador=colaborador, empresa_id=colaborador.empresa_id)
 
             ColaboradorContrato.objects.filter(colaborador_id=id).delete()
             for contrato in contratos:
