@@ -25,11 +25,15 @@ function validarTamano() {
 
 const primerDiv = $('#primer_div')
 const segundoDiv = $('#segundo_div')
+const tercerDiv = $('#tercer_div')
+const cuartoDiv = $('#cuarto_div')
 
 function configuracionNormal() {
     if (primerDiv.html() !== '') {
         segundoDiv.append(primerDiv.html())
         primerDiv.html('')
+        tercerDiv.append(cuartoDiv.html())
+        cuartoDiv.html('')
     }
 }
 
@@ -37,5 +41,7 @@ function configuracionMediana() {
     if (segundoDiv.html() !== '') {
         primerDiv.append(segundoDiv.html())
         segundoDiv.html('')
+        cuartoDiv.append(tercerDiv.html())
+        tercerDiv.html('')
     }
 }
