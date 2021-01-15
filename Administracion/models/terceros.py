@@ -95,7 +95,7 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     nombre_rl = models.CharField(max_length=100, verbose_name='Nombre del Representante Legal', null=True, blank=True)
     tipo_identificacion_rl = models.ForeignKey(TipoIdentificacion, on_delete=models.DO_NOTHING,
                                                verbose_name='Tipo de identificación del Representante Legal',
-                                               null=True, blank=False, related_name='proveedor_rl_tipo_identificacion')
+                                               null=True, blank=True, related_name='proveedor_rl_tipo_identificacion')
     identificacion_rl = models.CharField(max_length=100, verbose_name='Identificación del Representante Legal',
                                          null=True, blank=True)
     lugar_expedicion_rl = models.ForeignKey(Municipio, on_delete=models.DO_NOTHING, null=True, blank=True,
