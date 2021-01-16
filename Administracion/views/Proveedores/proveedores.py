@@ -33,9 +33,8 @@ class PerfilProveedorView(AbstractEvaLoggedProveedorView):
         total = datos_proveedor['total']
         datos_estado = {}
 
-        for ep in EstadosProveedor.choices:
-            if proveedor.estado_proveedor == int(ep[0]):
-                datos_estado = {'estado': proveedor.estado, 'estado_descripcion': ep[1]}
+        datos_estado = {'estado': proveedor.estado_proveedor,
+                        'estado_descripcion': proveedor.get_estado_proveedor_display()}
 
         certificaciones = Certificacion.objects.filter(tercero=proveedor).order_by('-id')
         if not certificaciones and not proveedor.es_vigente:
@@ -624,7 +623,7 @@ def duplicar_registro_proveedor(objeto, duplicado=None):
 def filtro_estado_proveedor(request):
     proveedor = Tercero.objects.filter(usuario=request.user)
 
-    if proveedor.first().estado_proveedor == int(EstadosProveedor.EDICION_PERFIL):
+    if proveedor.first().estado_proveedor == EstadosProveedor.EDICION_PERFIL:
         proveedor = proveedor.filter(es_vigente=False)
     else:
         proveedor = proveedor.filter(es_vigente=True)
