@@ -945,7 +945,7 @@ def generar_datos_proveedor(proveedor):
     if proveedor.tipo_persona == PERSONA_JURIDICA:
         lista_documentos = TipoDocumentoTercero.objects.filter(aplica_juridica=True)
     else:
-        lista_documentos = TipoDocumentoTercero.objects.filter(aplica_juridica=True)
+        lista_documentos = TipoDocumentoTercero.objects.filter(aplica_natural=True)
     n_tipos = 0
     n_documentos = 0
 
