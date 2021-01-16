@@ -27,14 +27,14 @@ class ProveedorIndexView(AbstractEvaLoggedView):
         if subproducto_subservicio:
             proveedores_pro_serv = proveedores_pro_serv.filter(subproducto_subservicio_id__in=subproducto_subservicio)
 
+            tipo_producto_servicio = int(tipo_producto_servicio)
+            producto_servicio = int(producto_servicio)
+
             messages.success(request, 'Se han encontrado {0} coincidencias'.format(len(proveedores_pro_serv)))
-            es_servicio = True if tipo_producto_servicio == '2' else False
+            es_servicio = tipo_producto_servicio == 2
             productos_servicios = ProductoServicio.objects.get_xa_select_activos().filter(es_servicio=es_servicio)
             subproductos_subservicios = SubproductoSubservicio.objects.get_xa_select_activos()\
                 .filter(producto_servicio_id=producto_servicio)
-
-            tipo_producto_servicio = int(tipo_producto_servicio)
-            producto_servicio = int(producto_servicio)
 
         valor_subproducto_subservicio = []
         for ps in subproducto_subservicio:
@@ -51,12 +51,8 @@ class ProveedorIndexView(AbstractEvaLoggedView):
             if not coincidencia:
                 lista_proveedores_activos.append(pps)
 
-        if tipo_producto_servicio == 2:
-            label_producto_servicio = 'Servicio'
-            label_subproducto_subservicio = 'Subservicio'
-        else:
-            label_producto_servicio = 'Producto'
-            label_subproducto_subservicio = 'Subproducto '
+        label_producto_servicio, label_subproducto_subservicio = ['Servicio', 'Subservicio'] \
+            if tipo_producto_servicio == 2 else ['Producto', 'Subproducto']
 
         return render(request, 'Administracion/Tercero/Proveedor/index.html',
                       {'proveedores_pro_serv': lista_proveedores_activos,

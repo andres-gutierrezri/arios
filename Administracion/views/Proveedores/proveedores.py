@@ -51,9 +51,9 @@ class PerfilProveedorView(AbstractEvaLoggedProveedorView):
             if 'Rechazada' in rechazos.first().notificacion.titulo:
                 datos_estado.update({'estado_solicitud': rechazos.first().notificacion.mensaje})
 
-        perfil_activo = True if Certificacion.objects.filter(tercero=proveedor, estado=True) else False
-        btn_enviar = True if total == 100 else False
-        solicitud_activa = True if SolicitudProveedor.objects.filter(proveedor=proveedor, estado=True) else False
+        perfil_activo = Certificacion.objects.filter(tercero=proveedor, estado=True).exists()
+        btn_enviar = total == 100
+        solicitud_activa = SolicitudProveedor.objects.filter(proveedor=proveedor, estado=True).exists()
 
         return render(request, 'Administracion/Tercero/Proveedor/perfil.html',
                       {'datos_proveedor': datos_proveedor, 'total': total, 'btn_enviar': btn_enviar,

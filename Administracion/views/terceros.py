@@ -207,7 +207,7 @@ class RegistroProveedorView(View):
         tercero = Tercero()
         tercero.nombre = nombre
         tercero.estado = False
-        tercero.tipo_tercero_id = TipoTercero.objects.get(nombre='Proveedor').id
+        tercero.tipo_tercero_id = TipoTercero.PROVEEDOR
         tercero.tipo_identificacion_id = datos_registro['tipoIdentificacion']
         tercero.identificacion = identificacion
         tercero.digito_verificacion = digito_verificacion
