@@ -1,62 +1,60 @@
 {% load static %}
-<div id="c_{{ objeto.id }}" class="card border shadow-0 mb-g shadow-sm-hover">
-    <div class="card-body border-faded border-top-0 border-left-0 border-right-0 rounded-top {% if not objeto.completo and not objeto.id == 0 %}alert-primary{% endif %} {% if objeto.modificado and solicitud_proveedor %}alert-primary{% endif %}">
-        <div class="d-flex flex-row align-items-center">
-            <div class="info-card-text flex-1">
-                {% if objeto.id != 0 %}
-                <b>{{ objeto.id }}. </b>
-                {% endif %}
-                {{ objeto.nombre }}
-            </div>
-            {% if not solicitud_activa and not solicitud_proveedor and not perfil_activo %}
-                <div class="info-card-text flex-1" style="text-align: end" >
-                    <a class="far fa-2x fa-edit" href="{{ objeto.url }}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
-                </div>
+<div id="panel-{{ objeto.id }}" class="panel">
+    <div class="panel-hdr {% if not objeto.completo and not objeto.id == 0 %}bg-danger-500 bg-danger-gradient{% elif objeto.modificado and solicitud_proveedor %}bg-info-500 bg-info-gradient{% else %}bg-primary-500 bg-primary-gradient{% endif %}">
+        <h2>
+            {% if objeto.id != 0 %}
+                {{ objeto.id }}.
             {% endif %}
+            {{ objeto.nombre }}
+        </h2>
+        <div class="panel-toolbar">
+            {% if not solicitud_activa and not solicitud_proveedor and not perfil_activo %}
+                <button class="btn  btn-icon btn-sm btn-primary mr-1 shadow-0" onclick='window.location.href="{{ objeto.url }}"' data-toggle="tooltip" data-offset="0,10" data-original-title="Editar">
+                    <i class="far fa-1x fa-edit"></i>
+                </button>
+            {% endif %}
+            <button class="btn btn-panel" data-action="panel-collapse" data-toggle="tooltip" data-offset="0,10" data-original-title="Collapse"></button>
         </div>
     </div>
-    <div class="card-body p-0 collapse show">
-        <div class="p-3" style="display: block">
-            <h5>
-                {% if objeto.datos %}
-                    {% for d in objeto.datos %}
-                        {% if d.valor_campo %}
-                            {% if d.validar %}
-                                {% if tipo_persona_pro == d.tipo_persona %}
-                                    <small class="mt-0 mb-3 text-muted">
-                                        <b>{{ d.nombre_campo }}</b>: {{ d.valor_campo }}
-                                    </small>
-                                {% endif %}
-                            {% else %}
-                                {% if pro_ser %}
-                                    <small class="mt-0 mb-3 text-muted">
-                                        <b>{{ d.nombre_campo }}</b>:
-                                            {% for datos in d.valor_campo %}
-                                                <br>&nbsp;&nbsp;&nbsp;&nbsp;<b>{{ datos.objeto }}: </b>{% for dts in datos.sub %}{{ dts }},&nbsp;{% endfor %}
-                                            {% endfor %}
-                                    </small>
+    <div class="panel-container show">
+        <div class="panel-content">
+            <div class="p-3" style="display: block">
+                <h5>
+                    {% if objeto.datos %}
+                        {% for d in objeto.datos %}
+                            {% if d.valor_campo %}
+                                {% if d.validar %}
+                                    {% if tipo_persona_pro == d.tipo_persona %}
+                                        <small class="mt-0 mb-3 text-muted">
+                                            <b>{{ d.nombre_campo }}</b>: {{ d.valor_campo }}
+                                        </small>
+                                    {% endif %}
                                 {% else %}
-                                    <small class="mt-0 mb-3 text-muted">
-                                        <b>{{ d.nombre_campo }}</b>: {{ d.valor_campo }}
-                                        {% if d.archivo %}
-                                            <a class="far fa-eye" style="text-decoration: none !important;" target="_blank" href="{{ d.archivo }}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ver Archivo"></a>
-                                        {% endif %}
-                                    </small>
+                                    {% if pro_ser %}
+                                        <small class="mt-0 mb-3 text-muted">
+                                            <b>{{ d.nombre_campo }}</b>:
+                                                {% for datos in d.valor_campo %}
+                                                    <br>&nbsp;&nbsp;&nbsp;&nbsp;<b>{{ datos.objeto }}: </b>{% for dts in datos.sub %}{{ dts }},&nbsp;{% endfor %}
+                                                {% endfor %}
+                                        </small>
+                                    {% else %}
+                                        <small class="mt-0 mb-3 text-muted">
+                                            <b>{{ d.nombre_campo }}</b>: {{ d.valor_campo }}
+                                            {% if d.archivo %}
+                                                <a class="far fa-eye" style="text-decoration: none !important;" target="_blank" href="{{ d.archivo }}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ver Archivo"></a>
+                                            {% endif %}
+                                        </small>
+                                    {% endif %}
                                 {% endif %}
                             {% endif %}
-                        {% endif %}
-                    {% endfor %}
-                {% else %}
-                    <small class="mt-0 mb-3 text-muted">
-                        <b>Ingresa al formulario para diligenciar este item.</b>
-                    </small>
-                {% endif %}
-            </h5>
-        </div>
-    </div>
-    <div class="card-body p-0 collapse show">
-        <div>
-            <a  class="mt-1 d-block fs-sm fw-400 text-dark">  </a>
+                        {% endfor %}
+                    {% else %}
+                        <small class="mt-0 mb-3 text-muted">
+                            <b>Ingresa al formulario para diligenciar este item.</b>
+                        </small>
+                    {% endif %}
+                </h5>
+            </div>
         </div>
     </div>
 </div>
