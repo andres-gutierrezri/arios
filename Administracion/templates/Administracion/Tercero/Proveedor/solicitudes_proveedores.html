@@ -34,8 +34,8 @@
                                                     <th>Ubicación</th>
                                                     <th>Teléfono</th>
                                                     <th>Correo</th>
-                                                    <th>Estado</th>
                                                     <th>Fecha de Envío de Solicitud</th>
+                                                    <th>Estado</th>
                                                     <th>Acción</th>
                                                 </tr>
                                             </thead>
@@ -43,10 +43,11 @@
                                                 {% for solicitud in solicitudes %}
                                                     <tr>
                                                         <td>{{ solicitud.proveedor.nombre }}</td>
-                                                        <td>{{ solicitud.proveedor.tipo_identificacion.sigla}} {{ solicitud.proveedor.identificacion}}</td>
-                                                        <td>{{ solicitud.proveedor.ciudad | title }} - {{ solicitud.proveedor.ciudad.departamento | title }} - {{ solicitud.proveedor.ciudad.departamento.pais }}</td>
+                                                        <td>{{ solicitud.proveedor.tipo_identificacion.sigla}} {{ solicitud.proveedor.identificacion}}{% if solicitud.proveedor.tipo_identificacion.sigla == 'NIT' %}-{{ solicitud.proveedor.digito_verificacion }}{% endif %}</td>
+                                                        <td>{{ solicitud.proveedor.ciudad.obtener_pais_dpto_mun }}</td>
                                                         <td>{{ solicitud.proveedor.telefono_movil_principal }}</td>
-                                                        <td>{{ solicitud.proveedor.telefono_movil_principal }}</td>
+                                                        <td>{{ solicitud.proveedor.correo_principal }}</td>
+                                                        <td>{{ solicitud.fecha_creacion|date:'Y-m-d' }}</td>
                                                         <td>
                                                             {% if solicitud.proveedor.estado == True %}
                                                             <span class="badge badge-primary">Activo</span>
@@ -54,7 +55,6 @@
                                                             <span class="badge badge-secondary">Inactivo</span>
                                                             {% endif %}
                                                         </td>
-                                                        <td>{{ solicitud.fecha_creacion|date:'Y-m-d' }}</td>
                                                         <td>
                                                             <a class="far fa-2x fa-check-square" href="{% url 'Administracion:proveedor-solicitudes-perfil' solicitud.proveedor_id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Aprobar/Rechazar"></a>
                                                         </td>

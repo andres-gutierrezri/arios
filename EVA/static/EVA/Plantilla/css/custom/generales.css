@@ -136,6 +136,10 @@ position: relative;
     text-align: end;
 }
 
+.t-a-c {
+    text-align: center;
+}
+
 .min-w-200{
     min-width: 200px;
 }

@@ -26,19 +26,19 @@
                         <div class="panel-hdr">
                             <br>
                             <form action="{% url 'Administracion:proveedor-administracion-index' %}" id="filtro-proveedores-form" method="get" class="needs-validation col-12" novalidate>
-                                <div class="row">
+                                <div class="row pt-1">
                                     <div class="col-xl-5 col-lg-1">
                                     </div>
                                     <div class="col-xl-2 col-lg-3 col-md-6 col-sm-6"  style="padding: 2px">
-                                        {% select_tag tipos_productos_servicios 'tipo_producto_servicio_' 'Seleccione una opción' required="" value=valor_tipo_producto_servicio onchange="cambioTipoProductoServicio('')" %}
+                                        {% select_tag tipos_productos_servicios 'tipo_producto_servicio_' 'Seleccione una opción' required="" value=valor_tipo_producto_servicio texto_label="Producto/Servicio" onchange="cambioTipoProductoServicio('')" %}
                                     </div>
                                     <div class="col-xl-2 col-lg-3 col-md-6 col-sm-6"  style="padding: 2px">
-                                        {% select_tag subtipos 'subtipo_producto_servicio_' 'Seleccione una opción' required="" value=valor_subtipo_producto_servicio onchange="cambioSubtipoProductoServicio('')" id_label=sl.nombre_subtipos %}
+                                        {% select_tag productos_servicios 'producto_servicio_' 'Seleccione una opción' required="" value=valor_producto_servicio texto_label=label_producto_servicio onchange="cambioProductoServicio('')" id_label="producto_servicio_" %}
                                     </div>
                                     <div class="col-xl-2 col-lg-3 col-md-6 col-sm-6"  style=" padding: 2px">
-                                        {% select_multiple_tag pro_serv 'producto_servicio_' 'producto_servicio_' 'Seleccione una opción' required="" value=valor_producto_servicio multiple=multiple id_label=sl.nombre_producto_servicio %}
+                                        {% select_multiple_tag subproductos_subservicios 'subproducto_subservicio_' 'subproducto_subservicio_' 'Seleccione una opción' required="" value=valor_subproducto_subservicio texto_label=label_subproducto_subservicio multiple=multiple id_label="subproducto_subservicio_" %}
                                     </div>
-                                    <div class="col-xl-1 col-lg-2 col-md-6 col-sm-6" style="float: right; padding-top: 3px">
+                                    <div class="col-xl-1 col-lg-2 col-md-6 col-sm-6" style="float: right; padding-top: 10px">
                                         <button id="filtrar" class="btn btn-primary btn-pills btn-block">Buscar</button>
                                      </div>
                                 </div>
@@ -64,33 +64,31 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        {% for proveedor in proveedores %}
+                                                        {% for pps in proveedores_pro_serv %}
                                                             <tr>
-                                                                <td>{{ proveedor.nombre }}</td>
-                                                                <td>{{ proveedor.identificacion}}</td>
-                                                                <td>{{ proveedor.ubicacion }}</td>
-                                                                <td>{{ proveedor.telefono }}</td>
-                                                                <td>{{ proveedor.correo }}</td>
+                                                                <td>{{ pps.proveedor.nombre }}</td>
+                                                                <td>{{ pps.proveedor.tipo_identificacion.sigla }} {{ pps.proveedor.identificacion }}{% if pps.proveedor.tipo_identificacion.sigla == 'NIT' %}-{{ pps.proveedor.digito_verificacion }}{% endif %}</td>
+                                                                <td>{{ pps.proveedor.ciudad.obtener_pais_dpto_mun }}</td>
+                                                                <td>{{ pps.proveedor.telefono_movil_principal }}</td>
+                                                                <td>{{ pps.proveedor.correo_principal }}</td>
                                                                 <td>
-                                                                    {% for ps in productos_servicios %}
-                                                                        {% if ps.proveedor_id == proveedor.id %}
-                                                                            <span class="badge badge-primary">{{ ps.producto_servicio }}</span>
+                                                                    {% for aps in all_productos_servicios %}
+                                                                        {% if aps.proveedor_id == pps.proveedor_id %}
+                                                                            <span class="badge badge-primary">{{ aps.subproducto_subservicio }}</span>
                                                                         {% endif %}
                                                                     {% endfor %}
                                                                 </td>
-                                                                <td>{{ proveedor.fecha_creacion|date:'Y-m-d' }}</td>
+                                                                <td>{{ pps.proveedor.fecha_creacion |date:'Y-m-d' }}</td>
                                                                 <td>
-                                                                    {% if proveedor.estado == True and not proveedor.editando %}
+                                                                    {% if pps.proveedor.estado == True %}
                                                                         <span class="badge badge-primary">Activo</span>
-                                                                    {% elif proveedor.editando %}
-                                                                        <span class="badge badge-warning">Editando Perfil</span>
                                                                     {% else %}
                                                                         <span class="badge badge-secondary">Inactivo</span>
                                                                     {% endif %}
                                                                 </td>
                                                                 <td>
-                                                                    <a class="far fa-2x fa-eye" href="{% url 'Administracion:proveedor-solicitudes-perfil' proveedor.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ver Perfil"></a>
-                                                                    <a class="far fa-2x fa-edit" {% if proveedor.estado %} href="javascript:cambiarEstadoProveedor('{{ proveedor.id }}', 'desactivar')" data-original-title="Desactivar" {% else %} href="javascript:cambiarEstadoProveedor('{{ proveedor.id }}', 'activar')" data-original-title="Activar" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
+                                                                    <a class="far fa-2x fa-eye" href="{% url 'Administracion:proveedor-solicitudes-perfil' pps.proveedor.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ver Perfil"></a>
+                                                                    <a class="far fa-2x fa-edit" {% if pps.proveedor.estado %} href="javascript:cambiarEstadoProveedor('{{ pps.proveedor.id }}', 'desactivar')" data-original-title="Desactivar" {% else %} href="javascript:cambiarEstadoProveedor('{{ pps.proveedor.id }}', 'activar')" data-original-title="Activar" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
                                                                 </td>
                                                             </tr>
                                                         {% endfor %}

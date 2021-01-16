@@ -53,7 +53,7 @@ selectTipoPersona.change(function (){
 
 function validarDV() {
     const tipoId =$('#tipo_identificacion_select_id option:selected').text();
-    actdesInputDV(tipoId.includes('NIT'));
+    actdesInputDV(tipoId.includes('Tributaria'));
 }
 
 function validarTipoPersona() {
@@ -128,7 +128,7 @@ function modificarPerfilProveedor(idProveedor) {
     Swal.fire({
         title: '¿Está seguro de modificar su perfil?',
         text: "Si modifica su perfil, la información aprobada será la que se encuentre vigente." +
-            "Los camibios realizados solo seran validos hasta que envíe la solicitud nuevamente y sea aprobada.",
+            "Los cambios realizados solo serán validos hasta que envíe la solicitud nuevamente y sea aprobada.",
         type: 'warning',
         showCancelButton: true,
         confirmButtonText: '¡Sí, Continuar!',

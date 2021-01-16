@@ -40,7 +40,7 @@ class Tributos(models.TextChoices):
     # PERSONALIZADO = 'ZZ', 'Nombre de la figura tributaria'  # Personalizado
 
 
-class EstadosProveedor(models.TextChoices):
+class EstadosProveedor(models.IntegerChoices):
 
     INACTIVO = 0, 'Proveedor Inactivo'
     ACTIVO = 1, ' Proveedor Activo'

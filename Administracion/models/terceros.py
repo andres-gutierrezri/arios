@@ -11,7 +11,7 @@ from EVA.General.modelmanagers import ManagerGeneral
 from .models import Empresa, TipoIdentificacion, Persona, SubproductoSubservicio
 from .divipol import CentroPoblado, Municipio
 from EVA.General.modeljson import ModelDjangoExtensiones
-from Administracion.enumeraciones import TipoPersona
+from Administracion.enumeraciones import TipoPersona, EstadosProveedor
 
 
 class TipoTercero(models.Model):
@@ -104,7 +104,8 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     fecha_constitucion = models.DateTimeField(verbose_name='Fecha de Constitución', null=True, blank=True)
     fecha_inicio_actividad = models.DateTimeField(verbose_name='Fecha de Inicio de Actividad', null=True, blank=True)
     usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario', null=True, blank=True)
-    estado_proveedor = models.SmallIntegerField(verbose_name='Estado del Proveedor', null=True, blank=True)
+    estado_proveedor = models.SmallIntegerField(choices=EstadosProveedor.choices, verbose_name='Estado del Proveedor',
+                                                null=True, blank=True)
     modificaciones = models.TextField(verbose_name='Modificaciones', null=True, blank=True)
     es_vigente = models.BooleanField(verbose_name='Es Vigente', null=False, blank=False)
 
@@ -114,7 +115,7 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     class Meta:
         verbose_name = 'Tercero'
         verbose_name_plural = 'Terceros'
-        permissions = [("view_proveedores", "Can view proveedores")]
+        permissions = [("view_proveedor", "Can view proveedor")]
 
     def empresa_to_dict(self):
         if self.empresa:
@@ -168,12 +169,28 @@ class UsuarioTercero(Persona):
         verbose_name_plural = 'Usuarios Terceros'
 
 
+def get_xa_select_con_opcionales(datos):
+    opciones = []
+    for d in datos:
+        if d.obligatorio:
+            opciones.append({'campo_valor': d.id, 'campo_texto': d.nombre})
+        else:
+            opciones.append({'campo_valor': d.id, 'campo_texto': '{0} (Opcional)'.format(d.nombre)})
+    return opciones
+
+
 class TipoDocumentoTerceroManager(ManagerGeneral):
     def get_xa_select_activos_aplica_natural(self) -> QuerySet:
         return self.get_xa_select_activos().filter(aplica_natural=True)
 
     def get_xa_select_activos_aplica_juridica(self) -> QuerySet:
         return self.get_xa_select_activos().filter(aplica_juridica=True)
+
+    def get_xa_select_con_opcionales_aplica_natural(self):
+        return get_xa_select_con_opcionales(self.filter(aplica_natural=True))
+
+    def get_xa_select_con_opcionales_aplica_juridica(self):
+        return get_xa_select_con_opcionales(self.filter(aplica_juridica=True))
 
 
 class TipoDocumentoTercero(models.Model):
