@@ -1,25 +1,33 @@
 {% load static %}
 <div class="col-xl-4 col-lg-4 col-md-6">
-    <div id="c_{{ objeto.id }}" class="card border shadow-0 mb-g shadow-sm-hover" data-filter-tags="{{ objeto.documento.nombre | lower }}">
-        <div class="card-body border-faded border-top-0 border-left-0 border-right-0 rounded-top">
-            <div class="d-flex flex-row align-items-center">
-                <div class="info-card-text flex-1">
-                    <h4>{% if objeto.tipo_documento %}{{ objeto.tipo_documento }} {% if not objeto.tipo_documento.obligatorio %}(Opcional){% endif %}{% else %}{{ objeto.nombre }}{% endif %}</h4>
-                </div>
-                <div class="info-card-text flex-1" style="text-align: end" >
-                    {% if objeto.tipo_documento %}
-                        <a class="far fa-2x far fa-edit" href="javascript:abrirModalGestionarDocumentos('{% url 'Administracion:proveedor-perfil-documento-editar' objeto.id %}')"  data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar Documento"></a>
-                    {% else %}
-                        <a class="far fa-2x far fa-edit" href="javascript:abrirModalGestionarDocumentos('{% url 'Administracion:proveedor-perfil-documento-adicional-editar' objeto.id %}')"  data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
-                        <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ eb.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ objeto.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
-                    {% endif %}
-                </div>
+    <div id="panel-{{ objeto.id }}" class="panel">
+        <div class="panel-hdr bg-primary-500 bg-primary-gradient">
+            <h2>
+                {% if objeto.tipo_documento %}{{ objeto.tipo_documento }} {% if not objeto.tipo_documento.obligatorio %}(Opcional){% endif %}{% else %}{{ objeto.nombre }}{% endif %}
+            </h2>
+            <div class="panel-toolbar">
+                {% if objeto.tipo_documento %}
+                    <button class="btn  btn-icon btn-sm btn-primary mr-1 shadow-0" onclick="abrirModalGestionarDocumentos('{% url 'Administracion:proveedor-perfil-documento-editar' objeto.id %}')" data-toggle="tooltip" data-offset="0,10" data-original-title="Editar Documento">
+                        <i class="far fa-1x fa-edit"></i>
+                    </button>
+                {% else %}
+                    <button class="btn  btn-icon btn-sm btn-primary mr-1 shadow-0" onclick="abrirModalGestionarDocumentos('{% url 'Administracion:proveedor-perfil-documento-adicional-editar' objeto.id %}')" data-toggle="tooltip" data-offset="0,10" data-original-title="Editar Documento">
+                        <i class="far fa-1x fa-edit"></i>
+                    </button>
+                    <button class="btn  btn-icon btn-sm btn-primary mr-1 shadow-0" onclick="fConfirmarEliminar({{ objeto.id }})" data-toggle="tooltip" data-offset="0,10" data-original-title="Eliminar">
+                        <i class="far fa-1x fa-trash-alt"></i>
+                    </button>
+                {% endif %}
+                <button class="btn btn-panel" data-action="panel-collapse" data-toggle="tooltip" data-offset="0,10" data-original-title="Collapse"></button>
             </div>
         </div>
-        <div class="card-body p-0 collapse show">
-            <div class="p-3" style="text-align: center;">
-                <h5>Ver Documento Cargado</h5>
-                <a class="fal fa-2x fa-custom fa-file-alt" style="text-decoration: none !important;" href="{% url 'Administracion:proveedor-perfil-ver-documento' objeto.id %}" target="_blank" data-original-title="Ver" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="Ver Documento Cargado"></a>
+
+        <div class="panel-container show">
+            <div class="panel-content">
+                <div class="p-3" style="text-align: center;">
+                    <h5>Ver Documento Cargado</h5>
+                    <a class="fal fa-2x fa-custom fa-file-alt" style="text-decoration: none !important;" href="{% url 'Administracion:proveedor-perfil-ver-documento' objeto.id %}" target="_blank" data-original-title="Ver" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="Ver Documento Cargado"></a>
+                </div>
             </div>
         </div>
     </div>
