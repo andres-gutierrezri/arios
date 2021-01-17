@@ -31,7 +31,6 @@ class PerfilProveedorView(AbstractEvaLoggedProveedorView):
         proveedor = filtro_estado_proveedor(request)
         datos_proveedor = generar_datos_proveedor(proveedor)
         total = datos_proveedor['total']
-        datos_estado = {}
 
         datos_estado = {'estado': proveedor.estado_proveedor,
                         'estado_descripcion': proveedor.get_estado_proveedor_display()}
@@ -791,23 +790,13 @@ def verificar_documentos_proveedor(proveedor, documentos):
 
 
 def generar_datos_informacion_basica(proveedor):
-    ubicacion = ''
-    lugar_exp_rl = ''
-    if proveedor.ciudad:
-        ubicacion = '{1} - {2} - {0}'.format(proveedor.ciudad.departamento.pais.nombre.capitalize(),
-                                             proveedor.ciudad.departamento.nombre.capitalize(),
-                                             proveedor.ciudad.nombre.capitalize())
-    if proveedor.lugar_expedicion_rl:
-        lugar_exp_rl = '{1} - {2} - {0}'.format(proveedor.lugar_expedicion_rl.departamento.pais.nombre.capitalize(),
-                                                proveedor.lugar_expedicion_rl.departamento.nombre.capitalize(),
-                                                proveedor.lugar_expedicion_rl.nombre.capitalize())
     if 'NIT' in proveedor.tipo_identificacion.sigla:
         proveedor.identificacion = '{0}-{1}'.format(proveedor.identificacion, proveedor.digito_verificacion)
 
     return [{'nombre_campo': 'Nombre', 'valor_campo': proveedor.nombre},
             {'nombre_campo': 'Identificación', 'valor_campo':
                 '{0} {1}'.format(proveedor.tipo_identificacion.sigla, proveedor.identificacion)},
-            {'nombre_campo': 'Ubicación', 'valor_campo': ubicacion},
+            {'nombre_campo': 'Ubicación', 'valor_campo': proveedor.ciudad.obtener_mun_dpto_pais()},
             {'nombre_campo': 'Teléfono Fijo Principal', 'valor_campo': proveedor.telefono_fijo_principal},
             {'nombre_campo': 'Teléfono Movil Principal', 'valor_campo': proveedor.telefono_movil_principal},
             {'nombre_campo': 'Teléfono Fijo Auxiliar', 'valor_campo': proveedor.telefono_fijo_auxiliar},
@@ -821,8 +810,8 @@ def generar_datos_informacion_basica(proveedor):
             {'nombre_campo': 'Fecha de Constitución', 'tipo_persona': 1, 'validar': True, 'valor_campo':
                 datetime_to_string(proveedor.fecha_inicio_actividad) if proveedor.fecha_inicio_actividad else '',
              'tipo_persona_pro': proveedor.tipo_persona},
-            {'nombre_campo': 'Lugar de Expedición del Documento del Representante Legal', 'valor_campo': lugar_exp_rl,
-             'tipo_persona': 1, 'validar': True},
+            {'nombre_campo': 'Lugar de Expedición del Documento del Representante Legal',
+             'valor_campo': proveedor.lugar_expedicion_rl.obtener_mun_dpto_pais(), 'tipo_persona': 1, 'validar': True},
             {'nombre_campo': 'Nombre del Representante Legal', 'valor_campo': proveedor.nombre_rl, 'validar': True,
              'tipo_persona': 1},
             {'nombre_campo': 'Identificación del Representante Legal', 'tipo_persona': 1, 'validar': True,

@@ -42,9 +42,9 @@ class Municipio(BaseDivipol):
         verbose_name = 'Municipio'
         verbose_name_plural = 'Municipios'
 
-    def obtener_pais_dpto_mun(self):
-        return '{0} - {1} - {2}'.format(self.departamento.pais.nombre.capitalize(),
-                                        self.departamento.nombre.capitalize(), self.nombre.capitalize())
+    def obtener_mun_dpto_pais(self):
+        return '{0} - {1} - {2}'.format(self.nombre.title(), self.departamento.nombre.title(),
+                                        self.departamento.pais.nombre.title())
 
 
 class CentroPoblado(BaseDivipol):
