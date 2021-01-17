@@ -33,7 +33,8 @@ class IniciarSesionView(View):
             username: str = request.POST.get('username', '')
             password = request.POST.get('password', '')
             user = authenticate(username=username.lower(), password=password)
-            if user is not None:
+            proveedor = User.objects.filter(username=username, email=username)
+            if user is not None and not proveedor:
                 login(request, user)
                 try:
                     colaborador = Colaborador.objects.get(usuario=request.user)

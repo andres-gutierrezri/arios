@@ -48,8 +48,9 @@ class InicioSesionProveedorView(View):
         else:
             correo = request.POST.get('correo', '')
             password = request.POST.get('password', '')
-            user = authenticate(username=correo, password=password)
-            if user is not None:
+            usuario = User.objects.filter(username=correo, email=correo)
+            if usuario:
+                user = authenticate(username=correo, password=password)
                 login(request, user)
                 try:
                     messages.success(request, 'Ha iniciado sesión como {0}'.format(user.email))
