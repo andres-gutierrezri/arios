@@ -74,7 +74,7 @@ class ActivarDesactivarProveedorView(AbstractEvaLoggedView):
             proveedor = Tercero.objects.get(id=id)
             proveedor.estado_proveedor = EstadosProveedor.DESACTIVADO_X_ADMINISTRADOR\
                 if proveedor.estado else EstadosProveedor.ACTIVO
-            proveedor.estado = False if proveedor.estado else True
+            proveedor.estado = proveedor.estado is False
             proveedor.save(update_fields=['estado', 'estado_proveedor'])
             texto = 'activado' if proveedor.estado else 'desactivado'
             messages.success(request, 'Se ha ' + texto + ' el proveedor correctamente')
