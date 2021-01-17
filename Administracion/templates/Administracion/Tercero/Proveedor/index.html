@@ -22,27 +22,56 @@
             </div>
             <div class="row">
                 <div class="col-xl-12">
-                    <div id="panel-1" class="panel">
+                    <div id="panel-busqueda" class="panel">
                         <div class="panel-hdr">
-                            <br>
-                            <form action="{% url 'Administracion:proveedor-administracion-index' %}" id="filtro-proveedores-form" method="get" class="needs-validation col-12" novalidate>
-                                <div class="row pt-1">
-                                    <div class="col-xl-5 col-lg-1">
+                            <h2>
+                                Búsqueda Por Producto o Servicio
+                            </h2>
+                            <div class="panel-toolbar">
+                                <button class="btn btn-panel" data-action="panel-collapse" data-toggle="tooltip" data-offset="0,10" data-original-title="Collapse"></button>
+                            </div>
+                        </div>
+                        <div class="panel-container show">
+                            <div class="panel-content">
+                                <form action="{% url 'Administracion:proveedor-administracion-index' %}" id="filtro-proveedores-form" method="get" class="needs-validation col-12" novalidate>
+                                    <div class="form-group">
+                                        <div class="form-row">
+                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                                                {% select_tag tipos_productos_servicios 'tipo_producto_servicio_' 'Seleccione una opción' required="" value=valor_tipo_producto_servicio texto_label="Producto/Servicio" onchange="cambioTipoProductoServicio('')" %}
+                                            </div>
+                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                                                {% select_tag productos_servicios 'producto_servicio_' 'Seleccione una opción' required="" value=valor_producto_servicio texto_label=label_producto_servicio onchange="cambioProductoServicio('')" id_label="producto_servicio_" %}
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="col-xl-2 col-lg-3 col-md-6 col-sm-6"  style="padding: 2px">
-                                        {% select_tag tipos_productos_servicios 'tipo_producto_servicio_' 'Seleccione una opción' required="" value=valor_tipo_producto_servicio texto_label="Producto/Servicio" onchange="cambioTipoProductoServicio('')" %}
+                                    <div class="form-group">
+                                        <div class="form-row">
+                                            <div class="col-xl-10 col-lg-10 col-md-12 col-sm-12">
+                                                {% select_multiple_tag subproductos_subservicios 'subproducto_subservicio_' 'subproducto_subservicio_' 'Seleccione una opción' required="" value=valor_subproducto_subservicio texto_label=label_subproducto_subservicio multiple=multiple id_label="subproducto_subservicio_" %}
+                                            </div>
+                                            <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12" style="padding-top: 23px">
+                                                <button id="filtrar" class="btn btn-primary btn-block btn-pills ">Buscar</button>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="col-xl-2 col-lg-3 col-md-6 col-sm-6"  style="padding: 2px">
-                                        {% select_tag productos_servicios 'producto_servicio_' 'Seleccione una opción' required="" value=valor_producto_servicio texto_label=label_producto_servicio onchange="cambioProductoServicio('')" id_label="producto_servicio_" %}
-                                    </div>
-                                    <div class="col-xl-2 col-lg-3 col-md-6 col-sm-6"  style=" padding: 2px">
-                                        {% select_multiple_tag subproductos_subservicios 'subproducto_subservicio_' 'subproducto_subservicio_' 'Seleccione una opción' required="" value=valor_subproducto_subservicio texto_label=label_subproducto_subservicio multiple=multiple id_label="subproducto_subservicio_" %}
-                                    </div>
-                                    <div class="col-xl-1 col-lg-2 col-md-6 col-sm-6" style="float: right; padding-top: 10px">
-                                        <button id="filtrar" class="btn btn-primary btn-pills btn-block">Buscar</button>
-                                     </div>
-                                </div>
-                            </form>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-12">
+                    <div id="panel-busqueda" class="panel">
+                        <div class="panel-hdr">
+                            <h2>
+                                {% if resutados_busqueda %}
+                                    Resultados de la búsqueda: {{ resutados_busqueda }}&nbsp;&nbsp;&nbsp;<a class="far fa-2x far fa-times-circle"  href="{% url 'Administracion:proveedor-administracion-index' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Borrar Búsqueda"></a>
+                                {% else %}
+                                    Lista de Proveedores
+                                {% endif %}
+                            </h2>
+                            <div class="panel-toolbar">
+                                <button class="btn btn-panel" data-action="panel-collapse" data-toggle="tooltip" data-offset="0,10" data-original-title="Collapse"></button>
+                            </div>
                         </div>
                         <div class="panel-container show">
                             <div class="panel-content">
@@ -68,7 +97,7 @@
                                                             <tr>
                                                                 <td>{{ pps.proveedor.nombre }}</td>
                                                                 <td>{{ pps.proveedor.tipo_identificacion.sigla }} {{ pps.proveedor.identificacion }}{% if pps.proveedor.tipo_identificacion.sigla == 'NIT' %}-{{ pps.proveedor.digito_verificacion }}{% endif %}</td>
-                                                                <td>{{ pps.proveedor.ciudad.obtener_pais_dpto_mun }}</td>
+                                                                <td>{{ pps.proveedor.ciudad.obtener_mun_dpto_pais }}</td>
                                                                 <td>{{ pps.proveedor.telefono_movil_principal }}</td>
                                                                 <td>{{ pps.proveedor.correo_principal }}</td>
                                                                 <td>

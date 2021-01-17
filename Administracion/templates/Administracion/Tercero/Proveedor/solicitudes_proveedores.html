@@ -44,7 +44,7 @@
                                                     <tr>
                                                         <td>{{ solicitud.proveedor.nombre }}</td>
                                                         <td>{{ solicitud.proveedor.tipo_identificacion.sigla}} {{ solicitud.proveedor.identificacion}}{% if solicitud.proveedor.tipo_identificacion.sigla == 'NIT' %}-{{ solicitud.proveedor.digito_verificacion }}{% endif %}</td>
-                                                        <td>{{ solicitud.proveedor.ciudad.obtener_pais_dpto_mun }}</td>
+                                                        <td>{{ solicitud.proveedor.ciudad.obtener_mun_dpto_pais }}</td>
                                                         <td>{{ solicitud.proveedor.telefono_movil_principal }}</td>
                                                         <td>{{ solicitud.proveedor.correo_principal }}</td>
                                                         <td>{{ solicitud.fecha_creacion|date:'Y-m-d' }}</td>

@@ -16,7 +16,7 @@ Including another URLconf
 
 from django.urls import path
 from Administracion.views import terceros, administracion, inicio_sesion, empresas, grupos_permisos, procesos
-from Administracion.views.Proveedores import proveedores, gestion_proveedores
+from Administracion.views.Proveedores import autenticacion, proveedores, gestion_proveedores
 from Administracion.views.seleccion_empresa import SeleccionEmpresaModalView
 
 app_name = 'Administracion'
@@ -52,9 +52,9 @@ urlpatterns = [
     path('grupos-permisos/<int:id>/delete', grupos_permisos.GruposPermisosEliminarView.as_view(),
          name='grupos-permisos-eliminar'),
     path('procesos', procesos.ProcesosView.as_view(), name='procesos'),
-    path('proveedor/index', terceros.IndexProveedorView.as_view(), name='proveedor-index'),
-    path('proveedor/iniciar-sesion', terceros.InicioSesionProveedorView.as_view(), name='proveedor-iniciar-sesion'),
-    path('proveedor/registro', terceros.RegistroProveedorView.as_view(), name='proveedor-registro'),
+    path('proveedor/index', autenticacion.IndexProveedorView.as_view(), name='proveedor-index'),
+    path('proveedor/iniciar-sesion', autenticacion.InicioSesionProveedorView.as_view(), name='proveedor-iniciar-sesion'),
+    path('proveedor/registro', autenticacion.RegistroProveedorView.as_view(), name='proveedor-registro'),
     path('proveedor/politica-confidencialidad', terceros.PoliticaDeCofidencialidadView.as_view(),
          name='proveedor-politica-cofidencialidad'),
     path('proveedor/perfil', proveedores.PerfilProveedorView.as_view(), name='proveedor-perfil'),

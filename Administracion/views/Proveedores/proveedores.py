@@ -31,7 +31,6 @@ class PerfilProveedorView(AbstractEvaLoggedProveedorView):
         proveedor = filtro_estado_proveedor(request)
         datos_proveedor = generar_datos_proveedor(proveedor)
         total = datos_proveedor['total']
-        datos_estado = {}
 
         datos_estado = {'estado': proveedor.estado_proveedor,
                         'estado_descripcion': proveedor.get_estado_proveedor_display()}
@@ -530,6 +529,7 @@ class ProveedorSolicitudAprobarRechazar(AbstractEvaLoggedView):
             solicitud.estado = False
             solicitud.save(update_fields=['aprobado', 'comentarios', 'estado'])
             if solicitud.aprobado:
+                comentario = 'Ahora estas activo como proveedor!'
                 Certificacion.objects.filter(tercero=solicitud.proveedor).update(estado=False)
                 Certificacion.objects.create(tercero=solicitud.proveedor, fecha_crea=app_datetime_now(), estado=True)
 
@@ -791,23 +791,14 @@ def verificar_documentos_proveedor(proveedor, documentos):
 
 
 def generar_datos_informacion_basica(proveedor):
-    ubicacion = ''
-    lugar_exp_rl = ''
-    if proveedor.ciudad:
-        ubicacion = '{1} - {2} - {0}'.format(proveedor.ciudad.departamento.pais.nombre.capitalize(),
-                                             proveedor.ciudad.departamento.nombre.capitalize(),
-                                             proveedor.ciudad.nombre.capitalize())
-    if proveedor.lugar_expedicion_rl:
-        lugar_exp_rl = '{1} - {2} - {0}'.format(proveedor.lugar_expedicion_rl.departamento.pais.nombre.capitalize(),
-                                                proveedor.lugar_expedicion_rl.departamento.nombre.capitalize(),
-                                                proveedor.lugar_expedicion_rl.nombre.capitalize())
     if 'NIT' in proveedor.tipo_identificacion.sigla:
         proveedor.identificacion = '{0}-{1}'.format(proveedor.identificacion, proveedor.digito_verificacion)
 
     return [{'nombre_campo': 'Nombre', 'valor_campo': proveedor.nombre},
             {'nombre_campo': 'Identificación', 'valor_campo':
                 '{0} {1}'.format(proveedor.tipo_identificacion.sigla, proveedor.identificacion)},
-            {'nombre_campo': 'Ubicación', 'valor_campo': ubicacion},
+            {'nombre_campo': 'Ubicación', 'valor_campo': proveedor.ciudad.obtener_mun_dpto_pais()
+            if proveedor.ciudad else ''},
             {'nombre_campo': 'Teléfono Fijo Principal', 'valor_campo': proveedor.telefono_fijo_principal},
             {'nombre_campo': 'Teléfono Movil Principal', 'valor_campo': proveedor.telefono_movil_principal},
             {'nombre_campo': 'Teléfono Fijo Auxiliar', 'valor_campo': proveedor.telefono_fijo_auxiliar},
@@ -821,8 +812,9 @@ def generar_datos_informacion_basica(proveedor):
             {'nombre_campo': 'Fecha de Constitución', 'tipo_persona': 1, 'validar': True, 'valor_campo':
                 datetime_to_string(proveedor.fecha_inicio_actividad) if proveedor.fecha_inicio_actividad else '',
              'tipo_persona_pro': proveedor.tipo_persona},
-            {'nombre_campo': 'Lugar de Expedición del Documento del Representante Legal', 'valor_campo': lugar_exp_rl,
-             'tipo_persona': 1, 'validar': True},
+            {'nombre_campo': 'Lugar de Expedición del Documento del Representante Legal',
+             'valor_campo': proveedor.lugar_expedicion_rl.obtener_mun_dpto_pais()
+             if proveedor.lugar_expedicion_rl else '', 'tipo_persona': 1, 'validar': True},
             {'nombre_campo': 'Nombre del Representante Legal', 'valor_campo': proveedor.nombre_rl, 'validar': True,
              'tipo_persona': 1},
             {'nombre_campo': 'Identificación del Representante Legal', 'tipo_persona': 1, 'validar': True,
@@ -974,24 +966,23 @@ def generar_datos_proveedor(proveedor):
 
     cambios = ast.literal_eval(proveedor.modificaciones)['modificaciones_tarjetas'] if proveedor.modificaciones else []
 
-    informacion_basica = {'id': 1, 'nombre': 'Información Básica', 'modificado': True if 1 in cambios else False,
+    informacion_basica = {'id': 1, 'nombre': 'Información Básica', 'modificado': 1 in cambios,
                           'url': '/administracion/proveedor/perfil/informacion-basica',
-                          'datos': informacion_basica, 'completo': True if proveedor.ciudad else False}
-    actividades_economicas = {'id': 2, 'nombre': 'Actividades Económicas', 'modificado': True if 2 in cambios else False,
+                          'datos': informacion_basica, 'completo': proveedor.ciudad is not None}
+    actividades_economicas = {'id': 2, 'nombre': 'Actividades Económicas', 'modificado': 2 in cambios,
                               'url': '/administracion/proveedor/perfil/actividades-economicas',
-                              'datos': actividades_economicas, 'completo': True if actividades_economicas else False}
+                              'datos': actividades_economicas, 'completo': actividades_economicas is not ''}
     documentos = {'id': 3, 'nombre': 'Documentos', 'url': '/administracion/proveedor/perfil/documentos',
-                  'datos': documentos, 'completo': True if documentos else False,
-                  'modificado': True if 3 in cambios else False}
-    entidades_bancarias = {'id': 4, 'nombre': 'Información Bancaria', 'modificado': True if 4 in cambios else False,
+                  'datos': documentos, 'completo': documentos != [], 'modificado': 3 in cambios}
+    entidades_bancarias = {'id': 4, 'nombre': 'Información Bancaria', 'modificado': 4 in cambios,
                            'url': '/administracion/proveedor/perfil/entidades-bancarias',
-                           'datos': entidades_bancarias, 'completo': True if entidades_bancarias else False}
-    bienes_servicios = {'id': 5, 'nombre': 'Productos y Servicios', 'modificado': True if 5 in cambios else False,
+                           'datos': entidades_bancarias, 'completo': entidades_bancarias != []}
+    bienes_servicios = {'id': 5, 'nombre': 'Productos y Servicios', 'modificado': 5 in cambios,
                         'url': '/administracion/proveedor/perfil/productos-servicios',
-                        'datos': bienes_servicios, 'completo': True if bienes_servicios else False}
+                        'datos': bienes_servicios, 'completo': bienes_servicios != ''}
     documentos_adicionales = {'id': 6, 'nombre': 'Certificaciones y Documentos Adicionales',
                               'url': '/administracion/proveedor/perfil/documentos-adicionales',
-                              'datos': documentos_adicionales, 'modificado': True if 6 in cambios else False,
+                              'datos': documentos_adicionales, 'modificado': 6 in cambios,
                               'completo': True}
 
     return {'total': total, 'informacion_basica': informacion_basica, 'actividades_economicas': actividades_economicas,
