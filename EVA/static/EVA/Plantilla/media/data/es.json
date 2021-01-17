@@ -8,7 +8,7 @@
     "application_intel_marketing_dashboard": "Marketing Dashboard",
     "application_intel_ceo_dashboard": "CEO Dashboard",
     "application_intel_introduction" : "Introduction",
-    "application_intel_build_notes": "Build Notes",
+    "application_docs_buildnotes": "Build Notes",
     "theme_settings": "Theme Settings",
     "theme_settings_how_it_works": "How it works",
     "theme_settings_layout_options": "Layout Options",
@@ -174,10 +174,10 @@
     "app_views-e-commerce_checkout": "Checkout"
   },
   "drpdwn": {
-    "reset_layout": "Reiniciar Layout",
-    "settings": "Configuración",
-    "fullscreen": "Pantalla Completa",
-    "print": "Imprimir",
-    "page-logout": "Cerrar Sesión"
+    "reset_layout": "Reset Layout",
+    "settings": "Settings",
+    "fullscreen": "Fullscreen",
+    "print": "Print",
+    "page-logout": "Logout"
   }  
 }

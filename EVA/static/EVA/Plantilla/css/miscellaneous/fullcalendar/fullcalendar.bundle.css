@@ -1352,6 +1352,14 @@ be a descendant of the grid when it is being dragged.
 /*------------------------
     Usage
 
+  $color-white: hexToRGBString(#fff) => "255,255,255"
+  $color-white: hexToRGBString(rgb(255,255,255)) => "255,255,255"
+  $color-white: hexToRGBString(rgba(#fff,1)) => "255,255,255"
+  
+------------------------*/
+/*------------------------
+    Usage
+
     h1 {
       font-size: rem(32);
     }
@@ -1380,6 +1388,10 @@ Color brightness is determined by the following formula:
 ------------------------*/
 /*------------------------
  color factory 
+  eg: contrast-ink($contrastvalue)
+------------------------*/
+/*------------------------
+ color factory 
   eg: @include paint($blue-grey-50, bg-blue-grey-50);
 ------------------------*/
 /* backface visibility */
@@ -1389,6 +1401,7 @@ Color brightness is determined by the following formula:
 /*  THEME COLORs
 ========================================================================== */
 /* Looks good on chrome default color profile */
+/* We will manually convert these primary colors to rgb for the dark mode option of the theme */
 /* looks good in sRGB but washed up on chrome default 
 $color-primary:						#826bb0;
 $color-success:						#31cb55;
@@ -1427,7 +1440,7 @@ $color-fusion:						darken(desaturate(adjust-hue($color-primary, 5), 80%), 25%);
 /* not part of bootstrap variable */
 /* custom checkbox */
 /* custom range */
-/* select */
+/* custom file */
 /* badge */
 /* cards */
 /*border radius*/
@@ -1551,7 +1564,10 @@ aside.page-sidebar ($nav-width, $nav-background)
 ========================================================================== */
 /* main navigation */
 /* left panel */
+/* nav footer */
 /* nav parent level-0 */
+/* nav link level-1 */
+/* nav level-1 bg */
 /* nav icon sizes */
 /* badge default */
 /* all child */
@@ -1584,6 +1600,7 @@ aside.page-sidebar ($nav-width, $nav-background)
 ========================================================================== */
 /* ACCESSIBILITIES */
 /* SHORTCUT BUTTON (appears on bottom right of the page) */
+/* GULP WARNINGS */
 body {
   font-family: "Roboto", "Helvetica Neue", Helvetica, Arial;
   font-size: 0.8125rem;
@@ -1639,9 +1656,9 @@ h6 small,
 
 /* text-gradient */
 .text-gradient {
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(25%, #6e4e9e), color-stop(50%, #62468d), color-stop(75%, #0c7cd5), to(#0960a5));
-  background: linear-gradient(180deg, #6e4e9e 25%, #62468d 50%, #0c7cd5 75%, #0960a5 100%);
-  color: #886ab5;
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(25%, #14867a), color-stop(50%, #107066), color-stop(75%, #ffb20e), to(#da9400));
+  background: linear-gradient(180deg, #14867a 25%, #107066 50%, #ffb20e 75%, #da9400 100%);
+  color: #1ab3a3;
   background-clip: text;
   text-fill-color: transparent;
   -webkit-background-clip: text;
@@ -1772,10 +1789,10 @@ RESULT:
 
 .fc-event,
 .fc-event-dot {
-  background: #967bbd; }
+  background: #1dc9b7; }
 
 .fc-event {
-  border: 1px solid #7a59ad; }
+  border: 1px solid #179d8f; }
 
 .fc-day-top.fc-other-month {
   opacity: 1; }

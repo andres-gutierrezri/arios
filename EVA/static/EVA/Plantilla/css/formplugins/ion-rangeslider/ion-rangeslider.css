@@ -1,8 +1,8 @@
 @charset "UTF-8";
 /**
-Ion.RangeSlider, 2.3.0
-© Denis Ineshin, 2010 - 2018, IonDen.com
-Build date: 2018-12-11 23:23:51
+Ion.RangeSlider, 2.3.1
+© Denis Ineshin, 2010 - 2019, IonDen.com
+Build date: 2019-12-19 16:51:02
 */
 @import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900");
 .irs {
@@ -701,6 +701,14 @@ Build date: 2018-12-11 23:23:51
 /*------------------------
     Usage
 
+  $color-white: hexToRGBString(#fff) => "255,255,255"
+  $color-white: hexToRGBString(rgb(255,255,255)) => "255,255,255"
+  $color-white: hexToRGBString(rgba(#fff,1)) => "255,255,255"
+  
+------------------------*/
+/*------------------------
+    Usage
+
     h1 {
       font-size: rem(32);
     }
@@ -729,6 +737,10 @@ Color brightness is determined by the following formula:
 ------------------------*/
 /*------------------------
  color factory 
+  eg: contrast-ink($contrastvalue)
+------------------------*/
+/*------------------------
+ color factory 
   eg: @include paint($blue-grey-50, bg-blue-grey-50);
 ------------------------*/
 /* backface visibility */
@@ -738,6 +750,7 @@ Color brightness is determined by the following formula:
 /*  THEME COLORs
 ========================================================================== */
 /* Looks good on chrome default color profile */
+/* We will manually convert these primary colors to rgb for the dark mode option of the theme */
 /* looks good in sRGB but washed up on chrome default 
 $color-primary:						#826bb0;
 $color-success:						#31cb55;
@@ -776,7 +789,7 @@ $color-fusion:						darken(desaturate(adjust-hue($color-primary, 5), 80%), 25%);
 /* not part of bootstrap variable */
 /* custom checkbox */
 /* custom range */
-/* select */
+/* custom file */
 /* badge */
 /* cards */
 /*border radius*/
@@ -900,7 +913,10 @@ aside.page-sidebar ($nav-width, $nav-background)
 ========================================================================== */
 /* main navigation */
 /* left panel */
+/* nav footer */
 /* nav parent level-0 */
+/* nav link level-1 */
+/* nav level-1 bg */
 /* nav icon sizes */
 /* badge default */
 /* all child */
@@ -933,6 +949,7 @@ aside.page-sidebar ($nav-width, $nav-background)
 ========================================================================== */
 /* ACCESSIBILITIES */
 /* SHORTCUT BUTTON (appears on bottom right of the page) */
+/* GULP WARNINGS */
 body {
   font-family: "Roboto", "Helvetica Neue", Helvetica, Arial;
   font-size: 0.8125rem;
@@ -988,9 +1005,9 @@ h6 small,
 
 /* text-gradient */
 .text-gradient {
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(25%, #6e4e9e), color-stop(50%, #62468d), color-stop(75%, #0c7cd5), to(#0960a5));
-  background: linear-gradient(180deg, #6e4e9e 25%, #62468d 50%, #0c7cd5 75%, #0960a5 100%);
-  color: #886ab5;
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(25%, #14867a), color-stop(50%, #107066), color-stop(75%, #ffb20e), to(#da9400));
+  background: linear-gradient(180deg, #14867a 25%, #107066 50%, #ffb20e 75%, #da9400 100%);
+  color: #1ab3a3;
   background-clip: text;
   text-fill-color: transparent;
   -webkit-background-clip: text;
@@ -1069,7 +1086,7 @@ RESULT:
 .irs--flat .irs-to,
 .irs--flat .irs-single,
 .irs--flat .irs-handle > i:first-child {
-  background-color: #886ab5; }
+  background-color: #1ab3a3; }
 
 .irs--flat .irs-from,
 .irs--flat .irs-to,
@@ -1079,37 +1096,37 @@ RESULT:
 .irs--flat .irs-from:before,
 .irs--flat .irs-to:before,
 .irs--flat .irs-single:before {
-  border-top-color: #886ab5; }
+  border-top-color: #1ab3a3; }
 
 .irs--flat .irs-handle.state_hover > i:first-child,
 .irs--flat .irs-handle:hover > i:first-child {
-  background-color: #7a59ad; }
+  background-color: #179d8f; }
 
 .irs--big .irs-bar {
-  background-color: #a38cc6;
-  border-color: #886ab5;
-  background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(30%, #a38cc6), to(#886ab5));
-  background: linear-gradient(to bottom, #ffffff 0%, #a38cc6 30%, #886ab5 100%); }
+  background-color: #21dfcb;
+  border-color: #1ab3a3;
+  background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(30%, #21dfcb), to(#1ab3a3));
+  background: linear-gradient(to bottom, #ffffff 0%, #21dfcb 30%, #1ab3a3 100%); }
 
 .irs--big .irs-from,
 .irs--big .irs-to,
 .irs--big .irs-single {
-  background: #886ab5; }
+  background: #1ab3a3; }
 
 .irs--modern .irs-bar {
-  background: #1ab3a3;
-  background: -webkit-gradient(linear, left top, left bottom, from(#21dfcb), to(#1ab3a3));
-  background: linear-gradient(to bottom, #21dfcb 0%, #1ab3a3 100%); }
+  background: #e1a015;
+  background: -webkit-gradient(linear, left top, left bottom, from(#edb53b), to(#e1a015));
+  background: linear-gradient(to bottom, #edb53b 0%, #e1a015 100%); }
 
 .irs--modern .irs-from,
 .irs--modern .irs-to,
 .irs--modern .irs-single {
-  background-color: #1dc9b7; }
+  background-color: #ebac24; }
 
 .irs--modern .irs-from:before,
 .irs--modern .irs-to:before,
 .irs--modern .irs-single:before {
-  border-top-color: #1dc9b7; }
+  border-top-color: #ebac24; }
 
 .irs--modern .irs-handle > i:nth-child(1) {
   width: 8px;
@@ -1120,30 +1137,30 @@ RESULT:
 .irs--sharp .irs-from,
 .irs--sharp .irs-to,
 .irs--sharp .irs-single {
-  background-color: #fd3995; }
+  background-color: #fd3939; }
 
 .irs--sharp .irs-handle > i:first-child,
 .irs--sharp .irs-from:before,
 .irs--sharp .irs-to:before,
 .irs--sharp .irs-single:before {
-  border-top-color: #fd3995; }
+  border-top-color: #fd3939; }
 
 .irs--sharp .irs-min,
 .irs--sharp .irs-max {
-  background-color: #e7026e; }
+  background-color: #e70202; }
 
 .irs--round .irs-handle {
-  border-color: #2196F3; }
+  border-color: #ffc241; }
 
 .irs--round .irs-bar,
 .irs--round .irs-from,
 .irs--round .irs-to,
 .irs--round .irs-single {
-  background-color: #2196F3; }
+  background-color: #ffc241; }
 
 .irs--round .irs-from:before,
 .irs--round .irs-to:before,
 .irs--round .irs-single:before {
-  border-top-color: #2196F3; }
+  border-top-color: #ffc241; }
 
 /*# sourceMappingURL=ion-rangeslider.css.map */

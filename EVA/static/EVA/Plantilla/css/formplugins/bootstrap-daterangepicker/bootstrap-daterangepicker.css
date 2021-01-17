@@ -332,6 +332,14 @@
 /*------------------------
     Usage
 
+  $color-white: hexToRGBString(#fff) => "255,255,255"
+  $color-white: hexToRGBString(rgb(255,255,255)) => "255,255,255"
+  $color-white: hexToRGBString(rgba(#fff,1)) => "255,255,255"
+  
+------------------------*/
+/*------------------------
+    Usage
+
     h1 {
       font-size: rem(32);
     }
@@ -360,6 +368,10 @@ Color brightness is determined by the following formula:
 ------------------------*/
 /*------------------------
  color factory 
+  eg: contrast-ink($contrastvalue)
+------------------------*/
+/*------------------------
+ color factory 
   eg: @include paint($blue-grey-50, bg-blue-grey-50);
 ------------------------*/
 /* backface visibility */
@@ -369,6 +381,7 @@ Color brightness is determined by the following formula:
 /*  THEME COLORs
 ========================================================================== */
 /* Looks good on chrome default color profile */
+/* We will manually convert these primary colors to rgb for the dark mode option of the theme */
 /* looks good in sRGB but washed up on chrome default 
 $color-primary:						#826bb0;
 $color-success:						#31cb55;
@@ -407,7 +420,7 @@ $color-fusion:						darken(desaturate(adjust-hue($color-primary, 5), 80%), 25%);
 /* not part of bootstrap variable */
 /* custom checkbox */
 /* custom range */
-/* select */
+/* custom file */
 /* badge */
 /* cards */
 /*border radius*/
@@ -531,7 +544,10 @@ aside.page-sidebar ($nav-width, $nav-background)
 ========================================================================== */
 /* main navigation */
 /* left panel */
+/* nav footer */
 /* nav parent level-0 */
+/* nav link level-1 */
+/* nav level-1 bg */
 /* nav icon sizes */
 /* badge default */
 /* all child */
@@ -564,6 +580,7 @@ aside.page-sidebar ($nav-width, $nav-background)
 ========================================================================== */
 /* ACCESSIBILITIES */
 /* SHORTCUT BUTTON (appears on bottom right of the page) */
+/* GULP WARNINGS */
 body {
   font-family: "Roboto", "Helvetica Neue", Helvetica, Arial;
   font-size: 0.8125rem;
@@ -619,9 +636,9 @@ h6 small,
 
 /* text-gradient */
 .text-gradient {
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(25%, #6e4e9e), color-stop(50%, #62468d), color-stop(75%, #0c7cd5), to(#0960a5));
-  background: linear-gradient(180deg, #6e4e9e 25%, #62468d 50%, #0c7cd5 75%, #0960a5 100%);
-  color: #886ab5;
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(25%, #14867a), color-stop(50%, #107066), color-stop(75%, #ffb20e), to(#da9400));
+  background: linear-gradient(180deg, #14867a 25%, #107066 50%, #ffb20e 75%, #da9400 100%);
+  color: #1ab3a3;
   background-clip: text;
   text-fill-color: transparent;
   -webkit-background-clip: text;
@@ -702,7 +719,7 @@ RESULT:
 
 .daterangepicker table tr td.old,
 .daterangepicker table tr td.new {
-  color: darkgray; }
+  color: gray; }
 
 .daterangepicker table tr td.active:active,
 .daterangepicker table tr td.active.highlighted:active,
@@ -712,7 +729,7 @@ RESULT:
 .daterangepicker table tr td.selected.highlighted,
 .daterangepicker table tr td span.active.active,
 .daterangepicker table tr td span.focused {
-  background-color: #967bbd;
+  background-color: #1dc9b7;
   color: #fff; }
 
 .daterangepicker table tr td.active:active:hover,
@@ -741,7 +758,7 @@ RESULT:
 .daterangepicker table tr td.selected.highlighted.active.focus,
 .daterangepicker table tr td.selected:hover,
 .daterangepicker table tr td.selected.highlighted:hover {
-  background-color: #7a59ad;
+  background-color: #179d8f;
   color: #fff; }
 
 .daterangepicker .calendar-table .next,
@@ -759,13 +776,13 @@ RESULT:
     border-color: #a1a8c3; }
 
 .daterangepicker .in-range.available {
-  background-color: #ffe3a7; }
+  background-color: #e5a783; }
 
 .daterangepicker .off.ends.in-range.available {
-  background-color: #ffebc1; }
+  background-color: #eab698; }
 
 .daterangepicker td.available:hover, .daterangepicker th.available:hover {
-  background-color: #ffd274; }
+  background-color: #dd8958; }
 
 .daterangepicker td.start-date {
   border-radius: 10px 0 0 10px; }
@@ -787,6 +804,6 @@ RESULT:
   font-size: 0.8125rem;
   padding: 0.75rem 1rem; }
   .daterangepicker .ranges li.active {
-    background-color: #886ab5; }
+    background-color: #1ab3a3; }
 
 /*# sourceMappingURL=bootstrap-daterangepicker.css.map */
