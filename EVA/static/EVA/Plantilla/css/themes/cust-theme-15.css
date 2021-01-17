@@ -343,11 +343,7 @@ RESULT:
   color: #0e0e0e; }
 
 /* #GLOBAL IMPORTS
-========================================================================== */
-/*@import '_imports/_global-import';*/
-/* #FRAMEWORK - Structure and layout files. (**DO NOT** change order)
-                DOC: you can disable unused _modules
-========================================================================== */
+
 /* contains root variables to be used with css (see docs) */
 /* html and body base styles */
 html body {
