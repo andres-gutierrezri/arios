@@ -23,14 +23,14 @@ class ProveedorIndexView(AbstractEvaLoggedView):
         proveedores_pro_serv = ProveedorProductoServicio.objects.distinct('proveedor')\
             .filter(proveedor__es_vigente=True)\
             .exclude(proveedor__estado_proveedor=EstadosProveedor.DILIGENCIAMIENTO_PERFIL)
-
+        resutados_busqueda = ''
         if subproducto_subservicio:
             proveedores_pro_serv = proveedores_pro_serv.filter(subproducto_subservicio_id__in=subproducto_subservicio)
 
             tipo_producto_servicio = int(tipo_producto_servicio)
             producto_servicio = int(producto_servicio)
-
-            messages.success(request, 'Se han encontrado {0} coincidencias'.format(len(proveedores_pro_serv)))
+            resutados_busqueda = 'Se han encontrado {0} coincidencias'.format(len(proveedores_pro_serv))
+            messages.success(request, resutados_busqueda)
             es_servicio = tipo_producto_servicio == 2
             productos_servicios = ProductoServicio.objects.get_xa_select_activos().filter(es_servicio=es_servicio)
             subproductos_subservicios = SubproductoSubservicio.objects.get_xa_select_activos()\
@@ -65,7 +65,8 @@ class ProveedorIndexView(AbstractEvaLoggedView):
                        'valor_subproducto_subservicio': valor_subproducto_subservicio,
                        'all_productos_servicios': all_productos_servicios,
                        'label_producto_servicio': label_producto_servicio,
-                       'label_subproducto_subservicio': label_subproducto_subservicio})
+                       'label_subproducto_subservicio': label_subproducto_subservicio,
+                       'resutados_busqueda': resutados_busqueda})
 
 
 class ActivarDesactivarProveedorView(AbstractEvaLoggedView):
