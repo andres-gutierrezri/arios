@@ -529,6 +529,7 @@ class ProveedorSolicitudAprobarRechazar(AbstractEvaLoggedView):
             solicitud.estado = False
             solicitud.save(update_fields=['aprobado', 'comentarios', 'estado'])
             if solicitud.aprobado:
+                comentario = 'Ahora estas activo como proveedor!'
                 Certificacion.objects.filter(tercero=solicitud.proveedor).update(estado=False)
                 Certificacion.objects.create(tercero=solicitud.proveedor, fecha_crea=app_datetime_now(), estado=True)
 
