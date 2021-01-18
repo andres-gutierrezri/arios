@@ -38,12 +38,13 @@
                                                 <tr>
                                                     <th>Nombre</th>
                                                     <th>Identificación</th>
-                                                    <th>Estado</th>
+
                                                     <th>Empresa</th>
                                                     <th>Fecha de creación</th>
                                                     <th>Fecha de modificación</th>
                                                     <th>Tipo tercero</th>
                                                     <th>Ciudad</th>
+                                                    <th>Estado</th>
                                                     {% if perms.Administracion.change_tercero or perms.Administracion.delete_tercero %}
                                                         <th>Acción</th>
                                                     {% endif %}
@@ -54,6 +55,12 @@
                                                     <tr>
                                                         <td>{{ tercero.nombre }}</td>
                                                         <td>{{ tercero.tipo_identificacion.sigla }} {{ tercero.identificacion }}{% if tercero.tipo_identificacion.sigla == 'NIT' and tercero.digito_verificacion %}-{{ tercero.digito_verificacion }}{% endif %}</td>
+
+                                                        <td>{{ tercero.empresa }}</td>
+                                                        <td>{{ tercero.fecha_creacion|date:'Y-m-d H:i' }}</td>
+                                                        <td>{{ tercero.fecha_modificacion|date:'Y-m-d H:i' }}</td>
+                                                        <td>{{ tercero.tipo_tercero }}</td>
+                                                        <td>{{ tercero.centro_poblado }}</td>
                                                         <td>
                                                             {% if tercero.estado == True %}
                                                             <span class="badge badge-primary">Activo</span>
@@ -61,11 +68,6 @@
                                                             <span class="badge badge-secondary">Inactivo</span>
                                                             {% endif %}
                                                         </td>
-                                                        <td>{{ tercero.empresa }}</td>
-                                                        <td>{{ tercero.fecha_creacion|date:'Y-m-d H:i' }}</td>
-                                                        <td>{{ tercero.fecha_modificacion|date:'Y-m-d H:i' }}</td>
-                                                        <td>{{ tercero.tipo_tercero }}</td>
-                                                        <td>{{ tercero.centro_poblado }}</td>
                                                         {% if perms.Administracion.change_tercero or perms.Administracion.delete_tercero %}
                                                         <td>
                                                             {% if perms.Administracion.change_tercero %}
