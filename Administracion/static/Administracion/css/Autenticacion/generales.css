@@ -1,0 +1,30 @@
+.bg-faded {
+    background-color: var(--theme-primary);
+    box-shadow: 0.8rem 0.8rem 0.7rem rgba(0, 0, 0, 0.80) !important;
+}
+
+.bg-faded-white {
+  background-color: #fff; }
+
+.form-control, .form-control:focus {
+    background-color: var(--theme-primary) !important;
+    color: #fff;
+}
+
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px var(--theme-primary) inset;
+    -webkit-text-fill-color: #fff !important;
+}
+.form-control::-webkit-input-placeholder {
+    color:#fff;
+}
+
+.form-label {
+    color: var(--theme-primary);
+}
+
+.titulo-autenticacion {
+    color: var(--theme-primary);
+}
