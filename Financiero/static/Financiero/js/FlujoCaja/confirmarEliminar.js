@@ -15,7 +15,7 @@ function fSweetAlert() {
     Swal.fire({
         title: '¿Está seguro de eliminar este registro?',
         text: "Esta acción no se podrá revertir",
-        type: 'warning',
+        icon: 'warning',
         showCancelButton: true,
         confirmButtonText: '¡Sí, eliminarlo!',
         cancelButtonText: 'Cancelar',

@@ -14,7 +14,7 @@ function fSweetAlert() {
     Swal.fire({
         title: '¿Está seguro de eliminar este ítem?',
         text: "Esta acción no se podrá revertir",
-        type: 'warning',
+        icon: 'warning',
         showCancelButton: true,
         confirmButtonText: '¡Sí, eliminarlo!',
         cancelButtonText: 'Cancelar'
@@ -39,7 +39,7 @@ function fSweetAlert() {
                     Swal.fire({
                         title: "¡Error!",
                         text: "Ha ocurrido un error eliminando el ítem",
-                        type: 'error',
+                        icon: 'error',
                     });
                 }
             });

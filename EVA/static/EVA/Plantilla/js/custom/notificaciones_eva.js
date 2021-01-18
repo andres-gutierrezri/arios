@@ -34,7 +34,7 @@ const EVANotificacion = {
         },
         general(tipo, mensaje) {
             Swal.fire({
-                type: tipo,
+                icon: tipo,
                 text: mensaje
             });
         },
@@ -57,7 +57,7 @@ const EVANotificacion = {
             Swal.fire({
                 title: titulo,
                 text: mensaje,
-                type: "success",
+                icon: "success",
                 confirmButtonText: texto_confirmacion,
                 closeOnConfirm: true
             }).then(function () {

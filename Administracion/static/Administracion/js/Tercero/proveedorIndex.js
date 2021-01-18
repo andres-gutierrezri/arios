@@ -14,7 +14,7 @@ function cambiarEstadoProveedor(idProveedor, opcion) {
     Swal.fire({
         title: titulo,
         text: mensaje,
-        type: 'warning',
+        icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Confirmar',
         cancelButtonText: 'Cancelar'
