@@ -38,7 +38,6 @@
                                                 <tr>
                                                     <th>Nombre</th>
                                                     <th>Identificación</th>
-                                                    <th>Tipo de identificación</th>
                                                     <th>Estado</th>
                                                     <th>Empresa</th>
                                                     <th>Fecha de creación</th>
@@ -54,12 +53,7 @@
                                                 {% for tercero in terceros %}
                                                     <tr>
                                                         <td>{{ tercero.nombre }}</td>
-                                                        {% if 'NIT' in tercero.tipo_identificacion.sigla %}
-                                                            <td>{{ tercero.identificacion}}-{{ tercero.digito_verificacion }}</td>
-                                                        {% else %}
-                                                            <td>{{ tercero.identificacion}}</td>
-                                                        {% endif %}
-                                                        <td>{{ tercero.tipo_identificacion}}</td>
+                                                        <td>{{ tercero.tipo_identificacion.sigla }} {{ tercero.identificacion }}{% if tercero.tipo_identificacion.sigla == 'NIT' and tercero.digito_verificacion %}-{{ tercero.digito_verificacion }}{% endif %}</td>
                                                         <td>
                                                             {% if tercero.estado == True %}
                                                             <span class="badge badge-primary">Activo</span>
