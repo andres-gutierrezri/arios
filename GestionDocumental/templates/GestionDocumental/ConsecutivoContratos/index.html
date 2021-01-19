@@ -43,6 +43,7 @@
                                 <div class="panel-group">
                                     <div class="panel-body">
                                         <div class="table-responsive">
+                                            {% include 'EVA/_common/_busqueda_paginacion.html' %}
                                             <table class="table table-bordered w-100" id="dataTableConsecutivos">
                                                 <thead class="bg-primary-600">
                                                     <tr>
@@ -76,6 +77,7 @@
                                                     {% endfor %}
                                                 </tbody>
                                             </table>
+                                            {% include 'EVA/_common/_paginacion.html' with datos=consecutivos buscar=buscar %}
                                         </div>
                                     </div>
                                     <div class="card-footer small text-muted">Actualizado: {{ fecha }}</div>
@@ -95,10 +97,5 @@
     <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script>
     <script src="{% static 'GestionDocumental/js/consecutivos_contratos.js' %}"></script>
-    <script src="{% static 'EVA/Plantilla/js/custom/controlDataTableExportar.js' %}"></script>
-    <script>
-        $(document).ready(function() {
-            iniciarTablaExportar([0, 1, 2, 3, 4, 5], 2, false, 'dataTableConsecutivos');
-        });
-    </script>
+    <script src="{% static 'EVA/Plantilla/js/custom/controlBusquedaPaginacion.js' %}"></script>
 {% endblock %}
