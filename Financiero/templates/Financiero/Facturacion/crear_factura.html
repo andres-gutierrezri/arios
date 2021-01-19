@@ -136,9 +136,14 @@
             </div>
             <div class="row justify-content-center">
                 <div class="col-auto">
-                    <a href="{% url 'Financiero:factura-index' %}" class="btn btn-danger btn-pills mr-1"><i class="fal fa-times"></i> Cancelar</a>
-                    <button class="btn btn-info btn-pills mr-1" type="button" id="btn_guardar_borrador"><i class="fal fa-eraser"></i> Guardar borrador</button>
-                    <button class="btn btn-success btn-pills mr-1" type="button" id="btn_generar_factura" disabled><i class="fal fa-file-alt"></i> Generar factura</button>
+                    <a href="{% url 'Financiero:factura-index' %}" class="btn btn-danger btn-pills mr-1 mt-2"><i class="fal fa-times"></i> Cancelar</a>
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-info btn-pills mr-1 mt-2" type="button" id="btn_guardar_borrador"><i class="fal fa-eraser"></i> Guardar borrador</button>
+                    <button class="btn btn-primary btn-pills mr-1 mt-2" type="button" id="btn_vista_previa" disabled><i class="fal fa-eye"></i> Vista previa</button>
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-success btn-pills mr-1 mt-2" type="button" id="btn_generar_factura" disabled><i class="fal fa-file-alt"></i> Generar factura</button>
                 </div>
             </div>
         </form>
@@ -146,6 +151,7 @@
     {% include 'Financiero/Facturacion/_agregar_item_modal.html' with impuestos=impuestos %}
     {% include 'Financiero/Facturacion/_agregar_amortizacion_modal.html'%}
     {% include 'Financiero/Facturacion/_agregar_aiu_modal.html'%}
+    {% include 'EVA/_common/_vista_previa_modal.html' with titulo_modal='Vista previa de factura' %}
 {% endblock main %}
 
 {% block scripts %}
@@ -157,4 +163,5 @@
     <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/conversiones.js' %}"></script>
     <script src="{% static 'Financiero/js/Facturacion/formFactura.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/funcionesGenerales.js' %}"></script>
 {% endblock scripts%}

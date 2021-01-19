@@ -5,6 +5,8 @@ let cargandoBorrador = false;
 const inputObservaciones = $('#observaciones_id');
 let modificado = true;
 let observacionesModificado = false;
+const modalAgregarItem = $("#agregar_item_modal");
+
 class Factura
 {
     constructor() {
@@ -145,7 +147,7 @@ $(document).ready(function () {
 
     // se realiza esto para que el select2 de impuestos se muestre correctamente en el modal de agregar ítem.
     $('#impuesto_select_id').select2({
-            dropdownParent: $('#agregar_item_modal')
+            dropdownParent: modalAgregarItem
         }
     );
 
@@ -176,6 +178,14 @@ $(document).ready(function () {
 		format: 'yyyy-mm-dd',
 		autoclose: true
 	});
+
+    modalAgregarItem.on('shown.bs.modal', function () {
+        $('#descripcion_item_id').focus();
+    });
+
+    $('#agregar_amortizacion_modal').on('shown.bs.modal', function () {
+        $("#agregar_amortizacion_modal input").first().focus();
+    });
 
 });
 
@@ -209,7 +219,7 @@ function configurarTablaDetalle() {
                         name: 'agregar',
                         className: 'btn-success btn-sm mr-1 btn-pills',
                         action: function abrirModalAgregarItem() {
-                                    $("#agregar_item_modal").modal('show');
+                                    modalAgregarItem.modal('show');
                                 }
                     }],
         columnDefs: [
@@ -279,6 +289,11 @@ function configurarBotones() {
     btnGenerarFactura.click(function () {
         enviarFactura(1);
     });
+
+    const btnVistaPrevia = $('#btn_vista_previa');
+    btnVistaPrevia.click(function () {
+        abrirModalVistaPrevia(`/financiero/facturas/${factura.id}/imprimir`);
+    });
     
 }
 
@@ -300,7 +315,7 @@ function ItemFactura(titulo, descripcion, valorUnitario, cantidad, impuesto, por
 
 function getItemXaTabla(itemFactura) {
     return([
-        `<b>${itemFactura.titulo}</b><br>${itemFactura.descripcion}`,
+        itemFactura.titulo === '' ? `${itemFactura.descripcion}` : `<b>${itemFactura.titulo}</b><br>${itemFactura.descripcion}`,
         numToDecimalStr(itemFactura.cantidad),
         itemFactura.unidadMedida.descripcion,
         numToDecimalStr(itemFactura.valorUnitario),
@@ -538,6 +553,7 @@ function renderDatosCliente(datos) {
 function habilitarBotones(borrador, generar) {
     $('#btn_guardar_borrador').prop('disabled', !borrador);
     $('#btn_generar_factura').prop('disabled', !generar);
+    $('#btn_vista_previa').prop('disabled', !generar);
     modificado = borrador;
 }
 
@@ -584,5 +600,4 @@ function renderBorrador() {
     clienteSelect.val(factura.cliente).change();
     habilitarBotones(false, true);
 }
-
 

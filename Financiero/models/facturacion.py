@@ -65,7 +65,6 @@ class FacturaEncabezado(models.Model, ModelDjangoExtensiones):
         ENVIADA_MODO_HABILITACION_NC = 44, 'Enviada en Modo Habilitación NC'
         NOTA_DEBITO = 60
 
-
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, verbose_name='Empresa', null=False, blank=False)
     tercero = models.ForeignKey(Tercero, on_delete=models.CASCADE, verbose_name='Tercero', null=False, blank=False)
     resolucion = models.ForeignKey(ResolucionFacturacion, on_delete=models.CASCADE,
@@ -171,8 +170,8 @@ class FacturaEncabezado(models.Model, ModelDjangoExtensiones):
 class FacturaDetalle(models.Model):
     factura_encabezado = models.ForeignKey(FacturaEncabezado, on_delete=models.CASCADE,
                                            verbose_name='Encabezado Factura', null=False, blank=False)
-    titulo = models.TextField(verbose_name='Título', max_length=250, null=False, blank=False)
-    descripcion = models.TextField(verbose_name='Descripción', max_length=500, null=True, blank=True)
+    titulo = models.TextField(verbose_name='Título', max_length=250, null=True, blank=True)
+    descripcion = models.TextField(verbose_name='Descripción', max_length=500, null=False, blank=True, default='')
     cantidad = models.PositiveIntegerField(verbose_name='Cantidad', null=False, blank=False)
     valor_unitario = models.DecimalField(verbose_name='Valor Unitario', max_digits=12, decimal_places=2, null=False,
                                          blank=False)

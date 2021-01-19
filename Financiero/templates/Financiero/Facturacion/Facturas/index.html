@@ -60,7 +60,7 @@
                                             <td>{{ factura.fecha_creacion |date:'Y-m-d' }}</td>
                                             <td>{{ factura.usuario_crea.username}}</td>
                                             <td>
-                                                <a class="far fa-2x fa-eye" href="{% url 'Financiero:factura-imprimir' factura.id %}"></a>
+                                                <a class="far fa-2x fa-eye" href="javascript:abrirModalVistaPrevia('{% url 'Financiero:factura-imprimir' factura.id %}')"></a>
                                                 {% if perms.Financeiro.delete_facturaencabezado %}
                                                     {% if factura.estado == 10 or factura.estado == 14 %}
                                                         <a class="far fa-2x fa-times-circle color-danger-900" id="eliminar_{{ factura.id }}" href="javascript:void(0);"  onclick="anularFacturaModal({{ factura.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-danger-900"></div></div>' data-toggle="tooltip" title="" data-original-title="Anular"></a>
@@ -101,7 +101,7 @@
                                             <td>{{ factura.fecha_creacion |date:'Y-m-d' }}</td>
                                             <td>{{ factura.usuario_crea.username}}</td>
                                             <td>
-                                                <a class="far fa-2x fa-eye" href="{% url 'Financiero:factura-imprimir' factura.id %}"></a>
+                                                <a class="far fa-2x fa-eye" href="javascript:abrirModalVistaPrevia('{% url 'Financiero:factura-imprimir' factura.id %}')"></a>
                                                 {% if perms.Financiero.change_facturaencabezado %}
                                                 <a class="far fa-2x fa-edit"  href="{% url 'Financiero:factura-editar' factura.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
                                                 {% endif %}
@@ -119,11 +119,13 @@
     </div>
 
     {% include 'Financiero/Facturacion/_anular_modal.html'%}
+    {% include 'EVA/_common/_vista_previa_modal.html' with titulo_modal='Vista previa de factura' %}
 {% endblock %}
 {% block scripts %}
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
     <script src="{% static 'Financiero/js/Facturacion/indexFactura.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/funcionesGenerales.js' %}"></script>
 
 {% endblock %}
