@@ -47,6 +47,7 @@
                                                     <tr>
                                                         <th>Consecutivo</th>
                                                         <th>Nombre</th>
+                                                        <th>Fecha de Creación</th>
                                                         <th>Fecha de Inicio</th>
                                                         <th>Fecha Final</th>
                                                         <th>Tipo de Contrato</th>
@@ -62,6 +63,7 @@
                                                                     {{ consecutivo.tercero }}
                                                                 {% endif %}
                                                             </td>
+                                                            <td>{{ consecutivo.fecha_crea | date:'Y-m-d h:i'}}</td>
                                                             <td>{{ consecutivo.fecha_inicio | date:'Y-m-d'}}</td>
                                                             <td>{% if consecutivo.fecha_final %}
                                                                     {{ consecutivo.fecha_final | date:'Y-m-d'}}
@@ -89,6 +91,11 @@
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.export.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script>
-    <script src="{% static 'GestionDocumental/js/exportar_tabla.js' %}"></script>
     <script src="{% static 'GestionDocumental/js/consecutivos_contratos.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/controlDataTableExportar.js' %}"></script>
+    <script>
+        $(document).ready(function() {
+            iniciarTablaExportar([0, 1, 2, 3, 4, 5], 2, false, 'dataTableConsecutivos');
+        });
+    </script>
 {% endblock %}
