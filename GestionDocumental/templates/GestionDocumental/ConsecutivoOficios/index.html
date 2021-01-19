@@ -7,6 +7,7 @@
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/theme-demo.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/custom/generales.css' %}">
 {% endblock styles %}
 
 {% block main %}
@@ -45,8 +46,8 @@
                                             <table class="table table-bordered w-100" id="dataTableConsecutivos">
                                                 <thead class="bg-primary-600">
                                                     <tr>
-                                                        <th>Código</th>
-                                                        <th>Fecha</th>
+                                                        <th class="min-w-100">Código</th>
+                                                        <th class="min-w-100">Fecha</th>
                                                         <th>Contrato</th>
                                                         <th>Detalle</th>
                                                         <th>Destinatario</th>
@@ -93,7 +94,12 @@
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.export.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script>
-    <script src="{% static 'GestionDocumental/js/exportar_tabla.js' %}"></script>
     <script src="{% static 'GestionDocumental/js/filtro_consecutivos.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/controlDataTableExportar.js' %}"></script>
+    <script>
+        $(document).ready(function() {
+            iniciarTablaExportar([0, 1, 2, 3, 4, 5], 1, false, 'dataTableConsecutivos');
+        });
+    </script>
 {% endblock %}

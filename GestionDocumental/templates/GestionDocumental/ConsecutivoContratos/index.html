@@ -7,6 +7,7 @@
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/theme-demo.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/custom/generales.css' %}">
 {% endblock styles %}
 
 {% block main %}
@@ -45,12 +46,13 @@
                                             <table class="table table-bordered w-100" id="dataTableConsecutivos">
                                                 <thead class="bg-primary-600">
                                                     <tr>
-                                                        <th>Consecutivo</th>
+                                                        <th class="min-w-100">Consecutivo</th>
                                                         <th>Nombre</th>
                                                         <th>Fecha de Creación</th>
                                                         <th>Fecha de Inicio</th>
                                                         <th>Fecha Final</th>
                                                         <th>Tipo de Contrato</th>
+                                                        <th>Usuario</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -69,6 +71,7 @@
                                                                     {{ consecutivo.fecha_final | date:'Y-m-d'}}
                                                                 {% else %} N/A {% endif %}</td>
                                                             <td>{{ consecutivo.tipo_contrato }}</td>
+                                                            <td>{{ consecutivo.usuario.get_full_name }}</td>
                                                         </tr>
                                                     {% endfor %}
                                                 </tbody>
