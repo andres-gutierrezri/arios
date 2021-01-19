@@ -23,7 +23,7 @@
 
                 <div class="form-row">
                     <div class="form-group col-12">
-                        {% input_textarea_tag 'comentario' 'Comentarios' maxlength="300" placeholder="Describa la razón de la aprobación o rechazo" required="" mensaje_validacion='Por favor escriba un comentario' invalido=errores.comentario %}
+                        {% input_textarea_tag 'comentario' 'Comentarios' maxlength="300" placeholder="Describa la razón del rechazo" required="" mensaje_validacion='Por favor escriba un comentario' invalido=errores.comentario %}
                     </div>
                 </div>
             </div>
@@ -34,4 +34,3 @@
         </div>
     </div>
 </form>
-<script src="{% static 'Administracion/js/Tercero/controlAprobarRechazar.js' %}"></script>
