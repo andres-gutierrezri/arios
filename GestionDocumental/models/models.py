@@ -42,7 +42,8 @@ class ConsecutivoOficio(models.Model):
 class ConsecutivoContrato(models.Model):
     objects = ManagerGeneral()
     numero_contrato = models.IntegerField(verbose_name='Número de Contrato', null=False, blank=False)
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Usuario', null=True, blank=True)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Usuario', null=True, blank=True,
+                                related_name='consecutivo_contrato_usuario')
     tercero = models.ForeignKey(Tercero, on_delete=models.CASCADE, verbose_name='Tercero', null=True, blank=True)
     tipo_contrato = models.ForeignKey(TipoContrato, on_delete=models.CASCADE, verbose_name='Tipo de Contrato',
                                       null=True, blank=True)
@@ -51,6 +52,8 @@ class ConsecutivoContrato(models.Model):
     codigo = models.CharField(max_length=50, verbose_name='Código', null=False, blank=False)
     fecha_crea = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False, blank=False)
     empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa', null=False, blank=False)
+    usuario_crea = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario Crea',
+                                     null=True, blank=True, related_name='consecutivo_contrato_usuario_crea')
 
     def __str__(self):
         return self.codigo

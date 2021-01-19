@@ -40,7 +40,7 @@ class ConsecutivoContratoCrearView(AbstractEvaLoggedView):
                                       empresa_id=get_id_empresa_global(request))
         sigla = TipoContrato.objects.get(id=consecutivo.tipo_contrato_id).sigla
         consecutivo.codigo = 'CTO_{0:03d}_{1}'.format(consecutivo.numero_contrato, sigla)
-
+        consecutivo.usuario_crea = request.user
         consecutivo.save()
         messages.success(request, 'Se ha creado el consecutivo {0}'.format(consecutivo.codigo))
         return redirect(reverse('GestionDocumental:consecutivo-contratos-index', args=[0]))

@@ -71,7 +71,7 @@
                                                                     {{ consecutivo.fecha_final | date:'Y-m-d'}}
                                                                 {% else %} N/A {% endif %}</td>
                                                             <td>{{ consecutivo.tipo_contrato }}</td>
-                                                            <td>{{ consecutivo.usuario.get_full_name }}</td>
+                                                            <td>{{ consecutivo.usuario_crea.get_full_name }}</td>
                                                         </tr>
                                                     {% endfor %}
                                                 </tbody>
