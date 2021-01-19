@@ -1,0 +1,27 @@
+<div class="modal fade"  tabindex="-1" id="vista_previa_modal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    {{ titulo_modal }}
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <div>
+                    <iframe id="if_vista_previa" src="" title="{{ titulo_modal }}" referrerpolicy="same-origin"  height="550"  style="border:none; width: 100%;"></iframe>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger btn-pills" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+

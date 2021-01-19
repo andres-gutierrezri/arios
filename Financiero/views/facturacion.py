@@ -11,6 +11,7 @@ from django.http import JsonResponse, FileResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.template.loader import get_template
 from django.urls import reverse
+from django.views.decorators.clickjacking import xframe_options_sameorigin
 
 from Administracion.models import Tercero, Impuesto, ConsecutivoDocumento, TipoDocumento, UnidadMedida
 from Administracion.utils import get_id_empresa_global
@@ -351,6 +352,7 @@ class FacturaDetalleView(AbstractEvaLoggedView):
 
 
 class FacturaImprimirView(AbstractEvaLoggedView):
+    @xframe_options_sameorigin
     def get(self, request, id_factura):
         try:
             factura = FacturaEncabezado.objects.get(id=id_factura, empresa_id=get_id_empresa_global(request))
