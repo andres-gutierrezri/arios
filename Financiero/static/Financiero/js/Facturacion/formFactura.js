@@ -289,6 +289,11 @@ function configurarBotones() {
     btnGenerarFactura.click(function () {
         enviarFactura(1);
     });
+
+    const btnVistaPrevia = $('#btn_vista_previa');
+    btnVistaPrevia.click(function () {
+        abrirModalVistaPrevia(`/financiero/facturas/${factura.id}/imprimir`);
+    });
     
 }
 
@@ -548,6 +553,7 @@ function renderDatosCliente(datos) {
 function habilitarBotones(borrador, generar) {
     $('#btn_guardar_borrador').prop('disabled', !borrador);
     $('#btn_generar_factura').prop('disabled', !generar);
+    $('#btn_vista_previa').prop('disabled', !generar);
     modificado = borrador;
 }
 
@@ -594,5 +600,4 @@ function renderBorrador() {
     clienteSelect.val(factura.cliente).change();
     habilitarBotones(false, true);
 }
-
 
