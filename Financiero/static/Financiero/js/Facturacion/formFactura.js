@@ -300,7 +300,7 @@ function ItemFactura(titulo, descripcion, valorUnitario, cantidad, impuesto, por
 
 function getItemXaTabla(itemFactura) {
     return([
-        `<b>${itemFactura.titulo}</b><br>${itemFactura.descripcion}`,
+        itemFactura.titulo === '' ? `${itemFactura.descripcion}` : `<b>${itemFactura.titulo}</b><br>${itemFactura.descripcion}`,
         numToDecimalStr(itemFactura.cantidad),
         itemFactura.unidadMedida.descripcion,
         numToDecimalStr(itemFactura.valorUnitario),
