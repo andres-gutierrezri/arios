@@ -34,6 +34,7 @@ class ConsecutivoContratoView(AbstractEvaLoggedView):
                                                Q(fecha_inicio__icontains=search) |
                                                Q(fecha_final__icontains=search) |
                                                Q(fecha_crea__icontains=search) |
+                                               Q(justificacion__icontains=search) |
                                                Q(tipo_contrato__nombre__icontains=search)
                                                )
 

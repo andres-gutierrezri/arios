@@ -42,6 +42,7 @@ class ConsecutivoOficiosView(AbstractEvaLoggedView):
                                                Q(detalle__icontains=search) |
                                                Q(destinatario__icontains=search) |
                                                Q(usuario__first_name__icontains=search) |
+                                               Q(justificacion__icontains=search) |
                                                Q(usuario__last_name__icontains=search))
         coincidencias = len(consecutivos)
         consecutivos = paginar(consecutivos.order_by('-id'), page, 10)
