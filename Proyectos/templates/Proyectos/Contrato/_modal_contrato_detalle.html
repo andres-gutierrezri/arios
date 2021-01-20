@@ -13,16 +13,17 @@
         <div class="modal-body p-b-0">
             <div class="row">
                 <div class="col-lg-6">
-                    <div class="card mb-g">
-                        <div class="row row-grid no-gutters">
-                            <div class="col-12">
-                                <div class="p-3">
-                                    <h2 class="mb-0 fs-xl">
-                                        <strong> Información Básica </strong>
-                                    </h2>
-                                </div>
+                    <div class="panel">
+                        <div class="panel-hdr">
+                            <h2 class="mb-0 fs-xl">
+                                <strong> Información Básica </strong>
+                            </h2>
+                            <div class="panel-toolbar">
+                                <button class="btn btn-panel" data-action="panel-collapse" data-toggle="tooltip" data-offset="0,10" data-original-title="Collapse"></button>
                             </div>
-                            <div class="p-3">
+                        </div>
+                        <div class="panel-container show">
+                            <div class="panel-content">
                                 <h5>
                                     <small class="mt-0 mb-3 text-muted">
                                         <b>Cliente: </b>{{ contrato.cliente }}
@@ -64,20 +65,21 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card mb-g">
-                        <div class="row row-grid no-gutters">
-                            <div class="col-12">
-                                <div class="p-3">
-                                    <h2 class="mb-0 fs-xl">
-                                        {% if supervisores %}
-                                            <strong> Supervisores </strong>
-                                        {% else %}
-                                            <strong> Interventores </strong>
-                                        {% endif %}
-                                    </h2>
-                                </div>
+                    <div class="panel">
+                        <div class="panel-hdr">
+                            <h2 class="mb-0 fs-xl">
+                                {% if supervisores %}
+                                    <strong> Supervisores </strong>
+                                {% else %}
+                                    <strong> Interventores </strong>
+                                {% endif %}
+                            </h2>
+                            <div class="panel-toolbar">
+                                <button class="btn btn-panel" data-action="panel-collapse" data-toggle="tooltip" data-offset="0,10" data-original-title="Collapse"></button>
                             </div>
-                            <div class="p-3">
+                        </div>
+                        <div class="panel-container show">
+                            <div class="panel-content">
                                 <h5>
                                     {% if supervisores %}
                                     <small class="mt-0 mb-3 text-muted">
@@ -103,16 +105,17 @@
                     </div>
                 </div>
                 <div class="col-lg-6">
-                    <div class="card mb-g">
-                        <div class="row row-grid no-gutters">
-                            <div class="col-12">
-                                <div class="p-3">
-                                    <h2 class="mb-0 fs-xl">
-                                        <strong> Información Financiera </strong>
-                                    </h2>
-                                </div>
+                    <div class="panel">
+                        <div class="panel-hdr">
+                            <h2 class="mb-0 fs-xl">
+                                <strong> Información Financiera </strong>
+                            </h2>
+                            <div class="panel-toolbar">
+                                <button class="btn btn-panel" data-action="panel-collapse" data-toggle="tooltip" data-offset="0,10" data-original-title="Collapse"></button>
                             </div>
-                            <div class="p-3">
+                        </div>
+                        <div class="panel-container show">
+                            <div class="panel-content">
                                 <h5>
                                     <small class="mt-0 mb-3 text-muted">
                                         <b>Fecha de Registro Presupuestal: </b>{{ contrato.fecha_registro_presupuestal|date:'Y-m-d' }}
@@ -161,18 +164,17 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-lg-12">
-                    <div class="card mb-g">
-                        <div class="row row-grid no-gutters">
-                            <div class="col-12">
-                                <div class="p-3">
-                                    <h2 class="mb-0 fs-xl">
-                                        <strong> Garantías </strong>
-                                    </h2>
-                                </div>
+                    <div class="panel">
+                        <div class="panel-hdr">
+                            <h2 class="mb-0 fs-xl">
+                                <strong> Garantías </strong>
+                            </h2>
+                            <div class="panel-toolbar">
+                                <button class="btn btn-panel" data-action="panel-collapse" data-toggle="tooltip" data-offset="0,10" data-original-title="Collapse"></button>
                             </div>
-                            <div class="col-12 p-3">
+                        </div>
+                        <div class="panel-container show">
+                            <div class="panel-content">
                                 <h5>
                                     <small class="mt-0 mb-3 text-muted">
                                         <div class="row">
