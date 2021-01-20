@@ -11,17 +11,17 @@
 
         {% for pag in datos.num_paginacion %}
             {% if datos.number != pag %}
-                <li class="page-item {% if pag == '...' %}disabled{% endif %}"><a class="page-link" href="?{{ parametro }}={{ pag }}{% if buscar %}&search={{ buscar }}{% endif %}">{{ pag }}</a></li>
+                <li class="page-item {% if pag == '...' %}disabled{% endif %}"><a class="page-link" href="?{{ parametro }}={{ pag }}{% if buscar %}&search={{ buscar }}{% endif %}{% if busqueda_avanzada %}&busqueda_avanzada={{ busqueda_avanzada }}{% endif %}">{{ pag }}</a></li>
             {% else %}
                 <li class="page-item active" aria-current="page">
-                    <a class="page-link" href="?{{ parametro }}={{ pag }}{% if buscar %}&search={{ buscar }}{% endif %}">{{ pag }} <span class="sr-only">(current)</span></a>
+                    <a class="page-link" href="?{{ parametro }}={{ pag }}{% if buscar %}&search={{ buscar }}{% endif %}{% if busqueda_avanzada %}&busqueda_avanzada={{ busqueda_avanzada }}{% endif %}">{{ pag }} <span class="sr-only">(current)</span></a>
                 </li>
             {% endif %}
         {% endfor %}
 
         {% if datos.has_next %}
             <li class="page-item">
-                <a class="page-link" href="?{{ parametro }}={{ datos.next_page_number }}{% if buscar %}&search={{ buscar }}{% endif %}" aria-label="Siguiente">
+                <a class="page-link" href="?{{ parametro }}={{ datos.next_page_number }}{% if buscar %}&search={{ buscar }}{% endif %}{% if busqueda_avanzada %}&busqueda_avanzada={{ busqueda_avanzada }}{% endif %}" aria-label="Siguiente">
                     <span aria-hidden="true"><i class="fal fa-chevron-right"></i></span>
                 </a>
             </li>

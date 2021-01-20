@@ -2,13 +2,6 @@
 
 let timeout
 
-function enviarBusqueda(elemento) {
-    let code = (elemento.keyCode ? elemento.keyCode : elemento.which);
-    if(code === 13) {
-      filtrar();
-    }
-}
-
 function filtrarPaginacion() {
     clearTimeout(timeout)
     timeout = setTimeout(() => {
