@@ -34,6 +34,7 @@ function fSweetAlertEliminarJustificado() {
         input: 'text',
         inputPlaceholder: '¿Por qué deseas eliminar este item?',
         inputValue: '',
+        inputAttributes: {'maxlength': 100},
         showCancelButton: true,
         confirmButtonText: '¡Sí, eliminarlo!',
         cancelButtonText: 'Cancelar',
