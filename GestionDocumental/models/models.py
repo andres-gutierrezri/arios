@@ -16,6 +16,8 @@ class ConsecutivoOficio(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Usuario', null=False, blank=False)
     codigo = models.CharField(max_length=50, verbose_name='Código', null=False, blank=False)
     empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa', blank=False, null=False)
+    justificacion = models.CharField(max_length=100, verbose_name='Justificacion', blank=True, null=True)
+    estado = models.BooleanField(verbose_name='Estado', blank=False, null=False)
 
     def __str__(self):
         return self.codigo
@@ -35,6 +37,7 @@ class ConsecutivoOficio(models.Model):
         consecutivo.contrato_id = datos.get('contrato_id', None)
         consecutivo.detalle = datos.get('detalle', '')
         consecutivo.destinatario = datos.get('destinatario', '')
+        consecutivo.estado = True
 
         return consecutivo
 
