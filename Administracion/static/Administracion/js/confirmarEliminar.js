@@ -43,7 +43,7 @@ function fSweetAlertEliminarJustificado() {
             }
         }
     }).then(result => {
-        confirmarEliminacion(result.value, URLDomain + rutaBorrado + "/" + idBorrar + "/delete?=justificacion=" + result.value)
+        confirmarEliminacion(result.value, URLDomain + rutaBorrado + "/" + idBorrar + "/delete")
     });
 }
 

@@ -31,4 +31,6 @@ urlpatterns = [
          name='consecutivo-contratos-index'),
     path('consecutivo-contratos/add', consecutivo_contrato.ConsecutivoContratoCrearView.as_view(),
          name='consecutivo-contratos-crear'),
+    path('consecutivo-contratos/<int:id>/delete', consecutivo_contrato.ConsecutivoContratoEliminarView.as_view(),
+         name='consecutivo-contratos-eliminar'),
 ]

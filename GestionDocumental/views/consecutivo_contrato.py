@@ -1,8 +1,10 @@
 import datetime
 import json
+from sqlite3 import IntegrityError
 
 from django.contrib import messages
 from django.db.models import Q
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
@@ -64,6 +66,28 @@ class ConsecutivoContratoCrearView(AbstractEvaLoggedView):
         consecutivo.save()
         messages.success(request, 'Se ha creado el consecutivo {0}'.format(consecutivo.codigo))
         return redirect(reverse('GestionDocumental:consecutivo-contratos-index', args=[0]))
+
+
+class ConsecutivoContratoEliminarView(AbstractEvaLoggedView):
+    def post(self, request, id):
+        consecutivo = ConsecutivoContrato.objects.get(id=id)
+        body_unicode = request.body.decode('utf-8')
+        datos_registro = json.loads(body_unicode)
+
+        justificacion = datos_registro['justificacion']
+        if not consecutivo.estado:
+            return JsonResponse({"estado": "error",
+                                 "mensaje": 'Este consecutivo ya ha sido eliminado.'})
+        try:
+            consecutivo.estado = False
+            consecutivo.justificacion = justificacion
+            consecutivo.save(update_fields=['estado', 'justificacion'])
+            messages.success(request, 'Se ha eliminado el consecutivo {0}'.format(consecutivo.codigo))
+            return JsonResponse({"estado": "OK"})
+
+        except IntegrityError:
+            return JsonResponse({"estado": "error",
+                                 "mensaje": 'Ha ocurrido un erro al realizar la acción'})
 
 
 def datos_xa_render(request) -> dict:

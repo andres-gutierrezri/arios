@@ -54,6 +54,9 @@
                                                         <th>Fecha Final</th>
                                                         <th>Tipo de Contrato</th>
                                                         <th>Usuario</th>
+                                                        <th>Justificación</th>
+                                                        <th>Estado</th>
+                                                        <th>Acción</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -73,6 +76,19 @@
                                                                 {% else %} N/A {% endif %}</td>
                                                             <td>{{ consecutivo.tipo_contrato }}</td>
                                                             <td>{{ consecutivo.usuario_crea.get_full_name }}</td>
+                                                            <td>{% if consecutivo.justificacion %}{{ consecutivo.justificacion }}{% endif %}</td>
+                                                            <td>
+                                                                {% if consecutivo.estado %}
+                                                                    <span class="badge badge-primary">Vigente</span>
+                                                                {% else %}
+                                                                    <span class="badge badge-secondary">Anulado</span>
+                                                                {% endif %}
+                                                            </td>
+                                                            <td>
+                                                                {% if perms.Administracion.delete_consecutivocontrato and consecutivo.estado %}
+                                                                  <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ consecutivo.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ consecutivo.id }}, true)" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+                                                                {% endif %}
+                                                            </td>
                                                         </tr>
                                                     {% endfor %}
                                                 </tbody>
@@ -88,10 +104,13 @@
                 </div>
             </div>
     </div>
+    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='gestion-documental/consecutivo-contratos' %}
 
 {% endblock %}
 {% block scripts %}
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
+    <script src="{% static 'Administracion/js/confirmarEliminar.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.export.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>

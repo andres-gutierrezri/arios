@@ -57,6 +57,8 @@ class ConsecutivoContrato(models.Model):
     empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa', null=False, blank=False)
     usuario_crea = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario Crea',
                                      null=True, blank=True, related_name='consecutivo_contrato_usuario_crea')
+    justificacion = models.CharField(max_length=100, verbose_name='Justificacion', blank=True, null=True)
+    estado = models.BooleanField(verbose_name='Estado', blank=False, null=False)
 
     def __str__(self):
         return self.codigo
@@ -78,6 +80,7 @@ class ConsecutivoContrato(models.Model):
         consecutivo.tipo_contrato_id = datos.get('tipo_contrato', '')
         consecutivo.fecha_inicio = datos.get('fecha_inicio', '')
         consecutivo.fecha_final = datos.get('fecha_final', '')
+        consecutivo.estado = True
         if not consecutivo.fecha_final:
             consecutivo.fecha_final = None
 
