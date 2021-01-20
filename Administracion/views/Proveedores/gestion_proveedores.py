@@ -10,7 +10,7 @@ from Administracion.enumeraciones import EstadosProveedor
 from Administracion.models import Tercero
 from Administracion.models.models import ProductoServicio, SubproductoSubservicio
 from Administracion.models.terceros import ProveedorProductoServicio
-from EVA.General.utilidades import paginar
+from EVA.General.utilidades import paginar, app_datetime_now
 from EVA.views.index import AbstractEvaLoggedView
 
 SOLICITUD_ENVIADA = 5
@@ -46,11 +46,18 @@ class ProveedorIndexView(AbstractEvaLoggedView):
         resutados_busqueda = ''
         if subproducto_subservicio:
             proveedores_pro_serv = proveedores_pro_serv.filter(subproducto_subservicio_id__in=subproducto_subservicio)
-            tipo_producto_servicio = 2 if proveedores_pro_serv[0].subproducto_subservicio.producto_servicio\
-                .es_servicio else 1
-            producto_servicio = proveedores_pro_serv[0].subproducto_subservicio.producto_servicio
-            resutados_busqueda = 'Se han encontrado {0} coincidencias'.format(len(proveedores_pro_serv))
-            messages.success(request, resutados_busqueda)
+            if proveedores_pro_serv:
+                tipo_producto_servicio = 2 if proveedores_pro_serv[0].subproducto_subservicio.producto_servicio\
+                    .es_servicio else 1
+                producto_servicio = proveedores_pro_serv[0].subproducto_subservicio.producto_servicio_id
+                resutados_busqueda = 'Se han encontrado {0} coincidencias'.format(len(proveedores_pro_serv))
+                messages.success(request, resutados_busqueda)
+            else:
+                tipo_producto_servicio = int(tipo_producto_servicio)
+                producto_servicio = int(producto_servicio)
+                resutados_busqueda = 'No se encontraron coincidencias'
+                messages.warning(request, resutados_busqueda)
+
             es_servicio = tipo_producto_servicio == 2
             productos_servicios = ProductoServicio.objects.get_xa_select_activos().filter(es_servicio=es_servicio)
             subproductos_subservicios = SubproductoSubservicio.objects.get_xa_select_activos()\
@@ -89,7 +96,8 @@ class ProveedorIndexView(AbstractEvaLoggedView):
                        'label_producto_servicio': label_producto_servicio,
                        'label_subproducto_subservicio': label_subproducto_subservicio,
                        'resutados_busqueda': resutados_busqueda,
-                       'buscar': search})
+                       'buscar': search,
+                       'fecha': app_datetime_now()})
 
 
 class ActivarDesactivarProveedorView(AbstractEvaLoggedView):
