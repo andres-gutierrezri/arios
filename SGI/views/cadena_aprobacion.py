@@ -23,12 +23,10 @@ class CadenaAprobacionView(AbstractEvaLoggedView):
     def get(self, request):
         cadenas_aprobacion = CadenaAprobacionEncabezado.objects.filter(empresa_id=get_id_empresa_global(request))
         detalles = CadenaAprobacionDetalle.objects.filter(cadena_aprobacion__empresa_id=get_id_empresa_global(request))
-        colaboradores = Colaborador.objects.all()
         procesos = Proceso.objects.filter(empresa_id=get_id_empresa_global(request)).order_by('nombre')
         return render(request, 'SGI/CadenasAprobacion/index.html', {'cadenas_aprobacion': cadenas_aprobacion,
                                                                     'detalles': detalles,
                                                                     'fecha': datetime.now(),
-                                                                    'colaboradores': colaboradores,
                                                                     'menu_actual': 'cadenas_aprobacion',
                                                                     'procesos': procesos})
 
