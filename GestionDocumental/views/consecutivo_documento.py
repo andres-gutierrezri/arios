@@ -1,11 +1,13 @@
 import datetime
 
 from django.contrib import messages
+from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
 from Administracion.models import ConsecutivoDocumento, TipoDocumento
 from Administracion.utils import get_id_empresa_global
+from EVA.General.utilidades import paginar
 from EVA.views.index import AbstractEvaLoggedView
 from GestionDocumental.models import ConsecutivoOficio
 from Proyectos.models import Contrato
@@ -25,10 +27,28 @@ class ConsecutivoOficiosView(AbstractEvaLoggedView):
         opciones_filtro = [{'campo_valor': 0, 'campo_texto': 'Todos'},
                            {'campo_valor': 1, 'campo_texto': 'Mis consecutivos'}]
 
+        page = request.GET.get('page', 1)
+        search = request.GET.get('search', '')
+        total = len(consecutivos)
+
+        if search:
+            consecutivos = consecutivos.filter(Q(codigo__icontains=search) |
+                                               Q(fecha__icontains=search) |
+                                               Q(contrato__numero_contrato__icontains=search) |
+                                               Q(contrato__cliente__nombre__icontains=search) |
+                                               Q(detalle__icontains=search) |
+                                               Q(destinatario__icontains=search) |
+                                               Q(usuario__first_name__icontains=search) |
+                                               Q(usuario__last_name__icontains=search))
+        coincidencias = len(consecutivos)
+        consecutivos = paginar(consecutivos, page, 10)
         return render(request, 'GestionDocumental/ConsecutivoOficios/index.html', {'consecutivos': consecutivos,
                                                                                    'opciones_filtro': opciones_filtro,
                                                                                    'colaborador': colaborador,
                                                                                    'fecha': datetime.datetime.now(),
+                                                                                   'buscar': search,
+                                                                                   'coincidencias': coincidencias,
+                                                                                   'total': total,
                                                                                    'menu_actual': 'consecutivos-oficios',
                                                                                    'id_filtro': id})
 
