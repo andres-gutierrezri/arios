@@ -1,5 +1,8 @@
+import json
+
 from django.contrib import messages
 from django.db import IntegrityError
+from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render
 
@@ -7,6 +10,7 @@ from Administracion.enumeraciones import EstadosProveedor
 from Administracion.models import Tercero
 from Administracion.models.models import ProductoServicio, SubproductoSubservicio
 from Administracion.models.terceros import ProveedorProductoServicio
+from EVA.General.utilidades import paginar
 from EVA.views.index import AbstractEvaLoggedView
 
 SOLICITUD_ENVIADA = 5
@@ -17,18 +21,34 @@ class ProveedorIndexView(AbstractEvaLoggedView):
         tipo_producto_servicio = request.GET.get('tipo_producto_servicio_', '')
         producto_servicio = request.GET.get('producto_servicio_', '')
         subproducto_subservicio = request.GET.getlist('subproducto_subservicio_', [])
+        busqueda_avanzada = request.GET.get('busqueda_avanzada', [])
+        search = request.GET.get('search', '')
+        if busqueda_avanzada:
+            subproducto_subservicio = json.loads(busqueda_avanzada)
+
         productos_servicios = []
         subproductos_subservicios = []
         all_productos_servicios = ProveedorProductoServicio.objects.all()
         proveedores_pro_serv = ProveedorProductoServicio.objects.distinct('proveedor')\
             .filter(proveedor__es_vigente=True)\
             .exclude(proveedor__estado_proveedor=EstadosProveedor.DILIGENCIAMIENTO_PERFIL)
+
+        if search:
+            proveedores_pro_serv = proveedores_pro_serv\
+                .filter(Q(proveedor__nombre__icontains=search) |
+                        Q(proveedor__identificacion__icontains=search) |
+                        Q(proveedor__ciudad__nombre__icontains=search) |
+                        Q(proveedor__ciudad__departamento__nombre__icontains=search) |
+                        Q(proveedor__ciudad__departamento__pais__nombre__icontains=search) |
+                        Q(proveedor__telefono_movil_principal__icontains=search) |
+                        Q(proveedor__correo_principal__icontains=search))
+
         resutados_busqueda = ''
         if subproducto_subservicio:
             proveedores_pro_serv = proveedores_pro_serv.filter(subproducto_subservicio_id__in=subproducto_subservicio)
-
-            tipo_producto_servicio = int(tipo_producto_servicio)
-            producto_servicio = int(producto_servicio)
+            tipo_producto_servicio = 2 if proveedores_pro_serv[0].subproducto_subservicio.producto_servicio\
+                .es_servicio else 1
+            producto_servicio = proveedores_pro_serv[0].subproducto_subservicio.producto_servicio
             resutados_busqueda = 'Se han encontrado {0} coincidencias'.format(len(proveedores_pro_serv))
             messages.success(request, resutados_busqueda)
             es_servicio = tipo_producto_servicio == 2
@@ -54,6 +74,8 @@ class ProveedorIndexView(AbstractEvaLoggedView):
         label_producto_servicio, label_subproducto_subservicio = ['Servicio', 'Subservicio'] \
             if tipo_producto_servicio == 2 else ['Producto', 'Subproducto']
 
+        page = request.GET.get('page', 1)
+        lista_proveedores_activos = paginar(lista_proveedores_activos, page, 10)
         return render(request, 'Administracion/Tercero/Proveedor/index.html',
                       {'proveedores_pro_serv': lista_proveedores_activos,
                        'menu_actual': ['proveedores', 'proveedores'],
@@ -66,7 +88,8 @@ class ProveedorIndexView(AbstractEvaLoggedView):
                        'all_productos_servicios': all_productos_servicios,
                        'label_producto_servicio': label_producto_servicio,
                        'label_subproducto_subservicio': label_subproducto_subservicio,
-                       'resutados_busqueda': resutados_busqueda})
+                       'resutados_busqueda': resutados_busqueda,
+                       'buscar': search})
 
 
 class ActivarDesactivarProveedorView(AbstractEvaLoggedView):
