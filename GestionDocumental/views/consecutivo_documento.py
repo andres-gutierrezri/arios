@@ -41,7 +41,7 @@ class ConsecutivoOficiosView(AbstractEvaLoggedView):
                                                Q(usuario__first_name__icontains=search) |
                                                Q(usuario__last_name__icontains=search))
         coincidencias = len(consecutivos)
-        consecutivos = paginar(consecutivos, page, 10)
+        consecutivos = paginar(consecutivos.order_by('-id'), page, 10)
         return render(request, 'GestionDocumental/ConsecutivoOficios/index.html', {'consecutivos': consecutivos,
                                                                                    'opciones_filtro': opciones_filtro,
                                                                                    'colaborador': colaborador,

@@ -36,7 +36,7 @@ class ConsecutivoContratoView(AbstractEvaLoggedView):
                                                )
 
         coincidencias = len(consecutivos)
-        consecutivos = paginar(consecutivos, page, 10)
+        consecutivos = paginar(consecutivos.order_by('-id'), page, 10)
         return render(request, 'GestionDocumental/ConsecutivoContratos/index.html',
                       {'consecutivos': consecutivos,
                        'tipo_contratos': tipos_contrato_filtro,
