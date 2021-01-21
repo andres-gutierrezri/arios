@@ -53,7 +53,7 @@
                                 <b>Proveedor: </b>{% if datos_estado.estado == True %}<span class="badge badge-primary">Activo</span>{% else %}<span class="badge badge-secondary">Inactivo</span>{% endif %}<br>
                                 <b>Estado: </b>{{ datos_estado.estado_descripcion }}<br>
                                 {% if datos_estado.ultima_act %}
-                                    <b>Última Aprobación:</b> {{ datos_estado.ultima_act |date:'Y-m-d h:m'}}<br>
+                                    <b>Última Aprobación:</b> {{ datos_estado.ultima_act |date:'Y-m-d H:i'}}<br>
                                 {% endif %}
                                 {% if datos_estado.estado_solicitud %}
                                     <b>Causa del Rechazo: </b>{{ datos_estado.estado_solicitud }}
