@@ -33,4 +33,8 @@ input:-webkit-autofill {
     background: white url('../../img/fondo.svg') no-repeat center bottom fixed;
     background-size: cover;
 }
+.fondo-autenticacion-proveedores {
+    background: url('../../img/fondo.svg') no-repeat center bottom fixed;
+    background-size: cover;
+}
 
