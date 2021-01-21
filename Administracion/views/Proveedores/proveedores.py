@@ -976,7 +976,7 @@ def generar_datos_proveedor(proveedor):
                               'url': '/administracion/proveedor/perfil/actividades-economicas',
                               'datos': actividades_economicas, 'completo': actividades_economicas is not ''}
     documentos = {'id': 3, 'nombre': 'Documentos', 'url': '/administracion/proveedor/perfil/documentos',
-                  'datos': documentos, 'completo': documentos != [], 'modificado': 3 in cambios}
+                  'datos': documentos, 'completo': n_documentos == n_tipos, 'modificado': 3 in cambios}
     entidades_bancarias = {'id': 4, 'nombre': 'Información Bancaria', 'modificado': 4 in cambios,
                            'url': '/administracion/proveedor/perfil/entidades-bancarias',
                            'datos': entidades_bancarias, 'completo': entidades_bancarias != []}
