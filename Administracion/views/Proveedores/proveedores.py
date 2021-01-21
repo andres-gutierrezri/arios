@@ -1016,7 +1016,7 @@ def generar_comentario_cambios_tarjeta_solicitud(proveedor):
     ebe = EntidadBancariaTercero.objects.filter(tercero=proveedor_editado)
 
     if validar_cambios_proveedor(ebv, ebe):
-        modificaciones += 'Entidades Bancarias, '
+        modificaciones += 'Información Bancaria, '
         lista_tarjeta_modificaciones.append(4)
 
     bsv = ProveedorProductoServicio.objects.filter(proveedor=proveedor_vigente)
