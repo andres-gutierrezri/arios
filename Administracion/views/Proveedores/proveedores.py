@@ -9,6 +9,7 @@ from django.db import transaction
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.views.decorators.clickjacking import xframe_options_sameorigin
 
 from Administracion.enumeraciones import TipoPersona, RegimenFiscal, \
     EstadosProveedor, TipoContribuyente
@@ -228,6 +229,7 @@ class EntidadBancariaEliminarView(AbstractEvaLoggedProveedorView):
 
 
 class VerCertificacionView(AbstractEvaLoggedProveedorView):
+    @xframe_options_sameorigin
     def get(self, request, id):
         entidad_bancaria = EntidadBancariaTercero.objects.get(id=id)
         if entidad_bancaria.certificacion:
@@ -455,6 +457,7 @@ class EnviarSolicitudProveedorView(AbstractEvaLoggedView):
 
 
 class VerDocumentoView(AbstractEvaLoggedProveedorView):
+    @xframe_options_sameorigin
     def get(self, request, id):
         documento = DocumentoTercero.objects.get(id=id)
         if documento.documento:
