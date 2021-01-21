@@ -28,3 +28,9 @@ input:-webkit-autofill {
 .titulo-autenticacion {
     color: var(--theme-primary);
 }
+
+.fondo-autenticacion {
+    background: white url('../../img/fondo.svg') no-repeat center bottom fixed;
+    background-size: cover;
+}
+
