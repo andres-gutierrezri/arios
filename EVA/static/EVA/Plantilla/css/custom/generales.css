@@ -163,3 +163,20 @@ position: relative;
     padding: 10px;
     border-radius: 4px;
 }
+
+.page-sidebar {
+    background-image: url("../../img/custom/menu-tb.svg");
+}
+.nav-footer, .page-logo {
+    background-color: transparent;
+}
+.nav-menu li a > [class*='fa-'], .nav-menu li a > .ni , .nav-menu li a, .nav-menu li > ul li a,
+.nav-menu li > ul li a > [class*='fa-'], .nav-menu li > ul li a > .ni {
+    color: white;
+}
+
+.bg-trans-gradient {
+    background-image: url("../../img/custom/fondo.svg");
+    background-size: cover;
+    background-color: #11564f
+}

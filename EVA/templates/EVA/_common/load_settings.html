@@ -24,7 +24,7 @@
     }
     else
     {
-        console.log("Heads up! Theme settings is empty or does not exist, loading default settings...");
+        console.log("Heads up! Theme settings is empty or does not exist, loading default settings...", "color: #ed1c24");
     }
     if (themeSettings.themeURL && !document.getElementById('mytheme'))
     {
@@ -33,6 +33,10 @@
         cssfile.rel = 'stylesheet';
         cssfile.href = themeURL;
         document.getElementsByTagName('head')[0].appendChild(cssfile);
+    }
+    else if (themeSettings.themeURL && document.getElementById('mytheme'))
+    {
+        document.getElementById('mytheme').href = themeSettings.themeURL;
     }
     /**
      * Save to localstorage
@@ -52,7 +56,7 @@
     /**
      * Reset settings
      **/
-    var resetSettings = function()
+    let resetSettings = function()
     {
         localStorage.setItem("themeSettings", "");
     }

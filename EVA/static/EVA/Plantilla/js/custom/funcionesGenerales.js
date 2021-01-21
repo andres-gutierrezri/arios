@@ -1,4 +1,3 @@
-
 'use strict';
 
 function mostrarCamposFormulario(lista){
@@ -13,4 +12,13 @@ function ocultarCamposFormulario(lista) {
         objeto.removeAttr('required', 'true')
         objeto.attr('hidden', 'true')
     })
+}
+
+function abrirModalVistaPrevia(urlDocumento) {
+    const ifVista =  $("#if_vista_previa");
+
+    ifVista.attr('src', '');
+    ifVista.attr('src', urlDocumento);
+
+    $("#vista_previa_modal").modal('show');
 }

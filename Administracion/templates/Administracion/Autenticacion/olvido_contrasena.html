@@ -2,42 +2,47 @@
 {% load static %}
 
 {% block titulo %}
-    Solicitar contraseña
+    Recuperar contraseña
 {% endblock %}
 
 
 {% block main %}
-    <div class="flex-1" style="background: url('{% static 'EVA/Plantilla/img/svg/pattern-1.svg' %}') no-repeat center bottom fixed; background-size: cover ">
+    <div class="flex-1 fondo-autenticacion">
         <div class="container py-4 py-lg-5 my-lg-5 px-4 px-sm-0">
             <div class="row">
                 <div class="col-sm-12 col-md-3 col-lg-3 col-xl-4"></div>
                 <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4">
-                    <h1 class="text-white fw-300 mb-3 d-sm-block d-md-none">
-                        Secure login
-                    </h1>
                     <div class="card p-4 rounded-plus bg-faded" style="justify-content: center">
-                        <div style="display: flex; justify-content: center;">
-                            <img src="{% static 'EVA/Plantilla/img/logo-arios-tr.png' %}" style="width: 80%">
+                        <div class="card p-4 mt-6 rounded-plus bg-faded-white" style="justify-content: center">
+                            <div style="display: flex; justify-content: center;">
+                                <img src="{% static 'EVA/Plantilla/img/custom/logo-eva.svg' %}">
+                            </div>
+                            <br>
+                            <div style="display: flex; justify-content: center;">
+                                <h2 class="titulo-autenticacion">Recuperar Contraseña</h2>
+                            </div>
+                            <form action="{% url 'Administracion:olvido-contrasena' %}" method="post" class="needs-validation" novalidate>
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label class="id_correo" for="usuario">Correo electrónico</label>
+                                    <input type="email" id="id_correo" name="email" class="form-control" placeholder="Digite su correo electrónico"  required>
+                                    <div class="invalid-feedback">Por favor digite su correo electrónico</div>
+                                </div>
+                                <div class="row no-gutters" style="justify-content: center">
+                                    <div class="col-lg-8 pl-lg-1 my-2">
+                                        <button id="js-login-btn" type="submit" class="btn btn-primary btn-block ">Enviar solicitud</button>
+                                    </div>
+                                </div>
+                                <div class="row no-gutters" style="justify-content: center">
+                                    <div class="col-lg-8 pl-lg-1 my-2" >
+                                        <a href="javascript:history.back()"  class="btn btn-success btn-block"> Volver</small></a>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
-                        <br>
-                        <form action="{% url 'Administracion:olvido-contrasena' %}" method="post" class="needs-validation" novalidate>
-                            {% csrf_token %}
-                            <div class="form-group">
-                                <label class="id_correo" for="usuario">Correo electrónico</label>
-                                <input type="email" id="id_correo" name="email" class="form-control" placeholder="Digite su correo electrónico"  required>
-                                <div class="invalid-feedback">Por favor digite su correo electrónico</div>
-                            </div>
-                            <div class="row no-gutters" style="justify-content: center">
-                                <div class="col-lg-8 pl-lg-1 my-2">
-                                    <button id="js-login-btn" type="submit" class="btn btn-danger btn-block ">Enviar solicitud</button>
-                                </div>
-                            </div>
-                            <div class="row no-gutters" style="justify-content: center">
-                                <div class="col-lg-8 pl-lg-1 my-2" >
-                                    <a href="javascript:history.back()"  class="btn btn-outline-default btn-block btn-xs"><small class="fw-300 mt-3 mb-5 opacity-90">Volver</small></a>
-                                </div>
-                            </div>
-                        </form>
+                         <div class="mt-4" style="display: flex; justify-content: center;">
+                                <img src="{% static 'EVA/Plantilla/img/custom/logo-arios-blanco.svg' %}" style="width: 50%">
+                        </div>
                     </div>
                 </div>
             </div>

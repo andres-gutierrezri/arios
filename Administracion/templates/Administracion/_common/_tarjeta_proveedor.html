@@ -41,7 +41,8 @@
                                         <small class="mt-0 mb-3 text-muted">
                                             <b>{{ d.nombre_campo }}</b>: {{ d.valor_campo }}
                                             {% if d.archivo %}
-                                                <a class="far fa-eye" style="text-decoration: none !important;" target="_blank" href="{{ d.archivo }}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ver Archivo"></a>
+{#                                                <a class="far fa-eye" style="text-decoration: none !important;" target="_blank" href="{{ d.archivo }}" ></a>#}
+                                                <a class="far fa-eye" style="text-decoration: none !important;" href="javascript:abrirModalVistaPrevia('{{ d.archivo }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ver Archivo"></a>
                                             {% endif %}
                                         </small>
                                     {% endif %}

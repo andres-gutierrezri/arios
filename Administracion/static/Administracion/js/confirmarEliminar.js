@@ -17,7 +17,7 @@ function fSweetAlert() {
     Swal.fire({
         title: '¿Está seguro de eliminar este item?',
         text: "Esta acción no se podrá revertir",
-        type: 'warning',
+        icon: 'warning',
         showCancelButton: true,
         confirmButtonText: '¡Sí, eliminarlo!',
         cancelButtonText: 'Cancelar'

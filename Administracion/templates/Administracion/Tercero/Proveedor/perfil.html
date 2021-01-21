@@ -7,7 +7,6 @@
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-brands.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-solid.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/sweetalert2/sweetalert2.bundle.css'%}">
-    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/theme-demo.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
     <link rel="mask-icon" href="{% static 'EVA/Plantilla/img/favicon/safari-pinned-tab.svg' %}" color="#5bbad5">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/bootstrap-datepicker/bootstrap-datepicker.css' %}">
@@ -105,6 +104,7 @@
         </div>
     </div>
     <div class="modal fade" tabindex="-1" id="accion_proveedor" role="dialog"></div>
+    {% include 'EVA/_common/_vista_previa_modal.html' with titulo_modal='Vista Documento' %}
 {% endblock main%}
 
 {% block scripts %}
@@ -113,10 +113,11 @@
     <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/funcionesGenerales.js' %}"></script>
     <script src="{% static 'Administracion/js/Tercero/entidadesBancarias.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/funcionesGenerales.js' %}"></script>
     <script src="{% static 'Administracion/js/Tercero/proveedor.js' %}"></script>
-    <script src="{% static 'EVA/Plantilla/js/easy-pie-chart/easypiechart.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/statistics/easypiechart/easypiechart.bundle.js' %}"></script>
     <script src="{% static 'Administracion/js/Tercero/controlEstadoProveedor.js' %}"></script>
 
 {% endblock scripts%}

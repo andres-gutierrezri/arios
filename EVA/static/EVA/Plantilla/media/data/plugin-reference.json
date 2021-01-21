@@ -61,12 +61,6 @@
       "description":"Turn your ordinary panels to SmartPanel. Smartpanels lets you add buttons dynamically to panel header using data attributes. All panels are Sortable across all bootstrap col-spans and uses localStorage to store position, color, collapse state and various other panel settings. Use built in hooks to detect state change of panels and execute your script."
    },
    {
-      "plugin":"holderJS",
-      "url":"http://holderjs.com",
-      "license":"MIT",
-      "description":"Holder renders image placeholders entirely in browser. Placeholders can have custom colors, fonts, resizing behavior, and rendering engine (Canvas/SVG)."
-   },
-   {
       "plugin":"i18next",
       "url":"http://i18next.github.io/i18next/",
       "license":"MIT",

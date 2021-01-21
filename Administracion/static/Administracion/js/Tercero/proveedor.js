@@ -83,7 +83,7 @@ function enviarSolicitudProveedor(idProveedor) {
     Swal.fire({
         title: '¿Está seguro de enviar la solicitud?',
         text: "Una vez enviada la solicitud, no podrá seguir editando los campos hasta que sea aprobada o rechazada.",
-        type: 'warning',
+        icon: 'warning',
         showCancelButton: true,
         confirmButtonText: '¡Sí, Enviar!',
         cancelButtonText: 'Cancelar'
@@ -155,7 +155,7 @@ function modificarPerfilProveedor(idProveedor) {
         title: '¿Está seguro de modificar su perfil?',
         text: "Si modifica su perfil, la información aprobada será la que se encuentre vigente." +
             "Los cambios realizados solo serán validos hasta que envíe la solicitud nuevamente y sea aprobada.",
-        type: 'warning',
+        icon: 'warning',
         showCancelButton: true,
         confirmButtonText: '¡Sí, Continuar!',
         cancelButtonText: 'Cancelar'
