@@ -108,6 +108,11 @@ function enviarSolicitudProveedor(idProveedor) {
     });
 }
 
+let selectAprobar = $("#Aprobar_id");
+let selectRechazar = $("#Rechazar_id");
+let comentario = $("#comentario_id");
+let divComentario = comentario.parent()
+
 function abrir_modal_aprobar_rechazar(url) {
     $('#accion_proveedor').load(url, function (responseText) {
         try {
@@ -116,6 +121,27 @@ function abrir_modal_aprobar_rechazar(url) {
                 return false;
             }
             $(this).modal('show');
+            selectAprobar = $("#Aprobar_id");
+            selectRechazar = $("#Rechazar_id");
+            comentario = $("#comentario_id");
+            divComentario = comentario.parent()
+
+            selectAprobar.click(function () {
+                if (selectAprobar) {
+                    $('.requiredFinal').removeAttr('required', 'true');
+                    divComentario.hide()
+                    comentario.attr('hidden', 'true');
+                    comentario.removeAttr('required', 'true');
+                }
+            });
+
+            selectRechazar.click(function () {
+                if (selectRechazar) {
+                    divComentario.show()
+                    comentario.removeAttr('hidden', 'true');
+                    comentario.attr('required', 'true');
+                }
+            });
             agregarValidacionFormularios();
         } catch (err) {
             console.log(err);

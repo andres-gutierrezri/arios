@@ -6,6 +6,7 @@
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/datagrid/datatables/datatables.bundle.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/custom/generales.css' %}">
 {% endblock styles %}
 
 {% block main %}
@@ -41,14 +42,20 @@
                                 <div class="panel-group">
                                     <div class="panel-body">
                                         <div class="table-responsive">
+                                            {% include 'EVA/_common/_busqueda_paginacion.html' %}
                                             <table class="table table-bordered w-100" id="dataTableConsecutivos">
-                                                <thead>
+                                                <thead class="bg-primary-600">
                                                     <tr>
-                                                        <th>Consecutivo</th>
-                                                        <th>Nombre</th>
+                                                        <th class="min-w-100">Consecutivo</th>
+                                                        <th class="min-w-100">Nombre</th>
+                                                        <th class="min-w-100">Fecha de Creación</th>
                                                         <th>Fecha de Inicio</th>
                                                         <th>Fecha Final</th>
                                                         <th>Tipo de Contrato</th>
+                                                        <th>Usuario</th>
+                                                        <th>Justificación</th>
+                                                        <th>Estado</th>
+                                                        <th>Acción</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -61,15 +68,31 @@
                                                                     {{ consecutivo.tercero }}
                                                                 {% endif %}
                                                             </td>
+                                                            <td>{{ consecutivo.fecha_crea | date:'Y-m-d H:i'}}</td>
                                                             <td>{{ consecutivo.fecha_inicio | date:'Y-m-d'}}</td>
                                                             <td>{% if consecutivo.fecha_final %}
                                                                     {{ consecutivo.fecha_final | date:'Y-m-d'}}
                                                                 {% else %} N/A {% endif %}</td>
                                                             <td>{{ consecutivo.tipo_contrato }}</td>
+                                                            <td>{{ consecutivo.usuario_crea.get_full_name }}</td>
+                                                            <td>{% if consecutivo.justificacion %}{{ consecutivo.justificacion }}{% endif %}</td>
+                                                            <td>
+                                                                {% if consecutivo.estado %}
+                                                                    <span class="badge badge-primary">Vigente</span>
+                                                                {% else %}
+                                                                    <span class="badge badge-secondary">Anulado</span>
+                                                                {% endif %}
+                                                            </td>
+                                                            <td>
+                                                                {% if perms.Administracion.delete_consecutivocontrato and consecutivo.estado %}
+                                                                  <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ consecutivo.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ consecutivo.id }}, true)" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+                                                                {% endif %}
+                                                            </td>
                                                         </tr>
                                                     {% endfor %}
                                                 </tbody>
                                             </table>
+                                            {% include 'EVA/_common/_paginacion.html' with datos=consecutivos %}
                                         </div>
                                     </div>
                                     <div class="card-footer small text-muted">Actualizado: {{ fecha }}</div>
@@ -80,14 +103,17 @@
                 </div>
             </div>
     </div>
+    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='gestion-documental/consecutivo-contratos' %}
 
 {% endblock %}
 {% block scripts %}
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
+    <script src="{% static 'Administracion/js/confirmarEliminar.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.export.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script>
-    <script src="{% static 'GestionDocumental/js/exportar_tabla.js' %}"></script>
     <script src="{% static 'GestionDocumental/js/consecutivos_contratos.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/controlBusquedaPaginacion.js' %}"></script>
 {% endblock %}

@@ -33,7 +33,7 @@
                                 <div class="panel-body">
                                     <div class="table-responsive">
                                         <table class="table table-bordered w-100" id="dataTable">
-                                            <thead>
+                                            <thead class="bg-primary-600">
                                                 <tr>
                                                     <th>Nombre</th>
                                                     <th>Usuarios</th>
@@ -50,19 +50,17 @@
                                                         <td>{{ cadenas.nombre }}</td>
                                                         <td style="width: 50%;">
                                                             <div class="frame-wrap">
-                                                                {% for detalle in detalles%}
+                                                                {% for detalle in detalles %}
                                                                     {% if detalle.cadena_aprobacion == cadenas %}
                                                                         <span class="badge badge-primary">
                                                                             <span class="badge bg-primary-300"><font style="vertical-align: inherit;">
                                                                                 <font style="vertical-align: inherit;">{{ detalle.orden }}</font></font>
                                                                             </span>
-                                                                            <font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
-                                                                                {% for col in colaboradores %}
-                                                                                    {% if col.usuario_id == detalle.usuario_id %}
-                                                                                        {{ col.primer_nombre_apellido }}
-                                                                                    {% endif %}
-                                                                                {% endfor %}
-                                                                            </font></font>
+                                                                            <font style="vertical-align: inherit;">
+                                                                                <font style="vertical-align: inherit;">
+                                                                                    {{ detalle.usuario.get_full_name }}
+                                                                                </font>
+                                                                            </font>
                                                                         </span>
                                                                     {% endif %}
                                                                 {% endfor %}

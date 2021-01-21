@@ -27,7 +27,7 @@
                                 <div class="panel-body">
                                     <div class="table-responsive">
                                         <table class="table table-bordered w-100" id="dataTable">
-                                            <thead>
+                                            <thead class="bg-primary-600">
                                                 <tr>
                                                     <th>Nombre</th>
                                                     <th>Versión</th>
@@ -42,7 +42,17 @@
                                                     <tr>
                                                         <td>{{ archivo.documento.nombre }}</td>
                                                         <td>{{ archivo.version }}</td>
-                                                        <td {% if archivo.estado_id == 0 %}class="campo_activo"{% endif %}>{{ archivo.estado }}</td>
+                                                        <td>
+                                                            {% if archivo.estado_id == 0 %}
+                                                                <span class="badge badge-warning">{{ archivo.estado }}</span>
+                                                            {% elif archivo.estado_id == 1 %}
+                                                                <span class="badge badge-primary">{{ archivo.estado }}</span>
+                                                            {% elif archivo.estado_id == 2 %}
+                                                                <span class="badge badge-secondary">{{ archivo.estado }}</span>
+                                                            {% else %}
+                                                                <span class="badge badge-danger">{{ archivo.estado }}</span>
+                                                            {% endif %}
+                                                        </td>
                                                         <td>{{ archivo.notas }}</td>
                                                         <td>{{ archivo.fecha_documento|date:'Y-m-d' }}</td>
                                                         <td>

@@ -21,6 +21,9 @@ function cambioTipoProductoServicio(pos){
     if(valor !== '') {
         cargarProductosServicios(valor, pos)
         cambioLabelSelects(valor, pos)
+    }else{
+        limpiarSelector($(`#producto_servicio_${pos}_select_id`));
+        limpiarSelector($(`#subproducto_subservicio_${pos}`));
     }
 }
 
@@ -28,7 +31,14 @@ function cambioProductoServicio(pos){
     let valor = $(`#producto_servicio_${pos}_select_id`).val();
     if(valor !== '') {
         cargarSubProductosSubServicios(valor, pos)
+    }else{
+        limpiarSelector($(`#subproducto_subservicio_${pos}`));
     }
+}
+
+function limpiarSelector(campo) {
+    campo.empty();
+    campo.append('<option value="">Seleccione una opción</option>');
 }
 
 function cambioLabelSelects(valor, pos) {
