@@ -506,7 +506,7 @@ class PerfilProveedorSolicitud(AbstractEvaLoggedView):
         return render(request, 'Administracion/Tercero/Proveedor/perfil.html',
                       {'datos_proveedor': datos_proveedor, 'solicitud_proveedor': proveedor,
                        'solicitud_activa': solicitud_activa, 'tipo_persona_pro': proveedor.tipo_persona,
-                       'modificaciones_perfil': modificaciones_perfil,
+                       'modificaciones_perfil': modificaciones_perfil, 'estado_proveedor': proveedor.estado_proveedor,
                        'modificaciones_tarjetas': modificaciones_tarjetas})
 
 
