@@ -27,9 +27,9 @@
                     {% endif %}
                     <div class="form-group col-12">
                         {% if documento %}
-                            {% input_file_tag 'documento' 'Documento' placeholder="Seleccione un archivo" invalido=errores.logo accept=".docx, .pdf" mensaje_validacion='Por favor seleccione un archivo'%}
+                            {% input_file_tag 'documento' 'Documento' placeholder="Seleccione un archivo" invalido=errores.logo accept=".pdf" mensaje_validacion='Por favor seleccione un archivo'%}
                         {% else %}
-                            {% input_file_tag 'documento' 'Documento' placeholder="Seleccione un archivo" required="" invalido=errores.logo accept=".docx, .pdf" mensaje_validacion='Por favor seleccione un archivo'%}
+                            {% input_file_tag 'documento' 'Documento' placeholder="Seleccione un archivo" required="" invalido=errores.logo accept=".pdf" mensaje_validacion='Por favor seleccione un archivo'%}
                         {% endif %}
                     </div>
                 </div>

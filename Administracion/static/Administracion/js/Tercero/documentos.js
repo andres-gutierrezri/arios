@@ -65,13 +65,13 @@ function abrirModalGestionarDocumentos(url) {
             $('#documento_id').change(function (e) {
                 let label_input = $('.custom-file-label');
                 let extension = e.target.files[0].name.split('.').pop();
-                if (extension === 'pdf' || extension === 'docx'){
+                if (extension === 'pdf'){
                     label_input.html(e.target.files[0].name);
                 }else{
                     label_input.html('Seleccione un archivo');
                     e.target.value = '';
                     EVANotificacion.toast.error('El archivo ingresado no tiene un formato compatible. ' +
-                                                '(Formatos Aceptados: PDF, Documento de Word)');
+                                                '(Formatos Aceptados: PDF)');
                     return false;
                 }
             });
