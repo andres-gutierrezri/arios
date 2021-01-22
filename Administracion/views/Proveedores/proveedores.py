@@ -260,6 +260,7 @@ class PerfilProductosServiciosView(AbstractEvaLoggedProveedorView):
 
     def post(self, request):
         contador = request.POST.get('contador')
+        bienes_servicios = request.POST.get('bienes_servicios', '')
         proveedor = filtro_estado_proveedor(request)
         try:
             ProveedorProductoServicio.objects.filter(proveedor=proveedor).delete()
@@ -281,7 +282,7 @@ class PerfilProductosServiciosView(AbstractEvaLoggedProveedorView):
             for lista_selec in set(lista_selecciones):
                 ProveedorProductoServicio.objects.create(proveedor=proveedor,
                                                          subproducto_subservicio_id=lista_selec)
-
+            Tercero.objects.filter(id=proveedor.id).update(bienes_servicios=bienes_servicios)
             messages.success(self.request, 'Se han guardado los productos y servicios correctamente.')
         except:
             messages.error(self.request, 'Ha ocurrido un error al guardar los datos')
@@ -748,6 +749,7 @@ def datos_xa_render_productos_servicios(request):
 
     datos = {'tipos_productos_servicios': tipos_productos_servicios,
              'productos_servicios': productos_servicios,
+             'productos_servicios_adicionales': proveedor.bienes_servicios,
              'subproductos_subservicios': subproductos_subservicios,
              'selecciones': lista_selecciones,
              'contador': contador}
@@ -861,7 +863,6 @@ def generar_datos_actividades_economicas(proveedor):
                      {'nombre_campo': 'Excento de Industria y Comercio: # Res', 'valor_campo': ae.numero_resolucion},
                      {'nombre_campo': 'Contribuyente Industria y Comercio', 'valor_campo': ae.contribuyente_iyc},
                      {'nombre_campo': 'Entidad Pública', 'valor_campo': entidad_publica},
-                     {'nombre_campo': 'Bienes y Servicios', 'valor_campo': ae.bienes_servicios},
                      ]
     return respuesta
 
@@ -892,6 +893,9 @@ def generar_datos_bienes_servicios(proveedor):
         lista_productos_servicios = [{'nombre_campo': 'Productos', 'valor_campo': l_productos},
                                      {'nombre_campo': 'Servicios', 'valor_campo': l_servicios}]
 
+    if proveedor.bienes_servicios:
+        lista_productos_servicios.append({'nombre_campo': 'Bienes y Servicios Adicionales',
+                                          'valor_campo': proveedor.bienes_servicios})
     return lista_productos_servicios
 
 
@@ -1001,7 +1005,8 @@ def generar_comentario_cambios_tarjeta_solicitud(proveedor):
     lista_tarjeta_modificaciones = []
     if not proveedor_vigente.comparar(proveedor_editado, excluir=['id', 'es_vigente', 'estado', 'fecha_creacion',
                                                                   'fecha_modificacion', 'estado_proveedor',
-                                                                  'regimen_fiscal', 'modificaciones']):
+                                                                  'regimen_fiscal', 'modificaciones',
+                                                                  'bienes_servicios']):
         modificaciones += 'Información Básica, '
         lista_tarjeta_modificaciones.append(1)
 
@@ -1022,7 +1027,7 @@ def generar_comentario_cambios_tarjeta_solicitud(proveedor):
     bsv = ProveedorProductoServicio.objects.filter(proveedor=proveedor_vigente)
     bse = ProveedorProductoServicio.objects.filter(proveedor=proveedor_editado)
 
-    if validar_cambios_proveedor(bsv, bse):
+    if validar_cambios_proveedor(bsv, bse) or proveedor_vigente.bienes_servicios != proveedor_editado.bienes_servicios:
         modificaciones += 'Productos y Servicios, '
         lista_tarjeta_modificaciones.append(5)
 

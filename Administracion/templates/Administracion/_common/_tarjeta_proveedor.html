@@ -32,10 +32,14 @@
                                 {% else %}
                                     {% if pro_ser %}
                                         <small class="mt-0 mb-3 text-muted">
+                                            {% if d.nombre_campo == 'Bienes y Servicios Adicionales' %}
+                                                <b>{{ d.nombre_campo }}</b>: {{ d.valor_campo }}
+                                            {% else %}
                                             <b>{{ d.nombre_campo }}</b>:
                                                 {% for datos in d.valor_campo %}
                                                     <br>&nbsp;&nbsp;&nbsp;&nbsp;<b>{{ datos.objeto }}: </b>{% for dts in datos.sub %}{{ dts }},&nbsp;{% endfor %}
                                                 {% endfor %}
+                                            {% endif %}
                                         </small>
                                     {% else %}
                                         <small class="mt-0 mb-3 text-muted">
