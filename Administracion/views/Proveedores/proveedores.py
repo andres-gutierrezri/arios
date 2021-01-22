@@ -752,7 +752,7 @@ def datos_xa_render_productos_servicios(request):
 
     datos = {'tipos_productos_servicios': tipos_productos_servicios,
              'productos_servicios': productos_servicios,
-             'productos_servicios_adicionales': proveedor.bienes_servicios,
+             'productos_servicios_adicionales': proveedor.bienes_servicios if proveedor.bienes_servicios else '',
              'subproductos_subservicios': subproductos_subservicios,
              'selecciones': lista_selecciones,
              'contador': contador}
