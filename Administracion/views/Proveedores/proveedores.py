@@ -894,7 +894,7 @@ def generar_datos_bienes_servicios(proveedor):
                                      {'nombre_campo': 'Servicios', 'valor_campo': l_servicios}]
 
     if proveedor.bienes_servicios:
-        lista_productos_servicios.append({'nombre_campo': 'Bienes y Servicios Adicionales',
+        lista_productos_servicios.append({'nombre_campo': 'Productos y Servicios Adicionales',
                                           'valor_campo': proveedor.bienes_servicios})
     return lista_productos_servicios
 
