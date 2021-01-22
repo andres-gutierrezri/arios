@@ -304,7 +304,8 @@ class PerfilDocumentosView(AbstractEvaLoggedProveedorView):
             tipos_documentos = TipoDocumentoTercero.objects.filter(aplica_natural=True)
 
         agregar = verificar_documentos_proveedor(proveedor, documentos)
-        porcentaje = 100 / len(tipos_documentos) * len(documentos)
+        porcentaje = 100 / len(tipos_documentos.filter(obligatorio=True)) * len(
+            documentos.filter(tipo_documento__obligatorio=True))
         n_doc_oblig = 0
         n_tip_oblig = 0
         for doc in documentos:
@@ -752,7 +753,7 @@ def datos_xa_render_productos_servicios(request):
 
     datos = {'tipos_productos_servicios': tipos_productos_servicios,
              'productos_servicios': productos_servicios,
-             'productos_servicios_adicionales': proveedor.bienes_servicios,
+             'productos_servicios_adicionales': proveedor.bienes_servicios if proveedor.bienes_servicios else '',
              'subproductos_subservicios': subproductos_subservicios,
              'selecciones': lista_selecciones,
              'contador': contador}
