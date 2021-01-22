@@ -1,7 +1,7 @@
 {% load eva_tags %}
 {% load static %}
 
-<form action="{% url 'Administracion:proveedor-solicitudes-aprobar-rechazar' proveedor.id %}" id="empresas-form" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+<form action="{% url 'Administracion:proveedor-solicitudes-aprobar-rechazar' proveedor.id %}" id="aprobar-denegar-form" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -23,7 +23,7 @@
 
                 <div class="form-row">
                     <div class="form-group col-12">
-                        {% input_textarea_tag 'comentario' 'Comentarios' maxlength="300" placeholder="Describa la razón del rechazo" required="" mensaje_validacion='Por favor escriba un comentario' invalido=errores.comentario %}
+                        {% input_textarea_tag 'comentario' 'Comentarios' maxlength="300" placeholder="Describa la razón del la denegación" required="" mensaje_validacion='Por favor escriba un comentario' invalido=errores.comentario %}
                     </div>
                 </div>
             </div>

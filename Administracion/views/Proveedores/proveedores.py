@@ -48,7 +48,7 @@ class PerfilProveedorView(AbstractEvaLoggedProveedorView):
             datos_estado.update({'ultima_act': certificaciones.first().fecha_crea})
 
         if rechazos and not proveedor.estado:
-            if 'Rechazada' in rechazos.first().notificacion.titulo:
+            if 'Denegada' in rechazos.first().notificacion.titulo:
                 datos_estado.update({'estado_solicitud': rechazos.first().notificacion.mensaje})
 
         perfil_activo = Certificacion.objects.filter(tercero=proveedor, estado=True).exists()
@@ -517,7 +517,7 @@ class ProveedorSolicitudAprobarRechazar(AbstractEvaLoggedView):
     def get(self, request, id):
         proveedor = Tercero.objects.get(id=id)
         opciones = [{'texto': 'Aprobar', 'valor': 1},
-                    {'texto': 'Rechazar', 'valor': 2}]
+                    {'texto': 'Denegar', 'valor': 2}]
         return render(request, 'Administracion/_common/_modal_aprobar_rechazar_proveedor.html',
                       {'proveedor': proveedor, 'opciones': opciones})
 
@@ -549,9 +549,9 @@ class ProveedorSolicitudAprobarRechazar(AbstractEvaLoggedView):
                 Tercero.objects.filter(id=id).update(estado_proveedor=EstadosProveedor.RECHAZADO)
 
             messages.success(self.request, 'Se ha {0} la solicitud correctamente.'
-                             .format('aprobado' if solicitud.aprobado else 'rechazado'))
+                             .format('aprobado' if solicitud.aprobado else 'denegado'))
 
-            titulo = 'Solicitud Aprobada' if solicitud.aprobado else 'Solicitud Rechazada'
+            titulo = 'Solicitud Aprobada' if solicitud.aprobado else 'Solicitud Denegada'
             crear_notificacion_por_evento(EventoDesencadenador.RESPUESTA_SOLICITUD_PROVEEDOR, solicitud.id,
                                           contenido={'titulo': titulo,
                                                      'mensaje': comentario,

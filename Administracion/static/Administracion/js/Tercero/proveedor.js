@@ -109,7 +109,7 @@ function enviarSolicitudProveedor(idProveedor) {
 }
 
 let selectAprobar = $("#Aprobar_id");
-let selectRechazar = $("#Rechazar_id");
+let selectRechazar = $("#Denegar_id");
 let comentario = $("#comentario_id");
 let divComentario = comentario.parent()
 
@@ -122,7 +122,7 @@ function abrir_modal_aprobar_rechazar(url) {
             }
             $(this).modal('show');
             selectAprobar = $("#Aprobar_id");
-            selectRechazar = $("#Rechazar_id");
+            selectRechazar = $("#Denegar_id");
             comentario = $("#comentario_id");
             divComentario = comentario.parent()
 
