@@ -502,11 +502,14 @@ class PerfilProveedorSolicitud(AbstractEvaLoggedView):
             modificaciones_perfil = {'id': 0, 'nombre': 'Modificaciones Recientes',
                                      'datos': [{'nombre_campo': 'Cambios',
                                                'valor_campo': cambios['comentario']}]}
-
+        if proveedor.estado_proveedor == 1 or proveedor.estado_proveedor == 6 and proveedor.es_vigente:
+            estado_proveedor = 1
+        else:
+            estado_proveedor = 0
         return render(request, 'Administracion/Tercero/Proveedor/perfil.html',
                       {'datos_proveedor': datos_proveedor, 'solicitud_proveedor': proveedor,
                        'solicitud_activa': solicitud_activa, 'tipo_persona_pro': proveedor.tipo_persona,
-                       'modificaciones_perfil': modificaciones_perfil, 'estado_proveedor': proveedor.estado_proveedor,
+                       'modificaciones_perfil': modificaciones_perfil, 'estado_proveedor': estado_proveedor,
                        'modificaciones_tarjetas': modificaciones_tarjetas})
 
 
