@@ -141,7 +141,7 @@ class PerfilActividadesEconomicasView(AbstractEvaLoggedProveedorView):
     def post(self, request):
         update_fields = ('actividad_principal', 'actividad_secundaria', 'otra_actividad', 'contribuyente_iyc',
                          'numero_resolucion', 'contribuyente_iyc', 'entidad_publica', 'proveedor',
-                         'bienes_servicios', 'proveedor', 'tipo_contribuyente')
+                         'proveedor', 'tipo_contribuyente')
         proveedor = filtro_estado_proveedor(request)
         proveedor_ae = ProveedorActividadEconomica.from_dictionary(request.POST)
         proveedor_ae.proveedor = proveedor
