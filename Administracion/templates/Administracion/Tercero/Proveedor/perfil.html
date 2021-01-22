@@ -86,7 +86,7 @@
                                             {% if solicitud_proveedor %}
                                                 {% if solicitud_activa %}
                                                     <small style="float: right">
-                                                        <a href="javascript:abrir_modal_aprobar_rechazar('{% url 'Administracion:proveedor-solicitudes-aprobar-rechazar' solicitud_proveedor.id %}')" class="btn btn-primary btn-pills btn-block">Aprobar/Rechazar</a>
+                                                        <a href="javascript:abrir_modal_aprobar_rechazar('{% url 'Administracion:proveedor-solicitudes-aprobar-rechazar' solicitud_proveedor.id %}')" class="btn btn-primary btn-pills btn-block">Aprobar/Denegar</a>
                                                     </small>
                                                 {% endif %}
                                             {% endif %}

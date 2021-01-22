@@ -31,8 +31,9 @@ class ProveedorIndexView(AbstractEvaLoggedView):
         all_productos_servicios = ProveedorProductoServicio.objects.all()
         proveedores_pro_serv = ProveedorProductoServicio.objects.distinct('proveedor')\
             .filter(proveedor__es_vigente=True)\
-            .exclude(proveedor__estado_proveedor=EstadosProveedor.DILIGENCIAMIENTO_PERFIL)
-
+            .exclude(proveedor__estado_proveedor__in=[EstadosProveedor.DILIGENCIAMIENTO_PERFIL,
+                                                      EstadosProveedor.EDICION_PERFIL])
+        total = len(proveedores_pro_serv)
         if search:
             proveedores_pro_serv = proveedores_pro_serv\
                 .filter(Q(proveedor__nombre__icontains=search) |
@@ -96,6 +97,8 @@ class ProveedorIndexView(AbstractEvaLoggedView):
                        'label_producto_servicio': label_producto_servicio,
                        'label_subproducto_subservicio': label_subproducto_subservicio,
                        'resutados_busqueda': resutados_busqueda,
+                       'coincidencias': len(lista_proveedores_activos),
+                       'total': total,
                        'buscar': search,
                        'fecha': app_datetime_now()})
 

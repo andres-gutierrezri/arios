@@ -30,7 +30,7 @@ function fSweetAlertEliminarJustificado() {
     Swal.fire({
         title: '¿Está seguro de eliminar este item?',
         text: "Esta acción no se podrá revertir",
-        type: 'warning',
+        icon: 'warning',
         input: 'text',
         inputPlaceholder: '¿Por qué deseas eliminar este item?',
         inputValue: '',

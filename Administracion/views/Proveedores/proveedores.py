@@ -48,7 +48,7 @@ class PerfilProveedorView(AbstractEvaLoggedProveedorView):
             datos_estado.update({'ultima_act': certificaciones.first().fecha_crea})
 
         if rechazos and not proveedor.estado:
-            if 'Rechazada' in rechazos.first().notificacion.titulo:
+            if 'Denegada' in rechazos.first().notificacion.titulo:
                 datos_estado.update({'estado_solicitud': rechazos.first().notificacion.mensaje})
 
         perfil_activo = Certificacion.objects.filter(tercero=proveedor, estado=True).exists()
@@ -141,7 +141,7 @@ class PerfilActividadesEconomicasView(AbstractEvaLoggedProveedorView):
     def post(self, request):
         update_fields = ('actividad_principal', 'actividad_secundaria', 'otra_actividad', 'contribuyente_iyc',
                          'numero_resolucion', 'contribuyente_iyc', 'entidad_publica', 'proveedor',
-                         'bienes_servicios', 'proveedor', 'tipo_contribuyente')
+                         'proveedor', 'tipo_contribuyente')
         proveedor = filtro_estado_proveedor(request)
         proveedor_ae = ProveedorActividadEconomica.from_dictionary(request.POST)
         proveedor_ae.proveedor = proveedor
@@ -260,6 +260,7 @@ class PerfilProductosServiciosView(AbstractEvaLoggedProveedorView):
 
     def post(self, request):
         contador = request.POST.get('contador')
+        bienes_servicios = request.POST.get('bienes_servicios', '')
         proveedor = filtro_estado_proveedor(request)
         try:
             ProveedorProductoServicio.objects.filter(proveedor=proveedor).delete()
@@ -281,7 +282,7 @@ class PerfilProductosServiciosView(AbstractEvaLoggedProveedorView):
             for lista_selec in set(lista_selecciones):
                 ProveedorProductoServicio.objects.create(proveedor=proveedor,
                                                          subproducto_subservicio_id=lista_selec)
-
+            Tercero.objects.filter(id=proveedor.id).update(bienes_servicios=bienes_servicios)
             messages.success(self.request, 'Se han guardado los productos y servicios correctamente.')
         except:
             messages.error(self.request, 'Ha ocurrido un error al guardar los datos')
@@ -501,11 +502,14 @@ class PerfilProveedorSolicitud(AbstractEvaLoggedView):
             modificaciones_perfil = {'id': 0, 'nombre': 'Modificaciones Recientes',
                                      'datos': [{'nombre_campo': 'Cambios',
                                                'valor_campo': cambios['comentario']}]}
-
+        if proveedor.estado_proveedor == 1 or proveedor.estado_proveedor == 6 and proveedor.es_vigente:
+            estado_proveedor = 1
+        else:
+            estado_proveedor = 0
         return render(request, 'Administracion/Tercero/Proveedor/perfil.html',
                       {'datos_proveedor': datos_proveedor, 'solicitud_proveedor': proveedor,
                        'solicitud_activa': solicitud_activa, 'tipo_persona_pro': proveedor.tipo_persona,
-                       'modificaciones_perfil': modificaciones_perfil,
+                       'modificaciones_perfil': modificaciones_perfil, 'estado_proveedor': estado_proveedor,
                        'modificaciones_tarjetas': modificaciones_tarjetas})
 
 
@@ -517,7 +521,7 @@ class ProveedorSolicitudAprobarRechazar(AbstractEvaLoggedView):
     def get(self, request, id):
         proveedor = Tercero.objects.get(id=id)
         opciones = [{'texto': 'Aprobar', 'valor': 1},
-                    {'texto': 'Rechazar', 'valor': 2}]
+                    {'texto': 'Denegar', 'valor': 2}]
         return render(request, 'Administracion/_common/_modal_aprobar_rechazar_proveedor.html',
                       {'proveedor': proveedor, 'opciones': opciones})
 
@@ -549,9 +553,9 @@ class ProveedorSolicitudAprobarRechazar(AbstractEvaLoggedView):
                 Tercero.objects.filter(id=id).update(estado_proveedor=EstadosProveedor.RECHAZADO)
 
             messages.success(self.request, 'Se ha {0} la solicitud correctamente.'
-                             .format('aprobado' if solicitud.aprobado else 'rechazado'))
+                             .format('aprobado' if solicitud.aprobado else 'denegado'))
 
-            titulo = 'Solicitud Aprobada' if solicitud.aprobado else 'Solicitud Rechazada'
+            titulo = 'Solicitud Aprobada' if solicitud.aprobado else 'Solicitud Denegada'
             crear_notificacion_por_evento(EventoDesencadenador.RESPUESTA_SOLICITUD_PROVEEDOR, solicitud.id,
                                           contenido={'titulo': titulo,
                                                      'mensaje': comentario,
@@ -748,6 +752,7 @@ def datos_xa_render_productos_servicios(request):
 
     datos = {'tipos_productos_servicios': tipos_productos_servicios,
              'productos_servicios': productos_servicios,
+             'productos_servicios_adicionales': proveedor.bienes_servicios,
              'subproductos_subservicios': subproductos_subservicios,
              'selecciones': lista_selecciones,
              'contador': contador}
@@ -861,7 +866,6 @@ def generar_datos_actividades_economicas(proveedor):
                      {'nombre_campo': 'Excento de Industria y Comercio: # Res', 'valor_campo': ae.numero_resolucion},
                      {'nombre_campo': 'Contribuyente Industria y Comercio', 'valor_campo': ae.contribuyente_iyc},
                      {'nombre_campo': 'Entidad Pública', 'valor_campo': entidad_publica},
-                     {'nombre_campo': 'Bienes y Servicios', 'valor_campo': ae.bienes_servicios},
                      ]
     return respuesta
 
@@ -892,6 +896,9 @@ def generar_datos_bienes_servicios(proveedor):
         lista_productos_servicios = [{'nombre_campo': 'Productos', 'valor_campo': l_productos},
                                      {'nombre_campo': 'Servicios', 'valor_campo': l_servicios}]
 
+    if proveedor.bienes_servicios:
+        lista_productos_servicios.append({'nombre_campo': 'Productos y Servicios Adicionales',
+                                          'valor_campo': proveedor.bienes_servicios})
     return lista_productos_servicios
 
 
@@ -976,7 +983,7 @@ def generar_datos_proveedor(proveedor):
                               'url': '/administracion/proveedor/perfil/actividades-economicas',
                               'datos': actividades_economicas, 'completo': actividades_economicas is not ''}
     documentos = {'id': 3, 'nombre': 'Documentos', 'url': '/administracion/proveedor/perfil/documentos',
-                  'datos': documentos, 'completo': documentos != [], 'modificado': 3 in cambios}
+                  'datos': documentos, 'completo': n_documentos == n_tipos, 'modificado': 3 in cambios}
     entidades_bancarias = {'id': 4, 'nombre': 'Información Bancaria', 'modificado': 4 in cambios,
                            'url': '/administracion/proveedor/perfil/entidades-bancarias',
                            'datos': entidades_bancarias, 'completo': entidades_bancarias != []}
@@ -1001,7 +1008,8 @@ def generar_comentario_cambios_tarjeta_solicitud(proveedor):
     lista_tarjeta_modificaciones = []
     if not proveedor_vigente.comparar(proveedor_editado, excluir=['id', 'es_vigente', 'estado', 'fecha_creacion',
                                                                   'fecha_modificacion', 'estado_proveedor',
-                                                                  'regimen_fiscal', 'modificaciones']):
+                                                                  'regimen_fiscal', 'modificaciones',
+                                                                  'bienes_servicios']):
         modificaciones += 'Información Básica, '
         lista_tarjeta_modificaciones.append(1)
 
@@ -1016,13 +1024,13 @@ def generar_comentario_cambios_tarjeta_solicitud(proveedor):
     ebe = EntidadBancariaTercero.objects.filter(tercero=proveedor_editado)
 
     if validar_cambios_proveedor(ebv, ebe):
-        modificaciones += 'Entidades Bancarias, '
+        modificaciones += 'Información Bancaria, '
         lista_tarjeta_modificaciones.append(4)
 
     bsv = ProveedorProductoServicio.objects.filter(proveedor=proveedor_vigente)
     bse = ProveedorProductoServicio.objects.filter(proveedor=proveedor_editado)
 
-    if validar_cambios_proveedor(bsv, bse):
+    if validar_cambios_proveedor(bsv, bse) or proveedor_vigente.bienes_servicios != proveedor_editado.bienes_servicios:
         modificaciones += 'Productos y Servicios, '
         lista_tarjeta_modificaciones.append(5)
 

@@ -1,6 +1,6 @@
 {% load static %}
 <div id="panel-{{ objeto.id }}" class="panel">
-    <div class="panel-hdr {% if not objeto.completo and not objeto.id == 0 %}bg-danger-500 bg-danger-gradient{% elif objeto.modificado and solicitud_proveedor %}bg-info-500 bg-info-gradient{% else %}bg-primary-500 bg-primary-gradient{% endif %}">
+    <div class="panel-hdr {% if not objeto.completo and not objeto.id == 0 %}bg-danger-500 bg-danger-gradient{% elif objeto.modificado and solicitud_proveedor and estado_proveedor != 1 %}bg-info-500 bg-info-gradient{% else %}bg-primary-500 bg-primary-gradient{% endif %}">
         <h2>
             {% if objeto.id != 0 %}
                 {{ objeto.id }}.
@@ -32,10 +32,14 @@
                                 {% else %}
                                     {% if pro_ser %}
                                         <small class="mt-0 mb-3 text-muted">
+                                            {% if d.nombre_campo == 'Productos y Servicios Adicionales' %}
+                                                <b>{{ d.nombre_campo }}</b>: {{ d.valor_campo }}
+                                            {% else %}
                                             <b>{{ d.nombre_campo }}</b>:
                                                 {% for datos in d.valor_campo %}
                                                     <br>&nbsp;&nbsp;&nbsp;&nbsp;<b>{{ datos.objeto }}: </b>{% for dts in datos.sub %}{{ dts }},&nbsp;{% endfor %}
                                                 {% endfor %}
+                                            {% endif %}
                                         </small>
                                     {% else %}
                                         <small class="mt-0 mb-3 text-muted">

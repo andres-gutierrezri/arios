@@ -107,6 +107,7 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     estado_proveedor = models.SmallIntegerField(choices=EstadosProveedor.choices, verbose_name='Estado del Proveedor',
                                                 null=True, blank=True)
     modificaciones = models.TextField(verbose_name='Modificaciones', null=True, blank=True)
+    bienes_servicios = models.TextField(verbose_name='Bienes y Servicios que Ofrece', null=True, blank=True)
     es_vigente = models.BooleanField(verbose_name='Es Vigente', null=False, blank=False)
 
     def __str__(self):

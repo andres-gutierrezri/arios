@@ -46,7 +46,7 @@ class EstadosProveedor(models.IntegerChoices):
     ACTIVO = 1, ' Proveedor Activo'
     DILIGENCIAMIENTO_PERFIL = 2, 'Diligenciamiento de Perfil'
     REGISTRADO = 3, 'Registrado'
-    RECHAZADO = 4, 'Rechazado'
+    RECHAZADO = 4, 'Denegado'
     SOLICITUD_ENVIADA = 5, 'Solicitud Enviada'
     EDICION_PERFIL = 6, 'Edición del Perfil'
     DESACTIVADO_X_ADMINISTRADOR = 7, 'Desactivado por el Administrador'
