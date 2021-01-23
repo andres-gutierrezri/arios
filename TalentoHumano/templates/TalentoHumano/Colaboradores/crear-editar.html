@@ -206,8 +206,11 @@
                                                             </div>
                                                             <div class="form-group">
                                                                 <div class="form-row">
+{#                                                                    <div class="col-md-6">#}
+{#                                                                        {% select_tag proceso 'proceso_id' 'Seleccione un proceso' texto_label="Proceso" value=colaborador.proceso_id required="" mensaje_validacion='Por favor seleccione un proceso' invalido=errores.proceso %}#}
+{#                                                                    </div>#}
                                                                     <div class="col-md-6">
-                                                                        {% select_tag proceso 'proceso_id' 'Seleccione un proceso' texto_label="Proceso" value=colaborador.proceso_id required="" mensaje_validacion='Por favor seleccione un proceso' invalido=errores.proceso %}
+                                                                        {% select_multiple_tag proceso 'proceso_id[]' 'proceso_id' 'Seleccione un a opción' texto_label="Procesos" value="" required="" mensaje_validacion='Por favor seleccione un proceso' multiple='multiple' invalido=errores.proceso %}
                                                                     </div>
                                                                     <div class="col-md-6">
                                                                         {% input_number_tag 'salario' 'Salario' placeholder="Ingrese el salario" required="" min='0' max="99999999" onInput="validarLongitud(8,this)" value=colaborador.salario mensaje_validacion='Por favor digite el salario.' invalido=errores.salario %}
