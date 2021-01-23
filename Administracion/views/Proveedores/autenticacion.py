@@ -14,6 +14,8 @@ from django.utils.http import urlsafe_base64_encode
 
 from Administracion.enumeraciones import EstadosProveedor
 from Administracion.models import Tercero, TipoIdentificacion, TipoTercero
+from EVA import settings
+from EVA.General import validar_recaptcha
 
 from EVA.views.index import AbstractEvaLoggedProveedorView
 from Notificaciones.models.models import EventoDesencadenador, SeleccionDeNotificacionARecibir
@@ -38,7 +40,8 @@ class InicioSesionProveedorView(View):
                 messages.success(request, 'Ha iniciado sesión como {0}'.format(request.user.email))
             else:
                 return redirect(reverse('Administracion:iniciar-sesion'))
-        return render(request, 'Administracion/Tercero/Proveedor/Autenticacion/inicio-sesion.html')
+        return render(request, 'Administracion/Tercero/Proveedor/Autenticacion/inicio-sesion.html',
+                      {'recaptcha_site_key': settings.EVA_RECAPTCHA_SITE_KEY})
 
     def post(self, request):
         if request.user.is_authenticated:
@@ -46,27 +49,32 @@ class InicioSesionProveedorView(View):
                 messages.success(request, 'Ha iniciado sesión como {0}'.format(request.user))
                 return redirect(reverse('Administracion:proveedor-index'))
         else:
-            correo = request.POST.get('correo', '')
-            password = request.POST.get('password', '')
-            usuario = User.objects.filter(username=correo, email=correo)
-            user = authenticate(username=correo, password=password)
-            if usuario and user is not None:
-                login(request, user)
-                try:
-                    messages.success(request, 'Ha iniciado sesión como {0}'.format(user.email))
-                    request.session['proveedor'] = user.first_name
-                    proveedor = Tercero.objects.filter(usuario=user)
-                    if proveedor:
-                        request.session['proveedor_foto'] = 'EVA/Plantilla/img/profile.png'
-                        request.session['proveedor_nombre'] = proveedor.first().nombre
-                        request.session['proveedor_correo'] = user.email
-                        request.session['proveedor_empresa'] = proveedor.first().empresa_to_dict()
-                        messages.success(request, 'Ha iniciado sesión como {0}'.format(request.user.first_name))
-                except:
+            if validar_recaptcha(request.POST.get('g-recaptcha-response', '')):
+
+                correo = request.POST.get('correo', '')
+                password = request.POST.get('password', '')
+                usuario = User.objects.filter(username=correo, email=correo)
+                user = authenticate(username=correo, password=password)
+                if usuario and user is not None:
+                    login(request, user)
+                    try:
+                        messages.success(request, 'Ha iniciado sesión como {0}'.format(user.email))
+                        request.session['proveedor'] = user.first_name
+                        proveedor = Tercero.objects.filter(usuario=user)
+                        if proveedor:
+                            request.session['proveedor_foto'] = 'EVA/Plantilla/img/profile.png'
+                            request.session['proveedor_nombre'] = proveedor.first().nombre
+                            request.session['proveedor_correo'] = user.email
+                            request.session['proveedor_empresa'] = proveedor.first().empresa_to_dict()
+                            messages.success(request, 'Ha iniciado sesión como {0}'.format(request.user.first_name))
+                    except:
+                        messages.warning(request, 'El correo y/o la contraseña no son válidos')
+                        return redirect(reverse('Administracion:proveedor-iniciar-sesion'))
+                else:
                     messages.warning(request, 'El correo y/o la contraseña no son válidos')
                     return redirect(reverse('Administracion:proveedor-iniciar-sesion'))
             else:
-                messages.warning(request, 'El correo y/o la contraseña no son válidos')
+                messages.warning(request, 'Captcha inválido')
                 return redirect(reverse('Administracion:proveedor-iniciar-sesion'))
 
         return redirect(reverse('Administracion:proveedor-index'))
