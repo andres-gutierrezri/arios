@@ -160,7 +160,7 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
     def post(self, request, id):
         update_fields = ['direccion', 'talla_camisa', 'talla_zapatos', 'talla_pantalon', 'eps_id',
                          'arl_id', 'afp_id', 'caja_compensacion_id', 'fecha_ingreso', 'fecha_examen',
-                         'salario', 'jefe_inmediato_id', 'cargo_id', 'proceso_id',
+                         'salario', 'jefe_inmediato_id', 'cargo_id',
                          'tipo_contrato_id', 'lugar_nacimiento_id', 'rango_id', 'fecha_nacimiento',
                          'identificacion', 'tipo_identificacion_id', 'fecha_expedicion', 'genero', 'telefono',
                          'estado', 'nombre_contacto', 'grupo_sanguineo', 'telefono_contacto', 'parentesco',
