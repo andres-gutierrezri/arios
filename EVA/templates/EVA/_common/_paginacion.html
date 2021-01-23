@@ -3,7 +3,7 @@
     <ul class="pagination justify-content-center">
         {% if datos.has_previous %}
             <li class="page-item">
-                <a class="page-link" href="?{{ parametro }}={{ datos.previous_page_number }}" aria-label="Anterior">
+                <a class="page-link" href="?{{ parametro }}={{ datos.previous_page_number }}{% if buscar %}&search={{ buscar }}{% endif %}{% if busqueda_avanzada %}&busqueda_avanzada={{ busqueda_avanzada }}{% endif %}" aria-label="Anterior">
                     <span aria-hidden="true"><i class="fal fa-chevron-left"></i></span>
                 </a>
             </li>
