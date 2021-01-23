@@ -87,3 +87,12 @@ def obtener_reporte(nombre: str, parametros: dict):
     if response.status_code == requests.codes.ok:
         return response.content
     return None
+
+
+def validar_recaptcha(recaptcha_response: str) -> bool:
+    payload = {'secret': settings.EVA_RECAPTCHA_SECRET_KEY, 'response': recaptcha_response}
+    response = requests.post('https://www.google.com/recaptcha/api/siteverify', data=payload)
+    if response.status_code == requests.codes.ok:
+        respuesta = response.json()
+        return respuesta['success']
+    return False

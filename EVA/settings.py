@@ -173,3 +173,6 @@ EVA_URL_BASE_FACELEC = os.environ.get('eva_url_base_facelec', 'http://localhost:
 JASPERSERVER_URL = os.environ.get('jasperserver_url', 'http://localhost:8081/jasperserver/rest_v2/reports/EVA/')
 JASPERSERVER_USUARIO = os.environ.get('jasperserver_usuario', 'jasperadmin')
 JASPERSERVER_CLAVE = os.environ.get('jasperserver_clave', 'jasperadmin')
+
+EVA_RECAPTCHA_SITE_KEY = os.environ.get('eva_recaptcha_site_key', '6Ld5nDgaAAAAAEMfhGZpUy48mKaGvowqVJyOulqI')
+EVA_RECAPTCHA_SECRET_KEY = os.environ.get('eva_recaptcha_site_key', '6Ld5nDgaAAAAAJf0aZ4axs6ocqqk6SXk5bQk7tLH')
