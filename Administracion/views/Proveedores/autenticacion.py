@@ -27,7 +27,7 @@ class IndexProveedorView(AbstractEvaLoggedProveedorView):
     def get(self, request):
         if request.user.is_authenticated:
             if Tercero.objects.filter(usuario=request.user):
-                messages.success(request, 'Ha iniciado sesión como {0}'.format(request.user.email))
+                messages.success(request, 'Ha iniciado sesión como {0}'.format(request.user.first_name))
             else:
                 return redirect(reverse('Administracion:iniciar-sesion'))
         return render(request, 'Administracion/index.html')
@@ -58,7 +58,6 @@ class InicioSesionProveedorView(View):
                 if usuario and user is not None:
                     login(request, user)
                     try:
-                        messages.success(request, 'Ha iniciado sesión como {0}'.format(user.email))
                         request.session['proveedor'] = user.first_name
                         proveedor = Tercero.objects.filter(usuario=user)
                         if proveedor:
@@ -66,7 +65,6 @@ class InicioSesionProveedorView(View):
                             request.session['proveedor_nombre'] = proveedor.first().nombre
                             request.session['proveedor_correo'] = user.email
                             request.session['proveedor_empresa'] = proveedor.first().empresa_to_dict()
-                            messages.success(request, 'Ha iniciado sesión como {0}'.format(request.user.first_name))
                     except:
                         messages.warning(request, 'El correo y/o la contraseña no son válidos')
                         return redirect(reverse('Administracion:proveedor-iniciar-sesion'))
