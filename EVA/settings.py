@@ -175,4 +175,4 @@ JASPERSERVER_USUARIO = os.environ.get('jasperserver_usuario', 'jasperadmin')
 JASPERSERVER_CLAVE = os.environ.get('jasperserver_clave', 'jasperadmin')
 
 EVA_RECAPTCHA_SITE_KEY = os.environ.get('eva_recaptcha_site_key', '6Ld5nDgaAAAAAEMfhGZpUy48mKaGvowqVJyOulqI')
-EVA_RECAPTCHA_SECRET_KEY = os.environ.get('eva_recaptcha_site_key', '6Ld5nDgaAAAAAJf0aZ4axs6ocqqk6SXk5bQk7tLH')
+EVA_RECAPTCHA_SECRET_KEY = os.environ.get('eva_recaptcha_secret_key', '6Ld5nDgaAAAAAJf0aZ4axs6ocqqk6SXk5bQk7tLH')
