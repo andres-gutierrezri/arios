@@ -66,7 +66,6 @@ class Colaborador(Persona, ModelDjangoExtensiones):
     jefe_inmediato = models.ForeignKey('self', on_delete=models.DO_NOTHING, verbose_name='Jefe inmediato', null=True,
                                        blank=True)
     cargo = models.ForeignKey(Cargo, on_delete=models.DO_NOTHING, verbose_name='Cargo', null=False, blank=False)
-    proceso = models.ForeignKey(Proceso, on_delete=models.DO_NOTHING, verbose_name='Proceso', null=False, blank=False)
     tipo_contrato = models.ForeignKey(TipoContrato, on_delete=models.DO_NOTHING, verbose_name='Tipo de contrato',
                                       null=False, blank=False)
     lugar_nacimiento = models.ForeignKey(CentroPoblado, on_delete=models.DO_NOTHING, verbose_name='Lugar de nacimiento',
@@ -128,7 +127,6 @@ class Colaborador(Persona, ModelDjangoExtensiones):
         if colaborador.jefe_inmediato_id == '':
             colaborador.jefe_inmediato_id = None
         colaborador.cargo_id = datos.get('cargo_id', '')
-        colaborador.proceso_id = datos.get('proceso_id', '')
         colaborador.tipo_contrato_id = datos.get('tipo_contrato_id', '')
         colaborador.lugar_nacimiento_id = datos.get('centro_poblado_id', '')
         colaborador.rango_id = datos.get('rango_id', '')
@@ -178,6 +176,18 @@ class Colaborador(Persona, ModelDjangoExtensiones):
                 usuario.username = usuario_n
 
                 return usuario
+
+
+class ColaboradorProceso(models.Model):
+    colaborador = models.ForeignKey(Colaborador, on_delete=models.DO_NOTHING, verbose_name='Colaborador', null=False,
+                                    blank=False)
+    proceso = models.ForeignKey(Proceso, on_delete=models.DO_NOTHING, verbose_name='Contrato', null=False, blank=False)
+
+    def __str__(self):
+        return str(self.proceso.id)
+
+    class Meta:
+        unique_together = ('colaborador', 'proceso')
 
 
 class ColaboradorContratoManger(models.Manager):
