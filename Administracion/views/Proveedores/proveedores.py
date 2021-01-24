@@ -1045,14 +1045,17 @@ def generar_comentario_cambios_tarjeta_solicitud(proveedor):
     if not proveedor_vigente.comparar(proveedor_editado, excluir=['id', 'es_vigente', 'estado', 'fecha_creacion',
                                                                   'fecha_modificacion', 'estado_proveedor',
                                                                   'regimen_fiscal', 'modificaciones',
-                                                                  'bienes_servicios']):
+                                                                  'bienes_servicios', 'responsabilidades_fiscales',
+                                                                  'tributos']):
         modificaciones += 'Información Básica, '
         lista_tarjeta_modificaciones.append(1)
 
     av = ProveedorActividadEconomica.objects.get(proveedor=proveedor_vigente)
     ae = ProveedorActividadEconomica.objects.get(proveedor=proveedor_editado)
-    if not av.comparar(ae, excluir=['id', 'proveedor']) or \
-            proveedor_vigente.regimen_fiscal != proveedor_editado.regimen_fiscal:
+    if not av.comparar(ae, excluir=['id', 'proveedor']) \
+            or proveedor_vigente.regimen_fiscal != proveedor_editado.regimen_fiscal \
+            or proveedor_vigente.tributos != proveedor_editado.tributos\
+            or proveedor_vigente.responsabilidades_fiscales != proveedor_editado.responsabilidades_fiscales:
         modificaciones += 'Actividades Económicas, '
         lista_tarjeta_modificaciones.append(2)
 
