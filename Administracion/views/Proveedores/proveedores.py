@@ -866,6 +866,25 @@ def generar_datos_actividades_economicas(proveedor):
                 tipo_contribuyente = tc[1]
                 break
 
+        declara_renta = ''
+        if ae.declara_renta and ae.proveedor.tipo_persona == TipoPersona.NATURAL:
+            declara_renta = 'Si'
+        elif ae.proveedor.tipo_persona == TipoPersona.NATURAL:
+            declara_renta = 'No'
+
+        responsabilidades_fiscales = ''
+        tributos = ''
+        if ae.proveedor.tipo_persona == TipoPersona.JURIDICA:
+            for rf_pro in ae.proveedor.responsabilidades_fiscales.split(';'):
+                for rf in ResponsabilidadesFiscales.choices:
+                    if rf[0] == rf_pro:
+                        responsabilidades_fiscales += rf[1] + ', '
+
+            for tr in Tributos.choices:
+                if tr[0] == ae.proveedor.tributos:
+                    tributos = '{0} - {1}'.format(tr[0], tr[1])
+                    break
+
         respuesta = [{'nombre_campo': 'Actividad Principal', 'valor_campo': ae.actividad_principal},
                      {'nombre_campo': 'Actividad Secundaria', 'valor_campo': ae.actividad_secundaria},
                      {'nombre_campo': 'Otra Actividad', 'valor_campo': ae.otra_actividad},
@@ -874,6 +893,9 @@ def generar_datos_actividades_economicas(proveedor):
                      {'nombre_campo': 'Excento de Industria y Comercio: # Res', 'valor_campo': ae.numero_resolucion},
                      {'nombre_campo': 'Contribuyente Industria y Comercio', 'valor_campo': ae.contribuyente_iyc},
                      {'nombre_campo': 'Entidad Pública', 'valor_campo': entidad_publica},
+                     {'nombre_campo': 'Declarante de Renta', 'valor_campo': declara_renta},
+                     {'nombre_campo': 'Responsabilidades Fiscales', 'valor_campo': responsabilidades_fiscales},
+                     {'nombre_campo': 'Tributos', 'valor_campo': tributos},
                      ]
     return respuesta
 
@@ -973,11 +995,17 @@ def generar_datos_proveedor(proveedor):
             if doc.tipo_documento:
                 if doc.tipo_documento.obligatorio:
                     n_documentos += 1
+    completado_ae = False
+    if proveedor.tipo_persona == TipoPersona.JURIDICA:
+        if proveedor.tributos:
+            completado_ae = True
+    elif actividades_economicas:
+        completado_ae = True
 
     total = 0
     total = total + 10 if proveedor.ciudad else total
     total = total + 10 if informacion_basica else total
-    total = total + 20 if actividades_economicas else total
+    total = total + 20 if completado_ae else total
     total = total + 20 if entidades_bancarias else total
     total = total + 20 if bienes_servicios else total
     total = total + 20 if n_documentos == n_tipos else total
@@ -989,7 +1017,7 @@ def generar_datos_proveedor(proveedor):
                           'datos': informacion_basica, 'completo': proveedor.ciudad is not None}
     actividades_economicas = {'id': 2, 'nombre': 'Actividades Económicas', 'modificado': 2 in cambios,
                               'url': '/administracion/proveedor/perfil/actividades-economicas',
-                              'datos': actividades_economicas, 'completo': actividades_economicas is not ''}
+                              'datos': actividades_economicas, 'completo': completado_ae}
     documentos = {'id': 3, 'nombre': 'Documentos', 'url': '/administracion/proveedor/perfil/documentos',
                   'datos': documentos, 'completo': n_documentos == n_tipos, 'modificado': 3 in cambios}
     entidades_bancarias = {'id': 4, 'nombre': 'Información Bancaria', 'modificado': 4 in cambios,
