@@ -12,7 +12,7 @@ from django.urls import reverse
 from django.views.decorators.clickjacking import xframe_options_sameorigin
 
 from Administracion.enumeraciones import TipoPersona, RegimenFiscal, \
-    EstadosProveedor, TipoContribuyente
+    EstadosProveedor, TipoContribuyente, ResponsabilidadesFiscales, Tributos
 from Administracion.models import TipoIdentificacion, Pais, Tercero, Departamento, Municipio
 from Administracion.models.models import SubproductoSubservicio, ProductoServicio
 from Administracion.models.terceros import ProveedorProductoServicio, TipoDocumentoTercero, DocumentoTercero, \
@@ -141,11 +141,14 @@ class PerfilActividadesEconomicasView(AbstractEvaLoggedProveedorView):
     def post(self, request):
         update_fields = ('actividad_principal', 'actividad_secundaria', 'otra_actividad', 'contribuyente_iyc',
                          'numero_resolucion', 'contribuyente_iyc', 'entidad_publica', 'proveedor',
-                         'proveedor', 'tipo_contribuyente')
+                         'proveedor', 'tipo_contribuyente', 'declara_renta')
         proveedor = filtro_estado_proveedor(request)
         proveedor_ae = ProveedorActividadEconomica.from_dictionary(request.POST)
         proveedor_ae.proveedor = proveedor
         proveedor.regimen_fiscal = request.POST.get('regimen_fiscal')
+        responsabilidades = request.POST.getlist('responsabilidades')
+        proveedor.responsabilidades_fiscales = ';'.join(responsabilidades) if responsabilidades else ''
+        proveedor.tributos = request.POST.get('tributo')
 
         try:
             registro = ProveedorActividadEconomica.objects.filter(proveedor=proveedor)
@@ -154,7 +157,7 @@ class PerfilActividadesEconomicasView(AbstractEvaLoggedProveedorView):
                 proveedor_ae.save(update_fields=update_fields)
             else:
                 proveedor_ae.save()
-            proveedor.save(update_fields=['regimen_fiscal'])
+            proveedor.save(update_fields=['regimen_fiscal', 'responsabilidades_fiscales', 'tributos'])
             messages.success(self.request, 'Se ha guardado la información de actividades económicas correctamente.')
             return redirect(reverse('Administracion:proveedor-perfil'))
         except:
@@ -681,12 +684,16 @@ def datos_xa_render_actividades_economicas(request):
                           {'campo_valor': '2', 'campo_texto': 'Departamental'},
                           {'campo_valor': '3', 'campo_texto': 'Municipal'}]
 
-    entidad_publica = True if PERSONA_JURIDICA == proveedor.tipo_persona else False
+    persona_juridica = True if PERSONA_JURIDICA == proveedor.tipo_persona else False
 
     datos = {'actividades_economicas': actividades_economicas,
              'entidades_publicas': entidades_publicas, 'proveedor': proveedor_actec,
-             'entidad_publica': entidad_publica, 'regimenes_fiscales': RegimenFiscal.choices,
-             'tipos_contribuyentes': TipoContribuyente.choices}
+             'persona_juridica': persona_juridica, 'regimenes_fiscales': RegimenFiscal.choices,
+             'tipos_contribuyentes': TipoContribuyente.choices,
+             'responsabilidades': ResponsabilidadesFiscales.choices, 'tributos': Tributos.choices,
+             'responsabilidades_tercero': proveedor.responsabilidades_fiscales.split(';')
+             if proveedor.responsabilidades_fiscales else []}
+
     return datos
 
 
