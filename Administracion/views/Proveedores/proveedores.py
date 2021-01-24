@@ -1008,7 +1008,7 @@ def generar_datos_proveedor(proveedor):
     total = total + 20 if completado_ae else total
     total = total + 20 if entidades_bancarias else total
     total = total + 20 if bienes_servicios else total
-    total = total + 20 if n_documentos == n_tipos else total
+    total = total + 20 if n_documentos >= n_tipos else total
 
     cambios = ast.literal_eval(proveedor.modificaciones)['modificaciones_tarjetas'] if proveedor.modificaciones else []
 
@@ -1019,7 +1019,7 @@ def generar_datos_proveedor(proveedor):
                               'url': '/administracion/proveedor/perfil/actividades-economicas',
                               'datos': actividades_economicas, 'completo': completado_ae}
     documentos = {'id': 3, 'nombre': 'Documentos', 'url': '/administracion/proveedor/perfil/documentos',
-                  'datos': documentos, 'completo': n_documentos == n_tipos, 'modificado': 3 in cambios}
+                  'datos': documentos, 'completo': n_documentos >= n_tipos, 'modificado': 3 in cambios}
     entidades_bancarias = {'id': 4, 'nombre': 'Información Bancaria', 'modificado': 4 in cambios,
                            'url': '/administracion/proveedor/perfil/entidades-bancarias',
                            'datos': entidades_bancarias, 'completo': entidades_bancarias != []}
