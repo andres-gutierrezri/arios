@@ -18,6 +18,7 @@ SOLICITUD_ENVIADA = 5
 
 class ProveedorIndexView(AbstractEvaLoggedView):
     def get(self, request):
+        page = request.GET.get('page', 1)
         tipo_producto_servicio = request.GET.get('tipo_producto_servicio_', '')
         producto_servicio = request.GET.get('producto_servicio_', '')
         subproducto_subservicio = request.GET.getlist('subproducto_subservicio_', [])
@@ -26,13 +27,10 @@ class ProveedorIndexView(AbstractEvaLoggedView):
         if busqueda_avanzada:
             subproducto_subservicio = json.loads(busqueda_avanzada)
 
-        productos_servicios = []
-        subproductos_subservicios = []
         all_productos_servicios = ProveedorProductoServicio.objects.all()
         proveedores_pro_serv = ProveedorProductoServicio.objects.distinct('proveedor')\
             .filter(proveedor__es_vigente=True)\
-            .exclude(proveedor__estado_proveedor__in=[EstadosProveedor.DILIGENCIAMIENTO_PERFIL,
-                                                      EstadosProveedor.EDICION_PERFIL])
+            .exclude(proveedor__estado_proveedor=EstadosProveedor.DILIGENCIAMIENTO_PERFIL)
         total = len(proveedores_pro_serv)
         if search:
             proveedores_pro_serv = proveedores_pro_serv\
@@ -44,25 +42,8 @@ class ProveedorIndexView(AbstractEvaLoggedView):
                         Q(proveedor__telefono_movil_principal__icontains=search) |
                         Q(proveedor__correo_principal__icontains=search))
 
-        resutados_busqueda = ''
         if subproducto_subservicio:
             proveedores_pro_serv = proveedores_pro_serv.filter(subproducto_subservicio_id__in=subproducto_subservicio)
-            if proveedores_pro_serv:
-                tipo_producto_servicio = 2 if proveedores_pro_serv[0].subproducto_subservicio.producto_servicio\
-                    .es_servicio else 1
-                producto_servicio = proveedores_pro_serv[0].subproducto_subservicio.producto_servicio_id
-                resutados_busqueda = 'Se han encontrado {0} coincidencias'.format(len(proveedores_pro_serv))
-                messages.success(request, resutados_busqueda)
-            else:
-                tipo_producto_servicio = int(tipo_producto_servicio)
-                producto_servicio = int(producto_servicio)
-                resutados_busqueda = 'No se encontraron coincidencias'
-                messages.warning(request, resutados_busqueda)
-
-            es_servicio = tipo_producto_servicio == 2
-            productos_servicios = ProductoServicio.objects.get_xa_select_activos().filter(es_servicio=es_servicio)
-            subproductos_subservicios = SubproductoSubservicio.objects.get_xa_select_activos()\
-                .filter(producto_servicio_id=producto_servicio)
 
         valor_subproducto_subservicio = []
         for ps in subproducto_subservicio:
@@ -79,10 +60,31 @@ class ProveedorIndexView(AbstractEvaLoggedView):
             if not coincidencia:
                 lista_proveedores_activos.append(pps)
 
+        resutados_busqueda = ''
+        productos_servicios = []
+        subproductos_subservicios = []
+        if subproducto_subservicio:
+            if proveedores_pro_serv and subproducto_subservicio:
+                tipo_producto_servicio = 2 if proveedores_pro_serv[0].subproducto_subservicio.producto_servicio \
+                    .es_servicio else 1
+                producto_servicio = proveedores_pro_serv[0].subproducto_subservicio.producto_servicio_id
+                resutados_busqueda = 'Se han encontrado {0} coincidencias'.format(len(lista_proveedores_activos))
+                if page == 1:
+                    messages.success(request, resutados_busqueda)
+            else:
+                tipo_producto_servicio = int(tipo_producto_servicio)
+                producto_servicio = int(producto_servicio)
+                resutados_busqueda = 'No se encontraron coincidencias'
+                messages.warning(request, resutados_busqueda)
+
+            es_servicio = tipo_producto_servicio == 2
+            productos_servicios = ProductoServicio.objects.get_xa_select_activos().filter(es_servicio=es_servicio)
+            subproductos_subservicios = SubproductoSubservicio.objects.get_xa_select_activos() \
+                .filter(producto_servicio_id=producto_servicio)
+
         label_producto_servicio, label_subproducto_subservicio = ['Servicio', 'Subservicio'] \
             if tipo_producto_servicio == 2 else ['Producto', 'Subproducto']
 
-        page = request.GET.get('page', 1)
         lista_proveedores_activos = paginar(lista_proveedores_activos, page, 10)
         return render(request, 'Administracion/Tercero/Proveedor/index.html',
                       {'proveedores_pro_serv': lista_proveedores_activos,

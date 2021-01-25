@@ -75,6 +75,7 @@ class ProveedorActividadEconomica(models.Model, ModelDjangoExtensiones):
     entidad_publica = models.CharField(verbose_name='Número de Resolución', max_length=100, null=True, blank=True)
     proveedor = models.ForeignKey(Tercero, on_delete=models.CASCADE, verbose_name='Usuario',
                                   null=False, blank=False)
+    declara_renta = models.BooleanField(verbose_name='Declara Renta', null=True, blank=False)
 
     def __str__(self):
         return 'Información de la Actividad Economica del usuario {0}'.format(self.proveedor.usuario.get_full_name())
@@ -98,6 +99,7 @@ class ProveedorActividadEconomica(models.Model, ModelDjangoExtensiones):
         proveedor_ae.numero_resolucion = datos.get('resolucion', '')
         proveedor_ae.contribuyente_iyc = datos.get('contribuyente_iyc', '')
         proveedor_ae.entidad_publica = datos.get('entidad_publica', '')
+        proveedor_ae.declara_renta = datos.get('declara_renta', 'False') == 'on'
 
         return proveedor_ae
 

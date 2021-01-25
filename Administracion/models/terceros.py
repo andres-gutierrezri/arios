@@ -116,7 +116,8 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     class Meta:
         verbose_name = 'Tercero'
         verbose_name_plural = 'Terceros'
-        permissions = [("view_proveedor", "Can view proveedor")]
+        permissions = [("view_proveedor", "Can view proveedor"),
+                       ("manage_proveedor", "Can manage proveedor")]
 
     def empresa_to_dict(self):
         if self.empresa:

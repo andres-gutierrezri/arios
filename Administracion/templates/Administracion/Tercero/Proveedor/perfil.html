@@ -83,11 +83,13 @@
                                     </div>
                                     <div class="form-row justify-content-end">
                                         <div class="pl-2">
-                                            {% if solicitud_proveedor %}
-                                                {% if solicitud_activa %}
-                                                    <small style="float: right">
-                                                        <a href="javascript:abrir_modal_aprobar_rechazar('{% url 'Administracion:proveedor-solicitudes-aprobar-rechazar' solicitud_proveedor.id %}')" class="btn btn-primary btn-pills btn-block">Aprobar/Denegar</a>
-                                                    </small>
+                                            {% if perms.Administracion.manage_proveedor %}
+                                                {% if solicitud_proveedor %}
+                                                    {% if solicitud_activa %}
+                                                        <small style="float: right">
+                                                            <a href="javascript:abrir_modal_aprobar_rechazar('{% url 'Administracion:proveedor-solicitudes-aprobar-rechazar' solicitud_proveedor.id %}')" class="btn btn-primary btn-pills btn-block">Aprobar/Denegar</a>
+                                                        </small>
+                                                    {% endif %}
                                                 {% endif %}
                                             {% endif %}
                                             {% if btn_enviar and not perfil_activo and not solicitud_activa %}

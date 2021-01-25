@@ -117,7 +117,9 @@
                                                                 </td>
                                                                 <td>
                                                                     <a class="far fa-2x fa-eye" href="{% url 'Administracion:proveedor-solicitudes-perfil' pps.proveedor.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ver Perfil"></a>
-                                                                    <a class="far fa-2x fa-edit" {% if pps.proveedor.estado %} href="javascript:cambiarEstadoProveedor('{{ pps.proveedor.id }}', 'desactivar')" data-original-title="Desactivar" {% else %} href="javascript:cambiarEstadoProveedor('{{ pps.proveedor.id }}', 'activar')" data-original-title="Activar" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
+                                                                    {% if perms.Administracion.manage_proveedor %}
+                                                                        <a class="far fa-2x fa-edit" {% if pps.proveedor.estado %} href="javascript:cambiarEstadoProveedor('{{ pps.proveedor.id }}', 'desactivar')" data-original-title="Desactivar" {% else %} href="javascript:cambiarEstadoProveedor('{{ pps.proveedor.id }}', 'activar')" data-original-title="Activar" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
+                                                                    {% endif %}
                                                                 </td>
                                                             </tr>
                                                         {% endfor %}

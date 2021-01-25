@@ -12,7 +12,7 @@ from django.urls import reverse
 from django.views.decorators.clickjacking import xframe_options_sameorigin
 
 from Administracion.enumeraciones import TipoPersona, RegimenFiscal, \
-    EstadosProveedor, TipoContribuyente
+    EstadosProveedor, TipoContribuyente, ResponsabilidadesFiscales, Tributos
 from Administracion.models import TipoIdentificacion, Pais, Tercero, Departamento, Municipio
 from Administracion.models.models import SubproductoSubservicio, ProductoServicio
 from Administracion.models.terceros import ProveedorProductoServicio, TipoDocumentoTercero, DocumentoTercero, \
@@ -141,11 +141,14 @@ class PerfilActividadesEconomicasView(AbstractEvaLoggedProveedorView):
     def post(self, request):
         update_fields = ('actividad_principal', 'actividad_secundaria', 'otra_actividad', 'contribuyente_iyc',
                          'numero_resolucion', 'contribuyente_iyc', 'entidad_publica', 'proveedor',
-                         'proveedor', 'tipo_contribuyente')
+                         'proveedor', 'tipo_contribuyente', 'declara_renta')
         proveedor = filtro_estado_proveedor(request)
         proveedor_ae = ProveedorActividadEconomica.from_dictionary(request.POST)
         proveedor_ae.proveedor = proveedor
         proveedor.regimen_fiscal = request.POST.get('regimen_fiscal')
+        responsabilidades = request.POST.getlist('responsabilidades')
+        proveedor.responsabilidades_fiscales = ';'.join(responsabilidades) if responsabilidades else ''
+        proveedor.tributos = request.POST.get('tributo')
 
         try:
             registro = ProveedorActividadEconomica.objects.filter(proveedor=proveedor)
@@ -154,7 +157,7 @@ class PerfilActividadesEconomicasView(AbstractEvaLoggedProveedorView):
                 proveedor_ae.save(update_fields=update_fields)
             else:
                 proveedor_ae.save()
-            proveedor.save(update_fields=['regimen_fiscal'])
+            proveedor.save(update_fields=['regimen_fiscal', 'responsabilidades_fiscales', 'tributos'])
             messages.success(self.request, 'Se ha guardado la información de actividades económicas correctamente.')
             return redirect(reverse('Administracion:proveedor-perfil'))
         except:
@@ -682,12 +685,16 @@ def datos_xa_render_actividades_economicas(request):
                           {'campo_valor': '2', 'campo_texto': 'Departamental'},
                           {'campo_valor': '3', 'campo_texto': 'Municipal'}]
 
-    entidad_publica = True if PERSONA_JURIDICA == proveedor.tipo_persona else False
+    persona_juridica = True if PERSONA_JURIDICA == proveedor.tipo_persona else False
 
     datos = {'actividades_economicas': actividades_economicas,
              'entidades_publicas': entidades_publicas, 'proveedor': proveedor_actec,
-             'entidad_publica': entidad_publica, 'regimenes_fiscales': RegimenFiscal.choices,
-             'tipos_contribuyentes': TipoContribuyente.choices}
+             'persona_juridica': persona_juridica, 'regimenes_fiscales': RegimenFiscal.choices,
+             'tipos_contribuyentes': TipoContribuyente.choices,
+             'responsabilidades': ResponsabilidadesFiscales.choices, 'tributos': Tributos.choices,
+             'responsabilidades_tercero': proveedor.responsabilidades_fiscales.split(';')
+             if proveedor.responsabilidades_fiscales else []}
+
     return datos
 
 
@@ -860,6 +867,25 @@ def generar_datos_actividades_economicas(proveedor):
                 tipo_contribuyente = tc[1]
                 break
 
+        declara_renta = ''
+        if ae.declara_renta and ae.proveedor.tipo_persona == TipoPersona.NATURAL:
+            declara_renta = 'Si'
+        elif ae.proveedor.tipo_persona == TipoPersona.NATURAL:
+            declara_renta = 'No'
+
+        responsabilidades_fiscales = ''
+        tributos = ''
+        if ae.proveedor.tipo_persona == TipoPersona.JURIDICA:
+            for rf_pro in ae.proveedor.responsabilidades_fiscales.split(';'):
+                for rf in ResponsabilidadesFiscales.choices:
+                    if rf[0] == rf_pro:
+                        responsabilidades_fiscales += rf[1] + ', '
+
+            for tr in Tributos.choices:
+                if tr[0] == ae.proveedor.tributos:
+                    tributos = '{0} - {1}'.format(tr[0], tr[1])
+                    break
+
         respuesta = [{'nombre_campo': 'Actividad Principal', 'valor_campo': ae.actividad_principal},
                      {'nombre_campo': 'Actividad Secundaria', 'valor_campo': ae.actividad_secundaria},
                      {'nombre_campo': 'Otra Actividad', 'valor_campo': ae.otra_actividad},
@@ -868,6 +894,9 @@ def generar_datos_actividades_economicas(proveedor):
                      {'nombre_campo': 'Excento de Industria y Comercio: # Res', 'valor_campo': ae.numero_resolucion},
                      {'nombre_campo': 'Contribuyente Industria y Comercio', 'valor_campo': ae.contribuyente_iyc},
                      {'nombre_campo': 'Entidad Pública', 'valor_campo': entidad_publica},
+                     {'nombre_campo': 'Declarante de Renta', 'valor_campo': declara_renta},
+                     {'nombre_campo': 'Responsabilidades Fiscales', 'valor_campo': responsabilidades_fiscales},
+                     {'nombre_campo': 'Tributos', 'valor_campo': tributos},
                      ]
     return respuesta
 
@@ -967,14 +996,20 @@ def generar_datos_proveedor(proveedor):
             if doc.tipo_documento:
                 if doc.tipo_documento.obligatorio:
                     n_documentos += 1
+    completado_ae = False
+    if proveedor.tipo_persona == TipoPersona.JURIDICA:
+        if proveedor.tributos:
+            completado_ae = True
+    elif actividades_economicas:
+        completado_ae = True
 
     total = 0
     total = total + 10 if proveedor.ciudad else total
     total = total + 10 if informacion_basica else total
-    total = total + 20 if actividades_economicas else total
+    total = total + 20 if completado_ae else total
     total = total + 20 if entidades_bancarias else total
     total = total + 20 if bienes_servicios else total
-    total = total + 20 if n_documentos == n_tipos else total
+    total = total + 20 if n_documentos >= n_tipos else total
 
     cambios = ast.literal_eval(proveedor.modificaciones)['modificaciones_tarjetas'] if proveedor.modificaciones else []
 
@@ -983,9 +1018,9 @@ def generar_datos_proveedor(proveedor):
                           'datos': informacion_basica, 'completo': proveedor.ciudad is not None}
     actividades_economicas = {'id': 2, 'nombre': 'Actividades Económicas', 'modificado': 2 in cambios,
                               'url': '/administracion/proveedor/perfil/actividades-economicas',
-                              'datos': actividades_economicas, 'completo': actividades_economicas is not ''}
+                              'datos': actividades_economicas, 'completo': completado_ae}
     documentos = {'id': 3, 'nombre': 'Documentos', 'url': '/administracion/proveedor/perfil/documentos',
-                  'datos': documentos, 'completo': n_documentos == n_tipos, 'modificado': 3 in cambios}
+                  'datos': documentos, 'completo': n_documentos >= n_tipos, 'modificado': 3 in cambios}
     entidades_bancarias = {'id': 4, 'nombre': 'Información Bancaria', 'modificado': 4 in cambios,
                            'url': '/administracion/proveedor/perfil/entidades-bancarias',
                            'datos': entidades_bancarias, 'completo': entidades_bancarias != []}
@@ -1011,14 +1046,17 @@ def generar_comentario_cambios_tarjeta_solicitud(proveedor):
     if not proveedor_vigente.comparar(proveedor_editado, excluir=['id', 'es_vigente', 'estado', 'fecha_creacion',
                                                                   'fecha_modificacion', 'estado_proveedor',
                                                                   'regimen_fiscal', 'modificaciones',
-                                                                  'bienes_servicios']):
+                                                                  'bienes_servicios', 'responsabilidades_fiscales',
+                                                                  'tributos']):
         modificaciones += 'Información Básica, '
         lista_tarjeta_modificaciones.append(1)
 
     av = ProveedorActividadEconomica.objects.get(proveedor=proveedor_vigente)
     ae = ProveedorActividadEconomica.objects.get(proveedor=proveedor_editado)
-    if not av.comparar(ae, excluir=['id', 'proveedor']) or \
-            proveedor_vigente.regimen_fiscal != proveedor_editado.regimen_fiscal:
+    if not av.comparar(ae, excluir=['id', 'proveedor']) \
+            or proveedor_vigente.regimen_fiscal != proveedor_editado.regimen_fiscal \
+            or proveedor_vigente.tributos != proveedor_editado.tributos\
+            or proveedor_vigente.responsabilidades_fiscales != proveedor_editado.responsabilidades_fiscales:
         modificaciones += 'Actividades Económicas, '
         lista_tarjeta_modificaciones.append(2)
 
