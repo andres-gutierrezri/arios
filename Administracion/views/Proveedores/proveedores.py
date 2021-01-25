@@ -605,6 +605,7 @@ class CertificacionesView(AbstractEvaLoggedProveedorView):
 
 
 class GenerarCertificacionView(AbstractEvaLoggedProveedorView):
+    @xframe_options_sameorigin
     def get(self, request, id):
         reporte = obtener_reporte('CertificadoProveedor.pdf', {'id_certificado': id})
         if reporte:
