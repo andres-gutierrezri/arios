@@ -53,7 +53,7 @@
                                                             {% if perms.Financiero.view_flujocajaencabezado %}
                                                             <td>
                                                                 {% if proceso.proceso_usuario or perms.Financiero.can_gestion_flujos_de_caja %}
-                                                                    <span class="badge badge-primary">{{ proceso.proceso.flujocajaencabezado_set.first.estado }}</span>
+                                                                    <span class="badge badge-primary">{{ proceso.flujocajaencabezado_set.first.estado }}</span>
                                                                 {% endif %}
                                                             </td>
                                                             <td>

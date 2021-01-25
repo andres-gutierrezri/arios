@@ -5,7 +5,7 @@ from django.shortcuts import render
 from Administracion.models import Proceso
 from Administracion.utils import get_id_empresa_global
 from EVA.views.index import AbstractEvaLoggedView
-from TalentoHumano.models import Colaborador
+from Financiero.models import FlujoCajaEncabezado
 from TalentoHumano.models.colaboradores import ColaboradorProceso
 
 
@@ -24,7 +24,9 @@ class ProcesosView(AbstractEvaLoggedView):
                                    'nombre': pro.nombre,
                                    'objeto': pro.objeto,
                                    'proceso_usuario': proceso_usuario,
-                                   'proceso': pro})
+                                   'flujocajaencabezado_set':
+                                       {'first': {'estado':
+                                                  FlujoCajaEncabezado.objects.filter(proceso=pro).first().estado}}})
         return render(request, 'Financiero/FlujoCaja/FlujoCajaProcesos/index.html',
                       {'procesos': procesos_lista, 'fecha': datetime.now(),
                        'menu_actual': ['procesos', 'flujos_de_caja'],
