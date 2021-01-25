@@ -875,7 +875,8 @@ def generar_datos_actividades_economicas(proveedor):
         responsabilidades_fiscales = ''
         tributos = ''
         if ae.proveedor.tipo_persona == TipoPersona.JURIDICA:
-            for rf_pro in ae.proveedor.responsabilidades_fiscales.split(';'):
+            for rf_pro in ae.proveedor.responsabilidades_fiscales.split(';')\
+                    if ae.proveedor.responsabilidades_fiscales else []:
                 for rf in ResponsabilidadesFiscales.choices:
                     if rf[0] == rf_pro:
                         responsabilidades_fiscales += rf[1] + ', '
