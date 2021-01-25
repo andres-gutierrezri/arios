@@ -15,6 +15,7 @@ from SGI.models.documentos import EstadoArchivo, CadenaAprobacionDetalle, Result
     CadenaAprobacionEncabezado, GruposDocumentosProcesos
 from SGI.views.cadena_aprobacion import crear_notificacion_cadena
 from TalentoHumano.models import Colaborador
+from TalentoHumano.models.colaboradores import ColaboradorProceso
 
 
 class IndexView(AbstractEvaLoggedView):
@@ -46,6 +47,9 @@ class IndexView(AbstractEvaLoggedView):
 
             colaborador = Colaborador.objects.get(usuario=request.user)
             grps_docs_pros = GruposDocumentosProcesos.objects.all()
+            colaborador_proceso = ColaboradorProceso.objects.filter(proceso_id=id, colaborador=colaborador)
+            if colaborador_proceso:
+                colaborador_proceso = proceso
 
             lista_grupos = []
             for grp_doc in grupo_documentos:
@@ -62,6 +66,7 @@ class IndexView(AbstractEvaLoggedView):
                                                                  'grupo_documentos': lista_grupos,
                                                                  'proceso': proceso,
                                                                  'colaborador': colaborador,
+                                                                 'colaborador_proceso': colaborador_proceso,
                                                                  'archivos': archivos,
                                                                  'historial': historial,
                                                                  'resultados': resultados,
