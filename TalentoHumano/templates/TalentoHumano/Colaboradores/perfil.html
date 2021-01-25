@@ -222,7 +222,7 @@
                                                                     <b>Fecha de examen de ingreso:</b> {{ colaborador.fecha_examen|date:'Y-m-d' }}
                                                                 </small>
                                                                 <small class="mt-0 mb-3 text-muted">
-                                                                    <b>Proceso:</b> {{ colaborador.proceso }}
+                                                                    <b>Proceso:</b> {% for proceso in procesos %}{% if procesos.last == proceso %}{{ proceso.proceso }}{% else %}{{ proceso.proceso }}{{ ', ' }}{% endif %}{% endfor %}
                                                                 </small>
                                                                 <small class="mt-0 mb-3 text-muted">
                                                                     <b>Salario:</b> {{ colaborador.salario }}

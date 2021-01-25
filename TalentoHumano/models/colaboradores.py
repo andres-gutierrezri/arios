@@ -178,7 +178,24 @@ class Colaborador(Persona, ModelDjangoExtensiones):
                 return usuario
 
 
+class ColaboradorProcesoManger(models.Manager):
+
+    def get_ids_procesos(self, colaborador_id: int = None, colaborador: Colaborador = None) -> QuerySet:
+        if colaborador:
+            colaborador_id = colaborador.id
+
+        filtro = {}
+        if colaborador_id:
+            filtro['colaborador_id'] = colaborador_id
+
+        return super().get_queryset().filter(**filtro).values_list('proceso_id', flat=True)
+
+    def get_ids_procesos_list(self, colaborador_id: int = None, colaborador: Colaborador = None) -> list:
+        return list(self.get_ids_procesos(colaborador_id, colaborador))
+
+
 class ColaboradorProceso(models.Model):
+    objects = ColaboradorProcesoManger()
     colaborador = models.ForeignKey(Colaborador, on_delete=models.DO_NOTHING, verbose_name='Colaborador', null=False,
                                     blank=False)
     proceso = models.ForeignKey(Proceso, on_delete=models.DO_NOTHING, verbose_name='Contrato', null=False, blank=False)
