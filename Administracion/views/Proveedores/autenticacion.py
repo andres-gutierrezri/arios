@@ -1,4 +1,5 @@
 import json
+import logging
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
@@ -21,6 +22,9 @@ from EVA.views.index import AbstractEvaLoggedProveedorView
 from Notificaciones.models.models import EventoDesencadenador, SeleccionDeNotificacionARecibir
 from Notificaciones.views.correo_electronico import enviar_correo
 from TalentoHumano.models import Colaborador
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 class IndexProveedorView(AbstractEvaLoggedProveedorView):
@@ -66,6 +70,7 @@ class InicioSesionProveedorView(View):
                             request.session['proveedor_correo'] = user.email
                             request.session['proveedor_empresa'] = proveedor.first().empresa_to_dict()
                     except:
+                        LOGGER.error('Error al iniciar sesión un proveedor')
                         messages.warning(request, 'El correo y/o la contraseña no son válidos')
                         return redirect(reverse('Administracion:proveedor-iniciar-sesion'))
                 else:
@@ -154,6 +159,7 @@ class RegistroProveedorView(View):
                                'token': False,
                                'lista_destinatarios': [usuario.email]})
             except:
+                LOGGER.error('Error en registro de un proveedor')
                 return JsonResponse({'estado': 'ERROR'})
         else:
             return JsonResponse({'estado': 'ERROR',

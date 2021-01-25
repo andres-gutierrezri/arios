@@ -1,4 +1,5 @@
 import json
+import logging
 
 from django.contrib import messages
 from django.db import IntegrityError
@@ -14,6 +15,8 @@ from EVA.General.utilidades import paginar, app_datetime_now
 from EVA.views.index import AbstractEvaLoggedView
 
 SOLICITUD_ENVIADA = 5
+
+LOGGER = logging.getLogger(__name__)
 
 
 class ProveedorIndexView(AbstractEvaLoggedView):
@@ -118,5 +121,6 @@ class ActivarDesactivarProveedorView(AbstractEvaLoggedView):
             return JsonResponse({"estado": "OK"})
 
         except IntegrityError:
+            LOGGER.error('Error al desactivar un proveedor')
             return JsonResponse({"estado": "error",
                                  "mensaje": "Ha ocurrido un error al realizar la acción"})

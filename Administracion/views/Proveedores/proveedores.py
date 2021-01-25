@@ -1,5 +1,6 @@
 import ast
 import json
+import logging
 import os
 from sqlite3 import IntegrityError
 
@@ -25,6 +26,8 @@ from Financiero.models.models import ActividadEconomica, ProveedorActividadEcono
     EntidadBancariaTercero, EntidadBancaria
 from Notificaciones.models.models import EventoDesencadenador, DestinatarioNotificacion
 from Notificaciones.views.views import crear_notificacion_por_evento
+
+LOGGER = logging.getLogger(__name__)
 
 
 class PerfilProveedorView(AbstractEvaLoggedProveedorView):
@@ -161,6 +164,7 @@ class PerfilActividadesEconomicasView(AbstractEvaLoggedProveedorView):
             messages.success(self.request, 'Se ha guardado la información de actividades económicas correctamente.')
             return redirect(reverse('Administracion:proveedor-perfil'))
         except:
+            LOGGER.exception("Error al actualizar información actividades económicas proveedor")
             messages.error(self.request, 'Ha ocurrido un error al actualizar la información.')
             return redirect(reverse('Administracion:proveedor-perfil'))
 
@@ -187,6 +191,7 @@ class EntidadBancariaCrearView(AbstractEvaLoggedProveedorView):
         try:
             entidad_proveedor.save()
         except:
+            LOGGER.exception("Error al crear información bancaria proveedor")
             return JsonResponse({"estado": "error", "mensaje": "Ha ocurrido un error al guardar la información"})
 
         messages.success(self.request, 'Se ha creado la entidad correctamente.')
@@ -212,6 +217,7 @@ class EntidadBancariaEditarView(AbstractEvaLoggedProveedorView):
                 update_fields.append('certificacion')
             entidad_proveedor.save(update_fields=update_fields)
         except:
+            LOGGER.exception("Error al editar información bancaria proveedor")
             return JsonResponse({"estado": "error", "mensaje": "Ha ocurrido un error al guardar la información"})
 
         messages.success(self.request, 'Se ha actualizado la entidad correctamente.')
@@ -227,6 +233,7 @@ class EntidadBancariaEliminarView(AbstractEvaLoggedProveedorView):
             return JsonResponse({"estado": "OK"})
 
         except IntegrityError:
+            LOGGER.exception("Error al eliminar información bancaria proveedor")
             return JsonResponse({"estado": "error",
                                  "mensaje": "Ha ocurrido un error al realizar la acción Vista"})
 
@@ -288,6 +295,7 @@ class PerfilProductosServiciosView(AbstractEvaLoggedProveedorView):
             Tercero.objects.filter(id=proveedor.id).update(bienes_servicios=bienes_servicios)
             messages.success(self.request, 'Se han guardado los productos y servicios correctamente.')
         except:
+            LOGGER.exception("Error al actualizar información productos/servicios proveedor")
             messages.error(self.request, 'Ha ocurrido un error al guardar los datos')
 
         return redirect(reverse('Administracion:proveedor-perfil'))
@@ -342,6 +350,7 @@ class DocumentoCrearView(AbstractEvaLoggedProveedorView):
         try:
             documento.save()
         except:
+            LOGGER.exception("Error al crear documento proveedor")
             return JsonResponse({"estado": "error", "mensaje": "Ha ocurrido un error al guardar la información"})
 
         messages.success(self.request, 'Se ha cargado el documento {0} correctamente.'
@@ -361,6 +370,7 @@ class DocumentoEditarView(AbstractEvaLoggedProveedorView):
         try:
             documento.save(update_fields=['documento'])
         except:
+            LOGGER.exception("Error al editar documento proveedor")
             return JsonResponse({"estado": "error", "mensaje": "Ha ocurrido un error al guardar la información"})
 
         messages.success(self.request, 'Se ha cargado el documento {0} correctamente.'
@@ -390,6 +400,7 @@ class DocumentoAdicionalCrearView(AbstractEvaLoggedProveedorView):
         try:
             documento.save()
         except:
+            LOGGER.exception("Error al crear documento adicional proveedor")
             return JsonResponse({"estado": "error", "mensaje": "Ha ocurrido un error al guardar la información"})
 
         messages.success(self.request, 'Se ha cargado el documento {0} correctamente.'
@@ -410,6 +421,7 @@ class DocumentoAdicionalEditarView(AbstractEvaLoggedProveedorView):
         try:
             documento.save(update_fields=['documento', 'nombre'])
         except:
+            LOGGER.exception("Error al editar documento adicional proveedor")
             return JsonResponse({"estado": "error", "mensaje": "Ha ocurrido un error al guardar la información"})
 
         messages.success(self.request, 'Se ha cargado el documento {0} correctamente.'
@@ -426,6 +438,7 @@ class DocumentoAdicionalEliminarView(AbstractEvaLoggedProveedorView):
             return JsonResponse({"estado": "OK"})
 
         except IntegrityError:
+            LOGGER.exception("Error al eliminar documento adicional proveedor")
             return JsonResponse({"estado": "error",
                                  "mensaje": "Ha ocurrido un error al realizar la acción"})
 
@@ -458,6 +471,7 @@ class EnviarSolicitudProveedorView(AbstractEvaLoggedView):
 
             return JsonResponse({"estado": "OK"})
         except:
+            LOGGER.exception("Error al enviar solicitud proveedor")
             return JsonResponse({"estado": "ERROR", "mensaje": "Ha ocurrido un error al realizar la solicitud"})
 
 
@@ -565,6 +579,7 @@ class ProveedorSolicitudAprobarRechazar(AbstractEvaLoggedView):
                                                      'mensaje': comentario,
                                                      'usuario': solicitud.proveedor.usuario_id})
         except:
+            LOGGER.exception("Error al aprobar/denegar solicitud proveedor")
             messages.error(self.request, 'Ha ocurrido un error al realizar la acción.')
 
         return redirect(reverse('Administracion:proveedor-solicitudes'))
@@ -594,6 +609,7 @@ class ProveedorModificarSolicitudView(AbstractEvaLoggedProveedorView):
             return JsonResponse({"estado": "OK"})
 
         except:
+            LOGGER.exception("Error al modificar solicitud proveedor")
             return JsonResponse({"estado": "ERROR", "mensaje": "Ha ocurrido un error al realizar la solicitud"})
 
 
