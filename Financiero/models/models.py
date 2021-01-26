@@ -30,14 +30,6 @@ class EntidadBancaria(models.Model):
         verbose_name_plural = 'Entidades Bancarias'
 
 
-class TipoCuentaBancariaManger(ManagerGeneral):
-    def get_like_json(self):
-        datos = []
-        for elemento in self.get_x_estado(True, False):
-            datos.append({'id': elemento.id, 'nombre': elemento.nombre})
-        return json.dumps(datos)
-
-
 class ActividadEconomicaManger(ManagerGeneral):
     def get_xa_select_actividades_con_codigo(self) -> List:
         datos = []
@@ -49,7 +41,7 @@ class ActividadEconomicaManger(ManagerGeneral):
 class ActividadEconomica(models.Model):
     objects = ActividadEconomicaManger()
     nombre = models.CharField(verbose_name='Nombre', max_length=200, null=False, blank=False)
-    codigo_ciiu = models.CharField(verbose_name='Codigo CIIU', max_length=10, null=False, blank=False)
+    codigo_ciiu = models.CharField(verbose_name='Código CIIU', max_length=10, null=False, blank=False)
 
     def __str__(self):
         return '{0} - {1}'.format(self.codigo_ciiu, self.nombre)
