@@ -47,9 +47,11 @@ class IndexView(AbstractEvaLoggedView):
 
             colaborador = Colaborador.objects.get(usuario=request.user)
             grps_docs_pros = GruposDocumentosProcesos.objects.all()
-            colaborador_proceso = ColaboradorProceso.objects.filter(proceso_id=id, colaborador=colaborador)
+            lista_procesos_db = []
+            colaborador_proceso = ColaboradorProceso.objects.filter(colaborador=colaborador)
             if colaborador_proceso:
-                colaborador_proceso = proceso
+                for cp in colaborador_proceso:
+                    lista_procesos_db.append(cp.proceso)
 
             lista_grupos = []
             for grp_doc in grupo_documentos:
@@ -66,7 +68,7 @@ class IndexView(AbstractEvaLoggedView):
                                                                  'grupo_documentos': lista_grupos,
                                                                  'proceso': proceso,
                                                                  'colaborador': colaborador,
-                                                                 'colaborador_proceso': colaborador_proceso,
+                                                                 'colaborador_proceso': lista_procesos_db,
                                                                  'archivos': archivos,
                                                                  'historial': historial,
                                                                  'resultados': resultados,
