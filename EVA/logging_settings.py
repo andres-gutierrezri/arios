@@ -10,12 +10,12 @@ LOGGING = {
     },
     'handlers': {
         'default': {
-            'level': 'INFO',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'level': 'ERROR',
+            'class': 'logging.handlers.RotatingFileHandler',
             'filename': os.environ.get('eva_ruta_log',
                                        os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                                                     'eva.log')),
-            'when': 'midnight',
+            'maxBytes': 10 * 1024 * 1024,
             'backupCount': 0,
             'formatter': 'standard',
             'encoding': 'UTF-8'
