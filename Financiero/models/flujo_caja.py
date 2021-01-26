@@ -31,7 +31,7 @@ class TipoMovimiento(models.Model):
 
 class CategoriaMovimiento(models.Model):
     objects = ManagerGeneral()
-    nombre = models.CharField(verbose_name='Nombre', max_length=30, null=False, blank=False)
+    nombre = models.CharField(verbose_name='Nombre', max_length=60, null=False, blank=False)
     descripcion = models.CharField(verbose_name='Descripción', max_length=200, null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', blank=False, null=False, default=True)
 
@@ -58,7 +58,7 @@ class CategoriaMovimiento(models.Model):
 
 class SubTipoMovimiento(models.Model):
     objects = ManagerGeneral()
-    nombre = models.CharField(verbose_name='Nombre', max_length=30, null=False, blank=False)
+    nombre = models.CharField(verbose_name='Nombre', max_length=60, null=False, blank=False)
     descripcion = models.CharField(verbose_name='Descripción', max_length=200, null=False, blank=False)
     tipo_movimiento = models.ForeignKey(TipoMovimiento, on_delete=models.DO_NOTHING, verbose_name='Tipo de Movimiento',
                                         null=False, blank=False)
