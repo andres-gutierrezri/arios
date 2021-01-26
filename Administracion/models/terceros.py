@@ -212,7 +212,7 @@ class TipoDocumentoTercero(models.Model):
 
 def custom_upload_to(instance, filename):
     return '{2}/Proveedores/Documentos/{0}/{1}'\
-        .format(instance.tercero.nombre[:10], filename, settings.EVA_PRIVATE_MEDIA)
+        .format(instance.tercero.identificacion, filename, settings.EVA_PRIVATE_MEDIA)
 
 
 class DocumentoTercero(models.Model, ModelDjangoExtensiones):
