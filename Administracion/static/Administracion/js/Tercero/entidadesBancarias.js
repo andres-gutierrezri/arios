@@ -71,7 +71,7 @@ function abrirModalGestionarEntidadBancaria(url) {
                     label_input.html('Seleccione un archivo');
                     e.target.value = '';
                     EVANotificacion.toast.error('El archivo ingresado no tiene un formato compatible. ' +
-                                                '(Formatos Aceptados: PDF, Documento de Word)');
+                                                '(Formatos Aceptados: PDF)');
                     return false;
                 }
             });
