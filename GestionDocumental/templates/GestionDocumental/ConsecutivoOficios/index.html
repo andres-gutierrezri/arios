@@ -85,7 +85,7 @@
                                                                 {% endif %}
                                                             </td>
                                                             <td>
-                                                                {% if perms.Administracion.delete_consecutivooficio and consecutivo.estado %}
+                                                                {% if perms.GestionDocumental.delete_consecutivooficio and consecutivo.estado %}
                                                                   <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ consecutivo.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ consecutivo.id }}, true)" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
                                                                 {% endif %}
                                                             </td>
