@@ -11,14 +11,8 @@ LOGGING = {
     'handlers': {
         'default': {
             'level': 'ERROR',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.environ.get('eva_ruta_log',
-                                       os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                                                    'eva.log')),
-            'maxBytes': 10 * 1024 * 1024,
-            'backupCount': 0,
-            'formatter': 'standard',
-            'encoding': 'UTF-8'
+            'class': 'logging.StreamHandler'
+
         },
     },
     'loggers': {
