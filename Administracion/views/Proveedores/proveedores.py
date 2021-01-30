@@ -555,18 +555,14 @@ class ProveedorSolicitudAprobarRechazar(AbstractEvaLoggedView):
             solicitud.save(update_fields=['aprobado', 'comentarios', 'estado'])
             if solicitud.aprobado:
                 comentario = 'Ahora estas activo como proveedor!'
-                Certificacion.objects.filter(tercero=solicitud.proveedor).update(estado=False)
-                Certificacion.objects.create(tercero=solicitud.proveedor, fecha_crea=app_datetime_now(), estado=True)
-
-                proveedor_anterior = Tercero.objects.filter(usuario=solicitud.proveedor.usuario)
-
-                if len(proveedor_anterior) == 2:
-                    proveedor_anterior = proveedor_anterior.get(es_vigente=True)
-                    Certificacion.objects.filter(tercero=proveedor_anterior).update(tercero=id, estado=False)
-                    proveedor_anterior.delete()
-
-                Tercero.objects.filter(id=id).update(estado=True, es_vigente=True,
-                                                     estado_proveedor=EstadosProveedor.ACTIVO)
+                proveedor_db = Tercero.objects.filter(usuario=solicitud.proveedor.usuario)
+                if len(proveedor_db) == 2:
+                    proveedor_anterior = proveedor_db.get(es_vigente=True)
+                    proveedor_nuevo = proveedor_db.get(es_vigente=False)
+                    migrar_informacion_aprobadada(proveedor_nuevo.id, proveedor_anterior.id)
+                    Tercero.objects.filter(id=proveedor_anterior.id).update(estado_proveedor=EstadosProveedor.ACTIVO)
+                else:
+                    Certificacion.objects.create(tercero=solicitud.proveedor, fecha_crea=app_datetime_now(), estado=True)
             else:
                 Tercero.objects.filter(id=id).update(estado_proveedor=EstadosProveedor.RECHAZADO)
 
@@ -583,6 +579,61 @@ class ProveedorSolicitudAprobarRechazar(AbstractEvaLoggedView):
             messages.error(self.request, 'Ha ocurrido un error al realizar la acción.')
 
         return redirect(reverse('Administracion:proveedor-solicitudes'))
+
+
+def migrar_informacion_aprobadada(id_proveedor_nuevo, id_proveedor_anterior):
+    proveedor_nuevo = Tercero.objects.get(id=id_proveedor_nuevo)
+    Tercero.objects.filter(id=id_proveedor_anterior) \
+        .update(nombre=proveedor_nuevo.nombre,
+                identificacion=proveedor_nuevo.identificacion,
+                digito_verificacion=proveedor_nuevo.digito_verificacion,
+                estado=proveedor_nuevo.estado,
+                empresa=proveedor_nuevo.empresa,
+                fecha_creacion=proveedor_nuevo.fecha_creacion,
+                fecha_modificacion=proveedor_nuevo.fecha_modificacion,
+                tipo_identificacion=proveedor_nuevo.tipo_identificacion,
+                ciudad=proveedor_nuevo.ciudad,
+                centro_poblado=proveedor_nuevo.centro_poblado,
+                direccion=proveedor_nuevo.direccion,
+                tipo_persona=proveedor_nuevo.tipo_persona,
+                responsabilidades_fiscales=proveedor_nuevo.responsabilidades_fiscales,
+                regimen_fiscal=proveedor_nuevo.regimen_fiscal,
+                tributos=proveedor_nuevo.tributos,
+                correo_facelec=proveedor_nuevo.correo_facelec,
+                codigo_postal=proveedor_nuevo.codigo_postal,
+                telefono_fijo_principal=proveedor_nuevo.telefono_fijo_principal,
+                telefono_fijo_auxiliar=proveedor_nuevo.telefono_fijo_auxiliar,
+                telefono_movil_principal=proveedor_nuevo.telefono_movil_principal,
+                telefono_movil_auxiliar=proveedor_nuevo.telefono_movil_auxiliar,
+                correo_principal=proveedor_nuevo.correo_principal,
+                correo_auxiliar=proveedor_nuevo.correo_auxiliar,
+                nombre_rl=proveedor_nuevo.nombre_rl,
+                identificacion_rl=proveedor_nuevo.identificacion_rl,
+                tipo_identificacion_rl=proveedor_nuevo.tipo_identificacion_rl,
+                lugar_expedicion_rl=proveedor_nuevo.lugar_expedicion_rl,
+                fecha_constitucion=proveedor_nuevo.fecha_constitucion,
+                fecha_inicio_actividad=proveedor_nuevo.fecha_inicio_actividad,
+                estado_proveedor=proveedor_nuevo.estado_proveedor,
+                bienes_servicios=proveedor_nuevo.bienes_servicios)
+
+    DocumentoTercero.objects.filter(tercero_id=id_proveedor_anterior).delete()
+    EntidadBancariaTercero.objects.filter(tercero_id=id_proveedor_anterior).delete()
+    ProveedorProductoServicio.objects.filter(proveedor_id=id_proveedor_anterior).delete()
+    ProveedorActividadEconomica.objects.filter(proveedor_id=id_proveedor_anterior).delete()
+
+    DocumentoTercero.objects.filter(tercero_id=id_proveedor_nuevo).update(tercero_id=id_proveedor_anterior)
+    EntidadBancariaTercero.objects.filter(tercero_id=id_proveedor_nuevo).update(tercero_id=id_proveedor_anterior)
+    Tercero.objects.filter(id=id_proveedor_anterior).update(estado=True, estado_proveedor=1)
+    ProveedorProductoServicio.objects \
+        .filter(proveedor_id=id_proveedor_nuevo).update(proveedor_id=id_proveedor_anterior)
+    ProveedorActividadEconomica.objects \
+        .filter(proveedor_id=id_proveedor_nuevo).update(proveedor_id=id_proveedor_anterior)
+
+    Certificacion.objects.filter(tercero_id=id_proveedor_anterior).update(estado=False)
+    Certificacion.objects.create(tercero_id=id_proveedor_anterior,
+                                 fecha_crea=app_datetime_now(), estado=True)
+
+    Tercero.objects.filter(id=id_proveedor_nuevo).delete()
 
 
 class ProveedorModificarSolicitudView(AbstractEvaLoggedProveedorView):
