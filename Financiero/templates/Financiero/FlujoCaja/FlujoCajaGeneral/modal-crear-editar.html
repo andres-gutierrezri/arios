@@ -30,7 +30,7 @@
 
                 <div class="form-row">
                     <div class="form-group col-12">
-                        {% select_tag subtipos_movimientos 'subtipo_movimiento_id' 'Seleccione un subtipo de movimiento' texto_label="Subtipo de Movimiento" value=flujo_detalle.subtipo_movimiento_id required="" mensaje_validacion='Por favor seleccione un subtipo de movimiento.' invalido=errores.subtipo_movimiento %}
+                        {% select_tag subtipos_movimientos 'subtipo_movimiento_id' 'Seleccione un subtipo de movimiento' agrupar=True texto_label="Subtipo de Movimiento" value=flujo_detalle.subtipo_movimiento_id required="" mensaje_validacion='Por favor seleccione un subtipo de movimiento.' invalido=errores.subtipo_movimiento %}
                     </div>
                 </div>
 

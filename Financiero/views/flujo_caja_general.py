@@ -2,7 +2,8 @@ import calendar
 from datetime import datetime, date
 
 from django.contrib import messages
-from django.db.models import F
+from django.db.models import F, Value, CharField
+from django.db.models.functions import Concat
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -374,7 +375,12 @@ def valores_select_subtipos_movimientos(request, contrato, proceso):
         subtipos |= SubTipoMovimiento.objects.filter(estado=True, solo_proceso=True)
     if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
         subtipos = subtipos.filter(protegido=False)
-    return subtipos.values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
+    return subtipos.values(campo_valor=F('id'), campo_texto=F('nombre'))\
+        .annotate(agrupacion=Concat('tipo_movimiento__nombre',
+                                       Value(' - '),
+                                       'categoria_movimiento__nombre',
+                                       output_field=CharField())).\
+        order_by('agrupacion', 'nombre')
 
 
 REAL = 0
