@@ -14,15 +14,15 @@
         <div class="modal-body p-b-0">
             <div class="table-responsive p-b-30">
                 <table class="table table-bordered w-100" id="dataTableHistorial">
-                    <thead>
+                    <thead class="bg-primary-600">
                         <tr>
                             <th hidden>id</th>
-                            <th>Fecha del Movimiento</th>
-                            <th>Tipo de Movimiento</th>
+                            <th>Fecha</th>
+                            <th>Tipo</th>
                             <th>Valor</th>
                             <th>Usuario</th>
-                            <th>Fecha de Creación</th>
-                            <th>Fecha de Modificación</th>
+                            <th>Creado</th>
+                            <th>Modificado</th>
                             <th>Comentarios</th>
                             <th>Motivo Edición</th>
                             <th>Estado</th>
@@ -33,7 +33,7 @@
                             <tr>
                                 <td hidden>{{ movimiento.id }}</td>
                                 <td>{{ movimiento.fecha_movimiento|date:'Y-m-d' }}</td>
-                                <td>{{ movimiento.subtipo_movimiento }}</td>
+                                <td><strong>{{ movimiento.subtipo_movimiento }}</strong><br>{{ movimiento.agrupacion }}</td>
                                 <td>{{ movimiento.valor|intcomma }}</td>
                                 <td>{{ movimiento.usuario_modifica }}</td>
                                 <td>{{ movimiento.fecha_crea|date:'Y-m-d' }}</td>

@@ -9,7 +9,8 @@ function abrirModalHistorial(url) {
                 return false;
             }
             $(this).modal('show');
-            iniciarDataTable([1, 2, 3, 4, 5, 6, 7, 8 , 9], 'dataTableHistorial');
+            const detalleColumnas = [{targets: [0, 4, 5], width: '8%'}]
+            iniciarDataTable([1, 2, 3, 4, 5, 6, 7, 8 , 9], 'dataTableHistorial', undefined, detalleColumnas);
         } catch (err) {
             console.log(err);
             EVANotificacion.toast.error('Ha ocurrido un error interno');

@@ -165,7 +165,11 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
 
     movimientos = movimientos.filter(
         fecha_movimiento__range=[obtener_fecha_inicio_de_mes(anio_seleccion, mes_seleccion),
-                                 obtener_fecha_fin_de_mes(anio_seleccion, mes_seleccion)])
+                                 obtener_fecha_fin_de_mes(anio_seleccion, mes_seleccion)])\
+        .annotate(agrupacion=Concat('subtipo_movimiento__tipo_movimiento__nombre',
+                                    Value(' - '),
+                                    'subtipo_movimiento__categoria_movimiento__nombre',
+                                    output_field=CharField()))
     ingresos = 0
     egresos = 0
     for movimiento in movimientos:
@@ -304,6 +308,10 @@ def historial_movimiento(request, movimiento):
 
     historial = FlujoCajaDetalle.objects.filter(flujo_detalle=flujo_detalle.first())
     historial |= flujo_detalle
+    historial = historial.annotate(agrupacion=Concat('subtipo_movimiento__tipo_movimiento__nombre',
+                                    Value(' - '),
+                                    'subtipo_movimiento__categoria_movimiento__nombre',
+                                    output_field=CharField()))
     return render(request, 'Financiero/FlujoCaja/FlujoCajaGeneral/modal-historial.html',
                   {'historial': historial})
 
