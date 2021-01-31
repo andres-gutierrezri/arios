@@ -1,7 +1,7 @@
 {% load eva_tags %}
 {% load static %}
 {% load humanize %}
-<div class="modal-dialog modal-lg" role="document">
+<div class="modal-dialog modal-xl" role="document">
     <div class="modal-content">
         <div class="modal-header p-b-0">
             <h4 class="modal-title">
@@ -24,6 +24,7 @@
                             <th>Fecha de Creación</th>
                             <th>Fecha de Modificación</th>
                             <th>Comentarios</th>
+                            <th>Motivo Edición</th>
                             <th>Estado</th>
                         </tr>
                     </thead>
@@ -37,7 +38,8 @@
                                 <td>{{ movimiento.usuario_modifica }}</td>
                                 <td>{{ movimiento.fecha_crea|date:'Y-m-d' }}</td>
                                 <td>{{ movimiento.fecha_modifica|date:'Y-m-d' }}</td>
-                                <td>{% if movimiento.comentarios %}{{ movimiento.comentarios }}{% else %}{% endif %}</td>
+                                <td>{{ movimiento.comentarios |default_if_none:'' }}</td>
+                                <td>{{ movimiento.motivo_edicion |default_if_none:''}}</td>
                                 <td><span class="badge {% if movimiento.estado_id == ELIMINADO %} badge-danger {% else %} badge-primary {% endif %} fw-300 ml-auto">{{ movimiento.estado }}</span></td>
                             </tr>
                         {% endfor %}

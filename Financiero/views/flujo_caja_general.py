@@ -249,10 +249,10 @@ def guardar_movimiento(request, tipo=None, contrato=None, proceso=None, movimien
 
     if flujo_detalle:
         update_fields = ['fecha_movimiento', 'subtipo_movimiento', 'valor', 'usuario_modifica',
-                         'fecha_modifica', 'comentarios', 'estado']
+                         'fecha_modifica', 'comentarios', 'estado', 'motivo_edicion']
 
-        comentarios = request.POST.get('comentarios', '')
-        crear_registro_historial(flujo_detalle, comentarios, EstadoFCDetalle.OBSOLETO)
+        motivo_edicion = request.POST.get('motivo', '')
+        crear_registro_historial(flujo_detalle, motivo_edicion, EstadoFCDetalle.OBSOLETO)
 
         fl_det.id = flujo_detalle.id
         fl_det.estado_id = EstadoFCDetalle.EDITADO
@@ -284,9 +284,9 @@ def eliminar_movimiento(request, flujo_detalle):
                              "mensaje": "No tiene permisos para realizar esta acción."})
 
     flujo_detalle.estado_id = EstadoFCDetalle.ELIMINADO
-    flujo_detalle.comentarios = request.POST['comentarios']
+    flujo_detalle.motivo_edicion = request.POST['motivo']
     flujo_detalle.fecha_modifica = app_datetime_now()
-    flujo_detalle.save(update_fields=['comentarios', 'estado', 'fecha_modifica'])
+    flujo_detalle.save(update_fields=['motivo_edicion', 'estado', 'fecha_modifica'])
 
     messages.success(request, 'Se ha eliminado el movimiento correctamente')
     return JsonResponse({"estado": "OK"})
@@ -387,15 +387,16 @@ REAL = 0
 PROYECCION = 1
 
 
-def crear_registro_historial(flujo_detalle, comentarios, estado):
+def crear_registro_historial(flujo_detalle, motivo_edicion, estado):
     FlujoCajaDetalle.objects \
         .create(fecha_movimiento=flujo_detalle.fecha_movimiento,
                 subtipo_movimiento_id=flujo_detalle.subtipo_movimiento_id,
                 valor=flujo_detalle.valor, tipo_registro=flujo_detalle.tipo_registro,
+                comentarios=flujo_detalle.comentarios,
                 usuario_crea=flujo_detalle.usuario_crea, usuario_modifica=flujo_detalle.usuario_modifica,
                 flujo_caja_enc=flujo_detalle.flujo_caja_enc, fecha_crea=flujo_detalle.fecha_crea,
                 fecha_modifica=app_datetime_now(), flujo_detalle=flujo_detalle,
-                estado_id=estado, comentarios=comentarios)
+                estado_id=estado, motivo_edicion=motivo_edicion)
 
 
 def validar_permisos(request, permiso):

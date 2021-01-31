@@ -184,6 +184,7 @@ class FlujoCajaDetalle(models.Model):
     estado = models.ForeignKey(EstadoFCDetalle, on_delete=models.DO_NOTHING, verbose_name='Estado',
                                null=False, blank=False)
     comentarios = models.CharField(verbose_name='Comentarios', max_length=100, null=True, blank=True)
+    motivo_edicion = models.CharField(verbose_name='Motivo', max_length=100, null=True, blank=True)
 
     def __str__(self):
         return 'Flujo de Caja {0} - Detalle: {1}'.format(self.flujo_caja_enc, self.id)
@@ -203,6 +204,7 @@ class FlujoCajaDetalle(models.Model):
         flujo_caja_detalle.fecha_movimiento = datos.get('fecha_movimiento', '')
         flujo_caja_detalle.subtipo_movimiento_id = datos.get('subtipo_movimiento_id', '')
         flujo_caja_detalle.valor = datos.get('valor', '')
+        flujo_caja_detalle.comentarios = datos.get('comentarios', '')
 
         return flujo_caja_detalle
 

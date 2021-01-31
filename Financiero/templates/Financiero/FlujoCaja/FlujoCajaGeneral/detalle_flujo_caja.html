@@ -21,6 +21,7 @@
         </div>
         <input hidden id="id_contrato_detalle" value="{{ contrato.id }}{{ proceso.id }}">
         <input hidden id="id_tipo_detalle" value="{{ tipo }}">
+        <input id="rutaBorrado" type="hidden" name="rutaBorrado" value="financiero/flujo-caja/movimiento">
         <div class="row">
             <div class="col-xl-12">
                 <div id="panel-1" class="panel">
@@ -67,6 +68,7 @@
                                                         <th>Fecha del Movimiento</th>
                                                         <th>Tipo de Movimiento</th>
                                                         <th>Valor</th>
+                                                        <th>Comentarios</th>
                                                         <th>Fecha de Creación</th>
                                                         <th>Fecha de Modificación</th>
                                                         {% if perms.TalentoHumano.can_access_usuarioespecial or perms.TalentoHumano.view_flujos_de_caja %}
@@ -83,6 +85,7 @@
                                                             <td>{{ movimiento.fecha_movimiento|date:'Y-m-d' }}</td>
                                                             <td>{{ movimiento.subtipo_movimiento }}</td>
                                                             <td class="t-a-e">{{ movimiento.valor|intcomma }}</td>
+                                                            <td>{{ movimiento.comentarios }}</td>
                                                             <td>{{ movimiento.fecha_crea|date:'Y-m-d' }}</td>
                                                             <td>{{ movimiento.fecha_modifica|date:'Y-m-d' }}</td>
                                                             {% if perms.TalentoHumano.can_access_usuarioespecial or perms.TalentoHumano.view_flujos_de_caja %}
@@ -120,7 +123,6 @@
     <div class="modal fade" tabindex="-1" id="crear_editar_flujo_caja" role="dialog"></div>
     <div class="modal fade" tabindex="-1" id="historial" role="dialog"></div>
 
-    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='financiero/flujo-caja/movimiento' %}
 {% endwith %}
 {% endblock %}
 {% block scripts %}
