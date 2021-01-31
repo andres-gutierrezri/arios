@@ -35,7 +35,7 @@
                                 <div class="panel-group">
                                     <div class="panel-body">
                                         <div class="table-responsive">
-                                            <table class="table table-bordered w-100" id="dataTable">
+                                            <table class="table table-bordered w-100" id="dataTable" data-flujo-contrato="true">
                                                 <thead class="bg-primary-600">
                                                     <tr>
                                                         <th>Cliente</th>
@@ -87,8 +87,7 @@
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.export.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script>
-    <script src="{% static 'Financiero/js/FlujoCaja/exportarTablas/exportarTablasFlujoCajaContratos.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
-    <script src="{% static 'Financiero/js/FlujoCaja/filtroFlujoCajaFinanciero.js' %}"></script>
+    <script src="{% static 'Financiero/js/FlujoCaja/indexFlujoCaja.js' %}"></script>
     <script src="{% static 'Financiero/js/FlujoCaja/volverAtras.js' %}"></script>
 {% endblock %}

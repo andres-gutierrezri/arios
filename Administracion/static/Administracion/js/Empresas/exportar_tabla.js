@@ -1,3 +1,3 @@
 $(document).ready(function() {
-    iniciarTablaExportar([0, 1, 3]);
+    iniciarDataTable([0, 1, 3]);
 });

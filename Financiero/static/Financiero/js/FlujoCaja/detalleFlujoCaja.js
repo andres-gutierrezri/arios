@@ -7,6 +7,9 @@ let idContratoDetalle = $('#id_contrato_detalle');
 let idTipoDetalle = $('#id_tipo_detalle');
 
  $(document).ready(function () {
+
+    iniciarDataTable([1, 2, 3, 4, 5,6], 'dataTableFlujoCaja', [[ 5, "desc" ]])
+
     $('.select2').select2({
         "language": {
             noResults: function () {

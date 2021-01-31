@@ -36,11 +36,6 @@ $(document).ready(function() {
         configuracionColspan.attr('colspan', (parseInt(numeroMeses) + 2));
     }
 
-
-    // Exportar resultado de la busqueda del consolidado
-
-    iniciarTablaExportar([0, 1, 2, 3, 4, 5]);
-
     // Configuración del Select Multiple de Categorias
     idCategorias.select2({
         placeholder: "Seleccione una opción",
