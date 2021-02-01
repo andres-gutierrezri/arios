@@ -86,7 +86,7 @@
                                                             <td>{{ movimiento.fecha_movimiento|date:'Y-m-d' }}</td>
                                                             <td><strong>{{ movimiento.subtipo_movimiento }}</strong><br>{{ movimiento.agrupacion }}</td>
                                                             <td class="t-a-e">{{ movimiento.valor|intcomma }}</td>
-                                                            <td>{{ movimiento.comentarios }}</td>
+                                                            <td>{{ movimiento.comentarios | default_if_none:'' }}</td>
                                                             <td>{{ movimiento.fecha_crea|date:'Y-m-d' }}</td>
                                                             <td>{{ movimiento.fecha_modifica|date:'Y-m-d' }}</td>
                                                             {% if perms.TalentoHumano.can_access_usuarioespecial or perms.TalentoHumano.view_flujos_de_caja %}
