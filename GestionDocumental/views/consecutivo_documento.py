@@ -15,15 +15,16 @@ from EVA.views.index import AbstractEvaLoggedView
 from GestionDocumental.models import ConsecutivoOficio
 from Proyectos.models import Contrato
 from TalentoHumano.models import Colaborador
+from TalentoHumano.models.colaboradores import ColaboradorProceso
 
 
 class ConsecutivoOficiosView(AbstractEvaLoggedView):
     def get(self, request, id):
         if id == 0:
             consecutivos = ConsecutivoOficio.objects.filter(empresa_id=get_id_empresa_global(request))
-            colaborador = Colaborador.objects.values('usuario_id', 'proceso__sigla')
+            colaborador = Colaborador.objects.values('usuario_id')
         else:
-            colaborador = Colaborador.objects.filter(usuario=request.user).values('usuario_id', 'proceso__sigla')
+            colaborador = Colaborador.objects.filter(usuario=request.user).values('usuario_id')
             consecutivos = ConsecutivoOficio.objects.filter(usuario_id=request.user.id,
                                                             empresa_id=get_id_empresa_global(request))
 
@@ -67,8 +68,16 @@ class ConsecutivoOficiosCrearView(AbstractEvaLoggedView):
             lista_contratos.append({'campo_valor': contrato['id'], 'campo_texto': '{0} - {1}'
                                    .format(contrato['numero_contrato'], contrato['cliente__nombre'])})
 
+        procesos = ColaboradorProceso.objects.filter(colaborador__usuario=request.user)
+        lista_procesos = []
+        if procesos.count() > 1:
+            for proceso in procesos:
+                lista_procesos.append({'campo_valor': proceso.proceso.id, 'campo_texto': proceso.proceso.nombre})
+
         return render(request, 'GestionDocumental/ConsecutivoOficios/crear.html', {'fecha': datetime.datetime.now(),
                                                                                    'contratos': lista_contratos,
+                                                                                   'procesos': lista_procesos,
+                                                                                   'lista_procesos': lista_procesos,
                                                                                    'menu_actual': 'consecutivos-oficios'})
 
     def post(self, request):
@@ -79,14 +88,18 @@ class ConsecutivoOficiosCrearView(AbstractEvaLoggedView):
             .get_consecutivo_por_anho(tipo_documento_id=TipoDocumento.OFICIOS,
                                       empresa_id=get_id_empresa_global(request))
 
-        colaborador = Colaborador.objects.get(usuario=request.user)
+        proceso = request.POST.get('proceso_id', '')
+        if proceso:
+            proceso = ColaboradorProceso.objects.get(proceso_id=proceso, colaborador__usuario=request.user).proceso
+        else:
+            proceso = ColaboradorProceso.objects.filter(colaborador__usuario=request.user).first().proceso
 
         if not consecutivo.contrato_id:
-            contrato = colaborador.proceso.sigla
+            contrato = proceso.sigla
         else:
             contrato = consecutivo.contrato.numero_contrato
 
-        consecutivo.codigo = '{0}-{1:03d}-{2}-{3}'.format(colaborador.proceso.sigla, consecutivo.consecutivo,
+        consecutivo.codigo = '{0}-{1:03d}-{2}-{3}'.format(proceso.sigla, consecutivo.consecutivo,
                                                           contrato, datetime.datetime.now().year).upper()
 
         consecutivo.save()

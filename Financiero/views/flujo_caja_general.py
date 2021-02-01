@@ -18,7 +18,7 @@ from Financiero.models import FlujoCajaDetalle, SubTipoMovimiento, FlujoCajaEnca
 from Financiero.models.flujo_caja import EstadoFCDetalle, TipoMovimiento
 from Financiero.parametros import ParametrosFinancieros
 from Proyectos.models import Contrato
-from TalentoHumano.models.colaboradores import ColaboradorContrato, Colaborador
+from TalentoHumano.models.colaboradores import ColaboradorContrato, Colaborador, ColaboradorProceso
 
 
 class FlujosDeCajaView(AbstractEvaLoggedView):
@@ -350,14 +350,11 @@ def datos_xa_render(request, opcion: str, tipo, fecha_minima_mes, flujo_detalle:
 
 
 def tiene_permisos_de_acceso(request, contrato=None, proceso=None):
-    validacion_adicional = False
-    if contrato:
-        if not ColaboradorContrato.objects \
-                .filter(contrato_id=contrato, colaborador__usuario=request.user):
-            validacion_adicional = True
-    else:
-        if not Colaborador.objects.filter(proceso_id=proceso, usuario=request.user):
-            validacion_adicional = True
+    validacion_adicional =\
+        not ColaboradorContrato.objects.filter(contrato_id=contrato, colaborador__usuario=request.user).exists() \
+        if contrato else \
+        not ColaboradorProceso.objects.filter(proceso_id=proceso, colaborador__usuario=request.user).exists()
+
     if validacion_adicional:
         if request.user.has_perms(['Financiero.can_gestion_flujos_de_caja']):
             return True

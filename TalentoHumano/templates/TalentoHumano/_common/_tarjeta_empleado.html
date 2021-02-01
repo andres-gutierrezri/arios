@@ -14,7 +14,7 @@
                     {% if perms.TalentoHumano.view_colaborador %}
                     <div class="dropdown-menu">
                         {% if perms.TalentoHumano.view_colaborador %}
-                        <a class="dropdown-item" href="{% url 'TalentoHumano:colaboradores-perfil' colaborador.usuario_id %}">Ver perfil</a>
+                        <a class="dropdown-item" href="{% url 'TalentoHumano:colaboradores-perfil' colaborador.id %}">Ver perfil</a>
                         {% endif %}
                         {% if perms.TalentoHumano.change_colaborador %}
                         <a class="dropdown-item" href="{% url 'TalentoHumano:colaboradores-editar' id_tarjeta %}">Editar</a>
