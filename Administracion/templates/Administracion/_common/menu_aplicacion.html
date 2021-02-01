@@ -54,7 +54,7 @@
             <span class="nav-link-text" > Proveedores</span>
         </a>
         <ul>
-            {% if perms.Administracion.view_proveedor %}
+            {% if perms.Administracion.manage_proveedor %}
             <li {% if menu_actual|last == 'solicitudes_proveedor' %} class="active" {% endif %}>
                 <a href="{% url 'Administracion:proveedor-solicitudes' %}" title="Solicitudes de Proveedor" data-filter-tags="solicitudes proveedor">
                     <i class="fal fa-list-alt"></i>

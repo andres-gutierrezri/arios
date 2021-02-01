@@ -30,14 +30,6 @@ class EntidadBancaria(models.Model):
         verbose_name_plural = 'Entidades Bancarias'
 
 
-class TipoCuentaBancariaManger(ManagerGeneral):
-    def get_like_json(self):
-        datos = []
-        for elemento in self.get_x_estado(True, False):
-            datos.append({'id': elemento.id, 'nombre': elemento.nombre})
-        return json.dumps(datos)
-
-
 class ActividadEconomicaManger(ManagerGeneral):
     def get_xa_select_actividades_con_codigo(self) -> List:
         datos = []
@@ -49,7 +41,7 @@ class ActividadEconomicaManger(ManagerGeneral):
 class ActividadEconomica(models.Model):
     objects = ActividadEconomicaManger()
     nombre = models.CharField(verbose_name='Nombre', max_length=200, null=False, blank=False)
-    codigo_ciiu = models.CharField(verbose_name='Codigo CIIU', max_length=10, null=False, blank=False)
+    codigo_ciiu = models.CharField(verbose_name='Código CIIU', max_length=10, null=False, blank=False)
 
     def __str__(self):
         return '{0} - {1}'.format(self.codigo_ciiu, self.nombre)
@@ -75,6 +67,7 @@ class ProveedorActividadEconomica(models.Model, ModelDjangoExtensiones):
     entidad_publica = models.CharField(verbose_name='Número de Resolución', max_length=100, null=True, blank=True)
     proveedor = models.ForeignKey(Tercero, on_delete=models.CASCADE, verbose_name='Usuario',
                                   null=False, blank=False)
+    declara_renta = models.BooleanField(verbose_name='Declara Renta', null=True, blank=False)
 
     def __str__(self):
         return 'Información de la Actividad Economica del usuario {0}'.format(self.proveedor.usuario.get_full_name())
@@ -98,13 +91,14 @@ class ProveedorActividadEconomica(models.Model, ModelDjangoExtensiones):
         proveedor_ae.numero_resolucion = datos.get('resolucion', '')
         proveedor_ae.contribuyente_iyc = datos.get('contribuyente_iyc', '')
         proveedor_ae.entidad_publica = datos.get('entidad_publica', '')
+        proveedor_ae.declara_renta = datos.get('declara_renta', 'False') == 'on'
 
         return proveedor_ae
 
 
 def custom_upload_to(instance, filename):
     return '{2}/Proveedores/CertificacionesBancarias/{0}/{1}'\
-        .format(instance.tercero.nombre[:10], filename, settings.EVA_PRIVATE_MEDIA)
+        .format(instance.tercero.identificacion, filename, settings.EVA_PRIVATE_MEDIA)
 
 
 class EntidadBancariaTercero(models.Model, ModelDjangoExtensiones):

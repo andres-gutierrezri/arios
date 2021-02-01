@@ -30,7 +30,7 @@
 
                 <div class="form-row">
                     <div class="form-group col-12">
-                        {% select_tag subtipos_movimientos 'subtipo_movimiento_id' 'Seleccione un subtipo de movimiento' texto_label="Subtipo de Movimiento" value=flujo_detalle.subtipo_movimiento_id required="" mensaje_validacion='Por favor seleccione un subtipo de movimiento.' invalido=errores.subtipo_movimiento %}
+                        {% select_tag subtipos_movimientos 'subtipo_movimiento_id' 'Seleccione un subtipo de movimiento' agrupar=True texto_label="Subtipo de Movimiento" value=flujo_detalle.subtipo_movimiento_id required="" mensaje_validacion='Por favor seleccione un subtipo de movimiento.' invalido=errores.subtipo_movimiento %}
                     </div>
                 </div>
 
@@ -45,10 +45,17 @@
                         {% input_date_tag 'fecha_movimiento' 'Fecha de movimiento' placeholder="Seleccione una fecha" required="" autocomplete="off" value=flujo_detalle.fecha_movimiento  mensaje_validacion='Por favor seleccione una fecha.' invalido=errores.fecha_movimiento %}
                     </div>
                 </div>
+
+                <div class="form-row">
+                    <div class="form-group col-12">
+                        {% input_textarea_tag 'comentarios' 'Comentarios' placeholder="(Opcional) Ingrese comentarios si aplica" maxlength="100" mensaje_validacion='Por favor ingrese los comentarios.' invalido=errores.comentarios %}
+                    </div>
+                </div>
+
                 {% if opcion == 'editar' %}
                     <div class="form-row">
                         <div class="form-group col-12">
-                            {% input_textarea_tag 'comentarios' 'Comentarios' placeholder="Ingrese los comentarios" maxlength="100" required="" mensaje_validacion='Por favor ingrese los comentarios.' invalido=errores.comentarios %}
+                            {% input_textarea_tag 'motivo' 'Motivo' placeholder="Ingrese el motivo de la edición" maxlength="100" required="" mensaje_validacion='Por favor ingrese el motivo.' invalido=errores.motivo %}
                         </div>
                     </div>
                 {% endif %}

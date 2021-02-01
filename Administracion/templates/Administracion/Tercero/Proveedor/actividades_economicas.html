@@ -41,12 +41,33 @@
                                             </div>
                                         </div>
                                         <div class="form-row">
-                                            <div class="form-group col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                                            <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
                                                 {% select_tag regimenes_fiscales 'regimen_fiscal' 'Seleccione un régimen fiscal' is_tupla=True texto_label="Régimen Fiscal" value=proveedor.proveedor.regimen_fiscal required="" mensaje_validacion='Por favor seleccione un régimen fiscal.' invalido=errores.regimen_fiscal %}
                                             </div>
-                                            <div class="form-group col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                                            <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
                                                 {% select_tag tipos_contribuyentes 'tipo_contribuyente' 'Seleccione un tipo de contribuyente' is_tupla=True texto_label="Tipo de Contribuyente" value=proveedor.tipo_contribuyente required="" mensaje_validacion='Por favor seleccione un tipo de contribuyente.' invalido=errores.tipo_contribuyente %}
                                             </div>
+                                            {% if not persona_juridica %}
+                                                <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                                    <div class="custom-control custom-checkbox" style="padding-top: 33px; padding-left: 40px">
+                                                        <input type="checkbox" class="custom-control-input" id="check_declara_renta_id" name="declara_renta" {% if proveedor.declara_renta %}checked{% endif %}>
+                                                        <label class="custom-control-label" for="check_declara_renta_id">Declarante de Renta</label>
+                                                    </div>
+                                                </div>
+                                            {% else %}
+                                                <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                                    {% select_tag tributos 'tributo' 'Seleccione un tributo' is_tupla=True texto_label="Tributo" value=proveedor.proveedor.tributos required="" mensaje_validacion='Por favor seleccione un tributo.' invalido=errores.tributos%}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="form-row">
+                                            {% if persona_juridica %}
+                                                <div class="form-group col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                                                    {% select_multiple_tag responsabilidades 'responsabilidades' 'responsabilidades_id' 'Seleccione una responsabilidad fiscal' is_tupla=True texto_label="Responsabilidad Fiscal" value=responsabilidades_tercero required="" mensaje_validacion='Por favor seleccione una responsabilidad fiscal.' multiple='multiple' invalido=errores.responsabilidades %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="form-row">
                                             <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
                                                 <div class="custom-control custom-checkbox">
                                                     <input type="checkbox" class="custom-control-input" id="check_excento_iyc_id" name="excento_iyc" {% if proveedor.numero_resolucion %}checked{% endif %}>
@@ -65,7 +86,7 @@
                                                     {% input_text_tag 'contribuyente_iyc' 'Contribuyente Industria y Comercio' placeholder="Ingrese un valor"  maxlength="100" value=proveedor.contribuyente_iyc mensaje_validacion='Por favor ingrese el el nit.' invalido=errores.numero_contrato %}
                                                 </div>
                                             </div>
-                                            {% if entidad_publica %}
+                                            {% if persona_juridica %}
                                             <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
                                                 <div class="custom-control custom-checkbox">
                                                     <input type="checkbox" class="custom-control-input" id="check_entidad_publica_id" name="entidad_publica" {% if proveedor.entidad_publica %}checked{% endif %}>

@@ -17,5 +17,5 @@ function abrir_modal_accion_documento(url) {
 }
 
 $(document).ready(function () {
-    iniciarTablaExportar([0, 1, 2, 3]);
+    iniciarDataTable([0, 1, 2, 3]);
 });

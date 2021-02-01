@@ -9,19 +9,8 @@ function abrirModalHistorial(url) {
                 return false;
             }
             $(this).modal('show');
-            $('#dataTableHistorial').dataTable({
-                "iDisplayLength": -1,
-               "aaSorting": [[ 0, "asc" ]],
-                responsive: true,
-                lengthChange: false,
-                language: {
-                info: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
-                infoEmpty:'Mostrando registros del 0 al 0 de un total de 0 registros',
-                emptyTable: 'No hay registros disponibles',
-                zeroRecords: 'No hay registros que coincidan'
-        }
-    });
-    $("#dataTableHistorial_filter").find("input").attr("placeholder", "Buscar");
+            const detalleColumnas = [{targets: [0, 4, 5], width: '8%'}]
+            iniciarDataTable([1, 2, 3, 4, 5, 6, 7, 8 , 9], 'dataTableHistorial', undefined, detalleColumnas);
         } catch (err) {
             console.log(err);
             EVANotificacion.toast.error('Ha ocurrido un error interno');

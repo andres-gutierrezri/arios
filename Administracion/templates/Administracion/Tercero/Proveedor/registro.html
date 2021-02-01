@@ -64,7 +64,8 @@
                                             <a href="{% url 'Administracion:proveedor-iniciar-sesion' %}" class="btn btn-danger btn-block">Cancelar</a>
                                     </div>
                                     <div class="form-group col-xl-6 col-lg-6 col-md-6 col-sm-6">
-                                        <button id="js-login-btn" type="submit" class="btn btn-primary btn-block ">Registrarse</button>
+{#                                        <button id="js-login-btn" type="submit" class="btn btn-primary btn-block ">Registrarse</button>#}
+                                        <button id="js-login-btn" type="button" class="btn btn-primary btn-block g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"  data-callback='enviarFormulario' data-expired-callback="resetRecaptcha" data-error-callback="errorRecaptcha">Registrarse</button>
                                     </div>
                                 </div>
                             </form>
@@ -84,8 +85,9 @@
     <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
-    <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
     <script src="{% static 'Administracion/js/Tercero/registro.js' %}"></script>
     <script src="{% static 'Administracion/js/Tercero/validarDigitoVerificacion.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/formRecaptcha.js' %}"></script>
+    <script src="https://www.google.com/recaptcha/api.js?hl=es" async defer></script>
 {% endblock scripts %}

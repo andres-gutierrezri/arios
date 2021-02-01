@@ -82,7 +82,7 @@ function validarTipoPersona() {
 function enviarSolicitudProveedor(idProveedor) {
     Swal.fire({
         title: '¿Está seguro de enviar la solicitud?',
-        text: "Una vez enviada la solicitud, no podrá seguir editando los campos hasta que sea aprobada o rechazada.",
+        text: "Una vez enviada la solicitud, no podrá seguir editando los campos hasta que sea aprobada o denegada.",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: '¡Sí, Enviar!',

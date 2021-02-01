@@ -2,7 +2,8 @@ import calendar
 from datetime import datetime, date
 
 from django.contrib import messages
-from django.db.models import F
+from django.db.models import F, Value, CharField
+from django.db.models.functions import Concat
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -164,7 +165,11 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
 
     movimientos = movimientos.filter(
         fecha_movimiento__range=[obtener_fecha_inicio_de_mes(anio_seleccion, mes_seleccion),
-                                 obtener_fecha_fin_de_mes(anio_seleccion, mes_seleccion)])
+                                 obtener_fecha_fin_de_mes(anio_seleccion, mes_seleccion)])\
+        .annotate(agrupacion=Concat('subtipo_movimiento__tipo_movimiento__nombre',
+                                    Value(' - '),
+                                    'subtipo_movimiento__categoria_movimiento__nombre',
+                                    output_field=CharField()))
     ingresos = 0
     egresos = 0
     for movimiento in movimientos:
@@ -248,10 +253,10 @@ def guardar_movimiento(request, tipo=None, contrato=None, proceso=None, movimien
 
     if flujo_detalle:
         update_fields = ['fecha_movimiento', 'subtipo_movimiento', 'valor', 'usuario_modifica',
-                         'fecha_modifica', 'comentarios', 'estado']
+                         'fecha_modifica', 'comentarios', 'estado', 'motivo_edicion']
 
-        comentarios = request.POST.get('comentarios', '')
-        crear_registro_historial(flujo_detalle, comentarios, EstadoFCDetalle.OBSOLETO)
+        motivo_edicion = request.POST.get('motivo', '')
+        crear_registro_historial(flujo_detalle, motivo_edicion, EstadoFCDetalle.OBSOLETO)
 
         fl_det.id = flujo_detalle.id
         fl_det.estado_id = EstadoFCDetalle.EDITADO
@@ -283,9 +288,9 @@ def eliminar_movimiento(request, flujo_detalle):
                              "mensaje": "No tiene permisos para realizar esta acción."})
 
     flujo_detalle.estado_id = EstadoFCDetalle.ELIMINADO
-    flujo_detalle.comentarios = request.POST['comentarios']
+    flujo_detalle.motivo_edicion = request.POST['motivo']
     flujo_detalle.fecha_modifica = app_datetime_now()
-    flujo_detalle.save(update_fields=['comentarios', 'estado', 'fecha_modifica'])
+    flujo_detalle.save(update_fields=['motivo_edicion', 'estado', 'fecha_modifica'])
 
     messages.success(request, 'Se ha eliminado el movimiento correctamente')
     return JsonResponse({"estado": "OK"})
@@ -303,6 +308,10 @@ def historial_movimiento(request, movimiento):
 
     historial = FlujoCajaDetalle.objects.filter(flujo_detalle=flujo_detalle.first())
     historial |= flujo_detalle
+    historial = historial.annotate(agrupacion=Concat('subtipo_movimiento__tipo_movimiento__nombre',
+                                    Value(' - '),
+                                    'subtipo_movimiento__categoria_movimiento__nombre',
+                                    output_field=CharField()))
     return render(request, 'Financiero/FlujoCaja/FlujoCajaGeneral/modal-historial.html',
                   {'historial': historial})
 
@@ -375,22 +384,28 @@ def valores_select_subtipos_movimientos(request, contrato, proceso):
         subtipos |= SubTipoMovimiento.objects.filter(estado=True, solo_proceso=True)
     if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
         subtipos = subtipos.filter(protegido=False)
-    return subtipos.values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
+    return subtipos.values(campo_valor=F('id'), campo_texto=F('nombre'))\
+        .annotate(agrupacion=Concat('tipo_movimiento__nombre',
+                                       Value(' - '),
+                                       'categoria_movimiento__nombre',
+                                       output_field=CharField())).\
+        order_by('agrupacion', 'nombre')
 
 
 REAL = 0
 PROYECCION = 1
 
 
-def crear_registro_historial(flujo_detalle, comentarios, estado):
+def crear_registro_historial(flujo_detalle, motivo_edicion, estado):
     FlujoCajaDetalle.objects \
         .create(fecha_movimiento=flujo_detalle.fecha_movimiento,
                 subtipo_movimiento_id=flujo_detalle.subtipo_movimiento_id,
                 valor=flujo_detalle.valor, tipo_registro=flujo_detalle.tipo_registro,
+                comentarios=flujo_detalle.comentarios,
                 usuario_crea=flujo_detalle.usuario_crea, usuario_modifica=flujo_detalle.usuario_modifica,
                 flujo_caja_enc=flujo_detalle.flujo_caja_enc, fecha_crea=flujo_detalle.fecha_crea,
                 fecha_modifica=app_datetime_now(), flujo_detalle=flujo_detalle,
-                estado_id=estado, comentarios=comentarios)
+                estado_id=estado, motivo_edicion=motivo_edicion)
 
 
 def validar_permisos(request, permiso):

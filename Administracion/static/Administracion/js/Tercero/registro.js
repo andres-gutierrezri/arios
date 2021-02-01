@@ -10,6 +10,7 @@ class DatosRegistro
         this.digitoVerificacion= '';
         this.correo= '';
         this.celular= '';
+        this.tokenRecaptcha = '';
     }
     setNombre(nombre) {
        this.nombre = nombre;
@@ -29,26 +30,30 @@ class DatosRegistro
     setCelular(celular) {
        this.celular = celular;
     }
+    setTokenRecaptcha(tokenRecaptcha) {
+       this.tokenRecaptcha = tokenRecaptcha;
+    }
 }
 
-$(document).ready(function () {
-    configurarFormulario();
-});
-
 let datosRegistros = new DatosRegistro();
+const formRegistro = $('#registro-proveedor-form')[0];
 
-function configurarFormulario() {
-    const form = $('#registro-proveedor-form')[0];
-    agregarValidacionForm(form, function (event) {
+function enviarFormulario(tokenRecaptcha) {
+    if(formRegistro.checkValidity())
+    {
         datosRegistros.setNombre($('#nombre_id').val());
         datosRegistros.setTipoIdentificacion($('#tipo_identificacion_select_id').val());
         datosRegistros.setIdentificacion($('#identificacion_id').val());
         datosRegistros.setDigitoVerificacion($('#digito_verificacion_id').val());
         datosRegistros.setCorreo($('#correo_id').val());
         datosRegistros.setCelular($('#celular_id').val());
+        datosRegistros.setTokenRecaptcha(tokenRecaptcha);
         guardarRegistro();
         return true;
-    });
+    } else {
+        formRegistro.classList.add('was-validated');
+        resetRecaptcha();
+    }
 }
 
 function guardarRegistro() {
@@ -60,6 +65,7 @@ function guardarRegistro() {
             contentType: "application/json; charset=utf-8;",
             dataType: "json",
     }).done(function(response) {
+        resetRecaptcha();
         if(response.hasOwnProperty('estado')){
             if (response.estado === 'OK') {
                 EVANotificacion.modal
@@ -76,6 +82,7 @@ function guardarRegistro() {
             }
         }
     }).fail(function () {
+        resetRecaptcha();
         EVANotificacion.toast.error('Falló el registro');
     })
 }

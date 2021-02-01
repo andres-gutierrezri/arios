@@ -116,7 +116,8 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     class Meta:
         verbose_name = 'Tercero'
         verbose_name_plural = 'Terceros'
-        permissions = [("view_proveedor", "Can view proveedor")]
+        permissions = [("view_proveedor", "Can view proveedor"),
+                       ("manage_proveedor", "Can manage proveedor")]
 
     def empresa_to_dict(self):
         if self.empresa:
@@ -211,7 +212,7 @@ class TipoDocumentoTercero(models.Model):
 
 def custom_upload_to(instance, filename):
     return '{2}/Proveedores/Documentos/{0}/{1}'\
-        .format(instance.tercero.nombre[:10], filename, settings.EVA_PRIVATE_MEDIA)
+        .format(instance.tercero.identificacion, filename, settings.EVA_PRIVATE_MEDIA)
 
 
 class DocumentoTercero(models.Model, ModelDjangoExtensiones):

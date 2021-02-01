@@ -120,7 +120,7 @@ class ParametrosFinancieros:
                 if parametro.nombre == ParametrosFlujoCaja.CORTE_ALIMENTACION:
                     parametros_fc.set_corte_alimentacion(int(parametro.valor))
                 elif parametro.nombre == ParametrosFlujoCaja.CORTE_EJECUCION:
-                    parametros_fc.set_corte_alimentacion(int(parametro.valor))
+                    parametros_fc.set_corte_ejecucion(int(parametro.valor))
             except ValueError:
                 pass
 

@@ -180,3 +180,6 @@ position: relative;
     background-size: cover;
     background-color: #11564f
 }
+.select2-container--default .select2-results__group {
+    color: var(--theme-secondary)
+}
