@@ -50,7 +50,7 @@ class ColaboradoresPerfilView(AbstractEvaLoggedView):
                 not tiene_permisos(request, 'TalentoHumano', ['view_colaborador'], None):
             return redirect(reverse('eva-index'))
         else:
-            colaborador = Colaborador.objects.get(usuario_id=id)
+            colaborador = Colaborador.objects.get(id=id)
             colaborador.usuario.get_full_name()
             colaboradores = Colaborador.objects.all()[:9]
             contratos = ColaboradorContrato.objects.filter(colaborador=colaborador)
