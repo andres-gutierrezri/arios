@@ -12,7 +12,7 @@ from Administracion.utils import get_id_empresa_global
 from Administracion.models import Proceso
 from EVA.General import app_datetime_now, app_date_now
 from EVA.General.conversiones import add_months, string_to_date, mes_numero_a_letras, obtener_fecha_inicio_de_mes, \
-    obtener_fecha_fin_de_mes
+    obtener_fecha_fin_de_mes, fijar_fecha_inicio_mes
 from EVA.views.index import AbstractEvaLoggedView
 from Financiero.models import FlujoCajaDetalle, SubTipoMovimiento, FlujoCajaEncabezado, EstadoFlujoCaja, CorteFlujoCaja
 from Financiero.models.flujo_caja import EstadoFCDetalle, TipoMovimiento
@@ -123,11 +123,11 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
     if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
         movimientos = movimientos.filter(subtipo_movimiento__protegido=False)
 
-    fecha_incial = app_datetime_now()
-    fecha_final = app_datetime_now()
+    fecha_incial = app_date_now()
+    fecha_final = app_date_now()
     if movimientos:
-        fecha_incial = movimientos.order_by('fecha_movimiento').first().fecha_movimiento
-        fecha_final = movimientos.order_by('fecha_movimiento').last().fecha_movimiento
+        fecha_incial = fijar_fecha_inicio_mes(movimientos.order_by('fecha_movimiento').first().fecha_movimiento)
+        fecha_final = fijar_fecha_inicio_mes(movimientos.order_by('fecha_movimiento').last().fecha_movimiento)
 
     meses = []
     anios = []

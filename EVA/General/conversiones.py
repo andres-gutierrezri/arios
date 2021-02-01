@@ -261,3 +261,8 @@ def mes_numero_a_letras(mes) -> str:
     elif mes == 12:
         return 'Diciembre'
 
+
+def fijar_fecha_inicio_mes(fecha):
+    return fecha.replace(fecha.year, fecha.month, 1)
+
+
