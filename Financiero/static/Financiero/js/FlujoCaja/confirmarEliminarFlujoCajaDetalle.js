@@ -3,7 +3,7 @@
 
 let URLDomain = document.location.origin+"/";
 let idBorrar = 0;
-let rutaBorrado = $('#rutaBorrado').val();
+let rutaBorrado = $('#configuracion_dfc')[0].dataset.rutaBorrado;
 
 function fConfirmarEliminar(idElemento) {
 

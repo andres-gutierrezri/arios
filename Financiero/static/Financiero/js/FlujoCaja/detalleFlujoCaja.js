@@ -3,8 +3,7 @@
 
 let selectFiltroAnio = $('#filtro_anio_id_select_id');
 let selectFiltroMes = $('#filtro_mes_id_select_id');
-let idContratoDetalle = $('#id_contrato_detalle');
-let idTipoDetalle = $('#id_tipo_detalle');
+const configuracionDFC = $('#configuracion_dfc')[0];
 
  $(document).ready(function () {
 
@@ -26,9 +25,9 @@ let idTipoDetalle = $('#id_tipo_detalle');
     });
 
     selectFiltroAnio.change(function () {
-        window.location = `/financiero/flujo-caja/procesos/${idContratoDetalle.val()}/detalle/${idTipoDetalle.val()}/anio/${selectFiltroAnio.val()}/mes/${selectFiltroMes.val()}`;
+        window.location = `/financiero/flujo-caja/${configuracionDFC.dataset.tipoFlujo}/${configuracionDFC.dataset.idContrato}/detalle/${configuracionDFC.dataset.idTipoDetalle}/anio/${selectFiltroAnio.val()}/mes/${selectFiltroMes.val()}`;
     });
     selectFiltroMes.change(function () {
-        window.location = `/financiero/flujo-caja/procesos/${idContratoDetalle.val()}/detalle/${idTipoDetalle.val()}/anio/${selectFiltroAnio.val()}/mes/${selectFiltroMes.val()}`;
+        window.location = `/financiero/flujo-caja/${configuracionDFC.dataset.tipoFlujo}/${configuracionDFC.dataset.idContrato}/detalle/${configuracionDFC.dataset.idTipoDetalle}/anio/${selectFiltroAnio.val()}/mes/${selectFiltroMes.val()}`;
     });
 });

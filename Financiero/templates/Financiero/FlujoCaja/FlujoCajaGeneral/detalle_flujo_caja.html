@@ -13,6 +13,7 @@
 
 {% block main %}
     {% with ALIMENTACION=1 EJECUCION=2 REAL=0 PROYECCION=1 VIGENTE=1 EDITADO=2 ELIMINADO=4 %}
+        <div id="configuracion_dfc" data-id-contrato="{{ contrato.id }}{{ proceso.id }}" data-id-tipo-detalle="{{ tipo }}" data-tipo-flujo="{% if contrato %}contratos{% else %}procesos{% endif %}" data-ruta-borrado="financiero/flujo-caja/movimiento"></div>
     <div class="panel-container show">
         <div class="header p-b-10">
             <h1 class="header-title">
@@ -20,9 +21,6 @@
                 <a class="fad fa-times-circle" href="#" onclick="volverAtras()" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Volver"></a>
             </h1>
         </div>
-        <input hidden id="id_contrato_detalle" value="{{ contrato.id }}{{ proceso.id }}">
-        <input hidden id="id_tipo_detalle" value="{{ tipo }}">
-        <input id="rutaBorrado" type="hidden" name="rutaBorrado" value="financiero/flujo-caja/movimiento">
         <div class="row">
             <div class="col-xl-12">
                 <div id="panel-1" class="panel">
