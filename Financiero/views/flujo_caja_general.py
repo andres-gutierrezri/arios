@@ -103,6 +103,13 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
             .annotate(fecha_corte=F('flujo_caja_enc__corteflujocaja__fecha_corte')) \
             .exclude(estado_id=EstadoFCDetalle.OBSOLETO)
 
+    eliminados = request.GET.get('eliminados', 'False') == 'True'
+
+    if eliminados:
+        movimientos = movimientos.exclude(estado_id__in=[EstadoFCDetalle.VIGENTE, EstadoFCDetalle.EDITADO])
+    else:
+        movimientos = movimientos.exclude(estado_id__in=[EstadoFCDetalle.ELIMINADO, EstadoFCDetalle.OBSOLETO])
+
     if flujo_caja_enc:
         flujo_caja_enc = flujo_caja_enc.first()
     else:
@@ -182,7 +189,7 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
     return render(request, 'Financiero/FlujoCaja/FlujoCajaGeneral/detalle_flujo_caja.html',
                   {'movimientos': movimientos, 'fecha': datetime.now(), 'contrato': contrato, 'proceso': proceso,
                    'menu_actual': menu_actual, 'fecha_minima_mes': fecha_minima_mes, 'tipo': tipo,
-                   'fecha_maxima_mes': fecha_maxima_mes, 'flujo_caja_enc': flujo_caja_enc,
+                   'fecha_maxima_mes': fecha_maxima_mes, 'flujo_caja_enc': flujo_caja_enc, 'eliminados': eliminados,
                    'base_template': base_template, 'ingresos': ingresos, 'egresos': egresos,
                    'anios': anios, 'meses': meses, 'anio_seleccion': anio_seleccion, 'mes_seleccion': mes_seleccion})
 

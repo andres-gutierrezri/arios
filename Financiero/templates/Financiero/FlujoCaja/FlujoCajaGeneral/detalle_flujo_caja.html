@@ -35,6 +35,7 @@
                                     {% endif %}
                                 </small>
                             </div>
+                            {% if not eliminados %}
                             <div class="col-md-5">
                                 <h3>
                                     <b>Total Ingresos: </b>{{ ingresos|intcomma }}
@@ -45,9 +46,21 @@
                                     <b>Total Egresos: </b>{{ egresos|intcomma }}
                                 </h3>
                             </div>
+                            {% endif %}
                         </div>
                         <div class="panel-hdr">
-                            <div class="col-lg-8 col-md-4 col-sm-2"></div>
+                            <div class="col-lg-8 col-md-4 col-sm-2">
+                                <div class="form-group col-12">
+                                    <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons" style="float: left">
+                                        <label class="btn btn-default waves-effect waves-themed active" onclick="cambioCheck('vigente')">
+                                            <input type="radio" name="solo_eliminado" id="ver_vigente" {% if not eliminados %} checked="" {% endif %} value="vigente"> Vigentes
+                                        </label>
+                                        <label class="btn btn-default waves-effect waves-themed" onclick="cambioCheck('eliminado')">
+                                            <input type="radio" name="solo_eliminado" id="ver_eliminado" {% if eliminados %}checked=""{% endif %} value="eliminado"> Eliminados
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="col-lg-2 col-md-4 col-sm-5" style="float: right;">
                                 {% select_tag anios 'filtro_anio_id' anios.first.campo_texto value=anio_seleccion primer_valor=True primer_campo_valor=anios.first.campo_valor %}
                             </div>

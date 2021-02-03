@@ -31,3 +31,11 @@ const configuracionDFC = $('#configuracion_dfc')[0];
         window.location = `/financiero/flujo-caja/${configuracionDFC.dataset.tipoFlujo}/${configuracionDFC.dataset.idContrato}/detalle/${configuracionDFC.dataset.idTipoDetalle}/anio/${selectFiltroAnio.val()}/mes/${selectFiltroMes.val()}`;
     });
 });
+
+ function cambioCheck(opcion){
+    if (opcion === 'vigente') {
+        location.href = window.location.pathname.split('?')[0];
+    }else{
+        location.href = window.location.pathname + '?eliminados=True';
+    }
+}
