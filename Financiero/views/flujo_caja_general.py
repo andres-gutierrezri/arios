@@ -173,10 +173,11 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
     ingresos = 0
     egresos = 0
     for movimiento in movimientos:
-        if movimiento.subtipo_movimiento.tipo_movimiento_id == TipoMovimiento.INGRESOS:
-            ingresos += movimiento.valor
-        else:
-            egresos += movimiento.valor
+        if movimiento.estado_id != EstadoFCDetalle.ELIMINADO:
+            if movimiento.subtipo_movimiento.tipo_movimiento_id == TipoMovimiento.INGRESOS:
+                ingresos += movimiento.valor
+            else:
+                egresos += movimiento.valor
 
     return render(request, 'Financiero/FlujoCaja/FlujoCajaGeneral/detalle_flujo_caja.html',
                   {'movimientos': movimientos, 'fecha': datetime.now(), 'contrato': contrato, 'proceso': proceso,
