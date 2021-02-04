@@ -50,7 +50,8 @@ class ContratoCrearView(AbstractEvaLoggedView):
             datos['errores'] = errores.message_dict
             return render(request, 'Proyectos/Contrato/crear-editar.html', datos)
 
-        if Contrato.objects.filter(numero_contrato=contrato.numero_contrato).exists():
+        if Contrato.objects.filter(numero_contrato=contrato.numero_contrato, cliente_id=contrato.cliente_id,
+                                   anho=contrato.anho).exists():
             messages.warning(request, 'Ya existe un contrato con número {0}'.format(contrato.numero_contrato))
             return render(request, 'Proyectos/Contrato/crear-editar.html',
                           datos_xa_render(request, self.OPCION, contrato))
