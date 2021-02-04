@@ -103,6 +103,13 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
             .annotate(fecha_corte=F('flujo_caja_enc__corteflujocaja__fecha_corte')) \
             .exclude(estado_id=EstadoFCDetalle.OBSOLETO)
 
+    eliminados = request.GET.get('eliminados', 'False') == 'True'
+
+    if eliminados:
+        movimientos = movimientos.exclude(estado_id__in=[EstadoFCDetalle.VIGENTE, EstadoFCDetalle.EDITADO])
+    else:
+        movimientos = movimientos.exclude(estado_id__in=[EstadoFCDetalle.ELIMINADO, EstadoFCDetalle.OBSOLETO])
+
     if flujo_caja_enc:
         flujo_caja_enc = flujo_caja_enc.first()
     else:
@@ -173,15 +180,16 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
     ingresos = 0
     egresos = 0
     for movimiento in movimientos:
-        if movimiento.subtipo_movimiento.tipo_movimiento_id == TipoMovimiento.INGRESOS:
-            ingresos += movimiento.valor
-        else:
-            egresos += movimiento.valor
+        if movimiento.estado_id != EstadoFCDetalle.ELIMINADO:
+            if movimiento.subtipo_movimiento.tipo_movimiento_id == TipoMovimiento.INGRESOS:
+                ingresos += movimiento.valor
+            else:
+                egresos += movimiento.valor
 
     return render(request, 'Financiero/FlujoCaja/FlujoCajaGeneral/detalle_flujo_caja.html',
                   {'movimientos': movimientos, 'fecha': datetime.now(), 'contrato': contrato, 'proceso': proceso,
                    'menu_actual': menu_actual, 'fecha_minima_mes': fecha_minima_mes, 'tipo': tipo,
-                   'fecha_maxima_mes': fecha_maxima_mes, 'flujo_caja_enc': flujo_caja_enc,
+                   'fecha_maxima_mes': fecha_maxima_mes, 'flujo_caja_enc': flujo_caja_enc, 'eliminados': eliminados,
                    'base_template': base_template, 'ingresos': ingresos, 'egresos': egresos,
                    'anios': anios, 'meses': meses, 'anio_seleccion': anio_seleccion, 'mes_seleccion': mes_seleccion})
 
@@ -241,9 +249,11 @@ def guardar_movimiento(request, tipo=None, contrato=None, proceso=None, movimien
     fl_det.usuario_modifica = request.user
     fl_det.fecha_modifica = app_datetime_now()
 
-    if string_to_date(str(fl_det.fecha_movimiento)) < generar_fecha_minima(tipo):
-        messages.error(request, 'La fecha ingresada es menor a la fecha mínima permitida')
-        return redirect(reverse(ruta_reversa))
+    fecha_minima = generar_fecha_minima(tipo)
+    if fecha_minima:
+        if string_to_date(str(fl_det.fecha_movimiento)) < fecha_minima:
+            messages.error(request, 'La fecha ingresada es menor a la fecha mínima permitida')
+            return redirect(reverse(ruta_reversa))
 
     fecha_maxima = generar_fecha_maxima(tipo)
     if fecha_maxima:
@@ -420,11 +430,15 @@ def generar_fecha_minima(tipo):
     fecha_minima = date(app_date_now().year, app_date_now().month, 1)
     param_fc = ParametrosFinancieros.get_params_flujo_caja()
     if tipo == REAL:
-        if app_date_now().day <= param_fc.get_corte_ejecucion():
+        if app_date_now().day <= param_fc.get_corte_ejecucion() != 0:
             fecha_minima = add_months(date(app_date_now().year, app_date_now().month, 1), -1)
+        elif param_fc.get_corte_ejecucion() == 0:
+            fecha_minima = False
     else:
-        if app_date_now().day > param_fc.get_corte_alimentacion():
+        if app_date_now().day > param_fc.get_corte_alimentacion() != 0:
             fecha_minima = add_months(date(app_date_now().year, app_date_now().month, 1), 1)
+        elif param_fc.get_corte_alimentacion() == 0:
+            fecha_minima = False
     return fecha_minima
 
 
@@ -432,7 +446,10 @@ def generar_fecha_maxima(tipo):
     if tipo == PROYECCION:
         fecha_maxima = False
     else:
-        fecha_maxima = app_date_now()
+        if ParametrosFinancieros.get_params_flujo_caja().get_corte_ejecucion() == 0:
+            fecha_maxima = False
+        else:
+            fecha_maxima = app_date_now()
     return fecha_maxima
 
 
@@ -447,5 +464,7 @@ def obtener_dia_maximo(parametro):
 
 def validar_fecha_accion(flujo_detalle):
     fecha_minima = generar_fecha_minima(flujo_detalle.tipo_registro)
-    if flujo_detalle.fecha_movimiento.date() >= fecha_minima:
+    if not fecha_minima:
+        return True
+    elif flujo_detalle.fecha_movimiento.date() >= fecha_minima:
         return True
