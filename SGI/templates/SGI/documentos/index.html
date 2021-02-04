@@ -68,10 +68,10 @@
                                                                                         {% if perms.SGI.view_cadenaaprobacionencabezado %}
                                                                                         <a class="fad fa-custom fa-link p-l-10" id="cadena_{{ documento.id }}" {% if documento.cadena_aprobacion %}href="javascript:abrirModalDetalleCadenaAprobacion('{% url 'sgi:cadenas-aprobacion-detalle' documento.cadena_aprobacion_id %}')" {% endif %} data-original-title="Ver Cadena de Aprobación" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
                                                                                         {% endif %}
-                                                                                        {% if grupo_documento.solo_proceso or perms.TalentoHumano.can_gestioncompletasgi or not grupo_documento.solo_proceso and proceso == colaborador_proceso %}
+                                                                                        {% if grupo_documento.solo_proceso or perms.TalentoHumano.can_gestioncompletasgi or not grupo_documento.solo_proceso and proceso in colaborador_proceso %}
                                                                                             {% if not perms.TalentoHumano.can_gestioncompletasgi %}
                                                                                                 {% for pro in grupo_documento.proceso %}
-                                                                                                    {% if pro == colaborador_proceso %}
+                                                                                                    {% if pro in colaborador_proceso %}
                                                                                                         {% include 'SGI/documentos/BotonesGestion/botonesGestionSGI.html' %}
                                                                                                     {% endif %}
                                                                                                 {% endfor %}
