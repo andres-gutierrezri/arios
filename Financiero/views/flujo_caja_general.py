@@ -77,7 +77,7 @@ class FlujoCajaMovimientoHistorialView(AbstractEvaLoggedView):
         return historial_movimiento(request, id_movimiento)
 
 
-def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccion=None, mes_seleccion=None):
+def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccion=None, mes_seleccion=None, ruta=None):
     if proceso:
         ruta_reversa = 'administracion:procesos'
         base_template = 'Administracion/_common/base_administracion.html'
@@ -113,9 +113,13 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
     if flujo_caja_enc:
         flujo_caja_enc = flujo_caja_enc.first()
     else:
-        flujo_caja_enc = FlujoCajaEncabezado.objects.create(fecha_crea=datetime.now(), proceso=proceso,
-                                                            contrato=contrato,
-                                                            estado_id=EstadoFlujoCaja.ALIMENTACION)
+        if proceso and proceso.empresa_id != get_id_empresa_global(request) \
+                or contrato and contrato.empresa_id != get_id_empresa_global(request):
+            return redirect(reverse(ruta))
+        else:
+            flujo_caja_enc = FlujoCajaEncabezado.objects.create(fecha_crea=datetime.now(), proceso=proceso,
+                                                                contrato=contrato,
+                                                                estado_id=EstadoFlujoCaja.ALIMENTACION)
     if not tiene_permisos_de_acceso(request, contrato=contrato, proceso=proceso):
         messages.error(request, 'No tiene permisos para acceder a este flujo de caja.')
         return redirect(reverse(ruta_reversa))

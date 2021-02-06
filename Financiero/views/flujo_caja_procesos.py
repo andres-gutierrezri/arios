@@ -10,7 +10,8 @@ class FlujoCajaProcesosDetalleView(AbstractEvaLoggedView):
     def get(self, request, id, tipo, anio, mes):
         if not validar_permisos(request, 'view_flujocajadetalle'):
             return redirect(reverse('eva-index'))
-        return flujo_caja_detalle(request, tipo, proceso=id, anio_seleccion=anio, mes_seleccion=mes)
+        return flujo_caja_detalle(request, tipo, proceso=id, anio_seleccion=anio, mes_seleccion=mes,
+                                  ruta='Administracion:procesos')
 
 
 class FlujoCajaProcesosCrearView(AbstractEvaLoggedView):
