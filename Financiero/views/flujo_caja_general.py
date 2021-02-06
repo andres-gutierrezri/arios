@@ -285,8 +285,8 @@ def guardar_movimiento(request, tipo=None, contrato=None, proceso=None, movimien
         fl_det.flujo_caja_enc = flujo_encabezado
         fl_det.save()
         messages.success(request, 'Se ha agregado el movimiento correctamente')
-
-    return redirect(reverse(ruta_detalle, args=[objeto, tipo, app_datetime_now().year, app_datetime_now().month]))
+    return redirect(reverse(ruta_detalle, args=[objeto, tipo, string_to_date(str(fl_det.fecha_movimiento)).year,
+                                                string_to_date(str(fl_det.fecha_movimiento)).month]))
 
 
 def eliminar_movimiento(request, flujo_detalle):
