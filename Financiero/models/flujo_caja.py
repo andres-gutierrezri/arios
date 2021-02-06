@@ -169,7 +169,7 @@ class FlujoCajaDetalle(models.Model):
     fecha_movimiento = models.DateTimeField(verbose_name='Fecha de Creación', max_length=100, null=False, blank=False)
     subtipo_movimiento = models.ForeignKey(SubTipoMovimiento, on_delete=models.DO_NOTHING,
                                            verbose_name='SubTipo de Movimiento', null=False, blank=False)
-    valor = models.IntegerField(verbose_name='Valor', blank=False, null=False)
+    valor = models.DecimalField(verbose_name='Valor', max_digits=13, decimal_places=2, null=False, blank=False)
     tipo_registro = models.IntegerField(verbose_name='Tipo Registro', blank=False, null=False)
     usuario_crea = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario Crea',
                                      null=False, blank=False, related_name='%(app_label)s_%(class)s_usuario_crea')
