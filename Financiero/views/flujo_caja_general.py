@@ -105,10 +105,15 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
 
     eliminados = request.GET.get('eliminados', 'False') == 'True'
 
-    if eliminados:
-        movimientos = movimientos.exclude(estado_id__in=[EstadoFCDetalle.VIGENTE, EstadoFCDetalle.EDITADO])
+    if not request.user.has_perms('Financiero.can_access_usuarioespecial'):
+        if not request.user.has_perms(['Financiero.can_gestion_flujos_de_caja']):
+            movimientos = movimientos.exclude(estado_id=EstadoFCDetalle.ELIMINADO)
+
     else:
-        movimientos = movimientos.exclude(estado_id__in=[EstadoFCDetalle.ELIMINADO, EstadoFCDetalle.OBSOLETO])
+        if eliminados:
+            movimientos = movimientos.exclude(estado_id__in=[EstadoFCDetalle.VIGENTE, EstadoFCDetalle.EDITADO])
+        else:
+            movimientos = movimientos.exclude(estado_id__in=[EstadoFCDetalle.ELIMINADO, EstadoFCDetalle.OBSOLETO])
 
     if flujo_caja_enc:
         flujo_caja_enc = flujo_caja_enc.first()
@@ -126,10 +131,6 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
 
     fecha_minima_mes = generar_fecha_minima(tipo)
     fecha_maxima_mes = generar_fecha_maxima(tipo)
-
-    if not request.user.has_perms('Financiero.can_access_usuarioespecial'):
-        if not request.user.has_perms(['Financiero.can_gestion_flujos_de_caja']):
-            movimientos = movimientos.exclude(estado_id=EstadoFCDetalle.ELIMINADO)
 
     if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
         movimientos = movimientos.filter(subtipo_movimiento__protegido=False)
