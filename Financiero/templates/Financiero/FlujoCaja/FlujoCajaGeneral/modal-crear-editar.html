@@ -36,7 +36,7 @@
 
                 <div class="form-row">
                     <div class="form-group col-12">
-                        {% input_currency_tag 'valor' 'Valor' placeholder="Ingrese una Valor" required=""  decimales=False min="1" max="2147483647" value=flujo_detalle.valor mensaje_validacion='Por favor ingrese un valor.' invalido=errores.descripcion removeMaskOnSubmit=True %}
+                        {% input_currency_tag 'valor' 'Valor' placeholder="Ingrese una Valor" required="" min="0.00" max="99999999999.99" step="0.01" value=flujo_detalle.valor mensaje_validacion='Por favor ingrese un valor.' invalido=errores.descripcion removeMaskOnSubmit=True %}
                     </div>
                 </div>
 
@@ -48,7 +48,7 @@
 
                 <div class="form-row">
                     <div class="form-group col-12">
-                        {% input_textarea_tag 'comentarios' 'Comentarios' placeholder="(Opcional) Ingrese comentarios si aplica" maxlength="100" mensaje_validacion='Por favor ingrese los comentarios.' invalido=errores.comentarios %}
+                        {% input_textarea_tag 'comentarios' 'Comentarios' placeholder="(Opcional) Ingrese comentarios si aplica" maxlength="100" value=flujo_detalle.comentarios mensaje_validacion='Por favor ingrese los comentarios.' invalido=errores.comentarios %}
                     </div>
                 </div>
 
