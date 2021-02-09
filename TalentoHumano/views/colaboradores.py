@@ -15,7 +15,8 @@ from EVA import settings
 from EVA.General.utilidades import validar_formato_imagen, app_datetime_now
 from Notificaciones.views.correo_electronico import enviar_correo
 from EVA.General.validacionpermisos import tiene_permisos
-from TalentoHumano.models.colaboradores import ColaboradorContrato, TipoNovedad, NovedadColaborador, ColaboradorEmpresa
+from TalentoHumano.models.colaboradores import ColaboradorContrato, TipoNovedad, NovedadColaborador, ColaboradorEmpresa, \
+    ColaboradorProceso
 from EVA.views.index import AbstractEvaLoggedView
 from Notificaciones.models.models import EventoDesencadenador
 from Notificaciones.views.views import crear_notificacion_por_evento
@@ -49,16 +50,18 @@ class ColaboradoresPerfilView(AbstractEvaLoggedView):
                 not tiene_permisos(request, 'TalentoHumano', ['view_colaborador'], None):
             return redirect(reverse('eva-index'))
         else:
-            colaborador = Colaborador.objects.get(usuario_id=id)
+            colaborador = Colaborador.objects.get(id=id)
             colaborador.usuario.get_full_name()
             colaboradores = Colaborador.objects.all()[:9]
             contratos = ColaboradorContrato.objects.filter(colaborador=colaborador)
+            procesos = ColaboradorProceso.objects.filter(colaborador=colaborador)
             novedades = NovedadColaborador.objects.filter(colaborador=colaborador)
             entregas_dotacion = novedades.filter(tipo_novedad_id=TipoNovedad.ENTEREGA_DOTACION)
             novedades_colaborador = novedades.exclude(tipo_novedad_id=TipoNovedad.ENTEREGA_DOTACION)
             return render(request, 'TalentoHumano/Colaboradores/perfil.html',
                           {'colaborador': colaborador,
                            'contratos': contratos,
+                           'procesos': procesos,
                            'entregas_dotacion': entregas_dotacion,
                            'novedades_colaborador': novedades_colaborador,
                            'colaboradores': colaboradores})
@@ -77,6 +80,7 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
         colaborador.usuario_crea = request.user
         contratos = request.POST.getlist('contrato_id[]', None)
         grupos = request.POST.getlist('grupo_id[]', None)
+        procesos = request.POST.getlist('proceso_id[]', None)
 
         colaborador.foto_perfil = request.FILES.get('foto_perfil', None)
         if not colaborador.foto_perfil:
@@ -126,6 +130,9 @@ class ColaboradoresCrearView(AbstractEvaLoggedView):
             for grp in grupos:
                 colaborador.usuario.groups.add(Group.objects.get(id=grp))
 
+            for proceso in procesos:
+                ColaboradorProceso.objects.create(proceso_id=proceso, colaborador=colaborador)
+
             messages.success(request, 'Se ha agregado el colaborador  {0}'.format(colaborador.nombre_completo))
 
             dominio = request.get_host()
@@ -160,7 +167,7 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
     def post(self, request, id):
         update_fields = ['direccion', 'talla_camisa', 'talla_zapatos', 'talla_pantalon', 'eps_id',
                          'arl_id', 'afp_id', 'caja_compensacion_id', 'fecha_ingreso', 'fecha_examen',
-                         'salario', 'jefe_inmediato_id', 'cargo_id', 'proceso_id',
+                         'salario', 'jefe_inmediato_id', 'cargo_id',
                          'tipo_contrato_id', 'lugar_nacimiento_id', 'rango_id', 'fecha_nacimiento',
                          'identificacion', 'tipo_identificacion_id', 'fecha_expedicion', 'genero', 'telefono',
                          'estado', 'nombre_contacto', 'grupo_sanguineo', 'telefono_contacto', 'parentesco',
@@ -169,9 +176,10 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
         colaborador = Colaborador.from_dictionary(request.POST)
         colaborador.usuario_actualiza = request.user
         contratos = request.POST.getlist('contrato_id[]', None)
+        procesos = request.POST.getlist('proceso_id[]', None)
         colaborador.empresa_id = request.POST.get('empresa_id')
         colaborador.empresa_sesion_id = colaborador.empresa_id
-
+        print(procesos)
         colaborador.id = int(id)
         colaborador.foto_perfil = request.FILES.get('foto_perfil', None)
         if colaborador.foto_perfil:
@@ -216,18 +224,33 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
             cambios_usuario.append('username')
 
         colaborador_contrato_db = ColaboradorContrato.objects.filter(colaborador_id=id)
-        cant = colaborador_contrato_db.count()
+        cant_contrato = colaborador_contrato_db.count()
 
-        cont = 0
-        if cant == len(contratos):
+        cont_contrato = 0
+        if cant_contrato == len(contratos):
             for clb in colaborador_contrato_db:
                 for ctr in contratos:
                     if clb.contrato.id == int(ctr):
-                        cont += 1
+                        cont_contrato += 1
+        else:
+            cont_contrato = len(contratos)
+
+        colaborador_proceso_db = ColaboradorProceso.objects.filter(colaborador_id=id)
+        cant_proceso = colaborador_proceso_db.count()
+
+        cont_proceso = 0
+        if cant_proceso == len(procesos):
+            for clb in colaborador_proceso_db:
+                for ctr in procesos:
+                    if clb.proceso_id == int(ctr):
+                        cont_proceso += 1
+        else:
+            cont_proceso = len(procesos)
 
         if colaborador_db.comparar(colaborador, excluir=['foto_perfil', 'empresa_sesion', 'usuario_actualiza',
                                                          'usuario_crea']) and \
-                len(cambios_usuario) <= 0 and not colaborador.foto_perfil and cont == cant:
+                len(cambios_usuario) <= 0 and not colaborador.foto_perfil and cont_contrato == cant_contrato \
+                and cont_proceso == cant_proceso:
             messages.success(request, 'No se hicieron cambios en el colaborador {0}'
                              .format(colaborador.nombre_completo))
             return redirect(reverse('TalentoHumano:colaboradores-index', args=[0]))
@@ -248,6 +271,11 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
             ColaboradorContrato.objects.filter(colaborador_id=id).delete()
             for contrato in contratos:
                 ColaboradorContrato.objects.create(contrato_id=contrato, colaborador_id=id)
+
+            ColaboradorProceso.objects.filter(colaborador_id=id).delete()
+            for proceso in procesos:
+                print(proceso)
+                ColaboradorProceso.objects.create(proceso_id=proceso, colaborador_id=id)
 
             if colaborador.foto_perfil:
                 request.session['colaborador'] = Colaborador.objects.get(usuario=request.user).foto_perfil.url
@@ -399,6 +427,7 @@ def datos_xa_render(opcion: str = None, colaborador: Colaborador = None) -> dict
     grupos = construir_grupos_xa_select()
     grupos_colaborador = obtener_lista_grupos(colaborador, opcion)
     contratos_colaborador = ColaboradorContrato.objects.get_ids_contratos_list(colaborador)
+    procesos_colaborador = ColaboradorProceso.objects.get_ids_procesos_list(colaborador)
     cargo = Cargo.objects.get_xa_select_activos()
     proceso = Proceso.objects.get_xa_select_activos()
     tipo_contratos = TipoContrato.objects.tipos_laborares(True, True)
@@ -417,13 +446,15 @@ def datos_xa_render(opcion: str = None, colaborador: Colaborador = None) -> dict
                     ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']]
     empresa = Empresa.objects.get_xa_select_activos()
 
+    procesos_selecciones = ColaboradorProceso.objects.get_ids_procesos_list(colaborador)
     datos = {'arl': arl, 'eps': eps, 'afp': afp, 'caja_compensacion': caja_compensacion, 'empresa': empresa,
              'jefe_inmediato': jefe_inmediato, 'contrato': contrato, 'cargo': cargo, 'proceso': proceso,
              'tipo_contrato': tipo_contratos, 'rango': rango, 'departamentos': departamentos,
              'talla_camisa': talla_camisa, 'talla_zapatos': talla_zapatos, 'talla_pantalon': talla_pantalon,
              'tipo_identificacion': tipo_identificacion, 'opcion': opcion, 'genero': genero,
              'contratos_colaborador': contratos_colaborador, 'grupo_sanguineo': grupo_sanguineo,
-             'menu_actual': 'colaboradores', 'grupos': grupos, 'grupos_colaborador': grupos_colaborador}
+             'menu_actual': 'colaboradores', 'grupos': grupos, 'grupos_colaborador': grupos_colaborador,
+             'procesos_colaborador': procesos_colaborador, 'procesos_selecciones': procesos_selecciones}
 
     if colaborador:
         municipios = Municipio.objects.get_xa_select_activos() \

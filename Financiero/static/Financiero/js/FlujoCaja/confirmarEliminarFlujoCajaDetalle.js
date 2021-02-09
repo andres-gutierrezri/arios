@@ -3,7 +3,7 @@
 
 let URLDomain = document.location.origin+"/";
 let idBorrar = 0;
-let rutaBorrado = $('#rutaBorrado').val();
+let rutaBorrado = $('#configuracion_dfc')[0].dataset.rutaBorrado;
 
 function fConfirmarEliminar(idElemento) {
 
@@ -20,10 +20,10 @@ function fSweetAlert() {
         showCancelButton: true,
         confirmButtonText: '¡Sí, eliminarlo!',
         cancelButtonText: 'Cancelar',
-        inputPlaceholder: "Ingrese un comentario",
+        inputPlaceholder: "Ingrese el motivo de la eliminación",
         inputValidator: comentarios => {
             if (!comentarios) {
-                return "Por favor ingresa un comentario";
+                return "Por favor ingresa el motivo de la eliminación";
             } else {
                 return undefined;
             }
@@ -39,7 +39,7 @@ function fSweetAlert() {
                 url: URLDomain + rutaBorrado + "/" + idBorrar + "/delete",
                 type: 'POST',
                 context: document.body,
-                data: {'comentarios': result.value},
+                data: {'motivo': result.value},
                 success: function (data) {
                     if(data.estado === "OK") {
                         location.reload();

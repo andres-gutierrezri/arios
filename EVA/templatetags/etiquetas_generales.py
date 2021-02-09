@@ -6,7 +6,7 @@ register = template.Library()
 
 
 @register.inclusion_tag('EVA/_general_tags/_select_tag.html')
-def select_tag(lista, nombre, texto_seleccion, is_tupla=False, **kwargs):
+def select_tag(lista, nombre, texto_seleccion, is_tupla=False, agrupar=False, **kwargs):
 
     texto_label = kwargs.pop('texto_label', None)
     mensaje_validacion = kwargs.pop('mensaje_validacion', None)
@@ -18,7 +18,7 @@ def select_tag(lista, nombre, texto_seleccion, is_tupla=False, **kwargs):
     return {'lista': lista, 'nombre': nombre, 'texto_seleccion': texto_seleccion, 'texto_label': texto_label,
             'propiedades': propiedades_to_str(kwargs), 'mensaje_validacion': mensaje_validacion, 'valor': valor,
             'primer_valor': primer_valor, 'primer_campo_valor': primer_campo_valor, 'modal': modal, 'id_label': id_label,
-            'is_tupla': is_tupla}
+            'is_tupla': is_tupla, 'agrupar': agrupar}
 
 
 @register.inclusion_tag('EVA/_general_tags/_select_multiple_tag.html')

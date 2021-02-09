@@ -2,7 +2,7 @@
 'use strict';
 
 $(document).ready(function () {
-
+    iniciarDataTable([0, 1, 2]);
 });
 
 function configurarFormularioEntidadesBancarias(url) {

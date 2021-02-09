@@ -3,6 +3,7 @@
 {% load static %}
 <title>{% block titulo %}Procesos{% endblock %}</title>
 {% block styles %}
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-duotone.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/datagrid/datatables/datatables.bundle.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
@@ -13,7 +14,7 @@
     <div class="panel-container show">
         <div class="header">
              <h1 class="header-title">
-                 <i class="subheader-icon fal fa-usd-square"></i> Flujos de Caja por Procesos <span class='fw-300'></span>
+                 <i class="subheader-icon fad fa-usd-square"></i> Flujos de Caja por Procesos <span class='fw-300'></span>
                  <br>
                  <br>
              </h1>
@@ -34,11 +35,11 @@
                                 <div class="panel-group">
                                     <div class="panel-body">
                                         <div class="table-responsive">
-                                            <table class="table table-bordered w-100" id="dataTable">
+                                            <table class="table table-bordered w-100" id="dataTable" data-flujo-contrato="false">
                                                 <thead class="bg-primary-600">
                                                     <tr>
                                                         <th>Proceso</th>
-                                                        <th>Descipción</th>
+                                                        <th>Descripción</th>
                                                         {% if perms.Financiero.view_flujocajaencabezado %}
                                                         <th>Estado del Flujo de Caja</th>
                                                         <th>Ver Flujo de Caja</th>
@@ -51,17 +52,17 @@
                                                             <td>{{ proceso.nombre }}</td>
                                                             <td>{{ proceso.objeto }}</td>
                                                             {% if perms.Financiero.view_flujocajaencabezado %}
-                                                            <td>
-                                                                {% if proceso_usuario == proceso or perms.Financiero.can_gestion_flujos_de_caja %}
-                                                                    <span class="badge badge-primary">{{ proceso.flujocajaencabezado_set.first.estado }}</span>
-                                                                {% endif %}
-                                                            </td>
-                                                            <td>
-                                                                {% if proceso_usuario == proceso or perms.Financiero.can_gestion_flujos_de_caja %}
-                                                                    <a href="#" onclick="guardarRutaLocal('{% url 'Financiero:flujo-caja-procesos-detalle' proceso.id REAL fecha.year fecha.month %}')"><span class="badge badge-primary fw-300 ml-auto">Real</span><br></a>
-                                                                    <a href="#" onclick="guardarRutaLocal('{% url 'Financiero:flujo-caja-procesos-detalle' proceso.id PROYECCION fecha.year fecha.month %}')"><span class="badge badge-primary fw-300 ml-auto">Proyección</span></a>
-                                                                {% endif %}
-                                                            </td>
+                                                                <td>
+                                                                    {% if proceso.proceso_usuario or perms.Financiero.can_gestion_flujos_de_caja %}
+                                                                        <span class="badge badge-primary">{{ proceso.estado_fc | default_if_none:'' }}</span>
+                                                                    {% endif %}
+                                                                </td>
+                                                                <td>
+                                                                    {% if proceso.proceso_usuario or perms.Financiero.can_gestion_flujos_de_caja %}
+                                                                        <a href="#" onclick="guardarRutaLocal('{% url 'Financiero:flujo-caja-procesos-detalle' proceso.id REAL fecha.year fecha.month %}')"><span class="badge badge-primary fw-300 ml-auto">Real</span><br></a>
+                                                                        <a href="#" onclick="guardarRutaLocal('{% url 'Financiero:flujo-caja-procesos-detalle' proceso.id PROYECCION fecha.year fecha.month %}')"><span class="badge badge-primary fw-300 ml-auto">Proyección</span></a>
+                                                                    {% endif %}
+                                                                </td>
                                                             {% endif %}
                                                         </tr>
                                                     {% endfor %}
@@ -83,9 +84,8 @@
     <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.export.js' %}"></script>
-    <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script>
-    <script src="{% static 'Financiero/js/FlujoCaja/exportarTablas/exportarTablasFlujoCajaProcesos.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script
     <script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
-    <script src="{% static 'Financiero/js/FlujoCaja/filtroFlujoCajaFinanciero.js' %}"></script>
+    <script src="{% static 'Financiero/js/FlujoCaja/indexFlujoCaja.js' %}"></script>
     <script src="{% static 'Financiero/js/FlujoCaja/volverAtras.js' %}"></script>
 {% endblock %}

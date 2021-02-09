@@ -31,7 +31,7 @@ class TipoMovimiento(models.Model):
 
 class CategoriaMovimiento(models.Model):
     objects = ManagerGeneral()
-    nombre = models.CharField(verbose_name='Nombre', max_length=30, null=False, blank=False)
+    nombre = models.CharField(verbose_name='Nombre', max_length=60, null=False, blank=False)
     descripcion = models.CharField(verbose_name='Descripción', max_length=200, null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', blank=False, null=False, default=True)
 
@@ -58,7 +58,7 @@ class CategoriaMovimiento(models.Model):
 
 class SubTipoMovimiento(models.Model):
     objects = ManagerGeneral()
-    nombre = models.CharField(verbose_name='Nombre', max_length=30, null=False, blank=False)
+    nombre = models.CharField(verbose_name='Nombre', max_length=60, null=False, blank=False)
     descripcion = models.CharField(verbose_name='Descripción', max_length=200, null=False, blank=False)
     tipo_movimiento = models.ForeignKey(TipoMovimiento, on_delete=models.DO_NOTHING, verbose_name='Tipo de Movimiento',
                                         null=False, blank=False)
@@ -169,7 +169,7 @@ class FlujoCajaDetalle(models.Model):
     fecha_movimiento = models.DateTimeField(verbose_name='Fecha de Creación', max_length=100, null=False, blank=False)
     subtipo_movimiento = models.ForeignKey(SubTipoMovimiento, on_delete=models.DO_NOTHING,
                                            verbose_name='SubTipo de Movimiento', null=False, blank=False)
-    valor = models.IntegerField(verbose_name='Valor', blank=False, null=False)
+    valor = models.DecimalField(verbose_name='Valor', max_digits=13, decimal_places=2, null=False, blank=False)
     tipo_registro = models.IntegerField(verbose_name='Tipo Registro', blank=False, null=False)
     usuario_crea = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario Crea',
                                      null=False, blank=False, related_name='%(app_label)s_%(class)s_usuario_crea')
@@ -184,6 +184,7 @@ class FlujoCajaDetalle(models.Model):
     estado = models.ForeignKey(EstadoFCDetalle, on_delete=models.DO_NOTHING, verbose_name='Estado',
                                null=False, blank=False)
     comentarios = models.CharField(verbose_name='Comentarios', max_length=100, null=True, blank=True)
+    motivo_edicion = models.CharField(verbose_name='Motivo', max_length=100, null=True, blank=True)
 
     def __str__(self):
         return 'Flujo de Caja {0} - Detalle: {1}'.format(self.flujo_caja_enc, self.id)
@@ -203,6 +204,7 @@ class FlujoCajaDetalle(models.Model):
         flujo_caja_detalle.fecha_movimiento = datos.get('fecha_movimiento', '')
         flujo_caja_detalle.subtipo_movimiento_id = datos.get('subtipo_movimiento_id', '')
         flujo_caja_detalle.valor = datos.get('valor', '')
+        flujo_caja_detalle.comentarios = datos.get('comentarios', '')
 
         return flujo_caja_detalle
 

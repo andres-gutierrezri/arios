@@ -66,7 +66,7 @@ class Colaborador(Persona, ModelDjangoExtensiones):
     jefe_inmediato = models.ForeignKey('self', on_delete=models.DO_NOTHING, verbose_name='Jefe inmediato', null=True,
                                        blank=True)
     cargo = models.ForeignKey(Cargo, on_delete=models.DO_NOTHING, verbose_name='Cargo', null=False, blank=False)
-    proceso = models.ForeignKey(Proceso, on_delete=models.DO_NOTHING, verbose_name='Proceso', null=False, blank=False)
+    proceso = models.ForeignKey(Proceso, on_delete=models.DO_NOTHING, verbose_name='Proceso', null=True, blank=True)
     tipo_contrato = models.ForeignKey(TipoContrato, on_delete=models.DO_NOTHING, verbose_name='Tipo de contrato',
                                       null=False, blank=False)
     lugar_nacimiento = models.ForeignKey(CentroPoblado, on_delete=models.DO_NOTHING, verbose_name='Lugar de nacimiento',
@@ -128,7 +128,6 @@ class Colaborador(Persona, ModelDjangoExtensiones):
         if colaborador.jefe_inmediato_id == '':
             colaborador.jefe_inmediato_id = None
         colaborador.cargo_id = datos.get('cargo_id', '')
-        colaborador.proceso_id = datos.get('proceso_id', '')
         colaborador.tipo_contrato_id = datos.get('tipo_contrato_id', '')
         colaborador.lugar_nacimiento_id = datos.get('centro_poblado_id', '')
         colaborador.rango_id = datos.get('rango_id', '')
@@ -178,6 +177,35 @@ class Colaborador(Persona, ModelDjangoExtensiones):
                 usuario.username = usuario_n
 
                 return usuario
+
+
+class ColaboradorProcesoManger(models.Manager):
+
+    def get_ids_procesos(self, colaborador_id: int = None, colaborador: Colaborador = None) -> QuerySet:
+        if colaborador:
+            colaborador_id = colaborador.id
+
+        filtro = {}
+        if colaborador_id:
+            filtro['colaborador_id'] = colaborador_id
+
+        return super().get_queryset().filter(**filtro).values_list('proceso_id', flat=True)
+
+    def get_ids_procesos_list(self, colaborador_id: int = None, colaborador: Colaborador = None) -> list:
+        return list(self.get_ids_procesos(colaborador_id, colaborador))
+
+
+class ColaboradorProceso(models.Model):
+    objects = ColaboradorProcesoManger()
+    colaborador = models.ForeignKey(Colaborador, on_delete=models.DO_NOTHING, verbose_name='Colaborador', null=False,
+                                    blank=False)
+    proceso = models.ForeignKey(Proceso, on_delete=models.DO_NOTHING, verbose_name='Contrato', null=False, blank=False)
+
+    def __str__(self):
+        return str(self.proceso.id)
+
+    class Meta:
+        unique_together = ('colaborador', 'proceso')
 
 
 class ColaboradorContratoManger(models.Manager):

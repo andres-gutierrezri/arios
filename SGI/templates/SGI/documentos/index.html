@@ -31,21 +31,20 @@
                                     {% for grupo_documento in grupo_documentos %}
                                         <li>
                                             <span class="col-md-4"><i class="fad fa-lg fa-file-alt"></i> {{ grupo_documento.nombre }}</span>
-                                            {% if grupo_documento.solo_proceso or perms.TalentoHumano.can_gestioncompletasgi or not grupo_documento.solo_proceso and proceso == colaborador.proceso %}
+                                            {% if grupo_documento.solo_proceso or perms.TalentoHumano.can_gestioncompletasgi or not grupo_documento.solo_proceso and proceso in colaborador_proceso %}
                                                 {% if not perms.TalentoHumano.can_gestioncompletasgi %}
                                                     {% for pro in grupo_documento.proceso %}
-                                                        {% if pro == colaborador.proceso %}
+                                                        {% if pro in colaborador_proceso %}
                                                             {% include 'SGI/documentos/BotonesGestion/botonCrearDocumento.html' %}
                                                         {% endif %}
                                                     {% endfor %}
                                                 {% else %}
                                                     {% include 'SGI/documentos/BotonesGestion/botonCrearDocumento.html' %}
                                                 {% endif %}
-                                                {% if not grupo_documento.solo_proceso and proceso == colaborador.proceso and not perms.TalentoHumano.can_gestioncompletasgi %}
+                                                {% if not grupo_documento.solo_proceso and proceso in colaborador_proceso and not perms.TalentoHumano.can_gestioncompletasgi %}
                                                     {% include 'SGI/documentos/BotonesGestion/botonCrearDocumento.html' %}
                                                 {% endif %}
                                             {% endif %}
-
                                             <ul>
                                                 {% for documento in documentos %}
                                                     {% if documento.grupo_documento_id == grupo_documento.id %}
@@ -69,17 +68,17 @@
                                                                                         {% if perms.SGI.view_cadenaaprobacionencabezado %}
                                                                                         <a class="fad fa-custom fa-link p-l-10" id="cadena_{{ documento.id }}" {% if documento.cadena_aprobacion %}href="javascript:abrirModalDetalleCadenaAprobacion('{% url 'sgi:cadenas-aprobacion-detalle' documento.cadena_aprobacion_id %}')" {% endif %} data-original-title="Ver Cadena de Aprobación" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
                                                                                         {% endif %}
-                                                                                        {% if grupo_documento.solo_proceso or perms.TalentoHumano.can_gestioncompletasgi or not grupo_documento.solo_proceso and proceso == colaborador.proceso %}
+                                                                                        {% if grupo_documento.solo_proceso or perms.TalentoHumano.can_gestioncompletasgi or not grupo_documento.solo_proceso and proceso in colaborador_proceso %}
                                                                                             {% if not perms.TalentoHumano.can_gestioncompletasgi %}
                                                                                                 {% for pro in grupo_documento.proceso %}
-                                                                                                    {% if pro == colaborador.proceso %}
+                                                                                                    {% if pro in colaborador_proceso %}
                                                                                                         {% include 'SGI/documentos/BotonesGestion/botonesGestionSGI.html' %}
                                                                                                     {% endif %}
                                                                                                 {% endfor %}
                                                                                             {% else %}
                                                                                                 {% include 'SGI/documentos/BotonesGestion/botonesGestionSGI.html' %}
                                                                                             {% endif %}
-                                                                                            {% if not grupo_documento.solo_proceso and proceso == colaborador.proceso and not perms.TalentoHumano.can_gestioncompletasgi %}
+                                                                                            {% if not grupo_documento.solo_proceso and proceso == colaborador_proceso and not perms.TalentoHumano.can_gestioncompletasgi %}
                                                                                                 {% include 'SGI/documentos/BotonesGestion/botonesGestionSGI.html' %}
                                                                                             {% endif %}
                                                                                         {% endif %}
@@ -106,17 +105,17 @@
                                                                                                              {{ hst.nombre_documento }} <span class="{% if hst.estado.id == estado.APROBADO %}badge badge-primary {% elif hst.estado.id == estado.RECHAZADO %} badge border border-danger text-danger {% else %} badge border border-primary text-primary {% endif %}" style="font-size: 70%">{{ hst.estado }}</span>
                                                                                                         </div>
                                                                                                         <div class="col-md-3 p-r-10" style="text-align: end">
-                                                                                                           {% if grupo_documento.solo_proceso or perms.TalentoHumano.can_gestioncompletasgi or not grupo_documento.solo_proceso and proceso == colaborador.proceso %}
+                                                                                                           {% if grupo_documento.solo_proceso or perms.TalentoHumano.can_gestioncompletasgi or not grupo_documento.solo_proceso and proceso == colaborador_proceso %}
                                                                                                                 {% if not perms.TalentoHumano.can_gestioncompletasgi %}
                                                                                                                     {% for pro in grupo_documento.proceso %}
-                                                                                                                        {% if pro == colaborador.proceso %}
+                                                                                                                        {% if pro == colaborador_proceso %}
                                                                                                                             {% include 'SGI/documentos/BotonesGestion/botonesArchivoEliminar.html' %}
                                                                                                                         {% endif %}
                                                                                                                     {% endfor %}
                                                                                                                 {% else %}
                                                                                                                     {% include 'SGI/documentos/BotonesGestion/botonesArchivoEliminar.html' %}
                                                                                                                 {% endif %}
-                                                                                                                {% if not grupo_documento.solo_proceso and proceso == colaborador.proceso and not perms.TalentoHumano.can_gestioncompletasgi %}
+                                                                                                                {% if not grupo_documento.solo_proceso and proceso == colaborador_proceso and not perms.TalentoHumano.can_gestioncompletasgi %}
                                                                                                                     {% include 'SGI/documentos/BotonesGestion/botonesArchivoEliminar.html' %}
                                                                                                                 {% endif %}
                                                                                                            {% endif %}

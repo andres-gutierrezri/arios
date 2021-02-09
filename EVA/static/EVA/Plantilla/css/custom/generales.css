@@ -35,6 +35,12 @@ input[type=checkbox] ~ label:before {
     color: #666666!important;
 }
 
+ input[type=checkbox]:checked + label:before {
+    background-color: #1ab3a3 !important;
+    border-color: #ccc !important;
+    color: #666666!important;
+}
+
 .seleccionEmpresaGlobal {
     height:60px;
     width:auto;
@@ -179,4 +185,7 @@ position: relative;
     background-image: url("../../img/custom/fondo.svg");
     background-size: cover;
     background-color: #11564f
+}
+.select2-container--default .select2-results__group {
+    color: var(--theme-secondary)
 }

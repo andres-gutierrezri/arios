@@ -10,9 +10,20 @@
             <option value="{{ item.0 }}" {% if item.0 == valor %} selected {% endif %}>{{ item.1 }}</option>
         {% endfor %}
     {% else %}
-        {% for item in lista %}
-            <option value="{{ item.campo_valor }}" {% if item.campo_valor == valor %} selected {% endif %}>{{ item.campo_texto }}</option>
-        {% endfor %}
+        {% if agrupar %}
+            {% regroup lista by agrupacion as lista_agrupada %}
+            {% for grupo in lista_agrupada %}
+                <optgroup label="{{ grupo.grouper }}">
+                    {% for item in grupo.list %}
+                        <option value="{{ item.campo_valor }}" {% if item.campo_valor == valor %} selected {% endif %}>{{ item.campo_texto }}</option>
+                    {% endfor %}
+                </optgroup>
+            {% endfor %}
+        {% else %}
+            {% for item in lista %}
+                <option value="{{ item.campo_valor }}" {% if item.campo_valor == valor %} selected {% endif %}>{{ item.campo_texto }}</option>
+            {% endfor %}
+        {% endif %}
     {% endif %}
 </select>
 {% if mensaje_validacion %}

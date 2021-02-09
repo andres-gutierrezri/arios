@@ -2,7 +2,8 @@ import calendar
 from datetime import datetime, date
 
 from django.contrib import messages
-from django.db.models import F
+from django.db.models import F, Value, CharField
+from django.db.models.functions import Concat
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -11,13 +12,13 @@ from Administracion.utils import get_id_empresa_global
 from Administracion.models import Proceso
 from EVA.General import app_datetime_now, app_date_now
 from EVA.General.conversiones import add_months, string_to_date, mes_numero_a_letras, obtener_fecha_inicio_de_mes, \
-    obtener_fecha_fin_de_mes
+    obtener_fecha_fin_de_mes, fijar_fecha_inicio_mes
 from EVA.views.index import AbstractEvaLoggedView
 from Financiero.models import FlujoCajaDetalle, SubTipoMovimiento, FlujoCajaEncabezado, EstadoFlujoCaja, CorteFlujoCaja
 from Financiero.models.flujo_caja import EstadoFCDetalle, TipoMovimiento
 from Financiero.parametros import ParametrosFinancieros
 from Proyectos.models import Contrato
-from TalentoHumano.models.colaboradores import ColaboradorContrato, Colaborador
+from TalentoHumano.models.colaboradores import ColaboradorContrato, Colaborador, ColaboradorProceso
 
 
 class FlujosDeCajaView(AbstractEvaLoggedView):
@@ -102,6 +103,13 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
             .annotate(fecha_corte=F('flujo_caja_enc__corteflujocaja__fecha_corte')) \
             .exclude(estado_id=EstadoFCDetalle.OBSOLETO)
 
+    eliminados = request.GET.get('eliminados', 'False') == 'True'
+
+    if eliminados:
+        movimientos = movimientos.exclude(estado_id__in=[EstadoFCDetalle.VIGENTE, EstadoFCDetalle.EDITADO])
+    else:
+        movimientos = movimientos.exclude(estado_id__in=[EstadoFCDetalle.ELIMINADO, EstadoFCDetalle.OBSOLETO])
+
     if flujo_caja_enc:
         flujo_caja_enc = flujo_caja_enc.first()
     else:
@@ -122,11 +130,11 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
     if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
         movimientos = movimientos.filter(subtipo_movimiento__protegido=False)
 
-    fecha_incial = app_datetime_now()
-    fecha_final = app_datetime_now()
+    fecha_incial = app_date_now()
+    fecha_final = app_date_now()
     if movimientos:
-        fecha_incial = movimientos.order_by('fecha_movimiento').first().fecha_movimiento
-        fecha_final = movimientos.order_by('fecha_movimiento').last().fecha_movimiento
+        fecha_incial = fijar_fecha_inicio_mes(movimientos.order_by('fecha_movimiento').first().fecha_movimiento)
+        fecha_final = fijar_fecha_inicio_mes(movimientos.order_by('fecha_movimiento').last().fecha_movimiento)
 
     meses = []
     anios = []
@@ -164,19 +172,24 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
 
     movimientos = movimientos.filter(
         fecha_movimiento__range=[obtener_fecha_inicio_de_mes(anio_seleccion, mes_seleccion),
-                                 obtener_fecha_fin_de_mes(anio_seleccion, mes_seleccion)])
+                                 obtener_fecha_fin_de_mes(anio_seleccion, mes_seleccion)])\
+        .annotate(agrupacion=Concat('subtipo_movimiento__tipo_movimiento__nombre',
+                                    Value(' - '),
+                                    'subtipo_movimiento__categoria_movimiento__nombre',
+                                    output_field=CharField()))
     ingresos = 0
     egresos = 0
     for movimiento in movimientos:
-        if movimiento.subtipo_movimiento.tipo_movimiento_id == TipoMovimiento.INGRESOS:
-            ingresos += movimiento.valor
-        else:
-            egresos += movimiento.valor
+        if movimiento.estado_id != EstadoFCDetalle.ELIMINADO:
+            if movimiento.subtipo_movimiento.tipo_movimiento_id == TipoMovimiento.INGRESOS:
+                ingresos += movimiento.valor
+            else:
+                egresos += movimiento.valor
 
     return render(request, 'Financiero/FlujoCaja/FlujoCajaGeneral/detalle_flujo_caja.html',
                   {'movimientos': movimientos, 'fecha': datetime.now(), 'contrato': contrato, 'proceso': proceso,
                    'menu_actual': menu_actual, 'fecha_minima_mes': fecha_minima_mes, 'tipo': tipo,
-                   'fecha_maxima_mes': fecha_maxima_mes, 'flujo_caja_enc': flujo_caja_enc,
+                   'fecha_maxima_mes': fecha_maxima_mes, 'flujo_caja_enc': flujo_caja_enc, 'eliminados': eliminados,
                    'base_template': base_template, 'ingresos': ingresos, 'egresos': egresos,
                    'anios': anios, 'meses': meses, 'anio_seleccion': anio_seleccion, 'mes_seleccion': mes_seleccion})
 
@@ -236,9 +249,11 @@ def guardar_movimiento(request, tipo=None, contrato=None, proceso=None, movimien
     fl_det.usuario_modifica = request.user
     fl_det.fecha_modifica = app_datetime_now()
 
-    if string_to_date(str(fl_det.fecha_movimiento)) < generar_fecha_minima(tipo):
-        messages.error(request, 'La fecha ingresada es menor a la fecha mínima permitida')
-        return redirect(reverse(ruta_reversa))
+    fecha_minima = generar_fecha_minima(tipo)
+    if fecha_minima:
+        if string_to_date(str(fl_det.fecha_movimiento)) < fecha_minima:
+            messages.error(request, 'La fecha ingresada es menor a la fecha mínima permitida')
+            return redirect(reverse(ruta_reversa))
 
     fecha_maxima = generar_fecha_maxima(tipo)
     if fecha_maxima:
@@ -248,10 +263,10 @@ def guardar_movimiento(request, tipo=None, contrato=None, proceso=None, movimien
 
     if flujo_detalle:
         update_fields = ['fecha_movimiento', 'subtipo_movimiento', 'valor', 'usuario_modifica',
-                         'fecha_modifica', 'comentarios', 'estado']
+                         'fecha_modifica', 'comentarios', 'estado', 'motivo_edicion']
 
-        comentarios = request.POST.get('comentarios', '')
-        crear_registro_historial(flujo_detalle, comentarios, EstadoFCDetalle.OBSOLETO)
+        motivo_edicion = request.POST.get('motivo', '')
+        crear_registro_historial(flujo_detalle, motivo_edicion, EstadoFCDetalle.OBSOLETO)
 
         fl_det.id = flujo_detalle.id
         fl_det.estado_id = EstadoFCDetalle.EDITADO
@@ -283,9 +298,9 @@ def eliminar_movimiento(request, flujo_detalle):
                              "mensaje": "No tiene permisos para realizar esta acción."})
 
     flujo_detalle.estado_id = EstadoFCDetalle.ELIMINADO
-    flujo_detalle.comentarios = request.POST['comentarios']
+    flujo_detalle.motivo_edicion = request.POST['motivo']
     flujo_detalle.fecha_modifica = app_datetime_now()
-    flujo_detalle.save(update_fields=['comentarios', 'estado', 'fecha_modifica'])
+    flujo_detalle.save(update_fields=['motivo_edicion', 'estado', 'fecha_modifica'])
 
     messages.success(request, 'Se ha eliminado el movimiento correctamente')
     return JsonResponse({"estado": "OK"})
@@ -303,6 +318,10 @@ def historial_movimiento(request, movimiento):
 
     historial = FlujoCajaDetalle.objects.filter(flujo_detalle=flujo_detalle.first())
     historial |= flujo_detalle
+    historial = historial.annotate(agrupacion=Concat('subtipo_movimiento__tipo_movimiento__nombre',
+                                    Value(' - '),
+                                    'subtipo_movimiento__categoria_movimiento__nombre',
+                                    output_field=CharField()))
     return render(request, 'Financiero/FlujoCaja/FlujoCajaGeneral/modal-historial.html',
                   {'historial': historial})
 
@@ -341,14 +360,11 @@ def datos_xa_render(request, opcion: str, tipo, fecha_minima_mes, flujo_detalle:
 
 
 def tiene_permisos_de_acceso(request, contrato=None, proceso=None):
-    validacion_adicional = False
-    if contrato:
-        if not ColaboradorContrato.objects \
-                .filter(contrato_id=contrato, colaborador__usuario=request.user):
-            validacion_adicional = True
-    else:
-        if not Colaborador.objects.filter(proceso_id=proceso, usuario=request.user):
-            validacion_adicional = True
+    validacion_adicional =\
+        not ColaboradorContrato.objects.filter(contrato_id=contrato, colaborador__usuario=request.user).exists() \
+        if contrato else \
+        not ColaboradorProceso.objects.filter(proceso_id=proceso, colaborador__usuario=request.user).exists()
+
     if validacion_adicional:
         if request.user.has_perms(['Financiero.can_gestion_flujos_de_caja']):
             return True
@@ -374,22 +390,28 @@ def valores_select_subtipos_movimientos(request, contrato, proceso):
         subtipos |= SubTipoMovimiento.objects.filter(estado=True, solo_proceso=True)
     if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
         subtipos = subtipos.filter(protegido=False)
-    return subtipos.values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
+    return subtipos.values(campo_valor=F('id'), campo_texto=F('nombre'))\
+        .annotate(agrupacion=Concat('tipo_movimiento__nombre',
+                                       Value(' - '),
+                                       'categoria_movimiento__nombre',
+                                       output_field=CharField())).\
+        order_by('agrupacion', 'nombre')
 
 
 REAL = 0
 PROYECCION = 1
 
 
-def crear_registro_historial(flujo_detalle, comentarios, estado):
+def crear_registro_historial(flujo_detalle, motivo_edicion, estado):
     FlujoCajaDetalle.objects \
         .create(fecha_movimiento=flujo_detalle.fecha_movimiento,
                 subtipo_movimiento_id=flujo_detalle.subtipo_movimiento_id,
                 valor=flujo_detalle.valor, tipo_registro=flujo_detalle.tipo_registro,
+                comentarios=flujo_detalle.comentarios,
                 usuario_crea=flujo_detalle.usuario_crea, usuario_modifica=flujo_detalle.usuario_modifica,
                 flujo_caja_enc=flujo_detalle.flujo_caja_enc, fecha_crea=flujo_detalle.fecha_crea,
                 fecha_modifica=app_datetime_now(), flujo_detalle=flujo_detalle,
-                estado_id=estado, comentarios=comentarios)
+                estado_id=estado, motivo_edicion=motivo_edicion)
 
 
 def validar_permisos(request, permiso):
@@ -408,11 +430,15 @@ def generar_fecha_minima(tipo):
     fecha_minima = date(app_date_now().year, app_date_now().month, 1)
     param_fc = ParametrosFinancieros.get_params_flujo_caja()
     if tipo == REAL:
-        if app_date_now().day <= param_fc.get_corte_ejecucion():
+        if app_date_now().day <= param_fc.get_corte_ejecucion() != 0:
             fecha_minima = add_months(date(app_date_now().year, app_date_now().month, 1), -1)
+        elif param_fc.get_corte_ejecucion() == 0:
+            fecha_minima = False
     else:
-        if app_date_now().day > param_fc.get_corte_alimentacion():
+        if app_date_now().day > param_fc.get_corte_alimentacion() != 0:
             fecha_minima = add_months(date(app_date_now().year, app_date_now().month, 1), 1)
+        elif param_fc.get_corte_alimentacion() == 0:
+            fecha_minima = False
     return fecha_minima
 
 
@@ -420,7 +446,10 @@ def generar_fecha_maxima(tipo):
     if tipo == PROYECCION:
         fecha_maxima = False
     else:
-        fecha_maxima = app_date_now()
+        if ParametrosFinancieros.get_params_flujo_caja().get_corte_ejecucion() == 0:
+            fecha_maxima = False
+        else:
+            fecha_maxima = app_date_now()
     return fecha_maxima
 
 
@@ -435,5 +464,7 @@ def obtener_dia_maximo(parametro):
 
 def validar_fecha_accion(flujo_detalle):
     fecha_minima = generar_fecha_minima(flujo_detalle.tipo_registro)
-    if flujo_detalle.fecha_movimiento.date() >= fecha_minima:
+    if not fecha_minima:
+        return True
+    elif flujo_detalle.fecha_movimiento.date() >= fecha_minima:
         return True
