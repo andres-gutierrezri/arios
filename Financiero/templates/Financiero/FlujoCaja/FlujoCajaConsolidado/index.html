@@ -446,25 +446,25 @@
                                             <tbody>
                                                 <tr>
                                                 {% if comparativo %}
-                                                    <td>{{ totales.total_ingresos_real }}</td>
-                                                    <td>{{ totales.total_costos_real }}</td>
-                                                    <td>{{ totales.total_gastos_real }}</td>
-                                                    <td>{{ totales.diferencia_ingresos_egresos_real }}</td>
-                                                    <td>{{ totales.total_ingresos_proyectado }}</td>
-                                                    <td>{{ totales.total_costos_proyectado }}</td>
-                                                    <td>{{ totales.total_gastos_proyectado }}</td>
-                                                    <td>{{ totales.diferencia_ingresos_egresos_proyectado }}</td>
+                                                    <td>{{ totales.total_ingresos_real|intcomma }}</td>
+                                                    <td>{{ totales.total_costos_real|intcomma }}</td>
+                                                    <td>{{ totales.total_gastos_real|intcomma }}</td>
+                                                    <td>{{ totales.diferencia_ingresos_egresos_real|intcomma }}</td>
+                                                    <td>{{ totales.total_ingresos_proyectado|intcomma }}</td>
+                                                    <td>{{ totales.total_costos_proyectado|intcomma }}</td>
+                                                    <td>{{ totales.total_gastos_proyectado|intcomma }}</td>
+                                                    <td>{{ totales.diferencia_ingresos_egresos_proyectado|intcomma }}</td>
                                                 {% else %}
                                                     {% if valor.tipos_flujos_caja == 0 %}
-                                                        <td>{{ totales.total_ingresos_real }}</td>
-                                                        <td>{{ totales.total_costos_real }}</td>
-                                                        <td>{{ totales.total_gastos_real }}</td>
-                                                        <td>{{ totales.diferencia_ingresos_egresos_real }}</td>
+                                                        <td>{{ totales.total_ingresos_real|intcomma }}</td>
+                                                        <td>{{ totales.total_costos_real|intcomma }}</td>
+                                                        <td>{{ totales.total_gastos_real|intcomma }}</td>
+                                                        <td>{{ totales.diferencia_ingresos_egresos_real|intcomma }}</td>
                                                     {% else %}
-                                                        <td>{{ totales.total_ingresos_proyectado }}</td>
-                                                        <td>{{ totales.total_costos_proyectado }}</td>
-                                                        <td>{{ totales.total_gastos_proyectado }}</td>
-                                                        <td>{{ totales.diferencia_ingresos_egresos_proyectado }}</td>
+                                                        <td>{{ totales.total_ingresos_proyectado|intcomma }}</td>
+                                                        <td>{{ totales.total_costos_proyectado|intcomma }}</td>
+                                                        <td>{{ totales.total_gastos_proyectado|intcomma }}</td>
+                                                        <td>{{ totales.diferencia_ingresos_egresos_proyectado|intcomma }}</td>
                                                     {% endif %}
                                                 {% endif %}
                                                 </tr>
