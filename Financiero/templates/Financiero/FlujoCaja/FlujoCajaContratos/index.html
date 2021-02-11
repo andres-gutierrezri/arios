@@ -57,7 +57,7 @@
                                                             <td>{{ contrato.anho}}</td>
                                                             <td>{{ contrato.fecha_inicio|date:'Y-m-d' }}</td>
                                                             <td>{{ contrato.fecha_terminacion|date:'Y-m-d' }}</td>
-                                                            <td class="t-a-e">{{ contrato.valor|intcomma }}</td>
+                                                            <td class="t-a-e">{{ contrato.valor|intcomma:False }}</td>
                                                             <td><span class="badge badge-primary">{{ contrato.flujocajaencabezado_set.first.estado }}</span></td>
                                                             <td>
                                                                 <a href="#" onclick="guardarRutaLocal('{% url 'Financiero:flujo-caja-contratos-detalle' contrato.id REAL fecha.year fecha.month %}')"><span class="badge badge-primary fw-300 ml-auto">Real</span><br></a>

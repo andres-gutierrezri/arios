@@ -34,7 +34,7 @@
                                 <td hidden>{{ movimiento.id }}</td>
                                 <td>{{ movimiento.fecha_movimiento|date:'Y-m-d' }}</td>
                                 <td><strong>{{ movimiento.subtipo_movimiento }}</strong><br>{{ movimiento.agrupacion }}</td>
-                                <td>{{ movimiento.valor|intcomma }}</td>
+                                <td>{{ movimiento.valor|intcomma:False }}</td>
                                 <td>{{ movimiento.usuario_modifica }}</td>
                                 <td>{{ movimiento.fecha_crea|date:'Y-m-d' }}</td>
                                 <td>{{ movimiento.fecha_modifica|date:'Y-m-d' }}</td>

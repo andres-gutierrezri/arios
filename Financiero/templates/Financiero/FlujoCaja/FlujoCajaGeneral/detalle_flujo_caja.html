@@ -38,12 +38,12 @@
                             {% if not eliminados %}
                             <div class="col-md-5">
                                 <h3>
-                                    <b>Total Ingresos: </b>{{ ingresos|intcomma }}
+                                    <b>Total Ingresos: </b>{{ ingresos|intcomma:False }}
                                 </h3>
                             </div>
                             <div class="col-md-5">
                                 <h3>
-                                    <b>Total Egresos: </b>{{ egresos|intcomma }}
+                                    <b>Total Egresos: </b>{{ egresos|intcomma:False }}
                                 </h3>
                             </div>
                             {% endif %}
@@ -98,7 +98,7 @@
                                                         <tr>
                                                             <td>{{ movimiento.fecha_movimiento|date:'Y-m-d' }}</td>
                                                             <td><strong>{{ movimiento.subtipo_movimiento }}</strong><br>{{ movimiento.agrupacion }}</td>
-                                                            <td class="t-a-e">{{ movimiento.valor|intcomma }}</td>
+                                                            <td class="t-a-e">{{ movimiento.valor|intcomma:False }}</td>
                                                             <td>{{ movimiento.comentarios | default_if_none:'' }}</td>
                                                             <td>{{ movimiento.fecha_crea|date:'Y-m-d' }}</td>
                                                             <td>{{ movimiento.fecha_modifica|date:'Y-m-d' }}</td>
