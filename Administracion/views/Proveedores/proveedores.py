@@ -75,9 +75,9 @@ class PerfilInformacionBasicaView(AbstractEvaLoggedProveedorView):
         update_fields = ['nombre', 'tipo_identificacion_id', 'identificacion', 'ciudad', 'tipo_persona',
                          'telefono_movil_principal', 'telefono_fijo_auxiliar', 'telefono_movil_auxiliar',
                          'correo_principal', 'correo_auxiliar', 'fecha_inicio_actividad', 'fecha_constitucion',
-                         'telefono_fijo_principal', 'estado_proveedor']
+                         'telefono_fijo_principal', 'estado_proveedor', 'direccion']
 
-        exclude = ['centro_poblado', 'direccion', 'telefono']
+        exclude = ['centro_poblado', 'telefono']
 
         proveedor = filtro_estado_proveedor(request)
 
@@ -86,6 +86,7 @@ class PerfilInformacionBasicaView(AbstractEvaLoggedProveedorView):
         proveedor.identificacion = request.POST.get('identificacion', '')
         proveedor.digito_verificacion = request.POST.get('digito_verificacion', '')
         proveedor.ciudad_id = request.POST.get('municipio', '')
+        proveedor.direccion = request.POST.get('direccion', '')
         proveedor.estado_proveedor = EstadosProveedor.DILIGENCIAMIENTO_PERFIL
         proveedor.tipo_persona = request.POST.get('tipo_persona', '')
 
@@ -832,6 +833,7 @@ def generar_datos_informacion_basica(proveedor):
                 '{0} {1}'.format(proveedor.tipo_identificacion.sigla, proveedor.identificacion)},
             {'nombre_campo': 'Ubicación', 'valor_campo': proveedor.ciudad.obtener_mun_dpto_pais()
             if proveedor.ciudad else ''},
+            {'nombre_campo': 'Dirección', 'valor_campo': proveedor.direccion},
             {'nombre_campo': 'Teléfono Fijo Principal', 'valor_campo': proveedor.telefono_fijo_principal},
             {'nombre_campo': 'Teléfono Movil Principal', 'valor_campo': proveedor.telefono_movil_principal},
             {'nombre_campo': 'Teléfono Fijo Auxiliar', 'valor_campo': proveedor.telefono_fijo_auxiliar},
