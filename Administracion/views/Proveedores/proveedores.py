@@ -1022,8 +1022,12 @@ def generar_datos_proveedor(proveedor):
     elif actividades_economicas:
         completado_ae = True
 
+    completo_info_basica = False
+    if not proveedor.direccion and proveedor.estado_proveedor == EstadosProveedor.ACTIVO or proveedor.direccion:
+        completo_info_basica = True
+
     total = 0
-    total = total + 10 if proveedor.ciudad else total
+    total = total + 10 if completo_info_basica else total
     total = total + 10 if informacion_basica else total
     total = total + 20 if completado_ae else total
     total = total + 20 if entidades_bancarias else total
@@ -1034,7 +1038,7 @@ def generar_datos_proveedor(proveedor):
 
     informacion_basica = {'id': 1, 'nombre': 'Información Básica', 'modificado': 1 in cambios,
                           'url': '/administracion/proveedor/perfil/informacion-basica',
-                          'datos': informacion_basica, 'completo': proveedor.ciudad is not None}
+                          'datos': informacion_basica, 'completo': completo_info_basica}
     actividades_economicas = {'id': 2, 'nombre': 'Actividades Económicas', 'modificado': 2 in cambios,
                               'url': '/administracion/proveedor/perfil/actividades-economicas',
                               'datos': actividades_economicas, 'completo': completado_ae}
