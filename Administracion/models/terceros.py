@@ -109,6 +109,7 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     modificaciones = models.TextField(verbose_name='Modificaciones', null=True, blank=True)
     bienes_servicios = models.TextField(verbose_name='Bienes y Servicios que Ofrece', null=True, blank=True)
     es_vigente = models.BooleanField(verbose_name='Es Vigente', null=False, blank=False)
+    consecutivo_cliente = models.IntegerField(verbose_name='Consecutivo Cliente', null=True, blank=True)
 
     def __str__(self):
         return self.nombre
@@ -139,7 +140,7 @@ class Tercero(models.Model, ModelDjangoExtensiones):
         tercero.estado = datos.get('estado', 'False') == 'True'
         tercero.empresa_id = datos.get('empresa', '')
         tercero.fecha_modificacion = datetime.now()
-        tercero.tipo_tercero_id = datos.get('tipo_tercero_id', '')
+        tercero.tipo_tercero_id = int(datos.get('tipo_tercero_id', ''))
         tercero.centro_poblado_id = datos.get('centro_poblado_id', '')
         tercero.telefono = datos.get('telefono', '')
         tercero.fax = datos.get('fax', '')

@@ -26,6 +26,7 @@ class TipoDocumento (models.Model):
     XML_NOTA_DEBITO = 6
     ZIP_ENVIO_DIAN = 7
     XML_ATTACHED_DOCUMENT = 8
+    CLIENTE = 9
 
 
 class ConsecutivoDocumento (models.Model):
