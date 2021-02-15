@@ -1,4 +1,5 @@
 {% extends 'Administracion/_common/base_administracion.html' %}
+{% load eva_tags %}
 {% load static %}
 <title>{% block titulo %}Terceros{% endblock %}</title>
 {% block styles %}
@@ -52,7 +53,11 @@
                                             <tbody>
                                                 {% for tercero in terceros %}
                                                     <tr>
-                                                        <td>{{ tercero.nombre }}</td>
+                                                        {% if tercero.tipo_tercero_id == 1 %}
+                                                            <td>{{ tercero.consecutivo_cliente|ceros_izquierda }} - {{ tercero.nombre }}</td>
+                                                        {% else %}
+                                                            <td>{{ tercero.nombre }}</td>
+                                                        {% endif %}
                                                         <td>{{ tercero.tipo_identificacion.sigla }} {{ tercero.identificacion }}{% if tercero.tipo_identificacion.sigla == 'NIT' and tercero.digito_verificacion %}-{{ tercero.digito_verificacion }}{% endif %}</td>
 
                                                         <td>{{ tercero.empresa }}</td>
