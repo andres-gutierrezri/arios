@@ -11,7 +11,7 @@ from django.views import View
 
 from Administracion.enumeraciones import TipoPersona, RegimenFiscal, ResponsabilidadesFiscales, Tributos
 from Administracion.models import Tercero, TipoIdentificacion, TipoTercero, CentroPoblado, Empresa, Departamento, \
-    Municipio
+    Municipio, ConsecutivoDocumento, TipoDocumento
 from Administracion.utils import get_id_empresa_global
 from EVA.views.index import AbstractEvaLoggedView
 from Notificaciones.models.models import EventoDesencadenador
@@ -36,6 +36,9 @@ class TerceroCrearView(AbstractEvaLoggedView):
         tercero = Tercero.from_dictionary(request.POST)
         tercero.empresa_id = get_id_empresa_global(request)
         tercero.estado = True
+        if tercero.tipo_tercero_id == TipoTercero.CLIENTE:
+            tercero.consecutivo_cliente = ConsecutivoDocumento.get_consecutivo_documento(TipoDocumento.CLIENTE,
+                                                                                         tercero.empresa_id)
         try:
             tercero.full_clean()
         except ValidationError as errores:
