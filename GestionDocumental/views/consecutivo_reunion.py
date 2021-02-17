@@ -49,7 +49,7 @@ class ConsecutivoReunionView(AbstractEvaLoggedView):
                        'buscar': search,
                        'coincidencias': coincidencias,
                        'total': total,
-                       'menu_actual': 'consecutivos-reuniones',
+                       'menu_actual': 'consecutivos-reunion',
                        'id_filtro': id})
 
 
@@ -57,7 +57,7 @@ class ConsecutivoReunionesCrearView(AbstractEvaLoggedView):
     def get(self, request):
         return render(request, 'GestionDocumental/ConsecutivosReuniones/crear.html',
                       {'fecha': datetime.datetime.now(),
-                       'menu_actual': 'consecutivos-reuniones'})
+                       'menu_actual': 'consecutivos-reunion'})
 
     def post(self, request):
         consecutivo = ConsecutivoReunion.from_dictionary(request.POST)
@@ -78,7 +78,7 @@ class ConsecutivoReunionesCrearView(AbstractEvaLoggedView):
 
 class ConsecutivoReunionesEliminarView(AbstractEvaLoggedView):
     def post(self, request, id):
-        consecutivo = ConsecutivoOficio.objects.get(id=id)
+        consecutivo = ConsecutivoReunion.objects.get(id=id)
         body_unicode = request.body.decode('utf-8')
         datos_registro = json.loads(body_unicode)
 
@@ -95,4 +95,4 @@ class ConsecutivoReunionesEliminarView(AbstractEvaLoggedView):
 
         except IntegrityError:
             return JsonResponse({"estado": "error",
-                                 "mensaje": 'Ha ocurrido un erro al realizar la acción'})
+                                 "mensaje": 'Ha ocurrido un error al realizar la acción'})
