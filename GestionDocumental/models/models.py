@@ -97,6 +97,7 @@ class ConsecutivoReunion(models.Model):
     empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa', blank=False, null=False)
     fecha_crea = models.DateField(verbose_name='Fecha de Creación', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', blank=False, null=False)
+    justificacion = models.CharField(max_length=100, verbose_name='Justificacion', blank=True, null=True)
 
     def __str__(self):
         return self.codigo
