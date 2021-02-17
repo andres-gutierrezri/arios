@@ -47,34 +47,27 @@
                                                     <tr>
                                                         <th class="min-w-200">Código</th>
                                                         <th class="min-w-200">Fecha</th>
-                                                        <th>Contrato</th>
-                                                        <th>Detalle</th>
-                                                        <th>Destinatario</th>
+                                                        <th>Tema de la Reunión</th>
+                                                        <th>Fecha de la Reunión</th>
+                                                        <th>Descripción</th>
                                                         <th>Usuario</th>
-                                                        <th>Justificación</th>
                                                         <th>Estado</th>
                                                         <th>Acción</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     {% for consecutivo in consecutivos %}
+                                                        {% if consecutivo == consecutivos.last and id_filtro == 1 %}
+                                                            Asereje
+                                                        {% endif %}
                                                         <tr {% if consecutivo == consecutivos.last and id_filtro == 1 and consecutivo.usuario == request.user %}style="background: #fffaee;"{% endif %}>
                                                             <td>{{ consecutivo.codigo }}</td>
-                                                            <td>{{ consecutivo.fecha | date:'Y-m-d'}}</td>
-                                                            <td>{% if consecutivo.contrato %}
-                                                                    {{ consecutivo.contrato}} - {{ consecutivo.contrato.cliente }}
-                                                                {% else %}
-                                                                    {% for col in colaborador %}
-                                                                        {% if col.usuario_id == consecutivo.usuario.id %}
-                                                                            {{ col.proceso__sigla }}
-                                                                        {% endif %}
-                                                                    {% endfor %}
-                                                                {% endif %}
-                                                            </td>
-                                                            <td>{{ consecutivo.detalle}}</td>
-                                                            <td>{{ consecutivo.destinatario }}</td>
+                                                            <td>{{ consecutivo.fecha_crea | date:'Y-m-d' }}</td>
+
+                                                            <td>{{ consecutivo.tema }}</td>
+                                                            <td>{{ consecutivo.fecha | date:'Y-m-d' }}</td>
+                                                            <td>{{ consecutivo.descripcion }}</td>
                                                             <td>{{ consecutivo.usuario.get_full_name }}</td>
-                                                            <td>{% if consecutivo.justificacion %}{{ consecutivo.justificacion }}{% endif %}</td>
                                                             <td>
                                                                 {% if consecutivo.estado %}
                                                                     <span class="badge badge-primary">Vigente</span>
