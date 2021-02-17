@@ -81,16 +81,16 @@
                                         <div class="contenedor-con-borde">
                                             <h4>Ubicación</h4>
                                             <div class="form-row">
-                                                <div class="form-group col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                                                <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
                                                     {% select_tag paises 'pais' 'Seleccione un país' texto_label="País" required="" value=proveedor.ciudad.departamento.pais_id  mensaje_validacion='Por favor seleccione un país' invalido=errores.pais %}
                                                 </div>
-                                                <div class="form-group col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                                                <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
                                                     {% select_tag departamentos 'departamento' 'Seleccione un departamento' texto_label="Departamento" required="" value=proveedor.ciudad.departamento_id  mensaje_validacion='Por favor seleccione un departamento' %}
                                                 </div>
-                                                <div class="form-group col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                                                <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
                                                     {% select_tag municipios 'municipio' 'Seleccione un municipio' texto_label="Municipio" required="" value=proveedor.ciudad_id  mensaje_validacion='Por favor seleccione un departamento' %}
                                                 </div>
-                                                <div class="form-group col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                                                <div class="form-group col-xl-12 col-lg-12 col-md-6 col-sm-6">
                                                     {% input_text_tag 'direccion' 'Dirección' placeholder="Ingrese la dirección" maxlength="100" required="" value=proveedor.direccion mensaje_validacion='Por favor ingrese una dirección' invalido=errores.direccion %}
                                                 </div>
                                             </div>
