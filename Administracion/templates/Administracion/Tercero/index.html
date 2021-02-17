@@ -54,7 +54,7 @@
                                                 {% for tercero in terceros %}
                                                     <tr>
                                                         {% if tercero.tipo_tercero_id == 1 %}
-                                                            <td>{{ tercero.consecutivo_cliente|ceros_izquierda }} - {{ tercero.nombre }}</td>
+                                                            <td>{{ tercero.consecutivo_cliente | stringformat:"03d" }} - {{ tercero.nombre }}</td>
                                                         {% else %}
                                                             <td>{{ tercero.nombre }}</td>
                                                         {% endif %}
