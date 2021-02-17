@@ -55,10 +55,10 @@
                                                             <div class="col-md-6">
                                                                 {% select_tag tipos_identificacion 'tipo_identificacion_id' 'Seleccione un tipo de identificación' texto_label="Tipo de Identificación" value=tercero.tipo_identificacion_id required="" mensaje_validacion='Por favor seleccione un tipo de identificación.' invalido=errores.tipo_identificacion %}
                                                             </div>
-                                                            <div class={% if opcion == 'editar' and 'NIT' in tercero.tipo_identificacion.sigla %} "col-md-5" {% else %} "col-md-6" {% endif %}>
+                                                            <div class="{% if 'NIT' in tercero.tipo_identificacion.sigla %} col-md-5 {% else %} col-md-6 {% endif %}">
                                                                 {% input_text_tag 'identificacion' 'Identificación' placeholder='Ingrese el número de identificación' required='' maxlength='15' value=tercero.identificacion mensaje_validacion='Por favor digite la identificación' invalido=errores.identificacion %}
                                                             </div>
-                                                            {% if opcion == 'editar' and 'NIT' in tercero.tipo_identificacion.sigla %}
+                                                            {% if 'NIT' in tercero.tipo_identificacion.sigla %}
                                                                 <div class="col-md-1">
                                                                     {% input_number_tag 'digito_verificacion' 'DV' placeholder='Ingrese el DV' required='' min='0' max='9' value=tercero.digito_verificacion mensaje_validacion='Por favor ingrese el digito de verificación' invalido=errores.digito_verificacion %}
                                                                 </div>
