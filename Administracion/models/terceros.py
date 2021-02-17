@@ -136,7 +136,7 @@ class Tercero(models.Model, ModelDjangoExtensiones):
         tercero = Tercero()
         tercero.nombre = datos.get('nombre', '')
         tercero.identificacion = datos.get('identificacion', '')
-        tercero.tipo_identificacion_id = datos.get('tipo_identificacion_id', '')
+        tercero.tipo_identificacion_id = int(datos.get('tipo_identificacion_id', ''))
         tercero.estado = datos.get('estado', 'False') == 'True'
         tercero.empresa_id = datos.get('empresa', '')
         tercero.fecha_modificacion = datetime.now()
@@ -148,8 +148,8 @@ class Tercero(models.Model, ModelDjangoExtensiones):
         tercero.digito_verificacion = datos.get('digito_verificacion')
         tercero.es_vigente = True
         if int(tercero.tipo_tercero_id) == TipoTercero.CLIENTE:
-            tercero.tipo_persona = datos.get('tipo_persona')
-            tercero.regimen_fiscal = datos.get('regimen_fiscal')
+            tercero.tipo_persona = int(datos.get('tipo_persona'))
+            tercero.regimen_fiscal = int(datos.get('regimen_fiscal'))
             responsabilidades = datos.getlist('responsabilidades')
             tercero.responsabilidades_fiscales = ';'.join(responsabilidades) if responsabilidades else ''
             tercero.tributos = datos.get('tributo')
