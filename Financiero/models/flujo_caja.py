@@ -126,6 +126,16 @@ class FlujoCajaEncabezadoManager(ManagerGeneral):
     def get_flujos_x_proceso(self, request) -> QuerySet:
         return super().get_queryset().filter(proceso__isnull=False, proceso__empresa_id=get_id_empresa_global(request))
 
+    def get_id_flujos_contratos(self, request) -> list:
+        return list(super().get_queryset()
+                    .filter(contrato__isnull=False, contrato__empresa_id=get_id_empresa_global(request))
+                    .values_list('id', flat=True))
+
+    def get_id_flujos_procesos(self, request) -> list:
+        return list(super().get_queryset()
+                    .filter(proceso__isnull=False, proceso__empresa_id=get_id_empresa_global(request))
+                    .values_list('id', flat=True))
+
 
 class FlujoCajaEncabezado(models.Model):
     objects = FlujoCajaEncabezadoManager()

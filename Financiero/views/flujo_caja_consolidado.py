@@ -1,14 +1,15 @@
+import copy
 import json
 from datetime import datetime
 
 from django.contrib import messages
-from django.db.models import F
+from django.db.models import Sum, DateField
+from django.db.models.functions import TruncMonth
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
-from EVA.General import app_date_now
-from EVA.General.conversiones import obtener_fecha_fin_de_mes, obtener_fecha_inicio_de_mes, add_months, \
-    mes_numero_a_letras
+from EVA.General import app_date_now, app_datetime_now
+from EVA.General.conversiones import add_months, mes_numero_a_letras, fijar_fecha_inicio_mes
 from EVA.views.index import AbstractEvaLoggedView
 from Financiero.models import FlujoCajaEncabezado
 from Financiero.models.flujo_caja import SubTipoMovimiento, FlujoCajaDetalle, EstadoFCDetalle, CategoriaMovimiento, \
@@ -28,74 +29,47 @@ class FlujoCajaConsolidadoView(AbstractEvaLoggedView):
         if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
             return redirect(reverse('eva-index'))
         datos = datos_formulario_consolidado(request)
-        if datos['fecha_desde']:
-            fecha_desde = datos['fecha_desde']
-        else:
-            fecha_desde = datos['fecha_min']
+        fecha_desde = datos['fecha_desde'] if datos['fecha_desde'] else datos['fecha_min']
+        fecha_hasta = datos['fecha_hasta'] if datos['fecha_hasta'] else datos['fecha_max']
 
-        if datos['fecha_hasta']:
-            fecha_hasta = datos['fecha_hasta']
-        else:
-            fecha_hasta = datos['fecha_max']
+        tipos_flujos_caja = [datos['tipos_flujos_caja']] if '' != datos['tipos_flujos_caja'] != 2 else [0, 1]
 
-        tipos_flujos_caja = [0, 1]
-        if datos['tipos_flujos_caja'] != '':
-            if datos['tipos_flujos_caja'] != 2:
-                tipos_flujos_caja = [datos['tipos_flujos_caja']]
+        estados = datos['estados'] if datos['estados'] else [1, 2, 4]
 
-        if datos['estados']:
-            estados = datos['estados']
-        else:
-            estados = [1, 2, 4]
+        subtipos = datos['subtipos'] if datos['subtipos'] else list(SubTipoMovimiento.objects.all()
+                                                                    .values_list('id', flat=True))
 
-        if datos['subtipos']:
-            subtipos = datos['subtipos']
-        else:
-            subtipos = SubTipoMovimiento.objects.all()
-
-        if datos['categorias']:
-            categorias = datos['categorias']
-        else:
-            categorias = CategoriaMovimiento.objects.all()
+        categorias = datos['categorias'] if datos['categorias'] else list(CategoriaMovimiento.objects.all()
+                                                                          .values_list('id', flat=True))
 
         con_pro = []
         if datos['lista_contratos']:
-            for valor in datos['lista_contratos']:
-                con_pro.append(valor)
-        else:
-            if not datos['lista_procesos']:
-                for valor in FlujoCajaEncabezado.objects.get_flujos_x_contrato(request):
-                    con_pro.append(valor.id)
+            con_pro.extend(datos['lista_contratos'])
+        elif not datos['lista_procesos']:
+            con_pro.extend(FlujoCajaEncabezado.objects.get_id_flujos_contratos(request))
 
         if datos['lista_procesos']:
-            for valor in datos['lista_procesos']:
-                con_pro.append(valor)
-        else:
-            if not datos['lista_contratos']:
-                for valor in FlujoCajaEncabezado.objects.get_flujos_x_proceso(request):
-                    con_pro.append(valor.id)
-
+            con_pro.extend(datos['lista_procesos'])
+        elif not datos['lista_contratos']:
+            con_pro.extend(FlujoCajaEncabezado.objects.get_id_flujos_procesos(request))
         movimientos = FlujoCajaDetalle.objects\
             .filter(estado_id__in=estados, flujo_caja_enc__in=con_pro,
                     fecha_movimiento__range=[fecha_desde, fecha_hasta], tipo_registro__in=tipos_flujos_caja,
                     subtipo_movimiento_id__in=subtipos,
                     subtipo_movimiento__categoria_movimiento__in=categorias)\
             .exclude(estado_id=EstadoFCDetalle.OBSOLETO)
-
         if not movimientos:
             messages.warning(request, 'No se encontraron concidencias')
+
+        datos_filtro = {'estados': estados, 'ids_flujos': con_pro, 'fecha_desde': fecha_desde,
+                        'fecha_hasta': fecha_hasta, 'tipos_registro': tipos_flujos_caja, 'subtipos': subtipos,
+                        'categorias': categorias}
         return render(request, 'Financiero/FlujoCaja/FlujoCajaConsolidado/index.html',
-                      datos_xa_render(request, datos, movimientos))
+                      datos_xa_render(request, datos, movimientos, datos_filtro))
 
 
-def datos_xa_render(request, datos_formulario=None, movimientos=None):
-    procesos_contratos = FlujoCajaDetalle.objects.all().order_by('fecha_movimiento')
-    if procesos_contratos:
-        fecha_min = procesos_contratos.first().fecha_movimiento
-        fecha_max = procesos_contratos.last().fecha_movimiento
-    else:
-        fecha_min = ''
-        fecha_max = ''
+def datos_xa_render(request, datos_formulario=None, movimientos=None, datos_filtro: {} = None):
+    fecha_min, fecha_max = obtener_fechas_min_max_fc('')
 
     fecha_min_max = json.dumps({'fecha_min': str(fecha_min),
                                 'fecha_max': str(fecha_max)})
@@ -150,11 +124,13 @@ def datos_xa_render(request, datos_formulario=None, movimientos=None):
         datos['valor'] = {'estados': [1, 2]}
 
     if movimientos:
-        consolidado = consolidado_ingresos_costos_gastos(movimientos)
+        consolidado = consolidado_ingresos_costos_gastos(movimientos, datos_filtro)
         datos['movimientos'] = consolidado['consolidado']
         datos['totales'] = consolidado['totales']
         datos['meses'] = consolidado['lista_meses']
 
+        # Se deja inicialmente como se estaba calculando, pero se dbe evaluar la posibilidad de hacer un refactor
+        # y hacer los cálculos en la función que realiza el consolidado.
         total_mes_a_mes = []
         for mes in datos['meses']:
             suma_mes_real = 0
@@ -176,6 +152,7 @@ def datos_xa_render(request, datos_formulario=None, movimientos=None):
                                     'valor_proyectado': suma_mes_proyectado})
 
             datos['totales_mes_a_mes'] = total_mes_a_mes
+
     return datos
 
 
@@ -206,42 +183,20 @@ def datos_formulario_consolidado(request):
     tipos_flujos_caja = request.POST.get('tipos_flujos_caja_id', '')
     estados = request.POST.getlist('estados[]', [])
 
-    lista_procesos = []
-    for pro in procesos:
-        lista_procesos.append(int(pro))
-
-    lista_contratos = []
-    for con in contratos:
-        lista_contratos.append(int(con))
-
-    if estados:
-        lista_estados = []
-        for y in estados:
-            lista_estados.append(int(y))
-    else:
-        lista_estados = [1, 2]
-
-    lista_subtipos = []
-    for z in subtipos:
-        lista_subtipos.append(int(z))
-
-    lista_categorias = []
-    for cat in categorias:
-        lista_categorias.append(int(cat))
+    procesos = list(map(int, procesos))
+    contratos = list(map(int, contratos))
+    estados = list(map(int, estados)) if estados else [1, 2]
+    subtipos = list(map(int, subtipos))
+    categorias = list(map(int, categorias))
 
     if tipos_flujos_caja:
         tipos_flujos_caja = int(tipos_flujos_caja)
 
-    movimientos = FlujoCajaDetalle.objects.all().order_by('fecha_movimiento')
-    if movimientos:
-        fecha_min = movimientos.first().fecha_movimiento
-        fecha_max = movimientos.last().fecha_movimiento
-    else:
-        fecha_min = datetime.now()
-        fecha_max = datetime.now()
-    return {'lista_procesos': lista_procesos, 'lista_contratos': lista_contratos, 'fecha_desde': fecha_desde,
-            'fecha_hasta': fecha_hasta, 'subtipos': lista_subtipos, 'tipos_flujos_caja': tipos_flujos_caja,
-            'estados': lista_estados, 'fecha_min': fecha_min, 'fecha_max': fecha_max, 'categorias': lista_categorias}
+    fecha_min, fecha_max = obtener_fechas_min_max_fc(app_datetime_now())
+
+    return {'lista_procesos': procesos, 'lista_contratos': contratos, 'fecha_desde': fecha_desde,
+            'fecha_hasta': fecha_hasta, 'subtipos': subtipos, 'tipos_flujos_caja': tipos_flujos_caja,
+            'estados': estados, 'fecha_min': fecha_min, 'fecha_max': fecha_max, 'categorias': categorias}
 
 
 def obtener_fecha_minima(objeto):
@@ -249,10 +204,7 @@ def obtener_fecha_minima(objeto):
         primera_fecha = objeto.order_by('fecha_movimiento').first().fecha_movimiento.date()
     else:
         primera_fecha = app_date_now()
-    for x in objeto:
-        if x.fecha_movimiento.date() < primera_fecha:
-            primera_fecha = x.fecha_movimiento.date()
-    return obtener_fecha_inicio_de_mes(primera_fecha.year, primera_fecha.month)
+    return fijar_fecha_inicio_mes(primera_fecha)
 
 
 def obtener_fecha_maxima(objeto):
@@ -260,273 +212,197 @@ def obtener_fecha_maxima(objeto):
         ultima_fecha = objeto.order_by('fecha_movimiento').last().fecha_movimiento.date()
     else:
         ultima_fecha = app_date_now()
-    for x in objeto:
-        if x.fecha_movimiento.date() > ultima_fecha:
-            ultima_fecha = x.fecha_movimiento.date()
-    return ultima_fecha
+    return fijar_fecha_inicio_mes(ultima_fecha)
 
 
-def consolidado_ingresos_costos_gastos(objeto):
-    fecha_minima = obtener_fecha_minima(objeto)
-    fecha_maxima = obtener_fecha_maxima(objeto)
+def consolidado_ingresos_costos_gastos(movimientos, datos_filtro):
+    """
+    Genera el consolidado de flujos de caja según los filtros especificados.
+    :param movimientos: Movimientos a los que les aplica el filtro. (Se debe evaluar si aplica dejarlo, solo se esta
+    usando para determinar la fecha mínima y máxima).
+    :param datos_filtro: datos_filtro: Diccionario con todos los datos de los filtros a aplicar en las consultas.
+    :return: Retorna un diccionario con el resultado del consolidado agrupado por tipo -> categoría -> subtipo ->
+    proceso/contrato, los totales y listado de los meses para el cual aplica el consolidado.
+    """
+    fecha_minima = obtener_fecha_minima(movimientos)
+    fecha_maxima = obtener_fecha_maxima(movimientos)
+    meses = crear_lista_meses(fecha_minima, fecha_maxima)
+    meses_catsub = obtener_meses_xa_catsub(meses)
+    tipos_mov = TipoMovimiento.objects.all()
+    categorias = CategoriaMovimiento.objects.filter(id__in=datos_filtro['categorias'])
+    consol = []
+    totales = []
 
-    lista_meses = []
-    pos_mes = 1
-    consolidado_resultado = []
-    total_ingresos_real = 0
-    total_ingresos_proyectado = 0
-    total_costos_real = 0
-    total_costos_proyectado = 0
-    total_gastos_real = 0
-    total_gastos_proyectado = 0
+    for tipo_mov in tipos_mov:
+        consol.append({'id_tipo': tipo_mov.id, 'nombre_tipo': tipo_mov.nombre, 'meses': obtener_meses_xa_tipo(meses),
+                       'valores': []})
+        totales.append({'total_real': 0, 'total_proyectado': 0})
+        for categoria in categorias:
+            valores_cat = {'id': categoria.id, 'nombre': categoria.nombre, 'meses': copy.deepcopy(meses_catsub),
+                           'subtipos': []}
 
-    for tipo_movimiento in TipoMovimiento.objects.all():
-        valores_mes_tipo_movimiento = []
-        fecha_minima_tipo_movimiento = fecha_minima
-        while obtener_fecha_inicio_de_mes(fecha_maxima.year, fecha_maxima.month) >= \
-                obtener_fecha_inicio_de_mes(fecha_minima_tipo_movimiento.year, fecha_minima_tipo_movimiento.month):
+            if consolidado_llenar_categoria(valores_cat, tipo_mov, datos_filtro, meses_catsub):
+                consol[-1]['valores'].append(valores_cat)
+                for i, mes in enumerate(valores_cat['meses']):
+                    add_valor_mes_tipo(mes, consol[-1]['meses'], i, totales[-1])
 
-            inicio_mes = obtener_fecha_inicio_de_mes(fecha_minima_tipo_movimiento.year, fecha_minima_tipo_movimiento.month)
-            fin_mes = obtener_fecha_fin_de_mes(fecha_minima_tipo_movimiento.year, fecha_minima_tipo_movimiento.month)
-
-            objeto_tipo_movimiento = objeto.filter(fecha_movimiento__range=[inicio_mes, fin_mes],
-                                                   subtipo_movimiento__tipo_movimiento=tipo_movimiento)
-            valor_real = 0
-            valor_proyectado = 0
-            for ptm in objeto_tipo_movimiento:
-                if ptm.tipo_registro == REAL:
-                    valor_real += ptm.valor
-                else:
-                    valor_proyectado += ptm.valor
-
-            valores_mes_tipo_movimiento.append({'mes': mes_numero_a_letras(fecha_minima_tipo_movimiento.month),
-                                                'valor_real': valor_real, 'anho': fecha_minima_tipo_movimiento.year,
-                                                'valor_proyectado': valor_proyectado})
-
-            if tipo_movimiento.id == TipoMovimiento.INGRESOS:
-                total_ingresos_real += valor_real
-                total_ingresos_proyectado += valor_proyectado
-            elif tipo_movimiento.id == TipoMovimiento.COSTOS:
-                total_costos_real += valor_real
-                total_costos_proyectado += valor_proyectado
-            elif tipo_movimiento.id == TipoMovimiento.GASTOS:
-                total_gastos_real += valor_real
-                total_gastos_proyectado += valor_proyectado
-
-            coincidencia = False
-            for mes in lista_meses:
-                if mes['numero'] == fecha_minima_tipo_movimiento.month and mes['anho'] == fecha_minima_tipo_movimiento.year:
-                    coincidencia = True
-            if not coincidencia:
-                lista_meses.append({'numero': fecha_minima_tipo_movimiento.month, 'pos': pos_mes,
-                                    'mes': mes_numero_a_letras(fecha_minima_tipo_movimiento.month),
-                                    'anho': fecha_minima_tipo_movimiento.year})
-                pos_mes += 1
-
-            fecha_minima_tipo_movimiento = add_months(fecha_minima_tipo_movimiento, 1)
-
-        consolidado_resultado\
-            .append({'id_tipo': tipo_movimiento.id, 'nombre_tipo': tipo_movimiento.nombre,
-                     'meses': valores_mes_tipo_movimiento,
-                     'valores': construir_consolidado(objeto.filter(subtipo_movimiento__tipo_movimiento=tipo_movimiento),
-                                                      fecha_minima, fecha_maxima)})
-
-    totales = {'total_ingresos_real': total_ingresos_real,
-               'total_ingresos_proyectado': total_ingresos_proyectado,
-               'total_costos_real': total_costos_real,
-               'total_costos_proyectado': total_costos_proyectado,
-               'total_gastos_real': total_gastos_real,
-               'total_gastos_proyectado': total_gastos_proyectado,
-               'diferencia_ingresos_egresos_real': total_ingresos_real - total_costos_real - total_gastos_real,
-               'diferencia_ingresos_egresos_proyectado':
-                   total_ingresos_proyectado - total_costos_proyectado - total_gastos_proyectado,
+    totales = {'total_ingresos_real': totales[2]['total_real'],
+               'total_ingresos_proyectado': totales[2]['total_proyectado'],
+               'total_costos_real': totales[0]['total_real'],
+               'total_costos_proyectado': totales[0]['total_proyectado'],
+               'total_gastos_real': totales[1]['total_real'],
+               'total_gastos_proyectado': totales[1]['total_proyectado'],
+               'diferencia_ingresos_egresos_real': (totales[2]['total_real'] -
+                                                    totales[1]['total_real'] -
+                                                    totales[0]['total_real']),
+               'diferencia_ingresos_egresos_proyectado': (totales[2]['total_proyectado'] -
+                                                          totales[1]['total_proyectado'] -
+                                                          totales[0]['total_proyectado'])
                }
 
-    return {'consolidado': consolidado_resultado, 'lista_meses': lista_meses, 'totales': totales}
+    return {'consolidado': consol, 'totales': totales, 'lista_meses': obtener_meses_xa_tipo(meses)}
 
 
-def construir_consolidado(objeto, fecha_minima, fecha_maxima):
+def consolidado_llenar_categoria(valores_cat: {}, tipo_mov, datos_filtro, meses):
+    """
+    Crea toda la estructura de datos con los valores correspondientes a todos los movimientos relacionados para una
+    categoría especifica.  Los datos se agrupan por subtipo de movimiento y en cada uno de estos por contrato o proceso.
+    :param valores_cat: Diccionario con la información de la categoría.
+    :param tipo_mov: Tipo del movimiento al que aplica Ingreso, Costo, Gasto.
+    :param datos_filtro: Diccionario con todos los datos de los filtros a aplicar en las consultas.
+    :param meses: Listado con los meses para que aplica el consolidado.
+    :return: True si efectivamente se adicionaron datos de movimientos a la categoría correspondiente de lo contrario
+    False.
+    """
+    subtipos = SubTipoMovimiento.objects.filter(id__in=datos_filtro['subtipos'],
+                                                categoria_movimiento_id=valores_cat['id'],
+                                                tipo_movimiento_id=tipo_mov.id)
 
-    categorias = objeto.distinct('subtipo_movimiento__categoria_movimiento')\
-        .values(id_categoria=F('subtipo_movimiento__categoria_movimiento_id'),
-                nombre=F('subtipo_movimiento__categoria_movimiento__nombre'))
-    subtipos = objeto.distinct('subtipo_movimiento')\
-        .values(id_subtipo=F('subtipo_movimiento_id'),
-                id_categoria=F('subtipo_movimiento__categoria_movimiento_id'),
-                nombre=F('subtipo_movimiento__nombre'))
-    procesos = objeto.filter(flujo_caja_enc__contrato__isnull=True).distinct('flujo_caja_enc__proceso')\
-        .values(contrato=F('flujo_caja_enc__contrato__numero_contrato'),
-                proceso=F('flujo_caja_enc__proceso__nombre'),
-                id_flujo_caja=F('flujo_caja_enc_id'),
-                id_subtipo=F('subtipo_movimiento__id'))
-    contratos = objeto.filter(flujo_caja_enc__proceso__isnull=True).distinct('flujo_caja_enc__contrato') \
-        .values(contrato=F('flujo_caja_enc__contrato__numero_contrato'),
-                proceso=F('flujo_caja_enc__proceso__nombre'),
-                id_flujo_caja=F('flujo_caja_enc_id'),
-                id_subtipo=F('subtipo_movimiento__id'))
+    for subtipo in subtipos:
+        valores_subtipo = {'id': subtipo.id, 'nombre': subtipo.nombre, 'meses':  copy.deepcopy(meses),
+                           'con_pro': []}
 
-    lista_procesos_contratos = []
+        movimientos = FlujoCajaDetalle.objects\
+            .filter(subtipo_movimiento_id=subtipo.id,
+                    fecha_movimiento__range=[datos_filtro['fecha_desde'], datos_filtro['fecha_hasta']],
+                    estado_id__in=datos_filtro['estados'],
+                    tipo_registro__in=datos_filtro['tipos_registro'],
+                    flujo_caja_enc_id__in=datos_filtro['ids_flujos'])\
+            .exclude(estado_id=EstadoFCDetalle.OBSOLETO)\
+            .values('flujo_caja_enc__proceso__nombre', 'flujo_caja_enc__contrato__numero_contrato', 'tipo_registro',
+                    fecha=TruncMonth('fecha_movimiento', output_field=DateField())).annotate(Sum('valor'))\
+            .order_by('flujo_caja_enc__proceso__nombre', 'flujo_caja_enc__contrato__numero_contrato', 'fecha')
 
-    for pro in procesos:
-        lista_procesos_contratos.append(pro)
+        nombre_conpro = ''
+        for movimiento in movimientos:
+            nombre = movimiento['flujo_caja_enc__proceso__nombre'] if movimiento['flujo_caja_enc__proceso__nombre'] else movimiento['flujo_caja_enc__contrato__numero_contrato']
 
-    for con in contratos:
-        lista_procesos_contratos.append(con)
+            if nombre_conpro != nombre:
+                nombre_conpro = nombre
+                valores_mov = {'nombre': nombre, 'meses':  copy.deepcopy(meses)}
+                valores_subtipo['con_pro'].append(valores_mov)
 
-    lista_categorias = []
+            add_valor_mes(movimiento['valor__sum'], movimiento['fecha'], movimiento['tipo_registro'], tipo_mov.id,
+                          valores_subtipo['con_pro'][-1]['meses'])
+            add_valor_mes(movimiento['valor__sum'], movimiento['fecha'], movimiento['tipo_registro'], tipo_mov.id,
+                          valores_subtipo['meses'])
+            add_valor_mes(movimiento['valor__sum'], movimiento['fecha'], movimiento['tipo_registro'], tipo_mov.id,
+                          valores_cat['meses'])
 
-    for cat in categorias:
-        lista_subtipos = []
-        for sub in subtipos:
-            valor_con_pro = 0
-            if sub['id_categoria'] == cat['id_categoria']:
+        if nombre_conpro:
+            valores_cat['subtipos'].append(valores_subtipo)
 
-                lista_con_pro = []
+    return len(valores_cat['subtipos']) != 0
 
-                # Inicio del for de contratos
-                for con_pro in lista_procesos_contratos:
-                    fecha_minima_con_pro = fecha_minima
-                    valores_mes_con_pro = []
 
-                    while obtener_fecha_inicio_de_mes(fecha_maxima.year, fecha_maxima.month) >= \
-                            obtener_fecha_inicio_de_mes(fecha_minima_con_pro.year, fecha_minima_con_pro.month):
-                        valor_con_pro_ingresos_real = 0
-                        valor_con_pro_ingresos_proyectado = 0
-                        valor_con_pro_costos_real = 0
-                        valor_con_pro_costos_proyectado = 0
-                        valor_con_pro_gastos_real = 0
-                        valor_con_pro_gastos_proyectado = 0
+def add_valor_mes(valor, fecha, tipo_registro, tipo_mov, meses):
+    """
+    Adiciona el valor especificado a una lista de meses donde se tienen los acumuladores para los costos, gastos e
+    ingreso tanto reales como proyectados, teniendo en cuenta la fecha, tipo de registro y tipo de movimiento
+    especificado.
+    :param valor: Valor a adicionar
+    :param fecha: fecha para la que aplica el valor
+    :param tipo_registro: Tipo que indica si se suma a Real o Proyectado
+    :param tipo_mov: Tipo del movimiento al que aplica Ingreso, Costo, Gasto.
+    :param meses: Lista de los meses que tienen los acumuladores y sobre la cual se hara la adición
+    :return:
+    """
+    valor_real = 0
+    valor_proyectado = 0
+    for mes in meses:
+        if mes['fecha'] == fecha:
+            if tipo_registro == REAL:
+                valor_real = valor
+            else:
+                valor_proyectado = valor
 
-                        inicio_mes = obtener_fecha_inicio_de_mes(fecha_minima_con_pro.year, fecha_minima_con_pro.month)
-                        fin_mes = obtener_fecha_fin_de_mes(fecha_minima_con_pro.year, fecha_minima_con_pro.month)
-                        objeto_con_pro = objeto.filter(fecha_movimiento__range=[inicio_mes, fin_mes],
-                                                       flujo_caja_enc=con_pro['id_flujo_caja'],
-                                                       subtipo_movimiento_id=sub['id_subtipo'])
-                        for ocp in objeto_con_pro:
-                            if ocp.tipo_registro == REAL:
-                                if ocp.subtipo_movimiento.tipo_movimiento_id == TipoMovimiento.INGRESOS:
-                                    valor_con_pro_ingresos_real += ocp.valor
-                                elif ocp.subtipo_movimiento.tipo_movimiento_id == TipoMovimiento.COSTOS:
-                                    valor_con_pro_costos_real += ocp.valor
-                                elif ocp.subtipo_movimiento.tipo_movimiento_id == TipoMovimiento.GASTOS:
-                                    valor_con_pro_gastos_real += ocp.valor
-                            else:
-                                if ocp.subtipo_movimiento.tipo_movimiento_id == TipoMovimiento.INGRESOS:
-                                    valor_con_pro_ingresos_proyectado += ocp.valor
-                                elif ocp.subtipo_movimiento.tipo_movimiento_id == TipoMovimiento.COSTOS:
-                                    valor_con_pro_costos_proyectado += ocp.valor
-                                elif ocp.subtipo_movimiento.tipo_movimiento_id == TipoMovimiento.GASTOS:
-                                    valor_con_pro_gastos_proyectado += ocp.valor
+            if tipo_mov == TipoMovimiento.INGRESOS:
+                mes['valor_ingresos_real'] += valor_real
+                mes['valor_ingresos_proyectado'] += valor_proyectado
+            elif tipo_mov == TipoMovimiento.COSTOS:
+                mes['valor_costos_real'] += valor_real
+                mes['valor_costos_proyectado'] += valor_proyectado
+            elif tipo_mov == TipoMovimiento.GASTOS:
+                mes['valor_gastos_real'] += valor_real
+                mes['valor_gastos_proyectado'] += valor_proyectado
 
-                            valor_con_pro += ocp.valor
 
-                        valores_mes_con_pro.append({
-                            'mes': mes_numero_a_letras(fecha_minima_con_pro.month),
-                            'valor_ingresos_real': valor_con_pro_ingresos_real,
-                            'valor_ingresos_proyectado': valor_con_pro_ingresos_proyectado,
-                            'valor_costos_real': valor_con_pro_costos_real,
-                            'valor_costos_proyectado': valor_con_pro_costos_proyectado,
-                            'valor_gastos_real': valor_con_pro_gastos_real,
-                            'valor_gastos_proyectado': valor_con_pro_gastos_proyectado})
+def add_valor_mes_tipo(mes, meses, pos_mes, totales):
+    """
+    Suma los valores correspondientes de un mes en el los totales de los meses
+    :param mes: valores reales y proyectados para el mes de costos, gastos e ingresos.
+    :param meses: Lista de meses en la cual se van adicionar los valores.
+    :param pos_mes: posición del mes en la lista de meses al cual se le van adicionar los valores
+    :param totales: diccionario donde se acumulan los totales para un tipo especifico de movimiento.
+    :return: Nada
+    """
+    total_real = mes['valor_ingresos_real'] + mes['valor_costos_real'] + mes['valor_gastos_real']
+    total_proyectado = mes['valor_ingresos_proyectado'] + mes['valor_costos_proyectado'] + mes['valor_gastos_proyectado']
+    meses[pos_mes]['valor_real'] += total_real
+    meses[pos_mes]['valor_proyectado'] += total_proyectado
 
-                        fecha_minima_con_pro = add_months(fecha_minima_con_pro, 1)
+    totales['total_real'] += total_real
+    totales['total_proyectado'] += total_proyectado
 
-                    if con_pro['contrato']:
-                        nombre = con_pro['contrato']
-                    else:
-                        nombre = con_pro['proceso']
-                    if valor_con_pro > 0:
-                        lista_con_pro.append({'nombre': nombre, 'meses': valores_mes_con_pro})
-                # Fin del for de contratos
 
-                fecha_minima_subtipos = fecha_minima
-                valores_mes_subtipos = []
-                while obtener_fecha_inicio_de_mes(fecha_maxima.year, fecha_maxima.month) >= \
-                        obtener_fecha_inicio_de_mes(fecha_minima_subtipos.year, fecha_minima_subtipos.month):
-                    valor_subtipos_ingresos_real = 0
-                    valor_subtipos_ingresos_proyectado = 0
-                    valor_subtipos_costos_real = 0
-                    valor_subtipos_costos_proyectado = 0
-                    valor_subtipos_gastos_real = 0
-                    valor_subtipos_gastos_proyectado = 0
+def crear_lista_meses(fecha_minima, fecha_maxima):
+    meses = []
 
-                    inicio_mes = obtener_fecha_inicio_de_mes(fecha_minima_subtipos.year, fecha_minima_subtipos.month)
-                    fin_mes = obtener_fecha_fin_de_mes(fecha_minima_subtipos.year, fecha_minima_subtipos.month)
-                    objeto_subtipos = objeto.filter(fecha_movimiento__range=[inicio_mes, fin_mes],
-                                                    subtipo_movimiento_id=sub['id_subtipo'])
+    while fecha_minima <= fecha_maxima:
+        meses.append({'fecha': fecha_minima, 'mes': mes_numero_a_letras(fecha_minima.month)})
+        fecha_minima = add_months(fecha_minima, 1)
+    return meses
 
-                    for os in objeto_subtipos:
-                        if os.tipo_registro == REAL:
-                            if os.subtipo_movimiento.tipo_movimiento_id == TipoMovimiento.INGRESOS:
-                                valor_subtipos_ingresos_real += os.valor
-                            elif os.subtipo_movimiento.tipo_movimiento_id == TipoMovimiento.COSTOS:
-                                valor_subtipos_costos_real += os.valor
-                            elif os.subtipo_movimiento.tipo_movimiento_id == TipoMovimiento.GASTOS:
-                                valor_subtipos_gastos_real += os.valor
-                        else:
-                            if os.subtipo_movimiento.tipo_movimiento_id == TipoMovimiento.INGRESOS:
-                                valor_subtipos_ingresos_proyectado += os.valor
-                            elif os.subtipo_movimiento.tipo_movimiento_id == TipoMovimiento.COSTOS:
-                                valor_subtipos_costos_proyectado += os.valor
-                            elif os.subtipo_movimiento.tipo_movimiento_id == TipoMovimiento.GASTOS:
-                                valor_subtipos_gastos_proyectado += os.valor
 
-                    valores_mes_subtipos.append(
-                        {'mes': mes_numero_a_letras(fecha_minima_subtipos.month),
-                         'valor_ingresos_real': valor_subtipos_ingresos_real,
-                         'valor_ingresos_proyectado': valor_subtipos_ingresos_proyectado,
-                         'valor_costos_real': valor_subtipos_costos_real,
-                         'valor_costos_proyectado': valor_subtipos_costos_proyectado,
-                         'valor_gastos_real': valor_subtipos_gastos_real,
-                         'valor_gastos_proyectado': valor_subtipos_gastos_proyectado})
-                    fecha_minima_subtipos = add_months(fecha_minima_subtipos, 1)
+def obtener_meses_xa_tipo(meses: []):
+    meses_tipo = copy.deepcopy(meses)
+    for mes in meses_tipo:
+        mes.update({'anho':  mes['fecha'].year, 'valor_proyectado': 0, 'valor_real': 0})
 
-                lista_subtipos.append({'id': sub['id_subtipo'], 'nombre': sub['nombre'], 'con_pro': lista_con_pro,
-                                       'meses': valores_mes_subtipos})
+    return meses_tipo
 
-        fecha_minima_categorias = fecha_minima
-        valores_mes_categorias = []
-        while obtener_fecha_inicio_de_mes(fecha_maxima.year, fecha_maxima.month) >= \
-                obtener_fecha_inicio_de_mes(fecha_minima_categorias.year, fecha_minima_categorias.month):
-            valor_cat_ingresos_real = 0
-            valor_cat_ingresos_proyectado = 0
-            valor_cat_costos_real = 0
-            valor_cat_costos_proyectado = 0
-            valor_cat_gastos_real = 0
-            valor_cat_gastos_proyectado = 0
 
-            inicio_mes = obtener_fecha_inicio_de_mes(fecha_minima_categorias.year, fecha_minima_categorias.month)
-            fin_mes = obtener_fecha_fin_de_mes(fecha_minima_categorias.year, fecha_minima_categorias.month)
-            objeto_categorias = objeto.filter(fecha_movimiento__range=[inicio_mes, fin_mes],
-                                              subtipo_movimiento__categoria_movimiento_id=cat['id_categoria'])
-            for oc in objeto_categorias:
-                if oc.tipo_registro == REAL:
-                    if oc.subtipo_movimiento.tipo_movimiento_id == TipoMovimiento.INGRESOS:
-                        valor_cat_ingresos_real += oc.valor
-                    elif oc.subtipo_movimiento.tipo_movimiento_id == TipoMovimiento.COSTOS:
-                        valor_cat_costos_real += oc.valor
-                    elif oc.subtipo_movimiento.tipo_movimiento_id == TipoMovimiento.GASTOS:
-                        valor_cat_gastos_real += oc.valor
-                else:
-                    if oc.subtipo_movimiento.tipo_movimiento_id == TipoMovimiento.INGRESOS:
-                        valor_cat_ingresos_proyectado += oc.valor
-                    elif oc.subtipo_movimiento.tipo_movimiento_id == TipoMovimiento.COSTOS:
-                        valor_cat_costos_proyectado += oc.valor
-                    elif oc.subtipo_movimiento.tipo_movimiento_id == TipoMovimiento.GASTOS:
-                        valor_cat_gastos_proyectado += oc.valor
-            valores_mes_categorias.append(
-                {'mes': mes_numero_a_letras(fecha_minima_categorias.month),
-                 'valor_ingresos_real': valor_cat_ingresos_real,
-                 'valor_ingresos_proyectado': valor_cat_ingresos_proyectado,
-                 'valor_costos_real': valor_cat_costos_real,
-                 'valor_costos_proyectado': valor_cat_costos_proyectado,
-                 'valor_gastos_real': valor_cat_gastos_real,
-                 'valor_gastos_proyectado': valor_cat_gastos_proyectado})
+def obtener_meses_xa_catsub(meses: []):
+    meses_catsub = copy.deepcopy(meses)
+    for mes in meses_catsub:
+        mes.update({'valor_ingresos_real': 0, 'valor_ingresos_proyectado': 0, 'valor_costos_real': 0,
+                    'valor_costos_proyectado': 0, 'valor_gastos_real': 0, 'valor_gastos_proyectado': 0})
 
-            fecha_minima_categorias = add_months(fecha_minima_categorias, 1)
+    return meses_catsub
 
-        lista_categorias.append({'id': cat['id_categoria'], 'nombre': cat['nombre'], 'subtipos': lista_subtipos,
-                                 'meses': valores_mes_categorias})
 
-    return lista_categorias
-
+def obtener_fechas_min_max_fc(valor_defecto):
+    """
+    Obtiene la fecha mínima y máxima de todos los movimientos de flujo de caja registrados.
+    :param valor_defecto: Valor por defecto a retornar en caso de que no existan movimientos.
+    :return: retorna la fecha mínima y máxima calculada en el orden que se mencionan.
+    """
+    movimientos = FlujoCajaDetalle.objects.all().order_by('fecha_movimiento')
+    primer_movimiento = movimientos.first()
+    if primer_movimiento:
+        fecha_min = primer_movimiento.fecha_movimiento
+        fecha_max = movimientos.last().fecha_movimiento
+    else:
+        fecha_min = valor_defecto
+        fecha_max = valor_defecto
+    return fecha_min, fecha_max
