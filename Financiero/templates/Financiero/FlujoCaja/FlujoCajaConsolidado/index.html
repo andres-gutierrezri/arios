@@ -157,12 +157,12 @@
                                                     <th class="min-w-200">Tipo de Movimiento</th>
                                                     {% if comparativo %}
                                                         {% for mes in meses %}
-                                                            <th class="min-w-200">{{ mes.mes }} - Real</th>
-                                                            <th class="min-w-200">{{ mes.mes }} - Proyectado</th>
+                                                            <th class="min-w-200">{{ mes.mes }} {{ mes.anho }} - Real</th>
+                                                            <th class="min-w-200">{{ mes.mes }} {{ mes.anho }} - Proyectado</th>
                                                         {% endfor %}
                                                     {% else %}
                                                         {% for mes in meses %}
-                                                            <th class="min-w-200">{{ mes.mes }}</th>
+                                                            <th class="min-w-200">{{ mes.mes }} {{ mes.anho }}</th>
                                                         {% endfor %}
                                                     {% endif %}
                                                 </tr>
@@ -200,12 +200,12 @@
                                                                         <th class="min-w-200">Categorias</th>
                                                                         {% if comparativo %}
                                                                             {% for mes in meses %}
-                                                                                <th class="min-w-200">{{ mes.mes }} - Real</th>
-                                                                                <th class="min-w-200">{{ mes.mes }} - Proyectado</th>
+                                                                                <th class="min-w-200">{{ mes.mes }} {{ mes.anho }} - Real</th>
+                                                                                <th class="min-w-200">{{ mes.mes }} {{ mes.anho }} - Proyectado</th>
                                                                             {% endfor %}
                                                                         {% else %}
                                                                             {% for mes in meses %}
-                                                                                <th class="min-w-200">{{ mes.mes }}</th>
+                                                                                <th class="min-w-200">{{ mes.mes }} {{ mes.anho }}</th>
                                                                             {% endfor %}
                                                                         {% endif %}
                                                                     </tr>
@@ -263,12 +263,12 @@
                                                                                             <th class="min-w-200">Subtipos</th>
                                                                                             {% if comparativo %}
                                                                                                 {% for mes in meses %}
-                                                                                                    <th class="min-w-200">{{ mes.mes }} - Real</th>
-                                                                                                    <th class="min-w-200">{{ mes.mes }} - Proyectado</th>
+                                                                                                    <th class="min-w-200">{{ mes.mes }} {{ mes.anho }} - Real</th>
+                                                                                                    <th class="min-w-200">{{ mes.mes }} {{ mes.anho }} - Proyectado</th>
                                                                                                 {% endfor %}
                                                                                             {% else %}
                                                                                                 {% for mes in meses %}
-                                                                                                    <th class="min-w-200">{{ mes.mes }}</th>
+                                                                                                    <th class="min-w-200">{{ mes.mes }} {{ mes.anho }}</th>
                                                                                                 {% endfor %}
                                                                                             {% endif %}
                                                                                         </tr>
@@ -325,12 +325,12 @@
                                                                                                                 <th class="min-w-200">Contratos - Procesos</th>
                                                                                                                 {% if comparativo %}
                                                                                                                     {% for mes in meses %}
-                                                                                                                        <th class="min-w-200">{{ mes.mes }} - Real</th>
-                                                                                                                        <th class="min-w-200">{{ mes.mes }} - Proyectado</th>
+                                                                                                                        <th class="min-w-200">{{ mes.mes }} {{ mes.anho }} - Real</th>
+                                                                                                                        <th class="min-w-200">{{ mes.mes }} {{ mes.anho }} - Proyectado</th>
                                                                                                                     {% endfor %}
                                                                                                                 {% else %}
                                                                                                                     {% for mes in meses %}
-                                                                                                                        <th class="min-w-200">{{ mes.mes }}</th>
+                                                                                                                        <th class="min-w-200">{{ mes.mes }} {{ mes.anho }}</th>
                                                                                                                     {% endfor %}
                                                                                                                 {% endif %}
                                                                                                             </tr>
