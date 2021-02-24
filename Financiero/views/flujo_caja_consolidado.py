@@ -2,13 +2,13 @@ import json
 from datetime import datetime
 
 from django.contrib import messages
-from django.db.models import F
+from django.db.models import Sum, DateField
+from django.db.models.functions import TruncMonth
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
-from EVA.General import app_date_now
-from EVA.General.conversiones import obtener_fecha_fin_de_mes, obtener_fecha_inicio_de_mes, add_months, \
-    mes_numero_a_letras
+from EVA.General import app_date_now, app_datetime_now
+from EVA.General.conversiones import add_months, mes_numero_a_letras, fijar_fecha_inicio_mes
 from EVA.views.index import AbstractEvaLoggedView
 from Financiero.models import FlujoCajaEncabezado
 from Financiero.models.flujo_caja import SubTipoMovimiento, FlujoCajaDetalle, EstadoFCDetalle, CategoriaMovimiento, \
@@ -28,53 +28,29 @@ class FlujoCajaConsolidadoView(AbstractEvaLoggedView):
         if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
             return redirect(reverse('eva-index'))
         datos = datos_formulario_consolidado(request)
-        if datos['fecha_desde']:
-            fecha_desde = datos['fecha_desde']
-        else:
-            fecha_desde = datos['fecha_min']
+        fecha_desde = datos['fecha_desde'] if datos['fecha_desde'] else datos['fecha_min']
+        fecha_hasta = datos['fecha_hasta'] if datos['fecha_hasta'] else datos['fecha_max']
 
-        if datos['fecha_hasta']:
-            fecha_hasta = datos['fecha_hasta']
-        else:
-            fecha_hasta = datos['fecha_max']
+        tipos_flujos_caja = [datos['tipos_flujos_caja']] if '' != datos['tipos_flujos_caja'] != 2 else [0, 1]
 
-        tipos_flujos_caja = [0, 1]
-        if datos['tipos_flujos_caja'] != '':
-            if datos['tipos_flujos_caja'] != 2:
-                tipos_flujos_caja = [datos['tipos_flujos_caja']]
+        estados = datos['estados'] if datos['estados'] else [1, 2, 4]
 
-        if datos['estados']:
-            estados = datos['estados']
-        else:
-            estados = [1, 2, 4]
+        subtipos = datos['subtipos'] if datos['subtipos'] else list(SubTipoMovimiento.objects.all()
+                                                                    .values_list('id', flat=True))
 
-        if datos['subtipos']:
-            subtipos = datos['subtipos']
-        else:
-            subtipos = SubTipoMovimiento.objects.all()
-
-        if datos['categorias']:
-            categorias = datos['categorias']
-        else:
-            categorias = CategoriaMovimiento.objects.all()
+        categorias = datos['categorias'] if datos['categorias'] else list(CategoriaMovimiento.objects.all()
+                                                                          .values_list('id', flat=True))
 
         con_pro = []
         if datos['lista_contratos']:
-            for valor in datos['lista_contratos']:
-                con_pro.append(valor)
-        else:
-            if not datos['lista_procesos']:
-                for valor in FlujoCajaEncabezado.objects.get_flujos_x_contrato(request):
-                    con_pro.append(valor.id)
+            con_pro.extend(datos['lista_contratos'])
+        elif not datos['lista_procesos']:
+            con_pro.extend(FlujoCajaEncabezado.objects.get_id_flujos_contratos(request))
 
         if datos['lista_procesos']:
-            for valor in datos['lista_procesos']:
-                con_pro.append(valor)
-        else:
-            if not datos['lista_contratos']:
-                for valor in FlujoCajaEncabezado.objects.get_flujos_x_proceso(request):
-                    con_pro.append(valor.id)
-
+            con_pro.extend(datos['lista_procesos'])
+        elif not datos['lista_contratos']:
+            con_pro.extend(FlujoCajaEncabezado.objects.get_id_flujos_procesos(request))
         movimientos = FlujoCajaDetalle.objects\
             .filter(estado_id__in=estados, flujo_caja_enc__in=con_pro,
                     fecha_movimiento__range=[fecha_desde, fecha_hasta], tipo_registro__in=tipos_flujos_caja,
@@ -176,6 +152,7 @@ def datos_xa_render(request, datos_formulario=None, movimientos=None):
                                     'valor_proyectado': suma_mes_proyectado})
 
             datos['totales_mes_a_mes'] = total_mes_a_mes
+
     return datos
 
 
@@ -206,33 +183,15 @@ def datos_formulario_consolidado(request):
     tipos_flujos_caja = request.POST.get('tipos_flujos_caja_id', '')
     estados = request.POST.getlist('estados[]', [])
 
-    lista_procesos = []
-    for pro in procesos:
-        lista_procesos.append(int(pro))
-
-    lista_contratos = []
-    for con in contratos:
-        lista_contratos.append(int(con))
-
-    if estados:
-        lista_estados = []
-        for y in estados:
-            lista_estados.append(int(y))
-    else:
-        lista_estados = [1, 2]
-
-    lista_subtipos = []
-    for z in subtipos:
-        lista_subtipos.append(int(z))
-
-    lista_categorias = []
-    for cat in categorias:
-        lista_categorias.append(int(cat))
+    procesos = list(map(int, procesos))
+    contratos = list(map(int, contratos))
+    estados = list(map(int, estados)) if estados else [1, 2]
+    subtipos = list(map(int, subtipos))
+    categorias = list(map(int, categorias))
 
     if tipos_flujos_caja:
         tipos_flujos_caja = int(tipos_flujos_caja)
 
-    movimientos = FlujoCajaDetalle.objects.all().order_by('fecha_movimiento')
     if movimientos:
         fecha_min = movimientos.first().fecha_movimiento
         fecha_max = movimientos.last().fecha_movimiento
@@ -243,16 +202,17 @@ def datos_formulario_consolidado(request):
             'fecha_hasta': fecha_hasta, 'subtipos': lista_subtipos, 'tipos_flujos_caja': tipos_flujos_caja,
             'estados': lista_estados, 'fecha_min': fecha_min, 'fecha_max': fecha_max, 'categorias': lista_categorias}
 
+    return {'lista_procesos': procesos, 'lista_contratos': contratos, 'fecha_desde': fecha_desde,
+            'fecha_hasta': fecha_hasta, 'subtipos': subtipos, 'tipos_flujos_caja': tipos_flujos_caja,
+            'estados': estados, 'fecha_min': fecha_min, 'fecha_max': fecha_max, 'categorias': categorias}
+
 
 def obtener_fecha_minima(objeto):
     if objeto:
         primera_fecha = objeto.order_by('fecha_movimiento').first().fecha_movimiento.date()
     else:
         primera_fecha = app_date_now()
-    for x in objeto:
-        if x.fecha_movimiento.date() < primera_fecha:
-            primera_fecha = x.fecha_movimiento.date()
-    return obtener_fecha_inicio_de_mes(primera_fecha.year, primera_fecha.month)
+    return fijar_fecha_inicio_mes(primera_fecha)
 
 
 def obtener_fecha_maxima(objeto):
