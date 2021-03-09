@@ -3,8 +3,10 @@ import json
 from datetime import datetime
 
 from django.contrib import messages
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Sum, DateField
 from django.db.models.functions import TruncMonth
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
@@ -14,6 +16,7 @@ from EVA.views.index import AbstractEvaLoggedView
 from Financiero.models import FlujoCajaEncabezado
 from Financiero.models.flujo_caja import SubTipoMovimiento, FlujoCajaDetalle, EstadoFCDetalle, CategoriaMovimiento, \
     TipoMovimiento
+from Proyectos.models import Contrato
 
 COMPARATIVO = 2
 REAL = 0
@@ -406,3 +409,27 @@ def obtener_fechas_min_max_fc(valor_defecto):
         fecha_min = valor_defecto
         fecha_max = valor_defecto
     return fecha_min, fecha_max
+
+
+class FCContratosXFCProcesos(AbstractEvaLoggedView):
+    """
+    Genera los datos necesarios para seleccionar los contratos relacionados a los procesos que recibe.
+    :request: Recibe por GET la lista con los id de los encabezados adociados a los procesos
+    seleccionados en el formulario de consolidado.
+    :return: Retorna una lista con los id de los encabezados de flujo de caja para cada contrato.
+    """
+    def get(self, request):
+        datos = json.loads(request.GET.get('datos', []))
+        procesos = FlujoCajaEncabezado.objects.filter(id__in=datos).values('proceso_id')
+
+        lista_procesos = []
+        for lp in procesos:
+            lista_procesos.append(lp['proceso_id'])
+
+        contratos = Contrato.objects.filter(proceso_a_cargo__in=lista_procesos).values('id')
+        lista_contratos = []
+        for c in contratos:
+            lista_contratos.append(c['id'])
+        contratos = FlujoCajaEncabezado.objects.filter(contrato_id__in=lista_contratos).values('id')
+        contratos_json = json.dumps(list(contratos), cls=DjangoJSONEncoder)
+        return JsonResponse({"estado": "OK", "datos": contratos_json})

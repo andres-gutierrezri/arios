@@ -312,3 +312,34 @@ function Imprimir() {
      window.print();
      document.body.innerHTML = originalContents;
 }
+
+function seleccionarFCContratosXFCProceso() {
+    $.ajax({
+        url: "/financiero/flujo-caja/consolidado/fc_contratos_x_fc_proceso/?datos=[" + idContratosXProceso.val() + "]",
+        type: 'GET',
+        context: document.body,
+        success: function (data) {
+            if(data.estado === "OK") {
+                idContratosXProceso.select2({placeholder: "Seleccione una opción"})
+                let contratoTemp = $('#contrato_id');
+                let listaContratos = []
+                if (data.datos.includes('id')){
+                    JSON.parse(data.datos).forEach(function (index){
+                        listaContratos.push(index.id)
+                    })
+                    contratoTemp.next().find("input").css("min-width", "200px");
+                    if (listaContratos){
+                        contratoTemp.val(listaContratos).trigger("change");
+                    }
+                }else{
+                    contratoTemp.select2('destroy').find('option').prop('selected', false).end().select2({placeholder: "Seleccione una opción"});
+                }
+            }else {
+                EVANotificacion.toast.error('Ha ocurrido un error');
+            }
+        },
+        failure: function (errMsg) {
+            EVANotificacion.toast.error('Ha ocurrido un error al enviar la solcitud.');
+        }
+    });
+}
