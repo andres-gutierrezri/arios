@@ -313,24 +313,24 @@ function Imprimir() {
      document.body.innerHTML = originalContents;
 }
 
+idProceso.change(function () {
+    seleccionarFCContratosXFCProceso();
+})
+
 function seleccionarFCContratosXFCProceso() {
     $.ajax({
-        url: "/financiero/flujo-caja/consolidado/fc_contratos_x_fc_proceso/?datos=[" + idContratosXProceso.val() + "]",
+        url: "/financiero/flujo-caja/consolidado/fc_contratos_x_fc_proceso/?datos=[" + idProceso.val() + "]",
         type: 'GET',
         context: document.body,
         success: function (data) {
             if(data.estado === "OK") {
-                idContratosXProceso.select2({placeholder: "Seleccione una opción"})
+                idProceso.select2({placeholder: "Seleccione una opción"})
                 let contratoTemp = $('#contrato_id');
-                let listaContratos = []
                 if (data.datos.includes('id')){
+                    contratoTemp.empty();
                     JSON.parse(data.datos).forEach(function (index){
-                        listaContratos.push(index.id)
-                    })
-                    contratoTemp.next().find("input").css("min-width", "200px");
-                    if (listaContratos){
-                        contratoTemp.val(listaContratos).trigger("change");
-                    }
+                        contratoTemp.append('<option value="' + index.id + '">' + index.contrato__numero_contrato + '</option>')
+                    });
                 }else{
                     contratoTemp.select2('destroy').find('option').prop('selected', false).end().select2({placeholder: "Seleccione una opción"});
                 }

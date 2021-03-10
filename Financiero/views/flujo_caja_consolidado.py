@@ -420,7 +420,10 @@ class FCContratosXFCProcesos(AbstractEvaLoggedView):
     """
     def get(self, request):
         datos = json.loads(request.GET.get('datos', []))
-        procesos = FlujoCajaEncabezado.objects.filter(id__in=datos).values('proceso_id')
+        if datos:
+            procesos = FlujoCajaEncabezado.objects.filter(id__in=datos).values('proceso_id')
+        else:
+            procesos = FlujoCajaEncabezado.objects.all().values('proceso_id')
 
         lista_procesos = []
         for lp in procesos:
@@ -430,6 +433,7 @@ class FCContratosXFCProcesos(AbstractEvaLoggedView):
         lista_contratos = []
         for c in contratos:
             lista_contratos.append(c['id'])
-        contratos = FlujoCajaEncabezado.objects.filter(contrato_id__in=lista_contratos).values('id')
+        contratos = FlujoCajaEncabezado.objects.filter(contrato_id__in=lista_contratos)\
+            .values('id', 'contrato__numero_contrato')
         contratos_json = json.dumps(list(contratos), cls=DjangoJSONEncoder)
         return JsonResponse({"estado": "OK", "datos": contratos_json})
