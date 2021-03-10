@@ -331,7 +331,7 @@ function seleccionarFCContratosXFCProceso() {
                         contratoTemp.append('<option value="' + index.id + '">' + index.contrato__numero_contrato + '</option>')
                     });
                 }else{
-                    contratoTemp.select2('destroy').find('option').prop('selected', false).end().select2({placeholder: "Seleccione una opción"});
+                    contratoTemp.empty();
                 }
             }else {
                 EVANotificacion.toast.error('Ha ocurrido un error');
