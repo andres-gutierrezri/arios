@@ -340,7 +340,7 @@ function Imprimir() {
 
 function seleccionarFCContratosXFCProceso() {
     $.ajax({
-        url: "/financiero/flujo-caja/consolidado/fc_contratos_x_fc_proceso/?datos=[" + idProceso.val() + "]",
+        url: "/financiero/flujo-caja/consolidado/fc_contratos_x_fc_proceso/?procesos=[" + idProceso.val() + "]&empresas=[" + idEmpresa.val() + "]",
         type: 'GET',
         context: document.body,
         success: function (data) {
