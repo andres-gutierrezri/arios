@@ -4,12 +4,13 @@ from datetime import datetime
 
 from django.contrib import messages
 from django.core.serializers.json import DjangoJSONEncoder
-from django.db.models import Sum, DateField
+from django.db.models import Sum, DateField, F
 from django.db.models.functions import TruncMonth
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
+from Administracion.utils import get_id_empresa_global
 from EVA.General import app_date_now, app_datetime_now
 from EVA.General.conversiones import add_months, mes_numero_a_letras, fijar_fecha_inicio_mes
 from EVA.views.index import AbstractEvaLoggedView
@@ -113,7 +114,12 @@ def datos_xa_render(request, datos_formulario=None, movimientos=None, datos_filt
 
         if datos_formulario['lista_procesos']:
             datos['textos_procesos'] = quitar_selecciones
-
+            valores_procesos = FlujoCajaEncabezado.objects.filter(id__in=datos_formulario['lista_procesos'])\
+                .values('proceso_id')
+            datos['contratos'] = FlujoCajaEncabezado.objects\
+                .filter(contrato__proceso_a_cargo__in=valores_procesos, contrato__isnull=False,
+                        contrato__empresa_id=get_id_empresa_global(request))\
+                .values(campo_valor=F('id'), campo_texto=F('contrato__numero_contrato'))
         if datos_formulario['subtipos']:
             datos['textos_subtipos'] = quitar_selecciones
 

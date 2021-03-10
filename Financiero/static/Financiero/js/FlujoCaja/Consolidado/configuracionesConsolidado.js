@@ -127,6 +127,10 @@ $(document).ready(function() {
     if (valoresSubtipos){
         idSubtipos.val(JSON.parse(valoresSubtipos)).trigger("change");
     }
+
+    idProceso.change(function () {
+        seleccionarFCContratosXFCProceso();
+    })
     // Fin del Bloque
 });
 // Fin del Bloque
@@ -313,10 +317,6 @@ function Imprimir() {
      document.body.innerHTML = originalContents;
 }
 
-idProceso.change(function () {
-    seleccionarFCContratosXFCProceso();
-})
-
 function seleccionarFCContratosXFCProceso() {
     $.ajax({
         url: "/financiero/flujo-caja/consolidado/fc_contratos_x_fc_proceso/?datos=[" + idProceso.val() + "]",
@@ -324,7 +324,6 @@ function seleccionarFCContratosXFCProceso() {
         context: document.body,
         success: function (data) {
             if(data.estado === "OK") {
-                idProceso.select2({placeholder: "Seleccione una opción"})
                 let contratoTemp = $('#contrato_id');
                 if (data.datos.includes('id')){
                     contratoTemp.empty();
