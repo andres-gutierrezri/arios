@@ -434,12 +434,12 @@ class FCContratosXFCProcesos(AbstractEvaLoggedView):
     :return: Retorna una lista con los id de los encabezados de flujo de caja para cada contrato.
     """
     def get(self, request):
-        procesos = json.loads(request.GET.get('procesos', []))
-        empresas = json.loads(request.GET.get('empresas', []))
+        procesos = json.loads(request.GET.get('procesos', [])) if request.GET.get('procesos') else ''
+        empresas = json.loads(request.GET.get('empresas', [])) if request.GET.get('empresas') else ''
         if procesos:
             procesos = FlujoCajaEncabezado.objects.filter(id__in=procesos).values('proceso_id')
         else:
-            contratos = FlujoCajaEncabezado.objects.filter(contrato__empresa_id_in=empresas)\
+            contratos = FlujoCajaEncabezado.objects.filter(contrato__empresa_id__in=empresas)\
                 .values('id', 'contrato__numero_contrato')
             contratos_json = json.dumps(list(contratos), cls=DjangoJSONEncoder)
             return JsonResponse({"estado": "OK", "datos": contratos_json})
@@ -478,4 +478,3 @@ class FCProcesosYContratosXFCEmpresas(AbstractEvaLoggedView):
 
         return JsonResponse({"estado": "OK", "datos": {'contratos': contratos_json,
                                                        'procesos': procesos_json}})
-
