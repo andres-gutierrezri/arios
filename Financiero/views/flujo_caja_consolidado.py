@@ -10,6 +10,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
+from Administracion.models import Empresa
 from Administracion.utils import get_id_empresa_global
 from EVA.General import app_date_now, app_datetime_now
 from EVA.General.conversiones import add_months, mes_numero_a_letras, fijar_fecha_inicio_mes
@@ -78,6 +79,7 @@ def datos_xa_render(request, datos_formulario=None, movimientos=None, datos_filt
     fecha_min_max = json.dumps({'fecha_min': str(fecha_min),
                                 'fecha_max': str(fecha_max)})
 
+    empresas = Empresa.objects.get_xa_select()
     procesos = FlujoCajaEncabezado.objects.get_xa_select_x_proceso(request)
     contratos = FlujoCajaEncabezado.objects.get_xa_select_x_contrato(request)
 
@@ -95,12 +97,13 @@ def datos_xa_render(request, datos_formulario=None, movimientos=None, datos_filt
                {'campo_valor': 4, 'campo_texto': 'Eliminado'}]
 
     datos = {'procesos': procesos, 'contratos': contratos, 'tipos_flujos': tipos_flujos, 'estados': estados,
-             'categorias': categorias, 'subtipos': subtipos, 'fecha_actual': datetime.today(),
+             'categorias': categorias, 'subtipos': subtipos, 'fecha_actual': datetime.today(), 'empresas': empresas,
              'subtipos_categorias': json.dumps(subtipos_categorias), 'fecha_min_max': fecha_min_max,
              'menu_actual': ['flujo_caja', 'consolidado']}
 
     quitar_selecciones = {'texto': 'Quitar Selecciones', 'icono': 'fa-times'}
     seleccionar_todos = {'texto': 'Seleccionar Todos', 'icono': 'fa-check'}
+    datos['textos_empresas'] = seleccionar_todos
     datos['textos_contratos'] = seleccionar_todos
     datos['textos_procesos'] = seleccionar_todos
     datos['textos_subtipos'] = seleccionar_todos
@@ -108,6 +111,9 @@ def datos_xa_render(request, datos_formulario=None, movimientos=None, datos_filt
 
     if datos_formulario:
         datos['valor'] = datos_formulario
+
+        if datos_formulario['lista_empresas']:
+            datos['textos_empresas'] = quitar_selecciones
 
         if datos_formulario['lista_contratos']:
             datos['textos_contratos'] = quitar_selecciones
@@ -130,7 +136,7 @@ def datos_xa_render(request, datos_formulario=None, movimientos=None, datos_filt
             datos['comparativo'] = True
 
     else:
-        datos['valor'] = {'estados': [1, 2]}
+        datos['valor'] = {'estados': [1, 2], 'lista_empresas': [get_id_empresa_global(request)]}
 
     if movimientos:
         consolidado = consolidado_ingresos_costos_gastos(movimientos, datos_filtro)
@@ -178,6 +184,7 @@ def sumar_consolidado_mes_a_mes(consolidado, mes, tipo):
 
 
 def datos_formulario_consolidado(request):
+    empresas = request.POST.getlist('empresa[]', [])
     procesos = request.POST.getlist('proceso[]', [])
     contratos = request.POST.getlist('contrato[]', [])
     fecha_desde = request.POST.get('fecha_desde', '')
@@ -192,6 +199,7 @@ def datos_formulario_consolidado(request):
     tipos_flujos_caja = request.POST.get('tipos_flujos_caja_id', '')
     estados = request.POST.getlist('estados[]', [])
 
+    empresas = list(map(int, empresas))
     procesos = list(map(int, procesos))
     contratos = list(map(int, contratos))
     estados = list(map(int, estados)) if estados else [1, 2]
@@ -205,7 +213,8 @@ def datos_formulario_consolidado(request):
 
     return {'lista_procesos': procesos, 'lista_contratos': contratos, 'fecha_desde': fecha_desde,
             'fecha_hasta': fecha_hasta, 'subtipos': subtipos, 'tipos_flujos_caja': tipos_flujos_caja,
-            'estados': estados, 'fecha_min': fecha_min, 'fecha_max': fecha_max, 'categorias': categorias}
+            'estados': estados, 'fecha_min': fecha_min, 'fecha_max': fecha_max, 'categorias': categorias,
+            'lista_empresas': empresas}
 
 
 def obtener_fecha_minima(objeto):
