@@ -151,7 +151,11 @@ $(document).ready(function() {
 
     idProceso.change(function () {
         seleccionarFCContratosXFCProceso();
-    })
+    });
+
+    idEmpresa.change(function () {
+        seleccionarFCProcesoContratoXFCEmpresa();
+    });
     // Fin del Bloque
 });
 // Fin del Bloque
@@ -353,6 +357,42 @@ function seleccionarFCContratosXFCProceso() {
                     });
                 }else{
                     contratoTemp.empty();
+                }
+            }else {
+                EVANotificacion.toast.error('Ha ocurrido un error');
+            }
+        },
+        failure: function (errMsg) {
+            EVANotificacion.toast.error('Ha ocurrido un error al enviar la solcitud.');
+        }
+    });
+}
+
+function seleccionarFCProcesoContratoXFCEmpresa() {
+    $.ajax({
+        url: "/financiero/flujo-caja/consolidado/fc_procesos_contratos_x_fc_empresas/?datos=[" + idEmpresa.val() + "]",
+        type: 'GET',
+        context: document.body,
+        success: function (data) {
+            if(data.estado === "OK") {
+                let contratoSelect = $('#contrato_id');
+                let procesoSelect = $('#proceso_id');
+                if (data.datos.contratos){
+                    contratoSelect.empty();
+                    JSON.parse(data.datos.contratos).forEach(function (index){
+                        contratoSelect.append('<option value="' + index.id + '">' + index.contrato__numero_contrato + '</option>')
+                    });
+                }else{
+                    contratoSelect.empty();
+                }
+                if (data.datos.procesos){
+                    procesoSelect.empty();
+                    JSON.parse(data.datos.procesos).forEach(function (index){
+                        console.log(index)
+                        procesoSelect.append('<option value="' + index.id + '">' + index.proceso__nombre + '</option>')
+                    });
+                }else{
+                    procesoSelect.empty();
                 }
             }else {
                 EVANotificacion.toast.error('Ha ocurrido un error');

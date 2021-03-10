@@ -69,5 +69,8 @@ urlpatterns = [
          name='flujo-caja-consolidado'),
     path('flujo-caja/consolidado/fc_contratos_x_fc_proceso/', flujo_caja_consolidado.FCContratosXFCProcesos.as_view(),
          name='fc_contratos_x_fc_procesos'),
+    path('flujo-caja/consolidado/fc_procesos_contratos_x_fc_empresas/',
+         flujo_caja_consolidado.FCProcesosYContratosXFCEmpresas.as_view(), name='fc_procesos_contratos_x_fc_empresas'),
+
 ]
 

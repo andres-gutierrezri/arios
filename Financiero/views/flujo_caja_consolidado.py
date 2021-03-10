@@ -456,3 +456,26 @@ class FCContratosXFCProcesos(AbstractEvaLoggedView):
             .values('id', 'contrato__numero_contrato')
         contratos_json = json.dumps(list(contratos), cls=DjangoJSONEncoder)
         return JsonResponse({"estado": "OK", "datos": contratos_json})
+
+
+class FCProcesosYContratosXFCEmpresas(AbstractEvaLoggedView):
+    """
+    Genera los datos necesarios para seleccionar los procesos y contratos relacionados a con las empresas seleccionadas.
+    :request: Recibe por GET la lista con los id de los encabezados asociados a los procesos
+    seleccionados en el formulario de consolidado.
+    :return: Retorna una lista con los id de los encabezados de flujo de caja para cada proceso y contrato.
+    """
+    def get(self, request):
+        datos = json.loads(request.GET.get('datos', []))
+
+        procesos = FlujoCajaEncabezado.objects.filter(proceso__empresa_id__in=datos)\
+            .values('id', 'proceso__nombre')
+        contratos = FlujoCajaEncabezado.objects.filter(contrato__empresa_id__in=datos)\
+            .values('id', 'contrato__numero_contrato')
+
+        contratos_json = json.dumps(list(contratos), cls=DjangoJSONEncoder)
+        procesos_json = json.dumps(list(procesos), cls=DjangoJSONEncoder)
+
+        return JsonResponse({"estado": "OK", "datos": {'contratos': contratos_json,
+                                                       'procesos': procesos_json}})
+
