@@ -178,6 +178,11 @@ function seleccionarTodos(elemento) {
         icono.addClass('fa-check');
         texto.html('Seleccionar Todos')
     }
+    if (elemento === 'empresa'){
+        seleccionarFCProcesoContratoXFCEmpresa();
+    }else if (elemento === 'proceso'){
+        seleccionarFCContratosXFCProceso();
+    }
 }
 
 let fechaHasta = $('#fecha_hasta_id');
@@ -343,8 +348,12 @@ function Imprimir() {
 }
 
 function seleccionarFCContratosXFCProceso() {
+    let ruta = "/financiero/flujo-caja/consolidado/fc_contratos_x_fc_proceso/?empresas=[" + idEmpresa.val() + "]";
+    if (idProceso.val().length > 0){
+        ruta = "/financiero/flujo-caja/consolidado/fc_contratos_x_fc_proceso/?procesos=[" + idProceso.val()+ "]&empresas=[" + idEmpresa.val() + "]";
+    }
     $.ajax({
-        url: "/financiero/flujo-caja/consolidado/fc_contratos_x_fc_proceso/?procesos=[" + idProceso.val() + "]&empresas=[" + idEmpresa.val() + "]",
+        url: ruta,
         type: 'GET',
         context: document.body,
         success: function (data) {
@@ -388,7 +397,6 @@ function seleccionarFCProcesoContratoXFCEmpresa() {
                 if (data.datos.procesos){
                     procesoSelect.empty();
                     JSON.parse(data.datos.procesos).forEach(function (index){
-                        console.log(index)
                         procesoSelect.append('<option value="' + index.id + '">' + index.proceso__nombre + '</option>')
                     });
                 }else{
