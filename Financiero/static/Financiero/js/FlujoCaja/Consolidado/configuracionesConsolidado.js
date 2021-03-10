@@ -9,6 +9,7 @@ const controls = {
 let idCategorias = $('#categorias_id');
 let idContrato = $('#contrato_id');
 let idProceso = $('#proceso_id');
+let idEmpresa = $('#empresa_id');
 let idEstados = $('#estados_id');
 let idSubtipos = $('#subtipos_id');
 let subtiposCategorias = JSON.parse($('#subtipos_categorias').val());
@@ -91,6 +92,26 @@ $(document).ready(function() {
     idProceso.next().find("input").css("min-width", "200px");
     if (valoresProcesos){
         idProceso.val(JSON.parse(valoresProcesos)).trigger("change");
+    }
+    // Final del Bloque
+
+    // Configuración del Select Multiple de Empresas
+    idEmpresa.select2({
+        placeholder: "Seleccione una opción",
+        "language": {
+            noResults: function () {
+                return 'No se encontraron coincidencias';
+            },
+            searching: function () {
+                return 'Buscando…';
+            },
+        },
+    });
+
+    let valoresEmpresas = $('#valores_empresas').val();
+    idEmpresa.next().find("input").css("min-width", "200px");
+    if (valoresEmpresas){
+        idEmpresa.val(JSON.parse(valoresEmpresas)).trigger("change");
     }
     // Final del Bloque
 
