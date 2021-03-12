@@ -51,17 +51,25 @@ class FlujoCajaConsolidadoView(AbstractEvaLoggedView):
         if datos['lista_contratos']:
             con_pro.extend(datos['lista_contratos'])
         elif not datos['lista_procesos']:
-            con_pro.extend(FlujoCajaEncabezado.objects.get_id_flujos_contratos(request))
+            con_pro.extend(FlujoCajaEncabezado.objects.get_id_flujos_contratos())
 
         if datos['lista_procesos']:
             con_pro.extend(datos['lista_procesos'])
         elif not datos['lista_contratos']:
-            con_pro.extend(FlujoCajaEncabezado.objects.get_id_flujos_procesos(request))
+            con_pro.extend(FlujoCajaEncabezado.objects.get_id_flujos_procesos())
+
+        empresas = []
+        if datos['lista_empresas']:
+            empresas.extend(datos['lista_empresas'])
+        elif not datos['lista_empresas']:
+            empresas.extend(FlujoCajaEncabezado.objects.get_id_flujos_empresas())
+
         movimientos = FlujoCajaDetalle.objects\
             .filter(estado_id__in=estados, flujo_caja_enc__in=con_pro,
                     fecha_movimiento__range=[fecha_desde, fecha_hasta], tipo_registro__in=tipos_flujos_caja,
                     subtipo_movimiento_id__in=subtipos,
-                    subtipo_movimiento__categoria_movimiento__in=categorias)\
+                    subtipo_movimiento__categoria_movimiento__in=categorias,
+                    flujo_caja_enc__empresa_id__in=empresas)\
             .exclude(estado_id=EstadoFCDetalle.OBSOLETO)
         if not movimientos:
             messages.warning(request, 'No se encontraron concidencias')
@@ -80,8 +88,8 @@ def datos_xa_render(request, datos_formulario=None, movimientos=None, datos_filt
                                 'fecha_max': str(fecha_max)})
 
     empresas = Empresa.objects.get_xa_select()
-    procesos = FlujoCajaEncabezado.objects.get_xa_select_x_proceso(request)
-    contratos = FlujoCajaEncabezado.objects.get_xa_select_x_contrato(request)
+    procesos = FlujoCajaEncabezado.objects.get_xa_select_x_proceso()
+    contratos = FlujoCajaEncabezado.objects.get_xa_select_x_contrato()
 
     subtipos = SubTipoMovimiento.objects.get_xa_select_activos()
     categorias = CategoriaMovimiento.objects.get_xa_select_activos()
@@ -211,10 +219,10 @@ def datos_formulario_consolidado(request):
 
     fecha_min, fecha_max = obtener_fechas_min_max_fc(app_datetime_now())
 
-    return {'lista_procesos': procesos, 'lista_contratos': contratos, 'fecha_desde': fecha_desde,
+    return {'lista_procesos': procesos, 'lista_contratos': contratos, 'lista_empresas': empresas,
             'fecha_hasta': fecha_hasta, 'subtipos': subtipos, 'tipos_flujos_caja': tipos_flujos_caja,
             'estados': estados, 'fecha_min': fecha_min, 'fecha_max': fecha_max, 'categorias': categorias,
-            'lista_empresas': empresas}
+            'fecha_desde': fecha_desde}
 
 
 def obtener_fecha_minima(objeto):
