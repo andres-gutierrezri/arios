@@ -110,30 +110,30 @@ class EstadoFlujoCaja(models.Model):
 
 
 class FlujoCajaEncabezadoManager(ManagerGeneral):
-    def get_xa_select_x_contrato(self, request) -> QuerySet:
+    def get_xa_select_x_contrato(self) -> QuerySet:
         return super().get_queryset()\
-            .filter(contrato__isnull=False, contrato__empresa_id=get_id_empresa_global(request))\
+            .filter(contrato__isnull=False)\
             .values(campo_valor=F('id'), campo_texto=F('contrato__numero_contrato'))
 
-    def get_xa_select_x_proceso(self, request) -> QuerySet:
+    def get_xa_select_x_proceso(self) -> QuerySet:
         return super().get_queryset()\
-            .filter(proceso__isnull=False, proceso__empresa_id=get_id_empresa_global(request)) \
+            .filter(proceso__isnull=False) \
             .values(campo_valor=F('id'), campo_texto=F('proceso__nombre'))
 
-    def get_flujos_x_contrato(self, request) -> QuerySet:
-        return super().get_queryset().filter(contrato__isnull=False, contrato__empresa_id=get_id_empresa_global(request))
+    def get_flujos_x_contrato(self) -> QuerySet:
+        return super().get_queryset().filter(contrato__isnull=False)
 
-    def get_flujos_x_proceso(self, request) -> QuerySet:
-        return super().get_queryset().filter(proceso__isnull=False, proceso__empresa_id=get_id_empresa_global(request))
+    def get_flujos_x_proceso(self) -> QuerySet:
+        return super().get_queryset().filter(proceso__isnull=False)
 
-    def get_id_flujos_contratos(self, request) -> list:
+    def get_id_flujos_contratos(self) -> list:
         return list(super().get_queryset()
-                    .filter(contrato__isnull=False, contrato__empresa_id=get_id_empresa_global(request))
+                    .filter(contrato__isnull=False)
                     .values_list('id', flat=True))
 
-    def get_id_flujos_procesos(self, request) -> list:
+    def get_id_flujos_procesos(self) -> list:
         return list(super().get_queryset()
-                    .filter(proceso__isnull=False, proceso__empresa_id=get_id_empresa_global(request))
+                    .filter(proceso__isnull=False)
                     .values_list('id', flat=True))
 
 
