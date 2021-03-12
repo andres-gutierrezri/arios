@@ -124,7 +124,8 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
         else:
             flujo_caja_enc = FlujoCajaEncabezado.objects.create(fecha_crea=datetime.now(), proceso=proceso,
                                                                 contrato=contrato,
-                                                                estado_id=EstadoFlujoCaja.ALIMENTACION)
+                                                                estado_id=EstadoFlujoCaja.ALIMENTACION,
+                                                                empresa_id=get_id_empresa_global(request))
     if not tiene_permisos_de_acceso(request, contrato=contrato, proceso=proceso):
         messages.error(request, 'No tiene permisos para acceder a este flujo de caja.')
         return redirect(reverse(ruta_reversa))
