@@ -6,7 +6,7 @@ from django.db import models
 from django.db.models import QuerySet, F
 
 from Administracion.utils import get_id_empresa_global
-from Administracion.models import Proceso
+from Administracion.models import Proceso, Empresa
 from EVA.General.modelmanagers import ManagerGeneral
 from Proyectos.models import Contrato
 
@@ -146,6 +146,8 @@ class FlujoCajaEncabezado(models.Model):
     estado = models.ForeignKey(EstadoFlujoCaja, on_delete=models.DO_NOTHING, verbose_name='Estado',
                                null=False, blank=False)
     fecha_crea = models.DateTimeField(verbose_name='Fecha de Creación', null=False, blank=False)
+
+    empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa', blank=False, null=True)
 
     def __str__(self):
         return '{0} - {1}'.format(self.proceso, self.contrato)
