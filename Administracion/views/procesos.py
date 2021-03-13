@@ -4,7 +4,6 @@ from django.db.models import OuterRef, Exists, F
 from django.shortcuts import render
 
 from Administracion.models import Proceso
-from Administracion.utils import get_id_empresa_global
 from EVA.views.index import AbstractEvaLoggedView
 from TalentoHumano.models.colaboradores import ColaboradorProceso
 
@@ -17,8 +16,7 @@ class ProcesosView(AbstractEvaLoggedView):
 
         procesos = Proceso.objects\
             .values('id', 'nombre', 'objeto', estado_fc=F('flujocajaencabezado__estado__nombre'))\
-            .annotate(proceso_usuario=Exists(procesos_usuario))\
-            .filter(empresa_id=get_id_empresa_global(request))
+            .annotate(proceso_usuario=Exists(procesos_usuario))
 
         return render(request, 'Financiero/FlujoCaja/FlujoCajaProcesos/index.html',
                       {'procesos': procesos, 'fecha': datetime.now(),
