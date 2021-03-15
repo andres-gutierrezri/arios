@@ -83,9 +83,10 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
         base_template = 'Administracion/_common/base_administracion.html'
         menu_actual = ['procesos', 'flujos_de_caja']
         proceso = Proceso.objects.get(id=proceso)
-        flujo_caja_enc = FlujoCajaEncabezado.objects.filter(proceso=proceso)
+        flujo_caja_enc = FlujoCajaEncabezado.objects.filter(proceso=proceso, empresa_id=get_id_empresa_global(request))
         movimientos = FlujoCajaDetalle \
-            .objects.filter(flujo_caja_enc__proceso=proceso, tipo_registro=tipo) \
+            .objects.filter(flujo_caja_enc__proceso=proceso, tipo_registro=tipo,
+                            flujo_caja_enc__empresa_id=get_id_empresa_global(request)) \
             .annotate(fecha_corte=F('flujo_caja_enc__corteflujocaja__fecha_corte')) \
             .exclude(estado_id=EstadoFCDetalle.OBSOLETO)
     else:
@@ -95,7 +96,8 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
         contrato = Contrato.objects.get(id=contrato)
         flujo_caja_enc = FlujoCajaEncabezado.objects.filter(contrato=contrato)
         movimientos = FlujoCajaDetalle \
-            .objects.filter(flujo_caja_enc__contrato=contrato, tipo_registro=tipo) \
+            .objects.filter(flujo_caja_enc__contrato=contrato, tipo_registro=tipo,
+                            flujo_caja_enc__empresa_id=get_id_empresa_global(request)) \
             .annotate(fecha_corte=F('flujo_caja_enc__corteflujocaja__fecha_corte')) \
             .exclude(estado_id=EstadoFCDetalle.OBSOLETO)
 
