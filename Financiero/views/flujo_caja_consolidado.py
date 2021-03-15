@@ -10,7 +10,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
-from Administracion.models import Empresa
+from Administracion.models import Empresa, Proceso
 from Administracion.utils import get_id_empresa_global
 from EVA.General import app_date_now, app_datetime_now
 from EVA.General.conversiones import add_months, mes_numero_a_letras, fijar_fecha_inicio_mes
@@ -92,8 +92,8 @@ def datos_xa_render(request, datos_formulario=None, movimientos=None, datos_filt
                                 'fecha_max': str(fecha_max)})
 
     empresas = Empresa.objects.get_xa_select()
-    procesos = FlujoCajaEncabezado.objects.get_xa_select_x_proceso()
-    contratos = FlujoCajaEncabezado.objects.get_xa_select_x_contrato()
+    procesos = Proceso.objects.get_xa_select()
+    contratos = Contrato.objects.get_xa_select_x_empresa(get_id_empresa_global(request))
 
     subtipos = SubTipoMovimiento.objects.get_xa_select_activos()
     categorias = CategoriaMovimiento.objects.get_xa_select_activos()
@@ -132,12 +132,8 @@ def datos_xa_render(request, datos_formulario=None, movimientos=None, datos_filt
 
         if datos_formulario['lista_procesos']:
             datos['textos_procesos'] = quitar_selecciones
-            valores_procesos = FlujoCajaEncabezado.objects.filter(id__in=datos_formulario['lista_procesos'])\
-                .values('proceso_id')
-            datos['contratos'] = FlujoCajaEncabezado.objects\
-                .filter(contrato__proceso_a_cargo__in=valores_procesos, contrato__isnull=False,
-                        contrato__empresa_id=get_id_empresa_global(request))\
-                .values(campo_valor=F('id'), campo_texto=F('contrato__numero_contrato'))
+            datos['contratos'] = Contrato.objects.filter(proceso_a_cargo__in=datos_formulario['lista_procesos']) \
+                .values(campo_valor=F('id'), campo_texto=F('numero_contrato'))
         if datos_formulario['subtipos']:
             datos['textos_subtipos'] = quitar_selecciones
 
@@ -317,7 +313,8 @@ def consolidado_llenar_categoria(valores_cat: {}, tipo_mov, datos_filtro, meses)
                     fecha_movimiento__range=[datos_filtro['fecha_desde'], datos_filtro['fecha_hasta']],
                     estado_id__in=datos_filtro['estados'],
                     tipo_registro__in=datos_filtro['tipos_registro'],
-                    flujo_caja_enc_id__in=datos_filtro['ids_flujos'])\
+                    flujo_caja_enc_id__in=datos_filtro['ids_flujos'],
+                    flujo_caja_enc__empresa_id__in=datos_filtro['empresas'])\
             .exclude(estado_id=EstadoFCDetalle.OBSOLETO)\
             .values('flujo_caja_enc__proceso__nombre', 'flujo_caja_enc__contrato__numero_contrato', 'tipo_registro',
                     fecha=TruncMonth('fecha_movimiento', output_field=DateField())).annotate(Sum('valor'))\
