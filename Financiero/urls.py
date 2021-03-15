@@ -67,7 +67,7 @@ urlpatterns = [
     path('flujos-de-caja/<int:opcion>', flujo_caja_general.FlujosDeCajaView.as_view(), name='flujos-de-caja'),
     path('flujo-caja/consolidado', flujo_caja_consolidado.FlujoCajaConsolidadoView.as_view(),
          name='flujo-caja-consolidado'),
-    path('flujo-caja/consolidado/fc_contratos_x_fc_proceso/', flujo_caja_consolidado.FCContratosXFCProcesos.as_view(),
-         name='fc_contratos_x_fc_procesos'),
+    path('flujo-caja/consolidado/contratos_x_proceso/', flujo_caja_consolidado.ContratosXProcesos.as_view(),
+         name='contratos_x_procesos'),
 ]
 
