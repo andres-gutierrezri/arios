@@ -18,6 +18,11 @@ class ManagerGeneral(models.Manager):
     def get_xa_select(self) -> QuerySet:
         return self.get_x_estado(xa_select=True)
 
+    def get_xa_select_x_empresa(self, id_empresa) -> QuerySet:
+        return super().get_queryset().filter(empresa_id=id_empresa)\
+            .values(campo_valor=F('id'), campo_texto=F(self.campo_texto)) \
+            .order_by(self.campo_texto)
+
     def get_xa_select_activos(self) -> QuerySet:
         return self.get_x_estado(True, True)
 
