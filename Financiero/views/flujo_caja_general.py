@@ -231,12 +231,14 @@ def guardar_movimiento(request, tipo=None, contrato=None, proceso=None, movimien
         ruta_reversa = 'financiero:flujo-caja-contratos'
         ruta_detalle = 'financiero:flujo-caja-contratos-detalle'
         objeto = contrato
-        flujo_encabezado = FlujoCajaEncabezado.objects.get(contrato_id=contrato)
+        flujo_encabezado = FlujoCajaEncabezado.objects.get(contrato_id=contrato,
+                                                           empresa_id=get_id_empresa_global(request))
     else:
         ruta_reversa = 'administracion:procesos'
         ruta_detalle = 'financiero:flujo-caja-procesos-detalle'
         objeto = proceso
-        flujo_encabezado = FlujoCajaEncabezado.objects.get(proceso_id=proceso)
+        flujo_encabezado = FlujoCajaEncabezado.objects.get(proceso_id=proceso,
+                                                           empresa_id=get_id_empresa_global(request))
 
     if not tiene_permisos_de_acceso(request, contrato=contrato, proceso=proceso) or \
             not validar_gestion_registro(request, flujo_detalle):
