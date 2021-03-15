@@ -435,33 +435,26 @@ def obtener_fechas_min_max_fc(valor_defecto):
     return fecha_min, fecha_max
 
 
-class FCContratosXFCProcesos(AbstractEvaLoggedView):
+class ContratosXProcesos(AbstractEvaLoggedView):
     """
     Genera los datos necesarios para seleccionar los contratos relacionados a los procesos que recibe.
-    :request: Recibe por GET la lista con los id de los encabezados adociados a los procesos
-    seleccionados en el formulario de consolidado.
-    :return: Retorna una lista con los id de los encabezados de flujo de caja para cada contrato.
+    :request: Recibe por GET la lista con los id de los procesos seleccionados en el formulario de consolidado,
+    adicional a ello, realiza un filtro por empresa para distinguir los datos.
+    :return: Retorna una lista con los id de los contratos.
     """
     def get(self, request):
         procesos = json.loads(request.GET.get('procesos', [])) if request.GET.get('procesos') else ''
         empresas = json.loads(request.GET.get('empresas', [])) if request.GET.get('empresas') else ''
-        if procesos:
-            procesos = FlujoCajaEncabezado.objects.filter(id__in=procesos).values('proceso_id')
+        if procesos and empresas:
+            contratos = Contrato.objects.filter(proceso_a_cargo_id__in=procesos, empresa_id__in=empresas)\
+                .values(campo_valor=F('id'), campo_texto=F('numero_contrato'))
+        elif procesos:
+            contratos = Contrato.objects.filter(proceso_a_cargo_id__in=procesos) \
+                .values(campo_valor=F('id'), campo_texto=F('numero_contrato'))
+        elif empresas:
+            contratos = Contrato.objects.filter(empresa_id__in=empresas) \
+                .values(campo_valor=F('id'), campo_texto=F('numero_contrato'))
         else:
-            contratos = FlujoCajaEncabezado.objects.filter(contrato__empresa_id__in=empresas)\
-                .values('id', 'contrato__numero_contrato')
-            contratos_json = json.dumps(list(contratos), cls=DjangoJSONEncoder)
-            return JsonResponse({"estado": "OK", "datos": contratos_json})
-
-        lista_procesos = []
-        for lp in procesos:
-            lista_procesos.append(lp['proceso_id'])
-
-        contratos = Contrato.objects.filter(proceso_a_cargo__in=lista_procesos).values('id')
-        lista_contratos = []
-        for c in contratos:
-            lista_contratos.append(c['id'])
-        contratos = FlujoCajaEncabezado.objects.filter(contrato_id__in=lista_contratos, contrato__isnull=False)\
-            .values('id', 'contrato__numero_contrato')
+            contratos = Contrato.objects.get_xa_select_activos()
         contratos_json = json.dumps(list(contratos), cls=DjangoJSONEncoder)
         return JsonResponse({"estado": "OK", "datos": contratos_json})
