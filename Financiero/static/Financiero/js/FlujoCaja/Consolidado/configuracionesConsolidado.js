@@ -150,11 +150,12 @@ $(document).ready(function() {
     }
 
     idProceso.change(function () {
-        seleccionarFCContratosXFCProceso();
+        cargarSeleccionesContratos();
     });
 
     idEmpresa.change(function () {
         idProceso.val([]).trigger('change');
+        cargarSeleccionesContratos();
     });
     // Fin del Bloque
 });
@@ -347,10 +348,10 @@ function Imprimir() {
      document.body.innerHTML = originalContents;
 }
 
-function seleccionarFCContratosXFCProceso() {
-    let ruta = "/financiero/flujo-caja/consolidado/fc_contratos_x_fc_proceso/?empresas=[" + idEmpresa.val() + "]";
+function cargarSeleccionesContratos() {
+    let ruta = "/financiero/flujo-caja/consolidado/contratos_x_proceso/?empresas=[" + idEmpresa.val() + "]";
     if (idProceso.val().length > 0){
-        ruta = "/financiero/flujo-caja/consolidado/fc_contratos_x_fc_proceso/?procesos=[" + idProceso.val()+ "]&empresas=[" + idEmpresa.val() + "]";
+        ruta = "/financiero/flujo-caja/consolidado/contratos_x_proceso/?procesos=[" + idProceso.val()+ "]&empresas=[" + idEmpresa.val() + "]";
     }
     $.ajax({
         url: ruta,
