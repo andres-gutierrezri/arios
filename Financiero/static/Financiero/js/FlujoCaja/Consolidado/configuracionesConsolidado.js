@@ -152,6 +152,10 @@ $(document).ready(function() {
     idProceso.change(function () {
         seleccionarFCContratosXFCProceso();
     });
+
+    idEmpresa.change(function () {
+        idProceso.val([]).trigger('change');
+    });
     // Fin del Bloque
 });
 // Fin del Bloque
@@ -355,10 +359,10 @@ function seleccionarFCContratosXFCProceso() {
         success: function (data) {
             if(data.estado === "OK") {
                 let contratoTemp = $('#contrato_id');
-                if (data.datos.includes('id')){
+                if (data.datos.includes('campo_valor')){
                     contratoTemp.empty();
                     JSON.parse(data.datos).forEach(function (index){
-                        contratoTemp.append('<option value="' + index.id + '">' + index.contrato__numero_contrato + '</option>')
+                        contratoTemp.append('<option value="' + index.campo_valor + '">' + index.campo_texto + '</option>')
                     });
                 }else{
                     contratoTemp.empty();
