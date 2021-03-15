@@ -49,21 +49,25 @@ class FlujoCajaConsolidadoView(AbstractEvaLoggedView):
 
         con_pro = []
         if datos['lista_contratos']:
-            con_pro.extend(datos['lista_contratos'])
-        elif not datos['lista_procesos']:
+            con_pro.extend(list(FlujoCajaEncabezado.objects
+                                .filter(contrato_id__in=datos['lista_contratos'])
+                                .values_list('id', flat=True)))
+        elif not datos['lista_procesos'] or not datos['lista_empresas']:
             con_pro.extend(FlujoCajaEncabezado.objects.get_id_flujos_contratos())
 
         if datos['lista_procesos']:
-            con_pro.extend(datos['lista_procesos'])
-        elif not datos['lista_contratos']:
+            con_pro.extend(list(FlujoCajaEncabezado.objects
+                                .filter(proceso_id__in=datos['lista_procesos'])
+                                .values_list('id', flat=True)))
+
+        elif not datos['lista_contratos'] or not datos['lista_empresas']:
             con_pro.extend(FlujoCajaEncabezado.objects.get_id_flujos_procesos())
 
         empresas = []
         if datos['lista_empresas']:
             empresas.extend(datos['lista_empresas'])
         elif not datos['lista_empresas']:
-            empresas.extend(FlujoCajaEncabezado.objects.get_id_flujos_empresas())
-
+            empresas.extend(list(Empresa.objects.all().values_list('id', flat=True)))
         movimientos = FlujoCajaDetalle.objects\
             .filter(estado_id__in=estados, flujo_caja_enc__in=con_pro,
                     fecha_movimiento__range=[fecha_desde, fecha_hasta], tipo_registro__in=tipos_flujos_caja,
@@ -76,7 +80,7 @@ class FlujoCajaConsolidadoView(AbstractEvaLoggedView):
 
         datos_filtro = {'estados': estados, 'ids_flujos': con_pro, 'fecha_desde': fecha_desde,
                         'fecha_hasta': fecha_hasta, 'tipos_registro': tipos_flujos_caja, 'subtipos': subtipos,
-                        'categorias': categorias}
+                        'categorias': categorias, 'empresas': empresas}
         return render(request, 'Financiero/FlujoCaja/FlujoCajaConsolidado/index.html',
                       datos_xa_render(request, datos, movimientos, datos_filtro))
 
