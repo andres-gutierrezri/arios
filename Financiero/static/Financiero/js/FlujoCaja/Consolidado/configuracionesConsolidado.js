@@ -179,11 +179,7 @@ function seleccionarTodos(elemento) {
         icono.addClass('fa-check');
         texto.html('Seleccionar Todos')
     }
-    if (elemento === 'empresa'){
-        seleccionarFCProcesoContratoXFCEmpresa();
-    }else if (elemento === 'proceso'){
-        seleccionarFCContratosXFCProceso();
-    }
+    cargarSeleccionesContratos();
 }
 
 let fechaHasta = $('#fecha_hasta_id');
