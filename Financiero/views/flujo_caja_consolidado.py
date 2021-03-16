@@ -132,7 +132,8 @@ def datos_xa_render(request, datos_formulario=None, movimientos=None, datos_filt
 
         if datos_formulario['lista_procesos']:
             datos['textos_procesos'] = quitar_selecciones
-            datos['contratos'] = Contrato.objects.filter(proceso_a_cargo__in=datos_formulario['lista_procesos']) \
+            datos['contratos'] = Contrato.objects.filter(proceso_a_cargo__in=datos_formulario['lista_procesos'],
+                                                         empresa_id__in=datos_formulario['lista_empresas']) \
                 .values(campo_valor=F('id'), campo_texto=F('numero_contrato'))
         if datos_formulario['subtipos']:
             datos['textos_subtipos'] = quitar_selecciones
