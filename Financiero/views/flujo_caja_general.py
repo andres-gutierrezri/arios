@@ -83,11 +83,10 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
         base_template = 'Administracion/_common/base_administracion.html'
         menu_actual = ['procesos', 'flujos_de_caja']
         proceso = Proceso.objects.get(id=proceso)
-        flujo_caja_enc = FlujoCajaEncabezado.objects.filter(proceso=proceso,
-                                                            proceso__empresa_id=get_id_empresa_global(request))
+        flujo_caja_enc = FlujoCajaEncabezado.objects.filter(proceso=proceso, empresa_id=get_id_empresa_global(request))
         movimientos = FlujoCajaDetalle \
             .objects.filter(flujo_caja_enc__proceso=proceso, tipo_registro=tipo,
-                            flujo_caja_enc__proceso__empresa_id=get_id_empresa_global(request)) \
+                            flujo_caja_enc__empresa_id=get_id_empresa_global(request)) \
             .annotate(fecha_corte=F('flujo_caja_enc__corteflujocaja__fecha_corte')) \
             .exclude(estado_id=EstadoFCDetalle.OBSOLETO)
     else:
@@ -95,11 +94,10 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
         base_template = 'Proyectos/_common/base_proyectos.html'
         menu_actual = 'fc_contratos'
         contrato = Contrato.objects.get(id=contrato)
-        flujo_caja_enc = FlujoCajaEncabezado.objects.filter(contrato=contrato,
-                                                            contrato__empresa_id=get_id_empresa_global(request))
+        flujo_caja_enc = FlujoCajaEncabezado.objects.filter(contrato=contrato)
         movimientos = FlujoCajaDetalle \
             .objects.filter(flujo_caja_enc__contrato=contrato, tipo_registro=tipo,
-                            flujo_caja_enc__contrato__empresa_id=get_id_empresa_global(request)) \
+                            flujo_caja_enc__empresa_id=get_id_empresa_global(request)) \
             .annotate(fecha_corte=F('flujo_caja_enc__corteflujocaja__fecha_corte')) \
             .exclude(estado_id=EstadoFCDetalle.OBSOLETO)
 
@@ -118,13 +116,10 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
     if flujo_caja_enc:
         flujo_caja_enc = flujo_caja_enc.first()
     else:
-        if proceso and proceso.empresa_id != get_id_empresa_global(request) \
-                or contrato and contrato.empresa_id != get_id_empresa_global(request):
-            return redirect(reverse(ruta))
-        else:
-            flujo_caja_enc = FlujoCajaEncabezado.objects.create(fecha_crea=datetime.now(), proceso=proceso,
-                                                                contrato=contrato,
-                                                                estado_id=EstadoFlujoCaja.ALIMENTACION)
+        flujo_caja_enc = FlujoCajaEncabezado.objects.create(fecha_crea=datetime.now(), proceso=proceso,
+                                                            contrato=contrato,
+                                                            estado_id=EstadoFlujoCaja.ALIMENTACION,
+                                                            empresa_id=get_id_empresa_global(request))
     if not tiene_permisos_de_acceso(request, contrato=contrato, proceso=proceso):
         messages.error(request, 'No tiene permisos para acceder a este flujo de caja.')
         return redirect(reverse(ruta_reversa))
@@ -238,12 +233,14 @@ def guardar_movimiento(request, tipo=None, contrato=None, proceso=None, movimien
         ruta_reversa = 'financiero:flujo-caja-contratos'
         ruta_detalle = 'financiero:flujo-caja-contratos-detalle'
         objeto = contrato
-        flujo_encabezado = FlujoCajaEncabezado.objects.get(contrato_id=contrato)
+        flujo_encabezado = FlujoCajaEncabezado.objects.get(contrato_id=contrato,
+                                                           empresa_id=get_id_empresa_global(request))
     else:
         ruta_reversa = 'administracion:procesos'
         ruta_detalle = 'financiero:flujo-caja-procesos-detalle'
         objeto = proceso
-        flujo_encabezado = FlujoCajaEncabezado.objects.get(proceso_id=proceso)
+        flujo_encabezado = FlujoCajaEncabezado.objects.get(proceso_id=proceso,
+                                                           empresa_id=get_id_empresa_global(request))
 
     if not tiene_permisos_de_acceso(request, contrato=contrato, proceso=proceso) or \
             not validar_gestion_registro(request, flujo_detalle):

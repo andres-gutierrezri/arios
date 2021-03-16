@@ -3,17 +3,22 @@ import json
 from datetime import datetime
 
 from django.contrib import messages
-from django.db.models import Sum, DateField
+from django.core.serializers.json import DjangoJSONEncoder
+from django.db.models import Sum, DateField, F
 from django.db.models.functions import TruncMonth
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
+from Administracion.models import Empresa, Proceso
+from Administracion.utils import get_id_empresa_global
 from EVA.General import app_date_now, app_datetime_now
 from EVA.General.conversiones import add_months, mes_numero_a_letras, fijar_fecha_inicio_mes
 from EVA.views.index import AbstractEvaLoggedView
 from Financiero.models import FlujoCajaEncabezado
 from Financiero.models.flujo_caja import SubTipoMovimiento, FlujoCajaDetalle, EstadoFCDetalle, CategoriaMovimiento, \
     TipoMovimiento
+from Proyectos.models import Contrato
 
 COMPARATIVO = 2
 REAL = 0
@@ -44,26 +49,38 @@ class FlujoCajaConsolidadoView(AbstractEvaLoggedView):
 
         con_pro = []
         if datos['lista_contratos']:
-            con_pro.extend(datos['lista_contratos'])
-        elif not datos['lista_procesos']:
-            con_pro.extend(FlujoCajaEncabezado.objects.get_id_flujos_contratos(request))
+            con_pro.extend(list(FlujoCajaEncabezado.objects
+                                .filter(contrato_id__in=datos['lista_contratos'])
+                                .values_list('id', flat=True)))
+        elif not datos['lista_procesos'] or not datos['lista_empresas']:
+            con_pro.extend(FlujoCajaEncabezado.objects.get_id_flujos_contratos())
 
         if datos['lista_procesos']:
-            con_pro.extend(datos['lista_procesos'])
-        elif not datos['lista_contratos']:
-            con_pro.extend(FlujoCajaEncabezado.objects.get_id_flujos_procesos(request))
+            con_pro.extend(list(FlujoCajaEncabezado.objects
+                                .filter(proceso_id__in=datos['lista_procesos'])
+                                .values_list('id', flat=True)))
+
+        elif not datos['lista_contratos'] or not datos['lista_empresas']:
+            con_pro.extend(FlujoCajaEncabezado.objects.get_id_flujos_procesos())
+
+        empresas = []
+        if datos['lista_empresas']:
+            empresas.extend(datos['lista_empresas'])
+        elif not datos['lista_empresas']:
+            empresas.extend(list(Empresa.objects.all().values_list('id', flat=True)))
         movimientos = FlujoCajaDetalle.objects\
             .filter(estado_id__in=estados, flujo_caja_enc__in=con_pro,
                     fecha_movimiento__range=[fecha_desde, fecha_hasta], tipo_registro__in=tipos_flujos_caja,
                     subtipo_movimiento_id__in=subtipos,
-                    subtipo_movimiento__categoria_movimiento__in=categorias)\
+                    subtipo_movimiento__categoria_movimiento__in=categorias,
+                    flujo_caja_enc__empresa_id__in=empresas)\
             .exclude(estado_id=EstadoFCDetalle.OBSOLETO)
         if not movimientos:
             messages.warning(request, 'No se encontraron concidencias')
 
         datos_filtro = {'estados': estados, 'ids_flujos': con_pro, 'fecha_desde': fecha_desde,
                         'fecha_hasta': fecha_hasta, 'tipos_registro': tipos_flujos_caja, 'subtipos': subtipos,
-                        'categorias': categorias}
+                        'categorias': categorias, 'empresas': empresas}
         return render(request, 'Financiero/FlujoCaja/FlujoCajaConsolidado/index.html',
                       datos_xa_render(request, datos, movimientos, datos_filtro))
 
@@ -74,8 +91,9 @@ def datos_xa_render(request, datos_formulario=None, movimientos=None, datos_filt
     fecha_min_max = json.dumps({'fecha_min': str(fecha_min),
                                 'fecha_max': str(fecha_max)})
 
-    procesos = FlujoCajaEncabezado.objects.get_xa_select_x_proceso(request)
-    contratos = FlujoCajaEncabezado.objects.get_xa_select_x_contrato(request)
+    empresas = Empresa.objects.get_xa_select()
+    procesos = Proceso.objects.get_xa_select()
+    contratos = Contrato.objects.get_xa_select_x_empresa(get_id_empresa_global(request))
 
     subtipos = SubTipoMovimiento.objects.get_xa_select_activos()
     categorias = CategoriaMovimiento.objects.get_xa_select_activos()
@@ -91,12 +109,13 @@ def datos_xa_render(request, datos_formulario=None, movimientos=None, datos_filt
                {'campo_valor': 4, 'campo_texto': 'Eliminado'}]
 
     datos = {'procesos': procesos, 'contratos': contratos, 'tipos_flujos': tipos_flujos, 'estados': estados,
-             'categorias': categorias, 'subtipos': subtipos, 'fecha_actual': datetime.today(),
+             'categorias': categorias, 'subtipos': subtipos, 'fecha_actual': datetime.today(), 'empresas': empresas,
              'subtipos_categorias': json.dumps(subtipos_categorias), 'fecha_min_max': fecha_min_max,
              'menu_actual': ['flujo_caja', 'consolidado']}
 
     quitar_selecciones = {'texto': 'Quitar Selecciones', 'icono': 'fa-times'}
     seleccionar_todos = {'texto': 'Seleccionar Todos', 'icono': 'fa-check'}
+    datos['textos_empresas'] = seleccionar_todos
     datos['textos_contratos'] = seleccionar_todos
     datos['textos_procesos'] = seleccionar_todos
     datos['textos_subtipos'] = seleccionar_todos
@@ -105,12 +124,17 @@ def datos_xa_render(request, datos_formulario=None, movimientos=None, datos_filt
     if datos_formulario:
         datos['valor'] = datos_formulario
 
+        if datos_formulario['lista_empresas']:
+            datos['textos_empresas'] = quitar_selecciones
+
         if datos_formulario['lista_contratos']:
             datos['textos_contratos'] = quitar_selecciones
 
         if datos_formulario['lista_procesos']:
             datos['textos_procesos'] = quitar_selecciones
-
+            datos['contratos'] = Contrato.objects.filter(proceso_a_cargo__in=datos_formulario['lista_procesos'],
+                                                         empresa_id__in=datos_formulario['lista_empresas']) \
+                .values(campo_valor=F('id'), campo_texto=F('numero_contrato'))
         if datos_formulario['subtipos']:
             datos['textos_subtipos'] = quitar_selecciones
 
@@ -121,7 +145,7 @@ def datos_xa_render(request, datos_formulario=None, movimientos=None, datos_filt
             datos['comparativo'] = True
 
     else:
-        datos['valor'] = {'estados': [1, 2]}
+        datos['valor'] = {'estados': [1, 2], 'lista_empresas': [get_id_empresa_global(request)]}
 
     if movimientos:
         consolidado = consolidado_ingresos_costos_gastos(movimientos, datos_filtro)
@@ -169,6 +193,7 @@ def sumar_consolidado_mes_a_mes(consolidado, mes, tipo):
 
 
 def datos_formulario_consolidado(request):
+    empresas = request.POST.getlist('empresa[]', [])
     procesos = request.POST.getlist('proceso[]', [])
     contratos = request.POST.getlist('contrato[]', [])
     fecha_desde = request.POST.get('fecha_desde', '')
@@ -183,6 +208,7 @@ def datos_formulario_consolidado(request):
     tipos_flujos_caja = request.POST.get('tipos_flujos_caja_id', '')
     estados = request.POST.getlist('estados[]', [])
 
+    empresas = list(map(int, empresas))
     procesos = list(map(int, procesos))
     contratos = list(map(int, contratos))
     estados = list(map(int, estados)) if estados else [1, 2]
@@ -194,9 +220,10 @@ def datos_formulario_consolidado(request):
 
     fecha_min, fecha_max = obtener_fechas_min_max_fc(app_datetime_now())
 
-    return {'lista_procesos': procesos, 'lista_contratos': contratos, 'fecha_desde': fecha_desde,
+    return {'lista_procesos': procesos, 'lista_contratos': contratos, 'lista_empresas': empresas,
             'fecha_hasta': fecha_hasta, 'subtipos': subtipos, 'tipos_flujos_caja': tipos_flujos_caja,
-            'estados': estados, 'fecha_min': fecha_min, 'fecha_max': fecha_max, 'categorias': categorias}
+            'estados': estados, 'fecha_min': fecha_min, 'fecha_max': fecha_max, 'categorias': categorias,
+            'fecha_desde': fecha_desde}
 
 
 def obtener_fecha_minima(objeto):
@@ -287,7 +314,8 @@ def consolidado_llenar_categoria(valores_cat: {}, tipo_mov, datos_filtro, meses)
                     fecha_movimiento__range=[datos_filtro['fecha_desde'], datos_filtro['fecha_hasta']],
                     estado_id__in=datos_filtro['estados'],
                     tipo_registro__in=datos_filtro['tipos_registro'],
-                    flujo_caja_enc_id__in=datos_filtro['ids_flujos'])\
+                    flujo_caja_enc_id__in=datos_filtro['ids_flujos'],
+                    flujo_caja_enc__empresa_id__in=datos_filtro['empresas'])\
             .exclude(estado_id=EstadoFCDetalle.OBSOLETO)\
             .values('flujo_caja_enc__proceso__nombre', 'flujo_caja_enc__contrato__numero_contrato', 'tipo_registro',
                     fecha=TruncMonth('fecha_movimiento', output_field=DateField())).annotate(Sum('valor'))\
@@ -406,3 +434,28 @@ def obtener_fechas_min_max_fc(valor_defecto):
         fecha_min = valor_defecto
         fecha_max = valor_defecto
     return fecha_min, fecha_max
+
+
+class ContratosXProcesos(AbstractEvaLoggedView):
+    """
+    Genera los datos necesarios para seleccionar los contratos relacionados a los procesos que recibe.
+    :request: Recibe por GET la lista con los id de los procesos seleccionados en el formulario de consolidado,
+    adicional a ello, realiza un filtro por empresa para distinguir los datos.
+    :return: Retorna una lista con los id de los contratos.
+    """
+    def get(self, request):
+        procesos = json.loads(request.GET.get('procesos', [])) if request.GET.get('procesos') else ''
+        empresas = json.loads(request.GET.get('empresas', [])) if request.GET.get('empresas') else ''
+        if procesos and empresas:
+            contratos = Contrato.objects.filter(proceso_a_cargo_id__in=procesos, empresa_id__in=empresas)\
+                .values(campo_valor=F('id'), campo_texto=F('numero_contrato'))
+        elif procesos:
+            contratos = Contrato.objects.filter(proceso_a_cargo_id__in=procesos) \
+                .values(campo_valor=F('id'), campo_texto=F('numero_contrato'))
+        elif empresas:
+            contratos = Contrato.objects.filter(empresa_id__in=empresas) \
+                .values(campo_valor=F('id'), campo_texto=F('numero_contrato'))
+        else:
+            contratos = Contrato.objects.get_xa_select_activos()
+        contratos_json = json.dumps(list(contratos), cls=DjangoJSONEncoder)
+        return JsonResponse({"estado": "OK", "datos": contratos_json})
