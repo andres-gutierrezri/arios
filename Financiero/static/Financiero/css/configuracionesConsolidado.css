@@ -25,3 +25,31 @@ table th {
 .p-20{
     padding: 20px;
 }
+
+#div_consolidado{
+    max-height: 400px;
+}
+
+#dataTableTipoMovimiento > thead > tr > th.bg-primary-400 {
+    position: sticky;
+    top: 0;
+    box-shadow: 0 0 0 0.5px #b6c9c7;
+}
+
+#dataTableCategoria > thead > tr > th.bg-info-700 {
+    position: sticky;
+    top: 43px;
+    box-shadow: 0 0 0 0.5px #b6c9c7;
+}
+
+#dataTableSubtipo > thead > tr > th.bg-success-700 {
+    position: sticky;
+    top: 43px;
+    box-shadow: 0 0 0 0.5px #b6c9c7;
+}
+
+#dataTableConPro > thead > tr > th.bg-fusion-50 {
+    position: sticky;
+    top: 43px;
+    box-shadow: 0 0 0 0.5px #b6c9c7;
+}
