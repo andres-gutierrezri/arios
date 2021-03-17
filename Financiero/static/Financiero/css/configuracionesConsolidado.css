@@ -28,28 +28,90 @@ table th {
 
 #div_consolidado{
     max-height: 400px;
+    border-left: 0.5px solid #b6c9c7;
+    border-right: 0.5px solid #b6c9c7;
 }
 
 #dataTableTipoMovimiento > thead > tr > th.bg-primary-400 {
     position: sticky;
     top: 0;
     box-shadow: 0 0 0 0.5px #b6c9c7;
+    z-index: 7;
 }
 
 #dataTableCategoria > thead > tr > th.bg-info-700 {
     position: sticky;
     top: 43px;
     box-shadow: 0 0 0 0.5px #b6c9c7;
+    z-index: 8;
 }
 
 #dataTableSubtipo > thead > tr > th.bg-success-700 {
     position: sticky;
     top: 43px;
     box-shadow: 0 0 0 0.5px #b6c9c7;
+    z-index: 9;
 }
 
 #dataTableConPro > thead > tr > th.bg-fusion-50 {
     position: sticky;
     top: 43px;
     box-shadow: 0 0 0 0.5px #b6c9c7;
+    z-index: 10;
+}
+
+.fijar-tipo-movimiento-1{
+    position: sticky;
+    left: 0;
+    box-shadow: 0 0 0 0.5px #b6c9c7;
+    background-color: white;
+    z-index: 4;
+}
+
+.fijar-tipo-movimiento-2{
+    position: sticky;
+    left: 52px;
+    box-shadow: 0 0 0 0.5px #b6c9c7;
+    background-color: white;
+    z-index: 4;
+}
+
+.fijar-categoria-1{
+    position: sticky;
+    left: 0;
+    box-shadow: 0 0 0 0.5px #b6c9c7;
+    background-color: white;
+    z-index: 5;
+}
+
+.fijar-categoria-2{
+    position: sticky;
+    left: 52px;
+    box-shadow: 0 0 0 0.5px #b6c9c7;
+    background-color: white;
+    z-index: 5;
+}
+
+.fijar-subtipo-1{
+    position: sticky;
+    left: 0;
+    box-shadow: 0 0 0 0.5px #b6c9c7;
+    background-color: white;
+    z-index: 6;
+}
+
+.fijar-subtipo-2{
+    position: sticky;
+    left: 52px;
+    box-shadow: 0 0 0 0.5px #b6c9c7;
+    background-color: white;
+    z-index: 6;
+}
+
+.fijar-conpro{
+    position: sticky;
+    left: 0;
+    box-shadow: 0 0 0 0.5px #b6c9c7;
+    background-color: white;
+    z-index: 6;
 }

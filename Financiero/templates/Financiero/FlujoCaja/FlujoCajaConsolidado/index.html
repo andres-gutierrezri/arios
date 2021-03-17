@@ -184,12 +184,12 @@
                                             <tbody>
                                                 {% for mov in movimientos %}
                                                     <tr>
-                                                        <td class="w-10">
+                                                        <td class="w-10 fijar-tipo-movimiento-1">
                                                             {% if mov.valores %}
                                                                 <a class="far fa-2x far fa-plus-circle" id="boton_tipo_movimiento_{{ mov.id_tipo }}_{{ mov.id_tipo }}" href="javascript:desplegarDetalle('tipo_movimiento', '{{ mov.id_tipo }}', '{{ mov.id_tipo }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip"></a>
                                                             {% endif %}
                                                         </td>
-                                                        <td>{{ mov.nombre_tipo }}</td>
+                                                        <td class="fijar-tipo-movimiento-2">{{ mov.nombre_tipo }}</td>
                                                         {% if comparativo %}
                                                             {% for valor_mes in mov.meses %}
                                                                 <td class="t-a-e">{{ valor_mes.valor_real|intcomma:False }}</td>
@@ -227,10 +227,10 @@
                                                                 <tbody>
                                                                     {% for cat in mov.valores %}
                                                                         <tr>
-                                                                            <td class="w-10">
+                                                                            <td class="w-10 fijar-categoria-1">
                                                                                 <a class="far fa-2x far fa-plus-circle" id="boton_categoria_{{ mov.id_tipo }}_{{ cat.id }}" href="javascript:desplegarDetalle('categoria', '{{ cat.id }}', '{{ mov.id_tipo }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip"></a>
                                                                             </td>
-                                                                            <td>{{ cat.nombre }}</td>
+                                                                            <td class="fijar-categoria-2">{{ cat.nombre }}</td>
                                                                             {% if comparativo %}
                                                                                 {% for mes in cat.meses %}
                                                                                     {% if mov.id_tipo == INGRESOS %}
@@ -290,10 +290,10 @@
                                                                                     <tbody>
                                                                                         {% for sub in cat.subtipos %}
                                                                                             <tr>
-                                                                                                <td class="w-10">
+                                                                                                <td class="w-10 fijar-subtipo-1">
                                                                                                     <a class="far fa-2x far fa-plus-circle" id="boton_subtipo_{{ mov.id_tipo }}_{{ sub.id }}" href="javascript:desplegarDetalle('subtipo', '{{ sub.id }}', '{{ mov.id_tipo }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip"></a>
                                                                                                 </td>
-                                                                                                <td>{{ sub.nombre }}</td>
+                                                                                                <td class="fijar-subtipo-2">{{ sub.nombre }}</td>
                                                                                                 {% if comparativo %}
                                                                                                     {% for mes in sub.meses %}
                                                                                                         {% if mov.id_tipo == INGRESOS %}
@@ -352,7 +352,7 @@
                                                                                                         <tbody>
                                                                                                             {% for cp in sub.con_pro %}
                                                                                                                 <tr>
-                                                                                                                    <td>{{ cp.nombre }}</td>
+                                                                                                                    <td class="fijar-conpro">{{ cp.nombre }}</td>
                                                                                                                     {% if comparativo %}
                                                                                                                         {% for mes in cp.meses %}
                                                                                                                             {% if mov.id_tipo == INGRESOS %}
@@ -408,9 +408,9 @@
                                                     </tr>
                                                 {% endfor %}
                                                 <tr>
-                                                    <td class="w-10">
+                                                    <td class="fijar-tipo-movimiento-1">
                                                     </td>
-                                                    <td>Total</td>
+                                                    <td class="fijar-tipo-movimiento-2">Total</td>
                                                     {% for mov in totales_mes_a_mes %}
                                                         {% if comparativo %}
                                                             <td class="t-a-e">{{ mov.valor_real|intcomma:False }}</td>
