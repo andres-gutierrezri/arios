@@ -167,16 +167,16 @@
                                         <table class="table table-bordered w-100" id="dataTableTipoMovimiento">
                                             <thead class="bg-primary-400">
                                                 <tr>
-                                                    <th></th>
-                                                    <th class="min-w-200">Tipo de Movimiento</th>
+                                                    <th class="bg-primary-400"></th>
+                                                    <th class="min-w-200 bg-primary-400">Tipo de Movimiento</th>
                                                     {% if comparativo %}
                                                         {% for mes in meses %}
-                                                            <th class="min-w-200">{{ mes.mes }} {{ mes.anho }} - Real</th>
-                                                            <th class="min-w-200">{{ mes.mes }} {{ mes.anho }} - Proyectado</th>
+                                                            <th class="min-w-200 bg-primary-400">{{ mes.mes }} {{ mes.anho }} - Real</th>
+                                                            <th class="min-w-200 bg-primary-400">{{ mes.mes }} {{ mes.anho }} - Proyectado</th>
                                                         {% endfor %}
                                                     {% else %}
                                                         {% for mes in meses %}
-                                                            <th class="min-w-200">{{ mes.mes }} {{ mes.anho }}</th>
+                                                            <th class="min-w-200 bg-primary-400">{{ mes.mes }} {{ mes.anho }}</th>
                                                         {% endfor %}
                                                     {% endif %}
                                                 </tr>
@@ -210,16 +210,16 @@
                                                              <table class="table table-bordered w-100" id="dataTableCategoria">
                                                                 <thead class="bg-info-700">
                                                                     <tr>
-                                                                        <th></th>
-                                                                        <th class="min-w-200">Categorias</th>
+                                                                        <th class="bg-info-700"></th>
+                                                                        <th class="min-w-200 bg-info-700">Categorias</th>
                                                                         {% if comparativo %}
                                                                             {% for mes in meses %}
-                                                                                <th class="min-w-200">{{ mes.mes }} {{ mes.anho }} - Real</th>
-                                                                                <th class="min-w-200">{{ mes.mes }} {{ mes.anho }} - Proyectado</th>
+                                                                                <th class="min-w-200 bg-info-700">{{ mes.mes }} {{ mes.anho }} - Real</th>
+                                                                                <th class="min-w-200 bg-info-700">{{ mes.mes }} {{ mes.anho }} - Proyectado</th>
                                                                             {% endfor %}
                                                                         {% else %}
                                                                             {% for mes in meses %}
-                                                                                <th class="min-w-200">{{ mes.mes }} {{ mes.anho }}</th>
+                                                                                <th class="min-w-200 bg-info-700">{{ mes.mes }} {{ mes.anho }}</th>
                                                                             {% endfor %}
                                                                         {% endif %}
                                                                     </tr>
@@ -273,16 +273,16 @@
                                                                                  <table class="table table-bordered w-100" id="dataTableSubtipo">
                                                                                     <thead class="bg-success-700">
                                                                                         <tr>
-                                                                                            <th></th>
-                                                                                            <th class="min-w-200">Subtipos</th>
+                                                                                            <th class="bg-success-700"></th>
+                                                                                            <th class="min-w-200 bg-success-700">Subtipos</th>
                                                                                             {% if comparativo %}
                                                                                                 {% for mes in meses %}
-                                                                                                    <th class="min-w-200">{{ mes.mes }} {{ mes.anho }} - Real</th>
-                                                                                                    <th class="min-w-200">{{ mes.mes }} {{ mes.anho }} - Proyectado</th>
+                                                                                                    <th class="min-w-200 bg-success-700">{{ mes.mes }} {{ mes.anho }} - Real</th>
+                                                                                                    <th class="min-w-200 bg-success-700">{{ mes.mes }} {{ mes.anho }} - Proyectado</th>
                                                                                                 {% endfor %}
                                                                                             {% else %}
                                                                                                 {% for mes in meses %}
-                                                                                                    <th class="min-w-200">{{ mes.mes }} {{ mes.anho }}</th>
+                                                                                                    <th class="min-w-200 bg-success-700">{{ mes.mes }} {{ mes.anho }}</th>
                                                                                                 {% endfor %}
                                                                                             {% endif %}
                                                                                         </tr>
@@ -336,15 +336,15 @@
                                                                                                      <table class="table table-bordered w-100" id="dataTableConPro">
                                                                                                         <thead class="bg-fusion-50">
                                                                                                             <tr>
-                                                                                                                <th class="min-w-200">Contratos - Procesos</th>
+                                                                                                                <th class="min-w-200 bg-fusion-50">Contratos - Procesos</th>
                                                                                                                 {% if comparativo %}
                                                                                                                     {% for mes in meses %}
-                                                                                                                        <th class="min-w-200">{{ mes.mes }} {{ mes.anho }} - Real</th>
-                                                                                                                        <th class="min-w-200">{{ mes.mes }} {{ mes.anho }} - Proyectado</th>
+                                                                                                                        <th class="min-w-200 bg-fusion-50">{{ mes.mes }} {{ mes.anho }} - Real</th>
+                                                                                                                        <th class="min-w-200 bg-fusion-50">{{ mes.mes }} {{ mes.anho }} - Proyectado</th>
                                                                                                                     {% endfor %}
                                                                                                                 {% else %}
                                                                                                                     {% for mes in meses %}
-                                                                                                                        <th class="min-w-200">{{ mes.mes }} {{ mes.anho }}</th>
+                                                                                                                        <th class="min-w-200 bg-fusion-50">{{ mes.mes }} {{ mes.anho }}</th>
                                                                                                                     {% endfor %}
                                                                                                                 {% endif %}
                                                                                                             </tr>
@@ -403,6 +403,7 @@
                                                                     {% endfor %}
                                                                 </tbody>
                                                             </table>
+                                                            <br>
                                                         </td>
                                                     </tr>
                                                 {% endfor %}
