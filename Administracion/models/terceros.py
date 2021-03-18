@@ -140,14 +140,14 @@ class Tercero(models.Model, ModelDjangoExtensiones):
         tercero.estado = datos.get('estado', 'False') == 'True'
         tercero.empresa_id = datos.get('empresa', '')
         tercero.fecha_modificacion = datetime.now()
-        tercero.tipo_tercero_id = int(datos.get('tipo_tercero_id', ''))
+        tercero.tipo_tercero_id = datos.get('tipo_tercero_id', '')
         tercero.centro_poblado_id = datos.get('centro_poblado_id', '')
         tercero.telefono = datos.get('telefono', '')
         tercero.fax = datos.get('fax', '')
         tercero.direccion = datos.get('direccion', '')
         tercero.digito_verificacion = datos.get('digito_verificacion')
         tercero.es_vigente = True
-        if int(tercero.tipo_tercero_id) == TipoTercero.CLIENTE:
+        if tercero.tipo_tercero_id and int(tercero.tipo_tercero_id) == TipoTercero.CLIENTE:
             tercero.tipo_persona = datos.get('tipo_persona')
             tercero.regimen_fiscal = datos.get('regimen_fiscal')
             responsabilidades = datos.getlist('responsabilidades')

@@ -2,7 +2,6 @@
 from django import template
 from django.utils.safestring import mark_safe
 from django.db import models
-from django.template.defaultfilters import stringfilter
 register = template.Library()
 
 
@@ -290,11 +289,5 @@ def extraer_min_max(**kwargs) -> str:
     if 'max' in kwargs:
         max_min += f", 'max':{kwargs.pop('max')}"
     return max_min
-
-
-@register.filter
-@stringfilter
-def ceros_izquierda(value):
-    return value.zfill(3)
 
 # endregion
