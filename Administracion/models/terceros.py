@@ -147,7 +147,7 @@ class Tercero(models.Model, ModelDjangoExtensiones):
         tercero.direccion = datos.get('direccion', '')
         tercero.digito_verificacion = datos.get('digito_verificacion')
         tercero.es_vigente = True
-        if tercero.tipo_tercero_id == TipoTercero.CLIENTE:
+        if tercero.tipo_tercero_id and int(tercero.tipo_tercero_id) == TipoTercero.CLIENTE:
             tercero.tipo_persona = datos.get('tipo_persona')
             tercero.regimen_fiscal = datos.get('regimen_fiscal')
             responsabilidades = datos.getlist('responsabilidades')
