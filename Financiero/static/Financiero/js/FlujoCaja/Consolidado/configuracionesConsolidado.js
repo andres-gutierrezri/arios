@@ -9,6 +9,7 @@ const controls = {
 let idCategorias = $('#categorias_id');
 let idContrato = $('#contrato_id');
 let idProceso = $('#proceso_id');
+let idEmpresa = $('#empresa_id');
 let idEstados = $('#estados_id');
 let idSubtipos = $('#subtipos_id');
 let subtiposCategorias = JSON.parse($('#subtipos_categorias').val());
@@ -94,6 +95,26 @@ $(document).ready(function() {
     }
     // Final del Bloque
 
+    // Configuración del Select Multiple de Empresas
+    idEmpresa.select2({
+        placeholder: "Seleccione una opción",
+        "language": {
+            noResults: function () {
+                return 'No se encontraron coincidencias';
+            },
+            searching: function () {
+                return 'Buscando…';
+            },
+        },
+    });
+
+    let valoresEmpresas = $('#valores_empresas').val();
+    idEmpresa.next().find("input").css("min-width", "200px");
+    if (valoresEmpresas){
+        idEmpresa.val(JSON.parse(valoresEmpresas)).trigger("change");
+    }
+    // Final del Bloque
+
     // Configuración del Select Multiple de Estados
     idEstados.select2({
         placeholder: "Seleccione un opción",
@@ -127,6 +148,14 @@ $(document).ready(function() {
     if (valoresSubtipos){
         idSubtipos.val(JSON.parse(valoresSubtipos)).trigger("change");
     }
+
+    idProceso.change(function () {
+        cargarSeleccionesContratos();
+    });
+
+    idEmpresa.change(function () {
+        cargarSeleccionesContratos();
+    });
     // Fin del Bloque
 });
 // Fin del Bloque
@@ -149,6 +178,7 @@ function seleccionarTodos(elemento) {
         icono.addClass('fa-check');
         texto.html('Seleccionar Todos')
     }
+    cargarSeleccionesContratos();
 }
 
 let fechaHasta = $('#fecha_hasta_id');
@@ -311,4 +341,47 @@ function Imprimir() {
      document.body.innerHTML = zonaImpresionConsolidado + zonaImpresionTotales;
      window.print();
      document.body.innerHTML = originalContents;
+}
+
+function cargarSeleccionesContratos() {
+    let ruta = "/financiero/flujo-caja/consolidado/contratos_x_proceso/?empresas=[" + idEmpresa.val() + "]";
+    if (idProceso.val().length > 0){
+        ruta = "/financiero/flujo-caja/consolidado/contratos_x_proceso/?procesos=[" + idProceso.val()+ "]&empresas=[" + idEmpresa.val() + "]";
+    }
+    $.ajax({
+        url: ruta,
+        type: 'GET',
+        context: document.body,
+        success: function (data) {
+            if(data.estado === "OK") {
+                let contratoTemp = $('#contrato_id');
+                let valoresContratoTemp = contratoTemp.val();
+                let listaContratos = [];
+                if (data.datos.includes('campo_valor')){
+                    contratoTemp.empty();
+                    JSON.parse(data.datos).forEach(function (index){
+                        contratoTemp.append('<option value="' + index.campo_valor + '">' + index.campo_texto + '</option>')
+                        $.each(valoresContratoTemp, function (ind, valContrato) {
+                            if (parseInt(valContrato) === index.campo_valor){
+                                listaContratos.push(valContrato);
+                            }
+                        });
+                    });
+                }else{
+                    contratoTemp.empty();
+                }
+                if (listaContratos){
+                    if (!idEmpresa.val()){
+                        contratoTemp.empty();
+                    }
+                    contratoTemp.val(listaContratos).trigger('change');
+                }
+            }else {
+                EVANotificacion.toast.error('Ha ocurrido un error');
+            }
+        },
+        failure: function (errMsg) {
+            EVANotificacion.toast.error('Ha ocurrido un error al enviar la solcitud.');
+        }
+    });
 }

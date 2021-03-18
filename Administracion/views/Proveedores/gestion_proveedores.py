@@ -33,7 +33,8 @@ class ProveedorIndexView(AbstractEvaLoggedView):
         all_productos_servicios = ProveedorProductoServicio.objects.all()
         proveedores_pro_serv = ProveedorProductoServicio.objects.distinct('proveedor')\
             .filter(proveedor__es_vigente=True)\
-            .exclude(proveedor__estado_proveedor__in=[EstadosProveedor.DILIGENCIAMIENTO_PERFIL,
+            .exclude(proveedor__estado_proveedor__in=[EstadosProveedor.REGISTRADO,
+                                                      EstadosProveedor.DILIGENCIAMIENTO_PERFIL,
                                                       EstadosProveedor.SOLICITUD_ENVIADA,
                                                       EstadosProveedor.RECHAZADO])
         total = len(proveedores_pro_serv)

@@ -10,7 +10,7 @@ from django.urls import reverse
 
 from Administracion.models import TipoContrato, TipoDocumento, ConsecutivoDocumento, Tercero
 from Administracion.utils import get_id_empresa_global
-from EVA.General.utilidades import paginar
+from EVA.General.utilidades import paginar, app_datetime_now
 from EVA.views.index import AbstractEvaLoggedView
 from GestionDocumental.models.models import ConsecutivoContrato
 from TalentoHumano.models import Colaborador
@@ -62,7 +62,7 @@ class ConsecutivoContratoCrearView(AbstractEvaLoggedView):
             .get_consecutivo_por_anho(tipo_documento_id=TipoDocumento.CONTRATOS,
                                       empresa_id=get_id_empresa_global(request))
         sigla = TipoContrato.objects.get(id=consecutivo.tipo_contrato_id).sigla
-        consecutivo.codigo = 'CTO_{0:03d}_{1}'.format(consecutivo.numero_contrato, sigla)
+        consecutivo.codigo = 'CTO_{0:03d}_{1}_{2}'.format(consecutivo.numero_contrato, sigla, app_datetime_now().year)
         consecutivo.usuario_crea = request.user
         consecutivo.save()
         messages.success(request, 'Se ha creado el consecutivo {0}'.format(consecutivo.codigo))
