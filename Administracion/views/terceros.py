@@ -72,7 +72,7 @@ class TerceroEditarView(AbstractEvaLoggedView):
 
         tercero = Tercero.from_dictionary(request.POST)
         tercero.empresa_id = get_id_empresa_global(request)
-        tercero.id = int(id)
+        tercero.id = id
 
         try:
             tercero.full_clean(validate_unique=False)
