@@ -506,13 +506,14 @@
     <script src="{% static 'Financiero/js/FlujoCaja/Consolidado/configuracionesConsolidado.js' %}"></script>
     <script>
         let divConsolidado = $('#div_consolidado');
-        let ejeX;
-        let ejeY;
+        let ejeX = 0;
+        let ejeY = 0;
         divConsolidado.scroll(function() {
-            if (ejeX === divConsolidado.scrollLeft()){
+            if (ejeX !== divConsolidado.scrollLeft()){
                 ejeX = divConsolidado.scrollLeft();
+
             }
-            if (ejeY === divConsolidado.scrollTop()){
+            if (ejeY !== divConsolidado.scrollTop()){
                 ejeY = divConsolidado.scrollTop();
             }
         });
