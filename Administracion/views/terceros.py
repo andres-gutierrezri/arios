@@ -37,7 +37,14 @@ class TerceroCrearView(AbstractEvaLoggedView):
         tercero.empresa_id = get_id_empresa_global(request)
         tercero.estado = True
 
-        if Tercero.objects.filter(identificacion=tercero.identificacion):
+        try:
+            tercero.full_clean()
+        except ValidationError as errores:
+            datos = datos_xa_render(self.OPCION, tercero)
+            datos['errores'] = errores.message_dict
+            return render(request, 'Administracion/Tercero/crear-editar.html', datos)
+
+        if Tercero.objects.filter(identificacion=tercero.identificacion).exists():
             messages.warning(request, 'Ya existe un tercero con identificación {0}'.format(tercero.identificacion))
             return render(request, 'Administracion/Tercero/crear-editar.html', datos_xa_render(self.OPCION, tercero))
 
@@ -67,6 +74,13 @@ class TerceroEditarView(AbstractEvaLoggedView):
         tercero.empresa_id = get_id_empresa_global(request)
         tercero.id = int(id)
 
+        try:
+            tercero.full_clean(validate_unique=False)
+        except ValidationError as errores:
+            datos = datos_xa_render(self.OPCION, tercero)
+            datos['errores'] = errores.message_dict
+            return render(request, 'Administracion/Tercero/crear-editar.html', datos)
+
         if Tercero.objects.filter(identificacion=tercero.identificacion).exclude(id=id).exists():
             messages.warning(request, 'Ya existe un tercero con identificación {0}'.format(tercero.identificacion))
             return render(request, 'Administracion/Tercero/crear-editar.html', datos_xa_render(self.OPCION, tercero))
@@ -77,7 +91,6 @@ class TerceroEditarView(AbstractEvaLoggedView):
             return redirect(reverse('Administracion:terceros'))
 
         else:
-
             tercero.save(update_fields=update_fields)
             messages.success(request, 'Se ha actualizado el tercero {0}'.format(tercero.nombre)
                              + ' con identificación {0}'.format(tercero.identificacion))
