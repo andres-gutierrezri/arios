@@ -154,7 +154,6 @@ $(document).ready(function() {
     });
 
     idEmpresa.change(function () {
-        idProceso.val([]).trigger('change');
         cargarSeleccionesContratos();
     });
     // Fin del Bloque
@@ -179,11 +178,7 @@ function seleccionarTodos(elemento) {
         icono.addClass('fa-check');
         texto.html('Seleccionar Todos')
     }
-    if (elemento === 'empresa'){
-        seleccionarFCProcesoContratoXFCEmpresa();
-    }else if (elemento === 'proceso'){
-        seleccionarFCContratosXFCProceso();
-    }
+    cargarSeleccionesContratos();
 }
 
 let fechaHasta = $('#fecha_hasta_id');
@@ -360,13 +355,26 @@ function cargarSeleccionesContratos() {
         success: function (data) {
             if(data.estado === "OK") {
                 let contratoTemp = $('#contrato_id');
+                let valoresContratoTemp = contratoTemp.val();
+                let listaContratos = [];
                 if (data.datos.includes('campo_valor')){
                     contratoTemp.empty();
                     JSON.parse(data.datos).forEach(function (index){
                         contratoTemp.append('<option value="' + index.campo_valor + '">' + index.campo_texto + '</option>')
+                        $.each(valoresContratoTemp, function (ind, valContrato) {
+                            if (parseInt(valContrato) === index.campo_valor){
+                                listaContratos.push(valContrato);
+                            }
+                        });
                     });
                 }else{
                     contratoTemp.empty();
+                }
+                if (listaContratos){
+                    if (!idEmpresa.val()){
+                        contratoTemp.empty();
+                    }
+                    contratoTemp.val(listaContratos).trigger('change');
                 }
             }else {
                 EVANotificacion.toast.error('Ha ocurrido un error');
