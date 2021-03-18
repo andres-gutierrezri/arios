@@ -504,4 +504,17 @@
     <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js'%}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script>
     <script src="{% static 'Financiero/js/FlujoCaja/Consolidado/configuracionesConsolidado.js' %}"></script>
+    <script>
+        let divConsolidado = $('#div_consolidado');
+        let ejeX;
+        let ejeY;
+        divConsolidado.scroll(function() {
+            if (ejeX === divConsolidado.scrollLeft()){
+                ejeX = divConsolidado.scrollLeft();
+            }
+            if (ejeY === divConsolidado.scrollTop()){
+                ejeY = divConsolidado.scrollTop();
+            }
+        });
+    </script>
 {% endblock %}
