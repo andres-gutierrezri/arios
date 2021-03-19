@@ -486,18 +486,8 @@ class FlujoCajaMovimientoAplicarView(AbstractEvaLoggedView):
     def post(self, request, id_movimiento):
         if not validar_permisos(request, 'change_flujocajadetalle'):
             return redirect(reverse('eva-index'))
-        ruta_reversa = 'administracion:procesos'
-        ruta_detalle = 'financiero:flujo-caja-procesos-detalle'
 
         flujo_detalle = FlujoCajaDetalle.objects.get(id=id_movimiento)
-
-        if flujo_detalle.estado_id not in [EstadoFCDetalle.VIGENTE, EstadoFCDetalle.EDITADO]:
-            messages.error(request, 'Este movimiento ya ha sido aplicado.')
-            return redirect(reverse(ruta_reversa))
-
-        if flujo_detalle.tipo_registro != PROYECCION:
-            messages.error(request, 'Este movimiento no puede ser aplicado.')
-            return redirect(reverse(ruta_reversa))
 
         if flujo_detalle.flujo_caja_enc.proceso:
             objeto = flujo_detalle.flujo_caja_enc.proceso_id
@@ -507,6 +497,14 @@ class FlujoCajaMovimientoAplicarView(AbstractEvaLoggedView):
             objeto = flujo_detalle.flujo_caja_enc.contrato_id
             ruta_reversa = 'administracion:contratos'
             ruta_detalle = 'financiero:flujo-caja-contratos-detalle'
+
+        if flujo_detalle.estado_id not in [EstadoFCDetalle.VIGENTE, EstadoFCDetalle.EDITADO]:
+            messages.error(request, 'Este movimiento ya ha sido aplicado.')
+            return redirect(reverse(ruta_reversa))
+
+        if flujo_detalle.tipo_registro != PROYECCION:
+            messages.error(request, 'Este movimiento no puede ser aplicado.')
+            return redirect(reverse(ruta_reversa))
 
         if not tiene_permisos_de_acceso(request, proceso=flujo_detalle.flujo_caja_enc.proceso_id,
                                         contrato=flujo_detalle.flujo_caja_enc.contrato_id):
