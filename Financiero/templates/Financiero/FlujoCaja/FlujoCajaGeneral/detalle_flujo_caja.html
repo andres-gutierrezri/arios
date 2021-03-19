@@ -120,6 +120,9 @@
                                                                         <a class="fad fa-2x fa-custom fa-list-alt" id="eliminar_{{ movimiento.id }}" href="javascript:void(0);"  onclick="abrirModalHistorial('{% url 'Financiero:flujo-caja-movimiento-historial' movimiento.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Historial"></a>
                                                                         {% endif %}
                                                                     {% endif %}
+                                                                    {% if tipo == PROYECCION %}
+                                                                        <a class="fad fa-2x fa-custom fa-check-circle" id="aplicar_{{ movimiento.id }}" href="javascript:void(0);"  onclick="abrirModalAplicarFlujoDeCaja('{% url 'Financiero:flujo-caja-movimiento-aplicar' movimiento.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Aplicar"></a>
+                                                                    {% endif %}
                                                                 </td>
                                                             {% endif %}
                                                         </tr>
@@ -137,6 +140,7 @@
         </div>
     </div>
     <div class="modal fade" tabindex="-1" id="crear_editar_flujo_caja" role="dialog"></div>
+    <div class="modal fade" tabindex="-1" id="aplicar_flujo_caja" role="dialog"></div>
     <div class="modal fade" tabindex="-1" id="historial" role="dialog"></div>
 
 {% endwith %}
