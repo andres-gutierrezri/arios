@@ -12,7 +12,7 @@
 {% endblock styles %}
 
 {% block main %}
-    {% with ALIMENTACION=1 EJECUCION=2 REAL=0 PROYECCION=1 VIGENTE=1 EDITADO=2 ELIMINADO=4 %}
+    {% with ALIMENTACION=1 EJECUCION=2 REAL=0 PROYECCION=1 VIGENTE=1 EDITADO=2 ELIMINADO=4 APLICADO=5 %}
         <div id="configuracion_dfc" data-id-contrato="{{ contrato.id }}{{ proceso.id }}" data-id-tipo-detalle="{{ tipo }}" data-tipo-flujo="{% if contrato %}contratos{% else %}procesos{% endif %}" data-ruta-borrado="financiero/flujo-caja/movimiento"></div>
     <div class="panel-container show">
         <div class="header p-b-10">
@@ -109,10 +109,10 @@
                                                                 <td>
                                                                     {% if movimiento.estado_id != ELIMINADO %}
                                                                         {% if perms.Financiero.change_flujocajadetalle %}
-                                                                        <a class="fad fa-2x fa-edit" {% if fecha_minima_mes|date:"Y-m-d" <= movimiento.fecha_movimiento|date:"Y-m-d" and movimiento.estado_id == VIGENTE or movimiento.estado_id == EDITADO %} href="javascript:abrirModalCrearEditarFlujoDeCaja('{% url 'Financiero:flujo-caja-movimiento-editar' movimiento.id %}', '{{ fecha_minima_mes|date:'Y-m-d' }}')" {% else %}style="color: grey" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                                        <a class="fad fa-2x fa-edit" {% if fecha_minima_mes|date:"Y-m-d" <= movimiento.fecha_movimiento|date:"Y-m-d" and movimiento.estado_id == VIGENTE or movimiento.estado_id == EDITADO or movimiento.estado_id == APLICADO %} href="javascript:abrirModalCrearEditarFlujoDeCaja('{% url 'Financiero:flujo-caja-movimiento-editar' movimiento.id %}', '{{ fecha_minima_mes|date:'Y-m-d' }}')" {% else %}style="color: grey" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
                                                                         {% endif %}
                                                                         {% if perms.Financiero.delete_flujocajadetalle %}
-                                                                            <a class="fad fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ movimiento.id }}"  {% if fecha_minima_mes|date:"Y-m-d" <= movimiento.fecha_movimiento|date:"Y-m-d" and movimiento.estado_id == VIGENTE or movimiento.estado_id == EDITADO %} href="javascript:void(0);"  onclick="fConfirmarEliminar({{ movimiento.id }})" {% else %}style="color: grey" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-danger-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+                                                                            <a class="fad fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ movimiento.id }}"  {% if fecha_minima_mes|date:"Y-m-d" <= movimiento.fecha_movimiento|date:"Y-m-d" and movimiento.estado_id == VIGENTE or movimiento.estado_id == EDITADO or movimiento.estado_id == APLICADO %} href="javascript:void(0);"  onclick="fConfirmarEliminar({{ movimiento.id }})" {% else %}style="color: grey" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-danger-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
                                                                         {% endif %}
                                                                     {% endif %}
                                                                     {% if perms.TalentoHumano.can_access_usuarioespecial or perms.Financiero.can_gestion_flujos_de_caja %}
@@ -121,7 +121,7 @@
                                                                         {% endif %}
                                                                     {% endif %}
                                                                     {% if tipo == PROYECCION %}
-                                                                        <a class="fad fa-2x fa-custom fa-check-circle" id="aplicar_{{ movimiento.id }}" href="javascript:void(0);"  onclick="abrirModalAplicarFlujoDeCaja('{% url 'Financiero:flujo-caja-movimiento-aplicar' movimiento.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Aplicar"></a>
+                                                                        <a class="fad fa-2x fa-custom fa-check-circle" id="aplicar_{{ movimiento.id }}" {% if movimiento.estado_id == APLICADO and tipo == PROYECCION %} style="color: grey" {% else %} href="javascript:void(0);" onclick="abrirModalAplicarFlujoDeCaja('{% url 'Financiero:flujo-caja-movimiento-aplicar' movimiento.id %}')" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Aplicar"></a>
                                                                     {% endif %}
                                                                 </td>
                                                             {% endif %}
