@@ -491,10 +491,22 @@ class FlujoCajaMovimientoAplicarView(AbstractEvaLoggedView):
 
         flujo_detalle = FlujoCajaDetalle.objects.get(id=id_movimiento)
 
+        if flujo_detalle.estado_id not in [EstadoFCDetalle.VIGENTE, EstadoFCDetalle.EDITADO]:
+            messages.error(request, 'Este movimiento ya ha sido aplicado.')
+            return redirect(reverse(ruta_reversa))
+
+        if flujo_detalle.tipo_registro != PROYECCION:
+            messages.error(request, 'Este movimiento no puede ser aplicado.')
+            return redirect(reverse(ruta_reversa))
+
         if flujo_detalle.flujo_caja_enc.proceso:
             objeto = flujo_detalle.flujo_caja_enc.proceso_id
+            ruta_reversa = 'administracion:procesos'
+            ruta_detalle = 'financiero:flujo-caja-procesos-detalle'
         else:
             objeto = flujo_detalle.flujo_caja_enc.contrato_id
+            ruta_reversa = 'administracion:contratos'
+            ruta_detalle = 'financiero:flujo-caja-contratos-detalle'
 
         if not tiene_permisos_de_acceso(request, proceso=flujo_detalle.flujo_caja_enc.proceso_id,
                                         contrato=flujo_detalle.flujo_caja_enc.contrato_id):
@@ -519,6 +531,6 @@ class FlujoCajaMovimientoAplicarView(AbstractEvaLoggedView):
         fl_det.movimiento_proyectado = flujo_detalle
         fl_det.save()
         messages.success(request, 'Se ha aplicado el movimiento correctamente')
-        return redirect(reverse(ruta_detalle, args=[objeto, REAL, fl_det.fecha_movimiento.year,
+        return redirect(reverse(ruta_detalle, args=[objeto, PROYECCION, fl_det.fecha_movimiento.year,
                                                     fl_det.fecha_movimiento.month]))
 
