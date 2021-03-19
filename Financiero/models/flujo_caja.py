@@ -175,6 +175,7 @@ class EstadoFCDetalle(models.Model):
     EDITADO = 2
     OBSOLETO = 3
     ELIMINADO = 4
+    APLICADO = 5
 
 
 class FlujoCajaDetalle(models.Model):
@@ -197,6 +198,8 @@ class FlujoCajaDetalle(models.Model):
                                null=False, blank=False)
     comentarios = models.CharField(verbose_name='Comentarios', max_length=100, null=True, blank=True)
     motivo_edicion = models.CharField(verbose_name='Motivo', max_length=100, null=True, blank=True)
+    movimiento_proyectado = models.ForeignKey('self', on_delete=models.DO_NOTHING, blank=False, null=False,
+                                              related_name='%(app_label)s_%(class)s_movimiento_proyectado')
 
     def __str__(self):
         return 'Flujo de Caja {0} - Detalle: {1}'.format(self.flujo_caja_enc, self.id)
