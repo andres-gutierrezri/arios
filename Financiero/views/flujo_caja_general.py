@@ -109,7 +109,8 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
 
     else:
         if eliminados:
-            movimientos = movimientos.exclude(estado_id__in=[EstadoFCDetalle.VIGENTE, EstadoFCDetalle.EDITADO])
+            movimientos = movimientos.exclude(estado_id__in=[EstadoFCDetalle.VIGENTE, EstadoFCDetalle.EDITADO,
+                                                             EstadoFCDetalle.APLICADO])
         else:
             movimientos = movimientos.exclude(estado_id__in=[EstadoFCDetalle.ELIMINADO, EstadoFCDetalle.OBSOLETO])
 
@@ -485,6 +486,39 @@ class FlujoCajaMovimientoAplicarView(AbstractEvaLoggedView):
     def post(self, request, id_movimiento):
         if not validar_permisos(request, 'change_flujocajadetalle'):
             return redirect(reverse('eva-index'))
+        ruta_reversa = 'administracion:procesos'
+        ruta_detalle = 'financiero:flujo-caja-procesos-detalle'
+
         flujo_detalle = FlujoCajaDetalle.objects.get(id=id_movimiento)
 
-        return guardar_movimiento(request, movimiento=id_movimiento)
+        if flujo_detalle.flujo_caja_enc.proceso:
+            objeto = flujo_detalle.flujo_caja_enc.proceso_id
+        else:
+            objeto = flujo_detalle.flujo_caja_enc.contrato_id
+
+        if not tiene_permisos_de_acceso(request, proceso=flujo_detalle.flujo_caja_enc.proceso_id,
+                                        contrato=flujo_detalle.flujo_caja_enc.contrato_id):
+            messages.error(request, 'No tiene permisos para acceder a este flujo de caja.')
+            return redirect(reverse(ruta_reversa))
+
+        flujo_detalle.estado_id = EstadoFCDetalle.APLICADO
+        flujo_detalle.save(update_fields=['estado'])
+
+        fl_det = FlujoCajaDetalle()
+        fl_det.fecha_movimiento = flujo_detalle.fecha_movimiento
+        fl_det.subtipo_movimiento = flujo_detalle.subtipo_movimiento
+        fl_det.valor = request.POST.get('valor', '')
+        fl_det.comentarios = request.POST.get('comentarios', '')
+        fl_det.usuario_modifica = request.user
+        fl_det.fecha_modifica = app_datetime_now()
+        fl_det.tipo_registro = REAL
+        fl_det.usuario_crea = request.user
+        fl_det.fecha_crea = app_datetime_now()
+        fl_det.estado_id = EstadoFCDetalle.APLICADO
+        fl_det.flujo_caja_enc = flujo_detalle.flujo_caja_enc
+        fl_det.movimiento_proyectado = flujo_detalle
+        fl_det.save()
+        messages.success(request, 'Se ha aplicado el movimiento correctamente')
+        return redirect(reverse(ruta_detalle, args=[objeto, REAL, fl_det.fecha_movimiento.year,
+                                                    fl_det.fecha_movimiento.month]))
+
