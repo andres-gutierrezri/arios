@@ -167,8 +167,8 @@
                                         <table class="table table-bordered w-100" id="dataTableTipoMovimiento">
                                             <thead class="bg-primary-400">
                                                 <tr>
-                                                    <th class="bg-primary-400"></th>
-                                                    <th class="min-w-200 bg-primary-400">Tipo de Movimiento</th>
+                                                    <th class="alternar-sticky-tipo-movimiento-1 bg-primary-400"></th>
+                                                    <th class="alternar-sticky-tipo-movimiento-2 min-w-200 bg-primary-400">Tipo de Movimiento</th>
                                                     {% if comparativo %}
                                                         {% for mes in meses %}
                                                             <th class="min-w-200 bg-primary-400">{{ mes.mes }} {{ mes.anho }} - Real</th>
@@ -210,8 +210,8 @@
                                                              <table class="table table-bordered w-100" id="dataTableCategoria">
                                                                 <thead class="bg-info-700">
                                                                     <tr>
-                                                                        <th class="bg-info-700"></th>
-                                                                        <th class="min-w-200 bg-info-700">Categorias</th>
+                                                                        <th class="bg-info-700 alternar-sticky-categoria-1"></th>
+                                                                        <th class="min-w-200 bg-info-700 alternar-sticky-categoria-2">Categorias</th>
                                                                         {% if comparativo %}
                                                                             {% for mes in meses %}
                                                                                 <th class="min-w-200 bg-info-700">{{ mes.mes }} {{ mes.anho }} - Real</th>
@@ -273,8 +273,8 @@
                                                                                  <table class="table table-bordered w-100" id="dataTableSubtipo">
                                                                                     <thead class="bg-success-700">
                                                                                         <tr>
-                                                                                            <th class="bg-success-700"></th>
-                                                                                            <th class="min-w-200 bg-success-700">Subtipos</th>
+                                                                                            <th class="bg-success-700 alternar-sticky-subtipo-1"></th>
+                                                                                            <th class="min-w-200 bg-success-700 alternar-sticky-subtipo-2">Subtipos</th>
                                                                                             {% if comparativo %}
                                                                                                 {% for mes in meses %}
                                                                                                     <th class="min-w-200 bg-success-700">{{ mes.mes }} {{ mes.anho }} - Real</th>
@@ -336,7 +336,7 @@
                                                                                                      <table class="table table-bordered w-100" id="dataTableConPro">
                                                                                                         <thead class="bg-fusion-50">
                                                                                                             <tr>
-                                                                                                                <th class="min-w-200 bg-fusion-50">Contratos - Procesos</th>
+                                                                                                                <th class="min-w-200 bg-fusion-50 alternar-sticky-conpro">Contratos - Procesos</th>
                                                                                                                 {% if comparativo %}
                                                                                                                     {% for mes in meses %}
                                                                                                                         <th class="min-w-200 bg-fusion-50">{{ mes.mes }} {{ mes.anho }} - Real</th>
@@ -504,18 +504,4 @@
     <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js'%}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script>
     <script src="{% static 'Financiero/js/FlujoCaja/Consolidado/configuracionesConsolidado.js' %}"></script>
-    <script>
-        let divConsolidado = $('#div_consolidado');
-        let ejeX = 0;
-        let ejeY = 0;
-        divConsolidado.scroll(function() {
-            if (ejeX !== divConsolidado.scrollLeft()){
-                ejeX = divConsolidado.scrollLeft();
-
-            }
-            if (ejeY !== divConsolidado.scrollTop()){
-                ejeY = divConsolidado.scrollTop();
-            }
-        });
-    </script>
 {% endblock %}
