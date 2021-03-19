@@ -12,11 +12,8 @@ from Administracion.models import ConsecutivoDocumento, TipoDocumento
 from Administracion.utils import get_id_empresa_global
 from EVA.General.utilidades import paginar, app_datetime_now
 from EVA.views.index import AbstractEvaLoggedView
-from GestionDocumental.models import ConsecutivoOficio
 from GestionDocumental.models.models import ConsecutivoReunion
-from Proyectos.models import Contrato
 from TalentoHumano.models import Colaborador
-from TalentoHumano.models.colaboradores import ColaboradorProceso
 
 
 class ConsecutivoReunionView(AbstractEvaLoggedView):
