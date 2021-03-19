@@ -1,14 +1,12 @@
 {% load eva_tags %}
 {% load static %}
 {% load humanize %}
- {% if contrato %}
-    <form id="formAplicarMovimiento" action="{% url 'Financiero:flujo-caja-movimiento-aplicar' flujo_detalle.id %}" method="post" class="needs-validation" novalidate>
-{% endif %}
+<form id="formAplicarMovimiento" action="{% url 'Financiero:flujo-caja-movimiento-aplicar' flujo_detalle.id %}" method="post" class="needs-validation" novalidate>
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title">
-                    Aplicar Movimiento
+                    Aplicar al Flujo de Caja Real
                 </h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true"><i class="fal fa-times"></i></span>
@@ -20,6 +18,7 @@
                 <input id="valores" name="valores" type="hidden" value="vacio">
                 <div class="form-row">
                     <div class="form-group col-12">
+                        <label for="subtipo_movimiento_id_select_id">Subtipo de Movimiento</label>
                         <select class="select2 form-control" id="subtipo_movimiento_id_select_id" name="subtipo_movimiento_id" disabled>
                             <option value="{{ flujo_detalle.subtipo_movimiento_id }}" selected="">{{ flujo_detalle.subtipo_movimiento.nombre }}</option>
                         </select>
@@ -55,7 +54,7 @@
 
             <div class="modal-footer">
                 <button data-dismiss="modal" class="btn btn-danger btn-pills">Cancelar</button>
-                <button id="guardar" type="submit" class="btn btn-primary btn-pills">{% if opcion == 'editar' %} Actualizar {% else %} Agregar {% endif %}</button>
+                <button id="guardar" type="submit" class="btn btn-primary btn-pills">Aplicar al Real</button>
             </div>
         </div>
     </div>
