@@ -470,3 +470,21 @@ def validar_fecha_accion(flujo_detalle):
         return True
     elif flujo_detalle.fecha_movimiento.date() >= fecha_minima:
         return True
+
+
+class FlujoCajaMovimientoAplicarView(AbstractEvaLoggedView):
+    def get(self, request, id_movimiento):
+        if not validar_permisos(request, 'change_flujocajadetalle'):
+            return redirect(reverse('eva-index'))
+        flujo_detalle = FlujoCajaDetalle.objects.get(id=id_movimiento)
+        subtipos_movimientos = [{'campo_valor': 1, 'campo_texto': flujo_detalle.subtipo_movimiento.nombre}]
+        return render(request, 'Financiero/FlujoCaja/FlujoCajaGeneral/modal-aplicar.html',
+                      {'flujo_detalle': flujo_detalle,
+                       'subtipos_movimientos': subtipos_movimientos})
+
+    def post(self, request, id_movimiento):
+        if not validar_permisos(request, 'change_flujocajadetalle'):
+            return redirect(reverse('eva-index'))
+        flujo_detalle = FlujoCajaDetalle.objects.get(id=id_movimiento)
+
+        return guardar_movimiento(request, movimiento=id_movimiento)
