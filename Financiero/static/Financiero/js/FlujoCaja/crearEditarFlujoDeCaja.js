@@ -69,7 +69,7 @@ function abrirModalAplicarFlujoDeCaja(url) {
                 return false;
             }
             $(this).modal('show');
-
+            $('#valor_id').inputmask();
             agregarValidacionFormularios();
         } catch (err) {
             console.log(err);
