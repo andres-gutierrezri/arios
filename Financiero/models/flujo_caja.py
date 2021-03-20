@@ -198,7 +198,7 @@ class FlujoCajaDetalle(models.Model):
                                null=False, blank=False)
     comentarios = models.CharField(verbose_name='Comentarios', max_length=100, null=True, blank=True)
     motivo_edicion = models.CharField(verbose_name='Motivo', max_length=100, null=True, blank=True)
-    movimiento_proyectado = models.ForeignKey('self', on_delete=models.DO_NOTHING, blank=False, null=False,
+    movimiento_proyectado = models.ForeignKey('self', on_delete=models.DO_NOTHING, blank=True, null=True,
                                               related_name='%(app_label)s_%(class)s_movimiento_proyectado')
 
     def __str__(self):
