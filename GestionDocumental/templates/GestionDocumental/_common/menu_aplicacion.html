@@ -21,6 +21,14 @@
             </a>
         </li>
         {% endif %}
+        {% if perms.GestionDocumental.view_consecutivoreunion %}
+        <li {% if menu_actual == 'consecutivos-reunion' %} class="active" {% endif %}>
+            <a href="{% url 'GestionDocumental:consecutivo-reuniones-index' 0 %}" title="Consecutivo de Reuniones" data-filter-tags="consecutivo reuniones">
+                <i class="far fa-file-alt"></i>
+                <span class="nav-link-text" data-i18n="nav.gestion_documental_consecutivo_contratos">Consecutivo de Reuniones</span>
+            </a>
+        </li>
+        {% endif %}
     </ul>
 </li>
 {% endif %}
