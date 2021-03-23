@@ -498,12 +498,13 @@ class FlujoCajaMovimientoAplicarView(AbstractEvaLoggedView):
             ruta_reversa = 'administracion:contratos'
             ruta_detalle = 'financiero:flujo-caja-contratos-detalle'
 
-        if flujo_detalle.estado_id not in [EstadoFCDetalle.VIGENTE, EstadoFCDetalle.EDITADO]:
-            messages.error(request, 'Este movimiento ya ha sido aplicado.')
+        if flujo_detalle.estado_id in [EstadoFCDetalle.ELIMINADO, EstadoFCDetalle.OBSOLETO] or \
+                flujo_detalle.tipo_registro != PROYECCION:
+            messages.error(request, 'Este movimiento no puede ser aplicado.')
             return redirect(reverse(ruta_reversa))
 
-        if flujo_detalle.tipo_registro != PROYECCION:
-            messages.error(request, 'Este movimiento no puede ser aplicado.')
+        if flujo_detalle.estado_id not in [EstadoFCDetalle.VIGENTE, EstadoFCDetalle.EDITADO]:
+            messages.error(request, 'Este movimiento ya ha sido aplicado.')
             return redirect(reverse(ruta_reversa))
 
         if not tiene_permisos_de_acceso(request, proceso=flujo_detalle.flujo_caja_enc.proceso_id,
