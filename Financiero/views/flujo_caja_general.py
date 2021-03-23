@@ -109,7 +109,8 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
 
     else:
         if eliminados:
-            movimientos = movimientos.exclude(estado_id__in=[EstadoFCDetalle.VIGENTE, EstadoFCDetalle.EDITADO])
+            movimientos = movimientos.exclude(estado_id__in=[EstadoFCDetalle.VIGENTE, EstadoFCDetalle.EDITADO,
+                                                             EstadoFCDetalle.APLICADO])
         else:
             movimientos = movimientos.exclude(estado_id__in=[EstadoFCDetalle.ELIMINADO, EstadoFCDetalle.OBSOLETO])
 
@@ -470,3 +471,64 @@ def validar_fecha_accion(flujo_detalle):
         return True
     elif flujo_detalle.fecha_movimiento.date() >= fecha_minima:
         return True
+
+
+class FlujoCajaMovimientoAplicarView(AbstractEvaLoggedView):
+    def get(self, request, id_movimiento):
+        if not validar_permisos(request, 'change_flujocajadetalle'):
+            return redirect(reverse('eva-index'))
+        flujo_detalle = FlujoCajaDetalle.objects.get(id=id_movimiento)
+        subtipos_movimientos = [{'campo_valor': 1, 'campo_texto': flujo_detalle.subtipo_movimiento.nombre}]
+        return render(request, 'Financiero/FlujoCaja/FlujoCajaGeneral/modal-aplicar.html',
+                      {'flujo_detalle': flujo_detalle,
+                       'subtipos_movimientos': subtipos_movimientos})
+
+    def post(self, request, id_movimiento):
+        if not validar_permisos(request, 'change_flujocajadetalle'):
+            return redirect(reverse('eva-index'))
+
+        flujo_detalle = FlujoCajaDetalle.objects.get(id=id_movimiento)
+
+        if flujo_detalle.flujo_caja_enc.proceso:
+            objeto = flujo_detalle.flujo_caja_enc.proceso_id
+            ruta_reversa = 'administracion:procesos'
+            ruta_detalle = 'financiero:flujo-caja-procesos-detalle'
+        else:
+            objeto = flujo_detalle.flujo_caja_enc.contrato_id
+            ruta_reversa = 'administracion:contratos'
+            ruta_detalle = 'financiero:flujo-caja-contratos-detalle'
+
+        if flujo_detalle.estado_id not in [EstadoFCDetalle.VIGENTE, EstadoFCDetalle.EDITADO]:
+            messages.error(request, 'Este movimiento ya ha sido aplicado.')
+            return redirect(reverse(ruta_reversa))
+
+        if flujo_detalle.tipo_registro != PROYECCION:
+            messages.error(request, 'Este movimiento no puede ser aplicado.')
+            return redirect(reverse(ruta_reversa))
+
+        if not tiene_permisos_de_acceso(request, proceso=flujo_detalle.flujo_caja_enc.proceso_id,
+                                        contrato=flujo_detalle.flujo_caja_enc.contrato_id):
+            messages.error(request, 'No tiene permisos para acceder a este flujo de caja.')
+            return redirect(reverse(ruta_reversa))
+
+        flujo_detalle.estado_id = EstadoFCDetalle.APLICADO
+        flujo_detalle.save(update_fields=['estado'])
+
+        fl_det = FlujoCajaDetalle()
+        fl_det.fecha_movimiento = flujo_detalle.fecha_movimiento
+        fl_det.subtipo_movimiento = flujo_detalle.subtipo_movimiento
+        fl_det.valor = request.POST.get('valor', '')
+        fl_det.comentarios = request.POST.get('comentarios', '')
+        fl_det.usuario_modifica = request.user
+        fl_det.fecha_modifica = app_datetime_now()
+        fl_det.tipo_registro = REAL
+        fl_det.usuario_crea = request.user
+        fl_det.fecha_crea = app_datetime_now()
+        fl_det.estado_id = EstadoFCDetalle.APLICADO
+        fl_det.flujo_caja_enc = flujo_detalle.flujo_caja_enc
+        fl_det.movimiento_proyectado = flujo_detalle
+        fl_det.save()
+        messages.success(request, 'Se ha aplicado el movimiento correctamente')
+        return redirect(reverse(ruta_detalle, args=[objeto, PROYECCION, fl_det.fecha_movimiento.year,
+                                                    fl_det.fecha_movimiento.month]))
+

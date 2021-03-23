@@ -13,7 +13,7 @@
     <div class="panel-container show">
             <div class="header">
                  <h1 class="header-title">
-                    <i class='far fa-file-alt'></i> Consecutivo de Oficios <span class='fw-300'></span>
+                    <i class='far fa-file-alt'></i> Consecutivo de Reuniones <span class='fw-300'></span>
                      <br>
                      <br>
                  </h1>
@@ -23,10 +23,10 @@
                     <div id="panel-1" class="panel">
 
                         <div class="panel-hdr">
-                            {% if perms.GestionDocumental.add_consecutivooficio %}
+                            {% if perms.GestionDocumental.add_consecutivoreunion %}
                             <div class="col-md-10">
                                 <small>
-                                     <a class="far fa-3x far fa-plus-circle"  href="{% url 'GestionDocumental:consecutivo-oficios-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar consecutivo de oficio"></a>
+                                     <a class="far fa-3x far fa-plus-circle"  href="{% url 'GestionDocumental:consecutivo-reuniones-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar consecutivo de oficio"></a>
                                 </small>
                             </div>
                             {% else %}
@@ -35,7 +35,7 @@
                             <div class="col-md-2" style="float: right" >
                                 {% select_tag opciones_filtro 'filtro_consecutivos' '' value=id_filtro  %}
                             </div>
-                            <input id="ruta_filtro_consecutivos" hidden value="/gestion-documental/consecutivo-oficios/">
+                            <input id="ruta_filtro_consecutivos" hidden value="/gestion-documental/consecutivo-reuniones/">
                         </div>
                         <div class="panel-container show">
                             <div class="panel-content">
@@ -46,36 +46,25 @@
                                             <table class="table table-bordered w-100" id="dataTableConsecutivos">
                                                 <thead class="bg-primary-600">
                                                     <tr>
-                                                        <th class="min-w-200">Código</th>
-                                                        <th class="min-w-200">Fecha</th>
-                                                        <th>Contrato</th>
-                                                        <th>Detalle</th>
-                                                        <th>Destinatario</th>
+                                                        <th class="min-w-50">Código</th>
+                                                        <th class="min-w-50">Fecha de la Reunión</th>
+                                                        <th class="min-w-200">Tema de la Reunión</th>
+                                                        <th>Descripción</th>
                                                         <th>Usuario</th>
-                                                        <th>Justificación</th>
+                                                        <th>Fecha</th>
                                                         <th>Estado</th>
                                                         <th>Acción</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     {% for consecutivo in consecutivos %}
-                                                        <tr {% if consecutivo == consecutivos.last and id_filtro == 1 and consecutivo.usuario == request.user %}style="background: #fffaee;"{% endif %}>
-                                                            <td>{{ consecutivo.codigo}}</td>
-                                                            <td>{{ consecutivo.fecha | date:'Y-m-d H:i'}}</td>
-                                                            <td>{% if consecutivo.contrato %}
-                                                                    {{ consecutivo.contrato}} - {{ consecutivo.contrato.cliente }}
-                                                                {% else %}
-                                                                    {% for col in colaborador %}
-                                                                        {% if col.usuario_id == consecutivo.usuario.id %}
-                                                                            {{ col.proceso__sigla }}
-                                                                        {% endif %}
-                                                                    {% endfor %}
-                                                                {% endif %}
-                                                            </td>
-                                                            <td>{{ consecutivo.detalle}}</td>
-                                                            <td>{{ consecutivo.destinatario }}</td>
+                                                        <tr>
+                                                            <td>{{ consecutivo.codigo }}</td>
+                                                            <td>{{ consecutivo.fecha | date:'Y-m-d' }}</td>
+                                                            <td>{{ consecutivo.tema }}</td>
+                                                            <td>{{ consecutivo.descripcion }}</td>
                                                             <td>{{ consecutivo.usuario.get_full_name }}</td>
-                                                            <td>{% if consecutivo.justificacion %}{{ consecutivo.justificacion }}{% endif %}</td>
+                                                            <td>{{ consecutivo.fecha_crea | date:'Y-m-d' }}</td>
                                                             <td>
                                                                 {% if consecutivo.estado %}
                                                                     <span class="badge badge-primary">Vigente</span>
@@ -84,7 +73,7 @@
                                                                 {% endif %}
                                                             </td>
                                                             <td>
-                                                                {% if perms.GestionDocumental.delete_consecutivooficio and consecutivo.estado %}
+                                                                {% if perms.GestionDocumental.delete_consecutivoreunion and consecutivo.estado %}
                                                                   <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ consecutivo.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ consecutivo.id }}, true)" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
                                                                 {% endif %}
                                                             </td>
@@ -103,7 +92,7 @@
                 </div>
             </div>
     </div>
-    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='gestion-documental/consecutivo-oficios' %}
+    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='gestion-documental/consecutivo-reuniones' %}
 
 {% endblock %}
 {% block scripts %}

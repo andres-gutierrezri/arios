@@ -39,7 +39,7 @@ class FlujoCajaConsolidadoView(AbstractEvaLoggedView):
 
         tipos_flujos_caja = [datos['tipos_flujos_caja']] if '' != datos['tipos_flujos_caja'] != 2 else [0, 1]
 
-        estados = datos['estados'] if datos['estados'] else [1, 2, 4]
+        estados = datos['estados'] if datos['estados'] else [1, 2, 4, 5]
 
         subtipos = datos['subtipos'] if datos['subtipos'] else list(SubTipoMovimiento.objects.all()
                                                                     .values_list('id', flat=True))
@@ -106,7 +106,8 @@ def datos_xa_render(request, datos_formulario=None, movimientos=None, datos_filt
 
     estados = [{'campo_valor': 1, 'campo_texto': 'Vigente'},
                {'campo_valor': 2, 'campo_texto': 'Editado'},
-               {'campo_valor': 4, 'campo_texto': 'Eliminado'}]
+               {'campo_valor': 4, 'campo_texto': 'Eliminado'},
+               {'campo_valor': 5, 'campo_texto': 'Aplicado'}]
 
     datos = {'procesos': procesos, 'contratos': contratos, 'tipos_flujos': tipos_flujos, 'estados': estados,
              'categorias': categorias, 'subtipos': subtipos, 'fecha_actual': datetime.today(), 'empresas': empresas,
@@ -145,7 +146,7 @@ def datos_xa_render(request, datos_formulario=None, movimientos=None, datos_filt
             datos['comparativo'] = True
 
     else:
-        datos['valor'] = {'estados': [1, 2], 'lista_empresas': [get_id_empresa_global(request)]}
+        datos['valor'] = {'estados': [1, 2, 5], 'lista_empresas': [get_id_empresa_global(request)]}
 
     if movimientos:
         consolidado = consolidado_ingresos_costos_gastos(movimientos, datos_filtro)
@@ -211,7 +212,7 @@ def datos_formulario_consolidado(request):
     empresas = list(map(int, empresas))
     procesos = list(map(int, procesos))
     contratos = list(map(int, contratos))
-    estados = list(map(int, estados)) if estados else [1, 2]
+    estados = list(map(int, estados)) if estados else [1, 2, 5]
     subtipos = list(map(int, subtipos))
     categorias = list(map(int, categorias))
 
