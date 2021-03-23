@@ -12,7 +12,7 @@
 {% endblock styles %}
 
 {% block main %}
-    {% with ALIMENTACION=1 EJECUCION=2 REAL=0 PROYECCION=1 VIGENTE=1 EDITADO=2 ELIMINADO=4 APLICADO=5 %}
+    {% with ALIMENTACION=1 EJECUCION=2 REAL=0 PROYECCION=1 VIGENTE=1 EDITADO=2 ELIMINADO=4 APLICADO=5 OBSOLETO=3 %}
         <div id="configuracion_dfc" data-id-contrato="{{ contrato.id }}{{ proceso.id }}" data-id-tipo-detalle="{{ tipo }}" data-tipo-flujo="{% if contrato %}contratos{% else %}procesos{% endif %}" data-ruta-borrado="financiero/flujo-caja/movimiento"></div>
     <div class="panel-container show">
         <div class="header p-b-10">
@@ -120,8 +120,8 @@
                                                                         <a class="fad fa-2x fa-custom fa-list-alt" id="eliminar_{{ movimiento.id }}" href="javascript:void(0);"  onclick="abrirModalHistorial('{% url 'Financiero:flujo-caja-movimiento-historial' movimiento.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Historial"></a>
                                                                         {% endif %}
                                                                     {% endif %}
-                                                                    {% if tipo == PROYECCION %}
-                                                                        <a class="fad fa-2x fa-custom fa-check-circle" id="aplicar_{{ movimiento.id }}" {% if movimiento.estado_id == APLICADO and tipo == PROYECCION %} style="color: grey" {% else %} href="javascript:void(0);" onclick="abrirModalAplicarFlujoDeCaja('{% url 'Financiero:flujo-caja-movimiento-aplicar' movimiento.id %}')" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Aplicar"></a>
+                                                                    {% if tipo == PROYECCION and not movimiento.estado_id == APLICADO and not movimiento.estado_id == ELIMINADO  and not movimiento.estado_id == OBSOLETO %}
+                                                                        <a class="fad fa-2x fa-custom fa-check-circle" id="aplicar_{{ movimiento.id }}" href="javascript:void(0);" onclick="abrirModalAplicarFlujoDeCaja('{% url 'Financiero:flujo-caja-movimiento-aplicar' movimiento.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Aplicar al Real"></a>
                                                                     {% endif %}
                                                                 </td>
                                                             {% endif %}
