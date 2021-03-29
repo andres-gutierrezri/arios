@@ -167,16 +167,16 @@
                                         <table class="table table-bordered w-100" id="dataTableTipoMovimiento">
                                             <thead class="bg-primary-400">
                                                 <tr>
-                                                    <th></th>
-                                                    <th class="min-w-200">Tipo de Movimiento</th>
+                                                    <th class="alternar-sticky-tipo-movimiento-1 bg-primary-400"></th>
+                                                    <th class="alternar-sticky-tipo-movimiento-2 min-w-200 bg-primary-400">Tipo de Movimiento</th>
                                                     {% if comparativo %}
                                                         {% for mes in meses %}
-                                                            <th class="min-w-200">{{ mes.mes }} {{ mes.anho }} - Real</th>
-                                                            <th class="min-w-200">{{ mes.mes }} {{ mes.anho }} - Proyectado</th>
+                                                            <th class="min-w-200 bg-primary-400">{{ mes.mes }} {{ mes.anho }} - Real</th>
+                                                            <th class="min-w-200 bg-primary-400">{{ mes.mes }} {{ mes.anho }} - Proyectado</th>
                                                         {% endfor %}
                                                     {% else %}
                                                         {% for mes in meses %}
-                                                            <th class="min-w-200">{{ mes.mes }} {{ mes.anho }}</th>
+                                                            <th class="min-w-200 bg-primary-400">{{ mes.mes }} {{ mes.anho }}</th>
                                                         {% endfor %}
                                                     {% endif %}
                                                 </tr>
@@ -184,12 +184,12 @@
                                             <tbody>
                                                 {% for mov in movimientos %}
                                                     <tr>
-                                                        <td class="w-10">
+                                                        <td class="w-10 fijar-tipo-movimiento-1">
                                                             {% if mov.valores %}
                                                                 <a class="far fa-2x far fa-plus-circle" id="boton_tipo_movimiento_{{ mov.id_tipo }}_{{ mov.id_tipo }}" href="javascript:desplegarDetalle('tipo_movimiento', '{{ mov.id_tipo }}', '{{ mov.id_tipo }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip"></a>
                                                             {% endif %}
                                                         </td>
-                                                        <td>{{ mov.nombre_tipo }}</td>
+                                                        <td class="fijar-tipo-movimiento-2">{{ mov.nombre_tipo }}</td>
                                                         {% if comparativo %}
                                                             {% for valor_mes in mov.meses %}
                                                                 <td class="t-a-e">{{ valor_mes.valor_real|intcomma:False }}</td>
@@ -210,16 +210,16 @@
                                                              <table class="table table-bordered w-100" id="dataTableCategoria">
                                                                 <thead class="bg-info-700">
                                                                     <tr>
-                                                                        <th></th>
-                                                                        <th class="min-w-200">Categorias</th>
+                                                                        <th class="bg-info-700 alternar-sticky-categoria-1"></th>
+                                                                        <th class="min-w-200 bg-info-700 alternar-sticky-categoria-2">Categorias</th>
                                                                         {% if comparativo %}
                                                                             {% for mes in meses %}
-                                                                                <th class="min-w-200">{{ mes.mes }} {{ mes.anho }} - Real</th>
-                                                                                <th class="min-w-200">{{ mes.mes }} {{ mes.anho }} - Proyectado</th>
+                                                                                <th class="min-w-200 bg-info-700">{{ mes.mes }} {{ mes.anho }} - Real</th>
+                                                                                <th class="min-w-200 bg-info-700">{{ mes.mes }} {{ mes.anho }} - Proyectado</th>
                                                                             {% endfor %}
                                                                         {% else %}
                                                                             {% for mes in meses %}
-                                                                                <th class="min-w-200">{{ mes.mes }} {{ mes.anho }}</th>
+                                                                                <th class="min-w-200 bg-info-700">{{ mes.mes }} {{ mes.anho }}</th>
                                                                             {% endfor %}
                                                                         {% endif %}
                                                                     </tr>
@@ -227,10 +227,10 @@
                                                                 <tbody>
                                                                     {% for cat in mov.valores %}
                                                                         <tr>
-                                                                            <td class="w-10">
+                                                                            <td class="w-10 fijar-categoria-1">
                                                                                 <a class="far fa-2x far fa-plus-circle" id="boton_categoria_{{ mov.id_tipo }}_{{ cat.id }}" href="javascript:desplegarDetalle('categoria', '{{ cat.id }}', '{{ mov.id_tipo }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip"></a>
                                                                             </td>
-                                                                            <td>{{ cat.nombre }}</td>
+                                                                            <td class="fijar-categoria-2">{{ cat.nombre }}</td>
                                                                             {% if comparativo %}
                                                                                 {% for mes in cat.meses %}
                                                                                     {% if mov.id_tipo == INGRESOS %}
@@ -273,16 +273,16 @@
                                                                                  <table class="table table-bordered w-100" id="dataTableSubtipo">
                                                                                     <thead class="bg-success-700">
                                                                                         <tr>
-                                                                                            <th></th>
-                                                                                            <th class="min-w-200">Subtipos</th>
+                                                                                            <th class="bg-success-700 alternar-sticky-subtipo-1"></th>
+                                                                                            <th class="min-w-200 bg-success-700 alternar-sticky-subtipo-2">Subtipos</th>
                                                                                             {% if comparativo %}
                                                                                                 {% for mes in meses %}
-                                                                                                    <th class="min-w-200">{{ mes.mes }} {{ mes.anho }} - Real</th>
-                                                                                                    <th class="min-w-200">{{ mes.mes }} {{ mes.anho }} - Proyectado</th>
+                                                                                                    <th class="min-w-200 bg-success-700">{{ mes.mes }} {{ mes.anho }} - Real</th>
+                                                                                                    <th class="min-w-200 bg-success-700">{{ mes.mes }} {{ mes.anho }} - Proyectado</th>
                                                                                                 {% endfor %}
                                                                                             {% else %}
                                                                                                 {% for mes in meses %}
-                                                                                                    <th class="min-w-200">{{ mes.mes }} {{ mes.anho }}</th>
+                                                                                                    <th class="min-w-200 bg-success-700">{{ mes.mes }} {{ mes.anho }}</th>
                                                                                                 {% endfor %}
                                                                                             {% endif %}
                                                                                         </tr>
@@ -290,10 +290,10 @@
                                                                                     <tbody>
                                                                                         {% for sub in cat.subtipos %}
                                                                                             <tr>
-                                                                                                <td class="w-10">
+                                                                                                <td class="w-10 fijar-subtipo-1">
                                                                                                     <a class="far fa-2x far fa-plus-circle" id="boton_subtipo_{{ mov.id_tipo }}_{{ sub.id }}" href="javascript:desplegarDetalle('subtipo', '{{ sub.id }}', '{{ mov.id_tipo }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip"></a>
                                                                                                 </td>
-                                                                                                <td>{{ sub.nombre }}</td>
+                                                                                                <td class="fijar-subtipo-2">{{ sub.nombre }}</td>
                                                                                                 {% if comparativo %}
                                                                                                     {% for mes in sub.meses %}
                                                                                                         {% if mov.id_tipo == INGRESOS %}
@@ -336,15 +336,15 @@
                                                                                                      <table class="table table-bordered w-100" id="dataTableConPro">
                                                                                                         <thead class="bg-fusion-50">
                                                                                                             <tr>
-                                                                                                                <th class="min-w-200">Contratos - Procesos</th>
+                                                                                                                <th class="min-w-200 bg-fusion-50 alternar-sticky-conpro">Contratos - Procesos</th>
                                                                                                                 {% if comparativo %}
                                                                                                                     {% for mes in meses %}
-                                                                                                                        <th class="min-w-200">{{ mes.mes }} {{ mes.anho }} - Real</th>
-                                                                                                                        <th class="min-w-200">{{ mes.mes }} {{ mes.anho }} - Proyectado</th>
+                                                                                                                        <th class="min-w-200 bg-fusion-50">{{ mes.mes }} {{ mes.anho }} - Real</th>
+                                                                                                                        <th class="min-w-200 bg-fusion-50">{{ mes.mes }} {{ mes.anho }} - Proyectado</th>
                                                                                                                     {% endfor %}
                                                                                                                 {% else %}
                                                                                                                     {% for mes in meses %}
-                                                                                                                        <th class="min-w-200">{{ mes.mes }} {{ mes.anho }}</th>
+                                                                                                                        <th class="min-w-200 bg-fusion-50">{{ mes.mes }} {{ mes.anho }}</th>
                                                                                                                     {% endfor %}
                                                                                                                 {% endif %}
                                                                                                             </tr>
@@ -352,7 +352,7 @@
                                                                                                         <tbody>
                                                                                                             {% for cp in sub.con_pro %}
                                                                                                                 <tr>
-                                                                                                                    <td>{{ cp.nombre }}</td>
+                                                                                                                    <td class="fijar-conpro">{{ cp.nombre }}</td>
                                                                                                                     {% if comparativo %}
                                                                                                                         {% for mes in cp.meses %}
                                                                                                                             {% if mov.id_tipo == INGRESOS %}
@@ -403,13 +403,14 @@
                                                                     {% endfor %}
                                                                 </tbody>
                                                             </table>
+                                                            <br>
                                                         </td>
                                                     </tr>
                                                 {% endfor %}
                                                 <tr>
-                                                    <td class="w-10">
+                                                    <td class="fijar-tipo-movimiento-1">
                                                     </td>
-                                                    <td>Total</td>
+                                                    <td class="fijar-tipo-movimiento-2">Total</td>
                                                     {% for mov in totales_mes_a_mes %}
                                                         {% if comparativo %}
                                                             <td class="t-a-e">{{ mov.valor_real|intcomma:False }}</td>
