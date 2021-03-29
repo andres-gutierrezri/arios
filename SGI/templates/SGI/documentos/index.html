@@ -78,7 +78,7 @@
                                                                                             {% else %}
                                                                                                 {% include 'SGI/documentos/BotonesGestion/botonesGestionSGI.html' %}
                                                                                             {% endif %}
-                                                                                            {% if not grupo_documento.solo_proceso and proceso == colaborador_proceso and not perms.TalentoHumano.can_gestioncompletasgi %}
+                                                                                            {% if not grupo_documento.solo_proceso and proceso in colaborador_proceso and not perms.TalentoHumano.can_gestioncompletasgi %}
                                                                                                 {% include 'SGI/documentos/BotonesGestion/botonesGestionSGI.html' %}
                                                                                             {% endif %}
                                                                                         {% endif %}
