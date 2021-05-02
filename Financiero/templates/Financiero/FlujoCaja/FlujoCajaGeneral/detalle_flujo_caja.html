@@ -12,7 +12,7 @@
 {% endblock styles %}
 
 {% block main %}
-    {% with ALIMENTACION=1 EJECUCION=2 REAL=0 PROYECCION=1 VIGENTE=1 EDITADO=2 ELIMINADO=4 %}
+    {% with ALIMENTACION=1 EJECUCION=2 REAL=0 PROYECCION=1 VIGENTE=1 EDITADO=2 ELIMINADO=4 APLICADO=5 OBSOLETO=3 %}
         <div id="configuracion_dfc" data-id-contrato="{{ contrato.id }}{{ proceso.id }}" data-id-tipo-detalle="{{ tipo }}" data-tipo-flujo="{% if contrato %}contratos{% else %}procesos{% endif %}" data-ruta-borrado="financiero/flujo-caja/movimiento"></div>
     <div class="panel-container show">
         <div class="header p-b-10">
@@ -38,29 +38,31 @@
                             {% if not eliminados %}
                             <div class="col-md-5">
                                 <h3>
-                                    <b>Total Ingresos: </b>{{ ingresos|intcomma }}
+                                    <b>Total Ingresos: </b>{{ ingresos|intcomma:False }}
                                 </h3>
                             </div>
                             <div class="col-md-5">
                                 <h3>
-                                    <b>Total Egresos: </b>{{ egresos|intcomma }}
+                                    <b>Total Egresos: </b>{{ egresos|intcomma:False }}
                                 </h3>
                             </div>
                             {% endif %}
                         </div>
                         <div class="panel-hdr">
-                            <div class="col-lg-8 col-md-4 col-sm-2">
-                                <div class="form-group col-12">
-                                    <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons" style="float: left">
-                                        <label class="btn btn-default waves-effect waves-themed active" onclick="cambioCheck('vigente')">
-                                            <input type="radio" name="solo_eliminado" id="ver_vigente" {% if not eliminados %} checked="" {% endif %} value="vigente"> Vigentes
-                                        </label>
-                                        <label class="btn btn-default waves-effect waves-themed" onclick="cambioCheck('eliminado')">
-                                            <input type="radio" name="solo_eliminado" id="ver_eliminado" {% if eliminados %}checked=""{% endif %} value="eliminado"> Eliminados
-                                        </label>
+                                <div class="col-lg-8 col-md-4 col-sm-2">
+                                {% if perms.Financiero.can_access_usuarioespecial or perms.Financiero.can_gestion_flujos_de_caja %}
+                                    <div class="form-group col-12">
+                                        <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons" style="float: left">
+                                            <label class="btn btn-default waves-effect waves-themed" onclick="cambioCheck('vigente')">
+                                                <input type="radio" name="solo_eliminado" id="ver_vigente" {% if not eliminados %} checked {% endif %} value="vigente"> Vigentes
+                                            </label>
+                                            <label class="btn btn-default waves-effect waves-themed" onclick="cambioCheck('eliminado')">
+                                                <input type="radio" name="solo_eliminado" id="ver_eliminado" {% if eliminados %}checked{% endif %} value="eliminado"> Eliminados
+                                            </label>
+                                        </div>
                                     </div>
+                                {% endif %}
                                 </div>
-                            </div>
                             <div class="col-lg-2 col-md-4 col-sm-5" style="float: right;">
                                 {% select_tag anios 'filtro_anio_id' anios.first.campo_texto value=anio_seleccion primer_valor=True primer_campo_valor=anios.first.campo_valor %}
                             </div>
@@ -83,10 +85,10 @@
                                                         <th>Comentarios</th>
                                                         <th>Creado</th>
                                                         <th>Modificado</th>
-                                                        {% if perms.TalentoHumano.can_access_usuarioespecial or perms.TalentoHumano.view_flujos_de_caja %}
+                                                        {% if perms.TalentoHumano.can_access_usuarioespecial or perms.Financiero.can_gestion_flujos_de_caja %}
                                                             <th>Estado</th>
                                                         {% endif %}
-                                                        {% if perms.Financiero.change_flujocajadetalle or perms.Financiero.delete_flujocajadetalle or perms.TalentoHumano.view_flujos_de_caja %}
+                                                        {% if perms.Financiero.change_flujocajadetalle or perms.Financiero.delete_flujocajadetalle or perms.Financiero.can_gestion_flujos_de_caja %}
                                                             <th>Acción</th>
                                                         {% endif %}
                                                     </tr>
@@ -96,27 +98,30 @@
                                                         <tr>
                                                             <td>{{ movimiento.fecha_movimiento|date:'Y-m-d' }}</td>
                                                             <td><strong>{{ movimiento.subtipo_movimiento }}</strong><br>{{ movimiento.agrupacion }}</td>
-                                                            <td class="t-a-e">{{ movimiento.valor|intcomma }}</td>
+                                                            <td class="t-a-e">{{ movimiento.valor|intcomma:False }}</td>
                                                             <td>{{ movimiento.comentarios | default_if_none:'' }}</td>
                                                             <td>{{ movimiento.fecha_crea|date:'Y-m-d' }}</td>
                                                             <td>{{ movimiento.fecha_modifica|date:'Y-m-d' }}</td>
-                                                            {% if perms.TalentoHumano.can_access_usuarioespecial or perms.TalentoHumano.view_flujos_de_caja %}
+                                                            {% if perms.TalentoHumano.can_access_usuarioespecial or perms.Financiero.can_gestion_flujos_de_caja %}
                                                                 <td><span class="badge {% if movimiento.estado_id == ELIMINADO %} badge-danger {% elif movimiento.estado_id == EDITADO %} bg-primary-900 {% else %} badge-primary {% endif %} fw-300 ml-auto">{{ movimiento.estado }}</span></td>
                                                             {% endif %}
-                                                            {% if perms.Financiero.change_flujocajadetalle or perms.Financiero.delete_flujocajadetalle or perms.TalentoHumano.view_flujos_de_caja %}
+                                                            {% if perms.Financiero.change_flujocajadetalle or perms.Financiero.delete_flujocajadetalle or perms.Financiero.can_gestion_flujos_de_caja %}
                                                                 <td>
                                                                     {% if movimiento.estado_id != ELIMINADO %}
                                                                         {% if perms.Financiero.change_flujocajadetalle %}
-                                                                        <a class="fad fa-2x fa-edit" {% if fecha_minima_mes|date:"Y-m-d" <= movimiento.fecha_movimiento|date:"Y-m-d" and movimiento.estado_id == VIGENTE or movimiento.estado_id == EDITADO %} href="javascript:abrirModalCrearEditarFlujoDeCaja('{% url 'Financiero:flujo-caja-movimiento-editar' movimiento.id %}', '{{ fecha_minima_mes|date:'Y-m-d' }}')" {% else %}style="color: grey" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                                        <a class="fad fa-2x fa-edit" {% if fecha_minima_mes|date:"Y-m-d" <= movimiento.fecha_movimiento|date:"Y-m-d" and movimiento.estado_id == VIGENTE or movimiento.estado_id == EDITADO or movimiento.estado_id == APLICADO %} href="javascript:abrirModalCrearEditarFlujoDeCaja('{% url 'Financiero:flujo-caja-movimiento-editar' movimiento.id %}', '{{ fecha_minima_mes|date:'Y-m-d' }}')" {% else %}style="color: grey" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
                                                                         {% endif %}
                                                                         {% if perms.Financiero.delete_flujocajadetalle %}
-                                                                            <a class="fad fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ movimiento.id }}"  {% if fecha_minima_mes|date:"Y-m-d" <= movimiento.fecha_movimiento|date:"Y-m-d" and movimiento.estado_id == VIGENTE or movimiento.estado_id == EDITADO %} href="javascript:void(0);"  onclick="fConfirmarEliminar({{ movimiento.id }})" {% else %}style="color: grey" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-danger-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+                                                                            <a class="fad fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ movimiento.id }}"  {% if fecha_minima_mes|date:"Y-m-d" <= movimiento.fecha_movimiento|date:"Y-m-d" and movimiento.estado_id == VIGENTE or movimiento.estado_id == EDITADO or movimiento.estado_id == APLICADO %} href="javascript:void(0);"  onclick="fConfirmarEliminar({{ movimiento.id }})" {% else %}style="color: grey" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-danger-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
                                                                         {% endif %}
                                                                     {% endif %}
-                                                                    {% if perms.TalentoHumano.can_access_usuarioespecial or perms.TalentoHumano.view_flujos_de_caja %}
+                                                                    {% if perms.TalentoHumano.can_access_usuarioespecial or perms.Financiero.can_gestion_flujos_de_caja %}
                                                                         {% if movimiento.estado_id == EDITADO or movimiento.estado_id == ELIMINADO %}
                                                                         <a class="fad fa-2x fa-custom fa-list-alt" id="eliminar_{{ movimiento.id }}" href="javascript:void(0);"  onclick="abrirModalHistorial('{% url 'Financiero:flujo-caja-movimiento-historial' movimiento.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Historial"></a>
                                                                         {% endif %}
+                                                                    {% endif %}
+                                                                    {% if tipo == PROYECCION and not movimiento.estado_id == APLICADO and not movimiento.estado_id == ELIMINADO  and not movimiento.estado_id == OBSOLETO %}
+                                                                        <a class="fad fa-2x fa-custom fa-check-circle" id="aplicar_{{ movimiento.id }}" href="javascript:void(0);" onclick="abrirModalAplicarFlujoDeCaja('{% url 'Financiero:flujo-caja-movimiento-aplicar' movimiento.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Aplicar al Real"></a>
                                                                     {% endif %}
                                                                 </td>
                                                             {% endif %}
@@ -135,6 +140,7 @@
         </div>
     </div>
     <div class="modal fade" tabindex="-1" id="crear_editar_flujo_caja" role="dialog"></div>
+    <div class="modal fade" tabindex="-1" id="aplicar_flujo_caja" role="dialog"></div>
     <div class="modal fade" tabindex="-1" id="historial" role="dialog"></div>
 
 {% endwith %}

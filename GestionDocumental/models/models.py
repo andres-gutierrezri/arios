@@ -85,3 +85,38 @@ class ConsecutivoContrato(models.Model):
             consecutivo.fecha_final = None
 
         return consecutivo
+
+
+class ConsecutivoReunion(models.Model):
+    objects = ManagerGeneral()
+    fecha = models.DateField(verbose_name='Fecha', null=False, blank=False)
+    tema = models.CharField(max_length=100, verbose_name='Tema', null=False, blank=False)
+    descripcion = models.CharField(max_length=100, verbose_name='Descripción', null=False, blank=False)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Usuario', null=False, blank=False)
+    codigo = models.CharField(max_length=50, verbose_name='Código', null=False, blank=False)
+    empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa', blank=False, null=False)
+    fecha_crea = models.DateField(verbose_name='Fecha de Creación', null=False, blank=False)
+    estado = models.BooleanField(verbose_name='Estado', blank=False, null=False)
+    justificacion = models.CharField(max_length=100, verbose_name='Justificación', blank=True, null=True)
+
+    def __str__(self):
+        return self.codigo
+
+    class Meta:
+        verbose_name = 'Consecutivo Reunión'
+        verbose_name_plural = 'Consecutivos Reuniones'
+
+    @staticmethod
+    def from_dictionary(datos: dict) -> 'ConsecutivoReunion':
+        """
+        Crea una instancia de ConsecutivoReunion con los datos pasados en el diccionario.
+        :param datos: Diccionario con los datos para crear el Consecutivo de Reunión.
+        :return: Instacia de consecutivo de oficios con la información especificada en el diccionario.
+        """
+        consecutivo = ConsecutivoReunion()
+        consecutivo.tema = datos.get('tema', '')
+        consecutivo.fecha = datos.get('fecha', '')
+        consecutivo.descripcion = datos.get('descripcion', '')
+        consecutivo.estado = True
+
+        return consecutivo

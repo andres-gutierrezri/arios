@@ -6,7 +6,7 @@ from django.db import models
 from django.db.models import QuerySet, F
 
 from Administracion.utils import get_id_empresa_global
-from Administracion.models import Proceso
+from Administracion.models import Proceso, Empresa
 from EVA.General.modelmanagers import ManagerGeneral
 from Proyectos.models import Contrato
 
@@ -110,21 +110,31 @@ class EstadoFlujoCaja(models.Model):
 
 
 class FlujoCajaEncabezadoManager(ManagerGeneral):
-    def get_xa_select_x_contrato(self, request) -> QuerySet:
+    def get_xa_select_x_contrato(self) -> QuerySet:
         return super().get_queryset()\
-            .filter(contrato__isnull=False, contrato__empresa_id=get_id_empresa_global(request))\
+            .filter(contrato__isnull=False)\
             .values(campo_valor=F('id'), campo_texto=F('contrato__numero_contrato'))
 
-    def get_xa_select_x_proceso(self, request) -> QuerySet:
+    def get_xa_select_x_proceso(self) -> QuerySet:
         return super().get_queryset()\
-            .filter(proceso__isnull=False, proceso__empresa_id=get_id_empresa_global(request)) \
+            .filter(proceso__isnull=False) \
             .values(campo_valor=F('id'), campo_texto=F('proceso__nombre'))
 
-    def get_flujos_x_contrato(self, request) -> QuerySet:
-        return super().get_queryset().filter(contrato__isnull=False, contrato__empresa_id=get_id_empresa_global(request))
+    def get_flujos_x_contrato(self) -> QuerySet:
+        return super().get_queryset().filter(contrato__isnull=False)
 
-    def get_flujos_x_proceso(self, request) -> QuerySet:
-        return super().get_queryset().filter(proceso__isnull=False, proceso__empresa_id=get_id_empresa_global(request))
+    def get_flujos_x_proceso(self) -> QuerySet:
+        return super().get_queryset().filter(proceso__isnull=False)
+
+    def get_id_flujos_contratos(self) -> list:
+        return list(super().get_queryset()
+                    .filter(contrato__isnull=False)
+                    .values_list('id', flat=True))
+
+    def get_id_flujos_procesos(self) -> list:
+        return list(super().get_queryset()
+                    .filter(proceso__isnull=False)
+                    .values_list('id', flat=True))
 
 
 class FlujoCajaEncabezado(models.Model):
@@ -136,6 +146,8 @@ class FlujoCajaEncabezado(models.Model):
     estado = models.ForeignKey(EstadoFlujoCaja, on_delete=models.DO_NOTHING, verbose_name='Estado',
                                null=False, blank=False)
     fecha_crea = models.DateTimeField(verbose_name='Fecha de Creación', null=False, blank=False)
+
+    empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa', blank=False, null=True)
 
     def __str__(self):
         return '{0} - {1}'.format(self.proceso, self.contrato)
@@ -163,6 +175,7 @@ class EstadoFCDetalle(models.Model):
     EDITADO = 2
     OBSOLETO = 3
     ELIMINADO = 4
+    APLICADO = 5
 
 
 class FlujoCajaDetalle(models.Model):
@@ -185,6 +198,8 @@ class FlujoCajaDetalle(models.Model):
                                null=False, blank=False)
     comentarios = models.CharField(verbose_name='Comentarios', max_length=100, null=True, blank=True)
     motivo_edicion = models.CharField(verbose_name='Motivo', max_length=100, null=True, blank=True)
+    movimiento_proyectado = models.ForeignKey('self', on_delete=models.DO_NOTHING, blank=True, null=True,
+                                              related_name='%(app_label)s_%(class)s_movimiento_proyectado')
 
     def __str__(self):
         return 'Flujo de Caja {0} - Detalle: {1}'.format(self.flujo_caja_enc, self.id)

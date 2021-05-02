@@ -29,7 +29,8 @@ class FlujoCajaContratosDetalleView(AbstractEvaLoggedView):
         if not validar_permisos(request, 'view_flujocajadetalle'):
             return redirect(reverse('eva-index'))
 
-        return flujo_caja_detalle(request, tipo, contrato=id, anio_seleccion=anio, mes_seleccion=mes)
+        return flujo_caja_detalle(request, tipo, contrato=id, anio_seleccion=anio, mes_seleccion=mes,
+                                  ruta='Financiero:flujo-caja-contratos')
 
 
 class FlujoCajaContratosCrearView(AbstractEvaLoggedView):

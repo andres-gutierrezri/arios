@@ -126,4 +126,4 @@ class ConsecutivoOficiosEliminarView(AbstractEvaLoggedView):
 
         except IntegrityError:
             return JsonResponse({"estado": "error",
-                                 "mensaje": 'Ha ocurrido un erro al realizar la acción'})
+                                 "mensaje": 'Ha ocurrido un error al realizar la acción'})

@@ -26,6 +26,8 @@ class TipoDocumento (models.Model):
     XML_NOTA_DEBITO = 6
     ZIP_ENVIO_DIAN = 7
     XML_ATTACHED_DOCUMENT = 8
+    CLIENTE = 9
+    REUNIONES = 10
 
 
 class ConsecutivoDocumento (models.Model):
@@ -55,7 +57,8 @@ class ConsecutivoDocumento (models.Model):
             consecutivo.save(update_fields=['consecutivo'])
             consecutivo.refresh_from_db(fields=['consecutivo'])
         else:
-            consecutivo = ConsecutivoDocumento(tipo_documento_id=tipo_documento_id, empresa_id=empresa_id, estado=True)
+            consecutivo = ConsecutivoDocumento(tipo_documento_id=tipo_documento_id, anho=app_datetime_now().year,
+                                               empresa_id=empresa_id, estado=True)
             consecutivo.consecutivo = 1
             consecutivo.save()
 

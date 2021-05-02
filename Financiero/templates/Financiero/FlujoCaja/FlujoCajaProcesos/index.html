@@ -54,7 +54,7 @@
                                                             {% if perms.Financiero.view_flujocajaencabezado %}
                                                                 <td>
                                                                     {% if proceso.proceso_usuario or perms.Financiero.can_gestion_flujos_de_caja %}
-                                                                        <span class="badge badge-primary">{{ proceso.estado_fc | default_if_none:'' }}</span>
+                                                                        <span class="badge badge-primary">{% for fc in flujos_caja %}{% if proceso.id == fc.proceso.id %}{{ fc.estado.nombre }}{% endif %}{% endfor %}</span>
                                                                     {% endif %}
                                                                 </td>
                                                                 <td>

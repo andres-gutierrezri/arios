@@ -77,17 +77,16 @@ class FlujoCajaMovimientoHistorialView(AbstractEvaLoggedView):
         return historial_movimiento(request, id_movimiento)
 
 
-def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccion=None, mes_seleccion=None):
+def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccion=None, mes_seleccion=None, ruta=None):
     if proceso:
         ruta_reversa = 'administracion:procesos'
         base_template = 'Administracion/_common/base_administracion.html'
         menu_actual = ['procesos', 'flujos_de_caja']
         proceso = Proceso.objects.get(id=proceso)
-        flujo_caja_enc = FlujoCajaEncabezado.objects.filter(proceso=proceso,
-                                                            proceso__empresa_id=get_id_empresa_global(request))
+        flujo_caja_enc = FlujoCajaEncabezado.objects.filter(proceso=proceso, empresa_id=get_id_empresa_global(request))
         movimientos = FlujoCajaDetalle \
             .objects.filter(flujo_caja_enc__proceso=proceso, tipo_registro=tipo,
-                            flujo_caja_enc__proceso__empresa_id=get_id_empresa_global(request)) \
+                            flujo_caja_enc__empresa_id=get_id_empresa_global(request)) \
             .annotate(fecha_corte=F('flujo_caja_enc__corteflujocaja__fecha_corte')) \
             .exclude(estado_id=EstadoFCDetalle.OBSOLETO)
     else:
@@ -95,37 +94,39 @@ def flujo_caja_detalle(request, tipo, contrato=None, proceso=None, anio_seleccio
         base_template = 'Proyectos/_common/base_proyectos.html'
         menu_actual = 'fc_contratos'
         contrato = Contrato.objects.get(id=contrato)
-        flujo_caja_enc = FlujoCajaEncabezado.objects.filter(contrato=contrato,
-                                                            contrato__empresa_id=get_id_empresa_global(request))
+        flujo_caja_enc = FlujoCajaEncabezado.objects.filter(contrato=contrato)
         movimientos = FlujoCajaDetalle \
             .objects.filter(flujo_caja_enc__contrato=contrato, tipo_registro=tipo,
-                            flujo_caja_enc__contrato__empresa_id=get_id_empresa_global(request)) \
+                            flujo_caja_enc__empresa_id=get_id_empresa_global(request)) \
             .annotate(fecha_corte=F('flujo_caja_enc__corteflujocaja__fecha_corte')) \
             .exclude(estado_id=EstadoFCDetalle.OBSOLETO)
 
     eliminados = request.GET.get('eliminados', 'False') == 'True'
 
-    if eliminados:
-        movimientos = movimientos.exclude(estado_id__in=[EstadoFCDetalle.VIGENTE, EstadoFCDetalle.EDITADO])
+    if not request.user.has_perms('Financiero.can_access_usuarioespecial'):
+        if not request.user.has_perms(['Financiero.can_gestion_flujos_de_caja']):
+            movimientos = movimientos.exclude(estado_id=EstadoFCDetalle.ELIMINADO)
+
     else:
-        movimientos = movimientos.exclude(estado_id__in=[EstadoFCDetalle.ELIMINADO, EstadoFCDetalle.OBSOLETO])
+        if eliminados:
+            movimientos = movimientos.exclude(estado_id__in=[EstadoFCDetalle.VIGENTE, EstadoFCDetalle.EDITADO,
+                                                             EstadoFCDetalle.APLICADO])
+        else:
+            movimientos = movimientos.exclude(estado_id__in=[EstadoFCDetalle.ELIMINADO, EstadoFCDetalle.OBSOLETO])
 
     if flujo_caja_enc:
         flujo_caja_enc = flujo_caja_enc.first()
     else:
         flujo_caja_enc = FlujoCajaEncabezado.objects.create(fecha_crea=datetime.now(), proceso=proceso,
                                                             contrato=contrato,
-                                                            estado_id=EstadoFlujoCaja.ALIMENTACION)
+                                                            estado_id=EstadoFlujoCaja.ALIMENTACION,
+                                                            empresa_id=get_id_empresa_global(request))
     if not tiene_permisos_de_acceso(request, contrato=contrato, proceso=proceso):
         messages.error(request, 'No tiene permisos para acceder a este flujo de caja.')
         return redirect(reverse(ruta_reversa))
 
     fecha_minima_mes = generar_fecha_minima(tipo)
     fecha_maxima_mes = generar_fecha_maxima(tipo)
-
-    if not request.user.has_perms('Financiero.can_access_usuarioespecial'):
-        if not request.user.has_perms(['Financiero.can_gestion_flujos_de_caja']):
-            movimientos = movimientos.exclude(estado_id=EstadoFCDetalle.ELIMINADO)
 
     if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
         movimientos = movimientos.filter(subtipo_movimiento__protegido=False)
@@ -233,12 +234,14 @@ def guardar_movimiento(request, tipo=None, contrato=None, proceso=None, movimien
         ruta_reversa = 'financiero:flujo-caja-contratos'
         ruta_detalle = 'financiero:flujo-caja-contratos-detalle'
         objeto = contrato
-        flujo_encabezado = FlujoCajaEncabezado.objects.get(contrato_id=contrato)
+        flujo_encabezado = FlujoCajaEncabezado.objects.get(contrato_id=contrato,
+                                                           empresa_id=get_id_empresa_global(request))
     else:
         ruta_reversa = 'administracion:procesos'
         ruta_detalle = 'financiero:flujo-caja-procesos-detalle'
         objeto = proceso
-        flujo_encabezado = FlujoCajaEncabezado.objects.get(proceso_id=proceso)
+        flujo_encabezado = FlujoCajaEncabezado.objects.get(proceso_id=proceso,
+                                                           empresa_id=get_id_empresa_global(request))
 
     if not tiene_permisos_de_acceso(request, contrato=contrato, proceso=proceso) or \
             not validar_gestion_registro(request, flujo_detalle):
@@ -280,8 +283,8 @@ def guardar_movimiento(request, tipo=None, contrato=None, proceso=None, movimien
         fl_det.flujo_caja_enc = flujo_encabezado
         fl_det.save()
         messages.success(request, 'Se ha agregado el movimiento correctamente')
-
-    return redirect(reverse(ruta_detalle, args=[objeto, tipo, app_datetime_now().year, app_datetime_now().month]))
+    return redirect(reverse(ruta_detalle, args=[objeto, tipo, string_to_date(str(fl_det.fecha_movimiento)).year,
+                                                string_to_date(str(fl_det.fecha_movimiento)).month]))
 
 
 def eliminar_movimiento(request, flujo_detalle):
@@ -468,3 +471,65 @@ def validar_fecha_accion(flujo_detalle):
         return True
     elif flujo_detalle.fecha_movimiento.date() >= fecha_minima:
         return True
+
+
+class FlujoCajaMovimientoAplicarView(AbstractEvaLoggedView):
+    def get(self, request, id_movimiento):
+        if not validar_permisos(request, 'change_flujocajadetalle'):
+            return redirect(reverse('eva-index'))
+        flujo_detalle = FlujoCajaDetalle.objects.get(id=id_movimiento)
+        subtipos_movimientos = [{'campo_valor': 1, 'campo_texto': flujo_detalle.subtipo_movimiento.nombre}]
+        return render(request, 'Financiero/FlujoCaja/FlujoCajaGeneral/modal-aplicar.html',
+                      {'flujo_detalle': flujo_detalle,
+                       'subtipos_movimientos': subtipos_movimientos})
+
+    def post(self, request, id_movimiento):
+        if not validar_permisos(request, 'change_flujocajadetalle'):
+            return redirect(reverse('eva-index'))
+
+        flujo_detalle = FlujoCajaDetalle.objects.get(id=id_movimiento)
+
+        if flujo_detalle.flujo_caja_enc.proceso:
+            objeto = flujo_detalle.flujo_caja_enc.proceso_id
+            ruta_reversa = 'administracion:procesos'
+            ruta_detalle = 'financiero:flujo-caja-procesos-detalle'
+        else:
+            objeto = flujo_detalle.flujo_caja_enc.contrato_id
+            ruta_reversa = 'administracion:contratos'
+            ruta_detalle = 'financiero:flujo-caja-contratos-detalle'
+
+        if flujo_detalle.estado_id in [EstadoFCDetalle.ELIMINADO, EstadoFCDetalle.OBSOLETO] or \
+                flujo_detalle.tipo_registro != PROYECCION:
+            messages.error(request, 'Este movimiento no puede ser aplicado.')
+            return redirect(reverse(ruta_reversa))
+
+        if flujo_detalle.estado_id not in [EstadoFCDetalle.VIGENTE, EstadoFCDetalle.EDITADO]:
+            messages.error(request, 'Este movimiento ya ha sido aplicado.')
+            return redirect(reverse(ruta_reversa))
+
+        if not tiene_permisos_de_acceso(request, proceso=flujo_detalle.flujo_caja_enc.proceso_id,
+                                        contrato=flujo_detalle.flujo_caja_enc.contrato_id):
+            messages.error(request, 'No tiene permisos para acceder a este flujo de caja.')
+            return redirect(reverse(ruta_reversa))
+
+        flujo_detalle.estado_id = EstadoFCDetalle.APLICADO
+        flujo_detalle.save(update_fields=['estado'])
+
+        fl_det = FlujoCajaDetalle()
+        fl_det.fecha_movimiento = flujo_detalle.fecha_movimiento
+        fl_det.subtipo_movimiento = flujo_detalle.subtipo_movimiento
+        fl_det.valor = request.POST.get('valor', '')
+        fl_det.comentarios = request.POST.get('comentarios', '')
+        fl_det.usuario_modifica = request.user
+        fl_det.fecha_modifica = app_datetime_now()
+        fl_det.tipo_registro = REAL
+        fl_det.usuario_crea = request.user
+        fl_det.fecha_crea = app_datetime_now()
+        fl_det.estado_id = EstadoFCDetalle.APLICADO
+        fl_det.flujo_caja_enc = flujo_detalle.flujo_caja_enc
+        fl_det.movimiento_proyectado = flujo_detalle
+        fl_det.save()
+        messages.success(request, 'Se ha aplicado el movimiento correctamente')
+        return redirect(reverse(ruta_detalle, args=[objeto, PROYECCION, fl_det.fecha_movimiento.year,
+                                                    fl_det.fecha_movimiento.month]))
+

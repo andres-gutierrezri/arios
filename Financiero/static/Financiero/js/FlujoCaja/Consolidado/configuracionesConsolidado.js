@@ -9,9 +9,11 @@ const controls = {
 let idCategorias = $('#categorias_id');
 let idContrato = $('#contrato_id');
 let idProceso = $('#proceso_id');
+let idEmpresa = $('#empresa_id');
 let idEstados = $('#estados_id');
 let idSubtipos = $('#subtipos_id');
 let subtiposCategorias = JSON.parse($('#subtipos_categorias').val());
+let divConsolidado = $('#div_consolidado');
 
 // Inicio del bloque de Configuración de los Select Multiples
 
@@ -94,6 +96,26 @@ $(document).ready(function() {
     }
     // Final del Bloque
 
+    // Configuración del Select Multiple de Empresas
+    idEmpresa.select2({
+        placeholder: "Seleccione una opción",
+        "language": {
+            noResults: function () {
+                return 'No se encontraron coincidencias';
+            },
+            searching: function () {
+                return 'Buscando…';
+            },
+        },
+    });
+
+    let valoresEmpresas = $('#valores_empresas').val();
+    idEmpresa.next().find("input").css("min-width", "200px");
+    if (valoresEmpresas){
+        idEmpresa.val(JSON.parse(valoresEmpresas)).trigger("change");
+    }
+    // Final del Bloque
+
     // Configuración del Select Multiple de Estados
     idEstados.select2({
         placeholder: "Seleccione un opción",
@@ -127,6 +149,14 @@ $(document).ready(function() {
     if (valoresSubtipos){
         idSubtipos.val(JSON.parse(valoresSubtipos)).trigger("change");
     }
+
+    idProceso.change(function () {
+        cargarSeleccionesContratos();
+    });
+
+    idEmpresa.change(function () {
+        cargarSeleccionesContratos();
+    });
     // Fin del Bloque
 });
 // Fin del Bloque
@@ -149,6 +179,7 @@ function seleccionarTodos(elemento) {
         icono.addClass('fa-check');
         texto.html('Seleccionar Todos')
     }
+    cargarSeleccionesContratos();
 }
 
 let fechaHasta = $('#fecha_hasta_id');
@@ -305,10 +336,138 @@ function desplegarDetalle(origen, idObjeto, idTipo) {
 }
 
 function Imprimir() {
-     let zonaImpresionConsolidado = $('#div_consolidado').html();
+     let zonaImpresionConsolidado = divConsolidado.html();
      let zonaImpresionTotales = $('#div_totales').html();
      let originalContents = document.body.innerHTML;
      document.body.innerHTML = zonaImpresionConsolidado + zonaImpresionTotales;
      window.print();
      document.body.innerHTML = originalContents;
 }
+
+function cargarSeleccionesContratos() {
+    let ruta = "/financiero/flujo-caja/consolidado/contratos_x_proceso/?empresas=[" + idEmpresa.val() + "]";
+    if (idProceso.val().length > 0){
+        ruta = "/financiero/flujo-caja/consolidado/contratos_x_proceso/?procesos=[" + idProceso.val()+ "]&empresas=[" + idEmpresa.val() + "]";
+    }
+    $.ajax({
+        url: ruta,
+        type: 'GET',
+        context: document.body,
+        success: function (data) {
+            if(data.estado === "OK") {
+                let contratoTemp = $('#contrato_id');
+                let valoresContratoTemp = contratoTemp.val();
+                let listaContratos = [];
+                if (data.datos.includes('campo_valor')){
+                    contratoTemp.empty();
+                    JSON.parse(data.datos).forEach(function (index){
+                        contratoTemp.append('<option value="' + index.campo_valor + '">' + index.campo_texto + '</option>')
+                        $.each(valoresContratoTemp, function (ind, valContrato) {
+                            if (parseInt(valContrato) === index.campo_valor){
+                                listaContratos.push(valContrato);
+                            }
+                        });
+                    });
+                }else{
+                    contratoTemp.empty();
+                }
+                if (listaContratos){
+                    if (!idEmpresa.val()){
+                        contratoTemp.empty();
+                    }
+                    contratoTemp.val(listaContratos).trigger('change');
+                }
+            }else {
+                EVANotificacion.toast.error('Ha ocurrido un error');
+            }
+        },
+        failure: function (errMsg) {
+            EVANotificacion.toast.error('Ha ocurrido un error al enviar la solcitud.');
+        }
+    });
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+/* Configuración para detectar el scroll x o y en el consolidado
+ y poder invertir el position sticky y sus propiedades entre la columna y la fila. */
+
+let ejeX = 0;
+let ejeY = 0;
+let movX = true;
+let movY = true;
+let alternarStickyTipoMovimiento1 = $('.alternar-sticky-tipo-movimiento-1');
+let alternarStickyTipoMovimiento2 = $('.alternar-sticky-tipo-movimiento-2');
+let alternarStickyCategoria1 = $('.alternar-sticky-categoria-1');
+let alternarStickyCategoria2 = $('.alternar-sticky-categoria-2');
+let alternarStickySubtipo1 = $('.alternar-sticky-subtipo-1');
+let alternarStickySubtipo2 = $('.alternar-sticky-subtipo-2');
+let alternarStickyConpro = $('.alternar-sticky-conpro');
+
+divConsolidado.scroll(function() {
+    if (ejeX !== divConsolidado.scrollLeft() ){
+        movY=true;
+       if(movX) {
+           ejeX = divConsolidado.scrollLeft();
+           alternarStickyTipoMovimiento1.removeClass('bg-primary-400');
+           alternarStickyTipoMovimiento1.removeClass('fijar-left-tipo-movimiento-1');
+           alternarStickyTipoMovimiento1.addClass('fijar-sticky-alternado-tipo-movimiento-1');
+           alternarStickyTipoMovimiento2.removeClass('bg-primary-400');
+           alternarStickyTipoMovimiento2.removeClass('fijar-left-tipo-movimiento-2');
+           alternarStickyTipoMovimiento2.addClass('fijar-sticky-alternado-tipo-movimiento-2');
+
+           alternarStickyCategoria1.removeClass('bg-info-700');
+           alternarStickyCategoria1.removeClass('fijar-left-categoria-1');
+           alternarStickyCategoria1.addClass('fijar-sticky-alternado-categoria-1');
+           alternarStickyCategoria2.removeClass('bg-info-700');
+           alternarStickyCategoria2.removeClass('fijar-left-categoria-2');
+           alternarStickyCategoria2.addClass('fijar-sticky-alternado-categoria-2');
+
+           alternarStickySubtipo1.removeClass('bg-success-700');
+           alternarStickySubtipo1.removeClass('fijar-left-subtipo-1');
+           alternarStickySubtipo1.addClass('fijar-sticky-alternado-subtipo-1');
+           alternarStickySubtipo2.removeClass('bg-success-700');
+           alternarStickySubtipo2.removeClass('fijar-left-subtipo-2');
+           alternarStickySubtipo2.addClass('fijar-sticky-alternado-subtipo-2');
+
+           alternarStickyConpro.removeClass('bg-fusion-50');
+           alternarStickyConpro.removeClass('fijar-left-conpro');
+           alternarStickyConpro.addClass('fijar-sticky-alternado-conpro');
+
+           movX=false;
+       }
+    }
+    if (ejeY !== divConsolidado.scrollTop()){
+        movX=true;
+        if(movY){
+            ejeY = divConsolidado.scrollTop();
+            alternarStickyTipoMovimiento1.removeClass('fijar-sticky-alternado-tipo-movimiento-1');
+            alternarStickyTipoMovimiento1.addClass('bg-primary-400');
+            alternarStickyTipoMovimiento1.addClass('fijar-left-tipo-movimiento-1');
+            alternarStickyTipoMovimiento2.removeClass('fijar-sticky-alternado-tipo-movimiento-2');
+            alternarStickyTipoMovimiento2.addClass('bg-primary-400');
+            alternarStickyTipoMovimiento2.addClass('fijar-left-tipo-movimiento-2');
+
+            alternarStickyCategoria1.removeClass('fijar-sticky-alternado-categoria-1');
+            alternarStickyCategoria1.addClass('bg-info-700');
+            alternarStickyCategoria1.addClass('fijar-left-categoria-1');
+            alternarStickyCategoria2.removeClass('fijar-sticky-alternado-categoria-2');
+            alternarStickyCategoria2.addClass('bg-info-700');
+            alternarStickyCategoria2.addClass('fijar-left-categoria-2');
+
+            alternarStickySubtipo1.removeClass('fijar-sticky-alternado-subtipo-1');
+            alternarStickySubtipo1.addClass('bg-success-700');
+            alternarStickySubtipo1.addClass('fijar-left-subtipo-1');
+            alternarStickySubtipo2.removeClass('fijar-sticky-alternado-subtipo-2');
+            alternarStickySubtipo2.addClass('bg-success-700');
+            alternarStickySubtipo2.addClass('fijar-left-subtipo-2');
+
+            alternarStickyConpro.removeClass('fijar-sticky-alternado-conpro');
+            alternarStickyConpro.addClass('bg-fusion-50');
+            alternarStickyConpro.addClass('fijar-left-conpro');
+
+            movY=false;
+        }
+    }
+});
+/* fin de la configuración para el scroll del consolidado */
+/*--------------------------------------------------------------------------------------------------------------------*/

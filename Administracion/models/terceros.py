@@ -31,8 +31,9 @@ class TipoTercero(models.Model):
     # Tipos Fijos
     CLIENTE = 1
     PROVEEDOR = 2
-    SUPERVISOR = 3
-    INTERVENTOR = 4
+    CLIENTE_Y_PROVEEDOR = 3
+    SUPERVISOR = 4
+    INTERVENTOR = 8
 
 
 class TerceroManger(ManagerGeneral):
@@ -109,6 +110,7 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     modificaciones = models.TextField(verbose_name='Modificaciones', null=True, blank=True)
     bienes_servicios = models.TextField(verbose_name='Bienes y Servicios que Ofrece', null=True, blank=True)
     es_vigente = models.BooleanField(verbose_name='Es Vigente', null=False, blank=False)
+    consecutivo_cliente = models.IntegerField(verbose_name='Consecutivo Cliente', null=True, blank=True)
 
     def __str__(self):
         return self.nombre
@@ -146,7 +148,7 @@ class Tercero(models.Model, ModelDjangoExtensiones):
         tercero.direccion = datos.get('direccion', '')
         tercero.digito_verificacion = datos.get('digito_verificacion')
         tercero.es_vigente = True
-        if int(tercero.tipo_tercero_id) == TipoTercero.CLIENTE:
+        if tercero.tipo_tercero_id and int(tercero.tipo_tercero_id) == TipoTercero.CLIENTE:
             tercero.tipo_persona = datos.get('tipo_persona')
             tercero.regimen_fiscal = datos.get('regimen_fiscal')
             responsabilidades = datos.getlist('responsabilidades')

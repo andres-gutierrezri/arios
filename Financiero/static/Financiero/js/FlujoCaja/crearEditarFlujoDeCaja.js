@@ -59,3 +59,21 @@ function abrirModalCrearEditarFlujoDeCaja(url, fecha_minima_mes, fecha_maxima_me
         }
     });
 }
+
+function abrirModalAplicarFlujoDeCaja(url) {
+    $('#aplicar_flujo_caja').load(url, function (responseText) {
+        try {
+            if (responseText.includes("error")) {
+                let error = JSON.parse(responseText);
+                EVANotificacion.toast.error(error.mensaje);
+                return false;
+            }
+            $(this).modal('show');
+            $('#valor_id').inputmask();
+            agregarValidacionFormularios();
+        } catch (err) {
+            console.log(err);
+            EVANotificacion.toast.error('Ha ocurrido un error interno');
+        }
+    });
+}
