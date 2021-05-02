@@ -73,7 +73,7 @@ function guardarRegistro() {
                     `Revise el correo electrónico ${response.datos.correo} para continuar con el proceso`,
                     "Ir al inicio de sesión", '/administracion/proveedor/iniciar-sesion')
             }else if (response.estado === 'ERROR') {
-                EVANotificacion.modal.error(response.mensaje)
+                EVANotificacion.modal.error(response.mensaje);
             } else {
                 if (response.hasOwnProperty('mensaje'))
                     EVANotificacion.toast.advertencia(response.mensaje);

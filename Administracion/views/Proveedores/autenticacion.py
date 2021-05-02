@@ -1,6 +1,7 @@
 import json
 import logging
 
+from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
@@ -8,21 +9,18 @@ from django.db.transaction import atomic
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from django.contrib import messages
-from django.views import View
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
+from django.views import View
 
 from Administracion.enumeraciones import EstadosProveedor
 from Administracion.models import Tercero, TipoIdentificacion, TipoTercero
 from EVA import settings
 from EVA.General import validar_recaptcha
-
 from EVA.views.index import AbstractEvaLoggedProveedorView
 from Notificaciones.models.models import EventoDesencadenador, SeleccionDeNotificacionARecibir
 from Notificaciones.views.correo_electronico import enviar_correo
 from TalentoHumano.models import Colaborador
-
 
 LOGGER = logging.getLogger(__name__)
 
@@ -103,8 +101,6 @@ class RegistroProveedorView(View):
             identificacion = datos_registro['identificacion']
             digito_verificacion = datos_registro['digitoVerificacion'] if datos_registro['digitoVerificacion'] else None
 
-            # usuario = Colaborador.crear_usuario(nombre if len(nombre) < 20 else nombre[:20], 'proveedor', correo)
-
             tercero = Tercero()
             tercero.nombre = nombre
             tercero.estado = False
@@ -128,13 +124,28 @@ class RegistroProveedorView(View):
             if User.objects.filter(email=correo):
                 return JsonResponse({'estado': 'ERROR', 'mensaje': 'El correo ingresado ya se encuentra registrado'})
 
-            if Tercero.objects.filter(identificacion=identificacion):
+            if Tercero.objects.filter(identificacion=identificacion,
+                                      tipo_identificacion_id=tercero.tipo_identificacion_id,
+                                      tipo_tercero_id__in=[TipoTercero.PROVEEDOR, TipoTercero.CLIENTE_Y_PROVEEDOR])\
+                    .exists():
                 return JsonResponse({'estado': 'ERROR',
                                      'mensaje': 'El número de identificación ingresado ya está registrado'})
             try:
                 usuario = User.objects.create(username=correo, first_name=nombre if len(nombre) < 20 else nombre[:20],
                                               last_name=nombre, email=correo)
                 tercero.usuario = usuario
+
+                cliente: Tercero = Tercero.objects.filter(identificacion=identificacion,
+                                                          tipo_identificacion_id=tercero.tipo_identificacion_id,
+                                                          tipo_tercero_id=TipoTercero.CLIENTE).first()
+
+                if cliente:
+                    cliente.tipo_tercero_id = TipoTercero.CLIENTE_Y_PROVEEDOR
+                    tercero.tipo_tercero_id = TipoTercero.CLIENTE_Y_PROVEEDOR
+                    tercero.estado_proveedor = EstadosProveedor.EDICION_PERFIL
+                    tercero.es_vigente = False
+                    cliente.save()
+
                 tercero.save()
                 SeleccionDeNotificacionARecibir\
                     .objects.create(envio_x_email=True, estado=True, usuario=usuario,
@@ -159,8 +170,8 @@ class RegistroProveedorView(View):
                                'token': False,
                                'lista_destinatarios': [usuario.email]})
             except:
-                LOGGER.error('Error en registro de un proveedor')
-                return JsonResponse({'estado': 'ERROR'})
+                LOGGER.exception("Error en registro de un proveedor")
+                return JsonResponse({'estado': 'ERROR', 'mensaje': 'Error en registro de un proveedor'})
         else:
             return JsonResponse({'estado': 'ERROR',
                                  'mensaje': 'Captcha inválido'})

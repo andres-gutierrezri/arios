@@ -31,8 +31,9 @@ class TipoTercero(models.Model):
     # Tipos Fijos
     CLIENTE = 1
     PROVEEDOR = 2
-    SUPERVISOR = 3
-    INTERVENTOR = 4
+    CLIENTE_Y_PROVEEDOR = 3
+    SUPERVISOR = 4
+    INTERVENTOR = 8
 
 
 class TerceroManger(ManagerGeneral):
