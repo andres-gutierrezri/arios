@@ -584,38 +584,9 @@ class ProveedorSolicitudAprobarRechazar(AbstractEvaLoggedView):
 
 def migrar_informacion_aprobadada(id_proveedor_nuevo, id_proveedor_anterior):
     proveedor_nuevo = Tercero.objects.get(id=id_proveedor_nuevo)
-    Tercero.objects.filter(id=id_proveedor_anterior) \
-        .update(nombre=proveedor_nuevo.nombre,
-                identificacion=proveedor_nuevo.identificacion,
-                digito_verificacion=proveedor_nuevo.digito_verificacion,
-                estado=proveedor_nuevo.estado,
-                empresa=proveedor_nuevo.empresa,
-                fecha_creacion=proveedor_nuevo.fecha_creacion,
-                fecha_modificacion=proveedor_nuevo.fecha_modificacion,
-                tipo_identificacion=proveedor_nuevo.tipo_identificacion,
-                ciudad=proveedor_nuevo.ciudad,
-                centro_poblado=proveedor_nuevo.centro_poblado,
-                direccion=proveedor_nuevo.direccion,
-                tipo_persona=proveedor_nuevo.tipo_persona,
-                responsabilidades_fiscales=proveedor_nuevo.responsabilidades_fiscales,
-                regimen_fiscal=proveedor_nuevo.regimen_fiscal,
-                tributos=proveedor_nuevo.tributos,
-                correo_facelec=proveedor_nuevo.correo_facelec,
-                codigo_postal=proveedor_nuevo.codigo_postal,
-                telefono_fijo_principal=proveedor_nuevo.telefono_fijo_principal,
-                telefono_fijo_auxiliar=proveedor_nuevo.telefono_fijo_auxiliar,
-                telefono_movil_principal=proveedor_nuevo.telefono_movil_principal,
-                telefono_movil_auxiliar=proveedor_nuevo.telefono_movil_auxiliar,
-                correo_principal=proveedor_nuevo.correo_principal,
-                correo_auxiliar=proveedor_nuevo.correo_auxiliar,
-                nombre_rl=proveedor_nuevo.nombre_rl,
-                identificacion_rl=proveedor_nuevo.identificacion_rl,
-                tipo_identificacion_rl=proveedor_nuevo.tipo_identificacion_rl,
-                lugar_expedicion_rl=proveedor_nuevo.lugar_expedicion_rl,
-                fecha_constitucion=proveedor_nuevo.fecha_constitucion,
-                fecha_inicio_actividad=proveedor_nuevo.fecha_inicio_actividad,
-                estado_proveedor=proveedor_nuevo.estado_proveedor,
-                bienes_servicios=proveedor_nuevo.bienes_servicios)
+    proveedor_nuevo.id = id_proveedor_anterior
+    proveedor_nuevo.es_vigente = True
+    proveedor_nuevo.save(force_update=True)
 
     DocumentoTercero.objects.filter(tercero_id=id_proveedor_anterior).delete()
     EntidadBancariaTercero.objects.filter(tercero_id=id_proveedor_anterior).delete()
