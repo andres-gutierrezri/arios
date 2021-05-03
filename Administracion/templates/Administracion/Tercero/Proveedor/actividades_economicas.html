@@ -31,21 +31,21 @@
                                         {% csrf_token %}
                                         <div class="form-row">
                                             <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                                                {% select_tag actividades_economicas 'actividad_principal' 'Seleccione una actividad' texto_label="Actividad Principal" required="" value=proveedor.actividad_principal_id  mensaje_validacion='Por favor seleccione una actividad' %}
+                                                {% select_tag actividades_economicas 'actividad_principal' 'Seleccione una actividad' texto_label="Actividad Principal" required="" value=proveedor_actec.actividad_principal_id  mensaje_validacion='Por favor seleccione una actividad' %}
                                             </div>
                                             <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                                                {% select_tag actividades_economicas 'actividad_secundaria' 'Seleccione una actividad' texto_label="Actividad Secundaria" value=proveedor.actividad_secundaria_id  mensaje_validacion='Por favor seleccione una actividad' %}
+                                                {% select_tag actividades_economicas 'actividad_secundaria' 'Seleccione una actividad' texto_label="Actividad Secundaria" value=proveedor_actec.actividad_secundaria_id  mensaje_validacion='Por favor seleccione una actividad' %}
                                             </div>
                                             <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                                                {% select_tag actividades_economicas 'otra_actividad' 'Seleccione una actividad' texto_label="Otra Actividad" value=proveedor.otra_actividad_id  mensaje_validacion='Por favor seleccione una actividad' %}
+                                                {% select_tag actividades_economicas 'otra_actividad' 'Seleccione una actividad' texto_label="Otra Actividad" value=proveedor_actec.otra_actividad_id  mensaje_validacion='Por favor seleccione una actividad' %}
                                             </div>
                                         </div>
                                         <div class="form-row">
                                             <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                                                {% select_tag regimenes_fiscales 'regimen_fiscal' 'Seleccione un régimen fiscal' is_tupla=True texto_label="Régimen Fiscal" value=proveedor.proveedor.regimen_fiscal required="" mensaje_validacion='Por favor seleccione un régimen fiscal.' invalido=errores.regimen_fiscal %}
+                                                {% select_tag regimenes_fiscales 'regimen_fiscal' 'Seleccione un régimen fiscal' is_tupla=True texto_label="Régimen Fiscal" value=proveedor.regimen_fiscal required="" mensaje_validacion='Por favor seleccione un régimen fiscal.' invalido=errores.regimen_fiscal %}
                                             </div>
                                             <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                                                {% select_tag tipos_contribuyentes 'tipo_contribuyente' 'Seleccione un tipo de contribuyente' is_tupla=True texto_label="Tipo de Contribuyente" value=proveedor.tipo_contribuyente required="" mensaje_validacion='Por favor seleccione un tipo de contribuyente.' invalido=errores.tipo_contribuyente %}
+                                                {% select_tag tipos_contribuyentes 'tipo_contribuyente' 'Seleccione un tipo de contribuyente' is_tupla=True texto_label="Tipo de Contribuyente" value=proveedor_actec.tipo_contribuyente required="" mensaje_validacion='Por favor seleccione un tipo de contribuyente.' invalido=errores.tipo_contribuyente %}
                                             </div>
                                             {% if not persona_juridica %}
                                                 <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
@@ -56,7 +56,7 @@
                                                 </div>
                                             {% else %}
                                                 <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                                                    {% select_tag tributos 'tributo' 'Seleccione un tributo' is_tupla=True texto_label="Tributo" value=proveedor.proveedor.tributos required="" mensaje_validacion='Por favor seleccione un tributo.' invalido=errores.tributos%}
+                                                    {% select_tag tributos 'tributo' 'Seleccione un tributo' is_tupla=True texto_label="Tributo" value=proveedor.tributos required="" mensaje_validacion='Por favor seleccione un tributo.' invalido=errores.tributos%}
                                                 </div>
                                             {% endif %}
                                         </div>
@@ -70,30 +70,30 @@
                                         <div class="form-row">
                                             <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
                                                 <div class="custom-control custom-checkbox">
-                                                    <input type="checkbox" class="custom-control-input" id="check_excento_iyc_id" name="excento_iyc" {% if proveedor.numero_resolucion %}checked{% endif %}>
+                                                    <input type="checkbox" class="custom-control-input" id="check_excento_iyc_id" name="excento_iyc" {% if proveedor_actec.numero_resolucion %}checked{% endif %}>
                                                     <label class="custom-control-label" for="check_excento_iyc_id">Excento de Industria y Comercio</label>
                                                 </div><br>
                                                 <div id="div_excento_iyc">
-                                                    {% input_text_tag 'resolucion' 'Número de Resolución' placeholder="Ingrese un número"  maxlength="100" value=proveedor.numero_resolucion mensaje_validacion='Por favor ingrese el el nit.' invalido=errores.numero_contrato %}
+                                                    {% input_text_tag 'resolucion' 'Número de Resolución' placeholder="Ingrese un número"  maxlength="100" value=proveedor_actec.numero_resolucion mensaje_validacion='Por favor ingrese el el nit.' invalido=errores.numero_contrato %}
                                                 </div>
                                             </div>
                                             <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
                                                 <div class="custom-control custom-checkbox">
-                                                    <input type="checkbox" class="custom-control-input" id="check_contribuyente_iyc_id" name="contibuyente_iyc" {% if proveedor.contribuyente_iyc %}checked{% endif %}>
+                                                    <input type="checkbox" class="custom-control-input" id="check_contribuyente_iyc_id" name="contibuyente_iyc" {% if proveedor_actec.contribuyente_iyc %}checked{% endif %}>
                                                     <label class="custom-control-label" for="check_contribuyente_iyc_id">Contribuyente Industria y Comercio</label>
                                                 </div><br>
                                                 <div id="div_contibuyente_iyc">
-                                                    {% input_text_tag 'contribuyente_iyc' 'Contribuyente Industria y Comercio' placeholder="Ingrese un valor"  maxlength="100" value=proveedor.contribuyente_iyc mensaje_validacion='Por favor ingrese el el nit.' invalido=errores.numero_contrato %}
+                                                    {% input_text_tag 'contribuyente_iyc' 'Contribuyente Industria y Comercio' placeholder="Ingrese un valor"  maxlength="100" value=proveedor_actec.contribuyente_iyc mensaje_validacion='Por favor ingrese el el nit.' invalido=errores.numero_contrato %}
                                                 </div>
                                             </div>
                                             {% if persona_juridica %}
                                             <div class="form-group col-xl-4 col-lg-4 col-md-6 col-sm-6">
                                                 <div class="custom-control custom-checkbox">
-                                                    <input type="checkbox" class="custom-control-input" id="check_entidad_publica_id" name="entidad_publica" {% if proveedor.entidad_publica %}checked{% endif %}>
+                                                    <input type="checkbox" class="custom-control-input" id="check_entidad_publica_id" name="entidad_publica" {% if proveedor_actec.entidad_publica %}checked{% endif %}>
                                                     <label class="custom-control-label" for="check_entidad_publica_id">Entidad Pública</label>
                                                 </div><br>
                                                 <div id="div_entidad_publica">
-                                                    {% select_tag entidades_publicas 'entidad_publica' 'Seleccione un opción' texto_label="Entidad Pública" value=proveedor.entidad_publica mensaje_validacion='Por favor seleccione un departamento' %}
+                                                    {% select_tag entidades_publicas 'entidad_publica' 'Seleccione un opción' texto_label="Entidad Pública" value=proveedor_actec.entidad_publica mensaje_validacion='Por favor seleccione un departamento' %}
                                                 </div>
                                             </div>
                                             {% endif %}
