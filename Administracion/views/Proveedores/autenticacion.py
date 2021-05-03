@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
-from django.db.transaction import atomic
+from django.db.transaction import atomic, rollback
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -90,7 +90,6 @@ class RegistroProveedorView(View):
                       {'tipo_identificacion': tipo_identificacion,
                        'recaptcha_site_key': settings.EVA_RECAPTCHA_SITE_KEY})
 
-    @atomic
     def post(self, request):
         body_unicode = request.body.decode('utf-8')
         datos_registro = json.loads(body_unicode)
@@ -100,80 +99,107 @@ class RegistroProveedorView(View):
             correo = datos_registro['correo']
             identificacion = datos_registro['identificacion']
             digito_verificacion = datos_registro['digitoVerificacion'] if datos_registro['digitoVerificacion'] else None
-
-            tercero = Tercero()
-            tercero.nombre = nombre
-            tercero.estado = False
-            tercero.tipo_tercero_id = TipoTercero.PROVEEDOR
-            tercero.tipo_identificacion_id = datos_registro['tipoIdentificacion']
-            tercero.identificacion = identificacion
-            tercero.digito_verificacion = digito_verificacion
-            tercero.tipo_persona = 1 if tercero.tipo_identificacion.sigla == 'NIT' else 2
-            tercero.telefono_movil_principal = datos_registro['celular']
-            tercero.correo_principal = correo
-            tercero.empresa_id = 1
-            tercero.nombre_rl = ''
-            tercero.identificacion_rl = ''
-            tercero.telefono_fijo_principal = ''
-            tercero.telefono_fijo_auxiliar = ''
-            tercero.telefono_movil_auxiliar = ''
-            tercero.correo_auxiliar = ''
-            tercero.es_vigente = True
-            tercero.estado_proveedor = EstadosProveedor.REGISTRADO
+            tipo_identificacion = datos_registro['tipoIdentificacion']
+            movil_ppal = datos_registro['celular']
 
             if User.objects.filter(email=correo):
                 return JsonResponse({'estado': 'ERROR', 'mensaje': 'El correo ingresado ya se encuentra registrado'})
 
             if Tercero.objects.filter(identificacion=identificacion,
-                                      tipo_identificacion_id=tercero.tipo_identificacion_id,
+                                      tipo_identificacion_id=tipo_identificacion,
                                       tipo_tercero_id__in=[TipoTercero.PROVEEDOR, TipoTercero.CLIENTE_Y_PROVEEDOR])\
                     .exists():
                 return JsonResponse({'estado': 'ERROR',
                                      'mensaje': 'El número de identificación ingresado ya está registrado'})
+            proveedor: Tercero
+
             try:
-                usuario = User.objects.create(username=correo, first_name=nombre if len(nombre) < 20 else nombre[:20],
-                                              last_name=nombre, email=correo)
-                tercero.usuario = usuario
+                with atomic():
+                    usuario = User.objects.create(username=correo, first_name=nombre if len(nombre) < 20 else nombre[:20],
+                                                  last_name=nombre, email=correo)
 
-                cliente: Tercero = Tercero.objects.filter(identificacion=identificacion,
-                                                          tipo_identificacion_id=tercero.tipo_identificacion_id,
-                                                          tipo_tercero_id=TipoTercero.CLIENTE).first()
+                    cliente: Tercero = Tercero.objects.filter(identificacion=identificacion,
+                                                              tipo_identificacion_id=tipo_identificacion,
+                                                              tipo_tercero_id=TipoTercero.CLIENTE).first()
 
-                if cliente:
-                    cliente.tipo_tercero_id = TipoTercero.CLIENTE_Y_PROVEEDOR
-                    tercero.tipo_tercero_id = TipoTercero.CLIENTE_Y_PROVEEDOR
-                    tercero.estado_proveedor = EstadosProveedor.EDICION_PERFIL
-                    tercero.es_vigente = False
-                    cliente.save()
+                    if cliente:
+                        cliente.tipo_tercero_id = TipoTercero.CLIENTE_Y_PROVEEDOR
+                        cliente.usuario = usuario
+                        cliente.estado_proveedor = EstadosProveedor.EDICION_PERFIL
+                        cliente.save()
 
-                tercero.save()
-                SeleccionDeNotificacionARecibir\
-                    .objects.create(envio_x_email=True, estado=True, usuario=usuario,
-                                    evento_desencadenador_id=EventoDesencadenador.RESPUESTA_SOLICITUD_PROVEEDOR)
-                dominio = request.get_host()
-                uidb64 = urlsafe_base64_encode(force_bytes(usuario.pk))
-                token = default_token_generator.make_token(usuario)
-                ruta = 'http://{0}/password-assign-proveedor/{1}/{2}'.format(dominio, uidb64, token)
+                        cliente.id = None
+                        cliente._state.adding = True
+                        cliente.telefono_movil_principal = movil_ppal
+                        cliente.estado = False
+                        cliente.correo_principal = correo
+                        cliente.es_vigente = False
+                        cliente.save()
+                        proveedor = cliente
+                    else:
+                        tercero = Tercero()
+                        tercero.nombre = nombre
+                        tercero.estado = False
+                        tercero.tipo_tercero_id = TipoTercero.PROVEEDOR
+                        tercero.tipo_identificacion_id = tipo_identificacion
+                        tercero.identificacion = identificacion
+                        tercero.digito_verificacion = digito_verificacion
+                        tercero.tipo_persona = 1 if tercero.tipo_identificacion.sigla == 'NIT' else 2
+                        tercero.telefono_movil_principal = datos_registro['celular']
+                        tercero.correo_principal = correo
+                        tercero.empresa_id = 1
+                        tercero.nombre_rl = ''
+                        tercero.identificacion_rl = ''
+                        tercero.telefono_fijo_principal = ''
+                        tercero.telefono_fijo_auxiliar = ''
+                        tercero.telefono_movil_auxiliar = ''
+                        tercero.correo_auxiliar = ''
+                        tercero.es_vigente = True
+                        tercero.estado_proveedor = EstadosProveedor.REGISTRADO
 
-                mensaje = "<p>Hola {0}, " \
-                          "Te estamos enviando este correo para que asignes una contraseña a tu " \
-                          "cuenta de proveedor en EVA.</p>" \
-                          "<p>Tu usuario es: {1}</p>" \
-                          "<p>El siguiente enlace te llevará a EVA donde puedes realizar la " \
-                          "asignación de tu contraseña:</p>" \
-                          "<a href={2}>Ir a EVA para asignar una contraseña</a>"\
-                    .format(tercero.nombre, usuario.email, ruta)
+                        tercero.save()
+                        proveedor = tercero
 
-                enviar_correo({'nombre': tercero.nombre,
-                               'mensaje': mensaje,
-                               'asunto': 'Bienvenido a EVA',
-                               'token': False,
-                               'lista_destinatarios': [usuario.email]})
+                    SeleccionDeNotificacionARecibir \
+                        .objects.create(envio_x_email=True, estado=True, usuario=usuario,
+                                        evento_desencadenador_id=EventoDesencadenador.RESPUESTA_SOLICITUD_PROVEEDOR)
             except:
+                rollback()
                 LOGGER.exception("Error en registro de un proveedor")
                 return JsonResponse({'estado': 'ERROR', 'mensaje': 'Error en registro de un proveedor'})
         else:
             return JsonResponse({'estado': 'ERROR',
                                  'mensaje': 'Captcha inválido'})
 
+        self.enviar_correo(request, proveedor)
+
         return JsonResponse({'estado': 'OK', 'datos': {'correo': correo}})
+
+    @staticmethod
+    def enviar_correo(request, proveedor: Tercero):
+
+        try:
+            usuario = proveedor.usuario
+
+            dominio = request.get_host()
+            uidb64 = urlsafe_base64_encode(force_bytes(usuario.pk))
+            token = default_token_generator.make_token(usuario)
+            ruta = 'http://{0}/password-assign-proveedor/{1}/{2}'.format(dominio, uidb64, token)
+
+            mensaje = "<p>Hola {0}, " \
+                      "Te estamos enviando este correo para que asignes una contraseña a tu " \
+                      "cuenta de proveedor en EVA.</p>" \
+                      "<p>Tu usuario es: {1}</p>" \
+                      "<p>El siguiente enlace te llevará a EVA donde puedes realizar la " \
+                      "asignación de tu contraseña:</p>" \
+                      "<a href={2}>Ir a EVA para asignar una contraseña</a>" \
+                .format(proveedor.nombre, usuario.email, ruta)
+
+            enviar_correo({'nombre': proveedor.nombre,
+                           'mensaje': mensaje,
+                           'asunto': 'Bienvenido a EVA',
+                           'token': False,
+                           'lista_destinatarios': [usuario.email]})
+        except:
+            LOGGER.exception("Error enviando correo al proveedor al registrarse.")
+
