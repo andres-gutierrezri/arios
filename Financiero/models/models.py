@@ -70,7 +70,7 @@ class ProveedorActividadEconomica(models.Model, ModelDjangoExtensiones):
     declara_renta = models.BooleanField(verbose_name='Declara Renta', null=True, blank=False)
 
     def __str__(self):
-        return 'Información de la Actividad Economica del usuario {0}'.format(self.proveedor.usuario.get_full_name())
+        return 'Información de la Actividad Económica del usuario {0}'.format(self.proveedor.usuario.get_full_name())
 
     class Meta:
         verbose_name = 'Actividad Económica del Proveedor'
