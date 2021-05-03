@@ -3,10 +3,11 @@ from datetime import datetime
 
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models import QuerySet
+from django.db.models import QuerySet, Count, Q
 from django.http import QueryDict
 
 from EVA import settings
+from EVA.General import app_datetime_now
 from EVA.General.modelmanagers import ManagerGeneral
 from .models import Empresa, TipoIdentificacion, Persona, SubproductoSubservicio
 from .divipol import CentroPoblado, Municipio
@@ -39,13 +40,15 @@ class TipoTercero(models.Model):
 class TerceroManger(ManagerGeneral):
 
     def clientes(self, estado: bool = None, xa_select: bool = False) -> QuerySet:
-        return self.get_x_estado(estado, xa_select).filter(tipo_tercero_id=TipoTercero.CLIENTE)
+        return self.get_x_estado(estado, xa_select).filter(tipo_tercero_id__in=[TipoTercero.CLIENTE,
+                                                                                TipoTercero.CLIENTE_Y_PROVEEDOR])
 
     def clientes_xa_select(self):
         return self.clientes(True, True)
 
     def proveedores(self, estado: bool = None, xa_select: bool = False) -> QuerySet:
-        return self.get_x_estado(estado, xa_select).filter(tipo_tercero_id=TipoTercero.PROVEEDOR)
+        return self.get_x_estado(estado, xa_select).filter(tipo_tercero_id__in=[TipoTercero.PROVEEDOR,
+                                                                                TipoTercero.CLIENTE_Y_PROVEEDOR])
 
     def proveedores_xa_select(self):
         return self.proveedores(True, True)
@@ -60,7 +63,8 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
 
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, verbose_name='Empresa', null=True, blank=False)
-    fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False, blank=False)
+    fecha_creacion = models.DateTimeField(verbose_name='Fecha de Creación', null=False, blank=False,
+                                          default=app_datetime_now())
     fecha_modificacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Modificación', null=True,
                                               blank=False)
     tipo_identificacion = models.ForeignKey(TipoIdentificacion, on_delete=models.DO_NOTHING, null=True, blank=False,
@@ -159,6 +163,44 @@ class Tercero(models.Model, ModelDjangoExtensiones):
         else:
             tercero.tipo_persona = TipoPersona.JURIDICA
         return tercero
+
+    @property
+    def datos_basicos_completos(self):
+        return self.nombre and self.tipo_identificacion and self.identificacion \
+                and ((self.tipo_identificacion.sigla == 'NIT' and self.digito_verificacion)
+                     or self.tipo_identificacion.sigla != 'NIT')\
+                and self.tipo_persona and ((self.tipo_persona == TipoPersona.JURIDICA and self.fecha_constitucion
+                                            and self.nombre_rl and self.tipo_identificacion_rl
+                                            and self.identificacion_rl and self.lugar_expedicion_rl)
+                                           or self.tipo_persona != TipoPersona.JURIDICA)\
+                and self.ciudad and self.direccion and self.correo_principal
+
+    @property
+    def actividades_economicas_completas(self):
+        actividad_economica = self.proveedoractividadeconomica_set.first()
+        return actividad_economica and self.regimen_fiscal and self.tributos \
+            and self.responsabilidades_fiscales and actividad_economica.actividad_principal \
+            and actividad_economica.tipo_contribuyente
+
+    @property
+    def datos_banacarios_completos(self):
+        return self.entidadbancariatercero_set.exists()
+
+    @property
+    def productos_servicios_completos(self):
+        return self.proveedorproductoservicio_set.exists()
+
+    @property
+    def documentos_completos(self):
+        if self.tipo_persona == TipoPersona.JURIDICA:
+            filtro_tipo_doc = Q(aplica_juridica=True)
+            filtro_docter = Q(tipo_documento__aplica_juridica=True)
+        else:
+            filtro_tipo_doc = Q(aplica_natural=True)
+            filtro_docter = Q(tipo_documento__aplica_natural=True)
+
+        return TipoDocumentoTercero.objects.filter(filtro_tipo_doc, obligatorio=True).count() == \
+            self.documentotercero_set.filter(filtro_docter, tipo_documento__obligatorio=True).count()
 
 
 class UsuarioTercero(Persona):

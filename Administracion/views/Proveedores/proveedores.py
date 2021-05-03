@@ -87,7 +87,8 @@ class PerfilInformacionBasicaView(AbstractEvaLoggedProveedorView):
         proveedor.digito_verificacion = request.POST.get('digito_verificacion', '')
         proveedor.ciudad_id = request.POST.get('municipio', '')
         proveedor.direccion = request.POST.get('direccion', '')
-        proveedor.estado_proveedor = EstadosProveedor.DILIGENCIAMIENTO_PERFIL
+        if proveedor.estado_proveedor != EstadosProveedor.EDICION_PERFIL:
+            proveedor.estado_proveedor = EstadosProveedor.DILIGENCIAMIENTO_PERFIL
         proveedor.tipo_persona = request.POST.get('tipo_persona', '')
 
         if 'NIT' in proveedor.tipo_identificacion.sigla:
@@ -724,10 +725,11 @@ def datos_xa_render_actividades_economicas(request):
                           {'campo_valor': '2', 'campo_texto': 'Departamental'},
                           {'campo_valor': '3', 'campo_texto': 'Municipal'}]
 
-    persona_juridica = True if PERSONA_JURIDICA == proveedor.tipo_persona else False
+    persona_juridica = PERSONA_JURIDICA == proveedor.tipo_persona
 
     datos = {'actividades_economicas': actividades_economicas,
-             'entidades_publicas': entidades_publicas, 'proveedor': proveedor_actec,
+             'entidades_publicas': entidades_publicas, 'proveedor_actec': proveedor_actec,
+             'proveedor': proveedor,
              'persona_juridica': persona_juridica, 'regimenes_fiscales': RegimenFiscal.choices,
              'tipos_contribuyentes': TipoContribuyente.choices,
              'responsabilidades': ResponsabilidadesFiscales.choices, 'tributos': Tributos.choices,
@@ -1016,62 +1018,30 @@ def generar_datos_proveedor(proveedor):
     bienes_servicios = generar_datos_bienes_servicios(proveedor)
     documentos = generar_datos_documentos(proveedor)
     documentos_adicionales = generar_datos_documentos_adicionales(proveedor)
-    if proveedor.tipo_persona == PERSONA_JURIDICA:
-        lista_documentos = TipoDocumentoTercero.objects.filter(aplica_juridica=True)
-    else:
-        lista_documentos = TipoDocumentoTercero.objects.filter(aplica_natural=True)
-    n_tipos = 0
-    n_documentos = 0
-
-    for ld in lista_documentos:
-        if ld.obligatorio:
-            n_tipos += 1
-
-    docs = DocumentoTercero.objects.filter(tercero=proveedor)
-    for doc in docs:
-        if proveedor.tipo_persona == TipoPersona.NATURAL:
-            if doc.tipo_documento:
-                if doc.tipo_documento.obligatorio:
-                    n_documentos += 1
-        else:
-            if doc.tipo_documento:
-                if doc.tipo_documento.obligatorio:
-                    n_documentos += 1
-    completado_ae = False
-    if proveedor.tipo_persona == TipoPersona.JURIDICA:
-        if proveedor.tributos:
-            completado_ae = True
-    elif actividades_economicas:
-        completado_ae = True
-
-    completo_info_basica = False
-    if not proveedor.direccion and proveedor.estado_proveedor == EstadosProveedor.ACTIVO or proveedor.direccion:
-        completo_info_basica = True
 
     total = 0
-    total = total + 10 if completo_info_basica else total
-    total = total + 10 if informacion_basica else total
-    total = total + 20 if completado_ae else total
-    total = total + 20 if entidades_bancarias else total
-    total = total + 20 if bienes_servicios else total
-    total = total + 20 if n_documentos >= n_tipos else total
+    total = total + 20 if proveedor.datos_basicos_completos else total
+    total = total + 20 if proveedor.actividades_economicas_completas else total
+    total = total + 20 if proveedor.datos_banacarios_completos else total
+    total = total + 20 if proveedor.productos_servicios_completos else total
+    total = total + 20 if proveedor.documentos_completos else total
 
     cambios = ast.literal_eval(proveedor.modificaciones)['modificaciones_tarjetas'] if proveedor.modificaciones else []
 
     informacion_basica = {'id': 1, 'nombre': 'Información Básica', 'modificado': 1 in cambios,
                           'url': '/administracion/proveedor/perfil/informacion-basica',
-                          'datos': informacion_basica, 'completo': completo_info_basica}
+                          'datos': informacion_basica, 'completo': proveedor.datos_basicos_completos}
     actividades_economicas = {'id': 2, 'nombre': 'Actividades Económicas', 'modificado': 2 in cambios,
                               'url': '/administracion/proveedor/perfil/actividades-economicas',
-                              'datos': actividades_economicas, 'completo': completado_ae}
+                              'datos': actividades_economicas, 'completo': proveedor.actividades_economicas_completas}
     documentos = {'id': 3, 'nombre': 'Documentos', 'url': '/administracion/proveedor/perfil/documentos',
-                  'datos': documentos, 'completo': n_documentos >= n_tipos, 'modificado': 3 in cambios}
+                  'datos': documentos, 'completo': proveedor.documentos_completos, 'modificado': 3 in cambios}
     entidades_bancarias = {'id': 4, 'nombre': 'Información Bancaria', 'modificado': 4 in cambios,
                            'url': '/administracion/proveedor/perfil/entidades-bancarias',
-                           'datos': entidades_bancarias, 'completo': entidades_bancarias != []}
+                           'datos': entidades_bancarias, 'completo': proveedor.datos_banacarios_completos}
     bienes_servicios = {'id': 5, 'nombre': 'Productos y Servicios', 'modificado': 5 in cambios,
                         'url': '/administracion/proveedor/perfil/productos-servicios',
-                        'datos': bienes_servicios, 'completo': bienes_servicios != ''}
+                        'datos': bienes_servicios, 'completo': proveedor.productos_servicios_completos}
     documentos_adicionales = {'id': 6, 'nombre': 'Certificaciones y Documentos Adicionales',
                               'url': '/administracion/proveedor/perfil/documentos-adicionales',
                               'datos': documentos_adicionales, 'modificado': 6 in cambios,
