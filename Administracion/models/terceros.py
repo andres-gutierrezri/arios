@@ -1,6 +1,7 @@
 import json
 from datetime import datetime
 
+import django
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import QuerySet, Count, Q
@@ -64,7 +65,7 @@ class Tercero(models.Model, ModelDjangoExtensiones):
 
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, verbose_name='Empresa', null=True, blank=False)
     fecha_creacion = models.DateTimeField(verbose_name='Fecha de Creación', null=False, blank=False,
-                                          default=app_datetime_now())
+                                          default=django.utils.timezone.now)
     fecha_modificacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Modificación', null=True,
                                               blank=False)
     tipo_identificacion = models.ForeignKey(TipoIdentificacion, on_delete=models.DO_NOTHING, null=True, blank=False,
