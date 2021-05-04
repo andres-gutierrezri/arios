@@ -545,38 +545,45 @@ class ProveedorSolicitudAprobarRechazar(AbstractEvaLoggedView):
         return render(request, 'Administracion/_common/_modal_aprobar_rechazar_proveedor.html',
                       {'proveedor': proveedor, 'opciones': opciones})
 
-    @transaction.atomic
     def post(self, request, id):
         try:
-            solicitud = SolicitudProveedor.objects.get(proveedor_id=id, estado=True)
-            opcion = request.POST.get('opcion', '')
-            comentario = request.POST.get('comentario', '')
-            solicitud.aprobado = True if int(opcion) == APROBADO else False
-            solicitud.comentarios = comentario
-            solicitud.estado = False
-            solicitud.save(update_fields=['aprobado', 'comentarios', 'estado'])
-            if solicitud.aprobado:
-                comentario = 'Ahora estas activo como proveedor!'
-                proveedor_db = Tercero.objects.filter(usuario=solicitud.proveedor.usuario)
-                if len(proveedor_db) == 2:
-                    proveedor_anterior = proveedor_db.get(es_vigente=True)
-                    proveedor_nuevo = proveedor_db.get(es_vigente=False)
-                    migrar_informacion_aprobadada(proveedor_nuevo.id, proveedor_anterior.id)
-                    Tercero.objects.filter(id=proveedor_anterior.id).update(estado_proveedor=EstadosProveedor.ACTIVO)
+            with atomic():
+                solicitud = SolicitudProveedor.objects.get(proveedor_id=id, estado=True)
+                opcion = request.POST.get('opcion', '')
+                comentario = request.POST.get('comentario', '')
+                solicitud.aprobado = True if int(opcion) == APROBADO else False
+                solicitud.comentarios = comentario
+                solicitud.estado = False
+                solicitud.save(update_fields=['aprobado', 'comentarios', 'estado'])
+                if solicitud.aprobado:
+                    comentario = 'Ahora estas activo como proveedor!'
+                    proveedor_db = Tercero.objects.filter(usuario=solicitud.proveedor.usuario)
+                    if len(proveedor_db) == 2:
+                        proveedor_anterior = proveedor_db.get(es_vigente=True)
+                        proveedor_nuevo = proveedor_db.get(es_vigente=False)
+                        migrar_informacion_aprobadada(proveedor_nuevo.id, proveedor_anterior.id)
+                        Tercero.objects.filter(id=proveedor_anterior.id)\
+                            .update(estado_proveedor=EstadosProveedor.ACTIVO)
+                    else:
+                        Tercero.objects.filter(id=proveedor_db.first().id).update(
+                            estado_proveedor=EstadosProveedor.ACTIVO, estado=True, es_vigente=True)
+
+                        Certificacion.objects.create(tercero_id=solicitud.proveedor.id, fecha_crea=app_datetime_now(),
+                                                     estado=True)
+
                 else:
-                    Certificacion.objects.create(tercero=solicitud.proveedor, fecha_crea=app_datetime_now(), estado=True)
-            else:
-                Tercero.objects.filter(id=id).update(estado_proveedor=EstadosProveedor.RECHAZADO)
+                    Tercero.objects.filter(id=id).update(estado_proveedor=EstadosProveedor.RECHAZADO)
 
-            messages.success(self.request, 'Se ha {0} la solicitud correctamente.'
-                             .format('aprobado' if solicitud.aprobado else 'denegado'))
+                messages.success(self.request, 'Se ha {0} la solicitud correctamente.'
+                                 .format('aprobado' if solicitud.aprobado else 'denegado'))
 
-            titulo = 'Solicitud Aprobada' if solicitud.aprobado else 'Solicitud Denegada'
-            crear_notificacion_por_evento(EventoDesencadenador.RESPUESTA_SOLICITUD_PROVEEDOR, solicitud.id,
-                                          contenido={'titulo': titulo,
-                                                     'mensaje': comentario,
-                                                     'usuario': solicitud.proveedor.usuario_id})
+                titulo = 'Solicitud Aprobada' if solicitud.aprobado else 'Solicitud Denegada'
+                crear_notificacion_por_evento(EventoDesencadenador.RESPUESTA_SOLICITUD_PROVEEDOR, solicitud.id,
+                                              contenido={'titulo': titulo,
+                                                         'mensaje': comentario,
+                                                         'usuario': solicitud.proveedor.usuario_id})
         except:
+            rollback()
             LOGGER.exception("Error al aprobar/denegar solicitud proveedor")
             messages.error(self.request, 'Ha ocurrido un error al realizar la acción.')
 
