@@ -179,8 +179,9 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     @property
     def actividades_economicas_completas(self):
         actividad_economica = self.proveedoractividadeconomica_set.first()
-        return actividad_economica and self.regimen_fiscal and self.tributos \
-            and self.responsabilidades_fiscales and actividad_economica.actividad_principal \
+        return actividad_economica and self.regimen_fiscal \
+            and ((self.tributos and self.responsabilidades_fiscales) or self.tipo_persona == TipoPersona.NATURAL) \
+            and actividad_economica.actividad_principal \
             and actividad_economica.tipo_contribuyente
 
     @property
