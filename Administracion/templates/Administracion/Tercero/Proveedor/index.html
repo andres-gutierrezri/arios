@@ -96,7 +96,7 @@
                                                         {% for pps in proveedores_pro_serv %}
                                                             <tr>
                                                                 <td>{{ pps.proveedor.nombre }}</td>
-                                                                <td>{{ pps.proveedor.tipo_identificacion.sigla }} {{ pps.proveedor.identificacion }}{% if pps.proveedor.tipo_identificacion.sigla == 'NIT' %}-{{ pps.proveedor.digito_verificacion }}{% endif %}</td>
+                                                                <td>{{ pps.proveedor.tipo_identificacion.sigla }} {{ pps.proveedor.identificacion }}{% if pps.proveedor.tipo_identificacion.sigla == 'NIT' and not pps.proveedor.extranjero %}-{{ pps.proveedor.digito_verificacion }}{% endif %}</td>
                                                                 <td>{{ pps.proveedor.ciudad.obtener_mun_dpto_pais }}</td>
                                                                 <td>{{ pps.proveedor.telefono_movil_principal }}</td>
                                                                 <td>{{ pps.proveedor.correo_principal }}</td>

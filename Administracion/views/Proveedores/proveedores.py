@@ -7,6 +7,7 @@ from sqlite3 import IntegrityError
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.db import transaction
+from django.db.transaction import atomic, rollback
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -75,7 +76,7 @@ class PerfilInformacionBasicaView(AbstractEvaLoggedProveedorView):
         update_fields = ['nombre', 'tipo_identificacion_id', 'identificacion', 'ciudad', 'tipo_persona',
                          'telefono_movil_principal', 'telefono_fijo_auxiliar', 'telefono_movil_auxiliar',
                          'correo_principal', 'correo_auxiliar', 'fecha_inicio_actividad', 'fecha_constitucion',
-                         'telefono_fijo_principal', 'estado_proveedor', 'direccion']
+                         'telefono_fijo_principal', 'estado_proveedor', 'direccion', 'extranjero']
 
         exclude = ['centro_poblado', 'telefono']
 
@@ -133,6 +134,7 @@ class PerfilInformacionBasicaView(AbstractEvaLoggedProveedorView):
             messages.error(self.request, 'Ha ocurrido un error al actualizar la información.')
             return redirect(reverse('Administracion:proveedor-perfil'))
 
+        proveedor.extranjero = proveedor.ciudad.departamento.pais_id != Pais.COLOMBIA
         proveedor.save(update_fields=update_fields)
         messages.success(self.request, 'Se ha guardado la información básica correctamente.')
         return redirect(reverse('Administracion:proveedor-perfil'))
@@ -148,24 +150,34 @@ class PerfilActividadesEconomicasView(AbstractEvaLoggedProveedorView):
                          'numero_resolucion', 'contribuyente_iyc', 'entidad_publica', 'proveedor',
                          'proveedor', 'tipo_contribuyente', 'declara_renta')
         proveedor = filtro_estado_proveedor(request)
+
         proveedor_ae = ProveedorActividadEconomica.from_dictionary(request.POST)
         proveedor_ae.proveedor = proveedor
-        proveedor.regimen_fiscal = request.POST.get('regimen_fiscal')
-        responsabilidades = request.POST.getlist('responsabilidades')
-        proveedor.responsabilidades_fiscales = ';'.join(responsabilidades) if responsabilidades else ''
-        proveedor.tributos = request.POST.get('tributo')
+
+        if proveedor.extranjero:
+            update_fields = ('actividad_principal', 'actividad_secundaria', 'otra_actividad')
+        else:
+            proveedor.regimen_fiscal = request.POST.get('regimen_fiscal')
+            responsabilidades = request.POST.getlist('responsabilidades')
+            proveedor.responsabilidades_fiscales = ';'.join(responsabilidades) if responsabilidades else ''
+            proveedor.tributos = request.POST.get('tributo')
 
         try:
-            registro = ProveedorActividadEconomica.objects.filter(proveedor=proveedor)
-            if registro:
-                proveedor_ae.id = registro.first().id
-                proveedor_ae.save(update_fields=update_fields)
-            else:
-                proveedor_ae.save()
-            proveedor.save(update_fields=['regimen_fiscal', 'responsabilidades_fiscales', 'tributos'])
-            messages.success(self.request, 'Se ha guardado la información de actividades económicas correctamente.')
-            return redirect(reverse('Administracion:proveedor-perfil'))
+            with atomic():
+                registro = ProveedorActividadEconomica.objects.filter(proveedor=proveedor)
+                if registro:
+                    proveedor_ae.id = registro.first().id
+                    proveedor_ae.save(update_fields=update_fields)
+                else:
+                    proveedor_ae.save()
+
+                if not proveedor.extranjero:
+                    proveedor.save(update_fields=['regimen_fiscal', 'responsabilidades_fiscales', 'tributos'])
+
+                messages.success(self.request, 'Se ha guardado la información de actividades económicas correctamente.')
+                return redirect(reverse('Administracion:proveedor-perfil'))
         except:
+            rollback()
             LOGGER.exception("Error al actualizar información actividades económicas proveedor")
             messages.error(self.request, 'Ha ocurrido un error al actualizar la información.')
             return redirect(reverse('Administracion:proveedor-perfil'))
@@ -856,7 +868,7 @@ def verificar_documentos_proveedor(proveedor, documentos):
 
 
 def generar_datos_informacion_basica(proveedor):
-    if 'NIT' in proveedor.tipo_identificacion.sigla:
+    if 'NIT' in proveedor.tipo_identificacion.sigla and not proveedor.extranjero:
         proveedor.identificacion = '{0}-{1}'.format(proveedor.identificacion, proveedor.digito_verificacion)
 
     return [{'nombre_campo': 'Nombre', 'valor_campo': proveedor.nombre},
@@ -895,48 +907,56 @@ def generar_datos_actividades_economicas(proveedor):
     respuesta = ''
     if ae:
         ae = ae.first()
-        if ae.entidad_publica == '1':
-            entidad_publica = 'Nacional'
-        elif ae.entidad_publica == '2':
-            entidad_publica = 'Departamental'
-        elif ae.entidad_publica == '3':
-            entidad_publica = 'Municipal'
-        else:
+        if proveedor.extranjero:
+            regimen_fiscal = ''
+            tipo_contribuyente = ''
             entidad_publica = ''
+            declara_renta = ''
+            responsabilidades_fiscales = ''
+            tributos = ''
+        else:
+            if ae.entidad_publica == '1':
+                entidad_publica = 'Nacional'
+            elif ae.entidad_publica == '2':
+                entidad_publica = 'Departamental'
+            elif ae.entidad_publica == '3':
+                entidad_publica = 'Municipal'
+            else:
+                entidad_publica = ''
 
-        reg_fisc = proveedor.regimen_fiscal
-        regimen_fiscal = ''
-        for d in RegimenFiscal.choices:
-            if d[0] == reg_fisc:
-                regimen_fiscal = d[1]
-                break
-
-        tip_cont = ae.tipo_contribuyente
-        tipo_contribuyente = ''
-        for tc in TipoContribuyente.choices:
-            if tc[0] == tip_cont:
-                tipo_contribuyente = tc[1]
-                break
-
-        declara_renta = ''
-        if ae.declara_renta and ae.proveedor.tipo_persona == TipoPersona.NATURAL:
-            declara_renta = 'Si'
-        elif ae.proveedor.tipo_persona == TipoPersona.NATURAL:
-            declara_renta = 'No'
-
-        responsabilidades_fiscales = ''
-        tributos = ''
-        if ae.proveedor.tipo_persona == TipoPersona.JURIDICA:
-            for rf_pro in ae.proveedor.responsabilidades_fiscales.split(';')\
-                    if ae.proveedor.responsabilidades_fiscales else []:
-                for rf in ResponsabilidadesFiscales.choices:
-                    if rf[0] == rf_pro:
-                        responsabilidades_fiscales += rf[1] + ', '
-
-            for tr in Tributos.choices:
-                if tr[0] == ae.proveedor.tributos:
-                    tributos = '{0} - {1}'.format(tr[0], tr[1])
+            reg_fisc = proveedor.regimen_fiscal
+            regimen_fiscal = ''
+            for d in RegimenFiscal.choices:
+                if d[0] == reg_fisc:
+                    regimen_fiscal = d[1]
                     break
+
+            tip_cont = ae.tipo_contribuyente
+            tipo_contribuyente = ''
+            for tc in TipoContribuyente.choices:
+                if tc[0] == tip_cont:
+                    tipo_contribuyente = tc[1]
+                    break
+
+            declara_renta = ''
+            if ae.declara_renta and ae.proveedor.tipo_persona == TipoPersona.NATURAL:
+                declara_renta = 'Si'
+            elif ae.proveedor.tipo_persona == TipoPersona.NATURAL:
+                declara_renta = 'No'
+
+            responsabilidades_fiscales = ''
+            tributos = ''
+            if ae.proveedor.tipo_persona == TipoPersona.JURIDICA:
+                for rf_pro in ae.proveedor.responsabilidades_fiscales.split(';')\
+                        if ae.proveedor.responsabilidades_fiscales else []:
+                    for rf in ResponsabilidadesFiscales.choices:
+                        if rf[0] == rf_pro:
+                            responsabilidades_fiscales += rf[1] + ', '
+
+                for tr in Tributos.choices:
+                    if tr[0] == ae.proveedor.tributos:
+                        tributos = '{0} - {1}'.format(tr[0], tr[1])
+                        break
 
         respuesta = [{'nombre_campo': 'Actividad Principal', 'valor_campo': ae.actividad_principal},
                      {'nombre_campo': 'Actividad Secundaria', 'valor_campo': ae.actividad_secundaria},

@@ -4,11 +4,10 @@ from datetime import datetime
 import django
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models import QuerySet, Count, Q
+from django.db.models import QuerySet, Q
 from django.http import QueryDict
 
 from EVA import settings
-from EVA.General import app_datetime_now
 from EVA.General.modelmanagers import ManagerGeneral
 from .models import Empresa, TipoIdentificacion, Persona, SubproductoSubservicio
 from .divipol import CentroPoblado, Municipio
@@ -116,6 +115,7 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     bienes_servicios = models.TextField(verbose_name='Bienes y Servicios que Ofrece', null=True, blank=True)
     es_vigente = models.BooleanField(verbose_name='Es Vigente', null=False, blank=False)
     consecutivo_cliente = models.IntegerField(verbose_name='Consecutivo Cliente', null=True, blank=True)
+    extranjero = models.IntegerField(verbose_name='Extranjero', null=True, blank=True, default=False)
 
     def __str__(self):
         return self.nombre
@@ -168,7 +168,7 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     @property
     def datos_basicos_completos(self):
         return self.nombre and self.tipo_identificacion and self.identificacion \
-                and ((self.tipo_identificacion.sigla == 'NIT' and self.digito_verificacion)
+                and ((self.tipo_identificacion.sigla == 'NIT' and (self.digito_verificacion or self.extranjero))
                      or self.tipo_identificacion.sigla != 'NIT')\
                 and self.tipo_persona and ((self.tipo_persona == TipoPersona.JURIDICA and self.fecha_constitucion
                                             and self.nombre_rl and self.tipo_identificacion_rl
@@ -179,10 +179,12 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     @property
     def actividades_economicas_completas(self):
         actividad_economica = self.proveedoractividadeconomica_set.first()
-        return actividad_economica and self.regimen_fiscal \
-            and ((self.tributos and self.responsabilidades_fiscales) or self.tipo_persona == TipoPersona.NATURAL) \
-            and actividad_economica.actividad_principal \
-            and actividad_economica.tipo_contribuyente
+
+        return actividad_economica and actividad_economica.actividad_principal \
+            and ((self.regimen_fiscal
+                 and ((self.tributos and self.responsabilidades_fiscales) or self.tipo_persona == TipoPersona.NATURAL)
+                 and actividad_economica.tipo_contribuyente)
+                 or self.extranjero)
 
     @property
     def datos_banacarios_completos(self):

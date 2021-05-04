@@ -25,6 +25,9 @@ class Pais(BaseDivipol):
         verbose_name = 'País'
         verbose_name_plural = 'Países'
 
+    # Id Países
+    COLOMBIA = 57
+
 
 class Departamento(BaseDivipol):
     pais = models.ForeignKey(Pais, on_delete=models.CASCADE, verbose_name='País', null=True, blank=False)

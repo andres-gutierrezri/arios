@@ -87,7 +87,7 @@ class ProveedorActividadEconomica(models.Model, ModelDjangoExtensiones):
         proveedor_ae.actividad_principal_id = datos.get('actividad_principal', '')
         proveedor_ae.actividad_secundaria_id = datos.get('actividad_secundaria', '')
         proveedor_ae.otra_actividad_id = datos.get('otra_actividad', '')
-        proveedor_ae.tipo_contribuyente = datos.get('tipo_contribuyente', '')
+        proveedor_ae.tipo_contribuyente = datos.get('tipo_contribuyente', 0)
         proveedor_ae.numero_resolucion = datos.get('resolucion', '')
         proveedor_ae.contribuyente_iyc = datos.get('contribuyente_iyc', '')
         proveedor_ae.entidad_publica = datos.get('entidad_publica', '')
@@ -107,7 +107,7 @@ class EntidadBancariaTercero(models.Model, ModelDjangoExtensiones):
     entidad_bancaria = models.ForeignKey(EntidadBancaria, on_delete=models.DO_NOTHING, verbose_name='Entidad Bancaria',
                                          null=False, blank=False)
     tipo_cuenta = models.SmallIntegerField(verbose_name='Tipo de Cuenta', null=False, blank=False, default=1)
-    numero_cuenta = models.BigIntegerField(verbose_name='Número de Cuenta', null=False, blank=False)
+    numero_cuenta = models.CharField(max_length=50, verbose_name='Número de Cuenta', null=False, blank=False)
     certificacion = models.FileField(upload_to=custom_upload_to, blank=False, null=False)
 
     def __str__(self):
