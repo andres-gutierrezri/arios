@@ -892,8 +892,10 @@ def generar_datos_actividades_economicas(proveedor):
             entidad_publica = 'Nacional'
         elif ae.entidad_publica == '2':
             entidad_publica = 'Departamental'
-        else:
+        elif ae.entidad_publica == '3':
             entidad_publica = 'Municipal'
+        else:
+            entidad_publica = ''
 
         reg_fisc = proveedor.regimen_fiscal
         regimen_fiscal = ''

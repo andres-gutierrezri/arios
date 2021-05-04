@@ -25,11 +25,7 @@
                         {% input_number_tag 'numero_cuenta' 'Número de Cuenta' placeholder='Ingrese el número de cuenta' required='' min='0' max='9223372036854775807' value=objeto.numero_cuenta mensaje_validacion='Por favor ingrese un número' invalido=errores.numero_cuenta %}
                     </div>
                     <div class="form-group col-12">
-                        {% if objeto %}
-                            {% input_file_tag 'certificacion' 'Certificación Bancaria' placeholder="Seleccione un archivo" invalido=errores.logo accept=".pdf" mensaje_validacion='Por favor seleccione un archivo'%}
-                        {% else %}
-                            {% input_file_tag 'certificacion' 'Certificación Bancaria' placeholder="Seleccione un archivo" required="" invalido=errores.logo accept=".docx, .pdf" mensaje_validacion='Por favor seleccione un archivo'%}
-                        {% endif %}
+                        {% input_file_tag 'certificacion' 'Certificación Bancaria' placeholder="Seleccione un archivo" required="" invalido=errores.logo accept=".pdf" mensaje_validacion='Por favor seleccione un archivo'%}
                     </div>
                 </div>
             </div>

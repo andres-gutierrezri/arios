@@ -65,7 +65,7 @@ function abrirModalGestionarEntidadBancaria(url) {
             $('#certificacion_id').change(function (e) {
                 let label_input = $('.custom-file-label');
                 let extension = e.target.files[0].name.split('.').pop();
-                if (extension === 'pdf' || extension === 'docx'){
+                if (extension === 'pdf'){
                     label_input.html(e.target.files[0].name);
                 }else{
                     label_input.html('Seleccione un archivo');
