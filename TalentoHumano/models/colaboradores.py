@@ -181,18 +181,21 @@ class Colaborador(Persona, ModelDjangoExtensiones):
 
 class ColaboradorProcesoManger(models.Manager):
 
-    def get_ids_procesos(self, colaborador_id: int = None, colaborador: Colaborador = None) -> QuerySet:
+    def get_ids_procesos(self, colaborador_id: int = None, colaborador: Colaborador = None,
+                         usuario: User = None) -> QuerySet:
+        filtro = {}
         if colaborador:
             colaborador_id = colaborador.id
-
-        filtro = {}
+        elif usuario:
+            filtro['colaborador__usuario'] = usuario
         if colaborador_id:
             filtro['colaborador_id'] = colaborador_id
 
         return super().get_queryset().filter(**filtro).values_list('proceso_id', flat=True)
 
-    def get_ids_procesos_list(self, colaborador_id: int = None, colaborador: Colaborador = None) -> list:
-        return list(self.get_ids_procesos(colaborador_id, colaborador))
+    def get_ids_procesos_list(self, colaborador_id: int = None, colaborador: Colaborador = None,
+                              usuario: User = None) -> list:
+        return list(self.get_ids_procesos(colaborador_id, colaborador, usuario))
 
 
 class ColaboradorProceso(models.Model):

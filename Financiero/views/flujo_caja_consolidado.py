@@ -19,6 +19,7 @@ from Financiero.models import FlujoCajaEncabezado
 from Financiero.models.flujo_caja import SubTipoMovimiento, FlujoCajaDetalle, EstadoFCDetalle, CategoriaMovimiento, \
     TipoMovimiento
 from Proyectos.models import Contrato
+from TalentoHumano.models.colaboradores import ColaboradorProceso
 
 COMPARATIVO = 2
 REAL = 0
@@ -30,16 +31,20 @@ class FlujoCajaConsolidadoView(AbstractEvaLoggedView):
                 and not request.user.has_perm('Financiero.view_flujocajadetalle'):
             return redirect(reverse('eva-index'))
 
-        datos_filtro = {'incluir_protegidos': request.user.has_perms('TalentoHumano.can_access_usuarioespecial')}
-
-        return render(request, 'Financiero/FlujoCaja/FlujoCajaConsolidado/index.html', datos_xa_render(request, datos_filtro=datos_filtro))
+        return render(request, 'Financiero/FlujoCaja/FlujoCajaConsolidado/index.html',
+                      datos_xa_render(
+                          request,
+                          es_usuario_especial=request.user.has_perms('TalentoHumano.can_access_usuarioespecial'),
+                          procesos_usuario=ColaboradorProceso.objects.get_ids_procesos_list(usuario=request.user)
+                      ))
 
     def post(self, request):
         if not request.user.has_perm('TalentoHumano.can_access_usuarioespecial') \
                 and not request.user.has_perm('Financiero.view_flujocajadetalle'):
             return redirect(reverse('eva-index'))
 
-        incluir_protegidos = request.user.has_perms('TalentoHumano.can_access_usuarioespecial')
+        es_usuario_especial = request.user.has_perms('TalentoHumano.can_access_usuarioespecial')
+        procesos_usuario = ColaboradorProceso.objects.get_ids_procesos_list(usuario=request.user)
 
         datos = datos_formulario_consolidado(request)
         fecha_desde = datos['fecha_desde'] if datos['fecha_desde'] else datos['fecha_min']
@@ -53,7 +58,7 @@ class FlujoCajaConsolidadoView(AbstractEvaLoggedView):
             subtipos = datos['subtipos']
         else:
             subtipos = SubTipoMovimiento.objects.all()
-            if not incluir_protegidos:
+            if not es_usuario_especial:
                 subtipos = subtipos.exclude(protegido=True)
             subtipos = list(subtipos.values_list('id', flat=True))
 
@@ -61,12 +66,18 @@ class FlujoCajaConsolidadoView(AbstractEvaLoggedView):
                                                                           .values_list('id', flat=True))
 
         con_pro = []
+
         if datos['lista_contratos']:
             con_pro.extend(list(FlujoCajaEncabezado.objects
                                 .filter(contrato_id__in=datos['lista_contratos'])
                                 .values_list('id', flat=True)))
         elif not datos['lista_procesos'] or not datos['lista_empresas']:
-            con_pro.extend(FlujoCajaEncabezado.objects.get_id_flujos_contratos())
+            if es_usuario_especial:
+                con_pro.extend(FlujoCajaEncabezado.objects.get_id_flujos_contratos())
+            else:
+                con_pro.extend(list(FlujoCajaEncabezado.objects
+                                    .filter(contrato__proceso_a_cargo_id__in=procesos_usuario)
+                                    .values_list('id', flat=True)))
 
         if datos['lista_procesos']:
             con_pro.extend(list(FlujoCajaEncabezado.objects
@@ -74,8 +85,12 @@ class FlujoCajaConsolidadoView(AbstractEvaLoggedView):
                                 .values_list('id', flat=True)))
 
         elif not datos['lista_contratos'] or not datos['lista_empresas']:
-            con_pro.extend(FlujoCajaEncabezado.objects.get_id_flujos_procesos())
-
+            if es_usuario_especial:
+                con_pro.extend(FlujoCajaEncabezado.objects.get_id_flujos_procesos())
+            else:
+                con_pro.extend(list(FlujoCajaEncabezado.objects
+                                    .filter(proceso_id__in=procesos_usuario)
+                                    .values_list('id', flat=True)))
         empresas = []
         if datos['lista_empresas']:
             empresas.extend(datos['lista_empresas'])
@@ -93,12 +108,13 @@ class FlujoCajaConsolidadoView(AbstractEvaLoggedView):
 
         datos_filtro = {'estados': estados, 'ids_flujos': con_pro, 'fecha_desde': fecha_desde,
                         'fecha_hasta': fecha_hasta, 'tipos_registro': tipos_flujos_caja, 'subtipos': subtipos,
-                        'categorias': categorias, 'empresas': empresas, 'incluir_protegidos': incluir_protegidos}
+                        'categorias': categorias, 'empresas': empresas}
         return render(request, 'Financiero/FlujoCaja/FlujoCajaConsolidado/index.html',
-                      datos_xa_render(request, datos, movimientos, datos_filtro))
+                      datos_xa_render(request, datos, movimientos, datos_filtro, es_usuario_especial, procesos_usuario))
 
 
-def datos_xa_render(request, datos_formulario=None, movimientos=None, datos_filtro: {} = None):
+def datos_xa_render(request, datos_formulario=None, movimientos=None, datos_filtro: {} = None,
+                    es_usuario_especial=False, procesos_usuario: [] = None):
     fecha_min, fecha_max = obtener_fechas_min_max_fc('')
 
     fecha_min_max = json.dumps({'fecha_min': str(fecha_min),
@@ -107,10 +123,14 @@ def datos_xa_render(request, datos_formulario=None, movimientos=None, datos_filt
     empresas = Empresa.objects.get_xa_select()
     procesos = Proceso.objects.get_xa_select()
     contratos = Contrato.objects.get_xa_select_x_empresa(get_id_empresa_global(request))
-
     subtipos = SubTipoMovimiento.objects.get_xa_select_activos()
-    if not datos_filtro.get('incluir_protegidos'):
+
+    procesos_usuario = ColaboradorProceso.objects.get_ids_procesos_list(usuario=request.user)
+
+    if not es_usuario_especial:
         subtipos = subtipos.exclude(protegido=True)
+        procesos = procesos.filter(id__in=procesos_usuario)
+        contratos = contratos.filter(proceso_a_cargo_id__in=procesos_usuario)
 
     categorias = CategoriaMovimiento.objects.get_xa_select_activos()
     subtipos_categorias = []
