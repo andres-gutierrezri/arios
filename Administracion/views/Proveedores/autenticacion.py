@@ -156,7 +156,7 @@ class RegistroProveedorView(View):
                         tercero.correo_auxiliar = ''
                         tercero.es_vigente = True
                         tercero.estado_proveedor = EstadosProveedor.REGISTRADO
-
+                        tercero.usuario = usuario
                         tercero.save()
                         proveedor = tercero
 
