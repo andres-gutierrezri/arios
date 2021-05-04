@@ -29,12 +29,18 @@ class FlujoCajaConsolidadoView(AbstractEvaLoggedView):
         if not request.user.has_perm('TalentoHumano.can_access_usuarioespecial')\
                 and not request.user.has_perm('Financiero.view_flujocajadetalle'):
             return redirect(reverse('eva-index'))
-        return render(request, 'Financiero/FlujoCaja/FlujoCajaConsolidado/index.html', datos_xa_render(request))
+
+        datos_filtro = {'incluir_protegidos': request.user.has_perms('TalentoHumano.can_access_usuarioespecial')}
+
+        return render(request, 'Financiero/FlujoCaja/FlujoCajaConsolidado/index.html', datos_xa_render(request, datos_filtro=datos_filtro))
 
     def post(self, request):
         if not request.user.has_perm('TalentoHumano.can_access_usuarioespecial') \
                 and not request.user.has_perm('Financiero.view_flujocajadetalle'):
             return redirect(reverse('eva-index'))
+
+        incluir_protegidos = request.user.has_perms('TalentoHumano.can_access_usuarioespecial')
+
         datos = datos_formulario_consolidado(request)
         fecha_desde = datos['fecha_desde'] if datos['fecha_desde'] else datos['fecha_min']
         fecha_hasta = datos['fecha_hasta'] if datos['fecha_hasta'] else datos['fecha_max']
@@ -43,8 +49,13 @@ class FlujoCajaConsolidadoView(AbstractEvaLoggedView):
 
         estados = datos['estados'] if datos['estados'] else [1, 2, 4, 5]
 
-        subtipos = datos['subtipos'] if datos['subtipos'] else list(SubTipoMovimiento.objects.all()
-                                                                    .values_list('id', flat=True))
+        if datos['subtipos']:
+            subtipos = datos['subtipos']
+        else:
+            subtipos = SubTipoMovimiento.objects.all()
+            if not incluir_protegidos:
+                subtipos = subtipos.exclude(protegido=True)
+            subtipos = list(subtipos.values_list('id', flat=True))
 
         categorias = datos['categorias'] if datos['categorias'] else list(CategoriaMovimiento.objects.all()
                                                                           .values_list('id', flat=True))
@@ -82,7 +93,7 @@ class FlujoCajaConsolidadoView(AbstractEvaLoggedView):
 
         datos_filtro = {'estados': estados, 'ids_flujos': con_pro, 'fecha_desde': fecha_desde,
                         'fecha_hasta': fecha_hasta, 'tipos_registro': tipos_flujos_caja, 'subtipos': subtipos,
-                        'categorias': categorias, 'empresas': empresas}
+                        'categorias': categorias, 'empresas': empresas, 'incluir_protegidos': incluir_protegidos}
         return render(request, 'Financiero/FlujoCaja/FlujoCajaConsolidado/index.html',
                       datos_xa_render(request, datos, movimientos, datos_filtro))
 
@@ -98,6 +109,9 @@ def datos_xa_render(request, datos_formulario=None, movimientos=None, datos_filt
     contratos = Contrato.objects.get_xa_select_x_empresa(get_id_empresa_global(request))
 
     subtipos = SubTipoMovimiento.objects.get_xa_select_activos()
+    if not datos_filtro.get('incluir_protegidos'):
+        subtipos = subtipos.exclude(protegido=True)
+
     categorias = CategoriaMovimiento.objects.get_xa_select_activos()
     subtipos_categorias = []
     for sub in SubTipoMovimiento.objects.all():
