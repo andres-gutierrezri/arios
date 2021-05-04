@@ -26,12 +26,14 @@ REAL = 0
 
 class FlujoCajaConsolidadoView(AbstractEvaLoggedView):
     def get(self, request):
-        if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
+        if not request.user.has_perm('TalentoHumano.can_access_usuarioespecial')\
+                and not request.user.has_perm('Financiero.view_flujocajadetalle'):
             return redirect(reverse('eva-index'))
         return render(request, 'Financiero/FlujoCaja/FlujoCajaConsolidado/index.html', datos_xa_render(request))
 
     def post(self, request):
-        if not request.user.has_perms(['TalentoHumano.can_access_usuarioespecial']):
+        if not request.user.has_perm('TalentoHumano.can_access_usuarioespecial') \
+                and not request.user.has_perm('Financiero.view_flujocajadetalle'):
             return redirect(reverse('eva-index'))
         datos = datos_formulario_consolidado(request)
         fecha_desde = datos['fecha_desde'] if datos['fecha_desde'] else datos['fecha_min']
