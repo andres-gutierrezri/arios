@@ -15,10 +15,12 @@ def select_tag(lista, nombre, texto_seleccion, is_tupla=False, agrupar=False, **
     primer_campo_valor = kwargs.pop('primer_campo_valor', None)
     modal = kwargs.pop('modal', False)
     id_label = kwargs.pop('id_label', None)
+    disabled = kwargs.pop('disabled', False)
+
     return {'lista': lista, 'nombre': nombre, 'texto_seleccion': texto_seleccion, 'texto_label': texto_label,
             'propiedades': propiedades_to_str(kwargs), 'mensaje_validacion': mensaje_validacion, 'valor': valor,
             'primer_valor': primer_valor, 'primer_campo_valor': primer_campo_valor, 'modal': modal, 'id_label': id_label,
-            'is_tupla': is_tupla, 'agrupar': agrupar}
+            'is_tupla': is_tupla, 'agrupar': agrupar, 'disabled':disabled}
 
 
 @register.inclusion_tag('EVA/_general_tags/_select_multiple_tag.html')

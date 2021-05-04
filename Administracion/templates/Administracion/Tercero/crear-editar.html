@@ -46,7 +46,7 @@
                                                                 {% input_text_tag 'nombre' 'Nombre' placeholder="Ingrese el nombre" required="" maxlength="100" value=tercero.nombre mensaje_validacion='Por favor digite el nombre.' invalido=errores.nombre %}
                                                             </div>
                                                             <div class="col-md-6">
-                                                                {% select_tag tipo_terceros 'tipo_tercero_id' 'Seleccione un tipo de tercero' texto_label='Tipo de tercero' value=tercero.tipo_tercero_id required='' mensaje_validacion='Por favor seleccione un tipo de tercero.' invalido=errores.tipo_tercero %}
+                                                                    {% select_tag tipo_terceros 'tipo_tercero_id' 'Seleccione un tipo de tercero' texto_label='Tipo de tercero' value=tercero.tipo_tercero_id required='' mensaje_validacion='Por favor seleccione un tipo de tercero.' invalido=errores.tipo_tercero disabled=es_cliente_proveedor %}
                                                             </div>
                                                         </div>
                                                     </div>

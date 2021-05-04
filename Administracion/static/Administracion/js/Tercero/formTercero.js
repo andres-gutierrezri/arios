@@ -141,8 +141,8 @@ function siguiente() {
 
 function actdesInfoFacturacion() {
     const tipoTercero = Number(selectTipoTercero.val());
-    // Cliente
-    if(tipoTercero === 1) {
+    // Si el primer bit es 1 entonces es cliente.
+    if((tipoTercero & 1) === 1) {
         activarBtnCancelar(false);
         activarBtnGuardar(false);
         wizard.smartWizard("stepState", [1], "enable");

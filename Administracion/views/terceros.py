@@ -73,6 +73,10 @@ class TerceroEditarView(AbstractEvaLoggedView):
         tercero = Tercero.from_dictionary(request.POST)
         tercero.empresa_id = get_id_empresa_global(request)
         tercero.id = id
+        tercero_db = Tercero.objects.get(id=id)
+
+        if not tercero.tipo_tercero_id:
+            tercero.tipo_tercero_id = tercero_db.tipo_tercero_id
 
         try:
             tercero.full_clean(validate_unique=False)
@@ -85,7 +89,6 @@ class TerceroEditarView(AbstractEvaLoggedView):
             messages.warning(request, 'Ya existe un tercero con identificación {0}'.format(tercero.identificacion))
             return render(request, 'Administracion/Tercero/crear-editar.html', datos_xa_render(self.OPCION, tercero))
 
-        tercero_db = Tercero.objects.get(id=id)
         if tercero_db.comparar(tercero):
             messages.success(request, 'No se hicieron cambios en el tercero {0}'.format(tercero.nombre))
             return redirect(reverse('Administracion:terceros'))
@@ -143,8 +146,12 @@ def datos_xa_render(opcion: str, tercero: Tercero = None) -> dict:
     empresas = Empresa.objects \
         .filter(estado=True).values(campo_valor=F('id'), campo_texto=F('nombre')).order_by('nombre')
     tipos_identificacion = TipoIdentificacion.objects.get_xa_select_activos()
-    tipo_terceros = TipoTercero.objects.get_xa_select_activos().exclude(id__in=[TipoTercero.PROVEEDOR,
-                                                                                TipoTercero.CLIENTE_Y_PROVEEDOR])
+    tipos_tercero_excluir = [TipoTercero.PROVEEDOR]
+
+    if not tercero or tercero.tipo_tercero_id != TipoTercero.CLIENTE_Y_PROVEEDOR:
+        tipos_tercero_excluir.append(TipoTercero.CLIENTE_Y_PROVEEDOR)
+
+    tipo_terceros = TipoTercero.objects.get_xa_select_activos().exclude(id__in=tipos_tercero_excluir)
     departamentos = Departamento.objects.get_xa_select_activos()
 
     datos = {'empresas': empresas, 'tipos_identificacion': tipos_identificacion, 'tipo_terceros': tipo_terceros,
@@ -162,6 +169,7 @@ def datos_xa_render(opcion: str, tercero: Tercero = None) -> dict:
         datos['tercero'] = tercero
         datos['responsabilidades_tercero'] = tercero.responsabilidades_fiscales.split(';')\
             if tercero.responsabilidades_fiscales else []
+        datos['es_cliente_proveedor'] = tercero.tipo_tercero_id == TipoTercero.CLIENTE_Y_PROVEEDOR
 
     return datos
 # endregion

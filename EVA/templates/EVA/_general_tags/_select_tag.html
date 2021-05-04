@@ -1,7 +1,7 @@
 {% if texto_label %}
     <label for="{{ nombre }}_select_id" {% if id_label %}id="{{ id_label }}_label_id"{% endif %}>{{ texto_label }}</label>
 {% endif %}
-<select class="select2 form-control" id="{{ nombre }}_select_id" name="{{ nombre }}" {{ propiedades }}>
+<select class="select2 form-control" id="{{ nombre }}_select_id" name="{{ nombre }}" {{ propiedades }} {% if disabled %}disabled{% endif %}>
     {% if texto_seleccion %}
         <option {% if primer_valor %}{% if primer_campo_valor %} value="{{ primer_campo_valor }}" {% else %} value="0" {% endif %} {% else %}value=""{% endif %}>{{ texto_seleccion }}</option>
     {% endif %}
