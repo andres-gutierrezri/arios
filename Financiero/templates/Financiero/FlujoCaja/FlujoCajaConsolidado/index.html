@@ -135,7 +135,7 @@
                                     {% select_tag tipos_flujos 'tipos_flujos_caja_id' 'Real' primer_valor=True texto_label="Proyectado/Real" value=valor.tipos_flujos_caja %}
                                 </div>
                                 <div class="col-md-4 p-t-25">
-                                    <button class="btn buttons-html5 btn-outline-primary btn-sm mr-1"><span>Buscar</span></button>
+                                    <button class="btn btn-primary mr-1" type="button" id="btn-buscar" onclick="buscarConsolidado()"><span class="fad fa-search-dollar mr-1"></span>Buscar</button>
                                 </div>
                             </div>
                         </div>
@@ -155,9 +155,9 @@
                                         </div>
                                         <div class="col-sm-12 col-md-6 d-flex align-items-center justify-content-end">
                                             <div class="dt-buttons">
-                                                <button class="btn buttons-print btn-outline-primary btn-sm"
-                                                        tabindex="0" aria-controls="dataTableFlujoCaja" type="button" onclick="Imprimir()">
-                                                    <span>Imprimir</span></button>
+                                                <button class="btn btn-primary"
+                                                        tabindex="0" aria-controls="dataTableFlujoCaja" type="button" onclick="descargarFC()">
+                                                    <span class="fad fa-file-excel mr-1"></span>Exportar</button>
                                             </div>
                                         </div>
                                     </div>

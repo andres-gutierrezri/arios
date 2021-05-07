@@ -1,19 +1,26 @@
 import copy
 import json
+import os
+
+import xlsxwriter
+
 from datetime import datetime
+from random import randrange
 
 from django.contrib import messages
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Sum, DateField, F
 from django.db.models.functions import TruncMonth
-from django.http import JsonResponse
+from django.http import JsonResponse, FileResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from xlsxwriter.worksheet import Worksheet
 
 from Administracion.models import Empresa, Proceso
 from Administracion.utils import get_id_empresa_global
+from EVA import settings
 from EVA.General import app_date_now, app_datetime_now
-from EVA.General.conversiones import add_months, mes_numero_a_letras, fijar_fecha_inicio_mes
+from EVA.General.conversiones import add_months, mes_numero_a_letras, fijar_fecha_inicio_mes, datetime_to_filename
 from EVA.views.index import AbstractEvaLoggedView
 from Financiero.models import FlujoCajaEncabezado
 from Financiero.models.flujo_caja import SubTipoMovimiento, FlujoCajaDetalle, EstadoFCDetalle, CategoriaMovimiento, \
@@ -22,6 +29,7 @@ from Proyectos.models import Contrato
 from TalentoHumano.models.colaboradores import ColaboradorProceso
 
 COMPARATIVO = 2
+PROYECTADO = 1
 REAL = 0
 
 
@@ -109,8 +117,97 @@ class FlujoCajaConsolidadoView(AbstractEvaLoggedView):
         datos_filtro = {'estados': estados, 'ids_flujos': con_pro, 'fecha_desde': fecha_desde,
                         'fecha_hasta': fecha_hasta, 'tipos_registro': tipos_flujos_caja, 'subtipos': subtipos,
                         'categorias': categorias, 'empresas': empresas}
-        return render(request, 'Financiero/FlujoCaja/FlujoCajaConsolidado/index.html',
-                      datos_xa_render(request, datos, movimientos, datos_filtro, es_usuario_especial, procesos_usuario))
+
+        datos_render = datos_xa_render(request, datos, movimientos, datos_filtro, es_usuario_especial, procesos_usuario)
+
+        if request.path.endswith('descargar'):
+            nombre_excel = f'FC_{"Proyectado" if datos["tipos_flujos_caja"] == PROYECTADO else "Real"}' \
+                           f'_{request.user.id}_{randrange(1,1000)}.xlsx'
+
+            nombre_excel = os.path.join(settings.EVA_RUTA_ARCHIVOS_TEMPORALES, nombre_excel)
+
+            self.generar_excel(nombre_excel, datos_render, datos['tipos_flujos_caja'])
+
+            return FileResponse(open(nombre_excel, 'rb'),
+                                filename=f"Flujo de Caja {datetime_to_filename(app_datetime_now())}.xlsx")
+        else:
+            return render(request, 'Financiero/FlujoCaja/FlujoCajaConsolidado/index.html', datos_render)
+
+    def generar_excel(self, nombre, datos: dict, tipo_consolidado):
+
+        # Constantes de los niveles para la agrupación de filas.
+        NIVEL_TIPO = 0
+        NIVEL_CATEGORIA = 1
+        NIVEL_SUBTIPO = 2
+
+        workbook = xlsxwriter.Workbook(nombre)
+
+        # Formatos para las celdas.
+        bold = workbook.add_format({'bold': True, 'border': 2})
+        bold_center = workbook.add_format({'bold': True, 'align': 'center'})
+        money = workbook.add_format({'num_format': '#,##0.00', 'border': 1})
+        money_bold = workbook.add_format({'num_format': '#,##0.00', 'bold': True, 'border': 2})
+        borde_1 = workbook.add_format({'border': 1})
+
+        worksheet = workbook.add_worksheet('Flujo de Caja')
+
+        # Título de la hoja.
+        worksheet.merge_range(0, 0, 0, 5, "Flujo de Caja", bold_center)
+
+        fila = 2
+        col = 1
+
+        # Se fija el ancho de las columnas.
+        worksheet.set_column(0, 0, 40, None, None)
+        worksheet.set_column(1, len(datos['meses']), 16, None, None)
+
+        # Se agrega la filas con los meses.
+        for mes in datos['meses']:
+            worksheet.write(fila, col, f"{mes['mes']} {mes['anho']}", borde_1)
+            col += 1
+
+        fila += 1
+
+        nombre_campo_totales = 'valor_proyectado' if tipo_consolidado == PROYECTADO else 'valor_real'
+
+        # Se agregan las filas con los movimientos agregando sub totales para las categorías y tipos de movimientos.
+        for tipo in datos['movimientos']:
+            if tipo_consolidado == PROYECTADO:
+                nombre_campo = 'valor_costos_proyectado' if tipo['id_tipo'] == 1 else 'valor_gastos_proyectado' \
+                    if tipo['id_tipo'] == 2 else 'valor_ingresos_proyectado'
+            else:
+                nombre_campo = 'valor_costos_real' if tipo['id_tipo'] == 1 else 'valor_gastos_real' \
+                    if tipo['id_tipo'] == 2 else 'valor_ingresos_real'
+
+            for categoria in tipo['valores']:
+                for subtipo in categoria['subtipos']:
+                    self.agregar_fila_excel(worksheet, fila, subtipo['meses'], (subtipo['nombre'], borde_1),
+                                            (nombre_campo, money),
+                                            {'level': NIVEL_SUBTIPO, 'hidden': True})
+                    fila += 1
+
+                self.agregar_fila_excel(worksheet, fila, categoria['meses'], (categoria['nombre'], bold),
+                                        (nombre_campo, money_bold),
+                                        {'level': NIVEL_CATEGORIA, 'collapsed': True, 'hidden': True})
+                fila += 1
+
+            self.agregar_fila_excel(worksheet, fila, tipo['meses'], (tipo['nombre_tipo'].upper(), bold),
+                              (nombre_campo_totales, money_bold),
+                              {'level': NIVEL_TIPO, 'collapsed': True})
+            fila += 1
+
+        self.agregar_fila_excel(worksheet, fila, datos['totales_mes_a_mes'], ('Total', bold),
+                          (nombre_campo_totales, money_bold), None)
+        workbook.close()
+
+    @staticmethod
+    def agregar_fila_excel(worksheet: Worksheet, fila, datos_meses, nombre_fila, nombre_campo, opciones):
+        worksheet.set_row(fila, None, None, opciones)
+        worksheet.write(fila, 0, nombre_fila[0], nombre_fila[1])
+        col = 1
+        for info_mes in datos_meses:
+            worksheet.write(fila, col, info_mes[nombre_campo[0]], nombre_campo[1])
+            col += 1
 
 
 def datos_xa_render(request, datos_formulario=None, movimientos=None, datos_filtro: {} = None,
@@ -212,7 +309,7 @@ def datos_xa_render(request, datos_formulario=None, movimientos=None, datos_filt
             total_mes_a_mes.append({'mes': mes['mes'], 'valor_real': suma_mes_real,
                                     'valor_proyectado': suma_mes_proyectado})
 
-            datos['totales_mes_a_mes'] = total_mes_a_mes
+        datos['totales_mes_a_mes'] = total_mes_a_mes
 
     return datos
 

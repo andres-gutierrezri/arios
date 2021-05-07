@@ -335,13 +335,18 @@ function desplegarDetalle(origen, idObjeto, idTipo) {
     }
 }
 
-function Imprimir() {
-     let zonaImpresionConsolidado = divConsolidado.html();
-     let zonaImpresionTotales = $('#div_totales').html();
-     let originalContents = document.body.innerHTML;
-     document.body.innerHTML = zonaImpresionConsolidado + zonaImpresionTotales;
-     window.print();
-     document.body.innerHTML = originalContents;
+function descargarFC() {
+    const form = $('#consolidado-form')[0];
+    if(!form.action.endsWith('descargar'))
+        form.action += '/descargar';
+    form.submit();
+}
+
+function buscarConsolidado() {
+    const form = $('#consolidado-form')[0];
+    if(form.action.endsWith('descargar'))
+        form.action = form.action.replace('/descargar', '');
+    form.submit();
 }
 
 function cargarSeleccionesContratos() {
