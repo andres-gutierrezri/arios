@@ -168,7 +168,9 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     @property
     def datos_basicos_completos(self):
         return self.nombre and self.tipo_identificacion and self.identificacion \
-                and ((self.tipo_identificacion.sigla == 'NIT' and (self.digito_verificacion or self.extranjero))
+                and ((self.tipo_identificacion.sigla == 'NIT'
+                      and ((isinstance(self.digito_verificacion, int) and self.digito_verificacion) >= 0
+                           or self.extranjero))
                      or self.tipo_identificacion.sigla != 'NIT')\
                 and self.tipo_persona and ((self.tipo_persona == TipoPersona.JURIDICA and self.fecha_constitucion
                                             and self.nombre_rl and self.tipo_identificacion_rl
