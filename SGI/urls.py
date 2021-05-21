@@ -16,6 +16,7 @@ Including another URLconf
 
 from django.urls import path
 from SGI.views import sgi, documentos, cadena_aprobacion
+from SGI.views.reportes import ReportesDescargarView, ReportesView
 
 app_name = 'SGI'
 
@@ -49,4 +50,6 @@ urlpatterns = [
     path('solicitudes_aprobacion/detalle/<int:id>', cadena_aprobacion.DetalleSolicitudAprobacionView.as_view(),
          name='detalle-solicitud-aprobacion'),
     path('documentos/buscar', sgi.BuscarDocumentos.as_view(), name='documentos-buscar'),
+    path('reportes', ReportesView.as_view(), name='reportes'),
+    path('reportes/<int:id>/formato/<str:formato>', ReportesDescargarView.as_view(), name='reportes-descarga'),
 ]

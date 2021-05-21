@@ -17,4 +17,6 @@ permisos = [Permiso('index', None),
             Permiso('aprobacion-documentos-ver', ['SGI.view_resultadosaprobacion']),
             Permiso('solicitudes-aprobacion', ['SGI.add_archivo']),
             Permiso('documentos-buscar', ['SGI.view_documento']),
+            Permiso('reportes', ['TalentoHumano.can_gestioncompletasgi']),
+            Permiso('reportes-descargar', ['TalentoHumano.can_gestioncompletasgi'])
             ]

@@ -64,3 +64,11 @@
         </a>
     </li>
 {% endif %}
+{% if perms.TalentoHumano.can_gestioncompletasgi %}
+    <li {% if menu_actual == 'reportes' %} class="active" {% endif %}>
+        <a href="{% url 'SGI:reportes' %}" title="Reportes" data-filter-tags="reportes">
+            <i class="fal fa-file-chart-line"></i>
+            <span class="nav-link-text" data-i18n="nav.sgi_reportes">Reportes</span>
+        </a>
+    </li>
+{% endif %}
