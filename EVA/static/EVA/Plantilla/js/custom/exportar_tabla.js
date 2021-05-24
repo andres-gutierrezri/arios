@@ -58,7 +58,7 @@ function getBotonesExportar(columnasExportar) {
     ]
 }
 
-function iniciarDataTable(columnasExportar, idTabla = 'dataTable', ordenInicial = [[0, 'asc']], detallesColumnas=[])
+function iniciarDataTable(columnasExportar, idTabla = 'dataTable', ordenInicial = [[0, 'asc']], detallesColumnas=[], buscar = true)
 {
     // initialize datatable
     $(`#${idTabla}`).dataTable(
@@ -72,7 +72,8 @@ function iniciarDataTable(columnasExportar, idTabla = 'dataTable', ordenInicial 
         aaSorting:ordenInicial,
         columnDefs: detallesColumnas,
         buttons: columnasExportar ? getBotonesExportar(columnasExportar) : [],
-        language:idiomaTabla
+        language:idiomaTabla,
+        searching:buscar
     });
     $(`#${idTabla}_filter`).find("input").attr("placeholder", "Buscar");
 
