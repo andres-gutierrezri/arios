@@ -7,6 +7,7 @@ from sqlite3 import IntegrityError
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.db import transaction
+from django.db.models import Max, F
 from django.db.transaction import atomic, rollback
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
@@ -15,7 +16,7 @@ from django.views.decorators.clickjacking import xframe_options_sameorigin
 
 from Administracion.enumeraciones import TipoPersona, RegimenFiscal, \
     EstadosProveedor, TipoContribuyente, ResponsabilidadesFiscales, Tributos
-from Administracion.models import TipoIdentificacion, Pais, Tercero, Departamento, Municipio
+from Administracion.models import TipoIdentificacion, Pais, Tercero, Departamento, Municipio, TipoTercero
 from Administracion.models.models import SubproductoSubservicio, ProductoServicio
 from Administracion.models.terceros import ProveedorProductoServicio, TipoDocumentoTercero, DocumentoTercero, \
     SolicitudProveedor, Certificacion
@@ -25,7 +26,7 @@ from EVA.views.index import AbstractEvaLoggedProveedorView, AbstractEvaLoggedVie
 from Financiero.enumeraciones import TipoCuentaBancaria
 from Financiero.models.models import ActividadEconomica, ProveedorActividadEconomica, \
     EntidadBancariaTercero, EntidadBancaria
-from Notificaciones.models.models import EventoDesencadenador, DestinatarioNotificacion
+from Notificaciones.models.models import EventoDesencadenador, DestinatarioNotificacion, Notificacion
 from Notificaciones.views.views import crear_notificacion_por_evento
 
 LOGGER = logging.getLogger(__name__)
@@ -516,9 +517,36 @@ class VerDocumentoView(AbstractEvaLoggedProveedorView):
 
 class SolicitudesProveedorView(AbstractEvaLoggedView):
     def get(self, request):
-        solicitudes = SolicitudProveedor.objects.filter(estado=True)
-        return render(request, 'Administracion/Tercero/Proveedor/solicitudes_proveedores.html',
-                      {'solicitudes': solicitudes, 'menu_actual': ['proveedores', 'solicitudes_proveedor']})
+        estado = request.GET.get('estado', 'pendientes')
+        if estado == 'denegada':
+            # Se obtienen las ultima notificación para cada proveedor
+            ultimas_notificaciones = DestinatarioNotificacion \
+                           .objects.exclude(usuario__tercero__tipo_tercero__in=([TipoTercero.PROVEEDOR,
+                                                                                 TipoTercero.CLIENTE_Y_PROVEEDOR]),
+                                            usuario__tercero__estado_proveedor=EstadosProveedor.ACTIVO)\
+                           .values('usuario_id').annotate(ultima=Max('id'))
+
+            id_notificaciones = list(map(lambda x: x['ultima'], ultimas_notificaciones))
+
+            # se obtiene los terceros para las notificaciones con solicitud denegada
+            proveedores_denegados = Notificacion\
+                .objects.filter(destinatarionotificacion__id__in=id_notificaciones,
+                                evento_desencadenador_id=EventoDesencadenador.RESPUESTA_SOLICITUD_PROVEEDOR,
+                                titulo='Solicitud Denegada')\
+                .values('mensaje', nombre=F('destinatarionotificacion__usuario__tercero__nombre'),
+                        identificacion=F('destinatarionotificacion__usuario__tercero__identificacion'),
+                        tipo_identificacion=F('destinatarionotificacion__usuario__tercero__tipo_identificacion__sigla'),
+                        digito_verificacion=F('destinatarionotificacion__usuario__tercero__digito_verificacion'),
+                        correo=F('destinatarionotificacion__usuario__tercero__correo_principal'))\
+                .distinct('destinatarionotificacion__usuario__tercero__identificacion')
+
+            return render(request, 'Administracion/Tercero/Proveedor/solicitudes_denegadas.html',
+                          {'proveedores': proveedores_denegados, 'menu_actual': ['proveedores', 'denegadas']})
+        else:
+            solicitudes = SolicitudProveedor.objects.filter(estado=True)
+
+            return render(request, 'Administracion/Tercero/Proveedor/solicitudes_proveedores.html',
+                          {'solicitudes': solicitudes, 'menu_actual': ['proveedores', 'pendientes']})
 
 
 class PerfilProveedorSolicitud(AbstractEvaLoggedView):

@@ -55,11 +55,27 @@
         </a>
         <ul>
             {% if perms.Administracion.manage_proveedor %}
-            <li {% if menu_actual|last == 'solicitudes_proveedor' %} class="active" {% endif %}>
-                <a href="{% url 'Administracion:proveedor-solicitudes' %}" title="Solicitudes de Proveedor" data-filter-tags="solicitudes proveedor">
+            <li {% if menu_actual|last == 'pendientes' or  menu_actual|last == 'denegadas'%} class="active" {% endif %}>
+                <a href="#" title="Solicitudes de Proveedor" data-filter-tags="solicitudes proveedor">
                     <i class="fal fa-list-alt"></i>
-                    <span class="nav-link-text" data-i18n="nav.administracion_proveedores_solicitud">Solicitudes de Proveeedor</span>
+                    <span class="nav-link-text" data-i18n="nav.administracion_proveedores_solicitud">Solicitudes de Proveedores</span>
                 </a>
+                <ul>
+                    {% if perms.Financiero.view_categoriamovimiento %}
+                    <li {% if menu_actual|last == 'pendientes' %} class="active" {% endif %}>
+                        <a href="{% url 'Administracion:proveedor-solicitudes' %}?estado=pendiente" title="Pendientes" data-filter-tags="solicitudes de proveedores pendientes">
+                            <span class="nav-link-text" data-i18n="nav.administracion_proveedores_solicitud_pendientes">Pendientes</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% if perms.Financiero.view_subtipomovimiento %}
+                    <li {% if menu_actual|last == 'denegadas' %} class="active" {% endif %}>
+                        <a href="{% url 'Administracion:proveedor-solicitudes' %}?estado=denegada" title="Denegadas" data-filter-tags="solicitudes de proveedores denegadas">
+                            <span class="nav-link-text" data-i18n="nav.administracion_proveedores_solicitud_denegadas">Denegadas</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
             </li>
             {% endif %}
             {% if perms.Administracion.view_proveedor %}
