@@ -63,6 +63,9 @@
                     {% endif %}
                 </div>
             </div>
+            {% if btn_enviar and not perfil_activo and not solicitud_activa and not estado_doc%}
+                <a href="javascript:enviarSolicitudProveedor({{ proveedor_id }})" class="btn btn-primary btn-pills btn-block mt-2">Enviar Solicitud</a>
+            {% endif %}
         </div>
     </div>
 </div>
