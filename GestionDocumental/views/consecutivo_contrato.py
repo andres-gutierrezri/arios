@@ -91,6 +91,23 @@ class ConsecutivoContratoEliminarView(AbstractEvaLoggedView):
                                  "mensaje": 'Ha ocurrido un erro al realizar la acción'})
 
 
+class ArchivoCargarView(AbstractEvaLoggedView):
+    OPCION = 'cargar'
+
+    def get(self, request, id_contrato):
+        consecutivo = ConsecutivoContrato.objects.get(id=id_contrato)
+        return render(request, 'GestionDocumental/ConsecutivoContratos/cargar-documento.html',{'contrato': consecutivo})
+
+    def post(self, request, id_contrato):
+        consecutivo = ConsecutivoContrato.objects.get(id=id_contrato)
+
+        consecutivo.ruta_archivo = request.POST.get('archivo')
+        
+        consecutivo.save()
+        return redirect(reverse('GestionDocumental:consecutivo-contratos-index', args=[0]))
+
+
+
 def datos_xa_render(request) -> dict:
     tipo_contratos = TipoContrato.objects
     colaboradores = Colaborador.objects.get_xa_select_usuarios_activos_x_empresa(request)
@@ -117,3 +134,4 @@ def tipos_contrato_filtro():
     for tipo_contrato in tipo_contratos:
         lista_tipo_contratos.append({'campo_valor': tipo_contrato.id, 'campo_texto': tipo_contrato.nombre})
     return lista_tipo_contratos
+

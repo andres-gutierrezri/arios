@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 
+import GestionDocumental
 from Administracion.models import Tercero, TipoContrato, Empresa
 from EVA.General.modelmanagers import ManagerGeneral
 from Proyectos.models import Contrato
@@ -59,6 +60,7 @@ class ConsecutivoContrato(models.Model):
                                      null=True, blank=True, related_name='consecutivo_contrato_usuario_crea')
     justificacion = models.CharField(max_length=100, verbose_name='Justificacion', blank=True, null=True)
     estado = models.BooleanField(verbose_name='Estado', blank=False, null=False)
+    ruta_archivo= models.FileField(blank=True, max_length=250, upload_to='ejemplo')
 
     def __str__(self):
         return self.codigo
@@ -120,3 +122,4 @@ class ConsecutivoReunion(models.Model):
         consecutivo.estado = True
 
         return consecutivo
+
