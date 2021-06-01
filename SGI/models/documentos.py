@@ -75,7 +75,7 @@ class CadenaAprobacionDetalle(models.Model):
 
 class MedioSoporte(models.Model):
     objects = ManagerGeneral()
-    nombre = models.CharField(max_length=50, verbose_name='Nombre', null=True, blank=False)
+    nombre = models.CharField(max_length=50, verbose_name='Nombre', null=False, blank=False)
 
     def __str__(self):
         return self.nombre
@@ -87,7 +87,7 @@ class MedioSoporte(models.Model):
 
 class TiempoConservacion(models.Model):
     objects = ManagerGeneral()
-    nombre = models.CharField(max_length=50, verbose_name='Nombre', null=True, blank=False)
+    nombre = models.CharField(max_length=50, verbose_name='Nombre', null=False, blank=False)
 
     def __str__(self):
         return self.nombre
@@ -102,9 +102,9 @@ class Documento(models.Model, ModelDjangoExtensiones):
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     codigo = models.CharField(max_length=20, verbose_name='Código', null=False, blank=False)
     medio_soporte = models.ForeignKey(MedioSoporte, on_delete=models.DO_NOTHING, max_length=50,
-                                      verbose_name='Medio Soporte', null=True, blank=False)
+                                      verbose_name='Medio Soporte', null=False, blank=False)
     tiempo_conservacion = models.ForeignKey(TiempoConservacion, on_delete=models.DO_NOTHING, max_length=10,
-                                            verbose_name='Tiempo Conservación', null=True, blank=False)
+                                            verbose_name='Tiempo Conservación', null=False, blank=False)
     fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False, blank=False)
     fecha_modificacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Modificación', null=True,
                                               blank=False)
