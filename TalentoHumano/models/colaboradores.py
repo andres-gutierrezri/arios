@@ -13,6 +13,7 @@ from EVA.General.modeljson import ModelDjangoExtensiones
 from EVA.General.modelmanagers import ManagerGeneral
 from Proyectos.models import Contrato
 from TalentoHumano.models import EntidadesCAFE
+from TalentoHumano.models.entidades_cafe import NivelRiesgoARL
 
 
 class ColaboradorManger(ManagerGeneral):
@@ -60,6 +61,12 @@ class Colaborador(Persona, ModelDjangoExtensiones):
     caja_compensacion = models.ForeignKey(EntidadesCAFE, on_delete=models.DO_NOTHING,
                                           verbose_name='Caja de compensación', null=False, blank=False,
                                           related_name='%(app_label)s_%(class)s_caja_compensacion')
+    cesantias = models.ForeignKey(EntidadesCAFE, on_delete=models.DO_NOTHING,
+                                  verbose_name='Cesantias', null=False, blank=False,
+                                  related_name='%(app_label)s_%(class)s_cesantias')
+    arl_nivel = models.ForeignKey(NivelRiesgoARL, on_delete=models.DO_NOTHING,
+                                  verbose_name='ARL_nivel', null=False, blank=False,
+                                  related_name='%(app_label)s_%(class)s_arl_nivel')
     fecha_ingreso = models.DateField(verbose_name='Fecha de ingreso', null=False, blank=False)
     fecha_examen = models.DateField(verbose_name='Fecha de examen', null=False, blank=False)
     salario = models.IntegerField(verbose_name="Salario", null=True, blank=False)
@@ -121,6 +128,8 @@ class Colaborador(Persona, ModelDjangoExtensiones):
         colaborador.arl_id = datos.get('arl_id', '')
         colaborador.afp_id = datos.get('afp_id', '')
         colaborador.caja_compensacion_id = datos.get('caja_compensacion_id', '')
+        colaborador.cesantias_id = datos.get('cesantias_id', '')
+        colaborador.arl_nivel_id = datos.get('arl_nivel_id', '')
         colaborador.fecha_ingreso = string_to_datetime(datos.get('fecha_ingreso', ''))
         colaborador.fecha_examen = string_to_datetime(datos.get('fecha_examen', ''))
         colaborador.salario = datos.get('salario', '')
