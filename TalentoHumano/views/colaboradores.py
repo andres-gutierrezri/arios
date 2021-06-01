@@ -23,6 +23,7 @@ from Notificaciones.views.views import crear_notificacion_por_evento
 from Proyectos.models import Contrato
 from TalentoHumano.models import Colaborador, EntidadesCAFE
 from Administracion.models import PermisosFuncionalidad
+from TalentoHumano.models.entidades_cafe import NivelRiesgoARL
 
 
 class ColaboradoresIndexView(AbstractEvaLoggedView):
@@ -166,8 +167,8 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
 
     def post(self, request, id):
         update_fields = ['direccion', 'talla_camisa', 'talla_zapatos', 'talla_pantalon', 'eps_id',
-                         'arl_id', 'afp_id', 'caja_compensacion_id', 'fecha_ingreso', 'fecha_examen',
-                         'salario', 'jefe_inmediato_id', 'cargo_id',
+                         'arl_id', 'afp_id', 'caja_compensacion_id', 'cesantias_id', 'arl_nivel_id',
+                         'fecha_ingreso', 'fecha_examen', 'salario', 'jefe_inmediato_id', 'cargo_id',
                          'tipo_contrato_id', 'lugar_nacimiento_id', 'rango_id', 'fecha_nacimiento',
                          'identificacion', 'tipo_identificacion_id', 'fecha_expedicion', 'genero', 'telefono',
                          'estado', 'nombre_contacto', 'grupo_sanguineo', 'telefono_contacto', 'parentesco',
@@ -422,6 +423,8 @@ def datos_xa_render(opcion: str = None, colaborador: Colaborador = None) -> dict
     arl = EntidadesCAFE.objects.arl_xa_select()
     afp = EntidadesCAFE.objects.afp_xa_select()
     caja_compensacion = EntidadesCAFE.objects.caja_compensacion_xa_select()
+    cesantias = EntidadesCAFE.objects.cesantias_xa_select()
+    arl_nivel = NivelRiesgoARL.objects.arl_nivel_xa_select()
     jefe_inmediato = Colaborador.objects.get_xa_select()
     contrato = Contrato.objects.get_xa_select_activos()
     grupos = construir_grupos_xa_select()
@@ -447,12 +450,12 @@ def datos_xa_render(opcion: str = None, colaborador: Colaborador = None) -> dict
     empresa = Empresa.objects.get_xa_select_activos()
 
     procesos_selecciones = ColaboradorProceso.objects.get_ids_procesos_list(colaborador)
-    datos = {'arl': arl, 'eps': eps, 'afp': afp, 'caja_compensacion': caja_compensacion, 'empresa': empresa,
-             'jefe_inmediato': jefe_inmediato, 'contrato': contrato, 'cargo': cargo, 'proceso': proceso,
-             'tipo_contrato': tipo_contratos, 'rango': rango, 'departamentos': departamentos,
-             'talla_camisa': talla_camisa, 'talla_zapatos': talla_zapatos, 'talla_pantalon': talla_pantalon,
-             'tipo_identificacion': tipo_identificacion, 'opcion': opcion, 'genero': genero,
-             'contratos_colaborador': contratos_colaborador, 'grupo_sanguineo': grupo_sanguineo,
+    datos = {'arl': arl, 'eps': eps, 'afp': afp, 'caja_compensacion': caja_compensacion, 'cesantias': cesantias,
+             'arl_nivel': arl_nivel, 'empresa': empresa, 'jefe_inmediato': jefe_inmediato, 'contrato': contrato,
+             'cargo': cargo, 'proceso': proceso, 'tipo_contrato': tipo_contratos, 'rango': rango,
+             'departamentos': departamentos, 'talla_camisa': talla_camisa, 'talla_zapatos': talla_zapatos,
+             'talla_pantalon': talla_pantalon, 'tipo_identificacion': tipo_identificacion, 'opcion': opcion,
+             'genero': genero, 'contratos_colaborador': contratos_colaborador, 'grupo_sanguineo': grupo_sanguineo,
              'menu_actual': 'colaboradores', 'grupos': grupos, 'grupos_colaborador': grupos_colaborador,
              'procesos_colaborador': procesos_colaborador, 'procesos_selecciones': procesos_selecciones}
 
