@@ -1,7 +1,7 @@
 from django.db import models
 from EVA.General.modeljson import ModelDjangoExtensiones
 from EVA.General.modelmanagers import ManagerGeneral
-from django.db.models import Q, QuerySet
+from django.db.models import QuerySet
 
 
 class TipoEntidadesCAFE(models.Model):
@@ -22,7 +22,6 @@ class TipoEntidadesCAFE(models.Model):
     EPS = 2
     CAJA_COMPENSACION = 3
     AFP = 4
-    CESANTIAS = 5
 
 
 class EntidadesManger(ManagerGeneral):
@@ -51,21 +50,6 @@ class EntidadesManger(ManagerGeneral):
     def afp_xa_select(self):
         return self.afp(True, True)
 
-    def cesantias(self, estado: bool = None, xa_select: bool = False) -> QuerySet:
-        return self.get_x_estado(estado, xa_select).\
-            filter(Q(tipo_entidad_id=TipoEntidadesCAFE.AFP) | Q(tipo_entidad_id=TipoEntidadesCAFE.CESANTIAS))
-
-    def cesantias_xa_select(self):
-        return self.cesantias(True, True)
-
-
-class ARLManger(ManagerGeneral):
-    def arl_nivel(self, estado: bool = None, xa_select: bool = False) -> QuerySet:
-        return self.get_x_estado(estado, xa_select)
-
-    def arl_nivel_xa_select(self):
-        return self.arl_nivel(True, True)
-
 
 class EntidadesCAFE(models.Model, ModelDjangoExtensiones):
     objects = EntidadesManger()
@@ -91,7 +75,7 @@ class EntidadesCAFE(models.Model, ModelDjangoExtensiones):
         """
         Crea una instancia de EntidadesCAFE con los datos pasados en el diccionario.
         :param datos: Diccionario con los datos para crear la EntidadCAFE.
-        :return: Instancia de entidad cafe con la información especificada en el diccionario.
+        :return: Instacia de entidad cafe con la información especificada en el diccionario.
         """
         entidad_cafe = EntidadesCAFE()
         entidad_cafe.tipo_entidad_id = datos.get('tipo_entidad_id', '')
@@ -105,27 +89,4 @@ class EntidadesCAFE(models.Model, ModelDjangoExtensiones):
         return entidad_cafe
 
 
-class NivelRiesgoARL(models.Model):
-    objects = ARLManger()
-    nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
-    estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
 
-    def __str__(self):
-        return self.nombre
-
-    class Meta:
-        verbose_name = 'Nivel de riesgo ARL'
-        verbose_name_plural = 'Niveles de riesgo ARL'
-
-    @staticmethod
-    def from_dictionary(datos: dict) -> 'NivelRiesgoARL':
-        """
-        Crea una instancia de NivelRiesgoARL con los datos pasados en el diccionario.
-        :param datos: Diccionario con los datos para crear el NivelRiesgoARL.
-        :return: Instancia de nivel de riesgo de ARL con la información especificada en el diccionario.
-        """
-        arl_nivel = NivelRiesgoARL()
-        arl_nivel.id = datos.get('arl_nivel_id', '')
-        arl_nivel.nombre = datos.get('nombre', '')
-
-        return arl_nivel

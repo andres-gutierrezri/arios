@@ -155,7 +155,7 @@
                                                                         {% select_tag eps 'eps_id' 'Seleccione una EPS' texto_label="EPS" value=colaborador.eps_id required="" mensaje_validacion='Por favor seleccione una EPS.' invalido=errores.eps %}
                                                                     </div>
                                                                     <div class="col-md-6">
-                                                                        {% select_tag caja_compensacion 'caja_compensacion_id' 'Seleccione una caja de compensación' texto_label="Caja de compensación" value=colaborador.caja_compensacion_id required="" mensaje_validacion='Por favor seleccione una caja de compensación.' invalido=errores.caja_compensacion %}
+                                                                        {% select_tag arl 'arl_id' 'Seleccione una ARL' texto_label="ARL" value=colaborador.arl_id required="" mensaje_validacion='Por favor seleccione una ARL.' invalido=errores.arl %}
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -165,17 +165,7 @@
                                                                         {% select_tag afp 'afp_id' 'Seleccione una AFP' texto_label="AFP" value=colaborador.afp_id required="" mensaje_validacion='Por favor seleccione una AFP.' invalido=errores.afp %}
                                                                     </div>
                                                                     <div class="col-md-6">
-                                                                        {% select_tag cesantias 'cesantias_id' 'Seleccione un fondo de cesantías' texto_label="Cesantías" value=colaborador.cesantias_id required="" mensaje_validacion='Por favor seleccione un fondo de cesantías.' invalido=errores.censantias %}
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <div class="form-row">
-                                                                    <div class="col-md-6">
-                                                                        {% select_tag arl 'arl_id' 'Seleccione una ARL' texto_label="ARL" value=colaborador.arl_id required="" mensaje_validacion='Por favor seleccione una ARL.' invalido=errores.arl %}
-                                                                    </div>
-                                                                    <div class="col-md-6">
-                                                                        {% select_tag arl_nivel 'arl_nivel_id' 'Seleccione el nivel de riesgo de ARL' texto_label="Nivel de Riesgo ARL" value=colaborador.arl_nivel_id required="" mensaje_validacion='Por favor seleccione el nivel de riesgo de ARL.' invalido=errores.arl_nivel %}
+                                                                        {% select_tag caja_compensacion 'caja_compensacion_id' 'Seleccione una caja de compensación' texto_label="Caja de compensación" value=colaborador.caja_compensacion_id required="" mensaje_validacion='Por favor seleccione una caja de compensación.' invalido=errores.caja_compensacion %}
                                                                     </div>
                                                                 </div>
                                                             </div>
