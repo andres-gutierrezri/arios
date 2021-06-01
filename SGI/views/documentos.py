@@ -84,8 +84,8 @@ class DocumentosCrearView(AbstractEvaLoggedView):
     def get(self, request, id_proceso, id_grupo):
         proceso = Proceso.objects.get(id=id_proceso)
         grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
-        medio_soporte = MedioSoporte.objects.get(id=id_grupo)
-        tiempo_conservacion = TiempoConservacion.objects.get(id=id_grupo)
+        medio_soporte = MedioSoporte.objects.all()
+        tiempo_conservacion = TiempoConservacion.objects.all()
         return render(request, 'SGI/documentos/crear-editar.html',
                       datos_xa_render(self.OPCION, proceso=proceso, grupo_documento=grupo_documento,
                                       empresa=get_id_empresa_global(request), medio_soporte=medio_soporte,
@@ -95,8 +95,8 @@ class DocumentosCrearView(AbstractEvaLoggedView):
         documento = Documento.from_dictionary(request.POST)
         proceso = Proceso.objects.get(id=id_proceso)
         grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
-        medio_soporte = MedioSoporte.objects.get(id=id_grupo)
-        tiempo_conservacion = TiempoConservacion.objects.get(id=id_grupo)
+        medio_soporte = MedioSoporte.objects.all()
+        tiempo_conservacion = TiempoConservacion.objects.all()
         documento.grupo_documento_id = id_grupo
         excluir_en_validacion = []
         if grupo_documento.es_general:
@@ -145,8 +145,8 @@ class DocumentosEditarView(AbstractEvaLoggedView):
         documento.proceso_id = id_proceso
         proceso = Proceso.objects.get(id=id_proceso)
         grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
-        medio_soporte = MedioSoporte.objects.get(id=id_grupo)
-        tiempo_conservacion = TiempoConservacion.objects.get(id=id_grupo)
+        medio_soporte = MedioSoporte.objects.all()
+        tiempo_conservacion = TiempoConservacion.objects.all()
 
         try:
             documento.clean_fields(exclude=['version_actual'])
