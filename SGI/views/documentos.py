@@ -374,10 +374,8 @@ def datos_xa_render(opcion: str = None, documento: Documento = None, proceso: Pr
 
     grupos_documentos = GrupoDocumento.objects.get_xa_select_activos().order_by('nombre')
     cadenas_aprobacion = CadenaAprobacionEncabezado.objects.get_xa_select_activos().order_by('nombre')
-# bloque de código actividad 1
     medios_soporte = MedioSoporte.objects.get_xa_select_activos().order_by('nombre')
     tiempos_conservacion = TiempoConservacion.objects.get_xa_select_activos().order_by('nombre')
-# bloque de código actividad 1
 
     datos = {'procesos': procesos, 'grupos_documentos': grupos_documentos, 'opcion': opcion, 'version': version,
              'cadenas_aprobacion': cadenas_aprobacion, 'medios_soporte': medios_soporte,

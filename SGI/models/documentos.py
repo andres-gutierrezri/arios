@@ -72,7 +72,7 @@ class CadenaAprobacionDetalle(models.Model):
         verbose_name = 'Detalle de cadena de aprobación'
         verbose_name_plural = 'Detalles de cadenas de aprobaciones'
 
-# bloque de código actividad 1
+
 
 
 class MedioSoporte(models.Model):
@@ -97,18 +97,15 @@ class TiempoConservacion(models.Model):
     class Meta:
         verbose_name = 'Tiempo Conservación'
         verbose_name_plural = 'Tiempos de Conservación'
-# bloque de código actividad 1
+
 
 
 class Documento(models.Model, ModelDjangoExtensiones):
     objects = ManagerGeneral()
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     codigo = models.CharField(max_length=20, verbose_name='Código', null=False, blank=False)
-# bloque de código actividad 1
     medio_soporte = models.ForeignKey(MedioSoporte, on_delete=models.DO_NOTHING, max_length=50, verbose_name='Medio Soporte', null=True, blank=False)
     tiempo_conservacion = models.ForeignKey(TiempoConservacion, on_delete=models.DO_NOTHING, max_length=10, verbose_name='Tiempo Conservación', null=True, blank=False)
-# bloque de código actividad 1
-
     fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False, blank=False)
     fecha_modificacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Modificación', null=True,
                                               blank=False)
@@ -145,10 +142,8 @@ class Documento(models.Model, ModelDjangoExtensiones):
         documento.cadena_aprobacion_id = datos.get('cadena_aprobacion_id', None)
         documento.grupo_documento_id = datos.get('grupo_documento_id', '')
         documento.proceso_id = datos.get('proceso_id', '')
-        # bloque de código actividad 1
         documento.medio_soporte_id = datos.get('soporte_id', None)
         documento.tiempo_conservacion_id = datos.get('conservacion_id', None)
-        # bloque de código actividad 1
 
         return documento
 
