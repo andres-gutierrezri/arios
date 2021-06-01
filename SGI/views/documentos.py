@@ -12,7 +12,7 @@ from EVA.General.utilidades import validar_extension_de_archivo
 from EVA.views.index import AbstractEvaLoggedView
 from SGI.models import Documento, GrupoDocumento, Archivo
 from SGI.models.documentos import EstadoArchivo, CadenaAprobacionDetalle, ResultadosAprobacion, \
-    CadenaAprobacionEncabezado, GruposDocumentosProcesos
+    CadenaAprobacionEncabezado, GruposDocumentosProcesos, MedioSoporte, TiempoConservacion
 from SGI.views.cadena_aprobacion import crear_notificacion_cadena
 from TalentoHumano.models import Colaborador
 from TalentoHumano.models.colaboradores import ColaboradorProceso
@@ -84,14 +84,19 @@ class DocumentosCrearView(AbstractEvaLoggedView):
     def get(self, request, id_proceso, id_grupo):
         proceso = Proceso.objects.get(id=id_proceso)
         grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
+        medio_soporte = MedioSoporte.objects.get(id=id_grupo)
+        tiempo_conservacion = TiempoConservacion.objects.get(id=id_grupo)
         return render(request, 'SGI/documentos/crear-editar.html',
                       datos_xa_render(self.OPCION, proceso=proceso, grupo_documento=grupo_documento,
-                                      empresa=get_id_empresa_global(request)))
+                                      empresa=get_id_empresa_global(request), medio_soporte=medio_soporte,
+                                      tiempo_conservacion=tiempo_conservacion))
 
     def post(self, request,  id_proceso, id_grupo):
         documento = Documento.from_dictionary(request.POST)
         proceso = Proceso.objects.get(id=id_proceso)
         grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
+        medio_soporte = MedioSoporte.objects.get(id=id_grupo)
+        tiempo_conservacion = TiempoConservacion.objects.get(id=id_grupo)
         documento.grupo_documento_id = id_grupo
         excluir_en_validacion = []
         if grupo_documento.es_general:
@@ -105,7 +110,8 @@ class DocumentosCrearView(AbstractEvaLoggedView):
             documento.full_clean(exclude=excluir_en_validacion)
         except ValidationError as errores:
             datos = datos_xa_render(self.OPCION, documento, proceso=proceso, grupo_documento=grupo_documento,
-                                    empresa=get_id_empresa_global(request))
+                                    empresa=get_id_empresa_global(request),  medio_soporte=medio_soporte,
+                                    tiempo_conservacion=tiempo_conservacion)
             datos['errores'] = errores.message_dict
             if '__all__' in errores.message_dict:
                 for mensaje in errores.message_dict['__all__']:
@@ -139,28 +145,35 @@ class DocumentosEditarView(AbstractEvaLoggedView):
         documento.proceso_id = id_proceso
         proceso = Proceso.objects.get(id=id_proceso)
         grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
+        medio_soporte = MedioSoporte.objects.get(id=id_grupo)
+        tiempo_conservacion = TiempoConservacion.objects.get(id=id_grupo)
 
         try:
             documento.clean_fields(exclude=['version_actual'])
         except ValidationError as errores:
             datos = datos_xa_render(self.OPCION, documento, proceso=proceso, grupo_documento=grupo_documento,
-                                    empresa=get_id_empresa_global(request))
+                                    empresa=get_id_empresa_global(request), medio_soporte=medio_soporte,
+                                    tiempo_conservacion=tiempo_conservacion)
             datos['errores'] = errores.message_dict
 
         documento_db = Documento.objects.get(id=id_documento)
 
-        if documento_db.comparar(documento, campos=['nombre', 'codigo', 'cadena_aprobacion']):
+        if documento_db.comparar(documento, campos=['nombre', 'codigo', 'cadena_aprobacion', 'medio_soporte',
+                                                    'tiempo_conservacion']):
             messages.success(request, 'No se hicieron cambios en el documento {0}'.format(documento.nombre))
             return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
         documento_db.nombre = documento.nombre
         documento_db.codigo = documento.codigo
         documento_db.cadena_aprobacion_id = documento.cadena_aprobacion_id
+        documento_db.medio_soporte_id = documento.medio_soporte_id
+        documento_db.tiempo_conservacion_id = documento.tiempo_conservacion_id
         try:
             documento_db.validate_unique()
         except ValidationError as errores:
             datos = datos_xa_render(self.OPCION, documento, proceso=proceso, grupo_documento=grupo_documento,
-                                    empresa=get_id_empresa_global(request))
+                                    empresa=get_id_empresa_global(request), medio_soporte=medio_soporte,
+                                    tiempo_conservacion=tiempo_conservacion)
             datos['errores'] = errores.message_dict
             if '__all__' in errores.message_dict:
                 for mensaje in errores.message_dict['__all__']:
@@ -173,7 +186,8 @@ class DocumentosEditarView(AbstractEvaLoggedView):
 
             return render(request, 'SGI/documentos/crear-editar.html', datos)
 
-        documento_db.save(update_fields=['nombre', 'codigo', 'cadena_aprobacion_id'])
+        documento_db.save(update_fields=['nombre', 'codigo', 'cadena_aprobacion_id', 'medio_soporte'
+                                                     , 'tiempo_conservacion'])
         messages.success(request, 'Se ha actualizado el documento {0}' .format(documento.nombre))
         return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
@@ -342,7 +356,8 @@ class VerDocumentoView(AbstractEvaLoggedView):
 
 
 def datos_xa_render(opcion: str = None, documento: Documento = None, proceso: Proceso = None, empresa: int = None,
-                    grupo_documento: GrupoDocumento = None, archivo: Archivo = None, version: float = 1) -> dict:
+                    grupo_documento: GrupoDocumento = None, medio_soporte: str = None, tiempo_conservacion: str = None,
+                    archivo: Archivo = None, version: float = 1) -> dict:
     """
     Datos necesarios para la creación de los html de Documento.
     :param opcion: valor de la acción a realizar 'crear' o 'editar'
@@ -359,9 +374,15 @@ def datos_xa_render(opcion: str = None, documento: Documento = None, proceso: Pr
 
     grupos_documentos = GrupoDocumento.objects.get_xa_select_activos().order_by('nombre')
     cadenas_aprobacion = CadenaAprobacionEncabezado.objects.get_xa_select_activos().order_by('nombre')
+# bloque de código actividad 1
+    medios_soporte = MedioSoporte.objects.get_xa_select_activos().order_by('nombre')
+    tiempos_conservacion = TiempoConservacion.objects.get_xa_select_activos().order_by('nombre')
+# bloque de código actividad 1
 
     datos = {'procesos': procesos, 'grupos_documentos': grupos_documentos, 'opcion': opcion, 'version': version,
-             'cadenas_aprobacion': cadenas_aprobacion}
+             'cadenas_aprobacion': cadenas_aprobacion, 'medios_soporte': medios_soporte,
+             'tiempos_conservacion': tiempos_conservacion}
+
     if documento:
         datos['documento'] = documento
     if proceso:
@@ -372,7 +393,10 @@ def datos_xa_render(opcion: str = None, documento: Documento = None, proceso: Pr
         datos['archivo'] = archivo
     if version:
         datos['version'] = version
-
+    if medios_soporte:
+        datos['medios_soporte'] = medios_soporte
+    if tiempos_conservacion:
+        datos['tiempos_conservacion'] = tiempos_conservacion
     return datos
 
 # endregion
