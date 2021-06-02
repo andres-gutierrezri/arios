@@ -1,12 +1,14 @@
 import datetime
 import json
+import os
 from sqlite3 import IntegrityError
 
 from django.contrib import messages
 from django.db.models import Q
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.views.decorators.clickjacking import xframe_options_sameorigin
 
 from Administracion.models import TipoContrato, TipoDocumento, ConsecutivoDocumento, Tercero
 from Administracion.utils import get_id_empresa_global
@@ -92,20 +94,41 @@ class ConsecutivoContratoEliminarView(AbstractEvaLoggedView):
 
 
 class ArchivoCargarView(AbstractEvaLoggedView):
-    OPCION = 'cargar'
 
     def get(self, request, id_contrato):
         consecutivo = ConsecutivoContrato.objects.get(id=id_contrato)
-        return render(request, 'GestionDocumental/ConsecutivoContratos/cargar-documento.html',{'contrato': consecutivo})
+        return render(request, 'GestionDocumental/ConsecutivoContratos/_modal_cargar_contrato.html', {'contrato': consecutivo})
 
     def post(self, request, id_contrato):
         consecutivo = ConsecutivoContrato.objects.get(id=id_contrato)
 
-        consecutivo.ruta_archivo = request.POST.get('archivo')
+        consecutivo.ruta_archivo = request.FILES.get('archivo', None)
         
-        consecutivo.save()
+        consecutivo.save(update_fields=['ruta_archivo'])
+        messages.success(request, 'Funcionó {0}'.format(consecutivo.codigo))
         return redirect(reverse('GestionDocumental:consecutivo-contratos-index', args=[0]))
 
+
+class VerArchivoView(AbstractEvaLoggedView):
+    @xframe_options_sameorigin
+    def get(self, request, id_contrato):
+        consecutivo = ConsecutivoContrato.objects.get(id=id_contrato)
+        if consecutivo.ruta_archivo:
+            extension = os.path.splitext(consecutivo.ruta_archivo.url)[1]
+            mime_types = {'.docx': 'application/msword', '.xlsx': 'application/vnd.ms-excel',
+                          '.pptx': 'application/vnd.ms-powerpoint',
+                          '.xlsm': 'application/vnd.ms-excel.sheet.macroenabled.12',
+                          '.dwg': 'application/octet-stream'
+                          }
+
+            mime_type = mime_types.get(extension, 'application/pdf')
+
+            response = HttpResponse(consecutivo.ruta_archivo, content_type=mime_type)
+            response['Content-Disposition'] = 'inline; filename="{0} {1}{2}"' \
+                .format(consecutivo.tercero.identificacion, consecutivo.codigo, extension)
+        else:
+            response = redirect(reverse('GestionDocumental:consecutivo-contratos-index', args=[0]))
+        return response
 
 
 def datos_xa_render(request) -> dict:

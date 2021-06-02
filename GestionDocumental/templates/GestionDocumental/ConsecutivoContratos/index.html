@@ -56,6 +56,7 @@
                                                         <th>Usuario</th>
                                                         <th>Justificación</th>
                                                         <th>Estado</th>
+                                                        <th>Contrato</th>
                                                         <th>Acción</th>
                                                     </tr>
                                                 </thead>
@@ -84,11 +85,15 @@
                                                                     <span class="badge badge-secondary">Anulado</span>
                                                                 {% endif %}
                                                             </td>
+                                                            <td class="text-center">
+                                                                <a class="fad fa-2x fa-file-upload" href="javascript:abrirModalCargar('{% url 'GestionDocumental:consecutivo-contratos-cargar' consecutivo.id%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Cargar Contrato"></a>
+                                                                {% if consecutivo.ruta_archivo %}
+                                                                    <a class="fad fa-2x fa-eye" href="javascript:abrirModalVistaPrevia('{% url 'GestionDocumental:consecutivo-contratos-ver' consecutivo.id%}')" data-original-title="Ver" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="Ver Contrato Cargado"></a>
+                                                                {% endif %}
+                                                            </td>
                                                             <td>
-                                                                <a class="far fa-2x fa-file-upload" href="javascript:abrir_modal_cargar('{% url 'GestionDocumental:consecutivo-contratos-cargar' consecutivo.id%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Cargar Archivo"></a>
-                                                                <a class="far fa-2x fa-eye" href="javascript:abrir_modal_crear('{% url 'GestionDocumental:consecutivo-contratos-cargar' consecutivo.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Cargar Archivo"></a>
                                                                 {% if perms.GestionDocumental.delete_consecutivocontrato and consecutivo.estado %}
-                                                                  <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ consecutivo.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ consecutivo.id }}, true)" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+                                                                  <a class="fad fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ consecutivo.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ consecutivo.id }}, true)" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
                                                                 {% endif %}
                                                             </td>
                                                         </tr>
@@ -107,10 +112,9 @@
             </div>
     </div>
     {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='gestion-documental/consecutivo-contratos' %}
+    {% include 'EVA/_common/_vista_previa_modal.html' with titulo_modal='Vista Documento' %}
     <div class="modal fade" tabindex="-1" id="cargar" role="dialog"></div>
-
     <div class="modal fade" tabindex="-1" id="crear" role="dialog"  aria-hidden="true"></div>
-
 {% endblock %}
 {% block scripts %}
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
