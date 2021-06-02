@@ -1,7 +1,7 @@
 
 const modalCrear = $('#crear');
 
-function abrir_modal_cargar(url) {
+function abrirModalCargar(url) {
     $('#cargar').load(url, function (responseText, textStatus, req) {
         try {
             if (responseText.includes("<!DOCTYPE html>")) {
@@ -22,8 +22,6 @@ function abrir_modal_cargar(url) {
                                                 'Presentacion de Power Point');
                     return false;
                 }
-
-
             });
             agregarValidacionFormularios();
         } catch (err) {
@@ -33,7 +31,7 @@ function abrir_modal_cargar(url) {
     });
 }
 
-function abrir_modal_crear(url) {
+function abrirModalCrear(url) {
     modalCrear.load(url, function (responseText, textStatus, req) {
         try {
             if (responseText.includes("<!DOCTYPE html>")) {
@@ -41,32 +39,102 @@ function abrir_modal_crear(url) {
                 return false;
             }
             $(this).modal('show');
-            $('#fecha_inicio_id').datepicker({
-                todayHighlight: true,
-                orientation: "bottom left",
-                templates: controls,
-                format: 'yyyy-mm-dd',
-                autoclose: true
-            });
-            $('#fecha_final_id').datepicker({
-                todayHighlight: true,
-                orientation: "bottom left",
-                templates: controls,
-                format: 'yyyy-mm-dd',
-                autoclose: true
-            });
-            $('#tipo_contrato_select_id').select2({
-                dropdownParent: modalCrear
-                }
-            );
-            $('#colaborador_select_id').select2({
-                dropdownParent: modalCrear
-                }
-            );
-            agregarValidacionFormularios();
+            configurarModalCrear ();
         } catch (err) {
             console.log(err);
             EVANotificacion.toast.error('Ha ocurrido un error al cargar el archivo');
         }
     });
+}
+
+function configurarModalCrear() {
+    extraTiposContrato = $('#extra_tipos_contrato');
+    fechaInicioID = $('#fecha_inicio_id');
+    fechaFinalID = $('#fecha_final_id');
+    colaboradorSelect = $('#colaborador_mostrar_id');
+    terceroSelect = $('#tercero_mostrar_id');
+    colaboradorSelectID = $('#colaborador_select_id');
+    terceroSelectID = $('#tercero_select_id');
+
+    fechaFinal = $('#fecha_final_mostrar');
+    $('#fecha_inicio_id').datepicker({
+        todayHighlight: true,
+        orientation: "bottom left",
+        templates: controls,
+        format: 'yyyy-mm-dd',
+        autoclose: true
+    });
+    $('#fecha_final_id').datepicker({
+        todayHighlight: true,
+        orientation: "bottom left",
+        templates: controls,
+        format: 'yyyy-mm-dd',
+        autoclose: true
+    });
+    $('#tipo_contrato_select_id').select2({
+        dropdownParent: modalCrear
+        }
+    );
+    $('#colaborador_select_id').select2({
+        dropdownParent: modalCrear
+        }
+    );
+    $('#tercero_select_id').select2({
+        dropdownParent: modalCrear
+        }
+    );
+    agregarValidacionFormularios();
+
+    $('#tipo_contrato_select_id').change(function () {
+        let actual = this.value;
+        $.each(jQuery.parseJSON(extraTiposContrato.val()), function(key, value) {
+            if(actual == value.id){
+              if (value.laboral){
+                  mostrarOcultarColaboradorTerceroTipoContrato(true)
+              }else{
+                  mostrarOcultarColaboradorTerceroTipoContrato(false)
+              }
+              if(value.fecha_fin){
+                  fechaFinal.show();
+                  fechaFinalID.attr("required", true);
+              }else{
+                  fechaFinal.hide();
+                  fechaFinalID.removeAttr("required", true);
+              }
+            }
+        });
+        if (actual === ""){
+             fechaFinal.show();
+             fechaFinalID.attr("required", true);
+             mostrarOcultarColaboradorTercero("ninguno")
+        }
+    });
+
+    fechaInicioID.change(function () {
+        if (new Date(fechaInicioID.val()) > new Date(fechaFinalID.val())) {
+            fechaFinalID.val('');
+            EVANotificacion.toast.advertencia('La fecha inicial no puede ser mayor a la fecha final');
+        }
+    });
+
+    fechaFinalID.change(function () {
+        if (new Date(fechaFinalID.val()) < new Date(fechaInicioID.val())) {
+            fechaInicioID.val('');
+            EVANotificacion.toast.advertencia('La fecha final no puede ser menor a la fecha inicial');
+        }
+    });
+}
+
+function mostrarOcultarColaboradorTerceroTipoContrato(laboral) {
+    if (laboral){
+        colaboradorSelect.show();
+        colaboradorSelectID.attr("required", true);
+        terceroSelect.hide();
+        terceroSelectID.removeAttr('required', true);
+    }else{
+        terceroSelect.show();
+        terceroSelectID.attr("required", true);
+        colaboradorSelect.hide();
+        colaboradorSelectID.removeAttr('required', true);
+    }
 }

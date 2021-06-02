@@ -28,7 +28,7 @@
                             {% if perms.GestionDocumental.add_consecutivocontrato %}
                             <div class="col-md-10">
                                 <small>
-                                    <a class="far fa-3x far fa-plus-circle" href="javascript:abrir_modal_crear('{% url 'GestionDocumental:consecutivo-contratos-crear'%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar consecutivo de contrato"></a>
+                                    <a class="far fa-3x far fa-plus-circle" href="javascript:abrirModalCrear('{% url 'GestionDocumental:consecutivo-contratos-crear'%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar consecutivo de contrato"></a>
                                 </small>
                             </div>
                             {% else %}
@@ -127,5 +127,6 @@
     <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js' %}"></script>
     <script src="{% static 'TalentoHumano/js/date_picker.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/funcionesGenerales.js' %}"></script>
 {% endblock %}
 

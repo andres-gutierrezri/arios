@@ -11,6 +11,12 @@ let fechaFinal = $('#fecha_final_mostrar');
 
 $(document).ready(function () {
     $('.select2').select2();
+    $('#tipo_consecutivos_select_id').change(function () {
+        window.location = '/gestion-documental/consecutivo-contratos/' + this.value + '/index';
+    });
+});
+/*
+function configurarModalCrear() {
     $('#tipo_contrato_select_id').change(function () {
         let actual = this.value;
         $.each(jQuery.parseJSON(extraTiposContrato.val()), function(key, value) {
@@ -36,24 +42,20 @@ $(document).ready(function () {
         }
     });
 
-    $('#tipo_consecutivos_select_id').change(function () {
-        window.location = '/gestion-documental/consecutivo-contratos/' + this.value + '/index';
+    fechaInicioID.change(function () {
+        if (new Date(fechaInicioID.val()) > new Date(fechaFinalID.val())) {
+            fechaFinalID.val('');
+            EVANotificacion.toast.advertencia('La fecha inicial no puede ser mayor a la fecha final');
+        }
     });
-});
 
-fechaInicioID.change(function () {
-    if (new Date(fechaInicioID.val()) > new Date(fechaFinalID.val())) {
-        fechaFinalID.val('');
-        EVANotificacion.toast.advertencia('La fecha inicial no puede ser mayor a la fecha final');
-    }
-});
-
-fechaFinalID.change(function () {
-    if (new Date(fechaFinalID.val()) < new Date(fechaInicioID.val())) {
-        fechaInicioID.val('');
-        EVANotificacion.toast.advertencia('La fecha final no puede ser menor a la fecha inicial');
-    }
-});
+    fechaFinalID.change(function () {
+        if (new Date(fechaFinalID.val()) < new Date(fechaInicioID.val())) {
+            fechaInicioID.val('');
+            EVANotificacion.toast.advertencia('La fecha final no puede ser menor a la fecha inicial');
+        }
+    });
+}
 
 function mostrarOcultarColaboradorTerceroTipoContrato(laboral) {
     if (laboral){
@@ -69,3 +71,4 @@ function mostrarOcultarColaboradorTerceroTipoContrato(laboral) {
     }
 }
 
+*/
