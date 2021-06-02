@@ -53,7 +53,7 @@ class ConsecutivoContratoView(AbstractEvaLoggedView):
 
 class ConsecutivoContratoCrearView(AbstractEvaLoggedView):
     def get(self, request):
-        return render(request, 'GestionDocumental/ConsecutivoContratos/crear.html', datos_xa_render(request))
+        return render(request, 'GestionDocumental/ConsecutivoContratos/_modal_crear_consecutivo.html', datos_xa_render(request))
 
     def post(self, request):
         consecutivo = ConsecutivoContrato.from_dictionary(request.POST)
