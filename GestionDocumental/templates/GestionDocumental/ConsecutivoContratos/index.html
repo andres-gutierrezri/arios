@@ -86,8 +86,10 @@
                                                                 {% endif %}
                                                             </td>
                                                             <td class="text-center">
-                                                                <a class="fad fa-2x fa-file-upload" href="javascript:abrirModalCargar('{% url 'GestionDocumental:consecutivo-contratos-cargar' consecutivo.id%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Cargar Contrato"></a>
-                                                                {% if consecutivo.ruta_archivo %}
+                                                                {% if perms.GestionDocumental.cargar_contrato_consecutivocontrato %}
+                                                                    <a class="fad fa-2x fa-file-upload" href="javascript:abrirModalCargar('{% url 'GestionDocumental:consecutivo-contratos-cargar' consecutivo.id%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Cargar Contrato"></a>
+                                                                {% endif %}
+                                                                {% if consecutivo.ruta_archivo and perms.GestionDocumental.ver_contratro_consecutivocontrato %}
                                                                     <a class="fad fa-2x fa-eye" href="javascript:abrirModalVistaPrevia('{% url 'GestionDocumental:consecutivo-contratos-ver' consecutivo.id%}')" data-original-title="Ver" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="Ver Contrato Cargado"></a>
                                                                 {% endif %}
                                                             </td>
