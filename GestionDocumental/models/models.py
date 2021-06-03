@@ -67,7 +67,8 @@ class ConsecutivoContrato(models.Model):
                                      null=True, blank=True, related_name='consecutivo_contrato_usuario_crea')
     justificacion = models.CharField(max_length=100, verbose_name='Justificacion', blank=True, null=True)
     estado = models.BooleanField(verbose_name='Estado', blank=False, null=False)
-    ruta_archivo = models.FileField(blank=True, max_length=250, upload_to=custom_upload_to)
+    ruta_archivo = models.FileField(blank=True, max_length=250, upload_to=custom_upload_to),
+    fecha_modificacion = models.DateTimeField(auto_now_add=False, verbose_name='Fecha de Modificacion', null=False, blank=False)
 
     def __str__(self):
         return self.codigo

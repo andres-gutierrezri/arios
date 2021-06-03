@@ -55,7 +55,7 @@ class ConsecutivoContratoView(AbstractEvaLoggedView):
 
 class ConsecutivoContratoCrearView(AbstractEvaLoggedView):
     def get(self, request):
-        return render(request, 'GestionDocumental/ConsecutivoContratos/_modal_crear_consecutivo.html', datos_xa_render(request))
+        return render(request, 'GestionDocumental/ConsecutivoContratos/_modal_crear_editar_consecutivo.html', datos_xa_render(request))
 
     def post(self, request):
         consecutivo = ConsecutivoContrato.from_dictionary(request.POST)
@@ -65,6 +65,27 @@ class ConsecutivoContratoCrearView(AbstractEvaLoggedView):
                                       empresa_id=get_id_empresa_global(request))
         sigla = TipoContrato.objects.get(id=consecutivo.tipo_contrato_id).sigla
         consecutivo.codigo = 'CTO_{0:03d}_{1}_{2}'.format(consecutivo.numero_contrato, sigla, app_datetime_now().year)
+        consecutivo.usuario_crea = request.user
+        consecutivo.save()
+        messages.success(request, 'Se ha creado el consecutivo {0}'.format(consecutivo.codigo))
+        return redirect(reverse('GestionDocumental:consecutivo-contratos-index', args=[0]))
+
+
+class ConsecutivoContratoEditarView(AbstractEvaLoggedView):
+    def get(self, request, id_contrato):
+        consecutivo = ConsecutivoContrato.objects.get(id=id_contrato)
+        return render(request, 'GestionDocumental/ConsecutivoContratos/_modal_crear_editar_consecutivo.html',
+                      datos_xa_render(request))
+
+    def post(self, request):
+        consecutivo = ConsecutivoContrato.from_dictionary(request.POST)
+        consecutivo.empresa_id = get_id_empresa_global(request)
+        consecutivo.numero_contrato = ConsecutivoDocumento \
+            .get_consecutivo_por_anho(tipo_documento_id=TipoDocumento.CONTRATOS,
+                                      empresa_id=get_id_empresa_global(request))
+        sigla = TipoContrato.objects.get(id=consecutivo.tipo_contrato_id).sigla
+        consecutivo.codigo = 'CTO_{0:03d}_{1}_{2}'.format(consecutivo.numero_contrato, sigla,
+                                                          app_datetime_now().year)
         consecutivo.usuario_crea = request.user
         consecutivo.save()
         messages.success(request, 'Se ha creado el consecutivo {0}'.format(consecutivo.codigo))
