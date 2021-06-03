@@ -105,7 +105,7 @@ class ArchivoCargarView(AbstractEvaLoggedView):
         consecutivo.ruta_archivo = request.FILES.get('archivo', None)
         
         consecutivo.save(update_fields=['ruta_archivo'])
-        messages.success(request, 'Funcionó {0}'.format(consecutivo.codigo))
+        messages.success(request, 'Se cagó archivo del consecutivo:  {0}'.format(consecutivo.codigo))
         return redirect(reverse('GestionDocumental:consecutivo-contratos-index', args=[0]))
 
 
