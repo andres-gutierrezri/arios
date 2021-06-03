@@ -11,7 +11,8 @@ from django.contrib.auth.models import User
 from Administracion.models import Empresa, Proceso
 from EVA.General.modeljson import ModelDjangoExtensiones
 from EVA.General.modelmanagers import ManagerGeneral
-from SGI.Enumeraciones import TiempoConservacion, MedioSoporte
+from SGI.Enumeraciones import MedioSoporte, TiempoConservacion
+
 from TalentoHumano.models import Colaborador
 
 
