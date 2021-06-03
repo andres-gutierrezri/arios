@@ -59,16 +59,3 @@ class TipoContribuyente(models.IntegerChoices):
     CONTRIBUYENTE_MEDIANO = 3, 'Contribuyente Mediano'
     CONTRIBUYENTE_MEDIANO_ALTO = 4, 'Contribuyente Mediano Alto'
     GRAN_CONTRIBUYENTE = 5, 'Gran Contribuyente'
-
-
-class MedioSoporte(models.IntegerChoices):
-
-    DIGITAL = 1, 'Digital'
-    IMPRESO = 2, 'Impreso'
-    DIGITAL_IMPRESO = 3, 'Digital e impreso'
-
-
-class TiempoConservacion(models.IntegerChoices):
-
-    TIEMPO_5_A = 5, '5 Años'
-    TIEMPO_20_A = 20, '20 Años'

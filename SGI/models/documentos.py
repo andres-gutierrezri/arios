@@ -3,7 +3,7 @@ from decimal import Decimal
 from django.db import models
 from datetime import datetime
 
-from Administracion.enumeraciones import MedioSoporte, TiempoConservacion
+
 from EVA import settings
 from EVA.General.conversiones import string_to_datetime
 from django.contrib.auth.models import User
@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 from Administracion.models import Empresa, Proceso
 from EVA.General.modeljson import ModelDjangoExtensiones
 from EVA.General.modelmanagers import ManagerGeneral
+from SGI.Enumeraciones import TiempoConservacion, MedioSoporte
 from TalentoHumano.models import Colaborador
 
 
