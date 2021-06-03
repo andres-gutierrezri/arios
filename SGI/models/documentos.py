@@ -3,6 +3,7 @@ from decimal import Decimal
 from django.db import models
 from datetime import datetime
 
+from Administracion.enumeraciones import MedioSoporte, TiempoConservacion
 from EVA import settings
 from EVA.General.conversiones import string_to_datetime
 from django.contrib.auth.models import User
@@ -73,38 +74,14 @@ class CadenaAprobacionDetalle(models.Model):
         verbose_name_plural = 'Detalles de cadenas de aprobaciones'
 
 
-class MedioSoporte(models.Model):
-    objects = ManagerGeneral()
-    nombre = models.CharField(max_length=50, verbose_name='Nombre', null=False, blank=False)
-
-    def __str__(self):
-        return self.nombre
-
-    class Meta:
-        verbose_name = 'Medio Soporte'
-        verbose_name_plural = 'Medios Soporte'
-
-
-class TiempoConservacion(models.Model):
-    objects = ManagerGeneral()
-    nombre = models.CharField(max_length=50, verbose_name='Nombre', null=False, blank=False)
-
-    def __str__(self):
-        return self.nombre
-
-    class Meta:
-        verbose_name = 'Tiempo Conservación'
-        verbose_name_plural = 'Tiempos de Conservación'
-
-
 class Documento(models.Model, ModelDjangoExtensiones):
     objects = ManagerGeneral()
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     codigo = models.CharField(max_length=20, verbose_name='Código', null=False, blank=False)
-    medio_soporte = models.ForeignKey(MedioSoporte, on_delete=models.DO_NOTHING, max_length=50,
-                                      verbose_name='Medio Soporte', null=False, blank=False)
-    tiempo_conservacion = models.ForeignKey(TiempoConservacion, on_delete=models.DO_NOTHING, max_length=10,
-                                            verbose_name='Tiempo Conservación', null=False, blank=False)
+    medio_soporte = models.SmallIntegerField(choices=MedioSoporte.choices, verbose_name='Medio Soporte',
+                                             null=False, blank=False)
+    tiempo_conservacion = models.SmallIntegerField(choices=TiempoConservacion.choices,
+                                                   verbose_name='Tiempo Conservación', null=False, blank=False)
     fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False, blank=False)
     fecha_modificacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Modificación', null=True,
                                               blank=False)
@@ -141,8 +118,8 @@ class Documento(models.Model, ModelDjangoExtensiones):
         documento.cadena_aprobacion_id = datos.get('cadena_aprobacion_id', None)
         documento.grupo_documento_id = datos.get('grupo_documento_id', '')
         documento.proceso_id = datos.get('proceso_id', '')
-        documento.medio_soporte_id = datos.get('soporte_id', None)
-        documento.tiempo_conservacion_id = datos.get('conservacion_id', None)
+        documento.medio_soporte = datos.get('soporte_id', None)
+        documento.tiempo_conservacion = datos.get('conservacion_id', None)
 
         return documento
 
