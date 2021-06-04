@@ -55,6 +55,7 @@ function configurarModalCrear() {
     terceroSelect = $('#tercero_mostrar_id');
     colaboradorSelectID = $('#colaborador_select_id');
     terceroSelectID = $('#tercero_select_id');
+    let idTipoContrato = $('#tipo_contrato_select_id').val();
 
     fechaFinal = $('#fecha_final_mostrar');
     $('#fecha_inicio_id').datepicker({
@@ -83,32 +84,21 @@ function configurarModalCrear() {
         dropdownParent: modalCrear
         }
     );
-    agregarValidacionFormularios();
 
-    $('#tipo_contrato_select_id').change(function () {
-        let actual = this.value;
-        $.each(jQuery.parseJSON(extraTiposContrato.val()), function(key, value) {
-            if(actual == value.id){
-              if (value.laboral){
-                  mostrarOcultarColaboradorTerceroTipoContrato(true)
-              }else{
-                  mostrarOcultarColaboradorTerceroTipoContrato(false)
-              }
-              if(value.fecha_fin){
-                  fechaFinal.show();
-                  fechaFinalID.attr("required", true);
-              }else{
-                  fechaFinal.hide();
-                  fechaFinalID.removeAttr("required", true);
-              }
+    if (idTipoContrato === ""){
+        $('#tipo_contrato_select_id').change(function () {
+            let actual = this.value;
+            CambiarSelect(actual);
+            if (actual === ""){
+                 fechaFinal.show();
+                 fechaFinalID.attr("required", true);
+                 mostrarOcultarColaboradorTercero("ninguno")
             }
-        });
-        if (actual === ""){
-             fechaFinal.show();
-             fechaFinalID.attr("required", true);
-             mostrarOcultarColaboradorTercero("ninguno")
-        }
-    });
+        })
+    }
+    else{
+        CambiarSelect(idTipoContrato);
+    }
 
     fechaInicioID.change(function () {
         if (new Date(fechaInicioID.val()) > new Date(fechaFinalID.val())) {
@@ -117,12 +107,39 @@ function configurarModalCrear() {
         }
     });
 
+
     fechaFinalID.change(function () {
         if (new Date(fechaFinalID.val()) < new Date(fechaInicioID.val())) {
             fechaInicioID.val('');
             EVANotificacion.toast.advertencia('La fecha final no puede ser menor a la fecha inicial');
         }
     });
+
+    agregarValidacionFormularios();
+}
+
+function CambiarSelect (actual){
+    $.each(jQuery.parseJSON(extraTiposContrato.val()), function(key, value) {
+        if(actual == value.id){
+            if (value.laboral){
+                mostrarOcultarColaboradorTerceroTipoContrato(true)
+            }else{
+                mostrarOcultarColaboradorTerceroTipoContrato(false)
+            }
+            if(value.fecha_fin){
+                fechaFinal.show();
+                fechaFinalID.attr("required", true);
+            }else{
+                fechaFinal.hide();
+                fechaFinalID.removeAttr("required", true);
+            }
+        }
+    });
+    if (actual === ""){
+         fechaFinal.show();
+         fechaFinalID.attr("required", true);
+         mostrarOcultarColaboradorTercero("ninguno")
+    }
 }
 
 function mostrarOcultarColaboradorTerceroTipoContrato(laboral) {
