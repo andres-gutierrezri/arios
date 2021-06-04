@@ -89,13 +89,13 @@
                                                                 {% if  perms.GestionDocumental.add_consecutivocontrato %}
                                                                     <a class="fad fa-2x fa-file-upload" href="javascript:abrirModalCargar('{% url 'GestionDocumental:consecutivo-contratos-cargar' consecutivo.id%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Cargar Contrato"></a>
                                                                 {% endif %}
-                                                                {% if consecutivo.ruta_archivo%}
+                                                                {% if consecutivo.ruta_archivo %}
                                                                     <a class="fad fa-2x fa-eye" href="javascript:abrirModalVistaPrevia('{% url 'GestionDocumental:consecutivo-contratos-ver' consecutivo.id%}')" data-original-title="Ver" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="Ver Contrato Cargado"></a>
                                                                 {% endif %}
                                                             </td>
                                                             <td>
-                                                                {% if perms.GestionDocumental.delete_consecutivocontrato and consecutivo.estado %}
-                                                                  <a class="fad fa-2x fa-file-edit" id="editar_{{ consecutivo.id }}" href="javascript:abrirModalCrear('{% url 'GestionDocumental:consecutivo-contratos-crear'%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="editar"></a>
+                                                                {% if consecutivo.estado %}
+                                                                  <a class="fad fa-2x fa-file-edit" id="editar_{{ consecutivo.id }}" href="javascript:abrirModalCrear('{% url 'GestionDocumental:consecutivo-contratos-editar' consecutivo.id%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="editar"></a>
                                                                 {% endif %}
                                                                 {% if perms.GestionDocumental.delete_consecutivocontrato and consecutivo.estado %}
                                                                   <a class="fad fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ consecutivo.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ consecutivo.id }}, true)" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
