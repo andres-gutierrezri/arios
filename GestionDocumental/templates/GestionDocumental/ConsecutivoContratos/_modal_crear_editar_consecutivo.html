@@ -44,6 +44,13 @@
                             {% input_date_tag 'fecha_final' 'Fecha Final' placeholder="Seleccione una fecha final" value=fecha_final required="" autocomplete="off" mensaje_validacion='Por favor seleccione una fecha final.' %}
                         </div>
                     </div>
+                    {% if editar %}
+                        <div class="form-group">
+                            <div id="motivo" class="col-md-12">
+                                {% input_textarea_tag 'motivo' 'Motivo' placeholder="Digite Motivo" value=motivo|default_if_none:"" required="" mensaje_validacion='Por favor digite el motivo.' %}
+                            </div>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
             <div class="modal-footer">

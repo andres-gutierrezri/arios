@@ -95,6 +95,7 @@ class ConsecutivoContrato(models.Model, ModelDjangoExtensiones):
         consecutivo.tipo_contrato_id = datos.get('tipo_contrato', '')
         consecutivo.fecha_inicio = datos.get('fecha_inicio', '')
         consecutivo.fecha_final = datos.get('fecha_final', '')
+        consecutivo.justificacion = datos.get('motivo', '')
         consecutivo.estado = True
         if not consecutivo.fecha_final:
             consecutivo.fecha_final = None

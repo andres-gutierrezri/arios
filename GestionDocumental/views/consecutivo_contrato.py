@@ -79,7 +79,7 @@ class ConsecutivoContratoEditarView(AbstractEvaLoggedView):
 
     def post(self, request, id_contrato):
         update_fields = ['fecha_inicio', 'fecha_final', 'codigo', 'tercero_id',
-                         'tipo_contrato_id', 'usuario_id']
+                         'tipo_contrato_id', 'usuario_id', 'justificacion']
         consecutivo = ConsecutivoContrato.from_dictionary(request.POST)
         consecutivo_db = ConsecutivoContrato.objects.get(id=id_contrato)
 
@@ -201,6 +201,7 @@ def datos_xa_render_editar(request, id_contrato) -> dict:
              'colaboradores': colaboradores,
              'terceros': terceros,
              'tipo_contratos': tipo_contratos.get_xa_select_activos().exclude(id=0),
+             'motivo':consecutivo.justificacion,
              'extra_tipos_contrato': json.dumps(extra_tipos_contrato),
              'contrato_actual': id_contrato,
              'menu_actual': 'consecutivos-contrato',
