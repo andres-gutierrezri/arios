@@ -98,6 +98,15 @@ function configurarModalCrear() {
     }
     else{
         CambiarSelect(idTipoContrato);
+        $('#tipo_contrato_select_id').change(function () {
+            let actual = this.value;
+            CambiarSelect(actual);
+            if (actual === ""){
+                 fechaFinal.show();
+                 fechaFinalID.attr("required", true);
+                 mostrarOcultarColaboradorTercero("ninguno")
+            }
+        })
     }
 
     fechaInicioID.change(function () {
@@ -106,7 +115,6 @@ function configurarModalCrear() {
             EVANotificacion.toast.advertencia('La fecha inicial no puede ser mayor a la fecha final');
         }
     });
-
 
     fechaFinalID.change(function () {
         if (new Date(fechaFinalID.val()) < new Date(fechaInicioID.val())) {
