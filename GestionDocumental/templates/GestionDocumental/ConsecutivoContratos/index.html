@@ -100,6 +100,7 @@
                                                                 {% if perms.GestionDocumental.delete_consecutivocontrato and consecutivo.estado %}
                                                                   <a class="fad fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ consecutivo.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ consecutivo.id }}, true)" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Anular"></a>
                                                                 {% endif %}
+                                                                <a class="fad fa-2x fa-copy" id="copiar_{{ consecutivo.id }}" href="javascript:void(0);"  onclick="fcopiarElemento({{ consecutivo.id }}, 0)" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Copiar"></a>
                                                             </td>
                                                         </tr>
                                                     {% endfor %}
