@@ -23,7 +23,6 @@
             <div class="row">
                 <div class="col-xl-12">
                     <div id="panel-1" class="panel">
-
                         <div class="panel-hdr">
                             {% if perms.GestionDocumental.add_consecutivocontrato %}
                             <div class="col-md-10">
@@ -63,7 +62,9 @@
                                                 <tbody>
                                                     {% for consecutivo in consecutivos %}
                                                         <tr>
-                                                            <td>{{ consecutivo.codigo }}</td>
+                                                            <td><span id="copiar_{{ consecutivo.id }}">{{ consecutivo.codigo }}</span>
+                                                                <span><a class="fad fa-copy" href="javascript:void(0);"  onclick="fcopiarElemento({{ consecutivo.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Copiar"></a></span>
+                                                            </td>
                                                             <td>{% if consecutivo.usuario %}
                                                                     {{ consecutivo.usuario.get_full_name }}
                                                                 {% else %}
@@ -100,7 +101,6 @@
                                                                 {% if perms.GestionDocumental.delete_consecutivocontrato and consecutivo.estado %}
                                                                   <a class="fad fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ consecutivo.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ consecutivo.id }}, true)" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Anular"></a>
                                                                 {% endif %}
-                                                                <a class="fad fa-2x fa-copy" id="copiar_{{ consecutivo.id }}" href="javascript:void(0);"  onclick="fcopiarElemento({{ consecutivo.id }}, 0)" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Copiar"></a>
                                                             </td>
                                                         </tr>
                                                     {% endfor %}
