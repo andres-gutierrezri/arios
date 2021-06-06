@@ -251,6 +251,7 @@ class ArchivoCargarView(AbstractEvaLoggedView):
         if not archivo.cadena_aprobacion:
             archivo.estado_id = EstadoArchivo.APROBADO
         archivo.usuario = request.user
+
         tipo_archivo = request.POST.get('tipo_archivo', '')
         if tipo_archivo == 'archivo':
             archivo.archivo = request.FILES.get('archivo', None)
@@ -350,15 +351,16 @@ class VerDocumentoView(AbstractEvaLoggedView):
 
 
 def datos_xa_render(opcion: str = None, documento: Documento = None, proceso: Proceso = None, empresa: int = None,
-                    grupo_documento: GrupoDocumento = None,
-                    archivo: Archivo = None, version: int = 1) -> dict:
+                    grupo_documento: GrupoDocumento = None, archivo: Archivo = None, version: int = 1) -> dict:
     """
     Datos necesarios para la creación de los html de Documento.
     :param opcion: valor de la acción a realizar 'crear' o 'editar'
     :param documento: Es opcional si se requiere pre cargar datos.
     :param proceso: Necesario para la ubicación del proceso al que pertenece el documento.
+    :param empresa: Necesario si qe requiere filtrar por esta.
     :param grupo_documento: Necesario para la ubicación del grupo de documentos al que pertenece.
     :param archivo: Es opcional si se requiere pre cargar datos.
+    :param version: la versión del documento, por defecto es 1.
     :return: Un diccionario con los datos.
     """
     if empresa:
