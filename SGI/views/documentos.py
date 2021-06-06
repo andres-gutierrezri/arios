@@ -348,8 +348,7 @@ class VerDocumentoView(AbstractEvaLoggedView):
 
 
 def datos_xa_render(opcion: str = None, documento: Documento = None, proceso: Proceso = None, empresa: int = None,
-                    grupo_documento: GrupoDocumento = None,
-                    archivo: Archivo = None, version: float = 1) -> dict:
+                    grupo_documento: GrupoDocumento = None, archivo: Archivo = None, version: float = 1) -> dict:
     """
     Datos necesarios para la creación de los html de Documento.
     :param opcion: valor de la acción a realizar 'crear' o 'editar'
