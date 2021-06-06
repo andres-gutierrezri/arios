@@ -65,8 +65,7 @@ class Colaborador(Persona, ModelDjangoExtensiones):
                                   verbose_name='Cesantias', null=False, blank=False,
                                   related_name='%(app_label)s_%(class)s_cesantias')
     arl_nivel = models.ForeignKey(NivelRiesgoARL, on_delete=models.DO_NOTHING,
-                                  verbose_name='ARL_nivel', null=False, blank=False,
-                                  related_name='%(app_label)s_%(class)s_arl_nivel')
+                                  verbose_name='ARL_nivel', null=False, blank=False)
     fecha_ingreso = models.DateField(verbose_name='Fecha de ingreso', null=False, blank=False)
     fecha_examen = models.DateField(verbose_name='Fecha de examen', null=False, blank=False)
     salario = models.IntegerField(verbose_name="Salario", null=True, blank=False)

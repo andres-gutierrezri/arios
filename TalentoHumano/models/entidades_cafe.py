@@ -59,14 +59,6 @@ class EntidadesManger(ManagerGeneral):
         return self.cesantias(True, True)
 
 
-class ARLManger(ManagerGeneral):
-    def arl_nivel(self, estado: bool = None, xa_select: bool = False) -> QuerySet:
-        return self.get_x_estado(estado, xa_select)
-
-    def arl_nivel_xa_select(self):
-        return self.arl_nivel(True, True)
-
-
 class EntidadesCAFE(models.Model, ModelDjangoExtensiones):
     objects = EntidadesManger()
     tipo_entidad = models.ForeignKey(TipoEntidadesCAFE, on_delete=models.DO_NOTHING, verbose_name='Tipo de entidad',
@@ -106,7 +98,7 @@ class EntidadesCAFE(models.Model, ModelDjangoExtensiones):
 
 
 class NivelRiesgoARL(models.Model):
-    objects = ARLManger()
+    objects = ManagerGeneral()
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
 

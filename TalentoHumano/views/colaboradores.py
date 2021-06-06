@@ -180,7 +180,6 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
         procesos = request.POST.getlist('proceso_id[]', None)
         colaborador.empresa_id = request.POST.get('empresa_id')
         colaborador.empresa_sesion_id = colaborador.empresa_id
-        print(procesos)
         colaborador.id = int(id)
         colaborador.foto_perfil = request.FILES.get('foto_perfil', None)
         if colaborador.foto_perfil:
@@ -275,7 +274,6 @@ class ColaboradorEditarView(AbstractEvaLoggedView):
 
             ColaboradorProceso.objects.filter(colaborador_id=id).delete()
             for proceso in procesos:
-                print(proceso)
                 ColaboradorProceso.objects.create(proceso_id=proceso, colaborador_id=id)
 
             if colaborador.foto_perfil:
@@ -424,7 +422,7 @@ def datos_xa_render(opcion: str = None, colaborador: Colaborador = None) -> dict
     afp = EntidadesCAFE.objects.afp_xa_select()
     caja_compensacion = EntidadesCAFE.objects.caja_compensacion_xa_select()
     cesantias = EntidadesCAFE.objects.cesantias_xa_select()
-    arl_nivel = NivelRiesgoARL.objects.arl_nivel_xa_select()
+    arl_nivel = NivelRiesgoARL.objects.get_xa_select_activos()
     jefe_inmediato = Colaborador.objects.get_xa_select()
     contrato = Contrato.objects.get_xa_select_activos()
     grupos = construir_grupos_xa_select()
