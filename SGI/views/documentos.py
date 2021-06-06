@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, reverse
@@ -102,7 +104,7 @@ class DocumentosCrearView(AbstractEvaLoggedView):
             excluir_en_validacion.append('proceso')
         else:
             documento.proceso_id = id_proceso
-        documento.version_actual = 0.00
+        documento.version_actual = 0
         try:
             documento.full_clean(exclude=excluir_en_validacion)
         except ValidationError as errores:
@@ -274,8 +276,9 @@ class ArchivoCargarView(AbstractEvaLoggedView):
             return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
         archivo_db = Archivo.objects.filter(documento_id=id_documento, estado=EstadoArchivo.APROBADO)
+        archivo.version = int(Decimal(archivo.version))
         if archivo_db:
-            if float(archivo.version) <= documento.version_actual:
+            if archivo.version <= documento.version_actual:
                 messages.error(request, 'La versión del documento debe ser mayor a la actual {0}'
                                .format(documento.version_actual))
                 return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
@@ -335,7 +338,7 @@ class VerDocumentoView(AbstractEvaLoggedView):
             mime_type = mime_types.get(extension, 'application/pdf')
 
             response = HttpResponse(archivo.archivo, content_type=mime_type)
-            response['Content-Disposition'] = 'inline; filename="{0} {1} v{2:.1f}{3}"'\
+            response['Content-Disposition'] = 'inline; filename="{0} {1} v{2}{3}"'\
                 .format(archivo.documento.codigo, archivo.documento.nombre,
                         archivo.documento.version_actual, extension)
         else:
@@ -348,7 +351,7 @@ class VerDocumentoView(AbstractEvaLoggedView):
 
 
 def datos_xa_render(opcion: str = None, documento: Documento = None, proceso: Proceso = None, empresa: int = None,
-                    grupo_documento: GrupoDocumento = None, archivo: Archivo = None, version: float = 1) -> dict:
+                    grupo_documento: GrupoDocumento = None, archivo: Archivo = None, version: int = 1) -> dict:
     """
     Datos necesarios para la creación de los html de Documento.
     :param opcion: valor de la acción a realizar 'crear' o 'editar'

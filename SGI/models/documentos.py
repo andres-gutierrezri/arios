@@ -87,8 +87,7 @@ class Documento(models.Model, ModelDjangoExtensiones):
     fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False, blank=False)
     fecha_modificacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Modificación', null=True,
                                               blank=False)
-    version_actual = models.DecimalField(max_digits=4, decimal_places=1, verbose_name='Versión Actual',
-                                         null=False, blank=False)
+    version_actual = models.SmallIntegerField(verbose_name='Versión Actual', null=False, blank=False)
     cadena_aprobacion = models.ForeignKey(CadenaAprobacionEncabezado, on_delete=models.DO_NOTHING,
                                           verbose_name='Cadena de aprobación', null=True, blank=False)
     grupo_documento = models.ForeignKey(GrupoDocumento, on_delete=models.DO_NOTHING,
@@ -98,7 +97,7 @@ class Documento(models.Model, ModelDjangoExtensiones):
 
     def __str__(self):
         return '{0} {1}'.format(self.codigo, self.nombre) +\
-               (' v{:.1f}'.format(self.version_actual) if self.version_actual != 0 else '')
+               (' v{}'.format(self.version_actual) if self.version_actual != 0 else '')
 
     class Meta:
         verbose_name = 'Documento'
@@ -127,7 +126,7 @@ class Documento(models.Model, ModelDjangoExtensiones):
 
     @property
     def version_minima_siguiente(self):
-        return '{0:.1f}'.format(self.version_actual + Decimal('0.1'))
+        return self.version_actual + 1
 
 
 class EstadoArchivo(models.Model):
@@ -163,7 +162,7 @@ class EstadoArchivo(models.Model):
 
 
 def custom_upload_to(instance, filename):
-    return '{6}/SGI/Documentos/{0:d}/{1:d}/{2} {3} v{4:.1f}.{5}'\
+    return '{6}/SGI/Documentos/{0:d}/{1:d}/{2} {3} v{4}.{5}'\
         .format(instance.documento.proceso.empresa.id, instance.documento.proceso.id, instance.documento.codigo,
                 instance.documento.nombre, instance.version, filename.split(".")[-1], settings.EVA_PRIVATE_MEDIA)
 
@@ -172,8 +171,7 @@ class Archivo(models.Model):
     objects = ManagerGeneral()
     documento = models.ForeignKey(Documento, on_delete=models.DO_NOTHING, verbose_name='Documento', null=True,
                                   blank=False)
-    version = models.DecimalField(max_digits=4, decimal_places=1, verbose_name='Versión',
-                                  null=False, blank=False)
+    version = models.SmallIntegerField(verbose_name='Versión', null=False, blank=False)
     notas = models.CharField(max_length=500, verbose_name='Notas', null=False, blank=False)
     fecha_documento = models.DateField(verbose_name='Fecha del Documento', null=False, blank=False)
     archivo = models.FileField(upload_to=custom_upload_to, blank=True, max_length=250)
@@ -216,7 +214,7 @@ class Archivo(models.Model):
     @property
     def nombre_documento(self):
         return '{0} {1}'.format(self.documento.codigo, self.documento.nombre) + \
-               (' v{:.1f}'.format(self.version) if self.version != 0 else '')
+               (' v{}'.format(self.version) if self.version != 0 else '')
 
 
 class ResultadosAprobacion(models.Model):
