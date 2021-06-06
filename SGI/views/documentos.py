@@ -355,8 +355,10 @@ def datos_xa_render(opcion: str = None, documento: Documento = None, proceso: Pr
     :param opcion: valor de la acción a realizar 'crear' o 'editar'
     :param documento: Es opcional si se requiere pre cargar datos.
     :param proceso: Necesario para la ubicación del proceso al que pertenece el documento.
+    :param empresa: Necesario si qe requiere filtrar por esta.
     :param grupo_documento: Necesario para la ubicación del grupo de documentos al que pertenece.
     :param archivo: Es opcional si se requiere pre cargar datos.
+    :param version: la versión del documento, por defecto es 1.
     :return: Un diccionario con los datos.
     """
     if empresa:
