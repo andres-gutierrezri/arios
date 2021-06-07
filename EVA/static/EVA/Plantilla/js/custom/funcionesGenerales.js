@@ -22,3 +22,50 @@ function abrirModalVistaPrevia(urlDocumento) {
 
     $("#vista_previa_modal").modal('show');
 }
+
+/**
+ * Inicializa un input como un datepicker.
+ * @param inputId id del input que se quiere inicializar.
+ */
+function inicializarDatePicker(inputId) {
+
+    $(`#${inputId}`).datepicker({
+        todayHighlight: true,
+        orientation: "bottom left",
+        templates: controls,
+        format: 'yyyy-mm-dd',
+        autoclose: true
+    });
+}
+
+const CONFIG_BASE_SELECT2 = {
+    language: {
+        noResults: function () {
+            return 'No se encontraron coincidencias';
+            },
+        searching: function () {
+            return 'Buscando…';
+            },
+        removeAllItems: function () {
+            return 'Quitar todas los items';
+            }
+        }
+}
+
+/**
+ * Inicializa un select como un select2.
+ * @param selectId id del input que se quiere inicializar.
+ * @param modal Si el select esta en un modal se debe pasar este para que se visualice correctamente.
+ */
+function inicializarSelect2(selectId, modal) {
+    const conf = {};
+    Object.assign(conf, CONFIG_BASE_SELECT2, (modal ? {dropdownParent: modal} : {}))
+    $(`#${selectId}`).select2(conf);
+}
+
+/**
+ * Activa como select2 todos los select con la clase .select2.
+ */
+function activarSelect2(){
+    $('.select2').select2(CONFIG_BASE_SELECT2);
+}
