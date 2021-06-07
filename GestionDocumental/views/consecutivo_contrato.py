@@ -74,8 +74,11 @@ class ConsecutivoContratoCrearView(AbstractEvaLoggedView):
 
 class ConsecutivoContratoEditarView(AbstractEvaLoggedView):
     def get(self, request, id_contrato):
+
+        consecutivo = ConsecutivoContrato.objects.get(id=id_contrato)
+
         return render(request, 'GestionDocumental/ConsecutivoContratos/_modal_crear_editar_consecutivo.html',
-                      datos_xa_render_editar(request, id_contrato))
+                      datos_xa_render(request, consecutivo))
 
     def post(self, request, id_contrato):
         update_fields = ['fecha_inicio', 'fecha_final', 'codigo', 'tercero_id',
@@ -166,7 +169,7 @@ class VerArchivoView(AbstractEvaLoggedView):
         return response
 
 
-def datos_xa_render(request) -> dict:
+def datos_xa_render(request, consecutivo: ConsecutivoContrato = None) -> dict:
     tipo_contratos = TipoContrato.objects
     colaboradores = Colaborador.objects.get_xa_select_usuarios_activos_x_empresa(request)
     terceros = Tercero.objects.get_xa_select_activos()
@@ -183,36 +186,9 @@ def datos_xa_render(request) -> dict:
              'extra_tipos_contrato': json.dumps(extra_tipos_contrato),
              'menu_actual': 'consecutivos-contrato'}
 
-    return datos
-
-
-def datos_xa_render_editar(request, id_contrato) -> dict:
-    consecutivo = ConsecutivoContrato.objects.get(id=id_contrato)
-    tipo_contratos = TipoContrato.objects
-    colaboradores = Colaborador.objects.get_xa_select_usuarios_activos_x_empresa(request)
-    terceros = Tercero.objects.get_xa_select_activos()
-    extra_tipos_contrato = []
-    for tipo_contrato in tipo_contratos.all():
-        extra_tipos_contrato.append({'id': tipo_contrato.id, 'laboral': tipo_contrato.laboral,
-                                     'fecha_fin': tipo_contrato.tiene_fecha_fin})
-
-    datos = {'fecha': datetime.datetime.now(),
-             'tipo_terminacion': request.POST.get('tipo_terminacion', ''),
-             'colaboradores': colaboradores,
-             'terceros': terceros,
-             'tipo_contratos': tipo_contratos.get_xa_select_activos().exclude(id=0),
-             'motivo':consecutivo.justificacion,
-             'extra_tipos_contrato': json.dumps(extra_tipos_contrato),
-             'contrato_actual': id_contrato,
-             'menu_actual': 'consecutivos-contrato',
-             'colaborador_actual': consecutivo.usuario_id,
-             'tercero_actual': consecutivo.tercero_id,
-             'tipo_contrato_actual': consecutivo.tipo_contrato_id,
-             'fecha_inicial':consecutivo.fecha_inicio,
-             'fecha_final':consecutivo.fecha_final,
-             'tipo_contrato_actu': consecutivo.tipo_contrato,
-             'editar':True
-             }
+    if consecutivo:
+        datos['consecutivo'] = consecutivo
+        datos['editar'] = True
 
     return datos
 
