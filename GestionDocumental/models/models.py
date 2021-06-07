@@ -1,8 +1,10 @@
+from attr.validators import instance_of
 from django.contrib.auth.models import User
 from django.db import models
 
 import GestionDocumental
 from Administracion.models import Tercero, TipoContrato, Empresa
+from EVA.General import app_date_now
 from EVA.General.modelmanagers import ManagerGeneral
 from Proyectos.models import Contrato
 from EVA import settings
@@ -45,9 +47,8 @@ class ConsecutivoOficio(models.Model):
 
 
 def custom_upload_to(instance, filename):
-    return '{3}/contratos/{0}/{1}.{2}'.format(instance.tercero.identificacion,
-                                               instance.codigo, filename.split(".")[-1],
-                                               settings.EVA_PRIVATE_MEDIA)
+    return '{3}/contratos/{0}/{1}.{2}'.format(app_date_now().year, instance.codigo, filename.split(".")[-1],
+                                              settings.EVA_PRIVATE_MEDIA)
 
 
 class ConsecutivoContrato(models.Model):
