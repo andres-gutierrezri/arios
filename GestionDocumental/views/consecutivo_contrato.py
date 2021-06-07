@@ -4,6 +4,7 @@ import os
 from sqlite3 import IntegrityError
 
 from django.contrib import messages
+from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
@@ -55,7 +56,7 @@ class ConsecutivoContratoView(AbstractEvaLoggedView):
 
 class ConsecutivoContratoCrearView(AbstractEvaLoggedView):
     def get(self, request):
-        return render(request, 'GestionDocumental/ConsecutivoContratos/_modal_crear_consecutivo.html', datos_xa_render(request))
+        return render(request, 'GestionDocumental/ConsecutivoContratos/_modal_crear_editar_consecutivo.html', datos_xa_render(request))
 
     def post(self, request):
         consecutivo = ConsecutivoContrato.from_dictionary(request.POST)
@@ -69,6 +70,43 @@ class ConsecutivoContratoCrearView(AbstractEvaLoggedView):
         consecutivo.save()
         messages.success(request, 'Se ha creado el consecutivo {0}'.format(consecutivo.codigo))
         return redirect(reverse('GestionDocumental:consecutivo-contratos-index', args=[0]))
+
+
+class ConsecutivoContratoEditarView(AbstractEvaLoggedView):
+    def get(self, request, id_contrato):
+
+        consecutivo = ConsecutivoContrato.objects.get(id=id_contrato)
+
+        return render(request, 'GestionDocumental/ConsecutivoContratos/_modal_crear_editar_consecutivo.html',
+                      datos_xa_render(request, consecutivo))
+
+    def post(self, request, id_contrato):
+        update_fields = ['fecha_inicio', 'fecha_final', 'codigo', 'tercero_id',
+                         'tipo_contrato_id', 'usuario_id', 'justificacion']
+        consecutivo = ConsecutivoContrato.from_dictionary(request.POST)
+        consecutivo_db = ConsecutivoContrato.objects.get(id=id_contrato)
+
+        consecutivo.id = consecutivo_db.id
+        consecutivo.ruta_archivo = consecutivo_db.ruta_archivo
+        consecutivo.numero_contrato = consecutivo_db.numero_contrato
+        consecutivo.usuario_crea = consecutivo_db.usuario_crea
+        consecutivo.empresa = consecutivo_db.empresa
+        sigla = TipoContrato.objects.get(id=consecutivo.tipo_contrato_id).sigla
+        consecutivo.codigo = 'CTO_{0:03d}_{1}_{2}'.format(consecutivo.numero_contrato, sigla, app_datetime_now().year)
+
+        try:
+            consecutivo.full_clean(validate_unique=False)
+        except ValidationError as errores:
+            messages.error(request, 'Falló editar. Valide los datos ingresados al editar el consecutivo')
+            return redirect(reverse('GestionDocumental:consecutivo-contratos-index', args=[0]))
+
+        if consecutivo_db.comparar(consecutivo, excluir=['fecha_modificacion', 'ruta_archivo']):
+            messages.success(request, 'No se hicieron cambios en la consecutivo {0}'.format(consecutivo.codigo))
+            return redirect(reverse('GestionDocumental:consecutivo-contratos-index', args=[0]))
+        else:
+            consecutivo.save(update_fields=update_fields)
+            messages.success(request, 'Se ha editado el consecutivo {0}'.format(consecutivo.codigo))
+            return redirect(reverse('GestionDocumental:consecutivo-contratos-index', args=[0]))
 
 
 class ConsecutivoContratoEliminarView(AbstractEvaLoggedView):
@@ -131,7 +169,7 @@ class VerArchivoView(AbstractEvaLoggedView):
         return response
 
 
-def datos_xa_render(request) -> dict:
+def datos_xa_render(request, consecutivo: ConsecutivoContrato = None) -> dict:
     tipo_contratos = TipoContrato.objects
     colaboradores = Colaborador.objects.get_xa_select_usuarios_activos_x_empresa(request)
     terceros = Tercero.objects.get_xa_select_activos()
@@ -147,6 +185,10 @@ def datos_xa_render(request) -> dict:
              'tipo_contratos': tipo_contratos.get_xa_select_activos().exclude(id=0),
              'extra_tipos_contrato': json.dumps(extra_tipos_contrato),
              'menu_actual': 'consecutivos-contrato'}
+
+    if consecutivo:
+        datos['consecutivo'] = consecutivo
+        datos['editar'] = True
 
     return datos
 

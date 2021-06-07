@@ -55,6 +55,7 @@ function configurarModalCrear() {
     terceroSelect = $('#tercero_mostrar_id');
     colaboradorSelectID = $('#colaborador_select_id');
     terceroSelectID = $('#tercero_select_id');
+    let idTipoContrato = $('#tipo_contrato_select_id').val();
 
     fechaFinal = $('#fecha_final_mostrar');
     $('#fecha_inicio_id').datepicker({
@@ -64,51 +65,36 @@ function configurarModalCrear() {
         format: 'yyyy-mm-dd',
         autoclose: true
     });
-    $('#fecha_final_id').datepicker({
-        todayHighlight: true,
-        orientation: "bottom left",
-        templates: controls,
-        format: 'yyyy-mm-dd',
-        autoclose: true
-    });
-    $('#tipo_contrato_select_id').select2({
-        dropdownParent: modalCrear
-        }
-    );
-    $('#colaborador_select_id').select2({
-        dropdownParent: modalCrear
-        }
-    );
-    $('#tercero_select_id').select2({
-        dropdownParent: modalCrear
-        }
-    );
-    agregarValidacionFormularios();
 
-    $('#tipo_contrato_select_id').change(function () {
-        let actual = this.value;
-        $.each(jQuery.parseJSON(extraTiposContrato.val()), function(key, value) {
-            if(actual == value.id){
-              if (value.laboral){
-                  mostrarOcultarColaboradorTerceroTipoContrato(true)
-              }else{
-                  mostrarOcultarColaboradorTerceroTipoContrato(false)
-              }
-              if(value.fecha_fin){
-                  fechaFinal.show();
-                  fechaFinalID.attr("required", true);
-              }else{
-                  fechaFinal.hide();
-                  fechaFinalID.removeAttr("required", true);
-              }
+    inicializarDatePicker('fecha_final_id');
+    inicializarDatePicker('fecha_inicio_id');
+    inicializarSelect2('tipo_contrato_select_id', modalCrear);
+    inicializarSelect2('colaborador_select_id', modalCrear);
+    inicializarSelect2('tercero_select_id', modalCrear);
+
+    if (idTipoContrato === ""){
+        $('#tipo_contrato_select_id').change(function () {
+            let actual = this.value;
+            CambiarSelect(actual);
+            if (actual === ""){
+                 fechaFinal.show();
+                 fechaFinalID.attr("required", true);
+                 mostrarOcultarColaboradorTercero("ninguno")
             }
-        });
-        if (actual === ""){
-             fechaFinal.show();
-             fechaFinalID.attr("required", true);
-             mostrarOcultarColaboradorTercero("ninguno")
-        }
-    });
+        })
+    }
+    else{
+        CambiarSelect(idTipoContrato);
+        $('#tipo_contrato_select_id').change(function () {
+            let actual = this.value;
+            CambiarSelect(actual);
+            if (actual === ""){
+                 fechaFinal.show();
+                 fechaFinalID.attr("required", true);
+                 mostrarOcultarColaboradorTercero("ninguno")
+            }
+        })
+    }
 
     fechaInicioID.change(function () {
         if (new Date(fechaInicioID.val()) > new Date(fechaFinalID.val())) {
@@ -123,6 +109,32 @@ function configurarModalCrear() {
             EVANotificacion.toast.advertencia('La fecha final no puede ser menor a la fecha inicial');
         }
     });
+
+    agregarValidacionFormularios();
+}
+
+function CambiarSelect (actual){
+    $.each(jQuery.parseJSON(extraTiposContrato.val()), function(key, value) {
+        if(actual == value.id){
+            if (value.laboral){
+                mostrarOcultarColaboradorTerceroTipoContrato(true)
+            }else{
+                mostrarOcultarColaboradorTerceroTipoContrato(false)
+            }
+            if(value.fecha_fin){
+                fechaFinal.show();
+                fechaFinalID.attr("required", true);
+            }else{
+                fechaFinal.hide();
+                fechaFinalID.removeAttr("required", true);
+            }
+        }
+    });
+    if (actual === ""){
+         fechaFinal.show();
+         fechaFinalID.attr("required", true);
+         mostrarOcultarColaboradorTercero("ninguno")
+    }
 }
 
 function mostrarOcultarColaboradorTerceroTipoContrato(laboral) {

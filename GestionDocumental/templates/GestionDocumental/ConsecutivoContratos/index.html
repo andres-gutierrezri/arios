@@ -54,7 +54,7 @@
                                                         <th>Fecha Final</th>
                                                         <th>Tipo de Contrato</th>
                                                         <th>Usuario</th>
-                                                        <th>Justificación</th>
+                                                        <th>Motivo Editar/Anular</th>
                                                         <th>Estado</th>
                                                         <th>Contrato</th>
                                                         <th>Acción</th>
@@ -86,16 +86,19 @@
                                                                 {% endif %}
                                                             </td>
                                                             <td class="text-center">
-                                                                {% if  perms.GestionDocumental.add_consecutivocontrato %}
+                                                                {% if  perms.GestionDocumental.add_consecutivocontrato and consecutivo.estado%}
                                                                     <a class="fad fa-2x fa-file-upload" href="javascript:abrirModalCargar('{% url 'GestionDocumental:consecutivo-contratos-cargar' consecutivo.id%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Cargar Contrato"></a>
                                                                 {% endif %}
-                                                                {% if consecutivo.ruta_archivo and perms.GestionDocumental.view_consecutivocontrato %}
+                                                                {% if perms.GestionDocumental.view_consecutivocontrato and consecutivo.ruta_archivo %}
                                                                     <a class="fad fa-2x fa-eye" href="javascript:abrirModalVistaPrevia('{% url 'GestionDocumental:consecutivo-contratos-ver' consecutivo.id%}')" data-original-title="Ver" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="Ver Contrato Cargado"></a>
                                                                 {% endif %}
                                                             </td>
                                                             <td>
+                                                                {% if perms.GestionDocumental.editar_consecutivocontrato and consecutivo.estado %}
+                                                                  <a class="fad fa-2x fa-file-edit" id="editar_{{ consecutivo.id }}" href="javascript:abrirModalCrear('{% url 'GestionDocumental:consecutivo-contratos-editar' consecutivo.id%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                                {% endif %}
                                                                 {% if perms.GestionDocumental.delete_consecutivocontrato and consecutivo.estado %}
-                                                                  <a class="fad fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ consecutivo.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ consecutivo.id }}, true)" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+                                                                  <a class="fad fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ consecutivo.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ consecutivo.id }}, true)" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Anular"></a>
                                                                 {% endif %}
                                                             </td>
                                                         </tr>
@@ -125,10 +128,9 @@
     <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
     <script src="{% static 'GestionDocumental/js/consecutivos_contratos.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/controlBusquedaPaginacion.js' %}"></script>
-    <script src="{% static 'GestionDocumental/js/modalCargarArchivoGes.js' %}"></script>
+    <script src="{% static 'GestionDocumental/js/configurar_modales.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js' %}"></script>
     <script src="{% static 'TalentoHumano/js/date_picker.js' %}"></script>
-    <script src="{% static 'EVA/Plantilla/js/custom/funcionesGenerales.js' %}"></script>
 {% endblock %}
 
