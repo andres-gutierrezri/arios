@@ -59,6 +59,3 @@ class TipoContribuyente(models.IntegerChoices):
     CONTRIBUYENTE_MEDIANO = 3, 'Contribuyente Mediano'
     CONTRIBUYENTE_MEDIANO_ALTO = 4, 'Contribuyente Mediano Alto'
     GRAN_CONTRIBUYENTE = 5, 'Gran Contribuyente'
-
-
-

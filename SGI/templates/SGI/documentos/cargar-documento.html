@@ -45,7 +45,7 @@
 
                 <div class="form-row">
                     <div class="form-group col-12">
-                        {% input_number_tag 'version' 'Versión' placeholder="Ingrese la versión del documento"  required="" min=version max="9999.9" step="0.1" value=version mensaje_validacion='Por favor digite una version mayor a la anterior.' invalido=errores.version %}
+                        {% input_number_tag 'version' 'Versión' placeholder="Ingrese la versión del documento"  required="" type="number"  min=version max="9999" step="1" value=version  mensaje_validacion='Por favor digite una versión mayor a la anterior que no sea decimal' invalido=errores.version %}
                     </div>
                 </div>
 

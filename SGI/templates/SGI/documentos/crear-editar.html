@@ -48,6 +48,12 @@
                                             <div class="col-md-6">
                                                     {% select_tag cadenas_aprobacion 'cadena_aprobacion_id' 'Seleccione una cadena de aprobación' texto_label="Cadena de Aprobación" required="" value=documento.cadena_aprobacion_id mensaje_validacion='Por favor seleccione una cadena de aprobación' invalido=errores.cadena_aprobacion %}
                                             </div>
+                                            <div class="col-md-3">
+                                                {% select_tag medios_soporte 'soporte_id' 'Seleccione medio de soporte' is_tupla=True texto_label="Medio de Soporte" required="" value=documento.medio_soporte mensaje_validacion='Por favor seleccione un medio de soporte' invalido=errores.medio_soporte %}
+                                            </div>
+                                            <div class="col-md-3">
+                                                    {% select_tag tiempos_conservacion 'conservacion_id' 'Seleccione tiempo de conservación' is_tupla=True texto_label="Tiempo de Conservación" required="" value=documento.tiempo_conservacion mensaje_validacion='Por favor seleccione un tiempo de conservación' invalido=errores.tiempo_conservacion %}
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="form-row">
