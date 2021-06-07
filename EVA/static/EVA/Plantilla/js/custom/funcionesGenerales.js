@@ -70,19 +70,12 @@ function activarSelect2(){
     $('.select2').select2(CONFIG_BASE_SELECT2);
 }
 
-
-function fcopiarElemento(idElementoCopiar)
+function copiarAPortapapeles(texto)
 {
-    let codigoConsecutivo;
-    let idElemento = "copiar_"+idElementoCopiar
-    let range = document.createRange();
-    codigoConsecutivo = document.getElementById(idElemento);
-    range.selectNode(codigoConsecutivo);
-    window.getSelection().removeAllRanges();
-    window.getSelection().addRange(range);
-    document.execCommand("copy");
-    window.getSelection().removeAllRanges();
-    EVANotificacion.toast.informacion("Copiado cotrato: "+codigoConsecutivo.textContent)
-    return codigoConsecutivo.textContent
+    navigator.clipboard.writeText(texto).then(() => {
+        EVANotificacion.toast.exitoso(`Se copió ${texto} exitosamente`);
+    }).catch(error => {
+        console.log(error);
+        EVANotificacion.toast.error(`Falló copiado`);
+    });
 }
-
