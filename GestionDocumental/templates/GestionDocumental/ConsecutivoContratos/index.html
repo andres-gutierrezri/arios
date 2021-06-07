@@ -23,7 +23,6 @@
             <div class="row">
                 <div class="col-xl-12">
                     <div id="panel-1" class="panel">
-
                         <div class="panel-hdr">
                             {% if perms.GestionDocumental.add_consecutivocontrato %}
                             <div class="col-md-10">
@@ -63,7 +62,9 @@
                                                 <tbody>
                                                     {% for consecutivo in consecutivos %}
                                                         <tr>
-                                                            <td>{{ consecutivo.codigo }}</td>
+                                                            <td><span id="copiar_{{ consecutivo.id }}">{{ consecutivo.codigo }}</span>
+                                                                <span><a class="fad fa-copy" href="javascript:void(0);"  onclick="copiarAPortapapeles('{{ consecutivo.codigo }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Copiar"></a></span>
+                                                            </td>
                                                             <td>{% if consecutivo.usuario %}
                                                                     {{ consecutivo.usuario.get_full_name }}
                                                                 {% else %}

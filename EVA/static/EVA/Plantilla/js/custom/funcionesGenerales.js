@@ -69,3 +69,13 @@ function inicializarSelect2(selectId, modal) {
 function activarSelect2(){
     $('.select2').select2(CONFIG_BASE_SELECT2);
 }
+
+function copiarAPortapapeles(texto)
+{
+    navigator.clipboard.writeText(texto).then(() => {
+        EVANotificacion.toast.exitoso(`Se copió ${texto} exitosamente`);
+    }).catch(error => {
+        console.log(error);
+        EVANotificacion.toast.error(`Falló copiado`);
+    });
+}
