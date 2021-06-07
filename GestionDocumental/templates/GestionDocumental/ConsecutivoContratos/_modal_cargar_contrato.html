@@ -1,0 +1,30 @@
+{% load eva_tags %}
+{% load static %}
+
+<form action="{% url 'GestionDocumental:consecutivo-contratos-cargar' contrato.id %}"  id="cargar-contratos-form" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+  {% csrf_token %}
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header p-b-0">
+                <h4 class="modal-title">
+                    Cargar archivo del contrato {{ contrato.codigo }} de {{ contrato.empresa }}
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row div_archivo">
+                    <div class="form-group col-12">
+                        {% input_file_tag 'archivo' 'Archivo' placeholder="Seleccione un archivo" required="" invalido=errores.logo accept=".docx, .pptx, .xlsx, .xlsm, .pdf, .dwg" mensaje_validacion='Por favor seleccione un archivo'%}
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-danger btn-pills">Cancelar</button>
+                <button id="guardar" type="submit" class="btn btn-primary btn-pills"> Cargar </button>
+            </div>
+        </div>
+    </div>
+</form>

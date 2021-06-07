@@ -1,12 +1,14 @@
 import datetime
 import json
+import os
 from sqlite3 import IntegrityError
 
 from django.contrib import messages
 from django.db.models import Q
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.views.decorators.clickjacking import xframe_options_sameorigin
 
 from Administracion.models import TipoContrato, TipoDocumento, ConsecutivoDocumento, Tercero
 from Administracion.utils import get_id_empresa_global
@@ -53,7 +55,7 @@ class ConsecutivoContratoView(AbstractEvaLoggedView):
 
 class ConsecutivoContratoCrearView(AbstractEvaLoggedView):
     def get(self, request):
-        return render(request, 'GestionDocumental/ConsecutivoContratos/crear.html', datos_xa_render(request))
+        return render(request, 'GestionDocumental/ConsecutivoContratos/_modal_crear_consecutivo.html', datos_xa_render(request))
 
     def post(self, request):
         consecutivo = ConsecutivoContrato.from_dictionary(request.POST)
@@ -91,6 +93,44 @@ class ConsecutivoContratoEliminarView(AbstractEvaLoggedView):
                                  "mensaje": 'Ha ocurrido un erro al realizar la acción'})
 
 
+class ArchivoCargarView(AbstractEvaLoggedView):
+
+    def get(self, request, id_contrato):
+        consecutivo = ConsecutivoContrato.objects.get(id=id_contrato)
+        return render(request, 'GestionDocumental/ConsecutivoContratos/_modal_cargar_contrato.html', {'contrato': consecutivo})
+
+    def post(self, request, id_contrato):
+        consecutivo = ConsecutivoContrato.objects.get(id=id_contrato)
+
+        consecutivo.ruta_archivo = request.FILES.get('archivo', None)
+        
+        consecutivo.save(update_fields=['ruta_archivo'])
+        messages.success(request, 'Se cagó archivo del consecutivo:  {0}'.format(consecutivo.codigo))
+        return redirect(reverse('GestionDocumental:consecutivo-contratos-index', args=[0]))
+
+
+class VerArchivoView(AbstractEvaLoggedView):
+    @xframe_options_sameorigin
+    def get(self, request, id_contrato):
+        consecutivo = ConsecutivoContrato.objects.get(id=id_contrato)
+        if consecutivo.ruta_archivo:
+            extension = os.path.splitext(consecutivo.ruta_archivo.url)[1]
+            mime_types = {'.docx': 'application/msword', '.xlsx': 'application/vnd.ms-excel',
+                          '.pptx': 'application/vnd.ms-powerpoint',
+                          '.xlsm': 'application/vnd.ms-excel.sheet.macroenabled.12',
+                          '.dwg': 'application/octet-stream'
+                          }
+
+            mime_type = mime_types.get(extension, 'application/pdf')
+
+            response = HttpResponse(consecutivo.ruta_archivo, content_type=mime_type)
+            response['Content-Disposition'] = 'inline; filename="{0}{1}"' \
+                .format(consecutivo.codigo, extension)
+        else:
+            response = redirect(reverse('GestionDocumental:consecutivo-contratos-index', args=[0]))
+        return response
+
+
 def datos_xa_render(request) -> dict:
     tipo_contratos = TipoContrato.objects
     colaboradores = Colaborador.objects.get_xa_select_usuarios_activos_x_empresa(request)
@@ -117,3 +157,4 @@ def tipos_contrato_filtro():
     for tipo_contrato in tipo_contratos:
         lista_tipo_contratos.append({'campo_valor': tipo_contrato.id, 'campo_texto': tipo_contrato.nombre})
     return lista_tipo_contratos
+

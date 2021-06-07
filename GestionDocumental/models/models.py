@@ -1,9 +1,13 @@
+from attr.validators import instance_of
 from django.contrib.auth.models import User
 from django.db import models
 
+import GestionDocumental
 from Administracion.models import Tercero, TipoContrato, Empresa
+from EVA.General import app_date_now
 from EVA.General.modelmanagers import ManagerGeneral
 from Proyectos.models import Contrato
+from EVA import settings
 
 
 class ConsecutivoOficio(models.Model):
@@ -42,6 +46,11 @@ class ConsecutivoOficio(models.Model):
         return consecutivo
 
 
+def custom_upload_to(instance, filename):
+    return '{3}/contratos/{0}/{1}.{2}'.format(app_date_now().year, instance.codigo, filename.split(".")[-1],
+                                              settings.EVA_PRIVATE_MEDIA)
+
+
 class ConsecutivoContrato(models.Model):
     objects = ManagerGeneral()
     numero_contrato = models.IntegerField(verbose_name='Número de Contrato', null=False, blank=False)
@@ -59,6 +68,7 @@ class ConsecutivoContrato(models.Model):
                                      null=True, blank=True, related_name='consecutivo_contrato_usuario_crea')
     justificacion = models.CharField(max_length=100, verbose_name='Justificacion', blank=True, null=True)
     estado = models.BooleanField(verbose_name='Estado', blank=False, null=False)
+    ruta_archivo = models.FileField(blank=True, max_length=250, upload_to=custom_upload_to)
 
     def __str__(self):
         return self.codigo
@@ -66,6 +76,7 @@ class ConsecutivoContrato(models.Model):
     class Meta:
         verbose_name = 'Consecutivo Contrato'
         verbose_name_plural = 'Consecutivos Contratos'
+
 
     @staticmethod
     def from_dictionary(datos: dict) -> 'ConsecutivoContrato':
@@ -120,3 +131,4 @@ class ConsecutivoReunion(models.Model):
         consecutivo.estado = True
 
         return consecutivo
+
