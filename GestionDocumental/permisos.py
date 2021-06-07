@@ -9,5 +9,6 @@ permisos = [Permiso('index', None),
             Permiso('consecutivo-contratos-index', ['GestionDocumental.view_consecutivocontrato']),
             Permiso('consecutivo-contratos-crear', ['GestionDocumental.add_consecutivocontrato']),
             Permiso('consecutivo-contratos-eliminar', ['GestionDocumental.delete_consecutivocontrato']),
-            Permiso('consecutivo-contratos-cargar', ['GestionDocumental.ver_contratro_consecutivocontrato']),
+            Permiso('consecutivo-contratos-cargar', ['GestionDocumental.add_consecutivocontrato']),
+            Permiso('consecutivo-contratos-ver', ['GestionDocumental.view_consecutivocontrato'])
             ]
