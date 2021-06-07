@@ -159,8 +159,8 @@ class VerArchivoView(AbstractEvaLoggedView):
             mime_type = mime_types.get(extension, 'application/pdf')
 
             response = HttpResponse(consecutivo.ruta_archivo, content_type=mime_type)
-            response['Content-Disposition'] = 'inline; filename="{0} {1}{2}"' \
-                .format(consecutivo.tercero.identificacion, consecutivo.codigo, extension)
+            response['Content-Disposition'] = 'inline; filename="{0}{1}"' \
+                .format(consecutivo.codigo, extension)
         else:
             response = redirect(reverse('GestionDocumental:consecutivo-contratos-index', args=[0]))
         return response

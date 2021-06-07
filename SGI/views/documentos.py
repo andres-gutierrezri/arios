@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, reverse
@@ -6,10 +8,13 @@ from django.contrib import messages
 from django.db import IntegrityError
 import os.path
 
+
 from Administracion.models import Proceso
 from Administracion.utils import get_id_empresa_global
 from EVA.General.utilidades import validar_extension_de_archivo
 from EVA.views.index import AbstractEvaLoggedView
+from SGI.Enumeraciones import MedioSoporte, TiempoConservacion
+
 from SGI.models import Documento, GrupoDocumento, Archivo
 from SGI.models.documentos import EstadoArchivo, CadenaAprobacionDetalle, ResultadosAprobacion, \
     CadenaAprobacionEncabezado, GruposDocumentosProcesos
@@ -86,7 +91,7 @@ class DocumentosCrearView(AbstractEvaLoggedView):
         grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
         return render(request, 'SGI/documentos/crear-editar.html',
                       datos_xa_render(self.OPCION, proceso=proceso, grupo_documento=grupo_documento,
-                                      empresa=get_id_empresa_global(request)))
+                                      empresa=get_id_empresa_global(request),))
 
     def post(self, request,  id_proceso, id_grupo):
         documento = Documento.from_dictionary(request.POST)
@@ -99,8 +104,7 @@ class DocumentosCrearView(AbstractEvaLoggedView):
             excluir_en_validacion.append('proceso')
         else:
             documento.proceso_id = id_proceso
-        documento.version_actual = 0.00
-
+        documento.version_actual = 0
         try:
             documento.full_clean(exclude=excluir_en_validacion)
         except ValidationError as errores:
@@ -149,13 +153,16 @@ class DocumentosEditarView(AbstractEvaLoggedView):
 
         documento_db = Documento.objects.get(id=id_documento)
 
-        if documento_db.comparar(documento, campos=['nombre', 'codigo', 'cadena_aprobacion']):
+        if documento_db.comparar(documento, campos=['nombre', 'codigo', 'cadena_aprobacion', 'medio_soporte',
+                                                    'tiempo_conservacion']):
             messages.success(request, 'No se hicieron cambios en el documento {0}'.format(documento.nombre))
             return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
         documento_db.nombre = documento.nombre
         documento_db.codigo = documento.codigo
         documento_db.cadena_aprobacion_id = documento.cadena_aprobacion_id
+        documento_db.medio_soporte = documento.medio_soporte
+        documento_db.tiempo_conservacion = documento.tiempo_conservacion
         try:
             documento_db.validate_unique()
         except ValidationError as errores:
@@ -173,7 +180,8 @@ class DocumentosEditarView(AbstractEvaLoggedView):
 
             return render(request, 'SGI/documentos/crear-editar.html', datos)
 
-        documento_db.save(update_fields=['nombre', 'codigo', 'cadena_aprobacion_id'])
+        documento_db.save(update_fields=['nombre', 'codigo', 'cadena_aprobacion_id', 'medio_soporte',
+                                         'tiempo_conservacion'])
         messages.success(request, 'Se ha actualizado el documento {0}' .format(documento.nombre))
         return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
@@ -268,8 +276,9 @@ class ArchivoCargarView(AbstractEvaLoggedView):
             return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
         archivo_db = Archivo.objects.filter(documento_id=id_documento, estado=EstadoArchivo.APROBADO)
+        archivo.version = int(Decimal(archivo.version))
         if archivo_db:
-            if float(archivo.version) <= documento.version_actual:
+            if archivo.version <= documento.version_actual:
                 messages.error(request, 'La versión del documento debe ser mayor a la actual {0}'
                                .format(documento.version_actual))
                 return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
@@ -329,7 +338,7 @@ class VerDocumentoView(AbstractEvaLoggedView):
             mime_type = mime_types.get(extension, 'application/pdf')
 
             response = HttpResponse(archivo.archivo, content_type=mime_type)
-            response['Content-Disposition'] = 'inline; filename="{0} {1} v{2:.1f}{3}"'\
+            response['Content-Disposition'] = 'inline; filename="{0} {1} v{2}{3}"'\
                 .format(archivo.documento.codigo, archivo.documento.nombre,
                         archivo.documento.version_actual, extension)
         else:
@@ -342,14 +351,16 @@ class VerDocumentoView(AbstractEvaLoggedView):
 
 
 def datos_xa_render(opcion: str = None, documento: Documento = None, proceso: Proceso = None, empresa: int = None,
-                    grupo_documento: GrupoDocumento = None, archivo: Archivo = None, version: float = 1) -> dict:
+                    grupo_documento: GrupoDocumento = None, archivo: Archivo = None, version: int = 1) -> dict:
     """
     Datos necesarios para la creación de los html de Documento.
     :param opcion: valor de la acción a realizar 'crear' o 'editar'
     :param documento: Es opcional si se requiere pre cargar datos.
     :param proceso: Necesario para la ubicación del proceso al que pertenece el documento.
+    :param empresa: Necesario si qe requiere filtrar por esta.
     :param grupo_documento: Necesario para la ubicación del grupo de documentos al que pertenece.
     :param archivo: Es opcional si se requiere pre cargar datos.
+    :param version: la versión del documento, por defecto es 1.
     :return: Un diccionario con los datos.
     """
     if empresa:
@@ -361,7 +372,9 @@ def datos_xa_render(opcion: str = None, documento: Documento = None, proceso: Pr
     cadenas_aprobacion = CadenaAprobacionEncabezado.objects.get_xa_select_activos().order_by('nombre')
 
     datos = {'procesos': procesos, 'grupos_documentos': grupos_documentos, 'opcion': opcion, 'version': version,
-             'cadenas_aprobacion': cadenas_aprobacion}
+             'cadenas_aprobacion': cadenas_aprobacion, 'medios_soporte': MedioSoporte.choices,
+             'tiempos_conservacion': TiempoConservacion.choices}
+
     if documento:
         datos['documento'] = documento
     if proceso:
@@ -372,7 +385,6 @@ def datos_xa_render(opcion: str = None, documento: Documento = None, proceso: Pr
         datos['archivo'] = archivo
     if version:
         datos['version'] = version
-
     return datos
 
 # endregion
