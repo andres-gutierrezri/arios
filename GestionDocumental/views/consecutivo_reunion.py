@@ -52,7 +52,7 @@ class ConsecutivoReunionView(AbstractEvaLoggedView):
 
 class ConsecutivoReunionesCrearView(AbstractEvaLoggedView):
     def get(self, request):
-        return render(request, 'GestionDocumental/ConsecutivosReuniones/crear.html',
+        return render(request, 'GestionDocumental/ConsecutivosReuniones/modal_crear_editar_reuniones.html',
                       {'fecha': datetime.datetime.now(),
                        'menu_actual': 'consecutivos-reunion'})
 
