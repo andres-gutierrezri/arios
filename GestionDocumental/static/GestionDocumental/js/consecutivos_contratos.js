@@ -10,7 +10,7 @@ let terceroSelectID = $('#tercero_select_id');
 let fechaFinal = $('#fecha_final_mostrar');
 
 $(document).ready(function () {
-    $('.select2').select2();
+    activarSelect2();
     $('#tipo_consecutivos_select_id').change(function () {
         window.location = '/gestion-documental/consecutivo-contratos/' + this.value + '/index';
     });
