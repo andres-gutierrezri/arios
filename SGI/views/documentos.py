@@ -42,7 +42,7 @@ class IndexView(AbstractEvaLoggedView):
 
             grupo_documentos |= GrupoDocumento.objects.filter(es_general=True, empresa_id=empresa_id).order_by('nombre')
             documentos |= Documento.objects.filter(grupo_documento__es_general=True,
-                                                   grupo_documento__empresa_id=empresa_id)
+                                                   grupo_documento__empresa_id=empresa_id, estado=True)
             archivos |= Archivo.objects.filter(documento__grupo_documento__es_general=True,
                                                documento__grupo_documento__empresa_id=empresa_id,
                                                estado_id=EstadoArchivo.APROBADO)
@@ -190,11 +190,12 @@ class DocumentosEliminarView(AbstractEvaLoggedView):
     def post(self, request, id):
         try:
             documento = Documento.objects.get(id=id)
-            if documento.archivo_set.exclude(estado_id=EstadoArchivo.ELIMINADO):
-                documento.delete()
-            else:
+            if documento.archivo_set.exists():
                 documento.estado = False
-                documento.save(update_fields=['estado'])
+                documento.usuario_modifica = request.user
+                documento.save(update_fields=['estado', 'usuario_modifica', 'fecha_modificacion'])
+            else:
+                documento.delete()
 
             messages.success(request, 'Se ha eliminado el documento {0}'.format(documento.nombre))
             return JsonResponse({"estado": "OK"})
