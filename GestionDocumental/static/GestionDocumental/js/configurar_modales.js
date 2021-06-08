@@ -56,7 +56,7 @@ function abrirModalCrearOficio(url) {
                 return false;
             }
             $(this).modal('show');
-            configurarModalCrearOficio ();
+            inicializarSelect2('contrato_id_select_id',modalCrearOficio);
         } catch (err) {
             console.log(err);
             EVANotificacion.toast.error('Ha ocurrido un error al cargar el archivo');
@@ -129,16 +129,6 @@ function configurarModalCrear() {
 
     agregarValidacionFormularios();
 }
-
-
-function configurarModalCrearOficio() {
-
-    $('#contrato_id_select_id').select2({
-            dropdownParent: modalCrearOficio
-        }
-    );
-}
-
 
 function CambiarSelect (actual){
     $.each(jQuery.parseJSON(extraTiposContrato.val()), function(key, value) {
