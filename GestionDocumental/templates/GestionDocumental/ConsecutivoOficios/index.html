@@ -26,7 +26,7 @@
                             {% if perms.GestionDocumental.add_consecutivooficio %}
                             <div class="col-md-10">
                                 <small>
-                                     <a class="far fa-3x far fa-plus-circle"  href="{% url 'GestionDocumental:consecutivo-oficios-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar consecutivo de oficio"></a>
+                                    <a class="far fa-3x far fa-plus-circle" href="javascript:abrirModalCrearOficio('{% url 'GestionDocumental:consecutivo-oficios-crear'%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar consecutivo de Oficio"></a>
                                 </small>
                             </div>
                             {% else %}
@@ -104,6 +104,7 @@
             </div>
     </div>
     {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='gestion-documental/consecutivo-oficios' %}
+     <div class="modal fade" tabindex="-1" id="crear-oficio" role="dialog"  aria-hidden="true"></div>
 
 {% endblock %}
 {% block scripts %}
@@ -113,4 +114,5 @@
     <script src="{% static 'GestionDocumental/js/filtro_consecutivos.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/controlBusquedaPaginacion.js' %}"></script>
+    <script src="{% static 'GestionDocumental/js/configurar_modales.js' %}"></script>
 {% endblock %}
