@@ -1,7 +1,7 @@
 {% load eva_tags %}
 {% load static %}
 
-<form action= "{% url 'GestionDocumental:consecutivo-contratos-crear' %}" id="consecutivo_contrato_form" method="post" class="needs-validation" novalidate>
+<form action= "{% url 'GestionDocumental:consecutivo-reuniones-crear' %}" id="consecutivo_reuniones_form" method="post" class="needs-validation" novalidate>
     {% csrf_token %}
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -21,7 +21,7 @@
                 </div>
                 <div class="form-group">
                     <div class="col-md-12">
-                        {% input_date_tag 'fecha' 'Fecha de Reunión' placeholder="Seleccione una fecha" required="" autocomplete="off" mensaje_validacion='Por favor seleccione una fecha.' invalido=errores.fecha_reunion %}
+                        {% input_date_tag 'fecha_reunion' 'Fecha de Reunión' placeholder="Seleccione una fecha" required="" autocomplete="off" mensaje_validacion='Por favor seleccione una fecha.' invalido=errores.fecha_reunion %}
                     </div>
                 </div>
                 <div class="form-group">
