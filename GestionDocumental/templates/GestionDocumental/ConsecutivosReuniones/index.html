@@ -24,13 +24,13 @@
 
                         <div class="panel-hdr">
                             {% if perms.GestionDocumental.add_consecutivoreunion %}
-                            <div class="col-md-10">
+                            <div class="col-md-12">
                                 <small>
-                                     <a class="far fa-3x far fa-plus-circle"  href="{% url 'GestionDocumental:consecutivo-reuniones-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar consecutivo de oficio"></a>
+                                    <a class="far fa-3x far fa-plus-circle" href="javascript:abrirModalCrearReunion('{% url 'GestionDocumental:consecutivo-reuniones-crear'%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar consecutivo acta de reunion"></a>
                                 </small>
                             </div>
                             {% else %}
-                            <div class="col-md-10"></div>
+                            <div class="col-md-12"></div>
                             {% endif %}
                             <div class="col-md-2" style="float: right" >
                                 {% select_tag opciones_filtro 'filtro_consecutivos' '' value=id_filtro  %}
@@ -93,6 +93,9 @@
             </div>
     </div>
     {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='gestion-documental/consecutivo-reuniones' %}
+    {% include 'EVA/_common/_vista_previa_modal.html' with titulo_modal='Vista Documento' %}
+    <div class="modal fade" tabindex="-1" id="crear" role="dialog"  aria-hidden="true"></div>
+    <div class="modal fade" tabindex="-1" id="crear-reunion" role="dialog"  aria-hidden="true"></div>
 
 {% endblock %}
 {% block scripts %}
@@ -102,4 +105,6 @@
     <script src="{% static 'GestionDocumental/js/filtro_consecutivos.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/controlBusquedaPaginacion.js' %}"></script>
+    <script src="{% static 'GestionDocumental/js/configurar_modales.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
 {% endblock %}
