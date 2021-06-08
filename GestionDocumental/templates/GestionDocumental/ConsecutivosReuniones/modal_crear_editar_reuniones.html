@@ -1,0 +1,39 @@
+{% load eva_tags %}
+{% load static %}
+
+<form action= "{% url 'GestionDocumental:consecutivo-contratos-crear' %}" id="consecutivo_contrato_form" method="post" class="needs-validation" novalidate>
+    {% csrf_token %}
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header p-b-0">
+                <h4 class="modal-title">
+                    Crear Consecutivo Acta de Reuniones
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <div class="col-md-12">
+                        {% input_text_tag 'tema' 'Tema' placeholder="Ingrese el tema de la reunión" required="" maxlength="100" mensaje_validacion='Por favor describa el tema' invalido=errores.destinatario %}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-12">
+                        {% input_date_tag 'fecha' 'Fecha de Reunión' placeholder="Seleccione una fecha" required="" autocomplete="off" mensaje_validacion='Por favor seleccione una fecha.' invalido=errores.fecha_reunion %}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-12">
+                        {% input_textarea_tag 'descripcion' 'Descripción de la Reunión (Opcional)' placeholder="Ingrese una descripción" maxlength="100" mensaje_validacion='Por favor digite una descripción.' invalido=errores.descripcion %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button data-dismiss="modal" class="btn btn-danger btn-pills">Cancelar</button>
+                    <button id="agregar" type="submit" class="btn btn-primary btn-pills">Agregar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
