@@ -114,15 +114,20 @@ class DocumentosCrearView(AbstractEvaLoggedView):
             datos = datos_xa_render(self.OPCION, documento, proceso=proceso, grupo_documento=grupo_documento,
                                     empresa=get_id_empresa_global(request))
             datos['errores'] = errores.message_dict
-            if '__all__' in errores.message_dict:
-                for mensaje in errores.message_dict['__all__']:
-                    if mensaje.find("Código") > 0:
-                        messages.warning(request, 'Ya existe un documento con código {0}'.format(documento.codigo))
-                        break
-                    elif mensaje.find('Nombre') > 0:
-                        messages.warning(request, 'Ya existe un documento con nombre {0}'.format(documento.nombre))
-                        break
             return render(request, 'SGI/documentos/crear-editar.html', datos)
+
+        mensaje_error = None
+        if documento.ya_existe_codigo():
+            mensaje_error = 'Ya existe un documento con código {0}'.format(documento.codigo)
+        elif documento.ya_existe_nombre():
+            mensaje_error = 'Ya existe un documento con nombre {0}'.format(documento.nombre)
+
+        if mensaje_error:
+            datos = datos_xa_render(self.OPCION, documento, proceso=proceso, grupo_documento=grupo_documento,
+                                    empresa=get_id_empresa_global(request))
+            messages.warning(request, mensaje_error)
+            return render(request, 'SGI/documentos/crear-editar.html', datos)
+
         documento.save()
         messages.success(request, 'Se ha creado el documento {0} ' .format(documento.nombre))
         return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
@@ -167,21 +172,17 @@ class DocumentosEditarView(AbstractEvaLoggedView):
         documento_db.medio_soporte = documento.medio_soporte
         documento_db.tiempo_conservacion = documento.tiempo_conservacion
         documento_db.usuario_modifica = request.user
-        try:
-            documento_db.validate_unique()
-        except ValidationError as errores:
+
+        mensaje_error = None
+        if documento_db.ya_existe_codigo(True):
+            mensaje_error = 'Ya existe un documento con código {0}'.format(documento.codigo)
+        elif documento_db.ya_existe_nombre(True):
+            mensaje_error = 'Ya existe un documento con nombre {0}'.format(documento.nombre)
+
+        if mensaje_error:
             datos = datos_xa_render(self.OPCION, documento, proceso=proceso, grupo_documento=grupo_documento,
                                     empresa=get_id_empresa_global(request))
-            datos['errores'] = errores.message_dict
-            if '__all__' in errores.message_dict:
-                for mensaje in errores.message_dict['__all__']:
-                    if 'Código' in mensaje:
-                        messages.warning(request, 'Ya existe un documento con código {0}'.format(documento.codigo))
-                        break
-                    elif 'Nombre' in mensaje:
-                        messages.warning(request, 'Ya existe un documento con nombre {0}'.format(documento.nombre))
-                        break
-
+            messages.warning(request, mensaje_error)
             return render(request, 'SGI/documentos/crear-editar.html', datos)
 
         documento_db.save(update_fields=['nombre', 'codigo', 'cadena_aprobacion_id', 'medio_soporte',

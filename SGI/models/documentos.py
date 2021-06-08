@@ -102,7 +102,6 @@ class Documento(models.Model, ModelDjangoExtensiones):
     class Meta:
         verbose_name = 'Documento'
         verbose_name_plural = 'Documentos'
-        unique_together = ('codigo', 'grupo_documento', 'proceso'), ('nombre', 'grupo_documento', 'proceso')
 
     @staticmethod
     def from_dictionary(datos: dict) -> 'Documento':
@@ -127,6 +126,22 @@ class Documento(models.Model, ModelDjangoExtensiones):
     @property
     def version_minima_siguiente(self):
         return self.version_actual + 1
+
+    def ya_existe_codigo(self, editando=False):
+        consulta = Documento.objects.filter(codigo__iexact=self.codigo, grupo_documento_id=self.grupo_documento_id,
+                                            proceso_id=self.proceso_id, estado=True)
+        if editando:
+            consulta = consulta.exclude(id=self.id)
+
+        return consulta.exists()
+
+    def ya_existe_nombre(self, editando=False):
+        consulta = Documento.objects.filter(nombre__iexact=self.nombre, grupo_documento_id=self.grupo_documento_id,
+                                            proceso_id=self.proceso_id, estado=True)
+        if editando:
+            consulta = consulta.exclude(id=self.id)
+
+        return consulta.exists()
 
 
 class EstadoArchivo(models.Model):
