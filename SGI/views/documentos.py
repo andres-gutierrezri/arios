@@ -32,7 +32,8 @@ class IndexView(AbstractEvaLoggedView):
                 .order_by('codigo')
             archivos = Archivo.objects.filter(documento__proceso_id=id, estado_id=EstadoArchivo.APROBADO)
             proceso = procesos.get(id=id)
-            grupo_documentos = GrupoDocumento.objects.filter(empresa_id=empresa_id, es_general=False).order_by('nombre')
+            grupo_documentos = GrupoDocumento.objects.filter(empresa_id=empresa_id, es_general=False, estado=True)\
+                .order_by('nombre')
             historial = Archivo.objects.filter(documento__proceso_id=id).order_by('-version')\
                 .exclude(estado_id=EstadoArchivo.PENDIENTE).exclude(estado_id=EstadoArchivo.ELIMINADO)
             resultados = ResultadosAprobacion.objects.exclude(estado_id=EstadoArchivo.PENDIENTE,
@@ -40,14 +41,15 @@ class IndexView(AbstractEvaLoggedView):
 
             # Union de documentos de grupos de documento generales.
 
-            grupo_documentos |= GrupoDocumento.objects.filter(es_general=True, empresa_id=empresa_id).order_by('nombre')
+            grupo_documentos |= GrupoDocumento.objects.filter(es_general=True, empresa_id=empresa_id, estado=True)\
+                .order_by('nombre')
             documentos |= Documento.objects.filter(grupo_documento__es_general=True,
                                                    grupo_documento__empresa_id=empresa_id, estado=True)
             archivos |= Archivo.objects.filter(documento__grupo_documento__es_general=True,
                                                documento__grupo_documento__empresa_id=empresa_id,
                                                estado_id=EstadoArchivo.APROBADO)
             historial |= Archivo.objects.filter(documento__grupo_documento__es_general=True,
-                                                documento__grupo_documento__empresa_id=empresa_id).order_by('-version') \
+                                                documento__grupo_documento__empresa_id=empresa_id).order_by('-version')\
                 .exclude(estado_id=EstadoArchivo.PENDIENTE)
 
             colaborador = Colaborador.objects.get(usuario=request.user)
