@@ -93,25 +93,12 @@ function configurarModalCrear() {
         format: 'yyyy-mm-dd',
         autoclose: true
     });
-    $('#fecha_final_id').datepicker({
-        todayHighlight: true,
-        orientation: "bottom left",
-        templates: controls,
-        format: 'yyyy-mm-dd',
-        autoclose: true
-    });
-    $('#tipo_contrato_select_id').select2({
-        dropdownParent: modalCrear
-        }
-    );
-    $('#colaborador_select_id').select2({
-        dropdownParent: modalCrear
-        }
-    );
-    $('#tercero_select_id').select2({
-        dropdownParent: modalCrear
-        }
-    );
+
+    inicializarDatePicker('fecha_final_id');
+    inicializarDatePicker('fecha_inicio_id');
+    inicializarSelect2('tipo_contrato_select_id', modalCrear);
+    inicializarSelect2('colaborador_select_id', modalCrear);
+    inicializarSelect2('tercero_select_id', modalCrear);
 
     if (idTipoContrato === ""){
         $('#tipo_contrato_select_id').change(function () {

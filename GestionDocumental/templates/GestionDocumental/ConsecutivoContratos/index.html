@@ -15,7 +15,7 @@
     <div class="panel-container show">
             <div class="header">
                  <h1 class="header-title">
-                    <i class='far fa-file-alt'></i> Consecutivo de Contratos <span class='fw-300'></span>
+                    <i class='fad fa-file-alt'></i> Consecutivo de Contratos <span class='fw-300'></span>
                      <br>
                      <br>
                  </h1>
@@ -23,12 +23,11 @@
             <div class="row">
                 <div class="col-xl-12">
                     <div id="panel-1" class="panel">
-
                         <div class="panel-hdr">
                             {% if perms.GestionDocumental.add_consecutivocontrato %}
                             <div class="col-md-10">
                                 <small>
-                                    <a class="far fa-3x far fa-plus-circle" href="javascript:abrirModalCrear('{% url 'GestionDocumental:consecutivo-contratos-crear'%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar consecutivo de contrato"></a>
+                                    <a class="fad fa-3x fad fa-plus-circle" href="javascript:abrirModalCrear('{% url 'GestionDocumental:consecutivo-contratos-crear'%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar consecutivo de contrato"></a>
                                 </small>
                             </div>
                             {% else %}
@@ -63,7 +62,9 @@
                                                 <tbody>
                                                     {% for consecutivo in consecutivos %}
                                                         <tr>
-                                                            <td>{{ consecutivo.codigo }}</td>
+                                                            <td><span id="copiar_{{ consecutivo.id }}">{{ consecutivo.codigo }}</span>
+                                                                <span><a class="fad fa-copy" href="javascript:void(0);"  onclick="copiarAPortapapeles('{{ consecutivo.codigo }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Copiar"></a></span>
+                                                            </td>
                                                             <td>{% if consecutivo.usuario %}
                                                                     {{ consecutivo.usuario.get_full_name }}
                                                                 {% else %}
@@ -89,7 +90,7 @@
                                                                 {% if  perms.GestionDocumental.add_consecutivocontrato and consecutivo.estado%}
                                                                     <a class="fad fa-2x fa-file-upload" href="javascript:abrirModalCargar('{% url 'GestionDocumental:consecutivo-contratos-cargar' consecutivo.id%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Cargar Contrato"></a>
                                                                 {% endif %}
-                                                                {% if perms.GestionDocumental.ver_consecutivocontrato and consecutivo.ruta_archivo %}
+                                                                {% if perms.GestionDocumental.view_consecutivocontrato and consecutivo.ruta_archivo %}
                                                                     <a class="fad fa-2x fa-eye" href="javascript:abrirModalVistaPrevia('{% url 'GestionDocumental:consecutivo-contratos-ver' consecutivo.id%}')" data-original-title="Ver" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="Ver Contrato Cargado"></a>
                                                                 {% endif %}
                                                             </td>
@@ -132,6 +133,5 @@
     <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js' %}"></script>
     <script src="{% static 'TalentoHumano/js/date_picker.js' %}"></script>
-    <script src="{% static 'EVA/Plantilla/js/custom/funcionesGenerales.js' %}"></script>
 {% endblock %}
 

@@ -76,7 +76,9 @@ def enviar_notificacion_por_email(self):
                 notificaciones.append(datos)
 
         elif email.notificacion.tipo_notificacion_id == TipoNotificacion.EVENTO_DEL_SISTEMA and \
-                not email.notificacion.evento_desencadenador_id == EventoDesencadenador.BIENVENIDA:
+                not email.notificacion.evento_desencadenador_id in [EventoDesencadenador.BIENVENIDA,
+                                                                    EventoDesencadenador.SOLICITUD_APROBACION,
+                                                                    EventoDesencadenador.NOTIFICACION_CA]:
             seleccion = SeleccionDeNotificacionARecibir.objects \
                         .filter(evento_desencadenador=email.notificacion.evento_desencadenador,
                                 usuario=email.usuario)

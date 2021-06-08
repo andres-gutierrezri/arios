@@ -1,16 +1,15 @@
-from decimal import Decimal
 
 from django.db import models
 from datetime import datetime
 
+
 from EVA import settings
-from EVA.General.conversiones import string_to_datetime
 from django.contrib.auth.models import User
 # Create your models here.
 from Administracion.models import Empresa, Proceso
 from EVA.General.modeljson import ModelDjangoExtensiones
 from EVA.General.modelmanagers import ManagerGeneral
-from TalentoHumano.models import Colaborador
+from SGI.Enumeraciones import MedioSoporte, TiempoConservacion
 
 
 class GrupoDocumento(models.Model):
@@ -77,26 +76,32 @@ class Documento(models.Model, ModelDjangoExtensiones):
     objects = ManagerGeneral()
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     codigo = models.CharField(max_length=20, verbose_name='Código', null=False, blank=False)
+    medio_soporte = models.SmallIntegerField(choices=MedioSoporte.choices, verbose_name='Medio Soporte',
+                                             null=False, blank=False)
+    tiempo_conservacion = models.SmallIntegerField(choices=TiempoConservacion.choices,
+                                                   verbose_name='Tiempo Conservación', null=False, blank=False)
     fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False, blank=False)
     fecha_modificacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Modificación', null=True,
                                               blank=False)
-    version_actual = models.DecimalField(max_digits=4, decimal_places=1, verbose_name='Versión Actual',
-                                         null=False, blank=False)
+    version_actual = models.SmallIntegerField(verbose_name='Versión Actual', null=False, blank=False)
     cadena_aprobacion = models.ForeignKey(CadenaAprobacionEncabezado, on_delete=models.DO_NOTHING,
                                           verbose_name='Cadena de aprobación', null=True, blank=False)
     grupo_documento = models.ForeignKey(GrupoDocumento, on_delete=models.DO_NOTHING,
                                         verbose_name='Grupo de documento', null=True, blank=False)
     proceso = models.ForeignKey(Proceso, on_delete=models.DO_NOTHING, verbose_name='Proceso', null=True, blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False, default=True)
+    usuario_crea = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario Crea", null=True,
+                                     blank=True, related_name='%(app_label)s_%(class)s_usuario_crea')
+    usuario_modifica = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario Modifica", null=True,
+                                         blank=True, related_name='%(app_label)s_%(class)s_usuario_modifica')
 
     def __str__(self):
         return '{0} {1}'.format(self.codigo, self.nombre) +\
-               (' v{:.1f}'.format(self.version_actual) if self.version_actual != 0 else '')
+               (' v{}'.format(self.version_actual) if self.version_actual != 0 else '')
 
     class Meta:
         verbose_name = 'Documento'
         verbose_name_plural = 'Documentos'
-        unique_together = ('codigo', 'grupo_documento', 'proceso'), ('nombre', 'grupo_documento', 'proceso')
 
     @staticmethod
     def from_dictionary(datos: dict) -> 'Documento':
@@ -113,12 +118,30 @@ class Documento(models.Model, ModelDjangoExtensiones):
         documento.cadena_aprobacion_id = datos.get('cadena_aprobacion_id', None)
         documento.grupo_documento_id = datos.get('grupo_documento_id', '')
         documento.proceso_id = datos.get('proceso_id', '')
+        documento.medio_soporte = datos.get('soporte_id', None)
+        documento.tiempo_conservacion = datos.get('conservacion_id', None)
 
         return documento
 
     @property
     def version_minima_siguiente(self):
-        return '{0:.1f}'.format(self.version_actual + Decimal('0.1'))
+        return self.version_actual + 1
+
+    def ya_existe_codigo(self, editando=False):
+        consulta = Documento.objects.filter(codigo__iexact=self.codigo, grupo_documento_id=self.grupo_documento_id,
+                                            proceso_id=self.proceso_id, estado=True)
+        if editando:
+            consulta = consulta.exclude(id=self.id)
+
+        return consulta.exists()
+
+    def ya_existe_nombre(self, editando=False):
+        consulta = Documento.objects.filter(nombre__iexact=self.nombre, grupo_documento_id=self.grupo_documento_id,
+                                            proceso_id=self.proceso_id, estado=True)
+        if editando:
+            consulta = consulta.exclude(id=self.id)
+
+        return consulta.exists()
 
 
 class EstadoArchivo(models.Model):
@@ -154,7 +177,7 @@ class EstadoArchivo(models.Model):
 
 
 def custom_upload_to(instance, filename):
-    return '{6}/SGI/Documentos/{0:d}/{1:d}/{2} {3} v{4:.1f}.{5}'\
+    return '{6}/SGI/Documentos/{0:d}/{1:d}/{2} {3} v{4}.{5}'\
         .format(instance.documento.proceso.empresa.id, instance.documento.proceso.id, instance.documento.codigo,
                 instance.documento.nombre, instance.version, filename.split(".")[-1], settings.EVA_PRIVATE_MEDIA)
 
@@ -163,8 +186,7 @@ class Archivo(models.Model):
     objects = ManagerGeneral()
     documento = models.ForeignKey(Documento, on_delete=models.DO_NOTHING, verbose_name='Documento', null=True,
                                   blank=False)
-    version = models.DecimalField(max_digits=4, decimal_places=1, verbose_name='Versión',
-                                  null=False, blank=False)
+    version = models.SmallIntegerField(verbose_name='Versión', null=False, blank=False)
     notas = models.CharField(max_length=500, verbose_name='Notas', null=False, blank=False)
     fecha_documento = models.DateField(verbose_name='Fecha del Documento', null=False, blank=False)
     archivo = models.FileField(upload_to=custom_upload_to, blank=True, max_length=250)
@@ -207,7 +229,7 @@ class Archivo(models.Model):
     @property
     def nombre_documento(self):
         return '{0} {1}'.format(self.documento.codigo, self.documento.nombre) + \
-               (' v{:.1f}'.format(self.version) if self.version != 0 else '')
+               (' v{}'.format(self.version) if self.version != 0 else '')
 
 
 class ResultadosAprobacion(models.Model):
@@ -239,3 +261,6 @@ class GruposDocumentosProcesos(models.Model):
     class Meta:
         verbose_name = 'Grupo de Documento Proceso'
         verbose_name_plural = 'Grupos de Documentos Procesos'
+
+
+

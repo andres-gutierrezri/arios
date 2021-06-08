@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, reverse
@@ -6,10 +8,13 @@ from django.contrib import messages
 from django.db import IntegrityError
 import os.path
 
+
 from Administracion.models import Proceso
 from Administracion.utils import get_id_empresa_global
 from EVA.General.utilidades import validar_extension_de_archivo
 from EVA.views.index import AbstractEvaLoggedView
+from SGI.Enumeraciones import MedioSoporte, TiempoConservacion
+
 from SGI.models import Documento, GrupoDocumento, Archivo
 from SGI.models.documentos import EstadoArchivo, CadenaAprobacionDetalle, ResultadosAprobacion, \
     CadenaAprobacionEncabezado, GruposDocumentosProcesos
@@ -27,7 +32,8 @@ class IndexView(AbstractEvaLoggedView):
                 .order_by('codigo')
             archivos = Archivo.objects.filter(documento__proceso_id=id, estado_id=EstadoArchivo.APROBADO)
             proceso = procesos.get(id=id)
-            grupo_documentos = GrupoDocumento.objects.filter(empresa_id=empresa_id, es_general=False).order_by('nombre')
+            grupo_documentos = GrupoDocumento.objects.filter(empresa_id=empresa_id, es_general=False, estado=True)\
+                .order_by('nombre')
             historial = Archivo.objects.filter(documento__proceso_id=id).order_by('-version')\
                 .exclude(estado_id=EstadoArchivo.PENDIENTE).exclude(estado_id=EstadoArchivo.ELIMINADO)
             resultados = ResultadosAprobacion.objects.exclude(estado_id=EstadoArchivo.PENDIENTE,
@@ -35,14 +41,15 @@ class IndexView(AbstractEvaLoggedView):
 
             # Union de documentos de grupos de documento generales.
 
-            grupo_documentos |= GrupoDocumento.objects.filter(es_general=True, empresa_id=empresa_id).order_by('nombre')
+            grupo_documentos |= GrupoDocumento.objects.filter(es_general=True, empresa_id=empresa_id, estado=True)\
+                .order_by('nombre')
             documentos |= Documento.objects.filter(grupo_documento__es_general=True,
-                                                   grupo_documento__empresa_id=empresa_id)
+                                                   grupo_documento__empresa_id=empresa_id, estado=True)
             archivos |= Archivo.objects.filter(documento__grupo_documento__es_general=True,
                                                documento__grupo_documento__empresa_id=empresa_id,
                                                estado_id=EstadoArchivo.APROBADO)
             historial |= Archivo.objects.filter(documento__grupo_documento__es_general=True,
-                                                documento__grupo_documento__empresa_id=empresa_id).order_by('-version') \
+                                                documento__grupo_documento__empresa_id=empresa_id).order_by('-version')\
                 .exclude(estado_id=EstadoArchivo.PENDIENTE)
 
             colaborador = Colaborador.objects.get(usuario=request.user)
@@ -86,36 +93,41 @@ class DocumentosCrearView(AbstractEvaLoggedView):
         grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
         return render(request, 'SGI/documentos/crear-editar.html',
                       datos_xa_render(self.OPCION, proceso=proceso, grupo_documento=grupo_documento,
-                                      empresa=get_id_empresa_global(request)))
+                                      empresa=get_id_empresa_global(request),))
 
     def post(self, request,  id_proceso, id_grupo):
         documento = Documento.from_dictionary(request.POST)
         proceso = Proceso.objects.get(id=id_proceso)
         grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
         documento.grupo_documento_id = id_grupo
+        documento.usuario_crea = request.user
         excluir_en_validacion = []
         if grupo_documento.es_general:
             documento.proceso = None
             excluir_en_validacion.append('proceso')
         else:
             documento.proceso_id = id_proceso
-        documento.version_actual = 0.00
-
+        documento.version_actual = 0
         try:
             documento.full_clean(exclude=excluir_en_validacion)
         except ValidationError as errores:
             datos = datos_xa_render(self.OPCION, documento, proceso=proceso, grupo_documento=grupo_documento,
                                     empresa=get_id_empresa_global(request))
             datos['errores'] = errores.message_dict
-            if '__all__' in errores.message_dict:
-                for mensaje in errores.message_dict['__all__']:
-                    if mensaje.find("Código") > 0:
-                        messages.warning(request, 'Ya existe un documento con código {0}'.format(documento.codigo))
-                        break
-                    elif mensaje.find('Nombre') > 0:
-                        messages.warning(request, 'Ya existe un documento con nombre {0}'.format(documento.nombre))
-                        break
             return render(request, 'SGI/documentos/crear-editar.html', datos)
+
+        mensaje_error = None
+        if documento.ya_existe_codigo():
+            mensaje_error = 'Ya existe un documento con código {0}'.format(documento.codigo)
+        elif documento.ya_existe_nombre():
+            mensaje_error = 'Ya existe un documento con nombre {0}'.format(documento.nombre)
+
+        if mensaje_error:
+            datos = datos_xa_render(self.OPCION, documento, proceso=proceso, grupo_documento=grupo_documento,
+                                    empresa=get_id_empresa_global(request))
+            messages.warning(request, mensaje_error)
+            return render(request, 'SGI/documentos/crear-editar.html', datos)
+
         documento.save()
         messages.success(request, 'Se ha creado el documento {0} ' .format(documento.nombre))
         return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
@@ -149,31 +161,32 @@ class DocumentosEditarView(AbstractEvaLoggedView):
 
         documento_db = Documento.objects.get(id=id_documento)
 
-        if documento_db.comparar(documento, campos=['nombre', 'codigo', 'cadena_aprobacion']):
+        if documento_db.comparar(documento, campos=['nombre', 'codigo', 'cadena_aprobacion', 'medio_soporte',
+                                                    'tiempo_conservacion']):
             messages.success(request, 'No se hicieron cambios en el documento {0}'.format(documento.nombre))
             return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
         documento_db.nombre = documento.nombre
         documento_db.codigo = documento.codigo
         documento_db.cadena_aprobacion_id = documento.cadena_aprobacion_id
-        try:
-            documento_db.validate_unique()
-        except ValidationError as errores:
+        documento_db.medio_soporte = documento.medio_soporte
+        documento_db.tiempo_conservacion = documento.tiempo_conservacion
+        documento_db.usuario_modifica = request.user
+
+        mensaje_error = None
+        if documento_db.ya_existe_codigo(True):
+            mensaje_error = 'Ya existe un documento con código {0}'.format(documento.codigo)
+        elif documento_db.ya_existe_nombre(True):
+            mensaje_error = 'Ya existe un documento con nombre {0}'.format(documento.nombre)
+
+        if mensaje_error:
             datos = datos_xa_render(self.OPCION, documento, proceso=proceso, grupo_documento=grupo_documento,
                                     empresa=get_id_empresa_global(request))
-            datos['errores'] = errores.message_dict
-            if '__all__' in errores.message_dict:
-                for mensaje in errores.message_dict['__all__']:
-                    if 'Código' in mensaje:
-                        messages.warning(request, 'Ya existe un documento con código {0}'.format(documento.codigo))
-                        break
-                    elif 'Nombre' in mensaje:
-                        messages.warning(request, 'Ya existe un documento con nombre {0}'.format(documento.nombre))
-                        break
-
+            messages.warning(request, mensaje_error)
             return render(request, 'SGI/documentos/crear-editar.html', datos)
 
-        documento_db.save(update_fields=['nombre', 'codigo', 'cadena_aprobacion_id'])
+        documento_db.save(update_fields=['nombre', 'codigo', 'cadena_aprobacion_id', 'medio_soporte',
+                                         'tiempo_conservacion', 'usuario_modifica', 'fecha_modificacion'])
         messages.success(request, 'Se ha actualizado el documento {0}' .format(documento.nombre))
         return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
@@ -182,11 +195,12 @@ class DocumentosEliminarView(AbstractEvaLoggedView):
     def post(self, request, id):
         try:
             documento = Documento.objects.get(id=id)
-            if documento.archivo_set.exclude(estado_id=EstadoArchivo.ELIMINADO):
-                documento.delete()
-            else:
+            if documento.archivo_set.exists():
                 documento.estado = False
-                documento.save(update_fields=['estado'])
+                documento.usuario_modifica = request.user
+                documento.save(update_fields=['estado', 'usuario_modifica', 'fecha_modificacion'])
+            else:
+                documento.delete()
 
             messages.success(request, 'Se ha eliminado el documento {0}'.format(documento.nombre))
             return JsonResponse({"estado": "OK"})
@@ -268,8 +282,9 @@ class ArchivoCargarView(AbstractEvaLoggedView):
             return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
         archivo_db = Archivo.objects.filter(documento_id=id_documento, estado=EstadoArchivo.APROBADO)
+        archivo.version = int(Decimal(archivo.version))
         if archivo_db:
-            if float(archivo.version) <= documento.version_actual:
+            if archivo.version <= documento.version_actual:
                 messages.error(request, 'La versión del documento debe ser mayor a la actual {0}'
                                .format(documento.version_actual))
                 return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
@@ -329,7 +344,7 @@ class VerDocumentoView(AbstractEvaLoggedView):
             mime_type = mime_types.get(extension, 'application/pdf')
 
             response = HttpResponse(archivo.archivo, content_type=mime_type)
-            response['Content-Disposition'] = 'inline; filename="{0} {1} v{2:.1f}{3}"'\
+            response['Content-Disposition'] = 'inline; filename="{0} {1} v{2}{3}"'\
                 .format(archivo.documento.codigo, archivo.documento.nombre,
                         archivo.documento.version_actual, extension)
         else:
@@ -342,14 +357,16 @@ class VerDocumentoView(AbstractEvaLoggedView):
 
 
 def datos_xa_render(opcion: str = None, documento: Documento = None, proceso: Proceso = None, empresa: int = None,
-                    grupo_documento: GrupoDocumento = None, archivo: Archivo = None, version: float = 1) -> dict:
+                    grupo_documento: GrupoDocumento = None, archivo: Archivo = None, version: int = 1) -> dict:
     """
     Datos necesarios para la creación de los html de Documento.
     :param opcion: valor de la acción a realizar 'crear' o 'editar'
     :param documento: Es opcional si se requiere pre cargar datos.
     :param proceso: Necesario para la ubicación del proceso al que pertenece el documento.
+    :param empresa: Necesario si qe requiere filtrar por esta.
     :param grupo_documento: Necesario para la ubicación del grupo de documentos al que pertenece.
     :param archivo: Es opcional si se requiere pre cargar datos.
+    :param version: la versión del documento, por defecto es 1.
     :return: Un diccionario con los datos.
     """
     if empresa:
@@ -361,7 +378,9 @@ def datos_xa_render(opcion: str = None, documento: Documento = None, proceso: Pr
     cadenas_aprobacion = CadenaAprobacionEncabezado.objects.get_xa_select_activos().order_by('nombre')
 
     datos = {'procesos': procesos, 'grupos_documentos': grupos_documentos, 'opcion': opcion, 'version': version,
-             'cadenas_aprobacion': cadenas_aprobacion}
+             'cadenas_aprobacion': cadenas_aprobacion, 'medios_soporte': MedioSoporte.choices,
+             'tiempos_conservacion': TiempoConservacion.choices}
+
     if documento:
         datos['documento'] = documento
     if proceso:
@@ -372,7 +391,6 @@ def datos_xa_render(opcion: str = None, documento: Documento = None, proceso: Pr
         datos['archivo'] = archivo
     if version:
         datos['version'] = version
-
     return datos
 
 # endregion
