@@ -1,19 +1,15 @@
-from decimal import Decimal
 
 from django.db import models
 from datetime import datetime
 
 
 from EVA import settings
-from EVA.General.conversiones import string_to_datetime
 from django.contrib.auth.models import User
 # Create your models here.
 from Administracion.models import Empresa, Proceso
 from EVA.General.modeljson import ModelDjangoExtensiones
 from EVA.General.modelmanagers import ManagerGeneral
 from SGI.Enumeraciones import MedioSoporte, TiempoConservacion
-
-from TalentoHumano.models import Colaborador
 
 
 class GrupoDocumento(models.Model):
