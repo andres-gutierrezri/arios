@@ -177,7 +177,7 @@ class AccionAprobacionDocumentosView(AbstractEvaLoggedView):
                 usuario_siguiente.aprobacion_anterior = EstadoArchivo.APROBADO
                 usuario_siguiente.save(update_fields=['aprobacion_anterior'])
                 crear_notificacion_cadena(usuario_siguiente.archivo, ACCION_CADENA_APROBADO)
-                crear_notificacion_cadena(usuario_cadena, ACCION_NUEVO, posicion=usuario_cadena.orden)
+                crear_notificacion_cadena(usuario_siguiente.archivo, ACCION_NUEVO, posicion=usuario_cadena.orden)
             else:
                 archivo_nuevo = Archivo.objects.get(id=id)
                 archivo_nuevo.estado_id = EstadoArchivo.APROBADO
@@ -209,27 +209,28 @@ def crear_notificacion_cadena(archivo, accion, posicion: int = 0):
 
         crear_notificacion_por_evento(EventoDesencadenador.NOTIFICACION_CA, archivo.id,
                                       contenido={'titulo': 'Solicitud de Aprobación',
-                                                 'mensaje': 'Tienes un documento pendiente para aprobación',
+                                                 'mensaje': f'Tienes un documento pendiente para aprobación: '
+                                                            f'{archivo.nombre_documento}',
                                                  'usuario': usuario.usuario_id})
     if accion == ACCION_APROBADO:
         crear_notificacion_por_evento(EventoDesencadenador.SOLICITUD_APROBACION, archivo.id,
                                       contenido={'titulo': 'Documento Aprobado',
-                                                 'mensaje': 'Tu solicitud para el documento '
-                                                            + archivo.documento.nombre + ' ha sido aprobada',
+                                                 'mensaje': f'Tu solicitud para el documento {archivo.nombre_documento}'
+                                                            f' ha sido aprobada',
                                                  'usuario': archivo.usuario_id})
         crear_notificacion_documento_nuevo(archivo)
 
     elif accion == ACCION_CADENA_APROBADO:
         crear_notificacion_por_evento(EventoDesencadenador.SOLICITUD_APROBACION, archivo.id,
                                       contenido={'titulo': 'Documento en aprobación',
-                                                 'mensaje': 'Tu solicitud para el documento '
-                                                            + archivo.documento.nombre + ' está avanzando',
+                                                 'mensaje': f'Tu solicitud para el documento {archivo.nombre_documento}'
+                                                            f' está avanzando',
                                                  'usuario': archivo.usuario_id})
     elif accion == ACCION_RECHAZADO:
         crear_notificacion_por_evento(EventoDesencadenador.SOLICITUD_APROBACION, archivo.id,
                                       contenido={'titulo': 'Documento Rechazado',
-                                                 'mensaje': 'Tu solicitud para el documento '
-                                                            + archivo.documento.nombre + ' ha sido rechazada',
+                                                 'mensaje': f'Tu solicitud para el documento {archivo.documento.nombre}'
+                                                            f' ha sido rechazada',
                                                  'usuario': archivo.usuario_id})
     elif accion == ACCION_APROBACION_DIRECTA:
         crear_notificacion_documento_nuevo(archivo)
