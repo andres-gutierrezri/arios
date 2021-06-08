@@ -94,6 +94,10 @@ class Documento(models.Model, ModelDjangoExtensiones):
                                         verbose_name='Grupo de documento', null=True, blank=False)
     proceso = models.ForeignKey(Proceso, on_delete=models.DO_NOTHING, verbose_name='Proceso', null=True, blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False, default=True)
+    usuario_crea = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario Crea", null=True,
+                                     blank=True, related_name='%(app_label)s_%(class)s_usuario_crea')
+    usuario_modifica = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario Modifica", null=True,
+                                         blank=True, related_name='%(app_label)s_%(class)s_usuario_modifica')
 
     def __str__(self):
         return '{0} {1}'.format(self.codigo, self.nombre) +\
