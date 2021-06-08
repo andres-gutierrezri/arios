@@ -1,6 +1,6 @@
 {% load eva_tags %}
 {% load static %}
- {% if editar %}
+{% if editar %}
 <form action= "{% url 'GestionDocumental:consecutivo-contratos-editar' contrato_actual%}" id="consecutivo_contrato_form_editar" method="post" class="needs-validation" novalidate>
 {% else %}
 <form action= "{% url 'GestionDocumental:consecutivo-contratos-crear' %}" id="consecutivo_contrato_form" method="post" class="needs-validation" novalidate>
