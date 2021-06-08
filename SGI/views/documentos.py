@@ -100,6 +100,7 @@ class DocumentosCrearView(AbstractEvaLoggedView):
         proceso = Proceso.objects.get(id=id_proceso)
         grupo_documento = GrupoDocumento.objects.get(id=id_grupo)
         documento.grupo_documento_id = id_grupo
+        documento.usuario_crea = request.user
         excluir_en_validacion = []
         if grupo_documento.es_general:
             documento.proceso = None
@@ -165,6 +166,7 @@ class DocumentosEditarView(AbstractEvaLoggedView):
         documento_db.cadena_aprobacion_id = documento.cadena_aprobacion_id
         documento_db.medio_soporte = documento.medio_soporte
         documento_db.tiempo_conservacion = documento.tiempo_conservacion
+        documento_db.usuario_modifica = request.user
         try:
             documento_db.validate_unique()
         except ValidationError as errores:
@@ -183,7 +185,7 @@ class DocumentosEditarView(AbstractEvaLoggedView):
             return render(request, 'SGI/documentos/crear-editar.html', datos)
 
         documento_db.save(update_fields=['nombre', 'codigo', 'cadena_aprobacion_id', 'medio_soporte',
-                                         'tiempo_conservacion'])
+                                         'tiempo_conservacion', 'usuario_modifica', 'fecha_modificacion'])
         messages.success(request, 'Se ha actualizado el documento {0}' .format(documento.nombre))
         return redirect(reverse('SGI:documentos-index', args=[id_proceso]))
 
