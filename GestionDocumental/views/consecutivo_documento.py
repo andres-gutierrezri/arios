@@ -60,25 +60,8 @@ class ConsecutivoOficiosView(AbstractEvaLoggedView):
 
 class ConsecutivoOficiosCrearView(AbstractEvaLoggedView):
     def get(self, request):
-        contratos = Contrato.objects\
-            .filter(empresa_id=get_id_empresa_global(request))\
-            .values('id', 'numero_contrato', 'cliente__nombre')
-        lista_contratos = []
-        for contrato in contratos:
-            lista_contratos.append({'campo_valor': contrato['id'], 'campo_texto': '{0} - {1}'
-                                   .format(contrato['numero_contrato'], contrato['cliente__nombre'])})
-
-        procesos = ColaboradorProceso.objects.filter(colaborador__usuario=request.user)
-        lista_procesos = []
-        if procesos.count() > 1:
-            for proceso in procesos:
-                lista_procesos.append({'campo_valor': proceso.proceso.id, 'campo_texto': proceso.proceso.nombre})
-
-        return render(request, 'GestionDocumental/ConsecutivoOficios/crear.html', {'fecha': datetime.datetime.now(),
-                                                                                   'contratos': lista_contratos,
-                                                                                   'procesos': lista_procesos,
-                                                                                   'lista_procesos': lista_procesos,
-                                                                                   'menu_actual': 'consecutivos-oficios'})
+        return render(request, 'GestionDocumental/ConsecutivoOficios/_modal_crear_editar_oficio.html',
+                      datos_xa_render(request))
 
     def post(self, request):
         consecutivo = ConsecutivoOficio.from_dictionary(request.POST)
@@ -127,3 +110,28 @@ class ConsecutivoOficiosEliminarView(AbstractEvaLoggedView):
         except IntegrityError:
             return JsonResponse({"estado": "error",
                                  "mensaje": 'Ha ocurrido un error al realizar la acción'})
+
+
+def datos_xa_render(request) -> dict:
+        contratos = Contrato.objects \
+            .filter(empresa_id=get_id_empresa_global(request)) \
+            .values('id', 'numero_contrato', 'cliente__nombre')
+        lista_contratos = []
+        for contrato in contratos:
+            lista_contratos.append({'campo_valor': contrato['id'], 'campo_texto': '{0} - {1}'
+                                   .format(contrato['numero_contrato'], contrato['cliente__nombre'])})
+
+        procesos = ColaboradorProceso.objects.filter(colaborador__usuario=request.user)
+        lista_procesos = []
+        if procesos.count() > 1:
+            for proceso in procesos:
+                lista_procesos.append({'campo_valor': proceso.proceso.id, 'campo_texto': proceso.proceso.nombre})
+
+        datos = {'fecha': datetime.datetime.now(),
+                 'contratos': lista_contratos,
+                 'procesos': lista_procesos,
+                 'lista_procesos': lista_procesos,
+                 'menu_actual': 'consecutivos-oficios'}
+
+        return datos
+
