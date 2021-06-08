@@ -65,13 +65,14 @@ function abrirModalCrearReunion(url) {
 }
 
 function configurarModalCrearReunion() {
-    $('#fecha_reunion_id').datepicker({
+    $('#fecha_id').datepicker({
         todayHighlight: true,
         orientation: "bottom left",
         templates: controls,
         format: 'yyyy-mm-dd',
         autoclose: true
     });
+    agregarValidacionFormularios();
 }
 
 function configurarModalCrear() {
