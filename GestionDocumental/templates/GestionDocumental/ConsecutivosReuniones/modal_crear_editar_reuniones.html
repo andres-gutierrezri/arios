@@ -1,13 +1,16 @@
 {% load eva_tags %}
 {% load static %}
-
-<form action= "{% url 'GestionDocumental:consecutivo-reuniones-crear' %}" id="consecutivo_reuniones_form" method="post" class="needs-validation" novalidate>
-    {% csrf_token %}
+{% if editar %}
+    <form action= "{% url 'GestionDocumental:consecutivo-reuniones-editar' consecutivo.id %}" id="consecutivo_reuniones_form_editar" method="post" class="needs-validation" novalidate>
+{% else %}
+    <form action= "{% url 'GestionDocumental:consecutivo-reuniones-crear' %}" id="consecutivo_reuniones_form" method="post" class="needs-validation" novalidate>
+{% endif %}
+{% csrf_token %}
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header p-b-0">
                 <h4 class="modal-title">
-                    Crear Consecutivo Acta de Reuniones
+                    {% if editar %}Editar Consecutivo Acta de Reunión: {{ consecutivo.codigo }}{% else %}Crear Consecutivo Acta de Reuniones{% endif %}
                 </h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true"><i class="fal fa-times"></i></span>
@@ -16,22 +19,29 @@
             <div class="modal-body">
                 <div class="form-group">
                     <div class="col-md-12">
-                        {% input_text_tag 'tema' 'Tema' placeholder="Ingrese el tema de la reunión" required="" maxlength="100" mensaje_validacion='Por favor describa el tema' invalido=errores.destinatario %}
+                        {% input_text_tag 'tema' 'Tema' placeholder="Ingrese el tema de la reunión" value=consecutivo.tema required="" maxlength="100" mensaje_validacion='Por favor describa el tema' invalido=errores.destinatario %}
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="col-md-12">
-                        {% input_date_tag 'fecha' 'Fecha de Reunión' placeholder="Seleccione una fecha" required="" autocomplete="off" mensaje_validacion='Por favor seleccione una fecha.' invalido=errores.fecha_reunion %}
+                        {% input_date_tag 'fecha' 'Fecha de Reunión' placeholder="Seleccione una fecha" value=consecutivo.fecha required="" autocomplete="off" mensaje_validacion='Por favor seleccione una fecha.' invalido=errores.fecha_reunion %}
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="col-md-12">
-                        {% input_textarea_tag 'descripcion' 'Descripción de la Reunión (Opcional)' placeholder="Ingrese una descripción" maxlength="100" mensaje_validacion='Por favor digite una descripción.' invalido=errores.descripcion %}
+                        {% input_textarea_tag 'descripcion' 'Descripción de la Reunión (Opcional)' placeholder="Ingrese una descripción" maxlength="100" value=consecutivo.descripcion mensaje_validacion='Por favor digite una descripción.' invalido=errores.descripcion %}
                     </div>
                 </div>
+                {% if editar %}
+                    <div class="form-group">
+                        <div id="motivo" class="col-md-12">
+                            {% input_textarea_tag 'motivo' 'Motivo' placeholder="Ingrese el Motivo" value=consecutivo.justificacion|default_if_none:"" required="" mensaje_validacion='Por favor digite el motivo.' %}
+                        </div>
+                    </div>
+                {% endif %}
                 <div class="modal-footer">
                     <button data-dismiss="modal" class="btn btn-danger btn-pills">Cancelar</button>
-                    <button id="agregar" type="submit" class="btn btn-primary btn-pills">Agregar</button>
+                    <button id="agregar" type="submit" class="btn btn-primary btn-pills"> {% if editar %}Editar{% else %}Agregar{% endif %} </button>
                 </div>
             </div>
         </div>

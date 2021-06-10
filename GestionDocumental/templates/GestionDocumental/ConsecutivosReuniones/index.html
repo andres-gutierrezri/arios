@@ -7,6 +7,8 @@
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/bootstrap-datepicker/bootstrap-datepicker.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/bootstrap-datepicker/bootstrap-datepicker.css' %}">
+	<link rel="stylesheet" media="screen, print" href="{%static 'EVA/Plantilla/css/fa-brands.css' %}">
 
 {% endblock styles %}
 
@@ -23,7 +25,6 @@
             <div class="row">
                 <div class="col-xl-12">
                     <div id="panel-1" class="panel">
-
                         <div class="panel-hdr">
                             {% if perms.GestionDocumental.add_consecutivoreunion %}
                             <div class="col-md-12">
@@ -51,9 +52,11 @@
                                                         <th class="min-w-50">Código</th>
                                                         <th class="min-w-50">Fecha de la Reunión</th>
                                                         <th class="min-w-200">Tema de la Reunión</th>
-                                                        <th>Descripción</th>
+                                                        <th>Descripción de la Reunión</th>
                                                         <th>Usuario</th>
-                                                        <th>Fecha</th>
+                                                        <th>Fecha de Creación</th>
+                                                        <th>Motivo Editar/Anular</th>
+                                                        <th>Fecha de Modificación</th>
                                                         <th>Estado</th>
                                                         <th>Acción</th>
                                                     </tr>
@@ -61,12 +64,16 @@
                                                 <tbody>
                                                     {% for consecutivo in consecutivos %}
                                                         <tr>
-                                                            <td>{{ consecutivo.codigo }}</td>
+                                                            <td><span id="copiar_{{ consecutivo.id }}">{{ consecutivo.codigo }}</span>
+                                                                <span><a class="fad fa-copy" href="javascript:void(0);"  onclick="copiarAPortapapeles('{{ consecutivo.codigo }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Copiar"></a></span>
+                                                            </td>
                                                             <td>{{ consecutivo.fecha | date:'Y-m-d' }}</td>
                                                             <td>{{ consecutivo.tema }}</td>
                                                             <td>{{ consecutivo.descripcion }}</td>
                                                             <td>{{ consecutivo.usuario.get_full_name }}</td>
                                                             <td>{{ consecutivo.fecha_crea | date:'Y-m-d' }}</td>
+                                                            <td>{% if consecutivo.justificacion %}{{ consecutivo.justificacion }}{% endif %}</td>
+                                                            <td>{% if consecutivo.justificacion %}{{ consecutivo.fecha_modificacion }}{% endif %}</td>
                                                             <td>
                                                                 {% if consecutivo.estado %}
                                                                     <span class="badge badge-primary">Vigente</span>
@@ -75,6 +82,9 @@
                                                                 {% endif %}
                                                             </td>
                                                             <td>
+                                                                {% if perms.GestionDocumental.editar_consecutivocontrato and consecutivo.estado %}
+                                                                  <a class="fad fa-2x fa-file-edit" id="editar_{{ consecutivo.id }}" href="javascript:abrirModalCrearReunion('{% url 'GestionDocumental:consecutivo-reuniones-editar' consecutivo.id%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                                {% endif %}
                                                                 {% if perms.GestionDocumental.delete_consecutivoreunion and consecutivo.estado %}
                                                                   <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ consecutivo.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ consecutivo.id }}, true)" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
                                                                 {% endif %}
@@ -110,5 +120,4 @@
     <script src="{% static 'TalentoHumano/js/date_picker.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/funcionesGenerales.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js' %}"></script>
-
 {% endblock %}
