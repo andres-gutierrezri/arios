@@ -43,6 +43,8 @@ urlpatterns = [
          name='consecutivo-reuniones-index'),
     path('consecutivo-reuniones/add', consecutivo_reunion.ConsecutivoReunionesCrearView.as_view(),
          name='consecutivo-reuniones-crear'),
+    path('consecutivo-reuniones/<int:id_reunion>/editar', consecutivo_reunion.ConsecutivoReunionesEditarView.as_view(),
+         name='consecutivo-reuniones-editar'),
     path('consecutivo-reuniones/<int:id>/delete', consecutivo_reunion.ConsecutivoReunionesEliminarView.as_view(),
          name='consecutivo-reuniones-eliminar'),
 ]
