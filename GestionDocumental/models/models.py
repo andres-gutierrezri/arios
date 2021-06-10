@@ -103,7 +103,7 @@ class ConsecutivoContrato(models.Model, ModelDjangoExtensiones):
         return consecutivo
 
 
-class ConsecutivoReunion(models.Model):
+class ConsecutivoReunion(models.Model, ModelDjangoExtensiones):
     objects = ManagerGeneral()
     fecha = models.DateField(verbose_name='Fecha', null=False, blank=False)
     tema = models.CharField(max_length=100, verbose_name='Tema', null=False, blank=False)
@@ -114,6 +114,8 @@ class ConsecutivoReunion(models.Model):
     fecha_crea = models.DateField(verbose_name='Fecha de Creación', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', blank=False, null=False)
     justificacion = models.CharField(max_length=100, verbose_name='Justificación', blank=True, null=True)
+    fecha_modificacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Modificación', null=False,
+                                              blank=False)
 
     def __str__(self):
         return self.codigo
@@ -133,6 +135,7 @@ class ConsecutivoReunion(models.Model):
         consecutivo.tema = datos.get('tema', '')
         consecutivo.fecha = datos.get('fecha', '')
         consecutivo.descripcion = datos.get('descripcion', '')
+        consecutivo.justificacion = datos.get('motivo', '')
         consecutivo.estado = True
 
         return consecutivo
