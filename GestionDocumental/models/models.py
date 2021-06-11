@@ -66,6 +66,8 @@ class ConsecutivoContrato(models.Model, ModelDjangoExtensiones):
     empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa', null=False, blank=False)
     usuario_crea = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario Crea',
                                      null=True, blank=True, related_name='consecutivo_contrato_usuario_crea')
+    usuario_modifica = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario Modifica',
+                                     null=True, blank=True, related_name='consecutivo_contrato_usuario_Modifica')
     justificacion = models.CharField(max_length=100, verbose_name='Justificacion', blank=True, null=True)
     estado = models.BooleanField(verbose_name='Estado', blank=False, null=False)
     ruta_archivo = models.FileField(blank=True, max_length=250, upload_to=custom_upload_to)

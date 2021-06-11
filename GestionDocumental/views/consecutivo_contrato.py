@@ -92,6 +92,7 @@ class ConsecutivoContratoEditarView(AbstractEvaLoggedView):
         consecutivo.numero_contrato = consecutivo_db.numero_contrato
         consecutivo.usuario_crea = consecutivo_db.usuario_crea
         consecutivo.empresa = consecutivo_db.empresa
+        consecutivo.usuario_modifica = request.user
         sigla = TipoContrato.objects.get(id=consecutivo.tipo_contrato_id).sigla
         consecutivo.codigo = 'CTO_{0:03d}_{1}_{2}'.format(consecutivo.numero_contrato, sigla, app_datetime_now().year)
 
