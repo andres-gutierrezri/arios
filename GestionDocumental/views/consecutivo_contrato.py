@@ -82,7 +82,8 @@ class ConsecutivoContratoEditarView(AbstractEvaLoggedView):
 
     def post(self, request, id_contrato):
         update_fields = ['fecha_inicio', 'fecha_final', 'codigo', 'tercero_id',
-                         'tipo_contrato_id', 'usuario_id', 'justificacion']
+                         'tipo_contrato_id', 'usuario_id', 'usuario_modifica',
+                         'justificacion', 'fecha_modificacion']
         consecutivo = ConsecutivoContrato.from_dictionary(request.POST)
         consecutivo_db = ConsecutivoContrato.objects.get(id=id_contrato)
 
