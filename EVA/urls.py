@@ -37,6 +37,7 @@ urlpatterns = [
          name="password_reset_confirm"),
     path('financiero/', include('Financiero.urls', namespace='financiero')),
     path('gestion-documental/', include('GestionDocumental.urls', namespace='gestion-documental')),
+    path('gestion-actividades/', include('GestionActividades.urls', namespace='gestion-actividades')),
     path('password-assign-proveedor/<uidb64>/<token>/',
          auth_views.PasswordResetConfirmView
          .as_view(success_url=reverse_lazy('password_assign_complete_proveedor'),
