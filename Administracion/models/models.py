@@ -332,3 +332,41 @@ class SubproductoSubservicio(models.Model, ModelDjangoExtensiones):
         verbose_name = 'Subproducto y Subservicio'
         verbose_name_plural = 'Subproductos y Subservicios'
 
+
+class ReservaSalaJuntas(models.Model, ModelDjangoExtensiones):
+    objects = ManagerGeneral()
+    usuario_responsable = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Usuario Responsable",
+                                            null=False, blank=False, related_name='ReservaSalaJuntasResponsable')
+    usuario_crea = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario Crea", null=False,
+                                     blank=False, related_name='ReservaSalaJuntasCrea')
+    usuario_modifica = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario Modifica", null=True,
+                                         blank=False, related_name='ReservaSalaJuntasModifica')
+    fecha_inicio = models.DateTimeField(auto_now=True, verbose_name='Fecha de Inicio', null=False,
+                                              blank=False)
+    fecha_finalizacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Finalización', null=False,
+                                        blank=False)
+    fecha_creacion = models.DateField(auto_now_add=True, verbose_name='Fecha de Creación', null=False, blank=False)
+    fecha_modificacion = models.DateField(verbose_name='Fecha de Modificación', null=True, blank=False)
+    motivo = models.CharField(max_length=100, verbose_name='Motivo', blank=True, null=True)
+
+    def __str__(self):
+        return self.usuario_responsable
+
+    class Meta:
+        verbose_name = 'Reserva Sala de Juntas'
+        verbose_name_plural = 'Reservas Sala de Juntas'
+
+    @staticmethod
+    def from_dictionary(datos: dict) -> 'ReservaSalaJuntas':
+        """
+        Crea una instancia de ReservaSalaJuntas con los datos pasados en el diccionario.
+        :param datos: Diccionario con los datos para crear la Reserva de la Sala de Juntas.
+        :return: Instacia de Reserva de la Sala de Juntas con la información especificada en el diccionario.
+        """
+        reserva_sala_juntas = ReservaSalaJuntas()
+        reserva_sala_juntas.usuario_responsable = datos.get('Usuario Responsable', '')
+        reserva_sala_juntas.fecha_inicio = datos.get('Fecha de Inicio', '')
+        reserva_sala_juntas.fecha_finalizacion = datos.get('Fecha de Finalización', '')
+        reserva_sala_juntas.motivo = datos.get('Motivo', '')
+
+        return reserva_sala_juntas
