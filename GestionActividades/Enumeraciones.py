@@ -1,9 +1,10 @@
 from django.db import models
 
 
-class Estado(models.IntegerChoices):
+class EstadosActividades(models.IntegerChoices):
 
-    EN_PROCESO = 1, 'En Proceso'
-    FINALIZADO = 2, 'Finalizado'
-    CERRADA = 3, 'Cerrada'
-    REABIERTA = 4, 'Reabierta'
+    CREADA = 1, 'Creada'
+    EN_PROCESO = 2, 'En Proceso'
+    FINALIZADO = 3, 'Finalizado'
+    CERRADA = 4, 'Cerrada'
+    REABIERTA = 5, 'Reabierta'
