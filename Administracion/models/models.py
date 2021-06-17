@@ -335,22 +335,22 @@ class SubproductoSubservicio(models.Model, ModelDjangoExtensiones):
 
 class ReservaSalaJuntas(models.Model, ModelDjangoExtensiones):
     objects = ManagerGeneral()
-    usuario_responsable = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Usuario Responsable",
+    responsable = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Responsable",
                                             null=False, blank=False, related_name='ReservaSalaJuntasResponsable')
     usuario_crea = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario Crea", null=False,
                                      blank=False, related_name='ReservaSalaJuntasCrea')
     usuario_modifica = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario Modifica", null=True,
                                          blank=False, related_name='ReservaSalaJuntasModifica')
-    fecha_inicio = models.DateTimeField(auto_now=True, verbose_name='Fecha de Inicio', null=False,
-                                              blank=False)
-    fecha_finalizacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Finalización', null=False,
-                                        blank=False)
+    fecha_inicio = models.DateTimeField(verbose_name='Fecha de Inicio', null=False, blank=False)
+    fecha_fin = models.DateTimeField(verbose_name='Fecha Fin', null=False, blank=False)
     fecha_creacion = models.DateField(auto_now_add=True, verbose_name='Fecha de Creación', null=False, blank=False)
-    fecha_modificacion = models.DateField(verbose_name='Fecha de Modificación', null=True, blank=False)
-    motivo = models.CharField(max_length=100, verbose_name='Motivo', blank=True, null=True)
+    fecha_modificacion = models.DateField(auto_now=True, verbose_name='Fecha de Modificación', null=True, blank=False)
+    tema = models.CharField(max_length=100, verbose_name='Tema', null=False, blank=False)
+    descripcion = models.CharField(max_length=300, verbose_name='Descripción', null=True, blank=True)
+    motivo = models.TextField(max_length=100, verbose_name='Motivo', blank=False, null=False)
 
     def __str__(self):
-        return self.usuario_responsable
+        return self.responsable
 
     class Meta:
         verbose_name = 'Reserva Sala de Juntas'
@@ -364,9 +364,11 @@ class ReservaSalaJuntas(models.Model, ModelDjangoExtensiones):
         :return: Instacia de Reserva de la Sala de Juntas con la información especificada en el diccionario.
         """
         reserva_sala_juntas = ReservaSalaJuntas()
-        reserva_sala_juntas.usuario_responsable = datos.get('Usuario Responsable', '')
+        reserva_sala_juntas.responsable = datos.get('Responsable', '')
         reserva_sala_juntas.fecha_inicio = datos.get('Fecha de Inicio', '')
-        reserva_sala_juntas.fecha_finalizacion = datos.get('Fecha de Finalización', '')
+        reserva_sala_juntas.fecha_fin = datos.get('Fecha Fin', '')
+        reserva_sala_juntas.tema = datos.get('tema', '')
+        reserva_sala_juntas.descripcion =datos.get('Descripción', '')
         reserva_sala_juntas.motivo = datos.get('Motivo', '')
 
         return reserva_sala_juntas
