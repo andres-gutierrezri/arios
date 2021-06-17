@@ -343,8 +343,9 @@ class ReservaSalaJuntas(models.Model, ModelDjangoExtensiones):
                                          blank=False, related_name='ReservaSalaJuntasModifica')
     fecha_inicio = models.DateTimeField(verbose_name='Fecha de Inicio', null=False, blank=False)
     fecha_fin = models.DateTimeField(verbose_name='Fecha Fin', null=False, blank=False)
-    fecha_creacion = models.DateField(auto_now_add=True, verbose_name='Fecha de Creación', null=False, blank=False)
-    fecha_modificacion = models.DateField(auto_now=True, verbose_name='Fecha de Modificación', null=True, blank=False)
+    fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False, blank=False)
+    fecha_modificacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Modificación', null=True,
+                                              blank=False)
     tema = models.CharField(max_length=100, verbose_name='Tema', null=False, blank=False)
     descripcion = models.CharField(max_length=300, verbose_name='Descripción', null=True, blank=True)
     motivo = models.TextField(max_length=100, verbose_name='Motivo', blank=False, null=False)
