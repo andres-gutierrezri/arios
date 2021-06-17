@@ -56,8 +56,7 @@ class ConsecutivoContratoView(AbstractEvaLoggedView):
 
 class ConsecutivoContratoCrearView(AbstractEvaLoggedView):
     def get(self, request):
-        return render(request, 'GestionDocumental/ConsecutivoContratos/_modal_crear_editar_consecutivo.html',
-                      datos_xa_render(request))
+        return render(request, 'GestionDocumental/ConsecutivoContratos/_modal_crear_editar_consecutivo.html', datos_xa_render(request))
 
     def post(self, request):
         consecutivo = ConsecutivoContrato.from_dictionary(request.POST)
@@ -83,8 +82,8 @@ class ConsecutivoContratoEditarView(AbstractEvaLoggedView):
 
     def post(self, request, id_contrato):
         update_fields = ['fecha_inicio', 'fecha_final', 'codigo', 'tercero_id',
-                         'tipo_contrato_id', 'usuario_id', 'justificacion']
-
+                         'tipo_contrato_id', 'usuario_id', 'usuario_modifica',
+                         'justificacion', 'fecha_modificacion']
         consecutivo = ConsecutivoContrato.from_dictionary(request.POST)
         consecutivo_db = ConsecutivoContrato.objects.get(id=id_contrato)
 
@@ -93,10 +92,10 @@ class ConsecutivoContratoEditarView(AbstractEvaLoggedView):
         consecutivo.numero_contrato = consecutivo_db.numero_contrato
         consecutivo.usuario_crea = consecutivo_db.usuario_crea
         consecutivo.empresa = consecutivo_db.empresa
-
+        consecutivo.usuario_modifica = request.user
         sigla = TipoContrato.objects.get(id=consecutivo.tipo_contrato_id).sigla
-
         consecutivo.codigo = 'CTO_{0:03d}_{1}_{2}'.format(consecutivo.numero_contrato, sigla, app_datetime_now().year)
+
         try:
             consecutivo.full_clean(validate_unique=False)
         except ValidationError as errores:
