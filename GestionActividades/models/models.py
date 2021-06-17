@@ -35,11 +35,11 @@ class ConsecutivoActividad(models.Model, ModelDjangoExtensiones):
     codigo = models.CharField(max_length=50, verbose_name='Código', null=False, blank=False)
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     fecha_inicio = models.DateField(verbose_name='Fecha de Inicio', null=False, blank=False)
-    fecha_fin = models.DateField(verbose_name='Fecha Final', null=True, blank=True)
-    responsable = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Usuario', null=True, blank=True,
+    fecha_fin = models.DateField(verbose_name='Fecha Fin', null=True, blank=True)
+    responsable = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Responsable', null=True, blank=True,
                                     related_name='consecutivo_actividad_responsable')
-    supervisor = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Usuario', null=True, blank=True,
-                                   related_name='consecutivo_contrato_supervisor')
+    supervisor = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Supervisor', null=True, blank=True,
+                                   related_name='consecutivo_actividad_supervisor')
     descripcion = models.CharField(max_length=500, verbose_name='Descripción', null=False, blank=False)
     estado = models.SmallIntegerField(choices=Estado.choices,
                                       verbose_name='Estado', null=False, blank=False)
