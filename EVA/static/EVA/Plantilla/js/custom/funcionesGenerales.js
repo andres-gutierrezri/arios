@@ -23,6 +23,11 @@ function abrirModalVistaPrevia(urlDocumento) {
     $("#vista_previa_modal").modal('show');
 }
 
+const CONTROLES_DATEPICKER = {
+	leftArrow: '<i class="fal fa-angle-left" style="font-size: 1.25rem"></i>',
+	rightArrow: '<i class="fal fa-angle-right" style="font-size: 1.25rem"></i>'
+};
+
 /**
  * Inicializa un input como un datepicker.
  * @param inputId id del input que se quiere inicializar.
@@ -32,7 +37,7 @@ function inicializarDatePicker(inputId) {
     $(`#${inputId}`).datepicker({
         todayHighlight: true,
         orientation: "bottom left",
-        templates: controls,
+        templates: CONTROLES_DATEPICKER,
         format: 'yyyy-mm-dd',
         autoclose: true
     });
