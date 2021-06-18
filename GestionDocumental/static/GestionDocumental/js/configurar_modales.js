@@ -1,6 +1,6 @@
 
 const modalCrear = $('#crear');
-const modalCrearOficio = $('#crear-oficio');
+
 
 function abrirModalCargar(url) {
     $('#cargar').load(url, function (responseText, textStatus, req) {
@@ -41,22 +41,6 @@ function abrirModalCrear(url) {
             }
             $(this).modal('show');
             configurarModalCrear ();
-        } catch (err) {
-            console.log(err);
-            EVANotificacion.toast.error('Ha ocurrido un error al cargar el archivo');
-        }
-    });
-}
-
-function abrirModalCrearOficio(url) {
-    modalCrearOficio.load(url, function (responseText, textStatus, req) {
-        try {
-            if (responseText.includes("<!DOCTYPE html>")) {
-                EVANotificacion.toast.error('No tiene permisos para acceder a esta funcionalidad');
-                return false;
-            }
-            $(this).modal('show');
-            inicializarSelect2('contrato_id_select_id',modalCrearOficio);
         } catch (err) {
             console.log(err);
             EVANotificacion.toast.error('Ha ocurrido un error al cargar el archivo');
