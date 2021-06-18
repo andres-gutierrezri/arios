@@ -1,14 +1,16 @@
 {% load eva_tags %}
 {% load static %}
-
+{% if editar %}
+<form action= "{% url 'GestionDocumental:consecutivo-oficios-editar' consecutivo.id %}" id="consecutivo_oficios_form_editar" method="post" class="needs-validation" novalidate>
+{% else %}
 <form action= "{% url 'GestionDocumental:consecutivo-oficios-crear' %}" id="consecutivo_oficios_form" method="post" class="needs-validation" novalidate>
-
+{% endif %}
     {% csrf_token %}
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header p-b-0">
                 <h4 class="modal-title">
-                    {% if editar %}{{ "Editar" }}{% else %}{{ "Crear" }}{% endif %} Consecutivo de Oficio
+                    {% if editar %}Editar Consecutivo de Oficio: {{ consecutivo.codigo }}{% else %}Crear Consecutivos de Oficio{% endif %}
                 </h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true"><i class="fal fa-times"></i></span>
@@ -19,12 +21,12 @@
                     <div class="form-group">
                         <input id="contrato_select_id" style="display: none">
                         <div class="col-md-12">
-                            {% select_tag contratos 'contrato_id' 'Seleccione un contrato' texto_label="Contrato (Opcional)" value=contratos invalido=errores.contrato %}
+                            {% select_tag contratos 'contrato_id' 'Seleccione un contrato' texto_label="Contrato (Opcional)" value=consecutivo.contrato_id invalido=errores.contrato %}
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="col-md-12">
-                            {% input_text_tag 'destinatario' 'Destinatario' placeholder="Ingrese un destinatario" required="" maxlength="100"  mensaje_validacion='Por favor digite un destinatario' invalido=errores.destinatario %}
+                            {% input_text_tag 'destinatario' 'Destinatario' placeholder="Ingrese un destinatario" required="" maxlength="100"  value=consecutivo.destinatario mensaje_validacion='Por favor digite un destinatario' invalido=errores.destinatario %}
                         </div>
                     </div>
                     {% if procesos %}
@@ -35,13 +37,20 @@
                 </div>
                 <div class="form-group">
                         <div class="col-md-12">
-                            {% input_textarea_tag 'detalle' 'Descripción del Documento' placeholder="Ingrese una descripción" required="" maxlength="300"  mensaje_validacion='Por favor digite una descripción.' invalido=errores.descripcion %}
+                            {% input_textarea_tag 'detalle' 'Descripción del Documento' placeholder="Ingrese una descripción" required="" maxlength="300" value=consecutivo.detalle mensaje_validacion='Por favor digite una descripción.' invalido=errores.descripcion %}
                         </div>
                 </div>
+                {% if editar %}
+                        <div class="form-group">
+                            <div id="motivo" class="col-md-12">
+                                {% input_textarea_tag 'motivo' 'Motivo' placeholder="Digite Motivo" value=consecutivo.justificacion|default_if_none:"" required="" mensaje_validacion='Por favor digite el motivo.' %}
+                            </div>
+                        </div>
+                {% endif %}
             </div>
             <div class="modal-footer">
                 <button data-dismiss="modal" class="btn btn-danger btn-pills">Cancelar</button>
-                <button id="agregar" type="submit" class="btn btn-primary btn-pills"> Agregar </button>
+                <button id="agregar" type="submit" class="btn btn-primary btn-pills"> {% if editar %}Editar{% else %}Agregar{% endif %} </button>
             </div>
         </div>
     </div>
