@@ -3,11 +3,9 @@
 {% load eva_tags %}
 <title>{% block titulo %}Consecutivo de Oficios{% endblock %}</title>
 {% block styles %}
-    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/datagrid/datatables/datatables.bundle.css' %}">
-    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
-    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
-    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/bootstrap-datepicker/bootstrap-datepicker.css' %}">
-	<link rel="stylesheet" media="screen, print" href="{%static 'EVA/Plantilla/css/fa-brands.css' %}">
+    {% include 'EVA/_common/_statics/_tablas.html' with incCSS=True %}
+    {% include 'EVA/_common/_statics/_select2.html' with incCSS=True %}
+    {% include 'EVA/_common/_statics/_datepicker.html' with incCSS=True %}
 {% endblock styles %}
 
 {% block main %}
@@ -45,7 +43,7 @@
                                     <div class="panel-body">
                                         <div class="table-responsive">
                                             {% include 'EVA/_common/_busqueda_paginacion.html' %}
-                                            <table class="table table-bordered w-100" id="dataTableConsecutivos">
+                                            <table class="table table-bordered w-100" id="dataTable">
                                                 <thead class="bg-primary-600">
                                                     <tr>
                                                         <th class="min-w-200">Código</th>
@@ -116,11 +114,12 @@
 
 {% endblock %}
 {% block scripts %}
-    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
+    {% include 'EVA/_common/_statics/_tablas.html' %}
+    {% include 'EVA/_common/_statics/_select2.html' %}
+    {% include 'EVA/_common/_statics/_datepicker.html'%}
     <script src="{% static 'Administracion/js/confirmarEliminar.js' %}"></script>
-    <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
     <script src="{% static 'GestionDocumental/js/filtro_consecutivos.js' %}"></script>
-    <script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
+    <script src="{% static 'GestionDocumental/js/consecutivos_oficios.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/controlBusquedaPaginacion.js' %}"></script>
     <script src="{% static 'GestionDocumental/js/configurar_modales.js' %}"></script>
 {% endblock %}
