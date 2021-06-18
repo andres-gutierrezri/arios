@@ -26,4 +26,5 @@ function abrirModalCrearOficio(url) {
 
 function configurarModalCrear() {
     inicializarSelect2('contrato_id_select_id', modalCrearOficio);
+    agregarValidacionFormularios();
 }
