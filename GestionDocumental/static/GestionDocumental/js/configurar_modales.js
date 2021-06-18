@@ -75,13 +75,6 @@ function configurarModalCrear() {
     let idTipoContrato = $('#tipo_contrato_select_id').val();
 
     fechaFinal = $('#fecha_final_mostrar');
-    $('#fecha_inicio_id').datepicker({
-        todayHighlight: true,
-        orientation: "bottom left",
-        templates: controls,
-        format: 'yyyy-mm-dd',
-        autoclose: true
-    });
 
     inicializarDatePicker('fecha_final_id');
     inicializarDatePicker('fecha_inicio_id');

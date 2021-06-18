@@ -14,4 +14,6 @@ $(document).ready(function () {
     $('#tipo_consecutivos_select_id').change(function () {
         window.location = '/gestion-documental/consecutivo-contratos/' + this.value + '/index';
     });
+
+    iniciarDataTableN({buscar: false, paginar:false});
 });
