@@ -10,7 +10,7 @@ from Proyectos.models import Contrato
 from EVA import settings
 
 
-class ConsecutivoOficio(models.Model):
+class ConsecutivoOficio(models.Model, ModelDjangoExtensiones):
     objects = ManagerGeneral()
     consecutivo = models.IntegerField(verbose_name='Consecutivo', null=False, blank=False)
     fecha = models.DateTimeField(auto_now_add=True, verbose_name='Fecha', null=False, blank=False)
@@ -22,6 +22,8 @@ class ConsecutivoOficio(models.Model):
     empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa', blank=False, null=False)
     justificacion = models.CharField(max_length=100, verbose_name='Justificacion', blank=True, null=True)
     estado = models.BooleanField(verbose_name='Estado', blank=False, null=False)
+    fecha_modificacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Modificación', null=False,
+                                              blank=False)
 
     def __str__(self):
         return self.codigo
@@ -41,6 +43,7 @@ class ConsecutivoOficio(models.Model):
         consecutivo.contrato_id = datos.get('contrato_id', None)
         consecutivo.detalle = datos.get('detalle', '')
         consecutivo.destinatario = datos.get('destinatario', '')
+        consecutivo.justificacion = datos.get('motivo', '')
         consecutivo.estado = True
 
         return consecutivo

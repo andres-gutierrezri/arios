@@ -1,6 +1,7 @@
 
 const modalCrear = $('#crear');
 
+
 function abrirModalCargar(url) {
     $('#cargar').load(url, function (responseText, textStatus, req) {
         try {
