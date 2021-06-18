@@ -1,0 +1,7 @@
+{% load static %}
+
+{% if incCSS %}
+   <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/bootstrap-datepicker/bootstrap-datepicker.css' %}">
+{% else %}
+    <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js' %}"></script>
+{% endif %}

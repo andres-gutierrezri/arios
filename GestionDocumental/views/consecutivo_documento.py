@@ -3,16 +3,19 @@ import json
 from sqlite3 import IntegrityError
 
 from django.contrib import messages
+from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
+
 from Administracion.models import ConsecutivoDocumento, TipoDocumento
 from Administracion.utils import get_id_empresa_global
-from EVA.General.utilidades import paginar
+from EVA.General.utilidades import paginar, app_datetime_now
 from EVA.views.index import AbstractEvaLoggedView
 from GestionDocumental.models import ConsecutivoOficio
+from GestionDocumental.models.models import ConsecutivoContrato
 from Proyectos.models import Contrato
 from TalentoHumano.models import Colaborador
 from TalentoHumano.models.colaboradores import ColaboradorProceso
@@ -60,25 +63,8 @@ class ConsecutivoOficiosView(AbstractEvaLoggedView):
 
 class ConsecutivoOficiosCrearView(AbstractEvaLoggedView):
     def get(self, request):
-        contratos = Contrato.objects\
-            .filter(empresa_id=get_id_empresa_global(request))\
-            .values('id', 'numero_contrato', 'cliente__nombre')
-        lista_contratos = []
-        for contrato in contratos:
-            lista_contratos.append({'campo_valor': contrato['id'], 'campo_texto': '{0} - {1}'
-                                   .format(contrato['numero_contrato'], contrato['cliente__nombre'])})
-
-        procesos = ColaboradorProceso.objects.filter(colaborador__usuario=request.user)
-        lista_procesos = []
-        if procesos.count() > 1:
-            for proceso in procesos:
-                lista_procesos.append({'campo_valor': proceso.proceso.id, 'campo_texto': proceso.proceso.nombre})
-
-        return render(request, 'GestionDocumental/ConsecutivoOficios/crear.html', {'fecha': datetime.datetime.now(),
-                                                                                   'contratos': lista_contratos,
-                                                                                   'procesos': lista_procesos,
-                                                                                   'lista_procesos': lista_procesos,
-                                                                                   'menu_actual': 'consecutivos-oficios'})
+        return render(request, 'GestionDocumental/ConsecutivoOficios/_modal_crear_editar_oficio.html',
+                      datos_xa_render(request))
 
     def post(self, request):
         consecutivo = ConsecutivoOficio.from_dictionary(request.POST)
@@ -107,6 +93,45 @@ class ConsecutivoOficiosCrearView(AbstractEvaLoggedView):
         return redirect(reverse('GestionDocumental:consecutivo-oficios-index', args=[1]))
 
 
+class ConsecutivoOficioEditarView(AbstractEvaLoggedView):
+    def get(self, request, id):
+
+        consecutivo = ConsecutivoOficio.objects.get(id=id)
+
+        return render(request, 'GestionDocumental/ConsecutivoOficios/_modal_crear_editar_oficio.html',
+                      datos_xa_render(request, consecutivo))
+
+    def post(self, request, id):
+        update_fields = ['fecha_modificacion', 'contrato_id', 'codigo', 'detalle', 'destinatario', 'justificacion']
+
+        consecutivo = ConsecutivoOficio.from_dictionary(request.POST)
+        consecutivo_db = ConsecutivoOficio.objects.get(id=id)
+
+        consecutivo.fecha = consecutivo_db.fecha
+        consecutivo.id = consecutivo_db.id
+        consecutivo.consecutivo = consecutivo_db.consecutivo
+        consecutivo.empresa = consecutivo_db.empresa
+        consecutivo.usuario_id = consecutivo_db.usuario_id
+        consecutivo.fecha_modificacion = app_datetime_now()
+
+        sigla = Contrato.objects.get(id=consecutivo.contrato_id).numero_contrato
+        consecutivo.codigo = 'AYD_{0:03d}_{1}_{2}'.format(consecutivo_db.consecutivo, sigla, app_datetime_now().year)
+
+        try:
+            consecutivo.full_clean(validate_unique=False)
+        except ValidationError as errores:
+            messages.error(request, 'Falló editar. Valide los datos ingresados al editar el consecutivo')
+            return redirect(reverse('GestionDocumental:consecutivo-oficios-index', args=[0]))
+
+        if consecutivo_db.comparar(consecutivo, excluir=['fecha_modificacion']):
+            messages.success(request, 'No se hicieron cambios en la consecutivo {0}'.format(consecutivo.codigo))
+            return redirect(reverse('GestionDocumental:consecutivo-oficios-index', args=[0]))
+        else:
+            consecutivo.save(update_fields=update_fields)
+            messages.success(request, 'Se ha editado el consecutivo {0}'.format(consecutivo.codigo))
+            return redirect(reverse('GestionDocumental:consecutivo-oficios-index', args=[0]))
+
+
 class ConsecutivoOficiosEliminarView(AbstractEvaLoggedView):
     def post(self, request, id):
         consecutivo = ConsecutivoOficio.objects.get(id=id)
@@ -127,3 +152,34 @@ class ConsecutivoOficiosEliminarView(AbstractEvaLoggedView):
         except IntegrityError:
             return JsonResponse({"estado": "error",
                                  "mensaje": 'Ha ocurrido un error al realizar la acción'})
+
+
+def datos_xa_render(request, consecutivo: ConsecutivoOficio = None) -> dict:
+    contratos = Contrato.objects \
+                .filter(empresa_id=get_id_empresa_global(request)) \
+                .values('id', 'numero_contrato', 'cliente__nombre')
+    lista_contratos = []
+    for contrato in contratos:
+        lista_contratos.append({'campo_valor': contrato['id'], 'campo_texto': '{0} - {1}'
+                                .format(contrato['numero_contrato'], contrato['cliente__nombre'])})
+
+    procesos = ColaboradorProceso.objects.filter(colaborador__usuario=request.user)
+    lista_procesos = []
+    if procesos.count() > 1:
+        for proceso in procesos:
+            lista_procesos.append({'campo_valor': proceso.proceso.id, 'campo_texto': proceso.proceso.nombre})
+
+    datos = {'fecha': datetime.datetime.now(),
+             'contratos': lista_contratos,
+             'procesos': lista_procesos,
+             'lista_procesos': lista_procesos,
+             'menu_actual': 'consecutivos-oficios'}
+
+    if consecutivo:
+        print(consecutivo)
+        datos['consecutivo'] = consecutivo
+        datos['editar'] = True
+
+    return datos
+
+
