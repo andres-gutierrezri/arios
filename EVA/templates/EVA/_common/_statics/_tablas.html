@@ -1,0 +1,11 @@
+{% load static %}
+
+{% if incCSS %}
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/datagrid/datatables/datatables.bundle.css' %}">
+{% else %}
+    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
+    {% if incExportar %}
+    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.export.js' %}"></script>
+    {% endif %}
+    <script src="{% static 'EVA/Plantilla/js/custom/customTabla.js' %}"></script>
+{% endif %}
