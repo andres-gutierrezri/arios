@@ -13,7 +13,7 @@
     <div class="panel-container show">
             <div class="header">
                  <h1 class="header-title">
-                    <i class='far fa-file-alt'></i> Consecutivo de Oficios <span class='fw-300'></span>
+                    <i class='fad fa-file-alt'></i> Consecutivo de Oficios <span class='fw-300'></span>
                      <br>
                      <br>
                  </h1>
@@ -26,7 +26,7 @@
                             {% if perms.GestionDocumental.add_consecutivooficio %}
                             <div class="col-md-10">
                                 <small>
-                                    <a class="far fa-3x far fa-plus-circle" href="javascript:abrirModalCrearOficio('{% url 'GestionDocumental:consecutivo-oficios-crear'%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar consecutivo de Oficio"></a>
+                                    <a class="fad fa-3x fad fa-plus-circle" href="javascript:abrirModalCrearOficio('{% url 'GestionDocumental:consecutivo-oficios-crear'%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar consecutivo de Oficio"></a>
                                 </small>
                             </div>
                             {% else %}
@@ -41,65 +41,64 @@
                             <div class="panel-content">
                                 <div class="panel-group">
                                     <div class="panel-body">
-                                        <div class="table-responsive">
-                                            {% include 'EVA/_common/_busqueda_paginacion.html' %}
-                                            <table class="table table-bordered w-100" id="dataTable">
-                                                <thead class="bg-primary-600">
-                                                    <tr>
-                                                        <th class="min-w-200">Código</th>
-                                                        <th class="min-w-200">Fecha</th>
-                                                        <th>Contrato</th>
-                                                        <th>Detalle</th>
-                                                        <th>Destinatario</th>
-                                                        <th>Usuario</th>
-                                                        <th>Motivo Editar/Anular</th>
-                                                        <th>Estado</th>
-                                                        <th>Acción</th>
+
+                                        {% include 'EVA/_common/_busqueda_paginacion.html' %}
+                                        <table class="table table-bordered w-100" id="dataTable">
+                                            <thead class="bg-primary-600">
+                                                <tr>
+                                                    <th data-priority="1" >Código</th>
+                                                    <th>Fecha</th>
+                                                    <th class="desktop">Contrato</th>
+                                                    <th class="min-tablet-l">Detalle</th>
+                                                    <th class="min-tablet-l">Destinatario</th>
+                                                    <th class="none">Usuario</th>
+                                                    <th class="none">Motivo Editar/Anular</th>
+                                                    <th class="min-desktop">Estado</th>
+                                                    <th data-priority="2">Acción</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for consecutivo in consecutivos %}
+                                                    <tr
+                                                            {% if consecutivo == consecutivos.last and id_filtro == 1 and consecutivo.usuario == request.user %}style="background: #fffaee;"{% endif %}>
+                                                        <td><span id="copiar_{{ consecutivo.id }}">{{ consecutivo.codigo }}</span>
+                                                            <span><a class="fad fa-copy" href="javascript:void(0);"  onclick="copiarAPortapapeles('{{ consecutivo.codigo }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Copiar"></a></span>
+                                                        </td>
+                                                        <td>{{ consecutivo.fecha | date:'Y-m-d H:i'}}</td>
+                                                        <td>{% if consecutivo.contrato %}
+                                                                {{ consecutivo.contrato}} - {{ consecutivo.contrato.cliente }}
+                                                            {% else %}
+                                                                {% for col in colaborador %}
+                                                                    {% if col.usuario_id == consecutivo.usuario.id %}
+                                                                        {{ col.proceso__sigla }}
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>{{ consecutivo.detalle}}</td>
+                                                        <td>{{ consecutivo.destinatario }}</td>
+                                                        <td>{{ consecutivo.usuario.get_full_name }}</td>
+                                                        <td>{% if consecutivo.justificacion %}{{ consecutivo.justificacion }}{% endif %}</td>
+                                                        <td>
+                                                            {% if consecutivo.estado %}
+                                                                <span class="badge badge-primary">Vigente</span>
+                                                            {% else %}
+                                                                <span class="badge badge-secondary">Anulado</span>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>
+                                                            {% if perms.GestionDocumental.editar_consecutivocontrato and consecutivo.estado %}
+                                                              <a class="fad fa-2x fa-file-edit" id="editar_{{ consecutivo.id }}" href="javascript:abrirModalCrearOficio('{% url 'GestionDocumental:consecutivo-oficios-editar' consecutivo.id%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                            {% endif %}
+                                                            {% if perms.GestionDocumental.delete_consecutivooficio and consecutivo.estado %}
+                                                              <a class="fad fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ consecutivo.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ consecutivo.id }}, true)" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+                                                            {% endif %}
+                                                        </td>
                                                     </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {% for consecutivo in consecutivos %}
-                                                        <tr
-                                                                {% if consecutivo == consecutivos.last and id_filtro == 1 and consecutivo.usuario == request.user %}style="background: #fffaee;"{% endif %}>
-                                                            <td><span id="copiar_{{ consecutivo.id }}">{{ consecutivo.codigo }}</span>
-                                                                <span><a class="fad fa-copy" href="javascript:void(0);"  onclick="copiarAPortapapeles('{{ consecutivo.codigo }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Copiar"></a></span>
-                                                            </td>
-                                                            <td>{{ consecutivo.fecha | date:'Y-m-d H:i'}}</td>
-                                                            <td>{% if consecutivo.contrato %}
-                                                                    {{ consecutivo.contrato}} - {{ consecutivo.contrato.cliente }}
-                                                                {% else %}
-                                                                    {% for col in colaborador %}
-                                                                        {% if col.usuario_id == consecutivo.usuario.id %}
-                                                                            {{ col.proceso__sigla }}
-                                                                        {% endif %}
-                                                                    {% endfor %}
-                                                                {% endif %}
-                                                            </td>
-                                                            <td>{{ consecutivo.detalle}}</td>
-                                                            <td>{{ consecutivo.destinatario }}</td>
-                                                            <td>{{ consecutivo.usuario.get_full_name }}</td>
-                                                            <td>{% if consecutivo.justificacion %}{{ consecutivo.justificacion }}{% endif %}</td>
-                                                            <td>
-                                                                {% if consecutivo.estado %}
-                                                                    <span class="badge badge-primary">Vigente</span>
-                                                                {% else %}
-                                                                    <span class="badge badge-secondary">Anulado</span>
-                                                                {% endif %}
-                                                            </td>
-                                                            <td>
-                                                                {% if perms.GestionDocumental.editar_consecutivocontrato and consecutivo.estado %}
-                                                                  <a class="fad fa-2x fa-file-edit" id="editar_{{ consecutivo.id }}" href="javascript:abrirModalCrearOficio('{% url 'GestionDocumental:consecutivo-oficios-editar' consecutivo.id%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
-                                                                {% endif %}
-                                                                {% if perms.GestionDocumental.delete_consecutivooficio and consecutivo.estado %}
-                                                                  <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ consecutivo.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ consecutivo.id }}, true)" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
-                                                                {% endif %}
-                                                            </td>
-                                                        </tr>
-                                                    {% endfor %}
-                                                </tbody>
-                                            </table>
-                                            {% include 'EVA/_common/_paginacion.html' with datos=consecutivos %}
-                                        </div>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                        {% include 'EVA/_common/_paginacion.html' with datos=consecutivos %}
                                     </div>
                                     <div class="card-footer small text-muted">Actualizado: {{ fecha }}</div>
                                 </div>
