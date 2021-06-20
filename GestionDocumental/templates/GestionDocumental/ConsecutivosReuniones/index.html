@@ -13,7 +13,7 @@
     <div class="panel-container show">
             <div class="header">
                  <h1 class="header-title">
-                    <i class='far fa-file-alt'></i> Consecutivo de Reuniones <span class='fw-300'></span>
+                    <i class='fad fa-file-alt'></i> Consecutivo de Reuniones <span class='fw-300'></span>
                      <br>
                      <br>
                  </h1>
@@ -25,7 +25,7 @@
                             {% if perms.GestionDocumental.add_consecutivoreunion %}
                             <div class="col-md-10">
                                 <small>
-                                    <a class="far fa-3x far fa-plus-circle" href="javascript:abrirModalCrearReunion('{% url 'GestionDocumental:consecutivo-reuniones-crear'%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar consecutivo acta de reunion"></a>
+                                    <a class="fad fa-3x fad fa-plus-circle" href="javascript:abrirModalCrearReunion('{% url 'GestionDocumental:consecutivo-reuniones-crear'%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar consecutivo acta de reunion"></a>
                                 </small>
                             </div>
                             {% else %}
@@ -40,57 +40,55 @@
                             <div class="panel-content">
                                 <div class="panel-group">
                                     <div class="panel-body">
-                                        <div class="table-responsive">
-                                            {% include 'EVA/_common/_busqueda_paginacion.html' %}
-                                            <table class="table table-bordered w-100" id="dataTable">
-                                                <thead class="bg-primary-600">
+                                        {% include 'EVA/_common/_busqueda_paginacion.html' %}
+                                        <table class="table table-bordered w-100" id="dataTable">
+                                            <thead class="bg-primary-600">
+                                                <tr>
+                                                    <th data-priority="1">Código</th>
+                                                    <th>Fecha de la Reunión</th>
+                                                    <th>Tema de la Reunión</th>
+                                                    <th class="min-tablet-l">Descripción de la Reunión</th>
+                                                    <th class="min-desktop">Usuario</th>
+                                                    <th class="min-desktop">Fecha de Creación</th>
+                                                    <th class="none">Motivo Editar/Anular</th>
+                                                    <th class="none">Fecha de Modificación</th>
+                                                    <th class="min-desktop">Estado</th>
+                                                    <th data-priority="2">Acción</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for consecutivo in consecutivos %}
                                                     <tr>
-                                                        <th class="min-w-50">Código</th>
-                                                        <th class="min-w-50">Fecha de la Reunión</th>
-                                                        <th class="min-w-200">Tema de la Reunión</th>
-                                                        <th>Descripción de la Reunión</th>
-                                                        <th>Usuario</th>
-                                                        <th>Fecha de Creación</th>
-                                                        <th>Motivo Editar/Anular</th>
-                                                        <th>Fecha de Modificación</th>
-                                                        <th>Estado</th>
-                                                        <th>Acción</th>
+                                                        <td><span id="copiar_{{ consecutivo.id }}">{{ consecutivo.codigo }}</span>
+                                                            <span><a class="fad fa-copy" href="javascript:void(0);"  onclick="copiarAPortapapeles('{{ consecutivo.codigo }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Copiar"></a></span>
+                                                        </td>
+                                                        <td>{{ consecutivo.fecha | date:'Y-m-d' }}</td>
+                                                        <td>{{ consecutivo.tema }}</td>
+                                                        <td>{{ consecutivo.descripcion }}</td>
+                                                        <td>{{ consecutivo.usuario.username }}</td>
+                                                        <td>{{ consecutivo.fecha_crea | date:'Y-m-d' }}</td>
+                                                        <td>{% if consecutivo.justificacion %}{{ consecutivo.justificacion }}{% endif %}</td>
+                                                        <td>{% if consecutivo.justificacion %}{{ consecutivo.fecha_modificacion  | date:'Y-m-d H:i'}}{% endif %}</td>
+                                                        <td>
+                                                            {% if consecutivo.estado %}
+                                                                <span class="badge badge-primary">Vigente</span>
+                                                            {% else %}
+                                                                <span class="badge badge-secondary">Anulado</span>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>
+                                                            {% if perms.GestionDocumental.editar_consecutivocontrato and consecutivo.estado %}
+                                                              <a class="fad fa-2x fa-file-edit" id="editar_{{ consecutivo.id }}" href="javascript:abrirModalCrearReunion('{% url 'GestionDocumental:consecutivo-reuniones-editar' consecutivo.id%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                            {% endif %}
+                                                            {% if perms.GestionDocumental.delete_consecutivoreunion and consecutivo.estado %}
+                                                              <a class="fad fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ consecutivo.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ consecutivo.id }}, true)" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+                                                            {% endif %}
+                                                        </td>
                                                     </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {% for consecutivo in consecutivos %}
-                                                        <tr>
-                                                            <td><span id="copiar_{{ consecutivo.id }}">{{ consecutivo.codigo }}</span>
-                                                                <span><a class="fad fa-copy" href="javascript:void(0);"  onclick="copiarAPortapapeles('{{ consecutivo.codigo }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Copiar"></a></span>
-                                                            </td>
-                                                            <td>{{ consecutivo.fecha | date:'Y-m-d' }}</td>
-                                                            <td>{{ consecutivo.tema }}</td>
-                                                            <td>{{ consecutivo.descripcion }}</td>
-                                                            <td>{{ consecutivo.usuario.get_full_name }}</td>
-                                                            <td>{{ consecutivo.fecha_crea | date:'Y-m-d' }}</td>
-                                                            <td>{% if consecutivo.justificacion %}{{ consecutivo.justificacion }}{% endif %}</td>
-                                                            <td>{% if consecutivo.justificacion %}{{ consecutivo.fecha_modificacion }}{% endif %}</td>
-                                                            <td>
-                                                                {% if consecutivo.estado %}
-                                                                    <span class="badge badge-primary">Vigente</span>
-                                                                {% else %}
-                                                                    <span class="badge badge-secondary">Anulado</span>
-                                                                {% endif %}
-                                                            </td>
-                                                            <td>
-                                                                {% if perms.GestionDocumental.editar_consecutivocontrato and consecutivo.estado %}
-                                                                  <a class="fad fa-2x fa-file-edit" id="editar_{{ consecutivo.id }}" href="javascript:abrirModalCrearReunion('{% url 'GestionDocumental:consecutivo-reuniones-editar' consecutivo.id%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
-                                                                {% endif %}
-                                                                {% if perms.GestionDocumental.delete_consecutivoreunion and consecutivo.estado %}
-                                                                  <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ consecutivo.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ consecutivo.id }}, true)" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
-                                                                {% endif %}
-                                                            </td>
-                                                        </tr>
-                                                    {% endfor %}
-                                                </tbody>
-                                            </table>
-                                            {% include 'EVA/_common/_paginacion.html' with datos=consecutivos %}
-                                        </div>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                        {% include 'EVA/_common/_paginacion.html' with datos=consecutivos %}
                                     </div>
                                     <div class="card-footer small text-muted">Actualizado: {{ fecha }}</div>
                                 </div>
