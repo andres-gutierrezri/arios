@@ -3,13 +3,9 @@
 {% load eva_tags %}
 <title>{% block titulo %}Consecutivo de Oficios{% endblock %}</title>
 {% block styles %}
-    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/datagrid/datatables/datatables.bundle.css' %}">
-    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
-    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
-    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/bootstrap-datepicker/bootstrap-datepicker.css' %}">
-    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/bootstrap-datepicker/bootstrap-datepicker.css' %}">
-	<link rel="stylesheet" media="screen, print" href="{%static 'EVA/Plantilla/css/fa-brands.css' %}">
-
+    {% include 'EVA/_common/_statics/_tablas.html' with incCSS=True %}
+    {% include 'EVA/_common/_statics/_select2.html' with incCSS=True %}
+    {% include 'EVA/_common/_statics/_datepicker.html' with incCSS=True %}
 {% endblock styles %}
 
 {% block main %}
@@ -27,13 +23,13 @@
                     <div id="panel-1" class="panel">
                         <div class="panel-hdr">
                             {% if perms.GestionDocumental.add_consecutivoreunion %}
-                            <div class="col-md-12">
+                            <div class="col-md-10">
                                 <small>
                                     <a class="far fa-3x far fa-plus-circle" href="javascript:abrirModalCrearReunion('{% url 'GestionDocumental:consecutivo-reuniones-crear'%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar consecutivo acta de reunion"></a>
                                 </small>
                             </div>
                             {% else %}
-                            <div class="col-md-12"></div>
+                            <div class="col-md-10"></div>
                             {% endif %}
                             <div class="col-md-2" style="float: right" >
                                 {% select_tag opciones_filtro 'filtro_consecutivos' '' value=id_filtro  %}
@@ -46,7 +42,7 @@
                                     <div class="panel-body">
                                         <div class="table-responsive">
                                             {% include 'EVA/_common/_busqueda_paginacion.html' %}
-                                            <table class="table table-bordered w-100" id="dataTableConsecutivos">
+                                            <table class="table table-bordered w-100" id="dataTable">
                                                 <thead class="bg-primary-600">
                                                     <tr>
                                                         <th class="min-w-50">Código</th>
@@ -109,15 +105,12 @@
 
 {% endblock %}
 {% block scripts %}
-    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
+    {% include 'EVA/_common/_statics/_tablas.html' %}
+    {% include 'EVA/_common/_statics/_select2.html' %}
+    {% include 'EVA/_common/_statics/_datepicker.html'%}
     <script src="{% static 'Administracion/js/confirmarEliminar.js' %}"></script>
-    <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
     <script src="{% static 'GestionDocumental/js/filtro_consecutivos.js' %}"></script>
-    <script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
+    <script src="{% static 'GestionDocumental/js/consecutivos_reuniones.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/controlBusquedaPaginacion.js' %}"></script>
-    <script src="{% static 'GestionDocumental/js/configurar_modales.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
-    <script src="{% static 'TalentoHumano/js/date_picker.js' %}"></script>
-    <script src="{% static 'EVA/Plantilla/js/custom/funcionesGenerales.js' %}"></script>
-    <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js' %}"></script>
 {% endblock %}

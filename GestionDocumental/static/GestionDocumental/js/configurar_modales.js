@@ -1,7 +1,5 @@
 
 const modalCrear = $('#crear');
-const modalCrearReunion = $('#crear-reunion');
-
 
 function abrirModalCargar(url) {
     $('#cargar').load(url, function (responseText, textStatus, req) {
@@ -47,27 +45,6 @@ function abrirModalCrear(url) {
             EVANotificacion.toast.error('Ha ocurrido un error al cargar el archivo');
         }
     });
-}
-
-function abrirModalCrearReunion(url) {
-    modalCrearReunion.load(url, function (responseText, textStatus, req) {
-        try {
-            if (responseText.includes("<!DOCTYPE html>")) {
-                EVANotificacion.toast.error('No tiene permisos para acceder a esta funcionalidad');
-                return false;
-            }
-            $(this).modal('show');
-            configurarModalCrearReunion();
-        } catch (err) {
-            console.log(err);
-            EVANotificacion.toast.error('Ha ocurrido un error');
-        }
-    });
-}
-
-function configurarModalCrearReunion() {
-    inicializarDatePicker('fecha_id');
-    agregarValidacionFormularios();
 }
 
 function configurarModalCrear() {
