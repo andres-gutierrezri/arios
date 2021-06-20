@@ -19,19 +19,7 @@ $(document).ready(function () {
 });
 
 function abrirModalCrearReunion(url) {
-    modalCrearReunion.load(url, function (responseText, textStatus, req) {
-        try {
-            if (responseText.includes("<!DOCTYPE html>")) {
-                EVANotificacion.toast.error('No tiene permisos para acceder a esta funcionalidad');
-                return false;
-            }
-            $(this).modal('show');
-            configurarModalCrear();
-        } catch (err) {
-            console.log(err);
-            EVANotificacion.toast.error('Ha ocurrido un error al cargar el archivo');
-        }
-    });
+    cargarAbrirModal(modalCrearReunion, url, configurarModalCrear);
 }
 
 function configurarModalCrear() {
