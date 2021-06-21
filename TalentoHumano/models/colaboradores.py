@@ -60,7 +60,7 @@ class Colaborador(Persona, ModelDjangoExtensiones):
                             related_name='%(app_label)s_%(class)s_afp')
     caja_compensacion = models.ForeignKey(EntidadesCAFE, on_delete=models.DO_NOTHING,
                                           verbose_name='Caja de compensación', null=False, blank=False,
-                                          related_name='%(app_label)s_%(class)s_caja_compensacion')
+                                           related_name='%(app_label)s_%(class)s_caja_compensacion')
     cesantias = models.ForeignKey(EntidadesCAFE, on_delete=models.DO_NOTHING,
                                   verbose_name='Cesantias', null=False, blank=False,
                                   related_name='%(app_label)s_%(class)s_cesantias')
@@ -97,6 +97,7 @@ class Colaborador(Persona, ModelDjangoExtensiones):
                        ("can_menu_proyectos", "Can access menu proyectos"),
                        ("can_menu_talentohumano", "Can access menu talento humano"),
                        ("can_menu_sgi", "Can access menu sgi"),
+                       ("can_menu_gestionactividades", "can access menu gestion actividades"),
                        ("can_menu_financiero", "Can access menu financiero"),
                        ("can_menu_gestiondocumental", "Can access menu gestion documental"),
                        ("view_historial", "Can view historial"),

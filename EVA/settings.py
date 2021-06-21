@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'SGI.apps.SgiConfig',
     'Notificaciones.apps.NotificacionesConfig',
     'GestionDocumental.apps.GestiondocumentalConfig',
+    'GestionActividades.apps.GestionactividadesConfig',
 ]
 
 MIDDLEWARE = [
@@ -153,6 +154,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'SGI', 'static', 'SGI'),
     os.path.join(BASE_DIR, 'Notificaciones', 'static', 'Notificaciones'),
     os.path.join(BASE_DIR, 'GestionDocumental', 'static', 'GestionDocumental'),
+    os.path.join(BASE_DIR, 'GestionActividades', 'static', 'GestionActividades'),
 )
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
