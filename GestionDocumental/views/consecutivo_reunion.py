@@ -3,6 +3,7 @@ import json
 from sqlite3 import IntegrityError
 
 from django.contrib import messages
+from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
@@ -52,7 +53,7 @@ class ConsecutivoReunionView(AbstractEvaLoggedView):
 
 class ConsecutivoReunionesCrearView(AbstractEvaLoggedView):
     def get(self, request):
-        return render(request, 'GestionDocumental/ConsecutivosReuniones/crear.html',
+        return render(request, 'GestionDocumental/ConsecutivosReuniones/modal_crear_editar_reuniones.html',
                       {'fecha': datetime.datetime.now(),
                        'menu_actual': 'consecutivos-reunion'})
 
@@ -71,6 +72,46 @@ class ConsecutivoReunionesCrearView(AbstractEvaLoggedView):
         consecutivo.save()
         messages.success(request, 'Se ha creado el consecutivo <br> {0}'.format(consecutivo.codigo))
         return redirect(reverse('GestionDocumental:consecutivo-reuniones-index', args=[1]))
+
+
+class ConsecutivoReunionesEditarView(AbstractEvaLoggedView):
+    def get(self, request, id_reunion):
+        consecutivo = ConsecutivoReunion.objects.get(id=id_reunion)
+
+        return render(request, 'GestionDocumental/ConsecutivosReuniones/modal_crear_editar_reuniones.html',
+                      datos_xa_render(request, consecutivo))
+
+    def post(self, request, id_reunion):
+        update_fields = ['fecha', 'fecha_crea', 'fecha_modificacion',
+                         'tema', 'codigo', 'descripcion', 'justificacion']
+
+        consecutivo = ConsecutivoReunion.from_dictionary(request.POST)
+        consecutivo_db = ConsecutivoReunion.objects.get(id=id_reunion)
+
+        consecutivo.id = consecutivo_db.id
+        consecutivo.tema = consecutivo_db.tema
+        consecutivo.fecha = consecutivo.fecha
+        consecutivo.empresa = consecutivo_db.empresa
+        consecutivo.usuario_id = consecutivo_db.usuario_id
+        consecutivo.fecha_crea = consecutivo_db.fecha_crea
+        consecutivo.fecha_modificacion = consecutivo_db.fecha_modificacion
+
+        anio_actual = str(datetime.datetime.now().year)
+        consecutivo.codigo = 'ACR-{0:03d}-{1}{2}'.format(consecutivo_db.id, anio_actual[2], anio_actual[3])
+
+        try:
+            consecutivo.full_clean(validate_unique=False)
+        except ValidationError as errores:
+            messages.error(request, 'Falló editar. Valide los datos ingresados al editar el consecutivo')
+            return redirect(reverse('GestionDocumental:consecutivo-reuniones-index', args=[0]))
+
+        if consecutivo_db.comparar(consecutivo, excluir=['fecha_modificacion']):
+            messages.success(request, 'No se hicieron cambios en la consecutivo {0}'.format(consecutivo.codigo))
+            return redirect(reverse('GestionDocumental:consecutivo-reuniones-index', args=[0]))
+        else:
+            consecutivo.save(update_fields=update_fields)
+            messages.success(request, 'Se ha editado el consecutivo {0}'.format(consecutivo.codigo))
+            return redirect(reverse('GestionDocumental:consecutivo-reuniones-index', args=[0]))
 
 
 class ConsecutivoReunionesEliminarView(AbstractEvaLoggedView):
@@ -93,3 +134,12 @@ class ConsecutivoReunionesEliminarView(AbstractEvaLoggedView):
         except IntegrityError:
             return JsonResponse({"estado": "error",
                                  "mensaje": 'Ha ocurrido un error al realizar la acción'})
+
+
+def datos_xa_render(request, consecutivo: ConsecutivoReunion = None) -> dict:
+    if consecutivo:
+        datos = {}
+        datos['consecutivo'] = consecutivo
+        datos['editar'] = True
+
+    return datos

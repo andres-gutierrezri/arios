@@ -23,6 +23,11 @@ function abrirModalVistaPrevia(urlDocumento) {
     $("#vista_previa_modal").modal('show');
 }
 
+const CONTROLES_DATEPICKER = {
+	leftArrow: '<i class="fal fa-angle-left" style="font-size: 1.25rem"></i>',
+	rightArrow: '<i class="fal fa-angle-right" style="font-size: 1.25rem"></i>'
+};
+
 /**
  * Inicializa un input como un datepicker.
  * @param inputId id del input que se quiere inicializar.
@@ -32,7 +37,7 @@ function inicializarDatePicker(inputId) {
     $(`#${inputId}`).datepicker({
         todayHighlight: true,
         orientation: "bottom left",
-        templates: controls,
+        templates: CONTROLES_DATEPICKER,
         format: 'yyyy-mm-dd',
         autoclose: true
     });
@@ -77,5 +82,30 @@ function copiarAPortapapeles(texto)
     }).catch(error => {
         console.log(error);
         EVANotificacion.toast.error(`Falló copiado`);
+    });
+}
+
+/**
+ * Solicita un modal a la url especificada, lo carga en el elemento especificado y lo abre.
+ * @param modal Elemento donde se cargará el modal.
+ * @param url Enlace al cual se solicita el modal requerido.
+ * @param fnCallback Función callback a ejecutar cuando se carga exitosamente el modal.
+ */
+function cargarAbrirModal(modal, url, fnCallback) {
+        modal.load(url, function (responseText) {
+        try {
+            if (responseText.includes("<!DOCTYPE html>")) {
+                EVANotificacion.toast.error('No tiene permisos para acceder a esta funcionalidad');
+                return false;
+            }
+            $(this).modal('show');
+
+            if((fnCallback !== undefined) && (typeof(fnCallback) === 'function'))
+                fnCallback();
+
+        } catch (err) {
+            console.log(err);
+            EVANotificacion.toast.error('Ha ocurrido un error');
+        }
     });
 }
