@@ -25,6 +25,8 @@ urlpatterns = [
          name='consecutivo-oficios-index'),
     path('consecutivo-oficios/add', consecutivo_documento.ConsecutivoOficiosCrearView.as_view(),
          name='consecutivo-oficios-crear'),
+    path('consecutivo-oficios/<int:id>/editar', consecutivo_documento.ConsecutivoOficioEditarView.as_view(),
+         name='consecutivo-oficios-editar'),
     path('consecutivo-oficios/<int:id>/delete', consecutivo_documento.ConsecutivoOficiosEliminarView.as_view(),
          name='consecutivo-oficios-eliminar'),
     path('consecutivo-contratos/<int:id>/index', consecutivo_contrato.ConsecutivoContratoView.as_view(),
