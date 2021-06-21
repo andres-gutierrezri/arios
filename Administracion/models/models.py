@@ -365,11 +365,11 @@ class ReservaSalaJuntas(models.Model, ModelDjangoExtensiones):
         :return: Instacia de Reserva de la Sala de Juntas con la información especificada en el diccionario.
         """
         reserva_sala_juntas = ReservaSalaJuntas()
-        reserva_sala_juntas.responsable = datos.get('Responsable', '')
-        reserva_sala_juntas.fecha_inicio = datos.get('Fecha de Inicio', '')
-        reserva_sala_juntas.fecha_fin = datos.get('Fecha Fin', '')
+        reserva_sala_juntas.responsable = datos.get('responsable', '')
+        reserva_sala_juntas.fecha_inicio = datos.get('fecha-inicio', '')
+        reserva_sala_juntas.fecha_fin = datos.get('fecha-fin', '')
         reserva_sala_juntas.tema = datos.get('tema', '')
-        reserva_sala_juntas.descripcion =datos.get('Descripción', '')
-        reserva_sala_juntas.motivo = datos.get('Motivo', '')
+        reserva_sala_juntas.descripcion =datos.get('descripcion', '')
+        reserva_sala_juntas.motivo = datos.get('motivo', '')
 
         return reserva_sala_juntas
