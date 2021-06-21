@@ -6,6 +6,13 @@ $(document).ready(function () {
         plugins: ['dayGrid', 'list', 'timeGrid', 'interaction', 'bootstrap'],
         themeSystem: 'bootstrap',
         timeZone: 'UTC',
+        firstDay: 0, // Cambio del primer día de inicio de semana del calendario, (Domingo = 0, Lunes = 1,…)
+        locale: 'es', // Cambio del lenguaje del calendario a español
+        titleFormat: {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        },
         buttonText: {
             today: 'Hoy',
             month: 'Mes',
@@ -19,7 +26,6 @@ $(document).ready(function () {
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
         },
-
     });
     calendario.render();
 });
