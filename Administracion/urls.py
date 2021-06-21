@@ -15,7 +15,8 @@ Including another URLconf
 """
 
 from django.urls import path
-from Administracion.views import terceros, administracion, inicio_sesion, empresas, grupos_permisos, procesos
+from Administracion.views import terceros, administracion, inicio_sesion, empresas, grupos_permisos, \
+    procesos, sala_juntas
 from Administracion.views.Proveedores import autenticacion, proveedores, gestion_proveedores
 from Administracion.views.seleccion_empresa import SeleccionEmpresaModalView
 
@@ -112,4 +113,5 @@ urlpatterns = [
     path('proveedores/certificaciones', proveedores.CertificacionesView.as_view(), name='proveedor-certificaciones'),
     path('proveedores/certificacion/generar/<int:id>', proveedores.GenerarCertificacionView.as_view(),
          name='proveedor-generar-certificacion'),
+    path('reserva-sala-juntas/', sala_juntas.ReservaSalaJuntasView.as_view(), name='reserva-sala-juntas'),
 ]
