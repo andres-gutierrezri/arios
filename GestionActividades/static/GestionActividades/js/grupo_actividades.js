@@ -32,14 +32,14 @@ function configurarModalCrear() {
      if (idTipoPertenencia === ""){
         $('#tipo_pertenencia_select_id').change(function () {
             let actual = this.value;
-            CambiarSelect(actual);
+            cambiarSelect(actual);
         })
     }
     else{
         CambiarSelect(idTipoPertenencia);
         $('#tipo_pertenencia_select_id').change(function () {
             let actual = this.value;
-            CambiarSelect(actual);
+            cambiarSelect(actual);
         })
     }
 
@@ -47,17 +47,17 @@ function configurarModalCrear() {
 }
 
 
-function CambiarSelect (actual){
-    $.each(jQuery.parseJSON(extraTiposPertenencia.val()), function(key, value) {
-        if (actual === value.id) {
-
-            if (values.tipo_pertenencia) {
+function cambiarSelect (actual){
+    //$.each(jQuery.parseJSON(extraTiposPertenencia.val()), function(key, value) {
+        //if (actual === 1) {
+        let SELECCION_CONTRATO = "1";
+            if (actual === SELECCION_CONTRATO) {
                 mostrarOcultarTipoPertenencia(true)
             } else {
                 mostrarOcultarTipoPertenencia(false)
             }
-        }
-    })
+        //}S
+   // })
 }
 
 function mostrarOcultarTipoPertenencia(tipo_pertenencia) {
