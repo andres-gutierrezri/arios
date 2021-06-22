@@ -5,7 +5,7 @@ $(document).ready(function () {
     const calendario = new FullCalendar.Calendar(divCalendario[0], {
         plugins: ['dayGrid', 'list', 'timeGrid', 'interaction', 'bootstrap'],
         themeSystem: 'bootstrap',
-        timeZone: 'UTC',
+        timeZone: 'local', // Configurar zona horaria
         firstDay: 0, // Cambio del primer día de inicio de semana del calendario, (Domingo = 0, Lunes = 1,…)
         locale: 'es', // Cambio del lenguaje del calendario a español
         titleFormat: {
