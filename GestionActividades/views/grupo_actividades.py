@@ -88,11 +88,6 @@ class GruposActividadesEditarView(AbstractEvaLoggedView):
         if grupo_actividad.tipo_pertenencia == '2':
             grupo_actividad.contrato_id = None
 
-        if GrupoActividad.objects.filter(nombre__iexact=grupo_actividad.nombre,
-                                         grupo_actividad_id__exact=grupo_actividad.grupo_actividad_id).exists():
-            messages.error(request, 'Falló Editar. Ya existe un grupo con el mismo nombre')
-            return redirect(reverse('GestionActividades:grupo-actividades-index'))
-
         try:
             grupo_actividad.full_clean(validate_unique=False)
         except ValidationError as errores:
