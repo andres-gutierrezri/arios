@@ -28,4 +28,7 @@ $(document).ready(function () {
         },
     });
     calendario.render();
+    calendario.addEventSource({
+        url: '/administracion/reservas-sala-juntas/json'
+    });
 });
