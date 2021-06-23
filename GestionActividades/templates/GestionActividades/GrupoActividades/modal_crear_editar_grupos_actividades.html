@@ -29,31 +29,34 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <input id="extra_tipos_pertenencia" value="{{ extra_tipos_pertenencia }}" style="display: none">
+                        <input id="tipo_pertenencia" value="{{ tipo_pertenencia }}" style="display: none">
                         <div class="col-md-12">
-                            {% select_tag tipo_pertenencia 'tipo_pertenencia' 'Seleccione un tipo de pertenencia' value=grupo_actividad.tipo_pertenencia texto_label="Tipo de Pertenencia" required="" mensaje_validacion='Por favor seleccione un tipo de pertenencia'  %}
+                            {% select_tag tipo_pertenencia 'tipo_pertenencia' 'Seleccione un tipo de pertenencia' value=grupo_actividad.tipo_pertenencia texto_label="Tipo de Pertenencia" required="" mensaje_validacion='Por favor seleccione un tipo de pertenencia' invalido=errores.tipo_pertenencia %}
                         </div>
                     </div>
                     <div class="form-group">
-                        <!--<input id="contrato_mostrar_id" style="display: none">-->
                         <div id=contrato_mostrar_id style="display: none" class="col-md-12">
                             {% select_tag contratos 'contrato_id' 'Seleccione un contrato' texto_label="Contrato" value=grupo_actividad.contrato_id invalido=errores.contrato mensaje_validacion='Por favor seleccione un contrato' %}
                         </div>
                     </div>
                     <div class="form-group">
-                        <!--<input id="proceso_mostrar_id" style="display: none">-->
                         <div id=proceso_mostrar_id style="display: none" class="col-md-12">
-                            {% select_tag procesos 'proceso_id' 'Seleccione un proceso' texto_label="Proceso"  value=grupo_actividad.proceso_id invalido=errores.proceso mensaje_validacion='Por favor seleccione un proceso' %}
+                            {% select_tag procesos 'proceso_id' 'Seleccione un proceso' texto_label="Proceso" value=grupo_actividad.proceso_id invalido=errores.proceso mensaje_validacion='Por favor seleccione un proceso' %}
                         </div>
                     </div>
-                </div>
-                {% if editar %}
+                    <div class="form-group">
+                            <div class="col-md-12">
+                                {% select_tag grupos 'grupo_pertenece' 'Seleccione el grupo al que pertenece' texto_label="Seleccione un grupo"  value=grupo_actividad.grupo_actividad_id %}
+                            </div>
+                    </div>
+                    {% if editar %}
                         <div class="form-group">
                             <div id="motivo" class="col-md-12">
-                                {% input_textarea_tag 'motivo' 'Motivo' placeholder="Digite Motivo" value=grupo_actividad.justificacion|default_if_none:"" required="" mensaje_validacion='Por favor digite el motivo.' %}
+                                {% input_textarea_tag 'motivo' 'Motivo' placeholder="Digite Motivo" value=grupo_actividad.motivo|default_if_none:"" required="" mensaje_validacion='Por favor digite el motivo.' %}
                             </div>
                         </div>
-                {% endif %}
+                    {% endif %}
+                </div>
             </div>
             <div class="modal-footer">
                 <button data-dismiss="modal" class="btn btn-danger btn-pills">Cancelar</button>

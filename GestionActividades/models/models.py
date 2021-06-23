@@ -22,10 +22,10 @@ class GrupoActividad(models.Model, ModelDjangoExtensiones):
                                               blank=False)
     tipo_pertenencia = models.SmallIntegerField(choices=PertenenciaGrupoActividades.choices,
                                                 verbose_name='Pertenencia', null=False, blank=False)
-    proceso = models.ForeignKey(Proceso, on_delete=models.DO_NOTHING, verbose_name='Proceso', null=True, blank=False)
+    proceso = models.ForeignKey(Proceso, on_delete=models.DO_NOTHING, verbose_name='Proceso', null=True, blank=True)
     contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato', null=True, blank=True)
     grupo_actividad = models.ForeignKey('self', on_delete=models.DO_NOTHING, verbose_name='Grupo Actividad', null=True,
-                                        blank=False)
+                                        blank=True)
     usuario_crea = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario Crea',
                                      null=False, blank=False, related_name='GrupoActividad_usuario_crea')
     usuario_modifica = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario Modifica',
@@ -47,12 +47,13 @@ class GrupoActividad(models.Model, ModelDjangoExtensiones):
         :return: Instacia de Grupo de activdiades con la información especificada en el diccionario.
         """
         grupo_actividad = GrupoActividad()
+        grupo_actividad.nombre = datos.get('nombre', None)
         grupo_actividad.contrato_id = datos.get('contrato_id', None)
         grupo_actividad.proceso_id = datos.get('proceso_id', None)
+        grupo_actividad.grupo_actividad_id = datos.get('grupo_pertenece', None)
         grupo_actividad.descripcion = datos.get('descripcion', '')
         grupo_actividad.tipo_pertenencia = datos.get('tipo_pertenencia', '')
-        grupo_actividad.responsables = datos.get('responsables', '')
-        grupo_actividad.justificacion = datos.get('motivo', '')
+        grupo_actividad.motivo = datos.get('motivo', '')
         grupo_actividad.estado = True
 
         return grupo_actividad
