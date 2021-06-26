@@ -43,6 +43,29 @@ function inicializarDatePicker(inputId) {
     });
 }
 
+/**
+ * Inicializa un input como un daterangepicker.
+ * @param inputId id del input que se quiere inicializar.
+ */
+
+function inicializarDateRangePicker(inputId) {
+
+    $(`#${inputId}`).daterangepicker({
+        timePicker: true,
+        startDate: moment(),
+        endDate: moment().add(1, 'hour'),
+        timePicker24Hour: true,
+        timePickerSeconds: true,
+        locale:
+            {
+                applyLabel: 'Aplicar',
+                cancelLabel: 'Cancelar',
+                separator: ' – ',
+                format: 'YYYY-MM-DD HH:mm:ss'
+            },
+    });
+}
+
 const CONFIG_BASE_SELECT2 = {
     language: {
         noResults: function () {
