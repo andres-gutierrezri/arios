@@ -4,8 +4,11 @@
 <title>{% block titulo %}Reserva de la Sala de Juntas{% endblock %}</title>
 
 {% block styles %}
+    {% include 'EVA/_common/_statics/_select2.html' with incCSS=True %}
+    {% include 'EVA/_common/_statics/_datepicker.html' with incCSS=True %}
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/miscellaneous/fullcalendar/fullcalendar.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.css' %}">
 {% endblock styles %}
 
 {% block main %}
@@ -22,8 +25,17 @@
         <div class="col-xl-12">
             <div id="panel-1" class="panel">
                 <div class="panel-hdr">
+                    {% if perms.Administracion.add_reserva_sala_juntas %}
+                        <div class="col-md-auto d-flex align-items-center">
+                            <small>
+                                <a class="fad fa-3x fad fa-plus-circle" href="javascript:abrirModalCrearReserva('{% url 'Administracion:reserva-sala-juntas-crear'%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear Reserva Sala de Juntas"></a>
+                            </small>
+                        </div>
+                    {% else %}
+                        <div class="col-md-auto d-flex align-items-center"></div>
+                    {% endif %}
                     <h2>
-                        Calendario para la Reserva de la Sala de Juntas <span class="fw-300"></span>
+                        Crear <span class="ml-1">Reserva</span>
                     </h2>
                     <div class="panel-toolbar">
                         <button class="btn btn-panel" data-action="panel-fullscreen" data-toggle="tooltip" data-offset="0,10" data-original-title="Pantalla completa"></button>
@@ -39,9 +51,17 @@
             </div>
         </div>
     </div>
+    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='administracion/reserva-sala-juntas' %}
+    <div class="modal fade" tabindex="-1" id="crear-reserva" role="dialog"  aria-hidden="true"></div>
 {% endblock %}
 
 {% block scripts %}
+    {% include 'EVA/_common/_statics/_select2.html' %}
+    {% include 'EVA/_common/_statics/_datepicker.html'%}
+    <script src="{% static 'Administracion/js/confirmarEliminar.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/miscellaneous/fullcalendar/fullcalendar.bundle.js' %}"></script>
     <script src="{% static 'Administracion/js/ReservaSalaJuntas/reservaSalaJuntas.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/dependency/moment/moment.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.js' %}"></script>
 {% endblock %}
