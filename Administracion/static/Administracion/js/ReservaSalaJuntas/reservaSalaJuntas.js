@@ -1,5 +1,7 @@
 'use strict'
 
+const modalCrearReserva = $('#crear-reserva');
+
 $(document).ready(function () {
     const divCalendario = $('#calendar');
     const calendario = new FullCalendar.Calendar(divCalendario[0], {
@@ -32,3 +34,14 @@ $(document).ready(function () {
         url: '/administracion/reservas-sala-juntas/json'
     });
 });
+
+function abrirModalCrearReserva(url) {
+    cargarAbrirModal(modalCrearReserva, url, configurarModalCrear);
+}
+
+function configurarModalCrear() {
+    inicializarSelect2('responsable_select_id', modalCrearReserva);
+    inicializarDateRangePicker('fecha_intervalo_id');
+
+    agregarValidacionFormularios();
+}
