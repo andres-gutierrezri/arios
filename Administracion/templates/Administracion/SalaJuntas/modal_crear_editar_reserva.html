@@ -1,10 +1,54 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% load eva_tags %}
+{% load static %}
+{% if editar %}
+    <form action= "{% url 'Administracion:reserva-sala-juntas-editar' consecutivo.id %}" id="reserva_sala_juntas_form_editar" method="post" class="needs-validation" novalidate>
+{% else %}
+    <form action= "{% url 'Administracion:reserva-sala-juntas-crear' %}" id="reserva_sala_juntas_form" method="post" class="needs-validation" novalidate>
+{% endif %}
+{% csrf_token %}
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header p-b-0">
+                <h4 class="modal-title">
+                    {% if editar %}Editar Reserva para la Sala de Juntas{% else %}Crear Reserva para la Sala de Juntas{% endif %}
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div id="responsable" class="form-group col-md-12">
+                        {% select_tag colaboradores 'responsable' 'Seleccione el responsable' value=reserva_sala_juntas.responsable_id texto_label="Responsable" required="" mensaje_validacion='Por favor seleccione el responsable' %}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div id="tema" class="form-group col-md-12">
+                        {% input_text_tag 'tema' 'Tema' placeholder="Ingrese el tema" value=reserva_sala_juntas.tema required="" maxlength="100" mensaje_validacion='Por favor describa el tema' %}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div id="fecha_intervalo" class="form-group col-md-12">
+                        {% input_date_tag 'fecha_intervalo' 'Tiempo' placeholder="Seleccione el tiempo" value=reserva_sala_juntas.fecha_intervalo required="" autocomplete="off" mensaje_validacion='Por favor seleccione el tiempo' %}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div id="descripcion" class="form-group col-md-12">
+                        {% input_textarea_tag 'descripcion' 'Descripción (Opcional)' placeholder="Ingrese una descripción" maxlength="100" value=reserva_sala_juntas.descripcion mensaje_validacion='Por favor digite una descripción' %}
+                    </div>
+                </div>
+                {% if editar %}
+                    <div class="form-row">
+                        <div id="motivo" class="form-group col-md-12">
+                            {% input_textarea_tag 'motivo' 'Motivo' placeholder="Ingrese el motivo" value=reserva_sala_juntas.motivo|default_if_none:"" required="" mensaje_validacion='Por favor ingrese el motivo' %}
+                        </div>
+                    </div>
+                {% endif %}
+                <div class="modal-footer">
+                    <button data-dismiss="modal" class="btn btn-danger btn-pills">Cancelar</button>
+                    <button id="agregar" type="submit" class="btn btn-primary btn-pills"> {% if editar %}Editar{% else %}Agregar{% endif %} </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
