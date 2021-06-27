@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
+from django.db.models import QuerySet
 
 import GestionActividades
 from Administracion.models import Proceso
@@ -10,6 +11,7 @@ from EVA.General.modelmanagers import ManagerGeneral
 from GestionActividades.Enumeraciones import EstadosActividades, PertenenciaGrupoActividades
 from Proyectos.models import Contrato
 from EVA import settings
+
 
 
 class GrupoActividad(models.Model, ModelDjangoExtensiones):
@@ -44,7 +46,7 @@ class GrupoActividad(models.Model, ModelDjangoExtensiones):
         """
         Crea una instancia de GrupoActividad con los datos pasados en el diccionario.
         :param datos: Diccionario con los datos para crear el Grupo de Actividades.
-        :return: Instacia de Grupo de activdiades con la información especificada en el diccionario.
+        :return: Instacia de Grupo de actividades con la información especificada en el diccionario.
         """
         grupo_actividad = GrupoActividad()
         grupo_actividad.nombre = datos.get('nombre', None)
@@ -71,7 +73,7 @@ class Actividad(models.Model, ModelDjangoExtensiones):
     supervisor = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Supervisor', null=False, blank=False,
                                    related_name='actividad_supervisor')
     descripcion = models.TextField(max_length=500, verbose_name='Descripción', null=False, blank=False)
-    estado = models.SmallIntegerField(choices=EstadosActividades.choices,
+    estado = models.SmallIntegerField(default=1, choices=EstadosActividades.choices,
                                       verbose_name='Estado', null=False, blank=False)
     porcentaje_avance = models.PositiveIntegerField(default=0, validators=[MinValueValidator(0),
                                                     MaxValueValidator(100)], verbose_name='Porcentaje Avance',
@@ -86,6 +88,7 @@ class Actividad(models.Model, ModelDjangoExtensiones):
                                                MaxValueValidator(10)], verbose_name='Calificación',
                                                null=False, blank=False)
     motivo = models.TextField(max_length=500, verbose_name='motivo', null=False, blank=False)
+    soporte_requerido = models.BooleanField(verbose_name='Soporte Requerido', blank=False, null=False, default=False)
 
     def __str__(self):
         return self.nombre
@@ -94,18 +97,56 @@ class Actividad(models.Model, ModelDjangoExtensiones):
         verbose_name = 'Actividad'
         verbose_name_plural = 'Actividades'
 
+    @staticmethod
+    def from_dictionary(datos: dict) -> 'Actividad':
+        """
+        Crea una instancia de Actividad con los datos pasados en el diccionario.
+        :param datos: Diccionario con los datos para crear Actividades.
+        :return: Instacia de actividades con la información especificada en el diccionario.
+        """
+        actividad = Actividad()
+        actividad.nombre = datos.get('nombre', None)
+        actividad.supervisor_id = datos.get('supervisor_id', None)
+        actividad.fecha_inicio = datos.get('fecha_inicio', '')
+        actividad.fecha_fin = datos.get('fecha_final', '')
+        actividad.grupo_actividad_id = datos.get('grupo_pertenece', None)
+        actividad.descripcion = datos.get('descripcion', '')
+        actividad.motivo = datos.get('motivo', '')
+        actividad.estado = datos.get('estado', 1)
+        actividad.codigo = datos.get('codigo', '100200')
 
-class ResponsableActividad(models.Model, ModelDjangoExtensiones):
-    objects = ManagerGeneral()
+
+        return actividad
+
+
+class ResponsableActividadManger(models.Manager):
+    def get_ids_responsables(self, actividad_id: int = None, actividad: Actividad = None) -> QuerySet:
+        if actividad:
+            actividad_id = actividad.id
+
+        filtro = {}
+        if actividad_id:
+            filtro['actividad_id'] = actividad_id
+
+        return super().get_queryset().filter(**filtro).values_list('responsable_id', flat=True)
+
+    def get_ids_responsables_list(self, actividad_id: int = None,  actividad: Actividad = None) -> list:
+        return list(self.get_ids_responsables(actividad_id, actividad))
+
+
+class ResponsableActividad(models.Model):
+    objects = ResponsableActividadManger()
     responsable = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Responsable',
                                     blank=False, null=False)
     actividad = models.ForeignKey(Actividad, on_delete=models.DO_NOTHING,
                                   verbose_name='Actividad', blank=False, null=False)
 
     def __str__(self):
-        return '{0}-{1}'.format(self.responsable, self.actividad)
+        return str.format(self.responsable, self.actividad)
 
     class Meta:
         unique_together = (('responsable', 'actividad'),)
-        verbose_name = 'Responsable Actividad'
-        verbose_name_plural = 'Responsables Actividades'
+
+
+
+
