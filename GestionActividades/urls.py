@@ -15,7 +15,8 @@ Including another URLconf
 """
 
 from django.urls import path
-from GestionActividades.views import views, grupo_actividades
+from GestionActividades.views import views, grupo_actividades, actividades
+
 app_name = 'GestionActividades'
 
 urlpatterns = [
@@ -26,6 +27,12 @@ urlpatterns = [
          name='grupo-actividades-crear'),
     path('grupo-actividades/<int:id_grupo>/editar', grupo_actividades.GruposActividadesEditarView.as_view(),
          name='grupo-actividades-editar'),
+    path('actividades/index', actividades.ActividadesIndexView.as_view(),
+         name='actividades-index'),
+    path('actividades/add', actividades.ActividadesCrearView.as_view(),
+         name='actividades-crear'),
+    path('actividades/<int:id_actividad>/editar', actividades.ActividadesEditarView.as_view(),
+         name='actividades-editar'),
 
 
 ]

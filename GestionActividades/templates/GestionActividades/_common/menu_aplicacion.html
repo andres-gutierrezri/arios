@@ -1,9 +1,17 @@
 {% if perms.GestionActividades.view_grupoactividades %}
-<li {% if menu_actual == 'Grupo Actividades' %} class="active" {% endif %}>
-    <a href="{% url 'GestionActividades:grupo-actividades-index' %}" title="Grupo Actividades" data-filter-tags="grupo actividades">
-        <i class="fal fa-calendar-alt"></i>
-        <span class="nav-link-text" data-i18n="nav.gestionactividades_grupo-actividades">Grupos Actividades</span>
+    <li {% if menu_actual == 'Grupo Actividades' %} class="active" {% endif %}>
+        <a href="{% url 'GestionActividades:grupo-actividades-index' %}" title="Grupo Actividades" data-filter-tags="grupo actividades">
+            <i class="fal fa-calendar-alt"></i>
+            <span class="nav-link-text" data-i18n="nav.gestionactividades_grupo-actividades">Grupos Actividades</span>
+        </a>
+    </li>
+{% endif%}
+{% if perms.GestionActividades.view_actividades %}
+<li  {% if menu_actual == 'Actividades' %} class="active" {% endif %}>
+    <a href="{% url 'GestionActividades:actividades-index'%}" title="Actividades" data-filter-tags="Actividades">
+        <i class="fal fa-clipboard-check"></i>
+        <span class="nav-link-text" data-i18n="nav.gestionactividades_actividades">Actividades</span>
     </a>
 </li>
-{% endif%}
+{% endif %}
 
