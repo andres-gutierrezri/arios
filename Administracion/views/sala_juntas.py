@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from django.contrib import messages
+from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -50,14 +51,52 @@ class ReservaSalaJuntasCrearView(AbstractEvaLoggedView):
         reserva.fecha_creacion = app_datetime_now()
 
         reserva.save()
-        messages.success(request, 'Se ha creado la reserva en la sala de juntas')
+        messages.success(request, 'Se ha creado la reserva para la sala de juntas')
         return redirect(reverse('Administracion:reserva-sala-juntas'))
 
 
-def datos_xa_render(request) -> dict:
+class ReservaSalaJuntasEditarView(AbstractEvaLoggedView):
+    def get(self, request, id_reserva):
+        reserva = ReservaSalaJuntas.objects.get(id=id_reserva)
+
+        return render(request, 'Administracion/SalaJuntas/modal_crear_editar_reserva.html',
+                      datos_xa_render(request, reserva))
+
+    def post(self, request, id_reserva):
+        update_fields = ['responsable', 'tema', 'fecha_inicio', 'fecha_fin', 'descripcion', 'motivo',
+                         'fecha_modificacion', 'usuario_modifica']
+
+        reserva = ReservaSalaJuntas.from_dictionary(request.POST)
+        reserva_db = ReservaSalaJuntas.objects.get(id=id_reserva)
+
+        reserva.id = reserva_db.id
+        reserva.fecha_creacion = reserva_db.fecha_creacion
+        reserva.usuario_crea = reserva_db.usuario_crea
+        reserva.usuario_modifica = request.user
+
+        try:
+            reserva.full_clean(validate_unique=False)
+        except ValidationError as errores:
+            messages.error(request, 'Falló editar. Valide los datos ingresados al editar la reserva')
+            return redirect(reverse('Administracion:reserva-sala-juntas'))
+
+        if reserva_db.comparar(reserva, excluir=['fecha_modificacion']):
+            messages.success(request, 'No se hicieron cambios en la reserva para la sala de juntas')
+            return redirect(reverse('Administracion:reserva-sala-juntas'))
+        else:
+            reserva.save(update_fields=update_fields)
+            messages.success(request, 'Se ha editado la reserva para la sala de juntas')
+            return redirect(reverse('Administracion:reserva-sala-juntas'))
+
+
+def datos_xa_render(request, reserva: ReservaSalaJuntas = None) -> dict:
     colaboradores = Colaborador.objects.get_xa_select_usuarios_activos_x_empresa(request)
 
     datos = {'colaboradores': colaboradores,
              'menu_actual': 'reserva-sala-juntas'}
+
+    if reserva:
+        datos['reserva'] = reserva
+        datos['editar'] = True
 
     return datos
