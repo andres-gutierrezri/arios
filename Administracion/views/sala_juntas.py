@@ -5,8 +5,9 @@ from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
-
+from django.db.models import Q
 from Administracion.models.models import ReservaSalaJuntas
+from Administracion.views.Proveedores.autenticacion import LOGGER
 from EVA.General import app_datetime_now
 from EVA.General.conversiones import datetime_to_isostring
 from EVA.views.index import AbstractEvaLoggedView
@@ -49,10 +50,27 @@ class ReservaSalaJuntasCrearView(AbstractEvaLoggedView):
         reserva = ReservaSalaJuntas.from_dictionary(request.POST)
         reserva.usuario_crea = request.user
         reserva.fecha_creacion = app_datetime_now()
+        if ReservaSalaJuntas.objects \
+            .filter(Q(fecha_inicio__lte=reserva.fecha_inicio, fecha_fin__gte=reserva.fecha_inicio)
+                    | Q(fecha_inicio__lte=reserva.fecha_fin, fecha_fin__gte=reserva.fecha_fin)).exists():
+            return JsonResponse({"estado": "error", "mensaje": "Ya existe una reunión cargada"})
 
-        reserva.save()
-        messages.success(request, 'Se ha creado la reserva para la sala de juntas')
-        return redirect(reverse('Administracion:reserva-sala-juntas'))
+        # Fecha de inicio este entre el rango de fechas
+        # Fecha de fin este entre el rango de fechas
+        # Fecha de inicio y la de fin este entre el rango de fechas
+
+        #reserva.save()
+        #messages.success(request, 'Se ha creado la reserva en la sala de juntas')
+        #return redirect(reverse('Administracion:reserva-sala-juntas'))
+        try:
+            reserva.save()
+        except:
+            LOGGER.exception("Error al reunión")
+            return JsonResponse({"estado": "error", "mensaje": "Ha ocurrido un error al guardar la información"})
+
+        messages.success(request, 'Se ha creado la reserva en la sala de juntas')
+
+        return JsonResponse({"estado": "OK"})
 
 
 class ReservaSalaJuntasEditarView(AbstractEvaLoggedView):
