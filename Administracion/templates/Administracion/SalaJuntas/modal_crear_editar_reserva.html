@@ -1,11 +1,7 @@
 {% load eva_tags %}
 {% load static %}
-{% if editar %}
-    <form action= "{% url 'Administracion:reserva-sala-juntas-editar' reserva.id %}" id="reserva_sala_juntas_form_editar" method="post" class="needs-validation" novalidate>
-{% else %}
-    <form action= "{% url 'Administracion:reserva-sala-juntas-crear' %}" id="reserva_sala_juntas_form" method="post" class="needs-validation" novalidate>
-{% endif %}
-{% csrf_token %}
+<form id="juntas_form" method="post" class="needs-validation" novalidate>
+
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header p-b-0">
@@ -17,6 +13,7 @@
                 </button>
             </div>
             <div class="modal-body">
+            {% csrf_token %}
                 <div class="form-row">
                     <div id="responsable" class="form-group col-md-12">
                         {% select_tag colaboradores 'responsable' 'Seleccione el responsable' value=reserva.responsable_id texto_label="Responsable" required="" mensaje_validacion='Por favor seleccione el responsable' %}

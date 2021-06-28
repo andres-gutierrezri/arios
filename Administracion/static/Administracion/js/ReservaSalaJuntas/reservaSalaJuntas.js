@@ -10,6 +10,9 @@ $(document).ready(function () {
         timeZone: 'local', // Configurar zona horaria
         firstDay: 0, // Cambio del primer día de inicio de semana del calendario, (Domingo = 0, Lunes = 1,…)
         locale: 'es', // Cambio del lenguaje del calendario a español
+        editable: true, // don't allow event dragging
+        eventResourceEditable: true, // except for between resources
+
         titleFormat: {
             year: 'numeric',
             month: 'long',
@@ -36,12 +39,21 @@ $(document).ready(function () {
 });
 
 function abrirModalCrearReserva(url) {
-    cargarAbrirModal(modalCrearReserva, url, configurarModalCrear);
+    cargarAbrirModal(modalCrearReserva, url,function () {
+        configurarModalCrear();
+        const form = $("#juntas_form")[0];
+        agregarValidacionForm(form, function (event) {
+            enviarFormularioAsync(form, url).then(exitoso => {
+                if (exitoso)
+                    location.reload();
+            });
+            return true;
+        });
+    });
 }
 
 function configurarModalCrear() {
     inicializarSelect2('responsable_select_id', modalCrearReserva);
     inicializarDateRangePicker('fecha_intervalo_id');
-
     agregarValidacionFormularios();
 }

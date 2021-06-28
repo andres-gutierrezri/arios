@@ -136,3 +136,38 @@ function cargarAbrirModal(modal, url, fnCallback) {
         }
     });
 }
+
+async function enviarFormularioAsync(form, url, mensaje='') {
+    if(typeof form === 'string') {
+        form = $(`#${form}`)[0];
+    }
+
+    const  formData = new FormData(form);
+
+    try {
+        EVANotificacion.modal.cargando(mensaje);
+        const datos = JSON.parse(await $.ajax({
+            url: url,
+            type: "post",
+            dataType: "html",
+            data: formData,
+            cache: false,
+            processData: false,
+            contentType: false
+        }));
+
+        if (datos.estado === 'OK') {
+            return true;
+        } else {
+            EVANotificacion.toast.error(datos.estado === 'error' ? datos.mensaje : 'No tiene permisos para acceder a esta funcionalidad');
+            return false;
+        }
+    } catch (e) {
+        console.error(e);
+        EVANotificacion.toast.error('Error Inesperado');
+        return false;
+    } finally {
+        EVANotificacion.modal.cerrar();
+    }
+}
+
