@@ -1,7 +1,7 @@
 {% load eva_tags %}
 {% load static %}
 {% if editar %}
-    <form action= "{% url 'Administracion:reserva-sala-juntas-editar' consecutivo.id %}" id="reserva_sala_juntas_form_editar" method="post" class="needs-validation" novalidate>
+    <form action= "{% url 'Administracion:reserva-sala-juntas-editar' reserva.id %}" id="reserva_sala_juntas_form_editar" method="post" class="needs-validation" novalidate>
 {% else %}
     <form action= "{% url 'Administracion:reserva-sala-juntas-crear' %}" id="reserva_sala_juntas_form" method="post" class="needs-validation" novalidate>
 {% endif %}
@@ -19,28 +19,28 @@
             <div class="modal-body">
                 <div class="form-row">
                     <div id="responsable" class="form-group col-md-12">
-                        {% select_tag colaboradores 'responsable' 'Seleccione el responsable' value=reserva_sala_juntas.responsable_id texto_label="Responsable" required="" mensaje_validacion='Por favor seleccione el responsable' %}
+                        {% select_tag colaboradores 'responsable' 'Seleccione el responsable' value=reserva.responsable_id texto_label="Responsable" required="" mensaje_validacion='Por favor seleccione el responsable' %}
                     </div>
                 </div>
                 <div class="form-row">
                     <div id="tema" class="form-group col-md-12">
-                        {% input_text_tag 'tema' 'Tema' placeholder="Ingrese el tema" value=reserva_sala_juntas.tema required="" maxlength="100" mensaje_validacion='Por favor describa el tema' %}
+                        {% input_text_tag 'tema' 'Tema' placeholder="Ingrese el tema" value=reserva.tema required="" maxlength="100" mensaje_validacion='Por favor describa el tema' %}
                     </div>
                 </div>
                 <div class="form-row">
                     <div id="fecha_intervalo" class="form-group col-md-12">
-                        {% input_date_tag 'fecha_intervalo' 'Tiempo' placeholder="Seleccione el tiempo" value=reserva_sala_juntas.fecha_intervalo required="" autocomplete="off" mensaje_validacion='Por favor seleccione el tiempo' %}
+                        {% input_date_tag 'fecha_intervalo' 'Tiempo' placeholder="Seleccione el tiempo" required="" autocomplete="off" mensaje_validacion='Por favor seleccione el tiempo' %}
                     </div>
                 </div>
                 <div class="form-row">
                     <div id="descripcion" class="form-group col-md-12">
-                        {% input_textarea_tag 'descripcion' 'Descripción (Opcional)' placeholder="Ingrese una descripción" maxlength="100" value=reserva_sala_juntas.descripcion mensaje_validacion='Por favor digite una descripción' %}
+                        {% input_textarea_tag 'descripcion' 'Descripción (Opcional)' placeholder="Ingrese una descripción" maxlength="100" value=reserva.descripcion mensaje_validacion='Por favor digite una descripción' %}
                     </div>
                 </div>
                 {% if editar %}
                     <div class="form-row">
                         <div id="motivo" class="form-group col-md-12">
-                            {% input_textarea_tag 'motivo' 'Motivo' placeholder="Ingrese el motivo" value=reserva_sala_juntas.motivo|default_if_none:"" required="" mensaje_validacion='Por favor ingrese el motivo' %}
+                            {% input_textarea_tag 'motivo' 'Motivo' placeholder="Ingrese el motivo" value=reserva.motivo|default_if_none:"" required="" mensaje_validacion='Por favor ingrese el motivo' %}
                         </div>
                     </div>
                 {% endif %}
