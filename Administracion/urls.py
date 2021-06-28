@@ -117,4 +117,6 @@ urlpatterns = [
     path('reservas-sala-juntas/json', sala_juntas.ReservaSalaJuntasView.as_view(), name='reserva-sala-juntas-json'),
     path('reservas-sala-juntas/add', sala_juntas.ReservaSalaJuntasCrearView.as_view(),
          name='reserva-sala-juntas-crear'),
+    path('reservas-sala-juntas/<int:id_reserva>/editar', sala_juntas.ReservaSalaJuntasEditarView.as_view(),
+         name='reserva-sala-juntas-editar'),
 ]
