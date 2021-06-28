@@ -109,3 +109,45 @@ function cargarAbrirModal(modal, url, fnCallback) {
         }
     });
 }
+
+/**
+ * Envia el formulario especificado de forma asíncrona a la url indicada. En caso de ocurrir una excepción o
+ * de recibir error como respuesta se laza una notificación tipo toast con el error.
+ * @param form Formulario o Id del formulario a enviar.
+ * @param url String con la url a donde se envia el formulario.
+ * @param mensaje Mensaje a mostrar mientras se realiza el envío y se recibe respuesta.
+ * @returns {Promise<boolean>} true -> si se recibe respuesta exitosa del servidor de lo contrario false.
+ */
+async function enviarFormularioAsync(form, url, mensaje='') {
+    if(typeof form === 'string') {
+        form = $(`#${form}`)[0];
+    }
+
+    const  formData = new FormData(form);
+
+    try {
+        EVANotificacion.modal.cargando(mensaje);
+        const datos = JSON.parse(await $.ajax({
+            url: url,
+            type: "post",
+            dataType: "html",
+            data: formData,
+            cache: false,
+            processData: false,
+            contentType: false
+        }));
+
+        if (datos.estado === 'OK') {
+            return true;
+        } else {
+            EVANotificacion.toast.error(datos.estado === 'error' ? datos.mensaje : 'No tiene permisos para acceder a esta funcionalidad');
+            return false;
+        }
+    } catch (e) {
+        console.error(e);
+        EVANotificacion.toast.error('Error Inesperado');
+        return false;
+    } finally {
+        EVANotificacion.modal.cerrar();
+    }
+}
