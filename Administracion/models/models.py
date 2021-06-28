@@ -364,12 +364,12 @@ class ReservaSalaJuntas(models.Model, ModelDjangoExtensiones):
         :param datos: Diccionario con los datos para crear la Reserva de la Sala de Juntas.
         :return: Instacia de Reserva de la Sala de Juntas con la información especificada en el diccionario.
         """
-        reserva_sala_juntas = ReservaSalaJuntas()
-        reserva_sala_juntas.responsable_id = datos.get('responsable', None)
-        reserva_sala_juntas.fecha_inicio = datos.get('fecha_intervalo', '').split(' – ')[0]
-        reserva_sala_juntas.fecha_fin = datos.get('fecha_intervalo', '').split(' – ')[1]
-        reserva_sala_juntas.tema = datos.get('tema', '')
-        reserva_sala_juntas.descripcion =datos.get('descripcion', '')
-        reserva_sala_juntas.motivo = datos.get('motivo', '')
+        reserva = ReservaSalaJuntas()
+        reserva.responsable_id = datos.get('responsable', None)
+        reserva.fecha_inicio = datos.get('fecha_intervalo', '').split(' – ')[0]
+        reserva.fecha_fin = datos.get('fecha_intervalo', '').split(' – ')[1]
+        reserva.tema = datos.get('tema', '')
+        reserva.descripcion =datos.get('descripcion', '')
+        reserva.motivo = datos.get('motivo', '')
 
-        return reserva_sala_juntas
+        return reserva
