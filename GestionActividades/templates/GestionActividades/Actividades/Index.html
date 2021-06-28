@@ -32,15 +32,10 @@
                         <div class="panel-content">
                             <div class="panel-group">
                                 <div class="panel-body">
+                                    {% include 'EVA/_common/_busqueda_paginacion.html'%}
                                     <div class="form-group">
                                          <div class="form-row">
                                              <div class="col-xl-12">
-                                                 <div class="border-faded bg-faded p-2 mb-g d-flex">
-                                                     <input type="text" id="js-filter" name="filter" class="form-control shadow-inset-2 form-control-lg" placeholder="Filtrar Nombre">
-                                                     <div class="input-group-append">
-                                                        <span class="input-group-text"><i class="fal fa-search"></i></span>
-                                                     </div>
-                                                </div>
                                             </div>
                                         </div>
                                             {% for grupo in grupos %}
@@ -93,13 +88,31 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-4 col-md-2 col-xl-1 hidden-md-down">
-                                                                    {% for opcion_estado in opciones_estado %}
-                                                                        {% if actividad.estado == opcion_estado%}
-                                                                            <div class="p-3 p-md-3">
-                                                                                <span class="d-block text-muted"><i> Creada </i></span>
-                                                                            </div>
-                                                                        {% endif %}
-                                                                    {% endfor %}
+                                                                {% if actividad.estado == 1%}
+                                                                    <div class="p-3 p-md-3">
+                                                                        <span class="d-block text-muted"><i> Creada </i></span>
+                                                                    </div>
+                                                                {% endif %}
+                                                                {% if actividad.estado == 2%}
+                                                                    <div class="p-3 p-md-3">
+                                                                        <span class="d-block text-muted"><i> En Proceso </i></span>
+                                                                    </div>
+                                                                {% endif %}
+                                                                {% if actividad.estado == 3%}
+                                                                    <div class="p-3 p-md-3">
+                                                                        <span class="d-block text-muted"><i> Finalizada </i></span>
+                                                                    </div>
+                                                                {% endif %}
+                                                                {% if actividad.estado == 4%}
+                                                                    <div class="p-3 p-md-3">
+                                                                        <span class="d-block text-muted"><i> Cerrada </i></span>
+                                                                    </div>
+                                                                {% endif %}
+                                                                {% if actividad.estado == 5%}
+                                                                    <div class="p-3 p-md-3">
+                                                                        <span class="d-block text-muted"><i> Abierta </i></span>
+                                                                    </div>
+                                                                {% endif %}
                                                                 </div>
                                                                 <div class="col-8 col-md-3 hidden-md-down">
                                                                     {% for responsable in responsable_actividad %}
@@ -169,32 +182,4 @@
     <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/controlBusquedaPaginacion.js' %}"></script>
     <script src="{% static 'GestionActividades/js/actividades.js' %}"></script>
-    <script>
-        $(document).ready(function()
-        {
-
-            $('input[type=radio][name=contactview]').change(function()
-            {
-                if (this.value == 'grid')
-                {
-                    $('#js-contacts .card').removeClassPrefix('mb-').addClass('mb-g');
-                    $('#js-contacts .col-xl-12').removeClassPrefix('col-xl-').addClass('col-xl-4');
-                    $('#js-contacts .js-expand-btn').addClass('d-none');
-                    $('#js-contacts .card-body + .card-body').addClass('show');
-
-                }
-                else if (this.value == 'table')
-                {
-                    $('#js-contacts .card').removeClassPrefix('mb-').addClass('mb-1');
-                    $('#js-contacts .col-xl-4').removeClassPrefix('col-xl-').addClass('col-xl-12');
-                    $('#js-contacts .js-expand-btn').removeClass('d-none');
-                    $('#js-contacts .card-body + .card-body').removeClass('show');
-                }
-
-            });
-
-            //initialize filter
-            initApp.listFilter($('#js-contacts'), $('#js-filter-contacts'));
-        });
-    </script>
 {% endblock scripts%}

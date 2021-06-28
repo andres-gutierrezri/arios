@@ -3,6 +3,7 @@ from datetime import datetime
 
 from django.contrib.auth.models import User
 from django.db import IntegrityError
+from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.template.defaultfilters import lower
@@ -28,15 +29,17 @@ class ActividadesIndexView(AbstractEvaLoggedView):
         responsable_actividad = ResponsableActividad.objects.values('responsable_id', 'actividad_id')
         colaboradores = User.objects.values('id', 'first_name', 'last_name')
         grupos = GrupoActividad.objects.values('id', 'nombre')
-        opciones_estado = [1, 2, 3, 4, 5]
+        search = request.GET.get('search', '')
+
+        if search:
+            grupos = grupos.filter(Q(nombre__icontains=search))
 
         return render(request, 'GestionActividades/Actividades/index.html',
                       {'actividades': actividades,
                        'grupos': grupos,
                        'responsable_actividad': responsable_actividad,
                        'colaboradores': colaboradores,
-                       'estados': EstadosActividades.labels,
-                       'opciones_estado': opciones_estado,
+                       'buscar': search,
                        'fecha': app_datetime_now()})
 
 
