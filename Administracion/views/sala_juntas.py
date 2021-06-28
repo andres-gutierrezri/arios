@@ -95,16 +95,15 @@ class ReservaSalaJuntasEditarView(AbstractEvaLoggedView):
         try:
             reserva.full_clean(validate_unique=False)
         except ValidationError as errores:
-            messages.error(request, 'Falló editar. Valide los datos ingresados al editar la reserva')
-            return redirect(reverse('Administracion:reserva-sala-juntas'))
+            return JsonResponse({"estado": "error", "mensaje": "Falló editar. Valide los datos ingresados al editar la reserva"})
 
         if reserva_db.comparar(reserva, excluir=['fecha_modificacion']):
             messages.success(request, 'No se hicieron cambios en la reserva para la sala de juntas')
-            return redirect(reverse('Administracion:reserva-sala-juntas'))
+            return JsonResponse({"estado": "OK"})
         else:
             reserva.save(update_fields=update_fields)
             messages.success(request, 'Se ha editado la reserva para la sala de juntas')
-            return redirect(reverse('Administracion:reserva-sala-juntas'))
+            return JsonResponse({"estado": "OK"})
 
 
 def datos_xa_render(request, reserva: ReservaSalaJuntas = None) -> dict:
