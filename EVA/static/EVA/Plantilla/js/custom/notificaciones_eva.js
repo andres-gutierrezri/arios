@@ -14,8 +14,8 @@ toastr.options = {
   "extendedTimeOut": 1000,
   "showEasing": "swing",
   "hideEasing": "linear",
-  "showMethod": "fadeIn",
-  "hideMethod": "fadeOut"
+  "showMethod": "slideDown",
+  "hideMethod": "slideUp"
 };
 
 const SwalEspera = Swal.mixin({

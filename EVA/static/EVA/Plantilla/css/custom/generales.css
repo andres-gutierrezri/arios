@@ -189,3 +189,13 @@ position: relative;
 .select2-container--default .select2-results__group {
     color: var(--theme-secondary)
 }
+
+.activar-scroll-tabla {
+     overflow-x: hidden !important;
+     overflow-y: auto !important;
+     height:60vh !important;
+}
+
+.swal2-container {
+  z-index: 10000;
+}
