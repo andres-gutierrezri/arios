@@ -5,6 +5,14 @@ const modalCrearReserva = $('#crear-reserva');
 $(document).ready(function () {
     const divCalendario = $('#calendar');
     const calendario = new FullCalendar.Calendar(divCalendario[0], {
+        eventClick: function(info) {
+        let eventObj = info.event;
+            if (eventObj.id) {
+                let idEvento = eventObj.id
+                let url = "/administracion/reservas-sala-juntas/" + idEvento + "/editar";
+                abrirModalCrearReserva(url);
+            }
+        },
         plugins: ['dayGrid', 'list', 'timeGrid', 'interaction', 'bootstrap'],
         themeSystem: 'bootstrap',
         timeZone: 'local', // Configurar zona horaria
