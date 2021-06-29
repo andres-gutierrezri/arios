@@ -52,6 +52,11 @@ function abrirModalCrearReserva(url) {
     });
 }
 
+function fEliminarReunion(valor){
+    modalCrearReserva.modal('hide');
+     fConfirmarEliminar(valor, true);
+}
+
 function configurarModalCrear() {
     inicializarSelect2('responsable_select_id', modalCrearReserva);
     inicializarDateRangePicker('fecha_intervalo_id');

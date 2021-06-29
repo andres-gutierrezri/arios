@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 
 from django.contrib import messages
@@ -5,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from sqlite3 import IntegrityError
 from django.db.models import Q
 from Administracion.models.models import ReservaSalaJuntas
 from Administracion.views.Proveedores.autenticacion import LOGGER
@@ -104,6 +106,21 @@ class ReservaSalaJuntasEditarView(AbstractEvaLoggedView):
             reserva.save(update_fields=update_fields)
             messages.success(request, 'Se ha editado la reserva para la sala de juntas')
             return JsonResponse({"estado": "OK"})
+
+
+class ReservaSalaJuntasEliminarView(AbstractEvaLoggedView):
+    def post(self, request, id_reserva):
+
+        reserva_db = ReservaSalaJuntas.objects.get(id=id_reserva)
+
+        try:
+            messages.success(request, 'Se ha eliminado la reunión {0}'.format(reserva_db.tema))
+            reserva_db.delete()
+            return JsonResponse({"estado": "OK"})
+
+        except IntegrityError:
+            return JsonResponse({"estado": "error",
+                                 "mensaje": "No se puede eliminar la reunión {0}".format(reserva_db.tema)})
 
 
 def datos_xa_render(request, reserva: ReservaSalaJuntas = None) -> dict:

@@ -119,4 +119,6 @@ urlpatterns = [
          name='reserva-sala-juntas-crear'),
     path('reservas-sala-juntas/<int:id_reserva>/editar', sala_juntas.ReservaSalaJuntasEditarView.as_view(),
          name='reserva-sala-juntas-editar'),
+    path('reservas-sala-juntas/<int:id_reserva>/delete', sala_juntas.ReservaSalaJuntasEliminarView.as_view(),
+         name='reserva-sala-juntas-delete')
 ]
