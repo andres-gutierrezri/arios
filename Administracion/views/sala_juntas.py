@@ -110,12 +110,19 @@ class ReservaSalaJuntasEditarView(AbstractEvaLoggedView):
 
 class ReservaSalaJuntasEliminarView(AbstractEvaLoggedView):
     def post(self, request, id_reserva):
-
         reserva_db = ReservaSalaJuntas.objects.get(id=id_reserva)
-
+        body_unicode = request.body.decode('utf-8')
+        datos_registro = json.loads(body_unicode)
+        motivo = datos_registro['justificacion']
+        if not reserva_db.estado:
+            return JsonResponse({"estado": "error",
+                                 "mensaje": 'Este consecutivo ya ha sido eliminado.'})
         try:
+            reserva_db.usuario_modifica = request.user
+            reserva_db.estado = False
+            reserva_db.motivo = motivo
+            reserva_db.save(update_fields=['estado', 'motivo', 'usuario_modifica', 'fecha_modificacion'])
             messages.success(request, 'Se ha eliminado la reunión {0}'.format(reserva_db.tema))
-            reserva_db.delete()
             return JsonResponse({"estado": "OK"})
 
         except IntegrityError:

@@ -349,6 +349,7 @@ class ReservaSalaJuntas(models.Model, ModelDjangoExtensiones):
     tema = models.CharField(max_length=100, verbose_name='Tema', null=False, blank=False)
     descripcion = models.CharField(max_length=300, verbose_name='Descripción', null=True, blank=True)
     motivo = models.TextField(max_length=100, verbose_name='Motivo', blank=False, null=False)
+    estado = models.BooleanField(verbose_name='Estado', blank=False, null=False, default=True)
 
     def __str__(self):
         return self.responsable
