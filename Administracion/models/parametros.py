@@ -5,6 +5,8 @@ from EVA.General.modeljson import ModelDjangoExtensiones
 
 
 # region Constantes grupos y subgrupos de parámetros.
+G_ADMINISTRACION = 'ADMINISTRACION'
+G_ADMINISTRACION_S_SALA_JUNTAS = 'SALA_JUNTAS'
 G_FINANCIERO = 'FINANCIERO'
 G_FINANCIERO_S_FLUJO_CAJA = 'FLUJO_CAJA'
 G_FINANCIERO_S_FACELEC = 'FACTURACION_ELECTRONICA'
@@ -13,10 +15,12 @@ G_FINANCIERO_S_FACELEC = 'FACTURACION_ELECTRONICA'
 
 # region Selecciones (Choices) para los grupos y subgrupos de parámetros
 SELECCIONES_GRUPOS = [
+    (G_ADMINISTRACION, 'Administración'),
     (G_FINANCIERO, 'Financiero')
 ]
 
 SELECCIONES_SUBGRUPOS = [
+    (G_ADMINISTRACION_S_SALA_JUNTAS, 'Sala de Juntas'),
     (G_FINANCIERO_S_FLUJO_CAJA, 'Flujo de caja'),
     (G_FINANCIERO_S_FACELEC, 'Facturación Electrónica')
 ]
