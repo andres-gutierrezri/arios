@@ -2,6 +2,7 @@
 
 const modalCrearReserva = $('#crear-reserva');
 let calendario;
+let mostrarOcultar;
 
 $(document).ready(function () {
     const divCalendario = $('#calendar');
@@ -38,8 +39,8 @@ $(document).ready(function () {
         },
         //evento para mostrar, ocultar o modificar los eventos al momento de hacer render.
         eventRender: function(event) {
-            clases = event.event.classNames.toString();
-            if (clases !== "mostrar") return false
+            mostrarOcultar = event.event.classNames.toString();
+            if (mostrarOcultar !== "mostrar") return false
         },
         // evento para seleccionar un evento.
         eventClick: function(event) {
@@ -76,7 +77,6 @@ function modificarEventos(event){
 }
 
 function abrirModalCrearReserva(url, fechas) {
-   // let editar = `se ha ${url.includes("editar") ? "editar" : "crear"} la reserva para la sala de juntas`
     cargarAbrirModal(modalCrearReserva, url,function () {
         configurarModalCrear(fechas);
         const form = $("#juntas_form")[0];
@@ -99,7 +99,7 @@ function fbtnCancelar(){
 function fEliminarReunion(valor){
     modalCrearReserva.modal('hide');
      fConfirmarEliminar(valor, true, function (){
-            EVANotificacion.toast.exitoso("funciono")
+            EVANotificacion.toast.exitoso("Se eliminó la reserva")
             calendario.refetchEvents();
             modalCrearReserva.modal('hide');
          }
