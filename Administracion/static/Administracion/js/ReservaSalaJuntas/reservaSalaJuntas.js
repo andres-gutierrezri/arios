@@ -43,6 +43,10 @@ $(document).ready(function () {
             clases = event.event.classNames.toString();
             if (clases !== "mostrar") return false
         },
+        // para cambio de posición del evento.
+        eventDrop: function(event) {
+            modificarEventos(event);
+        },
     });
     calendario.render();
     calendario.addEventSource({
@@ -50,7 +54,17 @@ $(document).ready(function () {
     });
 });
 
-function abrirModalCrearReserva(url) {
+function modificarEventos(event){
+    let eventObj = event.event;
+    if (eventObj.id) {
+        let idEvento = eventObj.id
+        let url = `/administracion/reservas-sala-juntas/${idEvento}/editar`;
+        let fechas = {  'inicio': moment(eventObj.start).format('YYYY-MM-DD HH:mm:ss'),
+                        'fin':moment(eventObj.end).format('YYYY-MM-DD HH:mm:ss')};
+        abrirModalCrearReserva(url, fechas, true);
+    }
+}
+
     cargarAbrirModal(modalCrearReserva, url,function () {
         configurarModalCrear();
         const form = $("#juntas_form")[0];
@@ -64,6 +78,10 @@ function abrirModalCrearReserva(url) {
     });
 }
 
+function fbtnCancelar(){
+    calendario.refetchEvents();
+}
+
 function fEliminarReunion(valor){
     modalCrearReserva.modal('hide');
      fConfirmarEliminar(valor, true, function (){
@@ -74,8 +92,12 @@ function fEliminarReunion(valor){
      );
 }
 
-function configurarModalCrear() {
+function configurarModalCrear(fechas) {
     inicializarSelect2('responsable_select_id', modalCrearReserva);
     inicializarDateRangePicker('fecha_intervalo_id');
+    if (fechas){
+        $('#fecha_intervalo_id').data('daterangepicker').setStartDate(fechas.inicio);
+        $('#fecha_intervalo_id').data('daterangepicker').setEndDate(fechas.fin);
+    }
     agregarValidacionFormularios();
 }

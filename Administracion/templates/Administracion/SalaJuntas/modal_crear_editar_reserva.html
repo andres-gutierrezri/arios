@@ -41,7 +41,7 @@
                     </div>
                 {% endif %}
                 <div class="modal-footer">
-                    <button data-dismiss="modal" class="btn btn-warning btn-pills">Cancelar</button>
+                    <button data-dismiss="modal" class="btn btn-warning btn-pills " href="javascript:void(0);"  onclick="fbtnCancelar()">Cancelar</button>
                     <button id="agregar_{{ reserva.id }}" type="submit" class="btn btn-primary btn-pills"> {% if editar %}Editar{% else %}Agregar{% endif %} </button>
                 {% if editar %}
                     <a type="button" class="btn btn-danger btn-pills" id="eliminar_{{ reserva.id }}" href="javascript:void(0);"  onclick="fEliminarReunion({{ reserva.id }}, true)" >Eliminar</a>
