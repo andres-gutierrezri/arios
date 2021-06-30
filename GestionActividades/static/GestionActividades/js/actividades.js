@@ -7,7 +7,10 @@ $(document).ready(function () {
     configurarFiltroConsecutivos();
 });
 
+let uri = '';
+
 function abrirModalCrearActividad(url) {
+    uri = url;
     cargarAbrirModal(modalCrearActividad, url, configurarModalCrear);
 }
 
@@ -42,6 +45,16 @@ function configurarModalCrear() {
             fechaInicioID.val('');
             EVANotificacion.toast.advertencia('La fecha final no puede ser menor a la fecha inicial');
         }
+    });
+
+    agregarValidacionFormularios();
+    agregarValidacionForm(form, function (event) {
+        enviarFormularioAsync(form, uri).then(exitoso => {
+            if (exitoso) {
+                location.reload();
+            }
+        });
+        return true;
     });
 
 }

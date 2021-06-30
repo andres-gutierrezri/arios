@@ -1,4 +1,5 @@
 import json
+from _decimal import Decimal
 from datetime import datetime
 
 from django.contrib.auth.models import User
@@ -61,23 +62,30 @@ class ActividadesCrearView(AbstractEvaLoggedView):
                 grupo_generales = list(GrupoActividad.objects.values('id').filter(nombre__iexact='generales'))
                 actividad.grupo_actividad_id = grupo_generales[0].get('id')
             else:
-                messages.error(request, 'Falló editar. El grupo Generales no existe')
+                messages.error(request, 'Falló crear. El grupo Generales no existe')
                 return redirect(reverse('GestionActividades:actividades-index'))
 
         if Actividad.objects.filter(nombre__iexact=actividad.nombre,
                                     grupo_actividad_id__exact=actividad.grupo_actividad_id).exists():
             messages.error(request, 'Falló crear. Ya existe una actividad con el mismo nombre dentro del grupo')
-            return redirect(reverse('GestionActividades:actividades-index'))
+            return JsonResponse({"estado": "error",
+                                 "mensaje": 'Falló crear. Ya existe una actividad con el mismo nombre dentro del grupo'})
+
         elif GrupoActividad.objects.filter(nombre__iexact=actividad.nombre).exists():
             messages.error(request, 'Falló crear. No puede colocar el mismo nombre del grupo '
                                     'que va a contener la actividad')
-            return redirect(reverse('GestionActividades:actividades-index'))
+            return JsonResponse({"estado": "error",
+                                 "mensaje": 'Falló crear. No puede colocar el mismo nombre del grupo '
+                                            'que va a contener la actividad'})
+
         else:
             actividad.save()
             for responsable in responsables:
                 ResponsableActividad.objects.create(responsable_id=responsable, actividad=actividad)
             messages.success(request, 'Se ha creado la actividad <br> {0}'.format(grupo_actividad.nombre))
             return redirect(reverse('GestionActividades:actividades-index'))
+
+        return JsonResponse({"estado": "OK"})
 
 
 class ActividadesEditarView(AbstractEvaLoggedView):
@@ -124,12 +132,15 @@ class ActividadesEditarView(AbstractEvaLoggedView):
             actividad.full_clean(validate_unique=False)
         except ValidationError as errores:
             messages.error(request, 'Falló editar. Valide los datos ingresados al editar la actividad')
-            return redirect(reverse('GestionActividades:actividades-index'))
+            return JsonResponse({"estado": "error",
+                                 "mensaje": 'Falló editar. Valide los datos ingresados al editar la actividad'})
 
         if GrupoActividad.objects.filter(nombre__iexact=actividad.nombre).exists():
             messages.error(request, 'Falló editar. No puede colocar el mismo nombre del grupo '
                                     'que va a contener la actividad')
-            return redirect(reverse('GestionActividades:actividades-index'))
+            return JsonResponse({"estado": "error",
+                                 "mensaje": 'Falló editar. No puede colocar el mismo nombre del grupo '
+                                            'que va a contener la actividad'})
 
         if actividad_db.comparar(actividad, excluir=['fecha_modificacion', 'motivo', 'calificacion', 'codigo',
                                                      'porcentaje_avance']) \
@@ -145,6 +156,8 @@ class ActividadesEditarView(AbstractEvaLoggedView):
             messages.success(request, 'Se ha editado la actividad <br> {0}'.format(actividad.nombre))
             return redirect(reverse('GestionActividades:actividades-index'))
 
+        return JsonResponse({"estado": "OK"})
+
 
 def datos_xa_render(request, actividad: Actividad = None) -> dict:
     grupos = GrupoActividad.objects.values('id', 'nombre')
@@ -159,7 +172,6 @@ def datos_xa_render(request, actividad: Actividad = None) -> dict:
                                    'campo_texto': colaborador['first_name']+' '+colaborador['last_name']})
 
     responsable_actividad = ResponsableActividad.objects.get_ids_responsables_list(actividad)
-
     datos = {'fecha': app_datetime_now(),
              'grupos': lista_grupos,
              'colaboradores': lista_colaboradores,
