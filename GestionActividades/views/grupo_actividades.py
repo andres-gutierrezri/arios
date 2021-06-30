@@ -47,9 +47,9 @@ class GruposActividadesCrearView(AbstractEvaLoggedView):
 
         if grupo_actividad.grupo_actividad_id == '':
             grupo_actividad.grupo_actividad_id = None
-        if grupo_actividad.tipo_pertenencia == '1':
+        if grupo_actividad.tipo_asociado == '1':
             grupo_actividad.proceso_id = None
-        if grupo_actividad.tipo_pertenencia == '2':
+        if grupo_actividad.tipo_asociado == '2':
             grupo_actividad.contrato_id = None
 
         if GrupoActividad.objects.filter(nombre__iexact=grupo_actividad.nombre,
@@ -71,7 +71,7 @@ class GruposActividadesEditarView(AbstractEvaLoggedView):
 
     def post(self, request, id_grupo):
         update_fields = ['fecha_modificacion', 'contrato_id', 'proceso_id', 'nombre', 'descripcion', 'fecha_crea',
-                         'tipo_pertenencia', 'motivo', 'usuario_modifica', 'usuario_crea', 'grupo_actividad_id']
+                         'tipo_asociado', 'motivo', 'usuario_modifica', 'usuario_crea', 'grupo_actividad_id']
 
         grupo_actividad = GrupoActividad.from_dictionary(request.POST)
         grupo_actividad_db = GrupoActividad.objects.get(id=id_grupo)
@@ -83,9 +83,9 @@ class GruposActividadesEditarView(AbstractEvaLoggedView):
 
         if grupo_actividad.grupo_actividad_id == '':
             grupo_actividad.grupo_actividad_id = None
-        if grupo_actividad.tipo_pertenencia == '1':
+        if grupo_actividad.tipo_asociado == '1':
             grupo_actividad.proceso_id = None
-        if grupo_actividad.tipo_pertenencia == '2':
+        if grupo_actividad.tipo_asociado == '2':
             grupo_actividad.contrato_id = None
 
         try:
@@ -105,8 +105,8 @@ class GruposActividadesEditarView(AbstractEvaLoggedView):
 
 
 def datos_xa_render(request, grupo_actividad: GrupoActividad = None) -> dict:
-    tipo_pertenencia = [{'campo_valor': 1, 'campo_texto': 'Contrato'},
-                        {'campo_valor': 2, 'campo_texto': 'Proceso'}]
+    tipo_asociado = [{'campo_valor': 1, 'campo_texto': 'Contrato'},
+                     {'campo_valor': 2, 'campo_texto': 'Proceso'}]
 
     grupos = GrupoActividad.objects.values('id', 'nombre')
     lista_grupos = []
@@ -133,7 +133,7 @@ def datos_xa_render(request, grupo_actividad: GrupoActividad = None) -> dict:
     datos = {'fecha': app_datetime_now(),
              'contratos': lista_contratos,
              'procesos': lista_procesos,
-             'tipo_pertenencia': tipo_pertenencia,
+             'tipo_asociado': tipo_asociado,
              'grupos': lista_grupos,
              'menu_actual': 'grupo-actividades'}
 
