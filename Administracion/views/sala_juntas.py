@@ -26,7 +26,8 @@ class ReservaSalaJuntasView(AbstractEvaLoggedView):
                 reservas_dict.append({'id': reserva.id, 'title': f'{reserva.tema} \n {reserva.responsable.username}',
                                       'start': datetime_to_isostring(reserva.fecha_inicio),
                                       'end': datetime_to_isostring(reserva.fecha_fin),
-                                      'color': self.get_color_reserva(reserva.fecha_inicio, reserva.fecha_fin)})
+                                      'color': self.get_color_reserva(reserva.fecha_inicio, reserva.fecha_fin),
+                                      'className': 'mostrar' if reserva.estado else 'ocultar'})
 
             return JsonResponse(reservas_dict, safe=False)
         else:

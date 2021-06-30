@@ -39,6 +39,10 @@ $(document).ready(function () {
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
         },
+        eventRender: function(event) {
+            clases = event.event.classNames.toString();
+            if (clases !== "mostrar") return false
+        },
     });
     calendario.render();
     calendario.addEventSource({
