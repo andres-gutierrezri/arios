@@ -3,17 +3,17 @@ let idBorrar = 0;
 let urlFinal;
 let rutaBorrado = $('#rutaBorrado').val();
 
-function fConfirmarEliminar(idElemento, justificar) {
+function fConfirmarEliminar(idElemento, justificar, fnCallback) {
     if (justificar){
-        fSweetAlertEliminarJustificado();
+        fSweetAlertEliminarJustificado(fnCallback);
     }else{
-        fSweetAlert();
+        fSweetAlert(fnCallback);
     }
 
     idBorrar = idElemento;
 }
 
-function fSweetAlert() {
+function fSweetAlert(fnCallback) {
     Swal.fire({
         title: '¿Está seguro de eliminar este item?',
         text: "Esta acción no se podrá revertir",
@@ -22,11 +22,11 @@ function fSweetAlert() {
         confirmButtonText: '¡Sí, eliminarlo!',
         cancelButtonText: 'Cancelar'
     }).then(result => {
-        confirmarEliminacion(result.value, URLDomain + rutaBorrado + "/" + idBorrar + "/delete")
+        confirmarEliminacion(result.value, URLDomain + rutaBorrado + "/" + idBorrar + "/delete", fnCallback)
     });
 }
 
-function fSweetAlertEliminarJustificado() {
+function fSweetAlertEliminarJustificado(fnCallback) {
     Swal.fire({
         title: '¿Está seguro de eliminar este item?',
         text: "Esta acción no se podrá revertir",
@@ -44,12 +44,12 @@ function fSweetAlertEliminarJustificado() {
             }
         }
     }).then(result => {
-        confirmarEliminacion(result.value, URLDomain + rutaBorrado + "/" + idBorrar + "/delete")
+        confirmarEliminacion(result.value, URLDomain + rutaBorrado + "/" + idBorrar + "/delete", fnCallback)
     });
 }
 
 
-function confirmarEliminacion(valor, url) {
+function confirmarEliminacion(valor, url, fnCallback) {
     if (valor) {
         $.ajax({
             url: url,
@@ -60,7 +60,12 @@ function confirmarEliminacion(valor, url) {
             dataType: "json",
             success: function (data) {
                 if(data.estado === "OK") {
-                    location.reload();
+                    if((fnCallback !== undefined) && (typeof(fnCallback) === 'function'))
+                    {
+                        fnCallback();
+                    }else{
+                        location.reload();
+                    }
                 }else if(data.estado === "error"){
                     EVANotificacion.toast.error(data.mensaje);
                 }
@@ -69,7 +74,12 @@ function confirmarEliminacion(valor, url) {
                 }
             },
             failure: function (errMsg) {
-                location.reload();
+                if((fnCallback !== undefined) && (typeof(fnCallback) === 'function'))
+                    {
+                        fnCallback();
+                    }else{
+                        location.reload();
+                    }
             }
         });
     }

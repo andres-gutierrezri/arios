@@ -122,7 +122,7 @@ class ReservaSalaJuntasEliminarView(AbstractEvaLoggedView):
             reserva_db.estado = False
             reserva_db.motivo = motivo
             reserva_db.save(update_fields=['estado', 'motivo', 'usuario_modifica', 'fecha_modificacion'])
-            messages.success(request, 'Se ha eliminado la reunión {0}'.format(reserva_db.tema))
+            #messages.success(request, 'Se ha eliminado la reunión {0}'.format(reserva_db.tema))
             return JsonResponse({"estado": "OK"})
 
         except IntegrityError:

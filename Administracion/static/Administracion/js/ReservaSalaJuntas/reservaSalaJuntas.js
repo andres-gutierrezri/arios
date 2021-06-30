@@ -62,7 +62,12 @@ function abrirModalCrearReserva(url) {
 
 function fEliminarReunion(valor){
     modalCrearReserva.modal('hide');
-     fConfirmarEliminar(valor, true);
+     fConfirmarEliminar(valor, true, function (){
+            EVANotificacion.toast.exitoso("funciono")
+            calendario.refetchEvents();
+            modalCrearReserva.modal('hide');
+         }
+     );
 }
 
 function configurarModalCrear() {
