@@ -13,7 +13,6 @@ from Proyectos.models import Contrato
 from EVA import settings
 
 
-
 class GrupoActividad(models.Model, ModelDjangoExtensiones):
     objects = ManagerGeneral()
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
@@ -22,8 +21,8 @@ class GrupoActividad(models.Model, ModelDjangoExtensiones):
     fecha_crea = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False, blank=False)
     fecha_modificacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Modificación', null=False,
                                               blank=False)
-    tipo_pertenencia = models.SmallIntegerField(choices=PertenenciaGrupoActividades.choices,
-                                                verbose_name='Pertenencia', null=False, blank=False)
+    tipo_asociado = models.SmallIntegerField(choices=PertenenciaGrupoActividades.choices,
+                                             verbose_name='Asociado', null=False, blank=False)
     proceso = models.ForeignKey(Proceso, on_delete=models.DO_NOTHING, verbose_name='Proceso', null=True, blank=True)
     contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato', null=True, blank=True)
     grupo_actividad = models.ForeignKey('self', on_delete=models.DO_NOTHING, verbose_name='Grupo Actividad', null=True,
@@ -54,7 +53,7 @@ class GrupoActividad(models.Model, ModelDjangoExtensiones):
         grupo_actividad.proceso_id = datos.get('proceso_id', None)
         grupo_actividad.grupo_actividad_id = datos.get('grupo_pertenece', None)
         grupo_actividad.descripcion = datos.get('descripcion', '')
-        grupo_actividad.tipo_pertenencia = datos.get('tipo_pertenencia', '')
+        grupo_actividad.tipo_asociado = datos.get('tipo_asociado', '')
         grupo_actividad.motivo = datos.get('motivo', '')
         grupo_actividad.estado = True
 

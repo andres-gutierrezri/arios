@@ -31,7 +31,7 @@
                     <div class="form-group">
                         <input id="tipo_pertenencia" value="{{ tipo_pertenencia }}" style="display: none">
                         <div class="col-md-12">
-                            {% select_tag tipo_pertenencia 'tipo_pertenencia' 'Seleccione un tipo de pertenencia' value=grupo_actividad.tipo_pertenencia texto_label="Tipo de Pertenencia" required="" mensaje_validacion='Por favor seleccione un tipo de pertenencia' invalido=errores.tipo_pertenencia %}
+                            {% select_tag tipo_asociado 'tipo_asociado' 'Seleccione un Asociado' value=grupo_actividad.tipo_asociado texto_label="Asociado a: " required="" mensaje_validacion='Por favor seleccione un tipo de asociado' invalido=errores.tipo_asociado %}
                         </div>
                     </div>
                     <div class="form-group">
