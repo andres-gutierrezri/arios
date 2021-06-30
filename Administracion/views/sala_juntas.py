@@ -95,6 +95,11 @@ class ReservaSalaJuntasEditarView(AbstractEvaLoggedView):
         reserva.usuario_crea = reserva_db.usuario_crea
         reserva.usuario_modifica = request.user
 
+        if ReservaSalaJuntas.objects \
+            .filter(Q(fecha_inicio__lte=reserva.fecha_inicio, fecha_fin__gte=reserva.fecha_inicio)
+                    | Q(fecha_inicio__lte=reserva.fecha_fin, fecha_fin__gte=reserva.fecha_fin)).exists():
+            return JsonResponse({"estado": "error", "mensaje": "Ya existe una reunión cargada"})
+
         try:
             reserva.full_clean(validate_unique=False)
         except ValidationError as errores:
