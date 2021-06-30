@@ -109,6 +109,7 @@ function fEliminarReunion(valor){
 function configurarModalCrear(fechas) {
     inicializarSelect2('responsable_select_id', modalCrearReserva);
     inicializarDateRangePicker('fecha_intervalo_id');
+    $('#fecha_intervalo_id').data('daterangepicker').minDate=moment();
     if (fechas){
         $('#fecha_intervalo_id').data('daterangepicker').setStartDate(fechas.inicio);
         $('#fecha_intervalo_id').data('daterangepicker').setEndDate(fechas.fin);
