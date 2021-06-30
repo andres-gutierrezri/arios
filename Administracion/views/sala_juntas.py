@@ -101,11 +101,11 @@ class ReservaSalaJuntasEditarView(AbstractEvaLoggedView):
             return JsonResponse({"estado": "error", "mensaje": "Falló editar. Valide los datos ingresados al editar la reserva"})
 
         if reserva_db.comparar(reserva, excluir=['fecha_modificacion']):
-            messages.success(request, 'No se hicieron cambios en la reserva para la sala de juntas')
+            #messages.success(request, 'No se hicieron cambios en la reserva para la sala de juntas')
             return JsonResponse({"estado": "OK"})
         else:
             reserva.save(update_fields=update_fields)
-            messages.success(request, 'Se ha editado la reserva para la sala de juntas')
+            #messages.success(request, 'Se ha editado la reserva para la sala de juntas')
             return JsonResponse({"estado": "OK"})
 
 
