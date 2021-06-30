@@ -4,16 +4,19 @@
         <div class="card-body border-faded border-top-0 border-left-0 border-right-0 rounded-top">
             <div class="d-flex flex-row align-items-center">
                 <div class="info-card-text flex-1">
-                    <a class="fs-xl text-truncate text-truncate-lg text-primary" aria-expanded="false">
+                    <a href="javascript:void(0);" class="fs-xl text-truncate text-truncate-lg text-primary" data-toggle="dropdown" aria-expanded="false">
                         {{ nombre }}
+                        <i class="fal fa-angle-down d-inline-block ml-1 fs-md"></i>
                     </a>
-                </div>
-                <div class="col-md-12">
-                {% if perms.GestionActividades.change_grupoactividades %}
-                    <small>
-                            <a class="fad fa-2x fa-file-edit" id="editar_{{ grupo_actividad.id }}" href="javascript:abrirModalCrearGrupoActividad('{% url 'GestionActividades:grupo-actividades-editar' grupo_actividad.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar Grupo"></a>
-                    </small>
-                {% endif %}
+                    <div class="col-md-12">
+                    {% if perms.GestionActividades.view_grupoactividades %}
+                        <div class="dropdown-menu">
+                            {% if perms.GestionActividades.change_grupoactividades %}
+                            <a class="dropdown-item" href="javascript:abrirModalCrearGrupoActividad('{% url 'GestionActividades:grupo-actividades-editar' grupo_actividad.id%}')">Editar</a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                    </div>
                 </div>
             </div>
         </div>

@@ -19,6 +19,7 @@
         <div class="row">
             <div class="col-xl-12">
                 <div id="panel-1" class="panel">
+                    <div class="panel-hdr">
                         {% if perms.GestionActividades.add_grupoactividades %}
                             <div class="col-md-10">
                                 <small>
@@ -28,6 +29,7 @@
                         {% else %}
                             <div class="col-md-10"></div>
                         {% endif %}
+                     </div>
                     <div class="panel-container show">
                         <div class="panel-content">
                             <div class="panel-group">
@@ -51,7 +53,7 @@
                                         <div class="form-group">
                                             <div class="form-row">
                                                 <div class="col-md-4">
-                                                    {% select_tag contratos 'contratos_id' 'Seleccione un contrato' texto_label="Contrato" required="" value='' invalido='' mensaje_validacion='Por favor seleccione un contrato'%}
+                                                    {% select_tag contratos 'contratos_id' 'Seleccione un contrato'  texto_label="Contrato" required="" value="" invalido='' mensaje_validacion='Por favor seleccione un contrato'%}
                                                 </div>
                                                 <div class="col-md-4">
                                                     {% select_tag colaboradores 'colaboradores_id' 'Seleccione un colaborador' texto_label="colaborador" required="" value='' invalido='' mensaje_validacion='Por favor seleccione un colaborador'%}
@@ -63,7 +65,7 @@
                                         </div>
                                         <div class="row" id="js-contacts">
                                         {% for grupo_actividad in grupos_actividades %}
-                                            {% include 'GestionActividades/_common/_tarjeta_grupo_actividad.html' with nombre=grupo_actividad.nombre id_grupo=grupo_actividad.id%}
+                                            {% include 'GestionActividades/_common/_tarjeta_grupo_actividad.html' with nombre=grupo_actividad.nombre id_grupo=grupo_actividad.id contrato=grupo_actividad.contrato_id proceso=grupo_actividad.proceso_id%}
                                         {% endfor %}
                                         </div>
                                     </div>
@@ -116,6 +118,7 @@
 
             //initialize filter
             initApp.listFilter($('#js-contacts'), $('#js-filter-contacts'));
+
         });
     </script>
 {% endblock scripts%}
