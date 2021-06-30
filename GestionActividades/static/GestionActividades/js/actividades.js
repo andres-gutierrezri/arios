@@ -7,11 +7,24 @@ $(document).ready(function () {
     configurarFiltroConsecutivos();
 });
 
-let uri = '';
-
 function abrirModalCrearActividad(url) {
-    uri = url;
-    cargarAbrirModal(modalCrearActividad, url, configurarModalCrear);
+    cargarAbrirModal(modalCrearActividad, url, function (){
+        configurarModalCrear();
+        let form = $('#actividad_form')[0];
+        agregarValidacionForm(form, function (event) {
+            enviarFormularioAsync(form, url, "cargando").then(exitoso => {
+                if (exitoso) {
+                    EVANotificacion.toast.exitoso(`Se ha ${url.includes("editar") ? "editado" : "creado"} la actividad`);
+                    modalCrearActividad.modal('hide');
+                    EVANotificacion.modal.exitoso("Registro Exitoso");
+                }
+                else{
+                    EVANotificacion.modal.error("Falló");
+                }
+            });
+            return true;
+        });
+    });
 }
 
 function configurarModalCrear() {
@@ -27,10 +40,10 @@ function configurarModalCrear() {
     inicializarSelect2('grupo_pertenece_select_id', modalCrearActividad);
     inicializarSelect2('estado_select_id', modalCrearActividad);
 
-    let form = $('#actividad_form')[0];
+
     if ($('#responsables_actividad').length > 0) {
         idColaboradores.val(JSON.parse($('#responsables_actividad').val())).trigger("change");
-        form = $('#actividad_form_editar')[0];
+        //form = $('#actividad_form_editar')[0];
     }
 
     fechaInicioID.change(function () {
@@ -48,13 +61,4 @@ function configurarModalCrear() {
     });
 
     agregarValidacionFormularios();
-    agregarValidacionForm(form, function (event) {
-        enviarFormularioAsync(form, uri).then(exitoso => {
-            if (exitoso) {
-                location.reload();
-            }
-        });
-        return true;
-    });
-
 }
