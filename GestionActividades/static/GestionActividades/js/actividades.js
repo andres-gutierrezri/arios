@@ -11,7 +11,6 @@ function abrirModalCrearActividad(url) {
     cargarAbrirModal(modalCrearActividad, url, configurarModalCrear);
 }
 
-
 function configurarModalCrear() {
 
     const idColaboradores = $('#responsables_id');
@@ -25,7 +24,11 @@ function configurarModalCrear() {
     inicializarSelect2('grupo_pertenece_select_id', modalCrearActividad);
     inicializarSelect2('estado_select_id', modalCrearActividad);
 
-    idColaboradores.val(JSON.parse($('#responsables_actividad').val())).trigger("change");
+    let form = $('#actividad_form')[0];
+    if ($('#responsables_actividad').length > 0) {
+        idColaboradores.val(JSON.parse($('#responsables_actividad').val())).trigger("change");
+        form = $('#actividad_form_editar')[0];
+    }
 
     fechaInicioID.change(function () {
         if (new Date(fechaInicioID.val()) > new Date(fechaFinalID.val())) {
@@ -40,7 +43,5 @@ function configurarModalCrear() {
             EVANotificacion.toast.advertencia('La fecha final no puede ser menor a la fecha inicial');
         }
     });
-
-    agregarValidacionFormularios();
 
 }
