@@ -54,8 +54,9 @@ class ReservaSalaJuntasCrearView(AbstractEvaLoggedView):
         reserva.usuario_crea = request.user
         reserva.fecha_creacion = app_datetime_now()
         if ReservaSalaJuntas.objects \
-            .filter(Q(fecha_inicio__lte=reserva.fecha_inicio, fecha_fin__gte=reserva.fecha_inicio)
-                    | Q(fecha_inicio__lte=reserva.fecha_fin, fecha_fin__gte=reserva.fecha_fin)).exists():
+                .filter(Q(fecha_inicio__lte=reserva.fecha_inicio, fecha_fin__gte=reserva.fecha_inicio)
+                        | Q(fecha_inicio__lte=reserva.fecha_fin, fecha_fin__gte=reserva.fecha_fin)) \
+                .exclude(estado=False).exists():
             return JsonResponse({"estado": "error", "mensaje": "Ya existe una reunión cargada"})
 
         # Fecha de inicio este entre el rango de fechas
@@ -97,7 +98,8 @@ class ReservaSalaJuntasEditarView(AbstractEvaLoggedView):
 
         if ReservaSalaJuntas.objects \
             .filter(Q(fecha_inicio__lte=reserva.fecha_inicio, fecha_fin__gte=reserva.fecha_inicio)
-                    | Q(fecha_inicio__lte=reserva.fecha_fin, fecha_fin__gte=reserva.fecha_fin)).exists():
+                    | Q(fecha_inicio__lte=reserva.fecha_fin, fecha_fin__gte=reserva.fecha_fin))\
+                    .exclude(Q(id=id_reserva) | Q(estado=False)).exists():
             return JsonResponse({"estado": "error", "mensaje": "Ya existe una reunión cargada"})
 
         try:
