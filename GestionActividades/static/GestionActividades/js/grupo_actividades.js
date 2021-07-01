@@ -1,5 +1,5 @@
 'use strict';
-let TipoPertenencia = $('#tipo_asociado');
+let TipoAsociado = $('#tipo_asociado');
 let contratoSelect = $('#contrato_mostrar_id');
 let procesoSelect = $('#proceso_mostrar_id');
 let contratoSelectID = $('#contrato_id_select_id');
@@ -37,27 +37,28 @@ function abrirModalCrearGrupoActividad(url) {
 }
 
 function configurarModalCrear() {
-    TipoPertenencia = $('#tipo_asociado');
+    TipoAsociado = $('#tipo_asociado');
     contratoSelect = $('#contrato_mostrar_id');
     procesoSelect = $('#proceso_mostrar_id');
     contratoSelectID = $('#contrato_id_select_id');
     procesoSelectID = $('#proceso_id_select_id');
     grupoSelectID = $('#grupo_asociado_select_id');
     let idTipoAsociado = $('#tipo_asociado_select_id').val();
+    let idTipoAsociadoRadio = $('#tipo_asociado_radio_id').val();
 
     inicializarSelect2('tipo_asociado_select_id', modalCrearGrupoActividad);
     inicializarSelect2('contrato_id_select_id', modalCrearGrupoActividad);
     inicializarSelect2('proceso_id_select_id', modalCrearGrupoActividad);
     inicializarSelect2('grupo_asociado_select_id', modalCrearGrupoActividad);
 
-     if (idTipoAsociado === ""){
-        $('#tipo_asociado_select_id').change(function () {
+     if (idTipoAsociadoRadio === ""){
+        $('#tipo_asociado_radio_id').change(function () {
             let actual = this.value;
             cambiarSelect(actual);
         })
     }
     else{
-        $('#tipo_asociado_select_id').change(function () {
+        $('#tipo_asociado_radio_id').change(function () {
             let actual = this.value;
             cambiarSelect(actual);
         }).trigger('change');

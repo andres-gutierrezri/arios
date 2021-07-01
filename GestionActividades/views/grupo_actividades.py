@@ -137,11 +137,15 @@ def datos_xa_render(request, grupo_actividad: GrupoActividad = None) -> dict:
     for proceso in procesos:
         lista_procesos.append({'campo_valor': proceso['id'], 'campo_texto': proceso['nombre']})
 
+    opciones_contrato_proceso = [{'valor': 1, 'texto': 'Contrato'},
+                                 {'valor': 2, 'texto': 'Proceso'}]
+
     datos = {'fecha': app_datetime_now(),
              'contratos': lista_contratos,
              'procesos': lista_procesos,
              'tipo_asociado': tipo_asociado,
              'grupos': lista_grupos,
+             'opciones_contrato_proceso': opciones_contrato_proceso,
              'menu_actual': 'grupo-actividades'}
 
     if grupo_actividad:
