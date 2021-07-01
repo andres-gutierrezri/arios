@@ -66,13 +66,10 @@ class ActividadesCrearView(AbstractEvaLoggedView):
 
         if Actividad.objects.filter(nombre__iexact=actividad.nombre,
                                     grupo_actividad_id__exact=actividad.grupo_actividad_id).exists():
-            #messages.error(request, 'Falló crear. Ya existe una actividad con el mismo nombre dentro del grupo')
             return JsonResponse({"estado": "error",
                                  "mensaje": 'Falló crear. Ya existe una actividad con el mismo nombre dentro del grupo'})
 
         elif GrupoActividad.objects.filter(nombre__iexact=actividad.nombre).exists():
-            #messages.error(request, 'Falló crear. No puede colocar el mismo nombre del grupo '
-            #                       'que va a contener la actividad')
             return JsonResponse({"estado": "error",
                                  "mensaje": 'Falló crear. No puede colocar el mismo nombre del grupo '
                                             'que va a contener la actividad'})
@@ -81,8 +78,6 @@ class ActividadesCrearView(AbstractEvaLoggedView):
             actividad.save()
             for responsable in responsables:
                 ResponsableActividad.objects.create(responsable_id=responsable, actividad=actividad)
-            #messages.success(request, 'Se ha creado la actividad <br> {0}'.format(grupo_actividad.nombre))
-            #return redirect(reverse('GestionActividades:actividades-index'))
 
         return JsonResponse({"estado": "OK"})
 
@@ -114,7 +109,6 @@ class ActividadesEditarView(AbstractEvaLoggedView):
                 actividad.grupo_actividad_id = grupo_generales[0].get('id')
             else:
                 return JsonResponse({"estado": "error",  "mensaje": 'Falló crear. El grupo Generales no existe'})
-                #return redirect(reverse('GestionActividades:actividades-index'))
 
         responsables_actividad_db = ResponsableActividad.objects.filter(actividad_id=id_actividad)
         cantidad_responsables = responsables_actividad_db.count()
@@ -130,13 +124,10 @@ class ActividadesEditarView(AbstractEvaLoggedView):
         try:
             actividad.full_clean(validate_unique=False)
         except ValidationError as errores:
-            #messages.error(request, 'Falló editar. Valide los datos ingresados al editar la actividad')
             return JsonResponse({"estado": "error",
                                  "mensaje": 'Falló editar. Valide los datos ingresados al editar la actividad'})
 
         if GrupoActividad.objects.filter(nombre__iexact=actividad.nombre).exists():
-            #messages.error(request, 'Falló editar. No puede colocar el mismo nombre del grupo '
-            #                        'que va a contener la actividad')
             return JsonResponse({"estado": "error",
                                  "mensaje": 'Falló editar. No puede colocar el mismo nombre del grupo '
                                             'que va a contener la actividad'})
@@ -144,18 +135,13 @@ class ActividadesEditarView(AbstractEvaLoggedView):
         if actividad_db.comparar(actividad, excluir=['fecha_modificacion', 'motivo', 'calificacion', 'codigo',
                                                      'porcentaje_avance']) \
                 and conteo_responsables == cantidad_responsables:
-            #messages.success(request, 'No se hicieron cambios en la actividad {0}'
-            #                 .format(actividad.nombre))
             return JsonResponse({"estado": "error",
                                  "mensaje": 'No se hicieron cambios en la actividad'})
-            #return redirect(reverse('GestionActividades:actividades-index'))
         else:
             actividad.save(update_fields=update_fields)
             ResponsableActividad.objects.filter(actividad_id=id_actividad).delete()
             for responsable in responsables:
                 ResponsableActividad.objects.create(responsable_id=responsable, actividad_id=id_actividad)
-            #messages.success(request, 'Se ha editado la actividad <br> {0}'.format(actividad.nombre))
-            #return redirect(reverse('GestionActividades:actividades-index'))
 
         return JsonResponse({"estado": "OK"})
 

@@ -7,19 +7,21 @@ $(document).ready(function () {
     configurarFiltroConsecutivos();
 });
 
-function abrirModalCrearActividad(url) {
-    cargarAbrirModal(modalCrearActividad, url, function (){
-        configurarModalCrear();
+function abrirModalCrearActividad(url, grupo) {
+    cargarAbrirModal(modalCrearActividad, url, function () {
+        configurarModalCrear(grupo);
         let form = $('#actividad_form')[0];
         agregarValidacionForm(form, function (event) {
             enviarFormularioAsync(form, url, "cargando").then(exitoso => {
                 if (exitoso) {
                     EVANotificacion.toast.exitoso(`Se ha ${url.includes("editar") ? "editado" : "creado"} la actividad`);
                     modalCrearActividad.modal('hide');
-                    EVANotificacion.modal.exitoso("Registro Exitoso");
-                }
-                else{
-                    EVANotificacion.modal.error("Falló");
+                    Swal.clickCancel();
+                    setTimeout(function (){
+                        location.reload();
+                    },1000);
+                } else {
+                    Swal.clickCancel();
                 }
             });
             return true;
@@ -27,17 +29,18 @@ function abrirModalCrearActividad(url) {
     });
 }
 
-function configurarModalCrear() {
+function configurarModalCrear(grupo) {
 
     const idColaboradores = $('#responsables_id');
     const fechaInicioID = $('#fecha_inicio_id');
     const fechaFinalID = $('#fecha_final_id');
+    const idGrupo = $('#grupo_asociado_select_id');
 
     inicializarDatePicker('fecha_final_id');
     inicializarDatePicker('fecha_inicio_id');
     inicializarSelect2('responsables_id', modalCrearActividad);
     inicializarSelect2('supervisor_id_select_id', modalCrearActividad);
-    inicializarSelect2('grupo_pertenece_select_id', modalCrearActividad);
+    inicializarSelect2('grupo_asociado_select_id', modalCrearActividad);
     inicializarSelect2('estado_select_id', modalCrearActividad);
 
 
@@ -59,6 +62,10 @@ function configurarModalCrear() {
             EVANotificacion.toast.advertencia('La fecha final no puede ser menor a la fecha inicial');
         }
     });
+
+    if (grupo) {
+        idGrupo.val(grupo).trigger("change");
+    }
 
     agregarValidacionFormularios();
 }

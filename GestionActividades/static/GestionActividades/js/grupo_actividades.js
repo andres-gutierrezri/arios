@@ -4,10 +4,7 @@ let contratoSelect = $('#contrato_mostrar_id');
 let procesoSelect = $('#proceso_mostrar_id');
 let contratoSelectID = $('#contrato_id_select_id');
 let procesoSelectID = $('#proceso_id_select_id');
-let grupoSelectID = $('#grupo_pertenece_select_id');
-
-
-
+let grupoSelectID = $('#grupo_asociado_select_id');
 
 const modalCrearGrupoActividad = $('#crear-grupo-actividad');
 
@@ -17,7 +14,26 @@ $(document).ready(function () {
 });
 
 function abrirModalCrearGrupoActividad(url) {
-    cargarAbrirModal(modalCrearGrupoActividad, url, configurarModalCrear);
+    cargarAbrirModal(modalCrearGrupoActividad, url, function (){
+        configurarModalCrear();
+        let form = $('#grupo_actividad_form')[0];
+        agregarValidacionForm(form, function (event) {
+            enviarFormularioAsync(form, url, "cargando").then(exitoso => {
+                if (exitoso) {
+                    EVANotificacion.toast.exitoso(`Se ha ${url.includes("editar") ? "editado" : "creado"} el grupo de actividades`);
+                    modalCrearGrupoActividad.modal('hide');
+                    Swal.clickCancel();
+                    setTimeout(function (){
+                        location.reload();
+                    },1000);
+                }
+                else{
+                    Swal.clickCancel();
+                }
+            });
+            return true;
+        });
+    });
 }
 
 function configurarModalCrear() {
@@ -26,15 +42,15 @@ function configurarModalCrear() {
     procesoSelect = $('#proceso_mostrar_id');
     contratoSelectID = $('#contrato_id_select_id');
     procesoSelectID = $('#proceso_id_select_id');
-    grupoSelectID = $('#grupo_pertenece_select_id');
-    let idTipoPertenencia = $('#tipo_asociado_select_id').val();
+    grupoSelectID = $('#grupo_asociado_select_id');
+    let idTipoAsociado = $('#tipo_asociado_select_id').val();
 
     inicializarSelect2('tipo_asociado_select_id', modalCrearGrupoActividad);
     inicializarSelect2('contrato_id_select_id', modalCrearGrupoActividad);
     inicializarSelect2('proceso_id_select_id', modalCrearGrupoActividad);
-    inicializarSelect2('grupo_pertenece_select_id', modalCrearGrupoActividad);
+    inicializarSelect2('grupo_asociado_select_id', modalCrearGrupoActividad);
 
-     if (idTipoPertenencia === ""){
+     if (idTipoAsociado === ""){
         $('#tipo_asociado_select_id').change(function () {
             let actual = this.value;
             cambiarSelect(actual);
