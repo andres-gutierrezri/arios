@@ -61,11 +61,16 @@ const CONFIG_BASE_SELECT2 = {
  * Inicializa un select como un select2.
  * @param selectId id del input que se quiere inicializar.
  * @param modal Si el select esta en un modal se debe pasar este para que se visualice correctamente.
+ * @returns {*|Window.jQuery|HTMLElement|void} Retorna el elemento del selector.
  */
-function inicializarSelect2(selectId, modal) {
+function inicializarSelect2(selectId, modal, valores) {
     const conf = {};
-    Object.assign(conf, CONFIG_BASE_SELECT2, (modal ? {dropdownParent: modal} : {}))
-    $(`#${selectId}`).select2(conf);
+    Object.assign(conf, CONFIG_BASE_SELECT2, (modal ? {dropdownParent: modal} : {}), (valores ? {data: valores} : {}))
+    let selector = $(`#${selectId}`);
+    if(valores)
+        selector.empty();
+    selector.select2(conf);
+    return selector;
 }
 
 /**
@@ -101,7 +106,7 @@ function cargarAbrirModal(modal, url, fnCallback) {
             $(this).modal('show');
 
             if((fnCallback !== undefined) && (typeof(fnCallback) === 'function'))
-                fnCallback();
+                fnCallback(url);
 
         } catch (err) {
             console.log(err);

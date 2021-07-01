@@ -1,4 +1,7 @@
 from datetime import datetime, date
+from itertools import groupby
+from typing import List, Dict
+
 import pytz
 import requests
 from django.core.paginator import Paginator, Page
@@ -96,3 +99,17 @@ def validar_recaptcha(recaptcha_response: str) -> bool:
         respuesta = response.json()
         return respuesta['success']
     return False
+
+
+def agrupar_lista_select2(lista: List[Dict], llave_agrupacion: str = 'agrupacion'):
+    """
+    Agrupa una lista de diccionarios por la llave indicada con el formato para un select2.
+    :param lista: Lista a agrupar.
+    :param llave_agrupacion: Llave por la que se va a realizar la agrupación.
+    :return: Lista con la agrupación para un select2.
+    """
+    datos = []
+    for k, g in groupby(lista, lambda item: item[llave_agrupacion]):
+        datos.append({'text': k, 'children': [{'id': obj['campo_valor'], 'text': obj['campo_texto']} for obj in g]})
+        
+    return datos
