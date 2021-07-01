@@ -52,6 +52,7 @@ function inicializarDateRangePicker(inputId) {
 
     $(`#${inputId}`).daterangepicker({
         timePicker: true,
+        minDate: new Date(),
         startDate: moment(),
         endDate: moment().add(1, 'hour'),
         timePicker24Hour: true,

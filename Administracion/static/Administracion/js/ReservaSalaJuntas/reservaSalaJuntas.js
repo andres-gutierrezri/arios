@@ -37,23 +37,25 @@ $(document).ready(function () {
          validRange: {
             start: moment().format('YYYY-MM-DD')
         },
-        //evento para mostrar, ocultar o modificar los eventos al momento de hacer render.
+        // Evento para mostrar, ocultar o modificar los eventos al momento de hacer render
         eventRender: function(event) {
             mostrarOcultar = event.event.classNames.toString();
             if (mostrarOcultar !== "mostrar") return false
         },
-        // evento para seleccionar un evento.
+        // Evento para seleccionar un evento
         eventClick: function(event) {
             modificarEventos(event);
         },
-        // para cambio de posición del evento.
+        // para cambio de posición del evento
         eventDrop: function(event) {
             modificarEventos(event);
         },
         select: function(start, end) {
             let url = `/administracion/reservas-sala-juntas/add`;
-            let fechas = {  'inicio': start.startStr,
-                            'fin':start.startStr};
+            let fechas = {
+                'inicio': start.startStr,
+                'fin':start.startStr
+            };
             abrirModalCrearReserva(url, fechas);
         },
 
@@ -70,8 +72,10 @@ function modificarEventos(event){
     if (eventObj.id) {
         let idEvento = eventObj.id
         let url = `/administracion/reservas-sala-juntas/${idEvento}/editar`;
-        let fechas = {  'inicio': moment(eventObj.start).format('YYYY-MM-DD HH:mm:ss'),
-                        'fin':moment(eventObj.end).format('YYYY-MM-DD HH:mm:ss')};
+        let fechas = {
+            'inicio': moment(eventObj.start).format('YYYY-MM-DD HH:mm:ss'),
+            'fin':moment(eventObj.end).format('YYYY-MM-DD HH:mm:ss')
+        };
         abrirModalCrearReserva(url, fechas, true);
     }
 }

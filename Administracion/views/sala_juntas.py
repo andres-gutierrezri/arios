@@ -4,8 +4,7 @@ from datetime import datetime
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
-from django.urls import reverse
+from django.shortcuts import render
 from sqlite3 import IntegrityError
 from django.db.models import Q
 from Administracion.models.models import ReservaSalaJuntas
@@ -53,27 +52,32 @@ class ReservaSalaJuntasCrearView(AbstractEvaLoggedView):
         reserva = ReservaSalaJuntas.from_dictionary(request.POST)
         reserva.usuario_crea = request.user
         reserva.fecha_creacion = app_datetime_now()
+<<<<<<< HEAD
         if ReservaSalaJuntas.objects \
                 .filter(Q(fecha_inicio__lte=reserva.fecha_inicio, fecha_fin__gte=reserva.fecha_inicio)
                         | Q(fecha_inicio__lte=reserva.fecha_fin, fecha_fin__gte=reserva.fecha_fin)) \
                 .exclude(estado=False).exists():
             return JsonResponse({"estado": "error", "mensaje": "Ya existe una reunión cargada"})
+=======
+>>>>>>> 73e16849069d6c0d8377be8affdfbe6b0ffff8b2
 
         # Fecha de inicio este entre el rango de fechas
         # Fecha de fin este entre el rango de fechas
         # Fecha de inicio y la de fin este entre el rango de fechas
 
-        #reserva.save()
-        #messages.success(request, 'Se ha creado la reserva en la sala de juntas')
-        #return redirect(reverse('Administracion:reserva-sala-juntas'))
+        if ReservaSalaJuntas.objects \
+            .filter(Q(fecha_inicio__lte=reserva.fecha_inicio, fecha_fin__gte=reserva.fecha_inicio)
+                    | Q(fecha_inicio__lte=reserva.fecha_fin, fecha_fin__gte=reserva.fecha_fin))\
+                .exclude(estado=False).exists():
+            return JsonResponse({"estado": "error", "mensaje": "Ya existe una reunión asignada"})
+
         try:
             reserva.save()
         except:
-            LOGGER.exception("Error al reunión")
+            LOGGER.exception("Error en la reunión")
             return JsonResponse({"estado": "error", "mensaje": "Ha ocurrido un error al guardar la información"})
 
-        messages.success(request, 'Se ha creado la reserva en la sala de juntas')
-
+        # Se ha creado la reserva en la sala de juntas
         return JsonResponse({"estado": "OK"})
 
 
@@ -92,6 +96,12 @@ class ReservaSalaJuntasEditarView(AbstractEvaLoggedView):
         reserva_db = ReservaSalaJuntas.objects.get(id=id_reserva)
 
         reserva.id = reserva_db.id
+        reserva.responsable_id = reserva_db.responsable_id
+        reserva.fecha_inicio = reserva.fecha_inicio
+        reserva.fecha_fin = reserva.fecha_fin
+        reserva.tema = reserva_db.tema
+        reserva.descripcion = reserva_db.descripcion
+
         reserva.fecha_creacion = reserva_db.fecha_creacion
         reserva.usuario_crea = reserva_db.usuario_crea
         reserva.usuario_modifica = request.user
@@ -99,20 +109,26 @@ class ReservaSalaJuntasEditarView(AbstractEvaLoggedView):
         if ReservaSalaJuntas.objects \
             .filter(Q(fecha_inicio__lte=reserva.fecha_inicio, fecha_fin__gte=reserva.fecha_inicio)
                     | Q(fecha_inicio__lte=reserva.fecha_fin, fecha_fin__gte=reserva.fecha_fin))\
+<<<<<<< HEAD
                     .exclude(Q(id=id_reserva) | Q(estado=False)).exists():
             return JsonResponse({"estado": "error", "mensaje": "Ya existe una reunión cargada"})
+=======
+                .exclude(estado=False).exclude(id=id_reserva).exists():
+            return JsonResponse({"estado": "error", "mensaje": "Ya existe una reunión asignada"})
+>>>>>>> 73e16849069d6c0d8377be8affdfbe6b0ffff8b2
 
         try:
             reserva.full_clean(validate_unique=False)
         except ValidationError as errores:
-            return JsonResponse({"estado": "error", "mensaje": "Falló editar. Valide los datos ingresados al editar la reserva"})
+            return JsonResponse({"estado": "error",
+                                 "mensaje": "Falló editar. Valide los datos ingresados al editar la reserva"})
 
         if reserva_db.comparar(reserva, excluir=['fecha_modificacion']):
-            #messages.success(request, 'No se hicieron cambios en la reserva para la sala de juntas')
+            messages.success(request, 'No se hicieron cambios en la reserva para la sala de juntas')
             return JsonResponse({"estado": "OK"})
         else:
             reserva.save(update_fields=update_fields)
-            #messages.success(request, 'Se ha editado la reserva para la sala de juntas')
+            # Se ha editado la reserva para la sala de juntas
             return JsonResponse({"estado": "OK"})
 
 
@@ -130,7 +146,7 @@ class ReservaSalaJuntasEliminarView(AbstractEvaLoggedView):
             reserva_db.estado = False
             reserva_db.motivo = motivo
             reserva_db.save(update_fields=['estado', 'motivo', 'usuario_modifica', 'fecha_modificacion'])
-            #messages.success(request, 'Se ha eliminado la reunión {0}'.format(reserva_db.tema))
+            # Se ha eliminado la reserva
             return JsonResponse({"estado": "OK"})
 
         except IntegrityError:
