@@ -52,24 +52,11 @@ class ReservaSalaJuntasCrearView(AbstractEvaLoggedView):
         reserva = ReservaSalaJuntas.from_dictionary(request.POST)
         reserva.usuario_crea = request.user
         reserva.fecha_creacion = app_datetime_now()
-<<<<<<< HEAD
         if ReservaSalaJuntas.objects \
                 .filter(Q(fecha_inicio__lte=reserva.fecha_inicio, fecha_fin__gte=reserva.fecha_inicio)
                         | Q(fecha_inicio__lte=reserva.fecha_fin, fecha_fin__gte=reserva.fecha_fin)) \
                 .exclude(estado=False).exists():
             return JsonResponse({"estado": "error", "mensaje": "Ya existe una reunión cargada"})
-=======
->>>>>>> 73e16849069d6c0d8377be8affdfbe6b0ffff8b2
-
-        # Fecha de inicio este entre el rango de fechas
-        # Fecha de fin este entre el rango de fechas
-        # Fecha de inicio y la de fin este entre el rango de fechas
-
-        if ReservaSalaJuntas.objects \
-            .filter(Q(fecha_inicio__lte=reserva.fecha_inicio, fecha_fin__gte=reserva.fecha_inicio)
-                    | Q(fecha_inicio__lte=reserva.fecha_fin, fecha_fin__gte=reserva.fecha_fin))\
-                .exclude(estado=False).exists():
-            return JsonResponse({"estado": "error", "mensaje": "Ya existe una reunión asignada"})
 
         try:
             reserva.save()
@@ -109,13 +96,8 @@ class ReservaSalaJuntasEditarView(AbstractEvaLoggedView):
         if ReservaSalaJuntas.objects \
             .filter(Q(fecha_inicio__lte=reserva.fecha_inicio, fecha_fin__gte=reserva.fecha_inicio)
                     | Q(fecha_inicio__lte=reserva.fecha_fin, fecha_fin__gte=reserva.fecha_fin))\
-<<<<<<< HEAD
-                    .exclude(Q(id=id_reserva) | Q(estado=False)).exists():
-            return JsonResponse({"estado": "error", "mensaje": "Ya existe una reunión cargada"})
-=======
                 .exclude(estado=False).exclude(id=id_reserva).exists():
             return JsonResponse({"estado": "error", "mensaje": "Ya existe una reunión asignada"})
->>>>>>> 73e16849069d6c0d8377be8affdfbe6b0ffff8b2
 
         try:
             reserva.full_clean(validate_unique=False)
