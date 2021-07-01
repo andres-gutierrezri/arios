@@ -21,16 +21,22 @@ from TalentoHumano.models.colaboradores import ColaboradorProceso
 
 class GruposActividadesIndexView(AbstractEvaLoggedView):
     def get(self, request):
-        grupos_actividades = GrupoActividad.objects.get_xa_select_activos().values('id', 'nombre')
+        grupos_actividades = GrupoActividad.objects.get_xa_select_activos().values('id', 'nombre',
+                                                                                   'contrato_id', 'proceso_id')
         contratos = Contrato.objects.get_xa_select_activos()
         procesos = Proceso.objects.get_xa_select_activos()
         colaboradores = Colaborador.objects.get_xa_select_activos()
+
+        lista_procesos = Proceso.objects.get_xa_select_activos().values('id', 'nombre')
+        lista_contratos = Contrato.objects.get_xa_select_activos().values('id', 'numero_contrato')
 
         return render(request, 'GestionActividades/GrupoActividades/index.html',
                       {'grupos_actividades': grupos_actividades,
                        'fecha': app_datetime_now(),
                        'contratos': contratos,
                        'colaboradores': colaboradores,
+                       'lista_procesos': lista_procesos,
+                       'lista_contratos': lista_contratos,
                        'procesos': procesos})
 
 
@@ -54,12 +60,12 @@ class GruposActividadesCrearView(AbstractEvaLoggedView):
 
         if GrupoActividad.objects.filter(nombre__iexact=grupo_actividad.nombre,
                                          grupo_actividad_id__exact=grupo_actividad.grupo_actividad_id).exists():
-            messages.error(request, 'Falló crear. Ya existe un grupo con el mismo nombre')
-            return redirect(reverse('GestionActividades:grupo-actividades-index'))
+            return JsonResponse({"estado": "error",
+                                 "mensaje": 'Falló crear. Ya existe un grupo con el mismo nombre'})
         else:
             grupo_actividad.save()
-            messages.success(request, 'Se ha creado el grupo de actividades <br> {0}'.format(grupo_actividad.nombre))
-            return redirect(reverse('GestionActividades:grupo-actividades-index'))
+
+        return JsonResponse({"estado": "OK"})
 
 
 class GruposActividadesEditarView(AbstractEvaLoggedView):
@@ -92,16 +98,17 @@ class GruposActividadesEditarView(AbstractEvaLoggedView):
             grupo_actividad.full_clean(validate_unique=False)
         except ValidationError as errores:
             messages.error(request, 'Falló editar. Valide los datos ingresados al editar el grupo de actividades')
-            return redirect(reverse('GestionActividades:grupo-actividades-index'))
+            return JsonResponse({"estado": "error",
+                                 "mensaje": 'Falló editar. Valide los datos ingresados '
+                                            'al editar el grupo de actividades'})
 
         if grupo_actividad_db.comparar(grupo_actividad, excluir=['fecha_modificacion', 'motivo']):
-            messages.success(request, 'No se hicieron cambios en el grupo de actividades {0}'
-                             .format(grupo_actividad.nombre))
-            return redirect(reverse('GestionActividades:grupo-actividades-index'))
+            return JsonResponse({"estado": "error",
+                                 "mensaje": 'No se hicieron cambios en el grupo de actividades'})
         else:
             grupo_actividad.save(update_fields=update_fields)
-            messages.success(request, 'Se ha editado el grupo de actividades <br> {0}'.format(grupo_actividad.nombre))
-            return redirect(reverse('GestionActividades:grupo-actividades-index'))
+
+        return JsonResponse({"estado": "OK"})
 
 
 def datos_xa_render(request, grupo_actividad: GrupoActividad = None) -> dict:

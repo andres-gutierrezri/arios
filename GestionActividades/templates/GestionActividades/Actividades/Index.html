@@ -47,7 +47,7 @@
                                                         <div class="col">
                                                             <span class="h6 font-weight-bold text-uppercase">{{ grupo.nombre }}</span>
                                                             <small>
-                                                                <a class="far fa-1x far fa-plus-circle" href="javascript:abrirModalCrearActividad('{% url 'GestionActividades:actividades-crear'%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear Actividad"></a>
+                                                                <a class="far fa-1x far fa-plus-circle" href="javascript:abrirModalCrearActividad('{% url 'GestionActividades:actividades-crear'%}','{{ grupo.id }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear Actividad" {{ grupo.id }}></a>
                                                             </small>
                                                         </div>
                                                     </div>
