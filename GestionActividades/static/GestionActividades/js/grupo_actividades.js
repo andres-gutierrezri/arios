@@ -11,6 +11,7 @@ const modalCrearGrupoActividad = $('#crear-grupo-actividad');
 $(document).ready(function () {
     activarSelect2();
     configurarFiltroConsecutivos();
+
 });
 
 function abrirModalCrearGrupoActividad(url) {
@@ -50,8 +51,9 @@ function configurarModalCrear() {
     inicializarSelect2('contrato_id_select_id', modalCrearGrupoActividad);
     inicializarSelect2('proceso_id_select_id', modalCrearGrupoActividad);
     inicializarSelect2('grupo_asociado_select_id', modalCrearGrupoActividad);
+    //$("input:radio[name=tipo_asociado_radio][value='1']").attr('checked', true); poner valor por defecto
 
-     if (idTipoAsociadoRadio === ""){
+    /*if (idTipoAsociadoRadio === ""){
         $('#tipo_asociado_radio_id').change(function () {
             let actual = this.value;
             cambiarSelect(actual);
@@ -62,7 +64,17 @@ function configurarModalCrear() {
             let actual = this.value;
             cambiarSelect(actual);
         }).trigger('change');
-    }
+    }*/
+
+    $('input:radio[name=tipo_asociado_radio]').change(function() {
+        idTipoAsociadoRadio = this.value
+        if (idTipoAsociadoRadio === "1") {
+            console.log("primero")
+        }
+        else if (idTipoAsociadoRadio === "2") {
+            console.log("segundo")
+        }
+    });
 
     agregarValidacionFormularios();
 }
