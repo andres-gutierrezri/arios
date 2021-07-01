@@ -12,7 +12,7 @@
                     {% if perms.GestionActividades.view_grupoactividades %}
                         <div class="dropdown-menu">
                             {% if perms.GestionActividades.change_grupoactividades %}
-                            <a class="dropdown-item" href="javascript:abrirModalCrearGrupoActividad('{% url 'GestionActividades:grupo-actividades-editar' grupo_actividad.id%}')">Editar</a>
+                            <a class="dropdown-item" href="javascript:abrirModalCrearGrupoActividad('{% url 'GestionActividades:grupo-actividades-editar' grupo_actividad.id%}', '{{ asociado }}')">Editar</a>
                             {% endif %}
                         </div>
                     {% endif %}

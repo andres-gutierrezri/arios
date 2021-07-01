@@ -14,9 +14,9 @@ $(document).ready(function () {
 
 });
 
-function abrirModalCrearGrupoActividad(url) {
+function abrirModalCrearGrupoActividad(url, asociado) {
     cargarAbrirModal(modalCrearGrupoActividad, url, function (){
-        configurarModalCrear();
+        configurarModalCrear(asociado);
         let form = $('#grupo_actividad_form')[0];
         agregarValidacionForm(form, function (event) {
             enviarFormularioAsync(form, url, "cargando").then(exitoso => {
@@ -37,44 +37,43 @@ function abrirModalCrearGrupoActividad(url) {
     });
 }
 
-function configurarModalCrear() {
+function configurarModalCrear(asociado) {
     TipoAsociado = $('#tipo_asociado');
     contratoSelect = $('#contrato_mostrar_id');
     procesoSelect = $('#proceso_mostrar_id');
     contratoSelectID = $('#contrato_id_select_id');
     procesoSelectID = $('#proceso_id_select_id');
     grupoSelectID = $('#grupo_asociado_select_id');
-    let idTipoAsociado = $('#tipo_asociado_select_id').val();
-    let idTipoAsociadoRadio = $('#tipo_asociado_radio_id').val();
+    let idTipoAsociado = $('#tipo_asociado_id')
 
     inicializarSelect2('tipo_asociado_select_id', modalCrearGrupoActividad);
     inicializarSelect2('contrato_id_select_id', modalCrearGrupoActividad);
     inicializarSelect2('proceso_id_select_id', modalCrearGrupoActividad);
     inicializarSelect2('grupo_asociado_select_id', modalCrearGrupoActividad);
-    //$("input:radio[name=tipo_asociado_radio][value='1']").attr('checked', true); poner valor por defecto
 
-    /*if (idTipoAsociadoRadio === ""){
-        $('#tipo_asociado_radio_id').change(function () {
+    //$("input:radio[name=tipo_asociado][value=asociado]").attr('checked', true);
+
+    $('input:radio[name=tipo_asociado]').change(function() {
+        idTipoAsociado = this.value
+        if (idTipoAsociado === "1") {
             let actual = this.value;
             cambiarSelect(actual);
-        })
-    }
-    else{
-        $('#tipo_asociado_radio_id').change(function () {
-            let actual = this.value;
-            cambiarSelect(actual);
-        }).trigger('change');
-    }*/
-
-    $('input:radio[name=tipo_asociado_radio]').change(function() {
-        idTipoAsociadoRadio = this.value
-        if (idTipoAsociadoRadio === "1") {
-            console.log("primero")
         }
-        else if (idTipoAsociadoRadio === "2") {
-            console.log("segundo")
+        else if (idTipoAsociado === "2") {
+            let actual = this.value;
+            cambiarSelect(actual);
         }
     });
+
+    if (asociado){
+        idTipoAsociado.val(asociado).trigger("change");
+         if (idTipoAsociado === "1") {
+             mostrarOcultarTipoAsociado(true)
+        }
+        else if (idTipoAsociado === "2") {
+             mostrarOcultarTipoAsociado(false)
+        }
+    }
 
     agregarValidacionFormularios();
 }

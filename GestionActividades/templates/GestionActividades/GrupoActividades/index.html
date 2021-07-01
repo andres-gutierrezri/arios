@@ -67,12 +67,12 @@
                                             {% for grupo_actividad in grupos_actividades %}
                                                 {% for proceso in lista_procesos %}
                                                     {% if grupo_actividad.proceso_id == proceso.id %}
-                                                        {% include 'GestionActividades/_common/_tarjeta_grupo_actividad.html' with nombre=grupo_actividad.nombre id_grupo=grupo_actividad.id  proceso=proceso.nombre %}
+                                                        {% include 'GestionActividades/_common/_tarjeta_grupo_actividad.html' with nombre=grupo_actividad.nombre id_grupo=grupo_actividad.id  proceso=proceso.nombre asociado=2%}
                                                     {% endif %}
                                                 {% endfor %}
                                                 {% for contrato in lista_contratos %}
                                                     {% if grupo_actividad.contrato_id == contrato.id %}
-                                                        {% include 'GestionActividades/_common/_tarjeta_grupo_actividad.html' with nombre=grupo_actividad.nombre id_grupo=grupo_actividad.id  contrato=contrato.numero_contrato %}
+                                                        {% include 'GestionActividades/_common/_tarjeta_grupo_actividad.html' with nombre=grupo_actividad.nombre id_grupo=grupo_actividad.id  contrato=contrato.numero_contrato asociado=1%}
                                                     {% endif %}
                                                 {% endfor %}
                                             {% endfor %}
