@@ -58,7 +58,12 @@ $(document).ready(function () {
             };
             abrirModalCrearReserva(url, fechas);
         },
-
+      eventResize: function(event) {
+            modificarEventos(event);
+            /*if (!confirm("is this okay?")) {
+              event.revert();
+            }*/
+      }
     });
     calendario.render();
     calendario.addEventSource({
