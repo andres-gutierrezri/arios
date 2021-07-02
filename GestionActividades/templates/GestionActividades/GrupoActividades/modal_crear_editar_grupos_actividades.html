@@ -24,12 +24,14 @@
                             {% input_textarea_tag 'descripcion' 'Descripción del grupo' placeholder="Ingrese una descripción" required="" maxlength="300" value=grupo_actividad.descripcion mensaje_validacion='Por favor digite una descripción.' invalido=errores.descripcion %}
                         </div>
                     </div>
-                    <p class="mb-2">Aplica a:</p>
                     <div class="form-group">
-                        <div class="contenedor-con-borde">
-                            <div class="form-row">
-                                <div class="col-md-12">
-                                    {% input_select_radio_tag 'tipo_asociado' '' opciones=opciones_contrato_proceso value=grupo_actividad.tipo_asociado required="" mensaje_validacion='Por favor seleccione un tipo de asociado' %}
+                        <p class="col-md-12">Asociado a:</p>
+                        <div class="col-md-12">
+                            <div class="contenedor-con-borde">
+                                <div class="form-row">
+                                    <div class="col-md-12">
+                                        {% input_select_radio_tag 'tipo_asociado' '' opciones=opciones_contrato_proceso value=grupo_actividad.tipo_asociado required="" mensaje_validacion='Por favor seleccione un tipo de asociado' %}
+                                    </div>
                                 </div>
                             </div>
                         </div>

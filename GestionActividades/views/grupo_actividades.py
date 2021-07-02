@@ -11,6 +11,7 @@ from django.core.exceptions import ValidationError
 from Administracion.models import Proceso, TipoContrato
 from Administracion.utils import get_id_empresa_global
 from EVA.General import app_datetime_now
+from EVA.General.modeljson import RespuestaJson
 from EVA.views.index import AbstractEvaLoggedView
 from GestionActividades.Enumeraciones import PertenenciaGrupoActividades
 from GestionActividades.models import GrupoActividad
@@ -60,12 +61,12 @@ class GruposActividadesCrearView(AbstractEvaLoggedView):
 
         if GrupoActividad.objects.filter(nombre__iexact=grupo_actividad.nombre,
                                          grupo_actividad_id__exact=grupo_actividad.grupo_actividad_id).exists():
-            return JsonResponse({"estado": "error",
-                                 "mensaje": 'Falló crear. Ya existe un grupo con el mismo nombre'})
+            return RespuestaJson.error("Falló crear. Ya existe un grupo con el mismo nombre")
+
         else:
             grupo_actividad.save()
 
-        return JsonResponse({"estado": "OK"})
+        return RespuestaJson.exitosa()
 
 
 class GruposActividadesEditarView(AbstractEvaLoggedView):
@@ -97,18 +98,15 @@ class GruposActividadesEditarView(AbstractEvaLoggedView):
         try:
             grupo_actividad.full_clean(validate_unique=False)
         except ValidationError as errores:
-            messages.error(request, 'Falló editar. Valide los datos ingresados al editar el grupo de actividades')
-            return JsonResponse({"estado": "error",
-                                 "mensaje": 'Falló editar. Valide los datos ingresados '
-                                            'al editar el grupo de actividades'})
+            return RespuestaJson.error("Falló editar. Valide los datos ingresados al editar el grupo de actividades")
 
         if grupo_actividad_db.comparar(grupo_actividad, excluir=['fecha_modificacion', 'motivo']):
-            return JsonResponse({"estado": "error",
-                                 "mensaje": 'No se hicieron cambios en el grupo de actividades'})
+            return RespuestaJson.error("No se hicieron cambios en el grupo de actividades")
+
         else:
             grupo_actividad.save(update_fields=update_fields)
 
-        return JsonResponse({"estado": "OK"})
+        return RespuestaJson.exitosa()
 
 
 def datos_xa_render(request, grupo_actividad: GrupoActividad = None) -> dict:
