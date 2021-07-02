@@ -65,8 +65,8 @@
                                                         <td>{{ consecutivo.fecha | date:'Y-m-d' }}</td>
                                                         <td>{{ consecutivo.tema }}</td>
                                                         <td>{{ consecutivo.descripcion }}</td>
-                                                        <td>{{ consecutivo.usuario.username }}</td>
-                                                        <td>{{ consecutivo.fecha_crea | date:'Y-m-d' }}</td>
+                                                        <td>{{ consecutivo.usuario_crea.username }}</td>
+                                                        <td>{{ consecutivo.fecha_creacion | date:'Y-m-d' }}</td>
                                                         <td>{% if consecutivo.justificacion %}{{ consecutivo.justificacion }}{% endif %}</td>
                                                         <td>{% if consecutivo.justificacion %}{{ consecutivo.fecha_modificacion  | date:'Y-m-d H:i'}}{% endif %}</td>
                                                         <td>
