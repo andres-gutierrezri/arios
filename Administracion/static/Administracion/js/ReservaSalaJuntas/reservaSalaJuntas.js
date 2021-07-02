@@ -16,8 +16,6 @@ $(document).ready(function () {
         eventLimit: true, // allow "more" link when too many events
         selectable: true,
         selectHelper: true,
-        //minTime: moment(moment().subtract(1, 'hours'), "h:mm:ss A").format("HH:mm:ss"),
-        //slotDuration: '00:15:00',
         titleFormat: {
             year: 'numeric',
             month: 'long',
@@ -134,5 +132,10 @@ function configurarModalCrear(fechas) {
         $('#fecha_intervalo_id').data('daterangepicker').setStartDate(fechas.inicio);
         $('#fecha_intervalo_id').data('daterangepicker').setEndDate(fechas.fin);
     }
+    modalCrearReserva.on('hidden.bs.modal', function () {
+        calendario.refetchEvents();
+    });
     agregarValidacionFormularios();
 }
+
+
