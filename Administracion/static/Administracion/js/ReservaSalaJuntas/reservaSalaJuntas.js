@@ -16,6 +16,8 @@ $(document).ready(function () {
         eventLimit: true, // allow "more" link when too many events
         selectable: true,
         selectHelper: true,
+        //minTime: moment(moment().subtract(1, 'hours'), "h:mm:ss A").format("HH:mm:ss"),
+        //slotDuration: '00:15:00',
         titleFormat: {
             year: 'numeric',
             month: 'long',
@@ -48,7 +50,14 @@ $(document).ready(function () {
         },
         // para cambio de posición del evento
         eventDrop: function(event) {
-            modificarEventos(event);
+            let fechaActual =  moment(moment(),"DD-MM-YYYY");
+            let fechaNueva = moment(event.event.start,"DD-MM-YYYY");
+            if(fechaActual >= fechaNueva){
+                calendario.refetchEvents();
+            }else{
+                modificarEventos(event);
+            }
+
         },
         select: function(start, end) {
             let url = `/administracion/reservas-sala-juntas/add`;
@@ -77,9 +86,11 @@ function modificarEventos(event){
     if (eventObj.id) {
         let idEvento = eventObj.id
         let url = `/administracion/reservas-sala-juntas/${idEvento}/editar`;
+        let fechaInicial = moment(eventObj.start).format('YYYY-MM-DD HH:mm:ss');
+        let fechaFinal = moment(eventObj.end).format('YYYY-MM-DD HH:mm:ss');
         let fechas = {
-            'inicio': moment(eventObj.start).format('YYYY-MM-DD HH:mm:ss'),
-            'fin':moment(eventObj.end).format('YYYY-MM-DD HH:mm:ss')
+            'inicio': fechaInicial,
+            'fin':eventObj.end ? fechaFinal : fechaInicial
         };
         abrirModalCrearReserva(url, fechas, true);
     }
