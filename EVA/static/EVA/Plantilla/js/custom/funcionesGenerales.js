@@ -171,6 +171,8 @@ async function enviarFormularioAsync(form, url, mensaje='') {
         }));
 
         if (datos.estado === 'OK') {
+            if(datos.mensaje)
+                EVANotificacion.toast.exitoso(datos.mensaje);
             return true;
         } else {
             EVANotificacion.toast.error(datos.estado === 'error' ? datos.mensaje : 'No tiene permisos para acceder a esta funcionalidad');
