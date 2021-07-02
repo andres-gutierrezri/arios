@@ -1,13 +1,34 @@
 from django.contrib.auth.models import User
 from django.db import models
 
-import GestionDocumental
 from Administracion.models import Tercero, TipoContrato, Empresa
+from Administracion.utils import get_id_empresa_global
 from EVA.General import app_date_now
 from EVA.General.modeljson import ModelDjangoExtensiones
-from EVA.General.modelmanagers import ManagerGeneral
+from EVA.General.modelmanagers import ManagerGeneral, ModeloBase
 from Proyectos.models import Contrato
 from EVA import settings
+
+
+class ConsecutivoBase(ModeloBase, ModelDjangoExtensiones):
+    objects = ManagerGeneral()
+    codigo = models.CharField(max_length=50, verbose_name='Código', null=False, blank=False)
+    empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa', blank=False, null=False)
+    justificacion = models.CharField(max_length=100, verbose_name='Justificación', blank=True, null=True)
+    estado = models.BooleanField(verbose_name='Estado', blank=False, null=False)
+
+    def __str__(self):
+        return self.codigo
+
+    class Meta:
+        abstract = True
+
+    def carga_campos_crear_editar(self, request, edita):
+        if edita:
+            self.usuario_modifica = request.user
+        else:
+            self.usuario_crea = request.user
+            self.empresa_id = get_id_empresa_global(request)
 
 
 class ConsecutivoOficio(models.Model, ModelDjangoExtensiones):
