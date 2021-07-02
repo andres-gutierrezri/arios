@@ -91,10 +91,10 @@ function abrirModalCrearReserva(url, fechas) {
         const form = $("#juntas_form")[0];
         agregarValidacionForm(form, function (event) {
             enviarFormularioAsync(form, url).then(exitoso => {
-                if (exitoso)
-                    EVANotificacion.toast.exitoso(`Se ha ${url.includes("editar") ? "editado" : "creado"} la reserva para la sala de juntas`);
+                if (exitoso) {
                     calendario.refetchEvents();
                     modalCrearReserva.modal('hide');
+                }
             });
             return true;
         });
