@@ -1,7 +1,6 @@
 import json
 from datetime import datetime
 
-from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -10,7 +9,8 @@ from django.db.models import Q
 from Administracion.models.models import ReservaSalaJuntas
 from Administracion.views.Proveedores.autenticacion import LOGGER
 from EVA.General import app_datetime_now
-from EVA.General.conversiones import datetime_to_isostring
+from EVA.General.conversiones import datetime_to_isostring, datetime_to_utc
+from EVA.General.modeljson import RespuestaJson
 from EVA.views.index import AbstractEvaLoggedView
 from TalentoHumano.models import Colaborador
 
@@ -52,20 +52,20 @@ class ReservaSalaJuntasCrearView(AbstractEvaLoggedView):
         reserva = ReservaSalaJuntas.from_dictionary(request.POST)
         reserva.usuario_crea = request.user
         reserva.fecha_creacion = app_datetime_now()
+
         if ReservaSalaJuntas.objects \
                 .filter(Q(fecha_inicio__lte=reserva.fecha_inicio, fecha_fin__gte=reserva.fecha_inicio)
                         | Q(fecha_inicio__lte=reserva.fecha_fin, fecha_fin__gte=reserva.fecha_fin)) \
                 .exclude(estado=False).exists():
-            return JsonResponse({"estado": "error", "mensaje": "Ya existe una reunión cargada"})
+            return RespuestaJson.error("Ya existe una reunión asignada en este horario")
 
         try:
             reserva.save()
         except:
-            LOGGER.exception("Error en la reunión")
-            return JsonResponse({"estado": "error", "mensaje": "Ha ocurrido un error al guardar la información"})
+            LOGGER.exception("Error en la reserva")
+            return RespuestaJson.error("Ha ocurrido un error al guardar la información")
 
-        # Se ha creado la reserva en la sala de juntas
-        return JsonResponse({"estado": "OK"})
+        return RespuestaJson.exitosa(mensaje="Se ha creado la reserva en la sala de juntas")
 
 
 class ReservaSalaJuntasEditarView(AbstractEvaLoggedView):
@@ -83,12 +83,6 @@ class ReservaSalaJuntasEditarView(AbstractEvaLoggedView):
         reserva_db = ReservaSalaJuntas.objects.get(id=id_reserva)
 
         reserva.id = reserva_db.id
-        reserva.responsable_id = reserva_db.responsable_id
-        reserva.fecha_inicio = reserva.fecha_inicio
-        reserva.fecha_fin = reserva.fecha_fin
-        reserva.tema = reserva_db.tema
-        reserva.descripcion = reserva_db.descripcion
-
         reserva.fecha_creacion = reserva_db.fecha_creacion
         reserva.usuario_crea = reserva_db.usuario_crea
         reserva.usuario_modifica = request.user
@@ -97,21 +91,21 @@ class ReservaSalaJuntasEditarView(AbstractEvaLoggedView):
             .filter(Q(fecha_inicio__lte=reserva.fecha_inicio, fecha_fin__gte=reserva.fecha_inicio)
                     | Q(fecha_inicio__lte=reserva.fecha_fin, fecha_fin__gte=reserva.fecha_fin))\
                 .exclude(estado=False).exclude(id=id_reserva).exists():
-            return JsonResponse({"estado": "error", "mensaje": "Ya existe una reunión asignada"})
+            return RespuestaJson.error("Ya existe una reunión asignada en este horario")
 
         try:
             reserva.full_clean(validate_unique=False)
         except ValidationError as errores:
-            return JsonResponse({"estado": "error",
-                                 "mensaje": "Falló editar. Valide los datos ingresados al editar la reserva"})
+            return RespuestaJson.error("Falló la edición. Valide los datos ingresados al editar la reserva")
 
-        if reserva_db.comparar(reserva, excluir=['fecha_modificacion']):
-            messages.success(request, 'No se hicieron cambios en la reserva para la sala de juntas')
-            return JsonResponse({"estado": "OK"})
+        reserva.fecha_inicio = datetime_to_utc(reserva.fecha_inicio)
+        reserva.fecha_fin = datetime_to_utc(reserva.fecha_fin)
+
+        if reserva_db.comparar(reserva, excluir=['fecha_modificacion', 'usuario_modifica', 'motivo']):
+            return RespuestaJson.exitosa(mensaje="No se hicieron cambios en la reserva para la sala de juntas")
         else:
             reserva.save(update_fields=update_fields)
-            # Se ha editado la reserva para la sala de juntas
-            return JsonResponse({"estado": "OK"})
+            return RespuestaJson.exitosa(mensaje="Se ha editado la reserva para la sala de juntas")
 
 
 class ReservaSalaJuntasEliminarView(AbstractEvaLoggedView):
@@ -120,20 +114,18 @@ class ReservaSalaJuntasEliminarView(AbstractEvaLoggedView):
         body_unicode = request.body.decode('utf-8')
         datos_registro = json.loads(body_unicode)
         motivo = datos_registro['justificacion']
+
         if not reserva_db.estado:
-            return JsonResponse({"estado": "error",
-                                 "mensaje": 'Este consecutivo ya ha sido eliminado.'})
+            return RespuestaJson.error("La reserva ha sido eliminada")
         try:
             reserva_db.usuario_modifica = request.user
             reserva_db.estado = False
             reserva_db.motivo = motivo
             reserva_db.save(update_fields=['estado', 'motivo', 'usuario_modifica', 'fecha_modificacion'])
-            # Se ha eliminado la reserva
-            return JsonResponse({"estado": "OK"})
+            return RespuestaJson.exitosa()
 
         except IntegrityError:
-            return JsonResponse({"estado": "error",
-                                 "mensaje": "No se puede eliminar la reunión {0}".format(reserva_db.tema)})
+            return RespuestaJson.error("No se puede eliminar la reserva {0}".format(reserva_db.tema))
 
 
 def datos_xa_render(request, reserva: ReservaSalaJuntas = None) -> dict:
