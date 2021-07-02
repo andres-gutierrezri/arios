@@ -27,4 +27,5 @@ permisos = [Permiso('index', None),
             Permiso('reserva-sala-juntas', ['Administracion.view_reserva_sala_juntas']),
             Permiso('reserva-sala-juntas-crear', ['Administracion.add_reserva_sala_juntas']),
             Permiso('reserva-sala-juntas-editar', ['Administracion.change_reserva_sala_juntas']),
+            Permiso('reserva-sala-juntas-eliminar', ['Administracion.delete_reserva_sala_juntas']),
             ]
