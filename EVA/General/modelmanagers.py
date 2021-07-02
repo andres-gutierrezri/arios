@@ -1,5 +1,6 @@
 import json
 
+from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import QuerySet, F
 
@@ -45,3 +46,19 @@ class ManagerGeneral(models.Manager):
                 .order_by(self.campo_texto)
         else:
             return super().get_queryset().filter(**filtro)
+
+
+class ModeloBase(models.Model):
+
+    fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False,
+                                          blank=False)
+    fecha_modificacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Modificación', null=False,
+                                              blank=False)
+    usuario_crea = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario Crea", null=False,
+                                     blank=False, related_name='%(app_label)s_%(class)s_usuario_crea')
+    usuario_modifica = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario Modifica",
+                                         null=True, blank=True,
+                                         related_name='%(app_label)s_%(class)s_usuario_modifica')
+
+    class Meta:
+        abstract = True
