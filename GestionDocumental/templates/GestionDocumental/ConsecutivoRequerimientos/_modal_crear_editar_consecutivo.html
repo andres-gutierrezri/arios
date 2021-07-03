@@ -1,0 +1,48 @@
+{% load eva_tags %}
+{% load static %}
+<form id="requerimientos_form" method="post" class="needs-validation" novalidate>
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header p-b-0">
+                <h4 class="modal-title">
+                    {% if editar %}Editar Consecutivo de requerimiento interno: {{ consecutivo.codigo }}{% else %}Crear Consecutivos de requerimiento interno{% endif %}
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                </button>
+            </div>
+         {% csrf_token %}
+            <div class="modal-body">
+                <div class="form-group">
+                    <div class="form-group">
+                        <input id="contrato_select_id" style="display: none">
+                        <div class="col-md-12">
+                            {% select_tag contratos 'contrato_id' 'Seleccione un contrato' texto_label="Contrato (Opcional)" value=consecutivo.contrato_id invalido=errores.contrato %}
+                        </div>
+                    </div>
+                    {% if procesos %}
+                        <div class="col-md-12">
+                            {% select_tag procesos 'proceso_id' 'Seleccione un proceso' texto_label="Proceso"  required="" value=consecutivo.proceso invalido=errores.proceso mensaje_validacion='Por favor seleccione un proceso' %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                        <div class="col-md-12">
+                            {% input_textarea_tag 'detalle' 'Descripción del Documento' placeholder="Ingrese una descripción" required="" maxlength="300" value=consecutivo.detalle mensaje_validacion='Por favor digite una descripción.' invalido=errores.descripcion %}
+                        </div>
+                </div>
+                {% if editar %}
+                        <div class="form-group">
+                            <div id="motivo" class="col-md-12">
+                                {% input_textarea_tag 'motivo' 'Motivo' placeholder="Digite Motivo" value=consecutivo.justificacion|default_if_none:"" required="" mensaje_validacion='Por favor digite el motivo.' %}
+                            </div>
+                        </div>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-danger btn-pills">Cancelar</button>
+                <button id="agregar" type="submit" class="btn btn-primary btn-pills"> {% if editar %}Editar{% else %}Agregar{% endif %} </button>
+            </div>
+        </div>
+    </div>
+</form>
