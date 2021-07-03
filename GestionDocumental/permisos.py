@@ -15,4 +15,8 @@ permisos = [Permiso('index', None),
             Permiso('consecutivo-reuniones-index', ['GestionDocumental.view_consecutivoreunion']),
             Permiso('consecutivo-reuniones-crear', ['GestionDocumental.add_consecutivoreunion']),
             Permiso('consecutivo-reuniones-eliminar', ['GestionDocumental.delete_consecutivoreunion']),
+            Permiso('consecutivo-requerimientos-index', ['GestionDocumental.view_consecutivorequerimientos']),
+            Permiso('consecutivo-requerimientos-crear', ['GestionDocumental.add_consecutivorequerimientos']),
+            Permiso('consecutivo-requerimientos-editar', ['GestionDocumental.change_consecutivorequerimientos']),
+            Permiso('consecutivo-requerimientos-eliminar', ['GestionDocumental.delete_consecutivorequerimientos'])
             ]
