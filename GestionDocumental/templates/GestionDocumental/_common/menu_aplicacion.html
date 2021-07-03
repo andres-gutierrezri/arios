@@ -29,6 +29,12 @@
             </a>
         </li>
         {% endif %}
+            <li {% if menu_actual == 'consecutivos-requerimientos' %} class="active" {% endif %}>
+            <a href="{% url 'GestionDocumental:consecutivo-requerimientos-index' 0 %}" title="Consecutivo de requerimiento interno" data-filter-tags="consecutivo requerimiento">
+                <i class="far fa-file-alt"></i>
+                <span class="nav-link-text" data-i18n="nav.gestion_documental_consecutivo_requerimientos">Consecutivo de requerimiento interno</span>
+            </a>
+        </li>
     </ul>
 </li>
 {% endif %}
