@@ -15,7 +15,8 @@ Including another URLconf
 """
 
 from django.urls import path
-from GestionDocumental.views import views, consecutivo_documento, consecutivo_contrato, consecutivo_reunion
+from GestionDocumental.views import views, consecutivo_documento, consecutivo_contrato, consecutivo_reunion, \
+    consecutivo_requerimientos
 
 app_name = 'GestionDocumental'
 
@@ -49,4 +50,12 @@ urlpatterns = [
          name='consecutivo-reuniones-editar'),
     path('consecutivo-reuniones/<int:id>/delete', consecutivo_reunion.ConsecutivoReunionesEliminarView.as_view(),
          name='consecutivo-reuniones-eliminar'),
+    path('consecutivo-requerimientos/<int:id>/index', consecutivo_requerimientos.ConsecutivoRequerimientoView.as_view(),
+         name='consecutivo-requerimientos-index'),
+    path('consecutivo-requerimientos/add', consecutivo_requerimientos.ConsecutivoRequerimientoCrearView.as_view(),
+         name='consecutivo-requerimientos-crear'),
+    path('consecutivo-requerimientos/editar', consecutivo_requerimientos.ConsecutivoRequerimientoCrearView.as_view(),
+         name='consecutivo-requerimientos-editar'),
+    path('consecutivo-requerimientos/<int:id>/delete', consecutivo_requerimientos.ConsecutivoRequerimientoCrearView.as_view(),
+         name='consecutivo-requerimientos-delete'),
 ]
