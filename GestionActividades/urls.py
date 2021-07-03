@@ -29,6 +29,8 @@ urlpatterns = [
          name='grupo-actividades-editar'),
     path('actividades/index', actividades.ActividadesIndexView.as_view(),
          name='actividades-index'),
+    path('actividades/index/<int:id>', actividades.ActividadesIndexView.as_view(),
+         name='actividades-index'),
     path('actividades/add', actividades.ActividadesCrearView.as_view(),
          name='actividades-crear'),
     path('actividades/<int:id_actividad>/editar', actividades.ActividadesEditarView.as_view(),

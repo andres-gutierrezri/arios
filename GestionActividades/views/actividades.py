@@ -25,16 +25,19 @@ from TalentoHumano.models.colaboradores import ColaboradorProceso
 
 
 class ActividadesIndexView(AbstractEvaLoggedView):
-    def get(self, request):
+    def get(self, request, id=None):
         actividades = Actividad.objects.values('id', 'nombre', 'grupo_actividad_id', 'descripcion',
                                                'estado', 'porcentaje_avance')
         responsable_actividad = ResponsableActividad.objects.values('responsable_id', 'actividad_id')
         colaboradores = User.objects.values('id', 'first_name', 'last_name')
-        grupos = GrupoActividad.objects.values('id', 'nombre')
+        grupos = GrupoActividad.objects.values('id', 'nombre', 'grupo_actividad_id')
         search = request.GET.get('search', '')
 
         if search:
             grupos = grupos.filter(Q(nombre__icontains=search))
+
+        if id:
+            grupos = grupos.filter(Q(id=id) | Q(nombre__iexact='Generales') | Q(grupo_actividad_id=id))
 
         return render(request, 'GestionActividades/Actividades/index.html',
                       {'actividades': actividades,
