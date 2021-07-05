@@ -1,6 +1,6 @@
 'use strict';
 
-const modalCrear = $('#crear-crequerimiento');
+const modalCrearEditar = $('#crear-crequerimiento');
 
 $(document).ready(function () {
     activarSelect2();
@@ -9,20 +9,32 @@ $(document).ready(function () {
         window.location = '/gestion-documental/consecutivo-requerimientos/' + this.value + '/index';
     });
 
-    iniciarDataTableN({buscar: false, paginar:false, ordenar: false});
+    /*const columnDefs = [
+        { "targets": [0], "width": '12%' },
+        { "targets": [1], "width": '10%' },
+        { "targets": [2], "width": '28%' },
+        { "targets": [3], "width": '28%' },
+        { "targets": [4], "width": '11%' },
+        { "targets": [7], "width": '5%' },
+        { "targets": [8], "width": '6%' }
+    ]*/
+    iniciarDataTableN({buscar: false, paginar: false, ordenar: false});
 });
 
 
 function abrirModalCrear(url) {
    // let editar = `se ha ${url.includes("editar") ? "editar" : "crear"} la reserva para la sala de juntas`
-    cargarAbrirModal(modalCrear, url,function () {
+    cargarAbrirModal(modalCrearEditar, url,function () {
         configurarModalCrear();
         const form = $("#requerimientos_form")[0];
         agregarValidacionForm(form, function (event) {
             enviarFormularioAsync(form, url).then(exitoso => {
                 if (exitoso)
-                    EVANotificacion.toast.exitoso(`Se ha ${url.includes("editar") ? "editado" : "creado"} la consecutivo`);
-                    modalCrear.modal('hide');
+                    modalCrearEditar.modal('hide');
+                    Swal.clickCancel();
+                    setTimeout(function (){
+                        location.reload();
+                    },100);
             });
             return true;
         });
@@ -30,10 +42,10 @@ function abrirModalCrear(url) {
 }
 
 function configurarModalCrear() {
-    inicializarSelect2('contrato_id_select_id', modalCrear);
+    inicializarSelect2('contrato_id_select_id', modalCrearEditar);
+    inicializarSelect2('proceso_id_select_id', modalCrearEditar);
     agregarValidacionFormularios();
 }
-
 
 let item = [];
 
@@ -46,3 +58,5 @@ function configurarFiltroConsecutivos() {
         window.location = ruta_filtro_consecutivos.val() + opcionSelect.val() + '/index';
     });
 }
+
+

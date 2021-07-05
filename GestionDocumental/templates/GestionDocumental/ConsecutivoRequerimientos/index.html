@@ -35,7 +35,7 @@
                             <div class="col-md-2" style="float: right" >
                                 {% select_tag opciones_filtro 'filtro_consecutivos' '' value=id_filtro  %}
                             </div>
-                            <input id="ruta_filtro_consecutivos" hidden value="/gestion-documental/consecutivo-oficios/">
+                            <input id="ruta_filtro_consecutivos" hidden value="/gestion-documental/consecutivo-requerimientos/">
                         </div>
                         <div class="panel-container show">
                             <div class="panel-content">
@@ -49,7 +49,7 @@
                                                     <th data-priority="1" >Código</th>
                                                     <th>Fecha</th>
                                                     <th class="desktop">Contrato</th>
-                                                    <th class="min-tablet-l">Detalle</th>
+                                                    <th class="min-tablet-l">Descripción</th>
                                                     <th class="none">Usuario</th>
                                                     <th class="none">Motivo Editar/Anular</th>
                                                     <th class="min-desktop">Estado</th>
@@ -74,8 +74,8 @@
                                                                 {% endfor %}
                                                             {% endif %}
                                                         </td>
-                                                        <td>{{ consecutivo.detalle}}</td>
-                                                        <td>{{ consecutivo.usuario.username }}</td>
+                                                        <td>{{ consecutivo.descripcion}}</td>
+                                                        <td>{{ consecutivo.usuario_crea.username }}</td>
                                                         <td>{% if consecutivo.justificacion %}{{ consecutivo.justificacion }}{% endif %}</td>
                                                         <td>
                                                             {% if consecutivo.estado %}
@@ -110,11 +110,9 @@
      <div class="modal fade" tabindex="-1" id="crear-crequerimiento" role="dialog"  aria-hidden="true"></div>
 
 {% endblock %}
-
 {% block scripts %}
     {% include 'EVA/_common/_statics/_tablas.html' %}
     {% include 'EVA/_common/_statics/_select2.html' %}
-    {% include 'EVA/_common/_statics/_datepicker.html'%}
     <script src="{% static 'Administracion/js/confirmarEliminar.js' %}"></script>
     <script src="{% static 'GestionDocumental/js/consecutivos_requerimientos.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/controlBusquedaPaginacion.js' %}"></script>

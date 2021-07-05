@@ -157,7 +157,7 @@ class ConsecutivoReunion(ConsecutivoBase):
 
 
 class ConsecutivoRequerimiento(ConsecutivoBase):
-    fecha = models.DateField(verbose_name='Fecha', null=False, blank=False)
+    fecha = models.DateTimeField(auto_now_add=True, verbose_name='Fecha', null=False, blank=False)
     descripcion = models.CharField(max_length=100, verbose_name='Descripción', null=False, blank=False)
     consecutivo = models.IntegerField(verbose_name='Consecutivo', null=False, blank=False)
     contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato', null=True, blank=True)
@@ -181,6 +181,7 @@ class ConsecutivoRequerimiento(ConsecutivoBase):
         consecutivo = ConsecutivoRequerimiento()
         consecutivo.contrato_id = datos.get('contrato_id', None)
         consecutivo.justificacion = datos.get('motivo', '')
+        consecutivo.descripcion = datos.get('descripcion', '')
         consecutivo.estado = True
 
         return consecutivo
