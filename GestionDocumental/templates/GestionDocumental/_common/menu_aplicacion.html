@@ -29,12 +29,30 @@
             </a>
         </li>
         {% endif %}
+        {% if perms.GestionDocumental.view_consecutivorequerimientos %}
             <li {% if menu_actual == 'consecutivos-requerimientos' %} class="active" {% endif %}>
             <a href="{% url 'GestionDocumental:consecutivo-requerimientos-index' 0 %}" title="Consecutivo de requerimiento interno" data-filter-tags="consecutivo requerimiento">
                 <i class="far fa-file-alt"></i>
                 <span class="nav-link-text" data-i18n="nav.gestion_documental_consecutivo_requerimientos">Consecutivo de requerimiento interno</span>
             </a>
         </li>
+        {% endif %}
+        {% if perms.GestionDocumental.view_plandetrabajo %}
+            <li {% if menu_actual == 'consecutivo-plantrabajo' %} class="active" {% endif %}>
+            <a href="{% url 'GestionDocumental:consecutivo-plantrabajo-index' 0 %}" title="Consecutivo de plan de trabajo" data-filter-tags="consecutivo plandetrabajo">
+                <i class="far fa-file-alt"></i>
+                <span class="nav-link-text" data-i18n="nav.gestion_documental_consecutivo_plantrabajo">Consecutivo de plan de trabajo</span>
+            </a>
+        </li>
+        {% endif %}
+        {% if perms.GestionDocumental.view_viaticoscomisiones %}
+            <li {% if menu_actual == 'consecutivo-viaticoscomisiones' %} class="active" {% endif %}>
+            <a href="{% url 'GestionDocumental:consecutivo-viaticoscomisiones-index' 0 %}" title="Consecutivo de viaticos y comisiones" data-filter-tags="consecutivo viaticoscomisiones">
+                <i class="far fa-file-alt"></i>
+                <span class="nav-link-text" data-i18n="nav.gestion_documental_consecutivo_viaticoscomisiones">Consecutivo de viaticos y comisiones</span>
+            </a>
+        </li>
+        {% endif %}
     </ul>
 </li>
 {% endif %}
