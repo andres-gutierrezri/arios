@@ -93,3 +93,61 @@ class ConsecutivoRequerimientoCrearView(AbstractEvaLoggedView):
             return RespuestaJson.error("Ha ocurrido un error al guardar la información")
 
         return RespuestaJson.exitosa(mensaje="Se ha creado el consecutivo de requerimiento interno{0}".format(consecutivo.codigo))
+
+
+class ConsecutivoRequerimientoEditarView(AbstractEvaLoggedView):
+    def get(self, request, id):
+        consecutivo = ConsecutivoRequerimiento.objects.get(id=id)
+        return render(request, 'GestionDocumental/ConsecutivoRequerimientos/_modal_crear_editar_consecutivo.html',
+                      datos_xa_render(request, consecutivo))
+
+    def post(self, request, id):
+        update_fields = ['fecha_modificacion', 'contrato_id', 'codigo', 'descripcion', 'justificacion']
+
+        consecutivo = ConsecutivoRequerimiento.from_dictionary(request.POST)
+        consecutivo_db = ConsecutivoRequerimiento.objects.get(id=id)
+
+        consecutivo.fecha = consecutivo_db.fecha
+        consecutivo.id = consecutivo_db.id
+        consecutivo.consecutivo = consecutivo_db.consecutivo
+        consecutivo.usuario_modifica = request.user
+
+        proceso = request.POST.get('proceso_id', '')
+        if proceso:
+            proceso = ColaboradorProceso.objects.get(proceso_id=proceso, colaborador__usuario=request.user).proceso
+        else:
+            proceso = ColaboradorProceso.objects.filter(colaborador__usuario=request.user).first().proceso
+            anio = str(datetime.datetime.now().year).upper()[2]
+
+        if not consecutivo.contrato_id:
+            contrato = proceso.sigla
+        else:
+            contrato = consecutivo.contrato.numero_contrato
+            anio = str(consecutivo.contrato.anho).upper()[2:4]
+
+        consecutivo.codigo = 'RQ-{0:03d}-{1}-{2}-{3}'.format(consecutivo_db.consecutivo,
+                                                             contrato, anio,
+                                                             str(datetime.datetime.now().year).upper()[2])
+
+        # sigla = Contrato.objects.get(id=consecutivo.contrato_id).numero_contrato
+        #consecutivo.codigo = 'RQ_{0:03d}_{1}_{2}'.format(consecutivo_db.consecutivo, sigla, app_datetime_now().year)
+
+        try:
+            consecutivo.full_clean(validate_unique=False, exclude=['usuario_crea'])
+        except ValidationError as errores:
+            #messages.error(request, 'Falló editar. Valide los datos ingresados al editar el consecutivo')
+            #return redirect(reverse('GestionDocumental:consecutivo-oficios-index', args=[0]))
+            return RespuestaJson.error(mensaje="Falló editar. Valide los datos ingresados al editar el consecutivo")
+
+        if consecutivo_db.comparar(consecutivo,excluir=['usuario_crea', 'fecha_crea', 'fecha_modificacion',
+                                                         'usuario_modifica']):
+            #messages.success(request, 'No se hicieron cambios en la consecutivo {0}'.format(consecutivo.codigo))
+            #return redirect(reverse('GestionDocumental:consecutivo-oficios-index', args=[0]))
+            return RespuestaJson.error("No se hicieron cambios en la consecutivo")
+        else:
+            consecutivo.save(update_fields=update_fields)
+            #messages.success(request, 'Se ha editado el consecutivo {0}'.format(consecutivo.codigo))
+            #return redirect(reverse('GestionDocumental:consecutivo-oficios-index', args=[0]))
+            return RespuestaJson.exitosa(mensaje="Se ha editado el consecutivo.")
+
+
