@@ -151,3 +151,47 @@ class ConsecutivoRequerimientoEditarView(AbstractEvaLoggedView):
             return RespuestaJson.exitosa(mensaje="Se ha editado el consecutivo.")
 
 
+class ConsecutivoOficiosEliminarView(AbstractEvaLoggedView):
+    def post(self, request, id):
+        consecutivo = ConsecutivoRequerimiento.objects.get(id=id)
+        body_unicode = request.body.decode('utf-8')
+        datos_registro = json.loads(body_unicode)
+        justificacion = datos_registro['justificacion']
+        if not consecutivo.estado:
+            return RespuestaJson.error(mensaje="Este consecutivo ya ha sido eliminado.")
+        try:
+            consecutivo.estado = False
+            consecutivo.justificacion = justificacion
+            consecutivo.save(update_fields=['estado', 'justificacion'])
+            return RespuestaJson.exitosa(mensaje="Se ha eliminado el consecutivo.")
+        except IntegrityError:
+            return RespuestaJson.error(mensaje="Ha ocurrido un error al realizar la acción")
+
+
+def datos_xa_render(request, consecutivo: ConsecutivoRequerimiento = None) -> dict:
+    contratos = Contrato.objects \
+                .filter(empresa_id=get_id_empresa_global(request)) \
+                .values('id', 'numero_contrato', 'cliente__nombre')
+    lista_contratos = []
+    for contrato in contratos:
+        lista_contratos.append({'campo_valor': contrato['id'], 'campo_texto': '{0} - {1}'
+                                .format(contrato['numero_contrato'], contrato['cliente__nombre'])})
+
+    procesos = ColaboradorProceso.objects.filter(colaborador__usuario=request.user)
+    lista_procesos = []
+    if procesos.count() > 1:
+        for proceso in procesos:
+            lista_procesos.append({'campo_valor': proceso.proceso.id, 'campo_texto': proceso.proceso.nombre})
+
+    datos = {'fecha': datetime.datetime.now(),
+             'contratos': lista_contratos,
+             'procesos': lista_procesos,
+             'lista_procesos': lista_procesos,
+             'menu_actual': 'consecutivos-requerimientos'}
+
+    if consecutivo:
+        print(consecutivo)
+        datos['consecutivo'] = consecutivo
+        datos['editar'] = True
+
+    return datos
