@@ -157,7 +157,7 @@ class ConsecutivoReunion(ConsecutivoBase):
 
 
 class ConsecutivoRequerimiento(ConsecutivoBase):
-    fecha = models.DateTimeField(auto_now_add=True, verbose_name='Fecha', null=False, blank=False)
+    fecha_crea = models.DateTimeField(auto_now_add=True, verbose_name='Fecha', null=False, blank=False)
     descripcion = models.CharField(max_length=100, verbose_name='Descripción', null=False, blank=False)
     consecutivo = models.IntegerField(verbose_name='Consecutivo', null=False, blank=False)
     contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato', null=True, blank=True)
@@ -179,6 +179,68 @@ class ConsecutivoRequerimiento(ConsecutivoBase):
         :return: Instacia de consecutivo de requerimientos de  con la información especificada en el diccionario.
         """
         consecutivo = ConsecutivoRequerimiento()
+        consecutivo.contrato_id = datos.get('contrato_id', None)
+        consecutivo.justificacion = datos.get('motivo', '')
+        consecutivo.descripcion = datos.get('descripcion', '')
+        consecutivo.estado = True
+
+        return consecutivo
+
+
+class ConsecutivoPlanTrabajo(ConsecutivoBase):
+    fecha_crea = models.DateTimeField(auto_now_add=True, verbose_name='Fecha', null=False, blank=False)
+    descripcion = models.CharField(max_length=100, verbose_name='Descripción', null=False, blank=False)
+    consecutivo = models.IntegerField(verbose_name='Consecutivo', null=False, blank=False)
+    contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato', null=True, blank=True)
+    fecha_modificacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Modificación', null=False,
+                                              blank=False)
+
+    def __str__(self):
+        return self.codigo
+
+    class Meta:
+        verbose_name = 'Consecutivo Plan de trabajo'
+        verbose_name_plural = 'Consecutivos Plan de trabajo'
+
+    @staticmethod
+    def from_dictionary(datos: dict) -> 'ConsecutivoPlanTrabajo':
+        """
+        Crea una instancia de ConsecutivoPlanTrabajo con los datos pasados en el diccionario.
+        :param datos: Diccionario con los datos para crear el Consecutivo de plan de trabajo.
+        :return: Instacia de consecutivo de plan de trabajo de  con la información especificada en el diccionario.
+        """
+        consecutivo = ConsecutivoPlanTrabajo()
+        consecutivo.contrato_id = datos.get('contrato_id', None)
+        consecutivo.justificacion = datos.get('motivo', '')
+        consecutivo.descripcion = datos.get('descripcion', '')
+        consecutivo.estado = True
+
+        return consecutivo
+
+
+class ConsecutivoViaticosComisiones(ConsecutivoBase):
+    fecha_crea = models.DateTimeField(auto_now_add=True, verbose_name='Fecha', null=False, blank=False)
+    descripcion = models.CharField(max_length=100, verbose_name='Descripción', null=False, blank=False)
+    consecutivo = models.IntegerField(verbose_name='Consecutivo', null=False, blank=False)
+    contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato', null=True, blank=True)
+    fecha_modificacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Modificación', null=False,
+                                              blank=False)
+
+    def __str__(self):
+        return self.codigo
+
+    class Meta:
+        verbose_name = 'Consecutivo Plan de trabajo'
+        verbose_name_plural = 'Consecutivos Plan de trabajo'
+
+    @staticmethod
+    def from_dictionary(datos: dict) -> 'ConsecutivoViaticosComisiones':
+        """
+        Crea una instancia de ConsecutivoViaticosComisiones con los datos pasados en el diccionario.
+        :param datos: Diccionario con los datos para crear el Consecutivo de viaticos y comisiones.
+        :return: Instacia de consecutivo de viaticos y comisiones de  con la información especificada en el diccionario.
+        """
+        consecutivo = ConsecutivoViaticosComisiones()
         consecutivo.contrato_id = datos.get('contrato_id', None)
         consecutivo.justificacion = datos.get('motivo', '')
         consecutivo.descripcion = datos.get('descripcion', '')
