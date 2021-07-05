@@ -19,4 +19,8 @@ permisos = [Permiso('index', None),
             Permiso('consecutivo-requerimientos-crear', ['GestionDocumental.add_consecutivorequerimientos']),
             Permiso('consecutivo-requerimientos-editar', ['GestionDocumental.change_consecutivorequerimientos']),
             Permiso('consecutivo-requerimientos-eliminar', ['GestionDocumental.delete_consecutivorequerimientos'])
+            Permiso('consecutivo-plantrabajo-index', ['GestionDocumental.view_plandetrabajo']),
+            Permiso('consecutivo-plantrabajo-crear', ['GestionDocumental.add_plandetrabajo']),
+            Permiso('consecutivo-plantrabajo-editar', ['GestionDocumental.change_plandetrabajo']),
+            Permiso('consecutivo-plantrabajo-eliminar', ['GestionDocumental.delete_plandetrabajo']),
             ]
