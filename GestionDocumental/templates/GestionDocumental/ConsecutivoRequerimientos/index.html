@@ -63,7 +63,7 @@
                                                         <td><span id="copiar_{{ consecutivo.id }}">{{ consecutivo.codigo }}</span>
                                                             <span><a class="fad fa-copy" href="javascript:void(0);"  onclick="copiarAPortapapeles('{{ consecutivo.codigo }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Copiar"></a></span>
                                                         </td>
-                                                        <td>{{ consecutivo.fecha | date:'Y-m-d H:i'}}</td>
+                                                        <td>{{ consecutivo.fecha_crea | date:'Y-m-d H:i'}}</td>
                                                         <td>{% if consecutivo.contrato %}
                                                                 {{ consecutivo.contrato}} - {{ consecutivo.contrato.cliente }}
                                                             {% else %}
