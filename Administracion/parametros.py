@@ -25,7 +25,7 @@ class ParametrosAdministracion:
         return Parametro.objects.filter(grupo=G_ADMINISTRACION, estado=True)
 
     @staticmethod
-    def get_params_flujo_caja() -> ParametrosSalaJuntas:
+    def get_params_sala_juntas() -> ParametrosSalaJuntas:
         parametros_sj = ParametrosSalaJuntas()
 
         for parametro in ParametrosAdministracion.get_all().only('nombre', 'valor') \
