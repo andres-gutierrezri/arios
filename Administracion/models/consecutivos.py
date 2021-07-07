@@ -28,7 +28,9 @@ class TipoDocumento (models.Model):
     XML_ATTACHED_DOCUMENT = 8
     CLIENTE = 9
     REUNIONES = 10
-    REQUERIMIENTO_INT = 10
+    REQUERIMIENTO_INT = 11
+    PLAN_TRABAJO = 12
+    VIATICOS_COMISIONES = 13
 
 
 class ConsecutivoDocumento (models.Model):
