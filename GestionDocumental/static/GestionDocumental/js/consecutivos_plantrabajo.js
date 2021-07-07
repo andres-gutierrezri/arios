@@ -5,7 +5,6 @@ const modalCrearEditar = $('#crear-editar-consecutivo');
 $(document).ready(function () {
     activarSelect2();
     configurarFiltroConsecutivos();
-
     iniciarDataTableN({buscar: false, paginar: false, ordenar: false});
 });
 
@@ -13,7 +12,7 @@ $(document).ready(function () {
 function abrirModalCrear(url) {
     cargarAbrirModal(modalCrearEditar, url,function () {
         configurarModalCrear();
-        const form = $("#requerimientos_form")[0];
+        const form = $("#plantrabajo_form")[0];
         agregarValidacionForm(form, function (event) {
             enviarFormularioAsync(form, url).then(exitoso => {
                 if (exitoso)

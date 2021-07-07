@@ -1,11 +1,11 @@
 {% load eva_tags %}
 {% load static %}
-<form id="requerimientos_form" method="post" class="needs-validation" novalidate>
+<form id="plantrabajo_form" method="post" class="needs-validation" novalidate>
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header p-b-0">
                 <h4 class="modal-title">
-                    {% if editar %}Editar consecutivo de requerimiento interno: {{ consecutivo.codigo }}{% else %}Crear consecutivo de requerimiento interno {% endif %}
+                    {% if editar %}Editar consecutivo de plan de trabajo: {{ consecutivo.codigo }}{% else %}Crear consecutivo de plan de trabajo {% endif %}
                 </h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true"><i class="fal fa-times"></i></span>
@@ -15,7 +15,6 @@
             <div class="modal-body">
                 <div class="form-group">
                     <div class="form-group">
-                        <input id="contrato_select_id" style="display: none">
                         <div class="col-md-12">
                             {% select_tag contratos 'contrato_id' 'Seleccione un contrato' texto_label="Contrato (Opcional)" value=consecutivo.contrato_id invalido=errores.contrato %}
                         </div>

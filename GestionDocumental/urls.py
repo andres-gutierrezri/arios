@@ -60,6 +60,8 @@ urlpatterns = [
          name='consecutivo-requerimientos-delete'),
     path('consecutivo-plantrabajo/<int:id>/index', consecutivo_plantrabajo.ConsecutivoPlanTrabajoView.as_view(),
          name='consecutivo-plantrabajo-index'),
+    path('consecutivo-plantrabajo/add', consecutivo_plantrabajo.ConsecutivoPlanTrabajoCrearView.as_view(),
+         name='consecutivo-plantrabajo-crear'),
     path('consecutivo-viaticoscomisiones/<int:id>/index', consecutivo_viaticoscomisiones.ConsecutivoViaticosComisionesView.as_view(),
          name='consecutivo-viaticoscomisiones-index')
 ]
