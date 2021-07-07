@@ -54,10 +54,10 @@ urlpatterns = [
          name='consecutivo-requerimientos-index'),
     path('consecutivo-requerimientos/add', consecutivo_requerimientos.ConsecutivoRequerimientoCrearView.as_view(),
          name='consecutivo-requerimientos-crear'),
-    path('consecutivo-requerimientos/<int:id>/editar', consecutivo_requerimientos.ConsecutivoRequerimientoEditarView.as_view(),
-         name='consecutivo-requerimientos-editar'),
-    path('consecutivo-requerimientos/<int:id>/delete', consecutivo_requerimientos.ConsecutivoOficiosEliminarView.as_view(),
-         name='consecutivo-requerimientos-delete'),
+    path('consecutivo-requerimientos/<int:id>/editar', consecutivo_requerimientos.
+         ConsecutivoRequerimientoEditarView.as_view(), name='consecutivo-requerimientos-editar'),
+    path('consecutivo-requerimientos/<int:id>/delete', consecutivo_requerimientos.
+         ConsecutivoRequerimientoEliminarView.as_view(), name='consecutivo-requerimientos-delete'),
     path('consecutivo-plantrabajo/<int:id>/index', consecutivo_plantrabajo.ConsecutivoPlanTrabajoView.as_view(),
          name='consecutivo-plantrabajo-index'),
     path('consecutivo-plantrabajo/add', consecutivo_plantrabajo.ConsecutivoPlanTrabajoCrearView.as_view(),

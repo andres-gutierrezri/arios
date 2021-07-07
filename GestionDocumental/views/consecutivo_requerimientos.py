@@ -25,7 +25,7 @@ class ConsecutivoRequerimientoView(AbstractEvaLoggedView):
         else:
             colaborador = Colaborador.objects.filter(usuario=request.user).values('usuario_id')
             consecutivos = ConsecutivoRequerimiento.objects.filter(usuario_id=request.user.id,
-                                                            empresa_id=get_id_empresa_global(request))
+                                                                   empresa_id=get_id_empresa_global(request))
 
         opciones_filtro = [{'campo_valor': 0, 'campo_texto': 'Todos'},
                            {'campo_valor': 1, 'campo_texto': 'Mis consecutivos'}]
@@ -45,29 +45,30 @@ class ConsecutivoRequerimientoView(AbstractEvaLoggedView):
         coincidencias = len(consecutivos)
         consecutivos = paginar(consecutivos.order_by('-id'), page, 10)
 
-        return render(request, 'GestionDocumental/ConsecutivoRequerimientos/index.html', {'consecutivos': consecutivos,
-                                                                                   'opciones_filtro': opciones_filtro,
-                                                                                   'colaborador': colaborador,
-                                                                                   'fecha': datetime.datetime.now(),
-                                                                                   'buscar': search,
-                                                                                   'coincidencias': coincidencias,
-                                                                                   'total': total,
-                                                                                   'menu_actual': 'consecutivos-requerimientos',
-                                                                                   'id_filtro': id})
+        return render(request, 'GestionDocumental/ConsecutivoRequerimientos/index.html', {
+            'consecutivos': consecutivos,
+            'opciones_filtro': opciones_filtro,
+            'colaborador': colaborador,
+            'fecha': datetime.datetime.now(),
+            'buscar': search,
+            'coincidencias': coincidencias,
+            'total': total,
+            'menu_actual': 'consecutivos-requerimientos',
+            'id_filtro': id})
 
 
 class ConsecutivoRequerimientoCrearView(AbstractEvaLoggedView):
     def get(self, request):
         return render(request, 'GestionDocumental/ConsecutivoRequerimientos/_modal_crear_editar_consecutivo.html',
-                          datos_xa_render(request))
+                      datos_xa_render(request))
 
     def post(self, request):
         consecutivo = ConsecutivoRequerimiento.from_dictionary(request.POST)
         consecutivo.usuario_crea = request.user
         consecutivo.empresa_id = get_id_empresa_global(request)
-        consecutivo.consecutivo = ConsecutivoDocumento.\
+        consecutivo.consecutivo = ConsecutivoDocumento. \
             get_consecutivo_por_anho(tipo_documento_id=TipoDocumento.REQUERIMIENTO_INT,
-                                      empresa_id=get_id_empresa_global(request))
+                                     empresa_id=get_id_empresa_global(request))
         proceso = request.POST.get('proceso_id', '')
         if proceso:
             proceso = ColaboradorProceso.objects.get(proceso_id=proceso, colaborador__usuario=request.user).proceso
@@ -143,7 +144,7 @@ class ConsecutivoRequerimientoEditarView(AbstractEvaLoggedView):
             return RespuestaJson.exitosa()
 
 
-class ConsecutivoOficiosEliminarView(AbstractEvaLoggedView):
+class ConsecutivoRequerimientoEliminarView(AbstractEvaLoggedView):
     def post(self, request, id):
         consecutivo = ConsecutivoRequerimiento.objects.get(id=id)
         body_unicode = request.body.decode('utf-8')
@@ -163,12 +164,12 @@ class ConsecutivoOficiosEliminarView(AbstractEvaLoggedView):
 
 def datos_xa_render(request, consecutivo: ConsecutivoRequerimiento = None) -> dict:
     contratos = Contrato.objects \
-                .filter(empresa_id=get_id_empresa_global(request)) \
-                .values('id', 'numero_contrato', 'cliente__nombre')
+        .filter(empresa_id=get_id_empresa_global(request)) \
+        .values('id', 'numero_contrato', 'cliente__nombre')
     lista_contratos = []
     for contrato in contratos:
         lista_contratos.append({'campo_valor': contrato['id'], 'campo_texto': '{0} - {1}'
-                                .format(contrato['numero_contrato'], contrato['cliente__nombre'])})
+                               .format(contrato['numero_contrato'], contrato['cliente__nombre'])})
 
     procesos = ColaboradorProceso.objects.filter(colaborador__usuario=request.user)
     lista_procesos = []
