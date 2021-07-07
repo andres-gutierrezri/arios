@@ -157,12 +157,9 @@ class ConsecutivoReunion(ConsecutivoBase):
 
 
 class ConsecutivoRequerimiento(ConsecutivoBase):
-    fecha_crea = models.DateTimeField(auto_now_add=True, verbose_name='Fecha', null=False, blank=False)
     descripcion = models.CharField(max_length=100, verbose_name='Descripción', null=False, blank=False)
     consecutivo = models.IntegerField(verbose_name='Consecutivo', null=False, blank=False)
     contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato', null=True, blank=True)
-    fecha_modificacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Modificación', null=False,
-                                              blank=False)
 
     def __str__(self):
         return self.codigo
@@ -188,12 +185,10 @@ class ConsecutivoRequerimiento(ConsecutivoBase):
 
 
 class ConsecutivoPlanTrabajo(ConsecutivoBase):
-    fecha_crea = models.DateTimeField(auto_now_add=True, verbose_name='Fecha', null=False, blank=False)
     descripcion = models.CharField(max_length=100, verbose_name='Descripción', null=False, blank=False)
     consecutivo = models.IntegerField(verbose_name='Consecutivo', null=False, blank=False)
     contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato', null=True, blank=True)
-    fecha_modificacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Modificación', null=False,
-                                              blank=False)
+
 
     def __str__(self):
         return self.codigo
@@ -219,12 +214,9 @@ class ConsecutivoPlanTrabajo(ConsecutivoBase):
 
 
 class ConsecutivoViaticosComisiones(ConsecutivoBase):
-    fecha_crea = models.DateTimeField(auto_now_add=True, verbose_name='Fecha', null=False, blank=False)
     descripcion = models.CharField(max_length=100, verbose_name='Descripción', null=False, blank=False)
     consecutivo = models.IntegerField(verbose_name='Consecutivo', null=False, blank=False)
     contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato', null=True, blank=True)
-    fecha_modificacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Modificación', null=False,
-                                              blank=False)
 
     def __str__(self):
         return self.codigo
