@@ -35,7 +35,7 @@
                             <div class="col-md-2" style="float: right" >
                                 {% select_tag opciones_filtro 'filtro_consecutivos' '' value=id_filtro  %}
                             </div>
-                            <input id="ruta_filtro_consecutivos" hidden value="/gestion-documental/consecutivo-requerimientos/">
+                            <input id="ruta_filtro_consecutivos" hidden value="/gestion-documental/consecutivo-viaticoscomisiones/">
                         </div>
                         <div class="panel-container show">
                             <div class="panel-content">
@@ -106,15 +106,15 @@
                 </div>
             </div>
     </div>
-    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='gestion-documental/consecutivo-requerimientos' %}
-     <div class="modal fade" tabindex="-1" id="crear-crequerimiento" role="dialog"  aria-hidden="true"></div>
+    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='gestion-documental/consecutivo-viaticoscomisiones' %}
+     <div class="modal fade" tabindex="-1" id="crear-editar-consecutivo" role="dialog"  aria-hidden="true"></div>
 
 {% endblock %}
 {% block scripts %}
     {% include 'EVA/_common/_statics/_tablas.html' %}
     {% include 'EVA/_common/_statics/_select2.html' %}
     <script src="{% static 'Administracion/js/confirmarEliminar.js' %}"></script>
-    <script src="{% static 'GestionDocumental/js/consecutivos_requerimientos.js' %}"></script>
+    <script src="{% static 'GestionDocumental/js/consecutivos_viaticoscomisiones.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/controlBusquedaPaginacion.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
 {% endblock %}
