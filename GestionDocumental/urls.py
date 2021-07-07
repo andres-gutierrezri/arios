@@ -70,4 +70,6 @@ urlpatterns = [
          ConsecutivoViaticosComisionesView.as_view(), name='consecutivo-viaticoscomisiones-index'),
     path('consecutivo-viaticoscomisiones/add', consecutivo_viaticoscomisiones.
          ConsecutivoViaticosComisioneCrearView.as_view(), name='consecutivo-viaticoscomisiones-crear'),
+    path('consecutivo-viaticoscomisiones/<int:id>/editar', consecutivo_viaticoscomisiones.
+         ConsecutivoViaticosComisioneEditarView.as_view(),name='consecutivo-viaticoscomisiones-editar'),
 ]
