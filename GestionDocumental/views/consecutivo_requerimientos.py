@@ -5,10 +5,7 @@ from sqlite3 import IntegrityError
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-from django.http import JsonResponse
-from django.shortcuts import render, redirect
-from django.urls import reverse
-
+from django.shortcuts import render
 from Administracion.utils import get_id_empresa_global
 from EVA.General.modeljson import RespuestaJson
 from EVA.General.utilidades import paginar, app_datetime_now
@@ -39,11 +36,12 @@ class ConsecutivoRequerimientoView(AbstractEvaLoggedView):
 
         if search:
             consecutivos = consecutivos.filter(Q(codigo__icontains=search) |
-                                               Q(fecha__icontains=search) |
+                                               Q(fecha_creacion__icontains=search) |
                                                Q(contrato__numero_contrato__icontains=search) |
                                                Q(contrato__cliente__nombre__icontains=search) |
                                                Q(descripcion__icontains=search) |
-                                               Q(justificacion__icontains=search))
+                                               Q(justificacion__icontains=search) |
+                                               Q(usuario_crea__username__icontains=search))
         coincidencias = len(consecutivos)
         consecutivos = paginar(consecutivos.order_by('-id'), page, 10)
 
@@ -56,7 +54,6 @@ class ConsecutivoRequerimientoView(AbstractEvaLoggedView):
                                                                                    'total': total,
                                                                                    'menu_actual': 'consecutivos-requerimientos',
                                                                                    'id_filtro': id})
-
 
 
 class ConsecutivoRequerimientoCrearView(AbstractEvaLoggedView):
@@ -76,7 +73,7 @@ class ConsecutivoRequerimientoCrearView(AbstractEvaLoggedView):
             proceso = ColaboradorProceso.objects.get(proceso_id=proceso, colaborador__usuario=request.user).proceso
         else:
             proceso = ColaboradorProceso.objects.filter(colaborador__usuario=request.user).first().proceso
-            anio = str(datetime.datetime.now().year).upper()[2]
+            anio = str(app_datetime_now().year)[2:4]
 
         if not consecutivo.contrato_id:
             contrato = proceso.sigla
@@ -86,13 +83,13 @@ class ConsecutivoRequerimientoCrearView(AbstractEvaLoggedView):
 
         consecutivo.codigo = 'RQ-{0:03d}-{1}-{2}-{3}'.format(consecutivo.consecutivo,
                                                              contrato, anio,
-                                                             str(datetime.datetime.now().year).upper()[2])
+                                                             str(app_datetime_now().year)[2:4])
         try:
             consecutivo.save()
         except:
             return RespuestaJson.error("Ha ocurrido un error al guardar la información")
-
-        return RespuestaJson.exitosa(mensaje="Se ha creado el consecutivo de requerimiento interno{0}".format(consecutivo.codigo))
+        messages.success(request, 'Se ha creado el consecutivo {0}'.format(consecutivo.codigo))
+        return RespuestaJson.exitosa()
 
 
 class ConsecutivoRequerimientoEditarView(AbstractEvaLoggedView):
@@ -102,22 +99,25 @@ class ConsecutivoRequerimientoEditarView(AbstractEvaLoggedView):
                       datos_xa_render(request, consecutivo))
 
     def post(self, request, id):
-        update_fields = ['fecha_modificacion', 'contrato_id', 'codigo', 'descripcion', 'justificacion']
+        update_fields = ['fecha_modificacion', 'contrato_id', 'codigo', 'descripcion',
+                         'justificacion', 'usuario_modifica']
 
         consecutivo = ConsecutivoRequerimiento.from_dictionary(request.POST)
         consecutivo_db = ConsecutivoRequerimiento.objects.get(id=id)
 
-        consecutivo.fecha = consecutivo_db.fecha
+        consecutivo.fecha_creacion = consecutivo_db.fecha_creacion
         consecutivo.id = consecutivo_db.id
         consecutivo.consecutivo = consecutivo_db.consecutivo
+        consecutivo.empresa = consecutivo_db.empresa
         consecutivo.usuario_modifica = request.user
+        consecutivo.usuario_crea = request.user
 
         proceso = request.POST.get('proceso_id', '')
         if proceso:
             proceso = ColaboradorProceso.objects.get(proceso_id=proceso, colaborador__usuario=request.user).proceso
         else:
             proceso = ColaboradorProceso.objects.filter(colaborador__usuario=request.user).first().proceso
-            anio = str(datetime.datetime.now().year).upper()[2]
+            anio = str(app_datetime_now().year)[2:4]
 
         if not consecutivo.contrato_id:
             contrato = proceso.sigla
@@ -127,28 +127,20 @@ class ConsecutivoRequerimientoEditarView(AbstractEvaLoggedView):
 
         consecutivo.codigo = 'RQ-{0:03d}-{1}-{2}-{3}'.format(consecutivo_db.consecutivo,
                                                              contrato, anio,
-                                                             str(datetime.datetime.now().year).upper()[2])
-
-        # sigla = Contrato.objects.get(id=consecutivo.contrato_id).numero_contrato
-        #consecutivo.codigo = 'RQ_{0:03d}_{1}_{2}'.format(consecutivo_db.consecutivo, sigla, app_datetime_now().year)
+                                                             str(app_datetime_now().year)[2:4])
 
         try:
             consecutivo.full_clean(validate_unique=False, exclude=['usuario_crea'])
         except ValidationError as errores:
-            #messages.error(request, 'Falló editar. Valide los datos ingresados al editar el consecutivo')
-            #return redirect(reverse('GestionDocumental:consecutivo-oficios-index', args=[0]))
             return RespuestaJson.error(mensaje="Falló editar. Valide los datos ingresados al editar el consecutivo")
 
-        if consecutivo_db.comparar(consecutivo,excluir=['usuario_crea', 'fecha_crea', 'fecha_modificacion',
-                                                         'usuario_modifica']):
-            #messages.success(request, 'No se hicieron cambios en la consecutivo {0}'.format(consecutivo.codigo))
-            #return redirect(reverse('GestionDocumental:consecutivo-oficios-index', args=[0]))
+        if consecutivo_db.comparar(consecutivo, excluir=['usuario_crea', 'fecha_crea', 'fecha_modificacion',
+                                                         'usuario_modifica', 'justificacion']):
             return RespuestaJson.error("No se hicieron cambios en la consecutivo")
         else:
             consecutivo.save(update_fields=update_fields)
-            #messages.success(request, 'Se ha editado el consecutivo {0}'.format(consecutivo.codigo))
-            #return redirect(reverse('GestionDocumental:consecutivo-oficios-index', args=[0]))
-            return RespuestaJson.exitosa(mensaje="Se ha editado el consecutivo.")
+            messages.success(request, 'Se ha editado el consecutivo {0}'.format(consecutivo.codigo))
+            return RespuestaJson.exitosa()
 
 
 class ConsecutivoOficiosEliminarView(AbstractEvaLoggedView):
@@ -158,12 +150,13 @@ class ConsecutivoOficiosEliminarView(AbstractEvaLoggedView):
         datos_registro = json.loads(body_unicode)
         justificacion = datos_registro['justificacion']
         if not consecutivo.estado:
-            return RespuestaJson.error(mensaje="Este consecutivo ya ha sido eliminado.")
+            return RespuestaJson.error(mensaje="Este consecutivo ya ha sido anulado.")
         try:
             consecutivo.estado = False
             consecutivo.justificacion = justificacion
             consecutivo.save(update_fields=['estado', 'justificacion'])
-            return RespuestaJson.exitosa(mensaje="Se ha eliminado el consecutivo.")
+            messages.success(request, 'Consecutivo {0} anulado'.format(consecutivo.codigo))
+            return RespuestaJson.exitosa()
         except IntegrityError:
             return RespuestaJson.error(mensaje="Ha ocurrido un error al realizar la acción")
 
