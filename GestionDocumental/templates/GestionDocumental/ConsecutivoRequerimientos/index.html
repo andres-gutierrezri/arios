@@ -43,7 +43,7 @@
                                     <div class="panel-body">
 
                                         {% include 'EVA/_common/_busqueda_paginacion.html' %}
-                                        <table class="table table-bordered w-100" id="dataTable">
+                                        <table class="table table-bordered w-100 table-sm" id="dataTable">
                                             <thead class="bg-primary-600">
                                                 <tr>
                                                     <th data-priority="1" >Código</th>
@@ -63,7 +63,7 @@
                                                         <td><span id="copiar_{{ consecutivo.id }}">{{ consecutivo.codigo }}</span>
                                                             <span><a class="fad fa-copy" href="javascript:void(0);"  onclick="copiarAPortapapeles('{{ consecutivo.codigo }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Copiar"></a></span>
                                                         </td>
-                                                        <td>{{ consecutivo.fecha_crea | date:'Y-m-d H:i'}}</td>
+                                                        <td>{{ consecutivo.fecha_creacion | date:'Y-m-d H:i'}}</td>
                                                         <td>{% if consecutivo.contrato %}
                                                                 {{ consecutivo.contrato}} - {{ consecutivo.contrato.cliente }}
                                                             {% else %}
@@ -107,7 +107,7 @@
             </div>
     </div>
     {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='gestion-documental/consecutivo-requerimientos' %}
-     <div class="modal fade" tabindex="-1" id="crear-crequerimiento" role="dialog"  aria-hidden="true"></div>
+     <div class="modal fade" tabindex="-1" id="crear-editar-consecutivo" role="dialog"  aria-hidden="true"></div>
 
 {% endblock %}
 {% block scripts %}
