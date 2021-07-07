@@ -23,10 +23,10 @@
                     <div id="panel-1" class="panel">
 
                         <div class="panel-hdr">
-                            {% if perms.GestionDocumental.add_consecutivorequerimientos %}
+                            {% if perms.GestionDocumental.add_consecutivoviaticoscomisiones %}
                             <div class="col-md-10">
                                 <small>
-                                    <a class="fad fa-3x fad fa-plus-circle" href="javascript:abrirModalCrear('{% url 'GestionDocumental:consecutivo-requerimientos-crear'%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar consecutivo de Oficio"></a>
+                                    <a class="fad fa-3x fad fa-plus-circle" href="javascript:abrirModalCrear('{% url 'GestionDocumental:consecutivo-viaticoscomisiones-crear'%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar consecutivo de Oficio"></a>
                                 </small>
                             </div>
                             {% else %}
@@ -63,7 +63,7 @@
                                                         <td><span id="copiar_{{ consecutivo.id }}">{{ consecutivo.codigo }}</span>
                                                             <span><a class="fad fa-copy" href="javascript:void(0);"  onclick="copiarAPortapapeles('{{ consecutivo.codigo }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Copiar"></a></span>
                                                         </td>
-                                                        <td>{{ consecutivo.fecha_crea | date:'Y-m-d H:i'}}</td>
+                                                        <td>{{ consecutivo.fecha_creacion | date:'Y-m-d H:i'}}</td>
                                                         <td>{% if consecutivo.contrato %}
                                                                 {{ consecutivo.contrato}} - {{ consecutivo.contrato.cliente }}
                                                             {% else %}
@@ -85,10 +85,10 @@
                                                             {% endif %}
                                                         </td>
                                                         <td>
-                                                            {% if perms.GestionDocumental.change_consecutivorequerimientos and consecutivo.estado %}
-                                                              <a class="fad fa-2x fa-file-edit" id="editar_{{ consecutivo.id }}" href="javascript:abrirModalCrear('{% url 'GestionDocumental:consecutivo-requerimientos-editar' consecutivo.id%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                            {% if perms.GestionDocumental.change_consecutivoviaticoscomisiones and consecutivo.estado %}
+                                                              <a class="fad fa-2x fa-file-edit" id="editar_{{ consecutivo.id }}" href="javascript:abrirModalCrear('{% url 'GestionDocumental:consecutivo-viaticoscomisiones-editar' consecutivo.id%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
                                                             {% endif %}
-                                                            {% if perms.GestionDocumental.delete_consecutivorequerimientos and consecutivo.estado %}
+                                                            {% if perms.GestionDocumental.delete_consecutivoviaticoscomisiones and consecutivo.estado %}
                                                               <a class="fad fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ consecutivo.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ consecutivo.id }}, true)" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
                                                             {% endif %}
                                                         </td>
