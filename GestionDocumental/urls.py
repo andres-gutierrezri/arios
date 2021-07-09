@@ -78,4 +78,8 @@ urlpatterns = [
          name='consecutivo-ordenestrabajo-index'),
     path('consecutivo-ordenestrabajo/add', consecutivo_ordenes.ConsecutivoOrdenesTrabajoCrearView.as_view(),
          name='consecutivo-ordenestrabajo-crear'),
+    path('consecutivo-ordenestrabajo/<int:id>/editar', consecutivo_ordenes.ConsecutivoOrdenesTrabajoEditarView.as_view(),
+         name='consecutivo-ordenestrabajo-editar'),
+    path('consecutivo-ordenestrabajo/<int:id>/delete', consecutivo_ordenes.ConsecutivoOrdenesTrabajoEliminarView.as_view(),
+         name='consecutivo-ordenestrabajo-delete')
 ]
