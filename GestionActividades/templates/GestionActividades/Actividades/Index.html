@@ -3,6 +3,7 @@
 {% load eva_tags %}
 {% block styles %}
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-solid.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/dropzone/dropzone.css' %}">
     {% include 'EVA/_common/_statics/_tablas.html' with incCSS=True %}
     {% include 'EVA/_common/_statics/_select2.html' with incCSS=True %}
     {% include 'EVA/_common/_statics/_datepicker.html' with incCSS=True %}
@@ -147,10 +148,20 @@
                                                                 </div>
                                                                 <div class="col-4 col-md-1 hidden-md-down">
                                                                     <div class="p-3 p-md-3">
-                                                                        {% if perms.GestionActividades.change_grupoactividades %}
+                                                                        {% if perms.GestionActividades.change_actividades %}
                                                                             <small>
                                                                                 <a class="fad fa-3x fa-file-edit" id="editar_{{ actividad.id }}" href="javascript:abrirModalCrearActividad('{% url 'GestionActividades:actividades-editar' actividad.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar Actividad"></a>
                                                                             </small>
+                                                                            {% if actividad.estado != 1 %}
+                                                                            <small>
+                                                                                <a class="fas fa-3x fa-clipboard-check" id="cargar_soporte_{{ actividad.id }}" href="javascript:abrirModalCargarSoporte('{% url 'GestionActividades:soportes-cargar' actividad.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Finalizar Actividad"></a>
+                                                                            </small>
+                                                                            {% endif %}
+                                                                            {% if actividad.estado != 1 and actividad.estado != 2 and actividad.soporte_requerido%}
+                                                                            <small>
+                                                                                <a class="fas fa-3x fa-eye" id="ver_soporte_{{ actividad.id }}" href="javascript:abrirModalCargarSoporte('{% url 'GestionActividades:soportes-ver' actividad.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ver Soportes"></a>
+                                                                            </small>
+                                                                            {% endif %}
                                                                         {% endif %}
                                                                     </div>
                                                                 </div>
@@ -174,6 +185,8 @@
         </div>
     </div>
     <div class="modal fade" tabindex="-1" id="crear-actividad" role="dialog"  aria-hidden="true"></div>
+    <div class="modal fade" tabindex="-1" id="cargar-soporte" role="dialog"  aria-hidden="true"></div>
+
 {% endblock %}
 
 {% block scripts %}
@@ -187,4 +200,7 @@
     <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/controlBusquedaPaginacion.js' %}"></script>
     <script src="{% static 'GestionActividades/js/actividades.js' %}"></script>
+    <script src="{% static 'GestionActividades/js/cargar_soporte.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/app.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/dropzone/dropzone.js' %}"></script>
 {% endblock scripts%}
