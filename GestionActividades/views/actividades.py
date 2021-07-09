@@ -1,11 +1,12 @@
 import json
+import os
 from _decimal import Decimal
 from datetime import datetime
 
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.db.models import Q
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.template.defaultfilters import lower
 from django.urls import reverse
@@ -18,7 +19,7 @@ from EVA.General import app_datetime_now
 from EVA.General.modeljson import RespuestaJson
 from EVA.views.index import AbstractEvaLoggedView
 from GestionActividades.Enumeraciones import PertenenciaGrupoActividades, EstadosActividades
-from GestionActividades.models.models import Actividad, GrupoActividad, ResponsableActividad
+from GestionActividades.models.models import Actividad, GrupoActividad, ResponsableActividad, Soporte
 from Proyectos.models import Contrato
 from TalentoHumano.models import Colaborador
 from TalentoHumano.models.colaboradores import ColaboradorProceso
@@ -27,7 +28,7 @@ from TalentoHumano.models.colaboradores import ColaboradorProceso
 class ActividadesIndexView(AbstractEvaLoggedView):
     def get(self, request, id=None):
         actividades = Actividad.objects.values('id', 'nombre', 'grupo_actividad_id', 'descripcion',
-                                               'estado', 'porcentaje_avance')
+                                               'estado', 'porcentaje_avance', 'soporte_requerido')
         responsable_actividad = ResponsableActividad.objects.values('responsable_id', 'actividad_id')
         colaboradores = User.objects.values('id', 'first_name', 'last_name')
         grupos = GrupoActividad.objects.values('id', 'nombre', 'grupo_actividad_id')
@@ -144,6 +145,59 @@ class ActividadesEditarView(AbstractEvaLoggedView):
                 ResponsableActividad.objects.create(responsable_id=responsable, actividad_id=id_actividad)
 
         return RespuestaJson.exitosa()
+
+
+class CargarSoporteView(AbstractEvaLoggedView):
+    def get(self, request, id_actividad):
+        actividad = Actividad.objects.get(id=id_actividad)
+
+        if actividad.estado == EstadosActividades.FINALIZADO:
+            opciones_estado = [{'valor': 3, 'texto': 'Finalizada'}]
+        else:
+            opciones_estado = [{'valor': 2, 'texto': 'En proceso'},
+                               {'valor': 3, 'texto': 'Finalizada'}]
+        return render(request, 'GestionActividades/Actividades/modal_cargar_editar_soportes.html',
+                      {'fecha': app_datetime_now(),
+                       'actividad': actividad,
+                       'opciones_estado': opciones_estado})
+
+    def post(self, request, id_actividad):
+        soporte = Soporte.from_dictionary(request.POST)
+
+
+        update_fields = ['estado']
+        actividad_db = Actividad.objects.get(id=id_actividad)
+        actividad_db.estado = EstadosActividades.FINALIZADO
+        actividad_db.save(update_fields=update_fields)
+        print(request)
+
+        # soporte = Soporte.from_dictionary(request.POST)
+        # soporte.save()
+
+        return RespuestaJson.exitosa()
+
+
+class VerSoporteView(AbstractEvaLoggedView):
+    def get(self, request, id_actividad):
+        actividad = Actividad.objects.get(id=id_actividad)
+        soporte = Soporte.objects.get(actividad_id=id_actividad)
+        if soporte.archivo:
+            extension = os.path.splitext(soporte.archivo.url)[1]
+            mime_types = {'.docx': 'application/msword', '.xlsx': 'application/vnd.ms-excel',
+                          '.pptx': 'application/vnd.ms-powerpoint',
+                          '.xlsm': 'application/vnd.ms-excel.sheet.macroenabled.12',
+                          '.dwg': 'application/octet-stream'
+                          }
+
+            mime_type = mime_types.get(extension, 'application/pdf')
+
+            response = HttpResponse(soporte.archivo, content_type=mime_type)
+            response['Content-Disposition'] = 'inline; filename="{0} {1} {3}"'\
+                .format(actividad.codigo, actividad.nombre, extension)
+        else:
+            response = redirect('GestionActividades/Actividades/index.html')
+
+        return response
 
 
 def datos_xa_render(request, actividad: Actividad = None) -> dict:
