@@ -239,3 +239,35 @@ class ConsecutivoViaticosComisiones(ConsecutivoBase):
         consecutivo.estado = True
 
         return consecutivo
+
+
+class ConsecutivoOrdenesTrabajo(ConsecutivoBase):
+    fecha_inicio = models.DateField(verbose_name='Fecha Inicial')
+    fecha_final = models.DateField(verbose_name='Fecha Final')
+    descripcion = models.CharField(max_length=100, verbose_name='Descripción', null=False, blank=False)
+    consecutivo = models.IntegerField(verbose_name='Consecutivo', null=False, blank=False)
+    contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato', null=True, blank=True)
+
+    def __str__(self):
+        return self.codigo
+
+    class Meta:
+        verbose_name = 'Consecutivo Ordenes de trabajo'
+        verbose_name_plural = 'Consecutivos Ordenes de trabajo'
+
+    @staticmethod
+    def from_dictionary(datos: dict) -> 'ConsecutivoOrdenesTrabajo':
+        """
+        Crea una instancia de ConsecutivoViaticosComisiones con los datos pasados en el diccionario.
+        :param datos: Diccionario con los datos para crear el Consecutivo de viaticos y comisiones.
+        :return: Instacia de consecutivo de viaticos y comisiones de  con la información especificada en el diccionario.
+        """
+        consecutivo = ConsecutivoOrdenesTrabajo()
+        consecutivo.contrato_id = datos.get('contrato_id', None)
+        consecutivo.justificacion = datos.get('motivo', '')
+        consecutivo.descripcion = datos.get('descripcion', '')
+        consecutivo.fecha_inicio = datos.get('fecha_inicio', '')
+        consecutivo.fecha_final = datos.get('fecha_final', '')
+        consecutivo.estado = True
+
+        return consecutivo

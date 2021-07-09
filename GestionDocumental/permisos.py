@@ -26,5 +26,6 @@ permisos = [Permiso('index', None),
             Permiso('consecutivo-viaticoscomisiones-index', ['GestionDocumental.view_consecutivoviaticoscomisiones']),
             Permiso('consecutivo-viaticoscomisiones-crear', ['GestionDocumental.add_consecutivoviaticoscomisiones']),
             Permiso('consecutivo-viaticoscomisiones-editar', ['GestionDocumental.change_consecutivoviaticoscomisiones']),
-            Permiso('consecutivo-viaticoscomisiones-eliminar', ['GestionDocumental.delete_consecutivoviaticoscomisiones'])
+            Permiso('consecutivo-viaticoscomisiones-eliminar', ['GestionDocumental.delete_consecutivoviaticoscomisiones']),
+            Permiso('consecutivo-ordenestrabajo-index', ['GestionDocumental.view_ordenestrabajo']),
             ]

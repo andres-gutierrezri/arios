@@ -16,7 +16,7 @@ Including another URLconf
 
 from django.urls import path
 from GestionDocumental.views import views, consecutivo_documento, consecutivo_contrato, consecutivo_reunion, \
-    consecutivo_requerimientos, consecutivo_plantrabajo, consecutivo_viaticoscomisiones
+    consecutivo_requerimientos, consecutivo_plantrabajo, consecutivo_viaticoscomisiones, consecutivo_ordenes
 
 app_name = 'GestionDocumental'
 
@@ -74,4 +74,6 @@ urlpatterns = [
          ConsecutivoViaticosComisioneEditarView.as_view(),name='consecutivo-viaticoscomisiones-editar'),
     path('consecutivo-viaticoscomisiones/<int:id>/delete', consecutivo_viaticoscomisiones.
          ConsecutivoViaticosComisioneEliminarView.as_view(), name='consecutivo-viaticoscomisiones-delete'),
+    path('consecutivo-ordenestrabajo/<int:id>/index', consecutivo_ordenes.ConsecutivoOrdenesTrabajoView.as_view(),
+         name='consecutivo-ordenestrabajo-index'),
 ]
