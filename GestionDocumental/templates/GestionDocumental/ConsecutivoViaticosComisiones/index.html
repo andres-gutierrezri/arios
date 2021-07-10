@@ -1,7 +1,7 @@
 {% extends 'GestionDocumental/_common/base_gestion_documental.html' %}
 {% load static %}
 {% load eva_tags %}
-<title>{% block titulo %}Consecutivo de viaticos y comisiones {% endblock %}</title>
+<title>{% block titulo %}Consecutivo de viáticos y comisiones {% endblock %}</title>
 {% block styles %}
     {% include 'EVA/_common/_statics/_tablas.html' with incCSS=True %}
     {% include 'EVA/_common/_statics/_select2.html' with incCSS=True %}
@@ -13,7 +13,7 @@
     <div class="panel-container show">
             <div class="header">
                  <h1 class="header-title">
-                    <i class='fad fa-file-alt'></i> Consecutivo de viaticos y comisiones <span class='fw-300'></span>
+                    <i class='fad fa-file-alt'></i> Consecutivo de viáticos y comisiones <span class='fw-300'></span>
                      <br>
                      <br>
                  </h1>
@@ -21,19 +21,17 @@
             <div class="row">
                 <div class="col-xl-12">
                     <div id="panel-1" class="panel">
-
                         <div class="panel-hdr">
-                            {% if perms.GestionDocumental.add_consecutivoviaticoscomisiones %}
-                            <div class="col-md-10">
-                                <small>
-                                    <a class="fad fa-3x fad fa-plus-circle" href="javascript:abrirModalCrear('{% url 'GestionDocumental:consecutivo-viaticoscomisiones-crear'%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar consecutivo de Oficio"></a>
-                                </small>
-                            </div>
-                            {% else %}
-                            <div class="col-md-10"></div>
-                            {% endif %}
-                            <div class="col-md-2" style="float: right" >
-                                {% select_tag opciones_filtro 'filtro_consecutivos' '' value=id_filtro  %}
+                            <h2 class="small">
+                                {% if perms.GestionDocumental.add_consecutivoviaticoscomisiones %}
+                                    <span class="fad fa-2x fa-plus-circle cursor-pointer" onclick="abrirModalCrear('{% url 'GestionDocumental:consecutivo-viaticoscomisiones-crear'%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar consecutivo de viáticos y comisiones">
+                                    </span>
+                                {% endif %}
+                            </h2>
+                            <div class="panel-toolbar">
+                                 <div class="d-flex position-relative ml-auto mr-2" style="min-width: 10rem;">
+                                {% select_tag opciones_filtro 'filtro_consecutivos' '' value=id_filtro %}
+                                 </div>
                             </div>
                             <input id="ruta_filtro_consecutivos" hidden value="/gestion-documental/consecutivo-viaticoscomisiones/">
                         </div>

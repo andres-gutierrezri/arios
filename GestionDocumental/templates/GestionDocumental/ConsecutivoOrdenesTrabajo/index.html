@@ -13,7 +13,7 @@
     <div class="panel-container show">
             <div class="header">
                  <h1 class="header-title">
-                    <i class='fad fa-file-alt'></i> Consecutivo de ordenes de trabajo <span class='fw-300'></span>
+                    <i class='fad fa-file-alt'></i> Consecutivo de órdenes de trabajo <span class='fw-300'></span>
                      <br>
                      <br>
                  </h1>
@@ -23,20 +23,20 @@
                     <div id="panel-1" class="panel">
 
                         <div class="panel-hdr">
-                            {% if perms.GestionDocumental.add_ordenestrabajo %}
-                            <div class="col-md-10">
-                                <small>
-                                    <a class="fad fa-3x fad fa-plus-circle" href="javascript:abrirModalCrear('{% url 'GestionDocumental:consecutivo-ordenestrabajo-crear'%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar consecutivo de Oficio"></a>
-                                </small>
+                            <h2 class="small">
+                                {% if  perms.GestionDocumental.add_ordenestrabajo %}
+                                    <span class="fad fa-2x fa-plus-circle cursor-pointer" onclick="abrirModalCrear('{% url 'GestionDocumental:consecutivo-ordenestrabajo-crear'%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar consecutivo de orden de trabajo">
+                                    </span>
+                                {% endif %}
+                            </h2>
+                            <div class="panel-toolbar">
+                                 <div class="d-flex position-relative ml-auto mr-2" style="min-width: 10rem;">
+                                {% select_tag opciones_filtro 'filtro_consecutivos' '' value=id_filtro %}
+                                 </div>
                             </div>
-                            {% else %}
-                            <div class="col-md-10"></div>
-                            {% endif %}
-                            <div class="col-md-2" style="float: right" >
-                                {% select_tag opciones_filtro 'filtro_consecutivos' '' value=id_filtro  %}
-                            </div>
-                            <input id="ruta_filtro_consecutivos" hidden value="/gestion-documental/consecutivo-requerimientos/">
+                            <input id="ruta_filtro_consecutivos" hidden value="/gestion-documental/consecutivo-ordenestrabajo/">
                         </div>
+
                         <div class="panel-container show">
                             <div class="panel-content">
                                 <div class="panel-group">
