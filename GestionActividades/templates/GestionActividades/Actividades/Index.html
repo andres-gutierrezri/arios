@@ -152,15 +152,19 @@
                                                                             <small>
                                                                                 <a class="fad fa-3x fa-file-edit" id="editar_{{ actividad.id }}" href="javascript:abrirModalCrearActividad('{% url 'GestionActividades:actividades-editar' actividad.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar Actividad"></a>
                                                                             </small>
+                                                                        {% endif %}
+                                                                        {% if perms.GestionActividades.add_archivo %}
                                                                             {% if actividad.estado != 1 %}
                                                                             <small>
                                                                                 <a class="fas fa-3x fa-clipboard-check" id="cargar_soporte_{{ actividad.id }}" href="javascript:abrirModalCargarSoporte('{% url 'GestionActividades:soportes-cargar' actividad.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Finalizar Actividad"></a>
                                                                             </small>
                                                                             {% endif %}
+                                                                        {% endif %}
+                                                                        {%  if perms.GestionActividades.view_archivo %}
                                                                             {% if actividad.estado != 1 and actividad.estado != 2 and actividad.soporte_requerido%}
-                                                                            <small>
-                                                                                <a class="fas fa-3x fa-eye" id="ver_soporte_{{ actividad.id }}" href="javascript:abrirModalCargarSoporte('{% url 'GestionActividades:soportes-ver' actividad.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ver Soportes"></a>
-                                                                            </small>
+                                                                                <small>
+                                                                                <a class="fas fa-3x fa-eye" style="text-decoration: none !important;" href="{% url 'GestionActividades:soportes-ver' actividad.id  %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ver Soportes"></a>
+                                                                                </small>
                                                                             {% endif %}
                                                                         {% endif %}
                                                                     </div>

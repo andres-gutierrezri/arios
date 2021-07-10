@@ -177,11 +177,19 @@ class CargarSoporteView(AbstractEvaLoggedView):
         return RespuestaJson.exitosa()
 
 
+class CargarArchivoSoporteView(AbstractEvaLoggedView):
+    def post(self, request, id_actividad):
+        archivos = request.FILES.getlist('file')
+        print(archivos)
+
+        return RespuestaJson.exitosa()
+
 class VerSoporteView(AbstractEvaLoggedView):
     def get(self, request, id_actividad):
         actividad = Actividad.objects.get(id=id_actividad)
-        soporte = Soporte.objects.get(actividad_id=id_actividad)
-        if soporte.archivo:
+
+        if Soporte.objects.filter(actividad_id=id_actividad).exists():
+            soporte = Soporte.objects.get(actividad_id=id_actividad)
             extension = os.path.splitext(soporte.archivo.url)[1]
             mime_types = {'.docx': 'application/msword', '.xlsx': 'application/vnd.ms-excel',
                           '.pptx': 'application/vnd.ms-powerpoint',
@@ -192,12 +200,12 @@ class VerSoporteView(AbstractEvaLoggedView):
             mime_type = mime_types.get(extension, 'application/pdf')
 
             response = HttpResponse(soporte.archivo, content_type=mime_type)
-            response['Content-Disposition'] = 'inline; filename="{0} {1} {3}"'\
+            response['Content-Disposition'] = 'inline; filename="{0} {1} {2}"' \
                 .format(actividad.codigo, actividad.nombre, extension)
-        else:
-            response = redirect('GestionActividades/Actividades/index.html')
 
-        return response
+            return response
+        else:
+            return render(request, 'GestionActividades/Actividades/index.html')
 
 
 def datos_xa_render(request, actividad: Actividad = None) -> dict:

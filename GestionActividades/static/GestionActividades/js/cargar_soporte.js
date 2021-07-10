@@ -12,7 +12,8 @@ function abrirModalCargarSoporte(url) {
         configurarModalSoporte();
         let form = $('#soporte_form')[0];
         agregarValidacionForm(form, function (event) {
-            myDropzone.processQueue();
+            //myDropzone.processQueue();
+            Dropzone.forElement("#dZUpload").processQueue();
             enviarFormularioAsync(form, url, "cargando").then(exitoso => {
                 if (exitoso) {
                     EVANotificacion.toast.exitoso(`Se ha ${url.includes("editar") ? "editado" : "cargado"} el soporte`);
@@ -40,15 +41,18 @@ function configurarModalSoporte() {
 
     inicializarSelect2('estado_select_id', modalCargarSoporte);
     inicializarDatePicker('fecha_final_id');
-
+    const token = {csrfmiddlewaretoken: $('#soporte_form')[0]['csrfmiddlewaretoken'].value};
     Dropzone.autoDiscover = false;
     Dropzone.prototype.defaultOptions.dictRemoveFile = "Eliminar";
     $("#dZUpload").dropzone({
-        url: "/media/privado/GestionActividades/Documentos/",
+        url: `/gestion-actividades/actividades/actividad/13/cargar-archivo`,
         autoProcessQueue: false,
         addRemoveLinks: true,
         acceptedFiles: 'image/*,application/pdf',
         preventDuplicates: true,
+        forceFallback:false,
+        params: token,
+        parallelUploads: false,
         init: initDZ,
     });
 

@@ -6,7 +6,7 @@
   display: none !important;
 }
 </style>
-<form id="soporte_form" method="post" class="needs-validation" novalidate>
+<form id="soporte_form" method="post" class="needs-validation" enctype="multipart/form-data" novalidate>
 {% csrf_token %}
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -46,6 +46,7 @@
                                         <div id="dZUpload" class="dropzone">
                                               <div class="dz-default dz-message"></div>
                                         </div>
+{#                                        {% input_file_tag 'archivo' 'Archivo' placeholder="Seleccione un archivo" required="" invalido=errores.logo accept=".docx, .pptx, .xlsx, .xlsm, .pdf, .dwg" mensaje_validacion='Por favor seleccione un archivo'%}#}
                                     </div>
                                 </div>
                             </div>
