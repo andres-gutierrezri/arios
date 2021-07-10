@@ -24,7 +24,7 @@ class ConsecutivoViaticosComisionesView(AbstractEvaLoggedView):
             colaborador = Colaborador.objects.values('usuario_id')
         else:
             colaborador = Colaborador.objects.filter(usuario=request.user).values('usuario_id')
-            consecutivos = ConsecutivoViaticosComisiones.objects.filter(usuario_id=request.user.id,
+            consecutivos = ConsecutivoViaticosComisiones.objects.filter(usuario_crea_id=request.user.id,
                                                                         empresa_id=get_id_empresa_global(request))
 
         opciones_filtro = [{'campo_valor': 0, 'campo_texto': 'Todos'},
