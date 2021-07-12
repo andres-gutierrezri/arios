@@ -351,7 +351,9 @@ class ReservaSalaJuntas(models.Model, ModelDjangoExtensiones):
     descripcion = models.CharField(max_length=300, verbose_name='Descripción', null=True, blank=True)
     motivo = models.TextField(max_length=100, verbose_name='Motivo', blank=False, null=False)
     estado = models.BooleanField(verbose_name='Estado', blank=False, null=False, default=True)
-    color = models.CharField(max_length=7, verbose_name='Color', null=False, blank=False , default='#20B8A9')
+    color = models.CharField(max_length=7, verbose_name='Color', null=False, blank=False, default='#20B8A9')
+    finalizacion = models.BooleanField(verbose_name='Finalización', blank=False, null=False, default=False)
+    notificacion = models.BooleanField(verbose_name='Notificación', blank=False, null=False, default=False)
 
     def __str__(self):
         return self.responsable
