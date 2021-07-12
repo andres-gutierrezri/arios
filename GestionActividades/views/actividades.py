@@ -6,7 +6,7 @@ from datetime import datetime
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.db.models import Q
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, StreamingHttpResponse, FileResponse
 from django.shortcuts import render, redirect
 from django.template.defaultfilters import lower
 from django.urls import reverse
@@ -15,7 +15,7 @@ from django.core.exceptions import ValidationError
 
 from Administracion.models import Proceso, TipoContrato
 from Administracion.utils import get_id_empresa_global
-from EVA.General import app_datetime_now
+from EVA.General import app_datetime_now, app_date_now
 from EVA.General.modeljson import RespuestaJson
 from EVA.views.index import AbstractEvaLoggedView
 from GestionActividades.Enumeraciones import PertenenciaGrupoActividades, EstadosActividades
@@ -27,8 +27,14 @@ from TalentoHumano.models.colaboradores import ColaboradorProceso
 
 class ActividadesIndexView(AbstractEvaLoggedView):
     def get(self, request, id=None):
-        actividades = Actividad.objects.values('id', 'nombre', 'grupo_actividad_id', 'descripcion',
-                                               'estado', 'porcentaje_avance', 'soporte_requerido')
+        actividades = Actividad.objects.values('id', 'estado', 'fecha_inicio')
+
+        for actividad in actividades:
+            if actividad['fecha_inicio'] <= app_date_now() and actividad['estado'] == EstadosActividades.CREADA:
+                actividad_db = Actividad.objects.get(id=actividad['id'])
+                actividad_db.estado = EstadosActividades.EN_PROCESO
+                actividad_db.save()
+
         responsable_actividad = ResponsableActividad.objects.values('responsable_id', 'actividad_id')
         colaboradores = User.objects.values('id', 'first_name', 'last_name')
         grupos = GrupoActividad.objects.values('id', 'nombre', 'grupo_actividad_id')
@@ -40,12 +46,19 @@ class ActividadesIndexView(AbstractEvaLoggedView):
         if id:
             grupos = grupos.filter(Q(id=id) | Q(nombre__iexact='Generales') | Q(grupo_actividad_id=id))
 
+        archivos_soporte = Soporte.objects.values('id', 'archivo', 'actividad_id')
+
+        actividades = Actividad.objects.values('id', 'nombre', 'grupo_actividad_id', 'descripcion',
+                                               'estado', 'porcentaje_avance', 'soporte_requerido', 'fecha_inicio')
+
         return render(request, 'GestionActividades/Actividades/index.html',
                       {'actividades': actividades,
                        'grupos': grupos,
                        'responsable_actividad': responsable_actividad,
                        'colaboradores': colaboradores,
                        'buscar': search,
+                       'archivos_soporte': archivos_soporte,
+                       'EstadosActividades': EstadosActividades,
                        'fecha': app_datetime_now()})
 
 
@@ -169,7 +182,7 @@ class CargarSoporteView(AbstractEvaLoggedView):
         actividad_db = Actividad.objects.get(id=id_actividad)
         actividad_db.estado = EstadosActividades.FINALIZADO
         actividad_db.save(update_fields=update_fields)
-        print(request)
+        # print(request)
 
         # soporte = Soporte.from_dictionary(request.POST)
         # soporte.save()
@@ -184,26 +197,24 @@ class CargarArchivoSoporteView(AbstractEvaLoggedView):
 
         return RespuestaJson.exitosa()
 
-class VerSoporteView(AbstractEvaLoggedView):
-    def get(self, request, id_actividad):
-        actividad = Actividad.objects.get(id=id_actividad)
 
-        if Soporte.objects.filter(actividad_id=id_actividad).exists():
-            soporte = Soporte.objects.get(actividad_id=id_actividad)
+class VerSoporteView(AbstractEvaLoggedView):
+    def get(self, request, id_soporte, id_actividad):
+        actividad = Actividad.objects.get(id=id_actividad)
+        if Soporte.objects.filter(id=id_soporte).exists():
+            soporte = Soporte.objects.get(id=id_soporte)
+            print(soporte)
             extension = os.path.splitext(soporte.archivo.url)[1]
             mime_types = {'.docx': 'application/msword', '.xlsx': 'application/vnd.ms-excel',
                           '.pptx': 'application/vnd.ms-powerpoint',
                           '.xlsm': 'application/vnd.ms-excel.sheet.macroenabled.12',
-                          '.dwg': 'application/octet-stream'
+                          '.dwg': 'application/octet-stream', '.pdf': 'application/pdf',
                           }
-
-            mime_type = mime_types.get(extension, 'application/pdf')
-
-            response = HttpResponse(soporte.archivo, content_type=mime_type)
+            response = HttpResponse(soporte.archivo, content_type=mime_types)
             response['Content-Disposition'] = 'inline; filename="{0} {1} {2}"' \
                 .format(actividad.codigo, actividad.nombre, extension)
-
             return response
+
         else:
             return render(request, 'GestionActividades/Actividades/index.html')
 

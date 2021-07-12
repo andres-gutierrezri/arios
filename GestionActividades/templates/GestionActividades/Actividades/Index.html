@@ -56,19 +56,22 @@
                                                 <div class="card-header p-0">
                                                     <div class="row no-gutters row-grid align-items-stretch">
                                                         <div class="col-12 col-md">
-                                                            <div class="text-uppercase text-white py-2 px-3 bg-primary-600">Actividad</div>
+                                                            <div class="text-uppercase text-white py-2 px-3 blue-color">Actividad</div>
                                                         </div>
                                                         <div class="col-sm-4 col-md-2 col-xl-1 hidden-md-down">
-                                                            <div class="text-uppercase text-white py-2 px-3 bg-primary-600">Estado</div>
+                                                            <div class="text-uppercase text-white py-2 px-3 blue-color">Estado</div>
                                                         </div>
-                                                        <div class="col-sm-6 col-md-3 hidden-md-down bg-primary-600">
+                                                        <div class="col-sm-6 col-md-3 hidden-md-down blue-color">
                                                             <div class="text-uppercase text-white py-2 px-3">Responsables</div>
                                                         </div>
-                                                        <div class="col-sm-4 col-md-2 hidden-md-down bg-primary-600">
+                                                        <div class="col-sm-4 col-md-2 hidden-md-down blue-color">
                                                             <div class="text-uppercase text-white py-2 px-3">Progreso</div>
                                                         </div>
-                                                        <div class="col-sm-4 col-md-1 hidden-md-down bg-primary-600">
+                                                        <div class="col-sm-4 col-md-1 hidden-md-down blue-color">
                                                             <div class="text-uppercase text-white py-2 px-3">Acción</div>
+                                                        </div>
+                                                        <div class="col-sm-4 col-md-1 hidden-md-down blue-color">
+                                                            <div class="text-uppercase text-white py-2 px-3">Soportes</div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -94,29 +97,29 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-4 col-md-2 col-xl-1 hidden-md-down">
-                                                                {% if actividad.estado == 1%}
+                                                                {% if actividad.estado == EstadosActividades.CREADA%}
                                                                     <div class="p-3 p-md-3">
                                                                         <span class="d-block text-muted"><i> Creada </i></span>
                                                                     </div>
                                                                 {% endif %}
-                                                                {% if actividad.estado == 2%}
+                                                                {% if actividad.estado == EstadosActividades.EN_PROCESO%}
                                                                     <div class="p-3 p-md-3">
                                                                         <span class="d-block text-muted"><i> En Proceso </i></span>
                                                                     </div>
                                                                 {% endif %}
-                                                                {% if actividad.estado == 3%}
+                                                                {% if actividad.estado == EstadosActividades.FINALIZADO%}
                                                                     <div class="p-3 p-md-3">
                                                                         <span class="d-block text-muted"><i> Finalizada </i></span>
                                                                     </div>
                                                                 {% endif %}
-                                                                {% if actividad.estado == 4%}
+                                                                {% if actividad.estado == EstadosActividades.CERRADA%}
                                                                     <div class="p-3 p-md-3">
                                                                         <span class="d-block text-muted"><i> Cerrada </i></span>
                                                                     </div>
                                                                 {% endif %}
-                                                                {% if actividad.estado == 5%}
+                                                                {% if actividad.estado == EstadosActividades.REABIERTA%}
                                                                     <div class="p-3 p-md-3">
-                                                                        <span class="d-block text-muted"><i> Abierta </i></span>
+                                                                        <span class="d-block text-muted"><i> ReAbierta </i></span>
                                                                     </div>
                                                                 {% endif %}
                                                                 </div>
@@ -129,7 +132,7 @@
                                                                                         <span class="badge badge-primary"><i>{{ colaborador.first_name}} {{colaborador.last_name}}</i></span>
                                                                                 {% endif %}
                                                                             {% endfor %}
-                                                                         {% endif %}
+                                                                        {% endif %}
                                                                     {% endfor %}
                                                                 </div>
                                                                 </div>
@@ -139,7 +142,7 @@
                                                                             <div class="flex-1 min-width-0">
                                                                                     <a href="javascript:void(0)" class="d-block text-truncate">
                                                                                         <div class="progress">
-                                                                                            <div class="progress-bar" role="progressbar" style="width:{{ actividad.porcentaje_avance }}%;" aria-valuenow="{{ actividad.porcentaje_avance }}" aria-valuemin="0" aria-valuemax="100">{{ actividad.porcentaje_avance }}%</div>
+                                                                                            <div class="progress-bar blue-color" role="progressbar" style="width:{{ actividad.porcentaje_avance }}%;" aria-valuenow="{{ actividad.porcentaje_avance }}" aria-valuemin="0" aria-valuemax="100">{{ actividad.porcentaje_avance }}%</div>
                                                                                         </div>
                                                                                     </a>
                                                                             </div>
@@ -154,20 +157,30 @@
                                                                             </small>
                                                                         {% endif %}
                                                                         {% if perms.GestionActividades.add_archivo %}
-                                                                            {% if actividad.estado != 1 %}
+                                                                            {% if actividad.estado != EstadosActividades.CREADA %}
                                                                             <small>
                                                                                 <a class="fas fa-3x fa-clipboard-check" id="cargar_soporte_{{ actividad.id }}" href="javascript:abrirModalCargarSoporte('{% url 'GestionActividades:soportes-cargar' actividad.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Finalizar Actividad"></a>
                                                                             </small>
                                                                             {% endif %}
                                                                         {% endif %}
-                                                                        {%  if perms.GestionActividades.view_archivo %}
-                                                                            {% if actividad.estado != 1 and actividad.estado != 2 and actividad.soporte_requerido%}
-                                                                                <small>
-                                                                                <a class="fas fa-3x fa-eye" style="text-decoration: none !important;" href="{% url 'GestionActividades:soportes-ver' actividad.id  %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ver Soportes"></a>
-                                                                                </small>
-                                                                            {% endif %}
-                                                                        {% endif %}
                                                                     </div>
+                                                                </div>
+                                                                <div class="col-4 col-md-1 hidden-md-down">
+                                                                    {%  if perms.GestionActividades.view_archivo %}
+                                                                        {% if actividad.estado != EstadosActividades.CREADA and actividad.estado != EstadosActividades.EN_PROCESO and actividad.soporte_requerido%}
+                                                                            {% for archivo in archivos_soporte %}
+                                                                                {% if actividad.id == archivo.actividad_id %}
+                                                                                    <small>
+                                                                                        <div class="d-block p-2 text-muted fs-sm">
+                                                                                            Archivo Soporte
+                                                                                            <a class="fas fa-1x fa-eye" style="text-decoration: none !important;" href="{% url 'GestionActividades:soportes-ver' actividad.id archivo.id  %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title=""></a>
+                                                                                        </div>
+                                                                                        <br>
+                                                                                    </small>
+                                                                                {% endif %}
+                                                                            {% endfor %}
+                                                                        {% endif %}
+                                                                    {% endif %}
                                                                 </div>
                                                             </div>
                                                         </div>
