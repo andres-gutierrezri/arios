@@ -1,6 +1,5 @@
 import json
 import random
-import datetime
 
 from django.core.exceptions import ValidationError
 from django.http import JsonResponse
@@ -14,15 +13,17 @@ from EVA.General import app_datetime_now
 from EVA.General.conversiones import datetime_to_isostring
 from EVA.General.modeljson import RespuestaJson
 from EVA.views.index import AbstractEvaLoggedView
+from Notificaciones.models.models import EventoDesencadenador
+from Notificaciones.views.views import crear_notificacion_por_evento
 from TalentoHumano.models import Colaborador
 
 # Constante para convertir minutos a segundos y viceversa
 SEGUNDOS: int = 60
 
 # Colores para la reserva
-COLORES = ['#A569BD', '#512E5F', '#D4AC0D', '#AF601A', '#148F77', '#2980B9', '#F06292', '#FF6F00', '#F9A825', '#1565C0',
-           '#00897B', '#1B5E20', '#2980B9', '#AF7AC5', '#F1948A', '#EB984E', '#F1C40F', '#58D68D', '#5B2C6F', '#7D6608',
-           '#21618C', '#196F3D', '#CB4335', '#138D75', '#F1948A', '#F0B27A', '#F7DC6F', '#82E0AA', '#76D7C4', '#7FB3D5']
+COLORES = ['#BDB4AB', '#BB9676', '#CFB606', '#B9B937', '#6BC41D', '#55A60E', '#5CB480', '#85AB8A', '#1EBE81', '#81B4A1',
+           '#28BEC0', '#039395', '#05AACB', '#4DC3DA', '#4D98DA', '#0079E3', '#2473B8', '#3033BF', '#6669FF', '#C76BFF',
+           '#CE00F7', '#D982EA', '#FF61C3', '#FF818F', '#E2EC3E', '#00E1DB', '#AEABEA', '#948EFF', '#F700FF', '#00A6FF']
 
 # Parámetro de holgura
 params_sala_juntas = ParametrosAdministracion.get_params_sala_juntas()
@@ -31,15 +32,32 @@ param_holgura = params_sala_juntas.get_holgura()
 
 class ReservaSalaJuntasView(AbstractEvaLoggedView):
     def get(self, request):
+        fecha_actual = app_datetime_now()
+
+        reuniones = ReservaSalaJuntas.objects.filter(fecha_inicio__date=fecha_actual.date()) \
+            .filter(fecha_fin__lt=fecha_actual).filter(finalizacion=False, notificacion=False) \
+            .exclude(estado=False)
+
+        for reunion in reuniones:
+            crear_notificacion_por_evento(EventoDesencadenador.CIERRE_RESERVA_SALA_JUNTAS, reunion.id,
+                                          contenido={'titulo': f'Pendiente finalización de la Reserva de la '
+                                                               f'Sala de Juntas',
+                                                     'mensaje': f'Se recuerda que al terminar la reunión en la sala de '
+                                                                f'juntas se debe finalizar la reserva con el tema: '
+                                                                f'{reunion.tema}',
+                                                     'usuario': reunion.responsable_id})
+            reunion.notificacion = True
+            reunion.save(update_fields=['notificacion'])
+
         if request.resolver_match.url_name == 'reserva-sala-juntas-json':
-            reservas = ReservaSalaJuntas.objects.all()
+            reservas = ReservaSalaJuntas.objects.filter(fecha_inicio__date__gte=fecha_actual.date())
             reservas_dict = []
 
             for reserva in reservas:
                 reservas_dict.append({'id': reserva.id, 'title': f'{reserva.tema} \n {reserva.responsable.username}',
                                       'start': datetime_to_isostring(reserva.fecha_inicio),
                                       'end': datetime_to_isostring(reserva.fecha_fin),
-                                      'color': self.get_color_reserva(reserva.fecha_inicio, reserva.fecha_fin, reserva),
+                                      'color': self.get_color_reserva(reserva),
                                       'className': 'mostrar' if reserva.estado else 'ocultar'})
 
             return JsonResponse(reservas_dict, safe=False)
@@ -48,14 +66,18 @@ class ReservaSalaJuntasView(AbstractEvaLoggedView):
                           {'menu_actual': 'reserva-sala-juntas'})
 
     @staticmethod
-    def get_color_reserva(fecha_inicio: datetime, fecha_fin: datetime, reserva: ReservaSalaJuntas) -> str:
-        actual = app_datetime_now()
-        if fecha_fin < actual:
-            return 'gray'  # color = HEX#808080
-        elif fecha_inicio > actual:
-            return reserva.color
+    def get_color_reserva(reserva: ReservaSalaJuntas) -> str:
+        fecha_actual = app_datetime_now()
+
+        if reserva.fecha_inicio <= fecha_actual <= reserva.fecha_fin:
+            return 'red'  # color = HEX#FF0000
+        elif reserva.fecha_fin < fecha_actual:
+            if reserva.finalizacion:
+                return 'gray'  # color = HEX#808080
+            else:
+                return 'orange'  # color = HEX#FF8000
         else:
-            return 'black'  # color = HEX#000000
+            return reserva.color
 
 
 class ReservaSalaJuntasCrearView(AbstractEvaLoggedView):
@@ -110,7 +132,6 @@ class ReservaSalaJuntasCrearView(AbstractEvaLoggedView):
                                            f'entre el final de la de reunión ({reserva_actual.strftime("%H:%M")}) '
                                            f'y el inicio de la siguiente ({reserva_posterior.strftime("%H:%M")}). '
                                            f'Hay una diferencia de: {reserva_holgura} {tiempo}')
-
         try:
             reserva.save()
         except:
@@ -210,7 +231,7 @@ class ReservaSalaJuntasEliminarView(AbstractEvaLoggedView):
         motivo = datos_registro['justificacion']
 
         if not reserva_db.estado:
-            return RespuestaJson.error("La reserva ha sido eliminada")
+            return RespuestaJson.error("La reserva ya ha sido eliminada")
         try:
             reserva_db.usuario_modifica = request.user
             reserva_db.estado = False
@@ -222,8 +243,28 @@ class ReservaSalaJuntasEliminarView(AbstractEvaLoggedView):
             return RespuestaJson.error("No se puede eliminar la reserva {0}".format(reserva_db.tema))
 
 
+class ReservaSalaJuntasFinalizarView(AbstractEvaLoggedView):
+    def post(self, request, id_reserva):
+        reserva_db = ReservaSalaJuntas.objects.get(id=id_reserva)
+
+        if reserva_db.finalizacion:
+            return RespuestaJson.error("La reserva ya ha sido finalizada")
+        try:
+            fecha_actual = app_datetime_now()
+            if reserva_db.fecha_fin >= fecha_actual:
+                reserva_db.fecha_fin = fecha_actual
+            reserva_db.usuario_modifica = request.user
+            reserva_db.finalizacion = True
+            reserva_db.save(update_fields=['fecha_fin','finalizacion', 'usuario_modifica', 'fecha_modificacion'])
+            return RespuestaJson.exitosa(mensaje="La reserva ha sido finalizada")
+
+        except IntegrityError:
+            return RespuestaJson.error("No se puede finalizar la reserva {0}".format(reserva_db.tema))
+
+
 def datos_xa_render(request, reserva: ReservaSalaJuntas = None) -> dict:
     colaboradores = Colaborador.objects.get_xa_select_usuarios_activos_x_empresa(request)
+    fecha_actual = app_datetime_now()
 
     datos = {'colaboradores': colaboradores,
              'menu_actual': 'reserva-sala-juntas'}
@@ -231,5 +272,7 @@ def datos_xa_render(request, reserva: ReservaSalaJuntas = None) -> dict:
     if reserva:
         datos['reserva'] = reserva
         datos['editar'] = True
+        datos['cierre'] = reserva.fecha_fin < fecha_actual and not reserva.finalizacion
+        datos['finalizar'] = reserva.fecha_inicio <= fecha_actual <= reserva.fecha_fin
 
     return datos
