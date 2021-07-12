@@ -42,13 +42,18 @@
                 {% endif %}
                 <div class="modal-footer">
                     <button data-dismiss="modal" class="btn btn-warning btn-pills " href="javascript:void(0);"  onclick="fbtnCancelar()">Cancelar</button>
-                    <button id="agregar_{{ reserva.id }}" type="submit" class="btn btn-primary btn-pills"> {% if editar %}Editar{% else %}Agregar{% endif %} </button>
-                {% if editar %}
-                    <a type="button" class="btn btn-danger btn-pills" id="eliminar_{{ reserva.id }}" href="javascript:void(0);"  onclick="fEliminarReunion({{ reserva.id }}, true)" >Eliminar</a>
-                 {% endif %}
+                    {% if not cierre %}
+                        <button id="agregar_{{ reserva.id }}" type="submit" class="btn btn-primary btn-pills"> {% if editar %}Editar{% else %}Agregar{% endif %} </button>
+                    {% endif %}
+                    {% if editar %}
+                        {% if finalizar or cierre %}
+                            <a type="button" class="btn btn-danger btn-pills" id="finalizar_{{ reserva.id }}" href="javascript:void(0);"  onclick="fFinalizarReunion({{ reserva.id }})" >Finalizar</a>
+                        {% else %}
+                            <a type="button" class="btn btn-danger btn-pills" id="eliminar_{{ reserva.id }}" href="javascript:void(0);"  onclick="fEliminarReunion({{ reserva.id }}, true)" >Eliminar</a>
+                        {% endif %}
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
 </form>
-
