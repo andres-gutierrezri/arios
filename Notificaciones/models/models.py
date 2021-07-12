@@ -56,6 +56,7 @@ class EventoDesencadenador(models.Model):
     VERSION_NUEVA_ARCHIVO_SGI = 11
     SOLICITUD_APROBACION_PROVEEDOR = 12
     RESPUESTA_SOLICITUD_PROVEEDOR = 13
+    CIERRE_RESERVA_SALA_JUNTAS = 14
     # endregion
 
 
