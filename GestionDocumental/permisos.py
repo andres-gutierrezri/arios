@@ -30,5 +30,9 @@ permisos = [Permiso('index', None),
             Permiso('consecutivo-ordenestrabajo-index', ['GestionDocumental.view_ordenestrabajo']),
             Permiso('consecutivo-ordenestrabajo-crear', ['GestionDocumental.add_ordenestrabajo']),
             Permiso('consecutivo-ordenestrabajo-editar', ['GestionDocumental.change_ordenestrabajo']),
-            Permiso('consecutivo-ordenestrabajo-eliminar', ['GestionDocumental.delete_ordenestrabajo'])
+            Permiso('consecutivo-ordenestrabajo-eliminar', ['GestionDocumental.delete_ordenestrabajo']),
+            Permiso('consecutivo-actascontratos-index', ['GestionDocumental.view_actascontratos']),
+            Permiso('consecutivo-actascontratos-crear', ['GestionDocumental.add_actascontratos']),
+            Permiso('consecutivo-actascontratos-editar', ['GestionDocumental.change_actascontratos']),
+            Permiso('consecutivo-actascontratos-eliminar', ['GestionDocumental.delete_actascontratos'])
             ]
