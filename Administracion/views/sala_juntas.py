@@ -50,8 +50,7 @@ class ReservaSalaJuntasView(AbstractEvaLoggedView):
             reunion.save(update_fields=['notificacion'])
 
         if request.resolver_match.url_name == 'reserva-sala-juntas-json':
-            reservas = ReservaSalaJuntas.objects.filter(Q(fecha_inicio__date__gte=fecha_actual.date())
-                                                        | Q(fecha_fin__date=fecha_actual.date()))
+            reservas = ReservaSalaJuntas.objects.all()
             reservas_dict = []
 
             for reserva in reservas:
