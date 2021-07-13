@@ -61,33 +61,14 @@
             </a>
         </li>
         {% endif %}
-        <li {% if menu_actual == 'consecutivos-actas-contrato' %} class="active" {% endif %}>
-            <a href="#" title="consecutivos" data-filter-tags="consecutivos">
-                <i class="fal fa-list-alt"></i>
-                <span class="nav-link-text" >Actas contratos</span>
+       {% if perms.GestionDocumental.view_actascontratos %}
+            <li {% if menu_actual == 'consecutivos-actas-contratos' %} class="active" {% endif %}>
+            <a href="{% url 'GestionDocumental:consecutivo-actascontratos-index' 0 %}" title="Consecutivo actas de contratos" data-filter-tags="consecutivo actascontratos">
+                <i class="far fa-file-alt"></i>
+                <span class="nav-link-text" data-i18n="nav.gestion_documental_consecutivo_actascontrato">Actas de contratos</span>
             </a>
-            <ul>
-                <li{% if menu_actual == 'consecutivos-actas-suspensión' %} class="active" {% endif %}>
-                     <a href="#" title="Consecutivo de actas de suspensión" data-filter-tags="consecutivo actassuspensión">
-                    <i class="far fa-file-alt"></i>
-                    <span class="nav-link-text" data-i18n="nav.gestion_documental_consecutivo_actasuspension">Suspensión</span>
-                    </a>
-                </li>
-                <li{% if menu_actual == 'consecutivos-actas-reinicio' %} class="active" {% endif %}>
-                     <a href="#" title="Consecutivo de actas de reinicio" data-filter-tags="consecutivo actasreinicio">
-                    <i class="far fa-file-alt"></i>
-                    <span class="nav-link-text" data-i18n="nav.gestion_documental_consecutivo_actasreinicio">Reinicio</span>
-                    </a>
-                </li>
-                <li{% if menu_actual == 'consecutivos-actas-apliacionsusp' %} class="active" {% endif %}>
-                     <a href="#" title="Consecutivo de actas de ampliación suspensión" data-filter-tags="consecutivo actas apliacion suspencion">
-                    <i class="far fa-file-alt"></i>
-                    <span class="nav-link-text" data-i18n="nav.gestion_documental_consecutivo_actasusamplpension">Ampliacíon de la suspensión</span>
-                    </a>
-                </li>
-            </ul>
         </li>
-
+        {% endif %}
     </ul>
 </li>
 {% endif %}
