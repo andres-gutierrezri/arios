@@ -3,6 +3,8 @@
 const modalCargarSoporte = $('#cargar-soporte');
 
 $(document).ready(function () {
+    Dropzone.autoDiscover = false;
+    Dropzone.prototype.defaultOptions.dictRemoveFile = "Eliminar";
     activarSelect2();
     configurarFiltroConsecutivos();
 });
@@ -12,25 +14,21 @@ function abrirModalCargarSoporte(url) {
         configurarModalSoporte();
         let form = $('#soporte_form')[0];
         agregarValidacionForm(form, function (event) {
-            //myDropzone.processQueue();
-            Dropzone.forElement("#dZUpload").processQueue();
-            enviarFormularioAsync(form, url, "cargando").then(exitoso => {
-                if (exitoso) {
-                    EVANotificacion.toast.exitoso(`Se ha ${url.includes("editar") ? "editado" : "cargado"} el soporte`);
-                    modalCargarSoporte.modal('hide');
-                    Swal.clickCancel();
-                    setTimeout(function () {
-                        location.reload();
-                    }, 1000);
-                } else {
-                    Swal.clickCancel();
-                }
-            });
+            const dzSoportes = Dropzone.forElement("#dZUpload");
+            dzSoportes.on("sendingmultiple", cargarDatosForm);
+            dzSoportes.on("errormultiple", (x, error) => EVANotificacion.toast.error(error));
+            dzSoportes.on("successmultiple", () => location.reload());
+            dzSoportes.processQueue();
             return true;
         });
     });
 }
 
+function cargarDatosForm(file, xhr, formData) {
+    $('#soporte_form').serializeArray().forEach(campo => {
+        formData.append(campo.name, campo.value);
+    })
+}
 function configurarModalSoporte() {
 
     const archivo = $('#archivo_mostrar');
@@ -41,19 +39,20 @@ function configurarModalSoporte() {
 
     inicializarSelect2('estado_select_id', modalCargarSoporte);
     inicializarDatePicker('fecha_final_id');
-    const token = {csrfmiddlewaretoken: $('#soporte_form')[0]['csrfmiddlewaretoken'].value};
-    Dropzone.autoDiscover = false;
-    Dropzone.prototype.defaultOptions.dictRemoveFile = "Eliminar";
+
+    const idActividad = $('#id_actividad').val();
+
     $("#dZUpload").dropzone({
-        url: `/gestion-actividades/actividades/actividad/13/cargar-archivo`,
+        url: `/gestion-actividades/actividades/actividad/${idActividad}/cargar`,
         autoProcessQueue: false,
         addRemoveLinks: true,
         acceptedFiles: 'image/*,application/pdf',
         preventDuplicates: true,
         forceFallback:false,
-        params: token,
-        parallelUploads: false,
-        init: initDZ,
+        parallelUploads: 30,
+        maxFiles: 30,
+        uploadMultiple: true,
+        timeout:1000 * 60 * 5,  // 5 minutos
     });
 
     $('input:radio[name=estado]').change(function () {
@@ -79,15 +78,3 @@ function configurarModalSoporte() {
     agregarValidacionFormularios();
 }
 
-function initDZ() {
-    let myDropzone = this;
-    console.log(myDropzone);
-    myDropzone.on("addedfile", function (file) {
-        console.log("Added file.");
-        console.log(file);
-    });
-    myDropzone.on("removedfile", function (file) {
-        console.log("removed file.");
-        console.log(file);
-    });
-}

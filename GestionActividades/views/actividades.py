@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 from _decimal import Decimal
 from datetime import datetime
@@ -6,7 +7,8 @@ from datetime import datetime
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.db.models import Q
-from django.http import JsonResponse, HttpResponse, StreamingHttpResponse, FileResponse
+from django.db.transaction import rollback, atomic
+from django.http import JsonResponse, HttpResponse, StreamingHttpResponse, FileResponse, HttpResponseServerError
 from django.shortcuts import render, redirect
 from django.template.defaultfilters import lower
 from django.urls import reverse
@@ -24,6 +26,7 @@ from Proyectos.models import Contrato
 from TalentoHumano.models import Colaborador
 from TalentoHumano.models.colaboradores import ColaboradorProceso
 
+LOGGER = logging.getLogger(__name__)
 
 class ActividadesIndexView(AbstractEvaLoggedView):
     def get(self, request, id=None):
@@ -175,27 +178,29 @@ class CargarSoporteView(AbstractEvaLoggedView):
                        'opciones_estado': opciones_estado})
 
     def post(self, request, id_actividad):
-        soporte = Soporte.from_dictionary(request.POST)
+        try:
+            with atomic():
+                soporte = Soporte.from_dictionary(request.POST)
+                soporte.actividad_id = id_actividad
+                # region Guarda los archivos
+                for llave in request.FILES:
+                    soporte.id = None
+                    soporte.archivo = request.FILES.get(llave)
+                    soporte.save()
+                # endregion
 
-
-        update_fields = ['estado']
-        actividad_db = Actividad.objects.get(id=id_actividad)
-        actividad_db.estado = EstadosActividades.FINALIZADO
-        actividad_db.save(update_fields=update_fields)
-        # print(request)
-
-        # soporte = Soporte.from_dictionary(request.POST)
-        # soporte.save()
-
-        return RespuestaJson.exitosa()
-
-
-class CargarArchivoSoporteView(AbstractEvaLoggedView):
-    def post(self, request, id_actividad):
-        archivos = request.FILES.getlist('file')
-        print(archivos)
-
-        return RespuestaJson.exitosa()
+                # region Actualiza estado actividad
+                update_fields = ['estado']
+                actividad_db = Actividad.objects.get(id=id_actividad)
+                actividad_db.estado = EstadosActividades.FINALIZADO
+                actividad_db.save(update_fields=update_fields)
+                # endregion
+                messages.success(request, 'Se ha finalizado exitosamente la actividad')
+                return RespuestaJson.exitosa()
+        except:
+            rollback()
+            # Se contesta con HttpResponseServerError para que el status code sea 500 y lo tome como error el dropzone
+            return HttpResponseServerError("Error Finalizando la actividad.")
 
 
 class VerSoporteView(AbstractEvaLoggedView):

@@ -39,7 +39,5 @@ urlpatterns = [
          name='soportes-cargar'),
     path('actividades/actividad/<int:id_actividad>/<int:id_soporte>/ver-soportes', actividades.VerSoporteView.as_view(),
          name='soportes-ver'),
-    path('actividades/actividad/<int:id_actividad>/cargar-archivo', actividades.CargarArchivoSoporteView.as_view(),
-         name='soportes-cargar-archivo'),
 
 ]
