@@ -271,3 +271,34 @@ class ConsecutivoOrdenesTrabajo(ConsecutivoBase):
         consecutivo.estado = True
 
         return consecutivo
+
+
+class ConsecutivoActasContratos(ConsecutivoBase):
+    fecha_suspension = models.DateField(verbose_name='Fecha Suspensión')
+    fecha_reinicio = models.DateField(verbose_name='Fecha Reinicio')
+    descripcion = models.CharField(max_length=100, verbose_name='Descripción', null=False, blank=False)
+    consecutivo = models.ForeignKey(ConsecutivoContrato, on_delete=models.CASCADE, verbose_name='Consecutivo', null=True, blank=True)
+    contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato', null=True, blank=True)
+    def __str__(self):
+        return self.codigo
+
+    class Meta:
+        verbose_name = 'Consecutivo acta de contrato'
+        verbose_name_plural = 'Consecutivos actas de contratos'
+
+    @staticmethod
+    def from_dictionary(datos: dict) -> 'ConsecutivoActasContratos':
+        """
+        Crea una instancia de ConsecutivoViaticosComisiones con los datos pasados en el diccionario.
+        :param datos: Diccionario con los datos para crear el Consecutivo de viaticos y comisiones.
+        :return: Instacia de consecutivo de viaticos y comisiones de  con la información especificada en el diccionario.
+        """
+        consecutivo = ConsecutivoActasContratos()
+        consecutivo.contrato_id = datos.get('contrato_id', None)
+        consecutivo.justificacion = datos.get('motivo', '')
+        consecutivo.descripcion = datos.get('descripcion', '')
+        consecutivo.fecha_suspension = datos.get('fecha_suspension', '')
+        consecutivo.fecha_reinicio = datos.get('fecha_reinicio', '')
+        consecutivo.estado = True
+
+        return consecutivo
