@@ -24,13 +24,44 @@ function abrirModalCrear(url) {
 }
 
 function configurarModalCrear() {
-    inicializarSelect2('contrato_id_select_id', modalCrearEditar);
-    inicializarSelect2('proceso_id_select_id', modalCrearEditar);
-    inicializarSelect2('tipo_acta_id_select_id');
+    inicializarSelect2('consecutivo_contrato_id_select_id', modalCrearEditar);
+    inicializarSelect2('tipo_acta_id_select_id', modalCrearEditar);
+    inicializarDatePicker('fecha_suspension_id');
+    inicializarDatePicker('fecha_reinicio_id');
+
+    if ($('#tipo_acta_id_select_id').val() === "0"){
+        $('#fecha_reinicio_id').attr("required", false);
+    }
+    else if ($('#tipo_acta_id_select_id').val() === "1"){
+        $('#fecha_reinicio_id').attr("required", false);
+    }
+
+     $('#tipo_acta_id_select_id').change(function () {
+    let idActa = this.value;
+        switch (idActa) {
+            case "0":
+                $('#fecha_reinicio_mostrar').show();
+                $('#fecha_reinicio_id').attr("required", false);
+                break;
+            case "1":
+                $('#fecha_reinicio_mostrar').hide();
+                $('#fecha_reinicio_id').attr("required", false);
+                break;
+            case "2":
+                $('#fecha_reinicio_mostrar').show();
+                $('#fecha_reinicio_id').attr("required", true);
+                break;
+            default:
+                $('#fecha_reinicio_mostrar').show();
+                $('#fecha_reinicio_id').attr("required", false);
+                break;
+        }
+    });
+
     agregarValidacionFormularios();
 }
 
-let item = [];
+
 
 function configurarFiltroConsecutivos() {
 

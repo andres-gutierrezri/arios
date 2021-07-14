@@ -46,7 +46,6 @@
                                                     <th data-priority="1" >Código</th>
                                                     <th>Fecha Suspensión</th>
                                                     <th>Fecha Reinicio</th>
-                                                    <th class="desktop">Contrato</th>
                                                     <th class="min-tablet-l">Descripción</th>
                                                     <th class="none">Usuario</th>
                                                     <th class="none">Motivo Editar/Anular</th>
@@ -68,7 +67,6 @@
                                                                 Indefinido
                                                             {% endif %}
                                                         </td>
-                                                        <td>{{consecutivo.contrato}}</td>
                                                         <td>{{ consecutivo.descripcion}}</td>
                                                         <td>{{ consecutivo.usuario_crea.username }}</td>
                                                         <td>{% if consecutivo.justificacion %}{{ consecutivo.justificacion }}{% endif %}</td>

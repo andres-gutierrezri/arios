@@ -14,8 +14,6 @@ from GestionDocumental.models.models import ConsecutivoActasContratos, Consecuti
 from TalentoHumano.models import Colaborador
 from TalentoHumano.models.colaboradores import ColaboradorProceso
 from Administracion.models import ConsecutivoDocumento, TipoDocumento
-from Proyectos.models import Contrato
-from enum import Enum
 
 
 
@@ -63,6 +61,33 @@ class ConsecutivoActasContratosCrearView(AbstractEvaLoggedView):
     def get(self, request):
         return render(request, 'GestionDocumental/ConsecutivoActasContratos/_modal_crear_editar_consecutivo.html',
                       datos_xa_render(request))
+
+    def post(self, request):
+        consecutivo = ConsecutivoActasContratos.from_dictionary(request.POST)
+        consecutivo.usuario_crea = request.user
+        consecutivo.empresa_id = get_id_empresa_global(request)
+        consecutivo.consecutivo = ConsecutivoDocumento. \
+            get_consecutivo_por_anho(tipo_documento_id=TipoDocumento.ACTAS_CONTRATOS,
+                                     empresa_id=get_id_empresa_global(request))
+
+        consecutivo.contrato = ConsecutivoContrato.objects.filter().values('id')
+        if consecutivo.tipo_acta == "0":
+            codigo_tipo_acta = "AS"
+        elif consecutivo.tipo_acta == "1":
+            codigo_tipo_acta = "AR"
+        elif consecutivo.tipo_acta == "2":
+            codigo_tipo_acta = "AAS"
+
+        consecutivo.codigo = '{0}-{1:03d}-{2}'.format(codigo_tipo_acta, consecutivo.consecutivo,
+                                                          app_datetime_now().year)
+
+        try:
+            consecutivo.save()
+        except:
+            return RespuestaJson.error("Ha ocurrido un error al guardar la información")
+        messages.success(request, 'Se ha creado el consecutivo {0}'.format(consecutivo.codigo))
+        return RespuestaJson.exitosa()
+
 
 def datos_xa_render(request, consecutivo: ConsecutivoActasContratos = None) -> dict:
 

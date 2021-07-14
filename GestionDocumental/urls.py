@@ -82,10 +82,9 @@ urlpatterns = [
     path('consecutivo-ordenestrabajo/<int:id>/editar', consecutivo_ordenes.ConsecutivoOrdenesTrabajoEditarView.as_view(),
          name='consecutivo-ordenestrabajo-editar'),
     path('consecutivo-ordenestrabajo/<int:id>/delete', consecutivo_ordenes.ConsecutivoOrdenesTrabajoEliminarView.as_view(),
-         name='consecutivo-ordenestrabajo-delete')
          name='consecutivo-ordenestrabajo-delete'),
-    path('consecutivo-actascontratos/<int:id>/index', consecutivo_actas_contratos.ConsecutivoActasContratosView.as_view(),
-         name='consecutivo-actascontratos-index'),
     path('consecutivo-actascontratos/<int:id>/index',
          consecutivo_actas_contratos.ConsecutivoActasContratosView.as_view(), name='consecutivo-actascontratos-index'),
+    path('consecutivo-actascontratos/add', consecutivo_actas_contratos.ConsecutivoActasContratosCrearView.as_view(),
+         name='consecutivo-actascontratos-crear'),
 ]
