@@ -89,4 +89,7 @@ urlpatterns = [
          name='consecutivo-actascontratos-crear'),
     path('consecutivo-actascontratos/<int:id>/editar', consecutivo_actas_contratos.
          ConsecutivoActasContratosEditarView.as_view(), name='consecutivo-actascontratos-editar'),
+    path('consecutivo-actascontratos/<int:id>/delete', consecutivo_actas_contratos.
+         ConsecutivoActasContratosEliminarView.as_view(), name='consecutivo-actascontratos-delete'),
+
 ]

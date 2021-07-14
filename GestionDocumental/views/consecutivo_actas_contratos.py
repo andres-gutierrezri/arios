@@ -132,6 +132,28 @@ class ConsecutivoActasContratosEditarView(AbstractEvaLoggedView):
             messages.success(request, 'Se ha editado el consecutivo {0}'.format(consecutivo.codigo))
             return RespuestaJson.exitosa()
 
+
+class ConsecutivoActasContratosEliminarView(AbstractEvaLoggedView):
+    def post(self, request, id):
+        consecutivo = ConsecutivoActasContratos.objects.get(id=id)
+        body_unicode = request.body.decode('utf-8')
+        datos_registro = json.loads(body_unicode)
+        justificacion = datos_registro['justificacion']
+
+        if not consecutivo.estado:
+            return RespuestaJson.error(mensaje="Este consecutivo ya ha sido anulado.")
+        try:
+            consecutivo.estado = False
+            consecutivo.justificacion = justificacion
+            consecutivo.usuario_modifica = request.user
+            consecutivo.fecha_modificacion = app_datetime_now();
+            consecutivo.save(update_fields=['estado', 'justificacion', 'fecha_modificacion', 'usuario_modifica'])
+            messages.success(request, 'Consecutivo {0} anulado'.format(consecutivo.codigo))
+            return RespuestaJson.exitosa()
+        except IntegrityError:
+            return RespuestaJson.error(mensaje="Ha ocurrido un error al realizar la acción")
+
+
 def datos_xa_render(request, consecutivo: ConsecutivoActasContratos = None) -> dict:
 
     conseccontrato = ConsecutivoContrato.objects.filter(estado=True).values('id', 'codigo')
@@ -156,3 +178,5 @@ def datos_xa_render(request, consecutivo: ConsecutivoActasContratos = None) -> d
         datos['editar'] = True
 
     return datos
+
+
