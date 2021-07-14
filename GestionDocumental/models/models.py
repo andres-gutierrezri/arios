@@ -274,11 +274,14 @@ class ConsecutivoOrdenesTrabajo(ConsecutivoBase):
 
 
 class ConsecutivoActasContratos(ConsecutivoBase):
-    fecha_suspension = models.DateField(verbose_name='Fecha Suspensión')
-    fecha_reinicio = models.DateField(verbose_name='Fecha Reinicio')
+    fecha_suspension = models.DateField(verbose_name='Fecha Suspensión', null=False, blank=False)
+    fecha_reinicio = models.DateField(verbose_name='Fecha Reinicio', null=True, blank=True)
     descripcion = models.CharField(max_length=100, verbose_name='Descripción', null=False, blank=False)
-    consecutivo = models.ForeignKey(ConsecutivoContrato, on_delete=models.CASCADE, verbose_name='Consecutivo', null=True, blank=True)
+    consecutivo_contrato = models.ForeignKey(ConsecutivoContrato, on_delete=models.CASCADE, verbose_name='Consecutivo', null=True, blank=True)
     contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato', null=True, blank=True)
+    tipo_acta = models.IntegerField(verbose_name='tipo_acta', null=False, blank=False)
+    consecutivo = models.IntegerField(verbose_name='Consecutivo', null=False, blank=False)
+
     def __str__(self):
         return self.codigo
 

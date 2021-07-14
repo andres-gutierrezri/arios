@@ -22,23 +22,16 @@
                 <div class="col-xl-12">
                     <div id="panel-1" class="panel">
                         <div class="panel-hdr">
-                            <div class="col-md-4">
-                                {% select_tag opciones_actas 'tipo_acta_id' 'Seleccione tipo de acta' texto_label="" value=consecutivo.contrato_id invalido=errores.contrato %}
-                            </div>
-                            <div class="col-md-4">
-                                <h2 class="small">
-                                    {% if perms.GestionDocumental.add_actascontratos %}
-                                        <span class="fad fa-2x fa-plus-circle cursor-pointer" onclick="abrirModalCrear('{% url 'GestionDocumental:consecutivo-actascontratos-crear'%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar consecutivos de actas de contratos">
-                                        </span>
-                                    {% endif %}
-                                </h2>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="panel-toolbar">
-                                     <div class="d-flex position-relative ml-auto mr-2" style="min-width: 10rem;">
+                            <h2 class="small">
+                                {% if perms.GestionDocumental.add_actascontratos %}
+                                    <span class="fad fa-2x fa-plus-circle cursor-pointer" onclick="abrirModalCrear('{% url 'GestionDocumental:consecutivo-actascontratos-crear'%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar consecutivos de actas de contratos">
+                                    </span>
+                                {% endif %}
+                            </h2>
+                            <div class="panel-toolbar">
+                                 <div class="d-flex position-relative ml-auto mr-2" style="min-width: 10rem;">
                                     {% select_tag opciones_filtro 'filtro_consecutivos' '' value=id_filtro %}
-                                     </div>
-                                </div>
+                                 </div>
                                 <input id="ruta_filtro_consecutivos" hidden value="/gestion-documental/consecutivo-actascontratos/">
                             </div>
                         </div>
@@ -46,13 +39,13 @@
                             <div class="panel-content">
                                 <div class="panel-group">
                                     <div class="panel-body">
-
                                         {% include 'EVA/_common/_busqueda_paginacion.html' %}
                                         <table class="table table-bordered w-100 table-sm" id="dataTable">
                                             <thead class="bg-primary-600">
                                                 <tr>
                                                     <th data-priority="1" >Código</th>
-                                                    <th>Fecha</th>
+                                                    <th>Fecha Suspensión</th>
+                                                    <th>Fecha Reinicio</th>
                                                     <th class="desktop">Contrato</th>
                                                     <th class="min-tablet-l">Descripción</th>
                                                     <th class="none">Usuario</th>
@@ -63,22 +56,19 @@
                                             </thead>
                                             <tbody>
                                                 {% for consecutivo in consecutivos %}
-                                                    <tr
-                                                            {% if consecutivo == consecutivos.last and id_filtro == 1 and consecutivo.usuario == request.user %}style="background: #fffaee;"{% endif %}>
+                                                    <tr {% if consecutivo == consecutivos.last and id_filtro == 1 and consecutivo.usuario == request.user %}style="background: #fffaee;"{% endif %}>
                                                         <td><span id="copiar_{{ consecutivo.id }}">{{ consecutivo.codigo }}</span>
                                                             <span><a class="fad fa-copy" href="javascript:void(0);"  onclick="copiarAPortapapeles('{{ consecutivo.codigo }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Copiar"></a></span>
                                                         </td>
-                                                        <td>{{ consecutivo.fecha_creacion | date:'Y-m-d H:i'}}</td>
-                                                        <td>{% if consecutivo.contrato %}
-                                                                {{ consecutivo.contrato}} - {{ consecutivo.contrato.cliente }}
+                                                        <td>{{ consecutivo.fecha_suspension | date:'Y-m-d'}}</td>
+                                                        <td>
+                                                            {% if consecutivo.fecha_reinicio %}
+                                                                {{ consecutivo.fecha_reinicio | date:'Y-m-d'}}
                                                             {% else %}
-                                                                {% for col in colaborador %}
-                                                                    {% if col.usuario_id == consecutivo.usuario.id %}
-                                                                        {{ col.proceso__sigla }}
-                                                                    {% endif %}
-                                                                {% endfor %}
+                                                                Indefinido
                                                             {% endif %}
                                                         </td>
+                                                        <td>{{consecutivo.contrato}}</td>
                                                         <td>{{ consecutivo.descripcion}}</td>
                                                         <td>{{ consecutivo.usuario_crea.username }}</td>
                                                         <td>{% if consecutivo.justificacion %}{{ consecutivo.justificacion }}{% endif %}</td>
@@ -91,7 +81,7 @@
                                                         </td>
                                                         <td>
                                                             {% if perms.GestionDocumental.change_actascontratos and consecutivo.estado %}
-                                                              <a class="fad fa-2x fa-file-edit" id="editar_{{ consecutivo.id }}" href="javascript:abrirModalCrear('{% url 'GestionDocumental:consecutivo-viaticoscomisiones-editar' consecutivo.id%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                              <a class="fad fa-2x fa-file-edit" id="editar_{{ consecutivo.id }}" href="javascript:abrirModalCrear('{% url 'GestionDocumental:consecutivo-actascontratos-editar' consecutivo.id%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
                                                             {% endif %}
                                                             {% if perms.GestionDocumental.delete_actascontratos and consecutivo.estado %}
                                                               <a class="fad fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ consecutivo.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ consecutivo.id }}, true)" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
@@ -111,13 +101,14 @@
                 </div>
             </div>
     </div>
-    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='gestion-documental/consecutivo-viaticoscomisiones' %}
+    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='gestion-documental/consecutivo-actascontratos' %}
      <div class="modal fade" tabindex="-1" id="crear-editar-consecutivo" role="dialog"  aria-hidden="true"></div>
 
 {% endblock %}
 {% block scripts %}
     {% include 'EVA/_common/_statics/_tablas.html' %}
     {% include 'EVA/_common/_statics/_select2.html' %}
+    {% include 'EVA/_common/_statics/_datepicker.html'%}
     <script src="{% static 'Administracion/js/confirmarEliminar.js' %}"></script>
     <script src="{% static 'GestionDocumental/js/consecutivos_actas_contratos.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/controlBusquedaPaginacion.js' %}"></script>
