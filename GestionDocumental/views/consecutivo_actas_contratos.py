@@ -89,6 +89,49 @@ class ConsecutivoActasContratosCrearView(AbstractEvaLoggedView):
         return RespuestaJson.exitosa()
 
 
+class ConsecutivoActasContratosEditarView(AbstractEvaLoggedView):
+    def get(self, request, id):
+        consecutivo = ConsecutivoActasContratos.objects.get(id=id)
+        return render(request, 'GestionDocumental/ConsecutivoActasContratos/_modal_crear_editar_consecutivo.html',
+                      datos_xa_render(request, consecutivo))
+
+    def post(self, request, id):
+        update_fields = ['tipo_acta', 'consecutivo_contrato_id', 'usuario_modifica','fecha_suspension',
+                         'fecha_reinicio', 'justificacion', 'fecha_modificacion','descripcion', 'codigo']
+
+        consecutivo = ConsecutivoActasContratos.from_dictionary(request.POST)
+        consecutivo_db = ConsecutivoActasContratos.objects.get(id=id)
+
+        consecutivo.id = consecutivo_db.id
+        consecutivo.codigo = consecutivo_db.codigo
+        consecutivo.consecutivo = consecutivo_db.consecutivo
+        consecutivo.usuario_modifica = request.user
+        consecutivo.empresa_id = get_id_empresa_global(request)
+        consecutivo.fecha_modificacion = app_datetime_now()
+
+        if consecutivo.tipo_acta == "0":
+            codigo_tipo_acta = "AS"
+        elif consecutivo.tipo_acta == "1":
+            codigo_tipo_acta = "AR"
+        elif consecutivo.tipo_acta == "2":
+            codigo_tipo_acta = "AAS"
+
+        consecutivo.codigo = '{0}-{1:03d}-{2}'.format(codigo_tipo_acta, consecutivo_db.consecutivo,
+                                                      app_datetime_now().year)
+
+        try:
+            consecutivo.full_clean(validate_unique=False, exclude=['usuario_crea'])
+        except ValidationError as errores:
+            return RespuestaJson.error(mensaje="Falló editar. Valide los datos ingresados al editar el consecutivo")
+
+        if consecutivo_db.comparar(consecutivo, excluir=['usuario_crea', 'fecha_creacion', 'fecha_modificacion',
+                                                         'usuario_modifica', 'justificacion']):
+            return RespuestaJson.error("No se hicieron cambios en la consecutivo")
+        else:
+            consecutivo.save(update_fields=update_fields)
+            messages.success(request, 'Se ha editado el consecutivo {0}'.format(consecutivo.codigo))
+            return RespuestaJson.exitosa()
+
 def datos_xa_render(request, consecutivo: ConsecutivoActasContratos = None) -> dict:
 
     conseccontrato = ConsecutivoContrato.objects.filter(estado=True).values('id', 'codigo')
