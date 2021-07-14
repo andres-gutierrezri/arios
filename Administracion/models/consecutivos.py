@@ -32,6 +32,7 @@ class TipoDocumento (models.Model):
     PLAN_TRABAJO = 13
     VIATICOS_COMISIONES = 14
     ORDENES_TRABAJO = 15
+    ACTAS_CONTRATOS = 16
 
 
 class ConsecutivoDocumento (models.Model):
