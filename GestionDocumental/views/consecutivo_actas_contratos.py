@@ -35,11 +35,11 @@ class ConsecutivoActasContratosView(AbstractEvaLoggedView):
         if search:
             consecutivos = consecutivos.filter(Q(codigo__icontains=search) |
                                                Q(fecha_creacion__icontains=search) |
-                                               Q(contrato__numero_contrato__icontains=search) |
-                                               Q(contrato__cliente__nombre__icontains=search) |
                                                Q(descripcion__icontains=search) |
                                                Q(justificacion__icontains=search) |
-                                               Q(usuario_crea__username__icontains=search))
+                                               Q(usuario_crea__username__icontains=search) |
+                                               Q(fecha_reinicio__icontains=search)  |
+                                               Q(fecha_suspension__icontains=search))
         coincidencias = len(consecutivos)
         consecutivos = paginar(consecutivos.order_by('-id'), page, 10)
 
