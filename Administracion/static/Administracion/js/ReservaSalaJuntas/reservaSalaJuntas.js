@@ -13,6 +13,8 @@ $(document).ready(function () {
         timeZone: 'local', // Configurar zona horaria
         firstDay: 0, // Cambio del primer día de inicio de semana del calendario, (Domingo = 0, Lunes = 1,…)
         locale: 'es', // Cambio del lenguaje del calendario a español
+        allDayText: 'Horas', // The text titling the "all-day" slot at the top of the calendar
+        defaultView: 'dayGridMonth', // The initial view when the calendar loads 'dayGridWeek', 'timeGridDay', 'listWeek'
         editable: true,
         eventLimit: true, // allow "more" link when too many events
         selectable: true,
