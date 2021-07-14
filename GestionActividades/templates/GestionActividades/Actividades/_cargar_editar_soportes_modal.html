@@ -1,18 +1,12 @@
 {% load eva_tags %}
 {% load static %}
-<style>
-    .dz-progress {
-  /* progress bar covers file name */
-  display: none !important;
-}
-</style>
 <form id="soporte_form" method="post" class="needs-validation" enctype="multipart/form-data" novalidate>
 {% csrf_token %}
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header p-b-0">
                 <h4 class="modal-title">
-                    {% if editar %} Editar Actividad: {{ actividad.nombre }}{% else %} Finalizar Actividad: {{ actividad.nombre }}{% endif %}
+                    Finalizar Actividad: {{ actividad.nombre }}
                 </h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true"><i class="fal fa-times"></i></span>
@@ -22,25 +16,13 @@
                 <input hidden id="id_actividad" value="{{ actividad.id }}">
                 <div class="form-group">
                     <div class="form-group">
-                        <p class="col-md-12">Estado:</p>
-                        <div class="col-md-12">
-                            <div class="contenedor-con-borde">
-                                <div class="form-row">
-                                    <div class="col-md-12">
-                                        {% input_select_radio_tag 'estado' '' opciones=opciones_estado value=actividad.estado required="" mensaje_validacion='Por favor seleccione un tipo de asociado' %}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div id="fecha_final_mostrar"  style="display: none" class="col-md-12">
-                            {% input_date_tag 'fecha_final' 'Fecha de Finalización' placeholder="Seleccione la fecha de finalización" value='' required="" autocomplete="off" mensaje_validacion='Por favor seleccione una fecha final.' %}
+                        <div id="fecha_final_mostrar"  class="col-md-12">
+                            {% input_date_tag 'fecha_final' 'Fecha de Finalización' placeholder="Seleccione la fecha de finalización" value=actividad_fecha_finalizacion required="" autocomplete="off" mensaje_validacion='Por favor seleccione una fecha final.' %}
                         </div>
                     </div>
                     {% if actividad.soporte_requerido%}
                     <div class="form-group">
-                        <div id="archivo_mostrar" {% if actividad.estado != 3 %} style="display: none" {% endif %} class="col-md-12">
+                        <div id="archivo_mostrar"  class="col-md-12">
                             <div id="panel-1" class="panel">
                                 <div class="panel-container show">
                                     <div class="panel-content">
@@ -55,14 +37,14 @@
                     </div>
                     {% endif %}
                     <div class="form-group">
-                        <div id="description_mostrar" {% if actividad.estado != 3 %} style="display: none" {% endif %} class="col-md-12">
-                            {% input_textarea_tag 'descripcion' 'Descripción' placeholder="Ingrese una descripción" required="" maxlength="300" value='' mensaje_validacion='Por favor digite una descripción.' invalido=errores.descripcion %}
+                        <div id="description_mostrar"   class="col-md-12">
+                            {% input_textarea_tag 'descripcion' 'Descripción' placeholder="Ingrese una descripción" required="" maxlength="300" value=soporte_descripcion mensaje_validacion='Por favor digite una descripción.' invalido=errores.descripcion %}
                         </div>
                     </div>
-                    {% if editar %}
+                    {% if actividad.estado == 3 %}
                         <div class="form-group">
                             <div id="motivo" class="col-md-12">
-                                {% input_textarea_tag 'motivo' 'Motivo' placeholder="Digite Motivo" value=actividad.motivo|default_if_none:"" required="" mensaje_validacion='Por favor digite el motivo.' %}
+                                {% input_textarea_tag 'motivo' 'Motivo' placeholder="Digite Motivo" value="" required="" mensaje_validacion='Por favor digite el motivo.' %}
                             </div>
                         </div>
                     {% endif %}
@@ -70,7 +52,7 @@
             </div>
             <div class="modal-footer">
                 <button data-dismiss="modal" class="btn btn-danger btn-pills">Cancelar</button>
-                <button id="agregar" type="submit" class="btn btn-primary btn-pills"> {% if editar %}Editar{% else %}Cargar{% endif %} </button>
+                <button id="agregar" type="submit" class="btn btn-primary btn-pills"> Finalizar </button>
             </div>
         </div>
     </div>

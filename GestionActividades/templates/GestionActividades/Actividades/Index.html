@@ -4,6 +4,7 @@
 {% block styles %}
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-solid.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/dropzone/dropzone.css' %}">
+    <link rel="stylesheet" href="{% static 'GestionActividades/css/cargar_soportes.css' %}">
     {% include 'EVA/_common/_statics/_tablas.html' with incCSS=True %}
     {% include 'EVA/_common/_statics/_select2.html' with incCSS=True %}
     {% include 'EVA/_common/_statics/_datepicker.html' with incCSS=True %}
@@ -56,21 +57,21 @@
                                                 <div class="card-header p-0">
                                                     <div class="row no-gutters row-grid align-items-stretch">
                                                         <div class="col-12 col-md">
-                                                            <div class="text-uppercase text-white py-2 px-3 blue-color">Actividad</div>
+                                                            <div class="text-uppercase text-white py-2 px-3 bg-primary-600">Actividad</div>
                                                         </div>
                                                         <div class="col-sm-4 col-md-2 col-xl-1 hidden-md-down">
-                                                            <div class="text-uppercase text-white py-2 px-3 blue-color">Estado</div>
+                                                            <div class="text-uppercase text-white py-2 px-3 bg-primary-600">Estado</div>
                                                         </div>
-                                                        <div class="col-sm-6 col-md-3 hidden-md-down blue-color">
+                                                        <div class="col-sm-6 col-md-3 hidden-md-down bg-primary-600">
                                                             <div class="text-uppercase text-white py-2 px-3">Responsables</div>
                                                         </div>
-                                                        <div class="col-sm-4 col-md-2 hidden-md-down blue-color">
+                                                        <div class="col-sm-4 col-md-2 hidden-md-down bg-primary-600">
                                                             <div class="text-uppercase text-white py-2 px-3">Progreso</div>
                                                         </div>
-                                                        <div class="col-sm-4 col-md-1 hidden-md-down blue-color">
+                                                        <div class="col-sm-4 col-md-1 hidden-md-down bg-primary-600">
                                                             <div class="text-uppercase text-white py-2 px-3">Acción</div>
                                                         </div>
-                                                        <div class="col-sm-4 col-md-1 hidden-md-down blue-color">
+                                                        <div class="col-sm-4 col-md-1 hidden-md-down bg-primary-600">
                                                             <div class="text-uppercase text-white py-2 px-3">Soportes</div>
                                                         </div>
                                                     </div>
@@ -86,7 +87,7 @@
                                                                     <div class="p-3">
                                                                         <div class="d-flex">
                                                                             <div class="d-inline-flex flex-column">
-                                                                                <a href="javascript:void(0)" class="fs-lg fw-500 d-block">
+                                                                                <a href="javascript:void(0)" class="fs-lg fw-500 d-block text-danger">
                                                                                     {{ actividad.nombre }}
                                                                                 </a>
                                                                                 <div class="d-block text-muted fs-sm">
@@ -129,7 +130,7 @@
                                                                         {% if actividad.id == responsable.actividad_id %}
                                                                             {% for colaborador in colaboradores %}
                                                                                 {% if responsable.responsable_id == colaborador.id %}
-                                                                                        <span class="badge badge-primary"><i>{{ colaborador.first_name}} {{colaborador.last_name}}</i></span>
+                                                                                        <span class="badge text-white bg-gray-600"><i>{{ colaborador.first_name}} {{colaborador.last_name}}</i></span>
                                                                                 {% endif %}
                                                                             {% endfor %}
                                                                         {% endif %}
@@ -142,7 +143,7 @@
                                                                             <div class="flex-1 min-width-0">
                                                                                     <a href="javascript:void(0)" class="d-block text-truncate">
                                                                                         <div class="progress">
-                                                                                            <div class="progress-bar blue-color" role="progressbar" style="width:{{ actividad.porcentaje_avance }}%;" aria-valuenow="{{ actividad.porcentaje_avance }}" aria-valuemin="0" aria-valuemax="100">{{ actividad.porcentaje_avance }}%</div>
+                                                                                            <div class="progress-bar bg-info-400" role="progressbar" style="width:{{ actividad.porcentaje_avance }}%;" aria-valuenow="{{ actividad.porcentaje_avance }}" aria-valuemin="0" aria-valuemax="100">{{ actividad.porcentaje_avance }}%</div>
                                                                                         </div>
                                                                                     </a>
                                                                             </div>
@@ -157,9 +158,9 @@
                                                                             </small>
                                                                         {% endif %}
                                                                         {% if perms.GestionActividades.add_archivo %}
-                                                                            {% if actividad.estado != EstadosActividades.CREADA %}
+                                                                            {% if actividad.estado != EstadosActividades.FINALIZADO %}
                                                                             <small>
-                                                                                <a class="fas fa-3x fa-clipboard-check" id="cargar_soporte_{{ actividad.id }}" href="javascript:abrirModalCargarSoporte('{% url 'GestionActividades:soportes-cargar' actividad.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Finalizar Actividad"></a>
+                                                                                <a class="fas fa-3x fa-clipboard-check" id="cargar_soporte_{{ actividad.id }}" href="javascript:abrirModalCargarSoporte('{% url 'GestionActividades:soportes-cargar' actividad.id %}', '{{actividad.soporte_requerido}}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Finalizar Actividad"></a>
                                                                             </small>
                                                                             {% endif %}
                                                                         {% endif %}

@@ -147,7 +147,7 @@ class ResponsableActividad(models.Model):
 
 
 def custom_upload_to(instance, filename):
-    return '{3}/GestiónActividades/Actividades/Documentos/{0} {1}.{2}' \
+    return '{3}/GestiónActividades/Actividades/Soportes/{0} {1}.{2}' \
      .format(instance.actividad.codigo, instance.actividad.nombre, filename.split(".")[-1], settings.EVA_PRIVATE_MEDIA)
 
 

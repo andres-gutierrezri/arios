@@ -9,17 +9,33 @@ $(document).ready(function () {
     configurarFiltroConsecutivos();
 });
 
-function abrirModalCargarSoporte(url) {
+function abrirModalCargarSoporte(url, soporte) {
     cargarAbrirModal(modalCargarSoporte, url, function () {
-        configurarModalSoporte();
+        configurarModalSoporte(soporte);
         let form = $('#soporte_form')[0];
         agregarValidacionForm(form, function (event) {
-            const dzSoportes = Dropzone.forElement("#dZUpload");
-            dzSoportes.on("sendingmultiple", cargarDatosForm);
-            dzSoportes.on("errormultiple", (x, error) => EVANotificacion.toast.error(error));
-            dzSoportes.on("successmultiple", () => location.reload());
-            dzSoportes.processQueue();
+            if (soporte === 'True'){
+                const dzSoportes = Dropzone.forElement("#dZUpload");
+                dzSoportes.on("sendingmultiple", cargarDatosForm);
+                dzSoportes.on("errormultiple", (x, error) => EVANotificacion.toast.error(error));
+                dzSoportes.on("successmultiple", () => location.reload());
+                dzSoportes.processQueue();
+                return true;
+            }
+            else if (soporte === 'False'){
+                enviarFormularioAsync(form, url, "cargando").then(exitoso => {
+                if (exitoso) {
+                    modalCargarSoporte.modal('hide');
+                    Swal.clickCancel();
+                    setTimeout(function (){
+                        location.reload();
+                    },1000);
+                } else {
+                    Swal.clickCancel();
+                }
+            });
             return true;
+            }
         });
     });
 }
@@ -29,12 +45,11 @@ function cargarDatosForm(file, xhr, formData) {
         formData.append(campo.name, campo.value);
     })
 }
-function configurarModalSoporte() {
+function configurarModalSoporte(soporte) {
 
     const archivo = $('#archivo_mostrar');
     const fechaFinal = $('#fecha_final_mostrar');
     const descripcion = $('#description_mostrar');
-    let idEstado = $('#estado_id');
     let agregar = document.querySelector('#agregar');
 
     inicializarSelect2('estado_select_id', modalCargarSoporte);
@@ -42,38 +57,29 @@ function configurarModalSoporte() {
 
     const idActividad = $('#id_actividad').val();
 
-    $("#dZUpload").dropzone({
-        url: `/gestion-actividades/actividades/actividad/${idActividad}/cargar`,
-        autoProcessQueue: false,
-        addRemoveLinks: true,
-        acceptedFiles: 'image/*,application/pdf',
-        preventDuplicates: true,
-        forceFallback:false,
-        parallelUploads: 30,
-        maxFiles: 30,
-        uploadMultiple: true,
-        timeout:1000 * 60 * 5,  // 5 minutos
-    });
+    archivo.show();
+    archivo.attr('required', true);
+    fechaFinal.show();
+    fechaFinal.attr('required', true);
+    descripcion.show();
+    descripcion.attr('required', true);
 
-    $('input:radio[name=estado]').change(function () {
-        idEstado = this.value
-        if (idEstado === "2") {
-            archivo.hide();
-            archivo.removeAttr('required');
-            fechaFinal.hide();
-            fechaFinal.removeAttr('required');
-            descripcion.hide();
-            descripcion.removeAttr('required');
-
-        } else if (idEstado === "3") {
-            archivo.show();
-            archivo.attr('required', true);
-            fechaFinal.show();
-            fechaFinal.attr('required', true);
-            descripcion.show();
-            descripcion.attr('required', true);
-        }
-    });
+    if (soporte === 'True') {
+        $("#dZUpload").dropzone({
+            url: `/gestion-actividades/actividades/actividad/${idActividad}/cargar`,
+            autoProcessQueue: false,
+            addRemoveLinks: true,
+            acceptedFiles: 'image/*,application/pdf,application/msword,application/vnd.ms-excel,' +
+                'application/vnd.ms-powerpoint,application/vnd.ms-excel.sheet.macroenabled.12,application/octet-stream,' +
+                'image/png,image/jpeg,image/jpeg,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            preventDuplicates: true,
+            forceFallback: false,
+            parallelUploads: 30,
+            maxFiles: 30,
+            uploadMultiple: true,
+            timeout: 1000 * 60 * 5,  // 5 minutos
+        });
+    }
 
     agregarValidacionFormularios();
 }

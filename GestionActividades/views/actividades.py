@@ -1,32 +1,25 @@
-import json
 import logging
 import os
-from _decimal import Decimal
-from datetime import datetime
 
 from django.contrib.auth.models import User
-from django.db import IntegrityError
 from django.db.models import Q
 from django.db.transaction import rollback, atomic
-from django.http import JsonResponse, HttpResponse, StreamingHttpResponse, FileResponse, HttpResponseServerError
-from django.shortcuts import render, redirect
-from django.template.defaultfilters import lower
-from django.urls import reverse
+from django.http import HttpResponse, HttpResponseServerError
+from django.shortcuts import render
+
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 
-from Administracion.models import Proceso, TipoContrato
-from Administracion.utils import get_id_empresa_global
+
 from EVA.General import app_datetime_now, app_date_now
 from EVA.General.modeljson import RespuestaJson
 from EVA.views.index import AbstractEvaLoggedView
-from GestionActividades.Enumeraciones import PertenenciaGrupoActividades, EstadosActividades
+from GestionActividades.Enumeraciones import EstadosActividades
 from GestionActividades.models.models import Actividad, GrupoActividad, ResponsableActividad, Soporte
-from Proyectos.models import Contrato
-from TalentoHumano.models import Colaborador
-from TalentoHumano.models.colaboradores import ColaboradorProceso
+
 
 LOGGER = logging.getLogger(__name__)
+
 
 class ActividadesIndexView(AbstractEvaLoggedView):
     def get(self, request, id=None):
@@ -67,7 +60,7 @@ class ActividadesIndexView(AbstractEvaLoggedView):
 
 class ActividadesCrearView(AbstractEvaLoggedView):
     def get(self, request):
-        return render(request, 'GestionActividades/Actividades/modal_crear_editar_actividades.html',
+        return render(request, 'GestionActividades/Actividades/_crear_editar_actividades_modal.html',
                       datos_xa_render(request))
 
     def post(self, request):
@@ -104,7 +97,7 @@ class ActividadesCrearView(AbstractEvaLoggedView):
 class ActividadesEditarView(AbstractEvaLoggedView):
     def get(self, request, id_actividad):
         actividad = Actividad.objects.get(id=id_actividad)
-        return render(request, 'GestionActividades/Actividades/modal_crear_editar_actividades.html',
+        return render(request, 'GestionActividades/Actividades/_crear_editar_actividades_modal.html',
                       datos_xa_render(request, actividad))
 
     def post(self, request, id_actividad):
@@ -166,18 +159,25 @@ class ActividadesEditarView(AbstractEvaLoggedView):
 class CargarSoporteView(AbstractEvaLoggedView):
     def get(self, request, id_actividad):
         actividad = Actividad.objects.get(id=id_actividad)
+        soportes = Soporte.objects.filter(actividad_id=id_actividad)
 
         if actividad.estado == EstadosActividades.FINALIZADO:
-            opciones_estado = [{'valor': 3, 'texto': 'Finalizada'}]
+            soporte = soportes.values('fecha_fin', 'descripcion')
+            actividad_fecha_finalizacion = soporte[0]['fecha_fin']
+            soporte_descripcion = soporte[0]['descripcion']
+
         else:
-            opciones_estado = [{'valor': 2, 'texto': 'En proceso'},
-                               {'valor': 3, 'texto': 'Finalizada'}]
-        return render(request, 'GestionActividades/Actividades/modal_cargar_editar_soportes.html',
+            actividad_fecha_finalizacion = ''
+            soporte_descripcion = ''
+
+        return render(request, 'GestionActividades/Actividades/_cargar_editar_soportes_modal.html',
                       {'fecha': app_datetime_now(),
                        'actividad': actividad,
-                       'opciones_estado': opciones_estado})
+                       'actividad_fecha_finalizacion': actividad_fecha_finalizacion,
+                       'soporte_descripcion': soporte_descripcion })
 
     def post(self, request, id_actividad):
+        actividad = Actividad.objects.get(id=id_actividad)
         try:
             with atomic():
                 soporte = Soporte.from_dictionary(request.POST)
@@ -188,6 +188,9 @@ class CargarSoporteView(AbstractEvaLoggedView):
                     soporte.archivo = request.FILES.get(llave)
                     soporte.save()
                 # endregion
+                if not actividad.soporte_requerido:
+                    soporte.archivo = None
+                    soporte.save()
 
                 # region Actualiza estado actividad
                 update_fields = ['estado']
@@ -195,6 +198,7 @@ class CargarSoporteView(AbstractEvaLoggedView):
                 actividad_db.estado = EstadosActividades.FINALIZADO
                 actividad_db.save(update_fields=update_fields)
                 # endregion
+
                 messages.success(request, 'Se ha finalizado exitosamente la actividad')
                 return RespuestaJson.exitosa()
         except:
@@ -208,12 +212,12 @@ class VerSoporteView(AbstractEvaLoggedView):
         actividad = Actividad.objects.get(id=id_actividad)
         if Soporte.objects.filter(id=id_soporte).exists():
             soporte = Soporte.objects.get(id=id_soporte)
-            print(soporte)
             extension = os.path.splitext(soporte.archivo.url)[1]
             mime_types = {'.docx': 'application/msword', '.xlsx': 'application/vnd.ms-excel',
                           '.pptx': 'application/vnd.ms-powerpoint',
                           '.xlsm': 'application/vnd.ms-excel.sheet.macroenabled.12',
                           '.dwg': 'application/octet-stream', '.pdf': 'application/pdf',
+                          '.png': 'image/png', '.jpeg': 'image/jpeg', '.jpg': 'image/jpeg'
                           }
             response = HttpResponse(soporte.archivo, content_type=mime_types)
             response['Content-Disposition'] = 'inline; filename="{0} {1} {2}"' \

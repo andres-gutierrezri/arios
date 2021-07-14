@@ -83,7 +83,7 @@ class GruposActividadesIndexView(AbstractEvaLoggedView):
 
 class GruposActividadesCrearView(AbstractEvaLoggedView):
     def get(self, request):
-        return render(request, 'GestionActividades/GrupoActividades/modal_crear_editar_grupos_actividades.html',
+        return render(request, 'GestionActividades/GrupoActividades/_crear_editar_grupos_actividades_modal.html',
                       datos_xa_render(request))
 
     def post(self, request):
@@ -113,7 +113,7 @@ class GruposActividadesEditarView(AbstractEvaLoggedView):
     def get(self, request, id_grupo):
         grupo_actividad = GrupoActividad.objects.get(id=id_grupo)
 
-        return render(request, 'GestionActividades/GrupoActividades/modal_crear_editar_grupos_actividades.html',
+        return render(request, 'GestionActividades/GrupoActividades/_crear_editar_grupos_actividades_modal.html',
                       datos_xa_render(request, grupo_actividad))
 
     def post(self, request, id_grupo):

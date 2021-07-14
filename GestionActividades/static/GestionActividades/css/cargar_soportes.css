@@ -1,0 +1,4 @@
+.dz-progress {
+    /* progress bar covers file name */
+    display: none !important;
+}
