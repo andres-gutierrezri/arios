@@ -1,5 +1,7 @@
 import logging
 import os
+import re
+from fileinput import filename
 
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -10,13 +12,11 @@ from django.shortcuts import render
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 
-
 from EVA.General import app_datetime_now, app_date_now
 from EVA.General.modeljson import RespuestaJson
 from EVA.views.index import AbstractEvaLoggedView
 from GestionActividades.Enumeraciones import EstadosActividades
 from GestionActividades.models.models import Actividad, GrupoActividad, ResponsableActividad, Soporte
-
 
 LOGGER = logging.getLogger(__name__)
 
@@ -42,7 +42,19 @@ class ActividadesIndexView(AbstractEvaLoggedView):
         if id:
             grupos = grupos.filter(Q(id=id) | Q(nombre__iexact='Generales') | Q(grupo_actividad_id=id))
 
-        archivos_soporte = Soporte.objects.values('id', 'archivo', 'actividad_id')
+        archivos = Soporte.objects.values('id', 'archivo', 'actividad_id')
+
+        # Slice descartando de la url "privado/GestiónActividades/Actividades/Soportes/" para que solo se
+        # visualice del archivo el código y el Filename
+        archivos_soporte = []
+        for archivo in archivos:
+            nombre_archivo = archivo['archivo'][48:]
+            if not nombre_archivo:
+                nombre_archivo = '0'
+
+            archivos_soporte.append({'id': archivo['id'], 'archivo': nombre_archivo,
+                                     'actividad_id': archivo['actividad_id']})
+        # endregion
 
         actividades = Actividad.objects.values('id', 'nombre', 'grupo_actividad_id', 'descripcion',
                                                'estado', 'porcentaje_avance', 'soporte_requerido', 'fecha_inicio')
@@ -174,7 +186,7 @@ class CargarSoporteView(AbstractEvaLoggedView):
                       {'fecha': app_datetime_now(),
                        'actividad': actividad,
                        'actividad_fecha_finalizacion': actividad_fecha_finalizacion,
-                       'soporte_descripcion': soporte_descripcion })
+                       'soporte_descripcion': soporte_descripcion})
 
     def post(self, request, id_actividad):
         actividad = Actividad.objects.get(id=id_actividad)
@@ -208,7 +220,7 @@ class CargarSoporteView(AbstractEvaLoggedView):
 
 
 class VerSoporteView(AbstractEvaLoggedView):
-    def get(self, request, id_soporte, id_actividad):
+    def get(self, request, id_soporte, id_actividad, archivo):
         actividad = Actividad.objects.get(id=id_actividad)
         if Soporte.objects.filter(id=id_soporte).exists():
             soporte = Soporte.objects.get(id=id_soporte)
@@ -220,8 +232,8 @@ class VerSoporteView(AbstractEvaLoggedView):
                           '.png': 'image/png', '.jpeg': 'image/jpeg', '.jpg': 'image/jpeg'
                           }
             response = HttpResponse(soporte.archivo, content_type=mime_types)
-            response['Content-Disposition'] = 'inline; filename="{0} {1} {2}"' \
-                .format(actividad.codigo, actividad.nombre, extension)
+            response['Content-Disposition'] = 'inline; filename="{0}"' \
+                .format(archivo)
             return response
 
         else:
@@ -238,7 +250,7 @@ def datos_xa_render(request, actividad: Actividad = None) -> dict:
     lista_colaboradores = []
     for colaborador in colaboradores:
         lista_colaboradores.append({'campo_valor': colaborador['id'],
-                                   'campo_texto': colaborador['first_name']+' '+colaborador['last_name']})
+                                    'campo_texto': colaborador['first_name'] + ' ' + colaborador['last_name']})
 
     responsable_actividad = ResponsableActividad.objects.get_ids_responsables_list(actividad)
     datos = {'fecha': app_datetime_now(),
@@ -253,4 +265,3 @@ def datos_xa_render(request, actividad: Actividad = None) -> dict:
         datos['editar'] = True
 
     return datos
-
