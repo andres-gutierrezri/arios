@@ -25,12 +25,12 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-md-12">
-                            {% input_date_tag 'fecha_suspension' 'Fecha de suspensión' placeholder="Seleccione una fecha de suspensión" value=consecutivo.fecha_suspension required="" autocomplete="off" mensaje_validacion='Por favor seleccione una fecha de suspensión.' %}
+                        <div id="fecha_suspension_mostrar" class="col-md-12">
+                            {% input_date_tag 'fecha_suspension' 'Fecha de suspensión' placeholder="Seleccione una fecha de suspensión" value=consecutivo.fecha_suspension required="false" autocomplete="off" mensaje_validacion='Por favor seleccione una fecha de suspensión.' %}
                         </div>
                     </div>
                     <div class="form-group">
-                        <div id="fecha_reinicio_mostrar" class="col-md-12">
+                        <div class="col-md-12">
                             {% input_date_tag 'fecha_reinicio' 'Fecha de reinicio' placeholder="Seleccione una fecha de reinicio" value=consecutivo.fecha_reinicio required="" autocomplete="off" mensaje_validacion='Por favor seleccione una fecha de reinicio.' %}
                         </div>
                     </div>

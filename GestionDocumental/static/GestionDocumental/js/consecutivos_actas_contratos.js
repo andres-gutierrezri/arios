@@ -29,35 +29,26 @@ function configurarModalCrear() {
     inicializarDatePicker('fecha_suspension_id');
     inicializarDatePicker('fecha_reinicio_id');
 
-    if ($('#tipo_acta_id_select_id').val() === "0"){
-        $('#fecha_reinicio_id').attr("required", false);
-    }
-    else if ($('#tipo_acta_id_select_id').val() === "1"){
-        $('#fecha_reinicio_id').attr("required", false);
-    }
 
+    if ($('#tipo_acta_id_select_id').val() === "1"){
+        $('#fecha_suspension_mostrar').hide();
+        $('#fecha_suspension_id').attr("required", false);
+        $('#fecha_reinicio_id').attr("required", true);
+    }
+    else{
+        $('#fecha_reinicio_id').attr("required", false);
+    }
      $('#tipo_acta_id_select_id').change(function () {
     let idActa = this.value;
-        switch (idActa) {
-            case "0":
-                $('#fecha_reinicio_mostrar').show();
-                $('#fecha_reinicio_id').attr("required", false);
-                break;
-            case "1":
-                $('#fecha_reinicio_mostrar').hide();
-                $('#fecha_reinicio_id').attr("required", false);
-                break;
-            case "2":
-                $('#fecha_reinicio_mostrar').show();
-                $('#fecha_reinicio_id').attr("required", true);
-                break;
-            default:
-                $('#fecha_reinicio_mostrar').show();
-                $('#fecha_reinicio_id').attr("required", false);
-                break;
+        if (idActa === "0" || idActa === "2"){
+            $('#fecha_suspension_mostrar').show();
+            $('#fecha_suspension_id').attr("required", true);
+            $('#fecha_reinicio_id').attr("required", false);
+        }else{
+            $('#fecha_suspension_mostrar').hide();
+            $('#fecha_suspension_id').attr("required", false);
         }
     });
-
     agregarValidacionFormularios();
 }
 
