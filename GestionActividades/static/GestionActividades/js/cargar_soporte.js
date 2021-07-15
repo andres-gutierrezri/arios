@@ -71,7 +71,9 @@ function configurarModalSoporte(soporte) {
             addRemoveLinks: true,
             acceptedFiles: 'image/*,application/pdf,application/msword,application/vnd.ms-excel,' +
                 'application/vnd.ms-powerpoint,application/vnd.ms-excel.sheet.macroenabled.12,application/octet-stream,' +
-                'image/png,image/jpeg,image/jpeg,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'image/png,image/jpeg,image/jpeg,application/vnd.openxmlformats-officedocument.wordprocessingml.document,' +
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, ' +
+                'application/vnd.openxmlformats-officedocument.presentationml.presentation',
             preventDuplicates: true,
             forceFallback: false,
             parallelUploads: 30,

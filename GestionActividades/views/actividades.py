@@ -26,9 +26,12 @@ class ActividadesIndexView(AbstractEvaLoggedView):
         actividades = Actividad.objects.values('id', 'estado', 'fecha_inicio')
 
         for actividad in actividades:
+            actividad_db = Actividad.objects.get(id=actividad['id'])
             if actividad['fecha_inicio'] <= app_date_now() and actividad['estado'] == EstadosActividades.CREADA:
-                actividad_db = Actividad.objects.get(id=actividad['id'])
                 actividad_db.estado = EstadosActividades.EN_PROCESO
+                actividad_db.save()
+            if actividad['fecha_inicio'] > app_date_now():
+                actividad_db.estado = EstadosActividades.CREADA
                 actividad_db.save()
 
         responsable_actividad = ResponsableActividad.objects.values('responsable_id', 'actividad_id')
@@ -56,7 +59,7 @@ class ActividadesIndexView(AbstractEvaLoggedView):
                                      'actividad_id': archivo['actividad_id']})
         # endregion
 
-        actividades = Actividad.objects.values('id', 'nombre', 'grupo_actividad_id', 'descripcion',
+        actividades = Actividad.objects.values('id', 'nombre', 'grupo_actividad_id', 'descripcion', 'fecha_fin',
                                                'estado', 'porcentaje_avance', 'soporte_requerido', 'fecha_inicio')
 
         return render(request, 'GestionActividades/Actividades/index.html',
@@ -113,12 +116,13 @@ class ActividadesEditarView(AbstractEvaLoggedView):
                       datos_xa_render(request, actividad))
 
     def post(self, request, id_actividad):
-        update_fields = ['fecha_modificacion', 'supervisor_id', 'fecha_inicio', 'fecha_fin', 'nombre', 'descripcion',
-                         'fecha_crea', 'motivo', 'usuario_modifica', 'usuario_crea',
+        update_fields = ['fecha_modificacion', 'codigo', 'supervisor_id', 'fecha_inicio', 'fecha_fin', 'nombre',
+                         'descripcion', 'fecha_crea', 'motivo', 'usuario_modifica', 'usuario_crea',
                          'grupo_actividad_id', 'estado', 'soporte_requerido']
         grupo_actividad = GrupoActividad.from_dictionary(request.POST)
         actividad = Actividad.from_dictionary(request.POST)
         actividad_db = Actividad.objects.get(id=id_actividad)
+        actividad.estado = actividad_db.estado
         actividad.fecha_crea = actividad_db.fecha_crea
         actividad.fecha_modificacion = app_datetime_now()
         actividad.id = actividad_db.id
@@ -225,8 +229,9 @@ class VerSoporteView(AbstractEvaLoggedView):
         if Soporte.objects.filter(id=id_soporte).exists():
             soporte = Soporte.objects.get(id=id_soporte)
             extension = os.path.splitext(soporte.archivo.url)[1]
-            mime_types = {'.docx': 'application/msword', '.xlsx': 'application/vnd.ms-excel',
+            mime_types = {'.docx': 'application/msword', '.xls': 'application/vnd.ms-excel',
                           '.pptx': 'application/vnd.ms-powerpoint',
+                          '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                           '.xlsm': 'application/vnd.ms-excel.sheet.macroenabled.12',
                           '.dwg': 'application/octet-stream', '.pdf': 'application/pdf',
                           '.png': 'image/png', '.jpeg': 'image/jpeg', '.jpg': 'image/jpeg'

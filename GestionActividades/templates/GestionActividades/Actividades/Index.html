@@ -57,8 +57,14 @@
                                                 </div>
                                                 <div class="card-header p-0">
                                                     <div class="row no-gutters row-grid align-items-stretch">
-                                                        <div class="col-sm-12 col-md-4 hidden-md-down bg-primary-600">
+                                                        <div class="col-sm-8 col-md-3 hidden-md-down bg-primary-600">
                                                             <div class="text-uppercase text-white py-2 px-3">Actividad</div>
+                                                        </div>
+                                                        <div class="col-sm-4 col-md-1 hidden-md-down bg-primary-600">
+                                                            <div class="text-uppercase text-white py-2 px-3">Fecha Inicio</div>
+                                                        </div>
+                                                        <div class="col-sm-4 col-md-1 hidden-md-down bg-primary-600">
+                                                            <div class="text-uppercase text-white py-2 px-3">Fecha Fin</div>
                                                         </div>
                                                         <div class="col-sm-4 col-md-1 hidden-md-down bg-primary-600">
                                                             <div class="text-uppercase text-white py-2 px-3">Estado</div>
@@ -69,7 +75,7 @@
                                                         <div class="col-sm-4 col-md-2 hidden-md-down bg-primary-600">
                                                             <div class="text-uppercase text-white py-2 px-3">Progreso</div>
                                                         </div>
-                                                        <div class="col-sm-4 col-md-2 hidden-md-down bg-primary-600">
+                                                        <div class="col-sm-4 col-md-1 hidden-md-down bg-primary-600">
                                                             <div class="text-uppercase text-white py-2 px-3">Acción</div>
                                                         </div>
                                                     </div>
@@ -81,7 +87,7 @@
                                                         {% if actividad.grupo_actividad_id ==  grupo.id %}
                                                         <div class="col-12 col">
                                                             <div class="row no-gutters row-grid align-items-stretch">
-                                                                <div class="col-sm-12 col-md-4">
+                                                                <div class="col-sm-8 col-md-3">
                                                                     <div class="p-3">
                                                                         <div class="d-flex">
                                                                             <div class="d-inline-flex flex-column">
@@ -95,7 +101,17 @@
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                <div class="col-4 col-md-2 col-xl-1 hidden-md-down">
+                                                                <div class="col-3 col-md-2 col-xl-1 hidden-md-down">
+                                                                    <div class="p-3 p-md-3">
+                                                                        <span class="d-block text-muted"><i> {{ actividad.fecha_inicio }} </i></span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-3 col-md-2 col-xl-1 hidden-md-down">
+                                                                    <div class="p-3 p-md-3">
+                                                                        <span class="d-block text-muted"><i> {{ actividad.fecha_fin }} </i></span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-3 col-md-2 col-xl-1 hidden-md-down">
                                                                 {% if actividad.estado == EstadosActividades.CREADA%}
                                                                     <div class="p-3 p-md-3">
                                                                         <span class="d-block text-muted"><i> Creada </i></span>
@@ -148,28 +164,28 @@
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                <div class="col-4 col-md-2 hidden-md-down">
+                                                                <div class="col-4 col-md-1 hidden-md-down">
                                                                     <div class="p-3 p-md-3">
                                                                         <div class="row">
                                                                             {% if perms.GestionActividades.change_actividades %}
-                                                                                <div class="col-md-2">
+                                                                                <div class="col-md-3">
                                                                                     <small>
                                                                                         <a class="fad fa-3x fa-file-edit" id="editar_{{ actividad.id }}" href="javascript:abrirModalCrearActividad('{% url 'GestionActividades:actividades-editar' actividad.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar Actividad"></a>
                                                                                     </small>
                                                                                 </div>
                                                                             {% endif %}
                                                                             {% if perms.GestionActividades.add_archivo %}
-                                                                                {% if actividad.estado != EstadosActividades.FINALIZADO %}
-                                                                                    <div></div>
+                                                                                {% if actividad.estado == EstadosActividades.EN_PROCESO or actividad.estado == EstadosActividades.REABIERTA%}
+                                                                                    <div class="col-md-2">
                                                                                         <small>
                                                                                             <a class="fas fa-3x fa-clipboard-check" id="cargar_soporte_{{ actividad.id }}" href="javascript:abrirModalCargarSoporte('{% url 'GestionActividades:soportes-cargar' actividad.id %}', '{{actividad.soporte_requerido}}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Finalizar Actividad"></a>
                                                                                         </small>
-                                                                                    <div></div>
+                                                                                    </div>
                                                                                 {% endif %}
                                                                             {% endif %}
                                                                             {%  if perms.GestionActividades.view_archivo %}
                                                                                 {% if actividad.estado == EstadosActividades.FINALIZADO and actividad.soporte_requerido %}
-                                                                                    <div class="col-0">
+                                                                                    <div class="col-2">
                                                                                         <div class="row col-xl-4">
                                                                                             <div class="accordion" id="accordionExample">
                                                                                                 <div class="card" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ver Soportes" >

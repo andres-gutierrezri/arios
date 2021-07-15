@@ -112,7 +112,7 @@ class Actividad(models.Model, ModelDjangoExtensiones):
         actividad.descripcion = datos.get('descripcion', '')
         actividad.motivo = datos.get('motivo', '')
         actividad.estado = datos.get('estado', 1)
-        actividad.codigo = datos.get('codigo', '100200')
+        actividad.codigo = datos.get('codigo', '')
 
         return actividad
 
