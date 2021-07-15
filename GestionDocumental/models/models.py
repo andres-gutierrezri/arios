@@ -8,6 +8,7 @@ from EVA.General.modeljson import ModelDjangoExtensiones
 from EVA.General.modelmanagers import ManagerGeneral, ModeloBase
 from Proyectos.models import Contrato
 from EVA import settings
+from GestionDocumental.Enumeraciones import TiposActas
 
 
 class ConsecutivoBase(ModeloBase, ModelDjangoExtensiones):
@@ -278,7 +279,8 @@ class ConsecutivoActasContratos(ConsecutivoBase):
     fecha_reinicio = models.DateField(verbose_name='Fecha Reinicio', null=True, blank=True)
     descripcion = models.CharField(max_length=100, verbose_name='Descripción', null=False, blank=False)
     consecutivo_contrato = models.ForeignKey(ConsecutivoContrato, on_delete=models.CASCADE, verbose_name='Consecutivo Contrato', null=True, blank=True)
-    tipo_acta = models.IntegerField(verbose_name='tipo_acta', null=False, blank=False)
+    tipo_acta = models.SmallIntegerField(choices=TiposActas.choices, verbose_name='Medio Soporte',
+                                             null=False, blank=False)
     consecutivo = models.IntegerField(verbose_name='Consecutivo', null=False, blank=False)
 
     def __str__(self):

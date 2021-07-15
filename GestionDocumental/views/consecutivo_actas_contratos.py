@@ -11,9 +11,8 @@ from EVA.General.modeljson import RespuestaJson
 from EVA.General.utilidades import paginar, app_datetime_now
 from EVA.views.index import AbstractEvaLoggedView
 from GestionDocumental.models.models import ConsecutivoActasContratos, ConsecutivoContrato
-from TalentoHumano.models import Colaborador
-from TalentoHumano.models.colaboradores import ColaboradorProceso
 from Administracion.models import ConsecutivoDocumento, TipoDocumento
+from GestionDocumental.Enumeraciones import TiposActas
 
 
 
@@ -23,10 +22,6 @@ class ConsecutivoActasContratosView(AbstractEvaLoggedView):
         consecutivos = ConsecutivoActasContratos.objects.filter(usuario_crea_id=request.user.id,
                                                                     empresa_id=get_id_empresa_global(request),
                                                                     tipo_acta=id)
-
-        opciones_filtro = [{'campo_valor': 0, 'campo_texto': 'Acta de suspención'},
-                           {'campo_valor': 1, 'campo_texto': 'Acta de reinicio'},
-                           {'campo_valor': 2, 'campo_texto': 'Acta de ampliación de la suspensión'}]
 
         page = request.GET.get('page', 1)
         search = request.GET.get('search', '')
@@ -47,7 +42,7 @@ class ConsecutivoActasContratosView(AbstractEvaLoggedView):
 
         return render(request, 'GestionDocumental/ConsecutivoActasContratos/index.html', {
             'consecutivos': consecutivos,
-            'opciones_filtro': opciones_filtro,
+            'opciones_filtro': TiposActas.choices,
             'fecha': datetime.datetime.now(),
             'buscar': search,
             'coincidencias': coincidencias,
@@ -163,14 +158,10 @@ def datos_xa_render(request, consecutivo: ConsecutivoActasContratos = None) -> d
         lista_consecutivos.append({'campo_valor': consecutivo_contrato['id'], 'campo_texto': '{0}'
                                .format(consecutivo_contrato['codigo'])})
 
-    tipo_acta= [{'campo_valor': 0, 'campo_texto': 'Acta de suspención'},
-                       {'campo_valor': 1, 'campo_texto': 'Acta de reinicio'},
-                       {'campo_valor': 2, 'campo_texto': 'Acta de ampliación de la suspensión'}]
-
     datos = {'fecha': datetime.datetime.now(),
              'lista_consecutivos': lista_consecutivos,
              'menu_actual': 'consecutivos-actas-contratos',
-             'tipo_acta': tipo_acta}
+             'tipo_acta': TiposActas.choices}
 
     if consecutivo:
         print(consecutivo)

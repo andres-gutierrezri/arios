@@ -16,7 +16,7 @@
                 <div class="form-group">
                     <div class="form-group">
                         <div class="col-md-12">
-                            {% select_tag tipo_acta 'tipo_acta_id' 'Seleccione tipo de acta' value=consecutivo.tipo_acta texto_label="Tipo de acta" required="" mensaje_validacion='Por favor seleccione un tipo de acta' %}
+                            {% select_tag tipo_acta 'tipo_acta_id' 'Seleccione tipo de acta' is_tupla=True value=consecutivo.tipo_acta texto_label="Tipo de acta" required="" mensaje_validacion='Por favor seleccione un tipo de acta' %}
                         </div>
                     </div>
                     <div class="form-group">
