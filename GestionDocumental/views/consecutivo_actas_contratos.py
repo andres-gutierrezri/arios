@@ -15,7 +15,6 @@ from Administracion.models import ConsecutivoDocumento, TipoDocumento
 from GestionDocumental.Enumeraciones import TiposActas
 
 
-
 class ConsecutivoActasContratosView(AbstractEvaLoggedView):
     def get(self, request, id):
 
