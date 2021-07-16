@@ -114,5 +114,11 @@ urlpatterns = [
     path('proveedores/certificacion/generar/<int:id>', proveedores.GenerarCertificacionView.as_view(),
          name='proveedor-generar-certificacion'),
     path('reservas-sala-juntas/', sala_juntas.ReservaSalaJuntasView.as_view(), name='reserva-sala-juntas'),
-    path('reservas-sala-juntas/json', sala_juntas.ReservaSalaJuntasView.as_view(), name='reserva-sala-juntas-json')
+    path('reservas-sala-juntas/json', sala_juntas.ReservaSalaJuntasView.as_view(), name='reserva-sala-juntas-json'),
+    path('reservas-sala-juntas/add', sala_juntas.ReservaSalaJuntasCrearView.as_view(),
+         name='reserva-sala-juntas-crear'),
+    path('reservas-sala-juntas/<int:id_reserva>/editar', sala_juntas.ReservaSalaJuntasEditarView.as_view(),
+         name='reserva-sala-juntas-editar'),
+    path('reservas-sala-juntas/<int:id_reserva>/delete', sala_juntas.ReservaSalaJuntasEliminarView.as_view(),
+         name='reserva-sala-juntas-delete')
 ]

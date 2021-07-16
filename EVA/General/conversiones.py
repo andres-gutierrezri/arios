@@ -72,6 +72,18 @@ def datetime_to_string(fecha) -> str:
     except ValueError:
         return ''
 
+def datetime_to_utc(fecha: datetime) -> Optional[datetime]:
+    """
+    Convierte un string a datetime, la fecha se toma con el timezone configurado en settings.TIME_ZONE
+    :param fecha_string: string con formato "%Y-%m-%d"
+    :return: retorna el datetime en UTC, si falla la conversión retorna None.
+    """
+    try:
+        return fecha.astimezone(pytz.timezone(settings.TIME_ZONE))\
+            .astimezone(pytz.timezone('UTC'))
+    except ValueError:
+        return None
+
 def datetime_to_filename(fecha) -> str:
     """
     Convierte una fecha a string con formato AAAAMMDD_HHmm.

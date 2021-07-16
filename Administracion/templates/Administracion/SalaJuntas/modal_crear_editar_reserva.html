@@ -1,0 +1,54 @@
+{% load eva_tags %}
+{% load static %}
+<form id="juntas_form" method="post" class="needs-validation" novalidate>
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header p-b-0">
+                <h4 class="modal-title">
+                    {% if editar %}Editar Reserva para la Sala de Juntas{% else %}Crear Reserva para la Sala de Juntas{% endif %}
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
+            {% csrf_token %}
+                <div class="form-row">
+                    <div id="responsable" class="form-group col-md-12">
+                        {% select_tag colaboradores 'responsable' 'Seleccione el responsable' value=reserva.responsable_id texto_label="Responsable" required="" mensaje_validacion='Por favor seleccione el responsable' %}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div id="tema" class="form-group col-md-12">
+                        {% input_text_tag 'tema' 'Tema' placeholder="Ingrese el tema" value=reserva.tema required="" maxlength="100" mensaje_validacion='Por favor describa el tema' %}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div id="fecha_intervalo" class="form-group col-md-12">
+                        {% input_date_tag 'fecha_intervalo' 'Tiempo' placeholder="Seleccione el tiempo" required="" autocomplete="off" mensaje_validacion='Por favor seleccione el tiempo' %}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div id="descripcion" class="form-group col-md-12">
+                        {% input_textarea_tag 'descripcion' 'Descripción (Opcional)' placeholder="Ingrese una descripción" maxlength="100" value=reserva.descripcion mensaje_validacion='Por favor digite una descripción' %}
+                    </div>
+                </div>
+                {% if editar %}
+                    <div class="form-row">
+                        <div id="motivo" class="form-group col-md-12">
+                            {% input_textarea_tag 'motivo' 'Motivo' placeholder="Ingrese el motivo" value=reserva.motivo|default_if_none:"" required="" mensaje_validacion='Por favor ingrese el motivo' %}
+                        </div>
+                    </div>
+                {% endif %}
+                <div class="modal-footer">
+                    <button data-dismiss="modal" class="btn btn-warning btn-pills " href="javascript:void(0);"  onclick="fbtnCancelar()">Cancelar</button>
+                    <button id="agregar_{{ reserva.id }}" type="submit" class="btn btn-primary btn-pills"> {% if editar %}Editar{% else %}Agregar{% endif %} </button>
+                {% if editar %}
+                    <a type="button" class="btn btn-danger btn-pills" id="eliminar_{{ reserva.id }}" href="javascript:void(0);"  onclick="fEliminarReunion({{ reserva.id }}, true)" >Eliminar</a>
+                 {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+

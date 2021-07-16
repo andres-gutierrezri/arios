@@ -43,6 +43,34 @@ function inicializarDatePicker(inputId) {
     });
 }
 
+/**
+ * Inicializa un input como un daterangepicker.
+ * @param inputId id del input que se quiere inicializar.
+ */
+
+function inicializarDateRangePicker(inputId) {
+
+    $(`#${inputId}`).daterangepicker({
+        timePicker: true,
+        minDate: new Date(),
+        startDate: moment(),
+        endDate: moment().add(1, 'hour'),
+        timePicker24Hour: true,
+        timePickerSeconds: false,
+        locale:
+            {
+                applyLabel: 'Aplicar',
+                cancelLabel: 'Cancelar',
+                separator: ' – ',
+                format: 'YYYY-MM-DD HH:mm',
+                firstDay: 0,
+                daysOfWeek: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá'],
+                monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+            },
+    });
+}
+
 const CONFIG_BASE_SELECT2 = {
     language: {
         noResults: function () {
