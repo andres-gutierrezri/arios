@@ -183,6 +183,37 @@ class Soporte(models.Model):
         return soporte
 
 
+class AvanceActividad(models.Model):
+    objects = ManagerGeneral()
+    actividad = models.ForeignKey(Actividad, on_delete=models.DO_NOTHING, verbose_name='Actividad', blank=False,
+                                  null=False)
+    descripcion = models.TextField(max_length=500, verbose_name='Descripción', null=False, blank=False)
+    fecha_avance = models.DateField(verbose_name='Fecha Avance', null=False, blank=False)
+    horas_empleadas = models.SmallIntegerField(default=0, verbose_name='Horas Empleadas', null=False, blank=False)
+    porcentaje_avance = models.PositiveIntegerField(default=0, validators=[MinValueValidator(0),
+                                                                           MaxValueValidator(100)],
+                                                    verbose_name='Porcentaje Avance',
+                                                    null=False, blank=False)
 
+    def __str__(self):
+        return self.actividad.nombre
 
+    class Meta:
+        verbose_name = 'Avance'
+        verbose_name_plural = 'Avances'
 
+    @staticmethod
+    def from_dictionary(datos: dict) -> 'AvanceActividad':
+        """
+        Crea una instancia de los Avances de una actividad con los datos pasados en el diccionario.
+        :param datos: Diccionario con los datos para almacenar los avances de una actividad.
+        :return: Instacia de los avances de una actividad con la información especificada en el diccionario.
+        """
+
+        avance_actividad = AvanceActividad()
+        avance_actividad.descripcion = datos.get('descripcion', '')
+        avance_actividad.fecha_avance = datos.get('fecha_avance', '')
+        avance_actividad.horas_empleadas = datos.get('horas', '')
+        avance_actividad.porcentaje_avance = datos.get('porcentaje', '')
+
+        return avance_actividad
