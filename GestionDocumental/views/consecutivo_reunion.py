@@ -21,10 +21,10 @@ class ConsecutivoReunionView(AbstractEvaLoggedView):
     def get(self, request, id):
         if id == 0:
             consecutivos = ConsecutivoReunion.objects.filter(empresa_id=get_id_empresa_global(request))
-            colaborador = Colaborador.objects.values('usuario_id')
+            colaborador = Colaborador.objects.values('usuario_crea_id')
         else:
-            colaborador = Colaborador.objects.filter(usuario=request.user).values('usuario_id')
-            consecutivos = ConsecutivoReunion.objects.filter(usuario_id=request.user.id,
+            colaborador = Colaborador.objects.filter(usuario=request.user).values('usuario_crea_id')
+            consecutivos = ConsecutivoReunion.objects.filter(usuario_crea_id=request.user.id,
                                                              empresa_id=get_id_empresa_global(request))
 
         opciones_filtro = [{'campo_valor': 0, 'campo_texto': 'Todos'},
@@ -58,10 +58,7 @@ class ConsecutivoReunionesCrearView(AbstractEvaLoggedView):
                        'menu_actual': 'consecutivos-reunion'})
 
     def post(self, request):
-        consecutivo = ConsecutivoReunion.from_dictionary(request.POST)
-        consecutivo.usuario = request.user
-        consecutivo.fecha_crea = app_datetime_now()
-        consecutivo.empresa_id = get_id_empresa_global(request)
+        consecutivo = ConsecutivoReunion.from_dictionary(request.POST, request)
 
         dato_consecutivo = ConsecutivoDocumento\
             .get_consecutivo_documento(tipo_documento_id=TipoDocumento.REUNIONES,
@@ -82,30 +79,26 @@ class ConsecutivoReunionesEditarView(AbstractEvaLoggedView):
                       datos_xa_render(request, consecutivo))
 
     def post(self, request, id_reunion):
-        update_fields = ['fecha', 'fecha_crea', 'fecha_modificacion',
+        update_fields = ['fecha', 'fecha_modificacion',
                          'tema', 'codigo', 'descripcion', 'justificacion']
 
-        consecutivo = ConsecutivoReunion.from_dictionary(request.POST)
+        consecutivo = ConsecutivoReunion.from_dictionary(request.POST, request, True)
         consecutivo_db = ConsecutivoReunion.objects.get(id=id_reunion)
 
         consecutivo.id = consecutivo_db.id
-        consecutivo.tema = consecutivo_db.tema
-        consecutivo.fecha = consecutivo.fecha
         consecutivo.empresa = consecutivo_db.empresa
-        consecutivo.usuario_id = consecutivo_db.usuario_id
-        consecutivo.fecha_crea = consecutivo_db.fecha_crea
-        consecutivo.fecha_modificacion = consecutivo_db.fecha_modificacion
 
         anio_actual = str(datetime.datetime.now().year)
         consecutivo.codigo = 'ACR-{0:03d}-{1}{2}'.format(consecutivo_db.id, anio_actual[2], anio_actual[3])
 
         try:
-            consecutivo.full_clean(validate_unique=False)
+            consecutivo.full_clean(validate_unique=False, exclude=['usuario_crea'])
         except ValidationError as errores:
             messages.error(request, 'Falló editar. Valide los datos ingresados al editar el consecutivo')
             return redirect(reverse('GestionDocumental:consecutivo-reuniones-index', args=[0]))
 
-        if consecutivo_db.comparar(consecutivo, excluir=['fecha_modificacion']):
+        if consecutivo_db.comparar(consecutivo, excluir=['usuario_crea', 'fecha_crea', 'fecha_modificacion',
+                                                         'usuario_modifica']):
             messages.success(request, 'No se hicieron cambios en la consecutivo {0}'.format(consecutivo.codigo))
             return redirect(reverse('GestionDocumental:consecutivo-reuniones-index', args=[0]))
         else:

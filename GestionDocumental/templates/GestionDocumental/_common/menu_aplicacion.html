@@ -9,7 +9,7 @@
         <li {% if menu_actual == 'consecutivos-oficios' %} class="active" {% endif %}>
             <a href="{% url 'GestionDocumental:consecutivo-oficios-index' 0 %}" title="Consecutivo de Oficios" data-filter-tags="consecutivo oficios">
                 <i class="far fa-file-alt"></i>
-                <span class="nav-link-text" data-i18n="nav.gestion_documental_consecutivo_oficios">Consecutivo de Oficios</span>
+                <span class="nav-link-text" data-i18n="nav.gestion_documental_consecutivo_oficios">Oficios</span>
             </a>
         </li>
         {% endif %}
@@ -17,7 +17,7 @@
         <li {% if menu_actual == 'consecutivos-contrato' %} class="active" {% endif %}>
             <a href="{% url 'GestionDocumental:consecutivo-contratos-index' 0 %}" title="Consecutivo de Contratos" data-filter-tags="consecutivo contratos">
                 <i class="far fa-file-alt"></i>
-                <span class="nav-link-text" data-i18n="nav.gestion_documental_consecutivo_contratos">Consecutivo de Contratos</span>
+                <span class="nav-link-text" data-i18n="nav.gestion_documental_consecutivo_contratos">Contratos</span>
             </a>
         </li>
         {% endif %}
@@ -25,7 +25,47 @@
         <li {% if menu_actual == 'consecutivos-reunion' %} class="active" {% endif %}>
             <a href="{% url 'GestionDocumental:consecutivo-reuniones-index' 0 %}" title="Consecutivo de Reuniones" data-filter-tags="consecutivo reuniones">
                 <i class="far fa-file-alt"></i>
-                <span class="nav-link-text" data-i18n="nav.gestion_documental_consecutivo_contratos">Consecutivo de Reuniones</span>
+                <span class="nav-link-text" data-i18n="nav.gestion_documental_consecutivo_contratos">Reuniones</span>
+            </a>
+        </li>
+        {% endif %}
+        {% if perms.GestionDocumental.view_consecutivorequerimientos %}
+            <li {% if menu_actual == 'consecutivos-requerimientos' %} class="active" {% endif %}>
+            <a href="{% url 'GestionDocumental:consecutivo-requerimientos-index' 0 %}" title="Consecutivo de requerimiento interno" data-filter-tags="consecutivo requerimiento">
+                <i class="far fa-file-alt"></i>
+                <span class="nav-link-text" data-i18n="nav.gestion_documental_consecutivo_requerimientos">Requerimiento interno</span>
+            </a>
+        </li>
+        {% endif %}
+        {% if perms.GestionDocumental.view_plandetrabajo %}
+            <li {% if menu_actual == 'consecutivos-plantrabajo' %} class="active" {% endif %}>
+            <a href="{% url 'GestionDocumental:consecutivo-plantrabajo-index' 0 %}" title="Consecutivo de plan de trabajo" data-filter-tags="consecutivo plandetrabajo">
+                <i class="far fa-file-alt"></i>
+                <span class="nav-link-text" data-i18n="nav.gestion_documental_consecutivo_plantrabajo">Plan de trabajo</span>
+            </a>
+        </li>
+        {% endif %}
+        {% if perms.GestionDocumental.view_viaticoscomisiones %}
+            <li {% if menu_actual == 'consecutivos-viaticoscomisiones' %} class="active" {% endif %}>
+            <a href="{% url 'GestionDocumental:consecutivo-viaticoscomisiones-index' 0 %}" title="Consecutivo de viaticos y comisiones" data-filter-tags="consecutivo viaticoscomisiones">
+                <i class="far fa-file-alt"></i>
+                <span class="nav-link-text" data-i18n="nav.gestion_documental_consecutivo_viaticoscomisiones">Viáticos y comisiones</span>
+            </a>
+        </li>
+        {% endif %}
+        {% if perms.GestionDocumental.view_ordenestrabajo %}
+            <li {% if menu_actual == 'consecutivos-ordenestrabajo' %} class="active" {% endif %}>
+            <a href="{% url 'GestionDocumental:consecutivo-ordenestrabajo-index' 0 %}" title="Consecutivo de ordenes de trabajo" data-filter-tags="consecutivo ordenestrabajo">
+                <i class="far fa-file-alt"></i>
+                <span class="nav-link-text" data-i18n="nav.gestion_documental_consecutivo_ordenestrabajo">Órdenes de trabajo</span>
+            </a>
+        </li>
+        {% endif %}
+       {% if perms.GestionDocumental.view_actascontratos %}
+            <li {% if menu_actual == 'consecutivos-actas-contratos' %} class="active" {% endif %}>
+            <a href="{% url 'GestionDocumental:consecutivo-actascontratos-index' 0 %}" title="Consecutivo actas de contratos" data-filter-tags="consecutivo actascontratos">
+                <i class="far fa-file-alt"></i>
+                <span class="nav-link-text" data-i18n="nav.gestion_documental_consecutivo_actascontrato">Actas de contratos</span>
             </a>
         </li>
         {% endif %}
