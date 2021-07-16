@@ -85,6 +85,14 @@
         </ul>
     </li>
     {% endif %}
+    {% if perms.Administracion.view_reserva_sala_juntas %}
+    <li {% if menu_actual == 'reserva-sala-juntas' %} class="active" {% endif %}>
+        <a href="{% url 'Administracion:reserva-sala-juntas' %}" title="Reserva Sala de Juntas" data-filter-tags="reserva sala juntas">
+            <i class="far fa-calendar-alt"></i>
+            <span class="nav-link-text" data-i18n="nav.administracion_reserva_sala_juntas">Reserva Sala de Juntas</span>
+        </a>
+    </li>
+    {% endif %}
 {% else %}
     <li {% if menu_actual == 'perfil' %} class="active" {% endif %}>
         <a href="{% url 'Administracion:proveedor-perfil' %}" title="Mi Perfil" data-filter-tags="proveedor perfil">

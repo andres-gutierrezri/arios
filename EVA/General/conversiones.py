@@ -49,6 +49,18 @@ def string_to_date(fecha_string: str) -> Optional[date]:
         return None
 
 
+def datetime_to_isostring(fecha) -> str:
+    """
+    Convierte una fecha a string con formato AAAA-MM-DDTHH:hh:ss.sssZ.
+    :param fecha: fecha con formato date o datetime
+    :return: retorna la fecha en string, Si falla la conversión, retorna vacío.
+    """
+    try:
+        return fecha.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+    except ValueError:
+        return ''
+
+
 def datetime_to_string(fecha) -> str:
     """
     Convierte una fecha a string con formato AAAA-MM-DD.
@@ -59,7 +71,6 @@ def datetime_to_string(fecha) -> str:
         return fecha.strftime("%Y-%m-%d")
     except ValueError:
         return ''
-
 
 def datetime_to_filename(fecha) -> str:
     """
