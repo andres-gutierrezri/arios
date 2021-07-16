@@ -25,6 +25,19 @@ def string_to_datetime(fecha_string: str) -> Optional[datetime]:
         return None
 
 
+def string_to_datetime_2(fecha_string: str) -> Optional[datetime]:
+    """
+    Convierte un string a datetime, la fecha se toma con el timezone configurado en settings.TIME_ZONE
+    :param fecha_string: string con formato "%Y-%m-%d %H:%M"
+    :return: retorna el datetime en UTC, si falla la conversión retorna None.
+    """
+    try:
+        return datetime.strptime(fecha_string, "%Y-%m-%d %H:%M").astimezone(pytz.timezone(settings.TIME_ZONE))\
+            .astimezone(pytz.timezone('UTC'))
+    except ValueError:
+        return None
+
+
 def isostring_to_datetime(fecha_string: str) -> Optional[datetime]:
     """
     Convierte un string con una fecha en formato ISO a datetime.
@@ -72,6 +85,7 @@ def datetime_to_string(fecha) -> str:
     except ValueError:
         return ''
 
+
 def datetime_to_utc(fecha: datetime) -> Optional[datetime]:
     """
     Convierte un string a datetime, la fecha se toma con el timezone configurado en settings.TIME_ZONE
@@ -83,6 +97,7 @@ def datetime_to_utc(fecha: datetime) -> Optional[datetime]:
             .astimezone(pytz.timezone('UTC'))
     except ValueError:
         return None
+
 
 def datetime_to_filename(fecha) -> str:
     """
