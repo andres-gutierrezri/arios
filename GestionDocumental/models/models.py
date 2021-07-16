@@ -278,9 +278,10 @@ class ConsecutivoActasContratos(ConsecutivoBase):
     fecha_suspension = models.DateField(verbose_name='Fecha Suspensión', null=True, blank=True)
     fecha_reinicio = models.DateField(verbose_name='Fecha Reinicio', null=True, blank=True)
     descripcion = models.CharField(max_length=100, verbose_name='Descripción', null=False, blank=False)
-    consecutivo_contrato = models.ForeignKey(ConsecutivoContrato, on_delete=models.CASCADE, verbose_name='Consecutivo Contrato', null=True, blank=True)
-    tipo_acta = models.SmallIntegerField(choices=TiposActas.choices, verbose_name='Medio Soporte',
-                                             null=False, blank=False)
+    consecutivo_contrato = models.ForeignKey(ConsecutivoContrato, on_delete=models.CASCADE,
+                                             verbose_name='Consecutivo Contrato', null=True, blank=True)
+    tipo_acta = models.SmallIntegerField(choices=TiposActas.choices, verbose_name='Tipo de Acta',
+                                         null=False, blank=False)
     consecutivo = models.IntegerField(verbose_name='Consecutivo', null=False, blank=False)
 
     def __str__(self):
@@ -312,3 +313,15 @@ class ConsecutivoActasContratos(ConsecutivoBase):
         consecutivo.estado = True
 
         return consecutivo
+
+    def actualizar_codigo(self, consecutivo: int = None):
+        """
+        Actualiza el código del consecutivo de contratos, se debe asegurar que el campo tipo de contrato ya este
+        asignado.
+        :param consecutivo: Número del consecutivo del contrato, si no se especifica se toma el que tiene asignado la
+        instancia.
+        """
+        sigla_tipo_acta = TiposActas.sigla(self.tipo_acta)
+        if not consecutivo:
+            consecutivo = self.consecutivo
+        self.codigo = f'{sigla_tipo_acta}-{consecutivo:03d}-{app_date_now().year}'
