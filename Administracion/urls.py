@@ -120,5 +120,9 @@ urlpatterns = [
     path('reservas-sala-juntas/<int:id_reserva>/editar', sala_juntas.ReservaSalaJuntasEditarView.as_view(),
          name='reserva-sala-juntas-editar'),
     path('reservas-sala-juntas/<int:id_reserva>/delete', sala_juntas.ReservaSalaJuntasEliminarView.as_view(),
-         name='reserva-sala-juntas-delete')
+         name='reserva-sala-juntas-delete'),
+    path('reservas-sala-juntas/<int:id_reserva>/finalizar', sala_juntas.ReservaSalaJuntasFinalizarView.as_view(),
+         name='reserva-sala-juntas-finalizar'),
+    path('reservas-sala-juntas/notificaciones', sala_juntas.ReservaSalaJuntasNotificacionView.as_view(),
+         name='reserva-sala-juntas-notificaciones'),
 ]

@@ -1,17 +1,20 @@
 'use strict'
 
 const modalCrearReserva = $('#crear-reserva');
+
 let calendario;
 let mostrarOcultar;
 
 $(document).ready(function () {
     const divCalendario = $('#calendar');
-   calendario = new FullCalendar.Calendar(divCalendario[0], {
+    calendario = new FullCalendar.Calendar(divCalendario[0], {
         plugins: ['dayGrid', 'list', 'timeGrid', 'interaction', 'bootstrap'],
         themeSystem: 'bootstrap',
         timeZone: 'local', // Configurar zona horaria
         firstDay: 0, // Cambio del primer día de inicio de semana del calendario, (Domingo = 0, Lunes = 1,…)
         locale: 'es', // Cambio del lenguaje del calendario a español
+        allDayText: 'Horas', // The text titling the "all-day" slot at the top of the calendar
+        defaultView: 'dayGridMonth', // The initial view when the calendar loads 'dayGridWeek', 'timeGridDay', 'listWeek'
         editable: true,
         eventLimit: true, // allow "more" link when too many events
         selectable: true,
@@ -38,48 +41,61 @@ $(document).ready(function () {
             start: moment().format('YYYY-MM-DD')
         },
         // Evento para mostrar, ocultar o modificar los eventos al momento de hacer render
+        // Mostrar y ocultar reservas
         eventRender: function(event) {
             mostrarOcultar = event.event.classNames.toString();
             if (mostrarOcultar !== "mostrar") return false
         },
-        // Evento para seleccionar un evento
+        // Evento para modificar un evento (Modificar una reserva haciendo Click sobre ella)
         eventClick: function(event) {
-            modificarEventos(event);
-        },
-        // para cambio de posición del evento
-        eventDrop: function(event) {
-            let fechaActual =  moment(moment(),"DD-MM-YYYY");
-            let fechaNueva = moment(event.event.start,"DD-MM-YYYY");
-            if(fechaActual >= fechaNueva){
-                calendario.refetchEvents();
-            }else{
+            let fechaActual = moment(moment(),"DD-MM-YYYY HH:mm:ss");
+            let fechaFinal = moment(event.event.end,"DD-MM-YYYY HH:mm:ss");
+            let color = event.event.backgroundColor;
+            if (fechaFinal > fechaActual || color === "orange") {
                 modificarEventos(event);
             }
-
         },
+        // Evento para cambio de posición de un evento (Cambio de posición de una reserva)
+        eventDrop: function(event) {
+            let fechaActual = moment(moment(),"DD-MM-YYYY HH:mm:ss");
+            let fechaNueva = moment(event.event.start,"DD-MM-YYYY HH:mm:ss");
+            let color = event.event.backgroundColor;
+            if (fechaActual >= fechaNueva || color === "gray" || color === "orange" || color === "red") {
+                calendario.refetchEvents();
+            } else {
+                modificarEventos(event);
+            }
+        },
+        // Evento de selección haciendo Click sobre el calendario (Creación de una reserva)
         select: function(start, end) {
+            let fechaActual = moment(moment(),"DD-MM-YYYY HH:mm:ss");
+            let fechaFin = moment(start.end,"DD-MM-YYYY HH:mm:ss");
             let url = `/administracion/reservas-sala-juntas/add`;
             let fechas = {
                 'inicio': start.startStr,
-                'fin':start.startStr
+                'fin':start.endStr
             };
-            abrirModalCrearReserva(url, fechas);
+            if (fechaFin >= fechaActual) {
+                abrirModalCrearReserva(url, fechas);
+            }
         },
-      eventResize: function(event) {
-            modificarEventos(event);
-            /*if (!confirm("is this okay?")) {
-              event.revert();
-            }*/
-      }
+        // Evento de arrastre de un evento (Modificación da la fecha final de una reserva)
+        eventResize: function(event) {
+            let color = event.event.backgroundColor;
+            if (color === "gray" || color === "orange") {
+                calendario.refetchEvents();
+            } else {
+                modificarEventos(event);
+            }
+        }
     });
     calendario.render();
     calendario.addEventSource({
         url: '/administracion/reservas-sala-juntas/json'
     });
-
 });
 
-function modificarEventos(event){
+function modificarEventos(event) {
     let eventObj = event.event;
     if (eventObj.id) {
         let idEvento = eventObj.id
@@ -110,18 +126,41 @@ function abrirModalCrearReserva(url, fechas) {
     });
 }
 
-function fbtnCancelar(){
+function fbtnCancelar() {
     calendario.refetchEvents();
 }
 
-function fEliminarReunion(valor){
+function fEliminarReunion(valor) {
     modalCrearReserva.modal('hide');
-     fConfirmarEliminar(valor, true, function (){
-            EVANotificacion.toast.exitoso("Se eliminó la reserva")
+     fConfirmarEliminar(valor, true, function () {
+            EVANotificacion.toast.exitoso("La reserva ha sido eliminada");
             calendario.refetchEvents();
             modalCrearReserva.modal('hide');
          }
      );
+}
+
+function fFinalizarReunion(valor) {
+    modalCrearReserva.modal('hide');
+    Swal.fire({
+        title: '¿Está seguro que desea finalizar la reunión?',
+        text: "Esta acción no se podrá revertir",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '¡Sí, finalizarla!',
+        cancelButtonText: 'Cancelar'
+    }).then(result => {
+        if(result.value) {
+            const form = $("#juntas_form")[0];
+            let url = `/administracion/reservas-sala-juntas/${valor}/finalizar`;
+            enviarFormularioAsync(form, url).then(exitoso => {
+                if (exitoso) {
+                    calendario.refetchEvents();
+                    modalCrearReserva.modal('hide');
+                }
+            });
+        }
+    });
 }
 
 function configurarModalCrear(fechas) {
@@ -137,5 +176,3 @@ function configurarModalCrear(fechas) {
     });
     agregarValidacionFormularios();
 }
-
-
