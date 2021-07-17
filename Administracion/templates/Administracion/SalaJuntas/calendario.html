@@ -6,7 +6,6 @@
 {% block styles %}
     {% include 'EVA/_common/_statics/_select2.html' with incCSS=True %}
     {% include 'EVA/_common/_statics/_datepicker.html' with incCSS=True %}
-    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/miscellaneous/fullcalendar/fullcalendar.bundle.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.css' %}">
 {% endblock styles %}
@@ -15,7 +14,7 @@
     <div class="panel-container show">
         <div class="header">
              <h1 class="header-title">
-                <i class='far fa-calendar-alt'></i> Reserva de la Sala de Juntas <span class='fw-300'></span>
+                <i class='fad fa-calendar-alt'></i> Reserva de la Sala de Juntas <span class='fw-300'></span>
                  <br>
                  <br>
              </h1>
@@ -25,17 +24,11 @@
         <div class="col-xl-12">
             <div id="panel-1" class="panel">
                 <div class="panel-hdr">
-                    {% if perms.Administracion.add_reserva_sala_juntas %}
-                        <div class="col-md-auto d-flex align-items-center">
-                            <small>
-                                <a class="fad fa-3x fad fa-plus-circle" href="javascript:abrirModalCrearReserva('{% url 'Administracion:reserva-sala-juntas-crear'%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear Reserva"></a>
-                            </small>
-                        </div>
-                    {% else %}
-                        <div class="col-md-auto d-flex align-items-center"></div>
-                    {% endif %}
                     <h2>
-                        Crear <span class="ml-1">Reserva</span>
+                        {% if perms.Administracion.add_reserva_sala_juntas %}
+                            <span class="fad fa-2x fa-plus-circle cursor-pointer" onclick="abrirModalCrearReserva('{% url 'Administracion:reserva-sala-juntas-crear'%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear Reserva">
+                            </span>
+                        {% endif %}
                     </h2>
                     <div class="panel-toolbar">
                         <button class="btn btn-panel" data-action="panel-fullscreen" data-toggle="tooltip" data-offset="0,10" data-original-title="Pantalla completa"></button>
