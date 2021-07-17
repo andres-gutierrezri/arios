@@ -69,7 +69,7 @@
                                                         <div class="col-sm-4 col-md-1 hidden-md-down bg-primary-600">
                                                             <div class="text-uppercase text-white py-2 px-3">Estado</div>
                                                         </div>
-                                                        <div class="col-sm-4 col-md-3 hidden-md-down bg-primary-600">
+                                                        <div class="col-sm-8 col-md-3 hidden-md-down bg-primary-600">
                                                             <div class="text-uppercase text-white py-2 px-3">Responsables</div>
                                                         </div>
                                                         <div class="col-sm-4 col-md-2 hidden-md-down bg-primary-600">
@@ -94,47 +94,47 @@
                                                                                 <a href="javascript:void(0)" class="fs-lg fw-500 d-block text-dark">
                                                                                     {{ actividad.nombre }}
                                                                                 </a>
-                                                                                <div class="d-block text-muted fs-sm">
+                                                                                <div class="d-block text-justify text-muted fs-sm">
                                                                                     {{ actividad.descripcion }}
                                                                                 </div>
                                                                             </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                <div class="col-3 col-md-2 col-xl-1 hidden-md-down">
-                                                                    <div class="p-3 p-md-3">
-                                                                        <span class="d-block text-muted"><i> {{ actividad.fecha_inicio }} </i></span>
+                                                                <div class="col-sm-4 col-md-1 hidden-md-down">
+                                                                    <div class="p-3 p-mt-3 p-md-3">
+                                                                        <span class="d-block text-left text-muted">{{ actividad.fecha_inicio|date:'Y-m-d' }}</span>
                                                                     </div>
                                                                 </div>
-                                                                <div class="col-3 col-md-2 col-xl-1 hidden-md-down">
-                                                                    <div class="p-3 p-md-3">
-                                                                        <span class="d-block text-muted"><i> {{ actividad.fecha_fin }} </i></span>
+                                                                <div class="col-sm-4 col-md-1 hidden-md-down">
+                                                                    <div class="p-3 p-mt-3 p-md-3">
+                                                                        <span class="d-block text-left text-muted">{{ actividad.fecha_fin|date:'Y-m-d' }}</span>
                                                                     </div>
                                                                 </div>
-                                                                <div class="col-3 col-md-2 col-xl-1 hidden-md-down">
+                                                                <div class="col-sm-4 col-md-1 hidden-md-down">
                                                                 {% if actividad.estado == EstadosActividades.CREADA%}
                                                                     <div class="p-3 p-md-3">
-                                                                        <span class="d-block text-muted"><i> Creada </i></span>
+                                                                        <span class="d-block text-left text-muted">Creada</span>
                                                                     </div>
                                                                 {% endif %}
                                                                 {% if actividad.estado == EstadosActividades.EN_PROCESO%}
                                                                     <div class="p-3 p-md-3">
-                                                                        <span class="d-block text-muted"><i> En Proceso </i></span>
+                                                                        <span class="d-block text-left text-muted">En Proceso</span>
                                                                     </div>
                                                                 {% endif %}
                                                                 {% if actividad.estado == EstadosActividades.FINALIZADO%}
                                                                     <div class="p-3 p-md-3">
-                                                                        <span class="d-block text-muted"><i> Finalizada </i></span>
+                                                                        <span class="d-block text-left text-muted">Finalizada</span>
                                                                     </div>
                                                                 {% endif %}
                                                                 {% if actividad.estado == EstadosActividades.CERRADA%}
                                                                     <div class="p-3 p-md-3">
-                                                                        <span class="d-block text-muted"><i> Cerrada </i></span>
+                                                                        <span class="d-block text-left text-muted">Cerrada</span>
                                                                     </div>
                                                                 {% endif %}
                                                                 {% if actividad.estado == EstadosActividades.REABIERTA%}
                                                                     <div class="p-3 p-md-3">
-                                                                        <span class="d-block text-muted"><i> ReAbierta </i></span>
+                                                                        <span class="d-block text-left text-muted">ReAbierta</span>
                                                                     </div>
                                                                 {% endif %}
                                                                 </div>
@@ -258,11 +258,11 @@
                                                                                                         Fecha:
                                                                                                     </a>
                                                                                                     <a class="fs-sm">
-                                                                                                        {{ avance.fecha_avance }}
+                                                                                                        {{ avance.fecha_avance|date:'Y-m-d' }}
                                                                                                     </a>
                                                                                                     <br>
                                                                                                 </div>
-                                                                                                <div class="card-body border-faded border-top-0 border-left-0 border-right-0 rounded-top">
+                                                                                                <div class="card-body text-justify border-faded border-top-0 border-left-0 border-right-0 rounded-top">
                                                                                                     <div class="d-block p-2 text-muted fs-sm">
                                                                                                         <a class="fs-lg text-dark" >
                                                                                                             Descripción:
