@@ -83,11 +83,27 @@ $(document).ready(function () {
         },
         // Evento de arrastre de un evento (Modificación da la fecha final de una reserva)
         eventResize: function(event) {
+            if(event.view.type !== 'listWeek') {
+                $(event.el).popover('dispose');
+            }
             let color = event.event.backgroundColor;
             if (color === "gray" || color === "orange") {
                 calendario.refetchEvents();
             } else {
                 modificarEventos(event);
+            }
+
+        },
+        eventMouseEnter: mouseEnterInfo => {
+            if(mouseEnterInfo.view.type !== 'listWeek') {
+                const elemento =  $(mouseEnterInfo.el);
+                elemento.popover({content: mouseEnterInfo.event.title, placement:'top'});
+                elemento.popover('show');
+            }
+        },
+        eventMouseLeave: mouseLeaveInfo => {
+            if(mouseLeaveInfo.view.type !== 'listWeek') {
+                $(mouseLeaveInfo.el).popover('dispose');
             }
         }
     });
