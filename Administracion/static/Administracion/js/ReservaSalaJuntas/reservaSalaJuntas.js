@@ -16,9 +16,11 @@ $(document).ready(function () {
         allDayText: 'Horas', // The text titling the "all-day" slot at the top of the calendar
         defaultView: 'dayGridMonth', // The initial view when the calendar loads 'dayGridWeek', 'timeGridDay', 'listWeek'
         editable: true,
-        eventLimit: true, // allow "more" link when too many events
+        eventLimit: 3, // allow "more" link when too many events
+        eventLimitText: 'reservas',
         selectable: true,
         selectHelper: true,
+        nowIndicator:true,
         titleFormat: {
             year: 'numeric',
             month: 'long',
