@@ -3,9 +3,9 @@ import random
 import datetime
 
 from django.core.exceptions import ValidationError
+from django.db.transaction import atomic, rollback
 from django.http import JsonResponse
 from django.shortcuts import render
-from sqlite3 import IntegrityError
 from django.db.models import Q
 from Administracion.models.sala_juntas import ReservaSalaJuntas
 from Administracion.parametros import ParametrosAdministracion
@@ -79,8 +79,10 @@ class ReservaSalaJuntasCrearView(AbstractEvaLoggedView):
             return RespuestaJson.error(resval)
 
         try:
-            reserva.save()
+            with atomic():
+                reserva.save()
         except:
+            rollback()
             LOGGER.exception("Error en la reserva")
             return RespuestaJson.error("Ha ocurrido un error al guardar la información")
 
@@ -130,9 +132,15 @@ class ReservaSalaJuntasEditarView(AbstractEvaLoggedView):
 
         if reserva_db.comparar(reserva, excluir=['fecha_modificacion', 'usuario_modifica', 'motivo']):
             return RespuestaJson.exitosa(mensaje="No se hicieron cambios en la reserva para la sala de juntas")
-        else:
-            reserva.save(update_fields=update_fields)
-            return RespuestaJson.exitosa(mensaje="Se ha editado la reserva para la sala de juntas")
+
+        try:
+            with atomic():
+                reserva.save(update_fields=update_fields)
+                return RespuestaJson.exitosa(mensaje="Se ha editado la reserva para la sala de juntas")
+        except:
+            rollback()
+            LOGGER.exception("Error editando una reserva de sala de juntas.")
+            return RespuestaJson.error("Se presentó un error al editar la reserva de sala de juntas.")
 
 
 class ReservaSalaJuntasEliminarView(AbstractEvaLoggedView):
@@ -145,13 +153,15 @@ class ReservaSalaJuntasEliminarView(AbstractEvaLoggedView):
         if not reserva_db.estado:
             return RespuestaJson.error("La reserva ya ha sido eliminada")
         try:
-            reserva_db.usuario_modifica = request.user
-            reserva_db.estado = False
-            reserva_db.motivo = motivo
-            reserva_db.save(update_fields=['estado', 'motivo', 'usuario_modifica', 'fecha_modificacion'])
-            return RespuestaJson.exitosa()
-
-        except IntegrityError:
+            with atomic():
+                reserva_db.usuario_modifica = request.user
+                reserva_db.estado = False
+                reserva_db.motivo = motivo
+                reserva_db.save(update_fields=['estado', 'motivo', 'usuario_modifica', 'fecha_modificacion'])
+                return RespuestaJson.exitosa()
+        except:
+            rollback()
+            LOGGER.exception("Error al eliminar una reserva de sala de juntas.")
             return RespuestaJson.error("No se puede eliminar la reserva {0}".format(reserva_db.tema))
 
 
@@ -162,14 +172,16 @@ class ReservaSalaJuntasFinalizarView(AbstractEvaLoggedView):
         if reserva_db.finalizacion:
             return RespuestaJson.error("La reserva ya ha sido finalizada")
         try:
-            if reserva_db.fecha_fin >= app_datetime_now():
-                reserva_db.fecha_fin = app_datetime_now()
-            reserva_db.usuario_modifica = request.user
-            reserva_db.finalizacion = True
-            reserva_db.save(update_fields=['fecha_fin', 'finalizacion', 'usuario_modifica', 'fecha_modificacion'])
-            return RespuestaJson.exitosa(mensaje="La reserva ha sido finalizada")
-
-        except IntegrityError:
+            with atomic():
+                if reserva_db.fecha_fin >= app_datetime_now():
+                    reserva_db.fecha_fin = app_datetime_now()
+                reserva_db.usuario_modifica = request.user
+                reserva_db.finalizacion = True
+                reserva_db.save(update_fields=['fecha_fin', 'finalizacion', 'usuario_modifica', 'fecha_modificacion'])
+                return RespuestaJson.exitosa(mensaje="La reserva ha sido finalizada")
+        except:
+            rollback()
+            LOGGER.exception("Error finalizando una reserva de sala de juntas.")
             return RespuestaJson.error("No se puede finalizar la reserva {0}".format(reserva_db.tema))
 
 
