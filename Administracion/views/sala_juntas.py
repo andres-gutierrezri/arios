@@ -4,7 +4,6 @@ import datetime
 
 from django.core.exceptions import ValidationError
 from django.db.transaction import atomic, rollback
-from django.http import JsonResponse
 from django.shortcuts import render
 from django.db.models import Q
 from Administracion.models.sala_juntas import ReservaSalaJuntas
@@ -39,7 +38,7 @@ class ReservaSalaJuntasView(AbstractEvaLoggedView):
                                       'color': self.get_color_reserva(reserva),
                                       'className': 'mostrar' if reserva.estado else 'ocultar'})
 
-            return JsonResponse(reservas_dict, safe=False)
+            return RespuestaJson.exitosa(reservas_dict)
         else:
             return render(request, 'Administracion/SalaJuntas/calendario.html',
                           {'menu_actual': 'reserva-sala-juntas'})
@@ -208,9 +207,9 @@ class ReservaSalaJuntasNotificacionView(AbstractEvaLoggedView):
                 reserva.save(update_fields=['notificacion'])
 
         if notificaciones_generadas:
-            return JsonResponse({"estado": "OK", "mensaje": "Notificaciones generadas"})
+            return RespuestaJson.exitosa(mensaje='Notificaciones generadas')
         else:
-            return JsonResponse({"estado": "OK", "mensaje": "En espera para generar las notificaciones"})
+            return RespuestaJson.exitosa(mensaje='En espera para generar las notificaciones')
 
 
 def datos_xa_render(request, reserva: ReservaSalaJuntas = None) -> dict:

@@ -105,6 +105,13 @@ $(document).ready(function () {
             if(mouseLeaveInfo.view.type !== 'listWeek') {
                 $(mouseLeaveInfo.el).popover('dispose');
             }
+        },
+        eventSourceSuccess: (content, xhr) => {
+            return content.datos;
+        },
+        eventSourceFailure: (errorObj ) => {
+            console.error(errorObj.message);
+            EVANotificacion.toast.error("Error al cargar las reservas");
         }
     });
     calendario.render();
