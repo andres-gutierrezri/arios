@@ -59,6 +59,9 @@ $(document).ready(function () {
         },
         // Evento para cambio de posición de un evento (Cambio de posición de una reserva)
         eventDrop: function(event) {
+            if(event.view.type !== 'listWeek') {
+                $(event.el).popover('dispose');
+            }
             let fechaActual = moment(moment(),"DD-MM-YYYY HH:mm:ss");
             let fechaNueva = moment(event.event.start,"DD-MM-YYYY HH:mm:ss");
             let color = event.event.backgroundColor;
