@@ -12,6 +12,12 @@ from django.utils.translation import ngettext_lazy
 from EVA.General import app_datetime_now
 
 
+SEGUNDOS_EN_MIN: int = 60
+"""
+Cantidad de segundos en un minuto
+"""
+
+
 def string_to_datetime(fecha_string: str) -> Optional[datetime]:
     """
     Convierte un string a datetime, la fecha se toma con el timezone configurado en settings.TIME_ZONE
