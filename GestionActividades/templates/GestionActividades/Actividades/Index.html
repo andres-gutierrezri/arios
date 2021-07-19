@@ -1,0 +1,185 @@
+{% extends 'GestionActividades/_common/base_gestion_actividades.html' %}
+{% load static %}
+{% load eva_tags %}
+{% block styles %}
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-solid.css' %}">
+    {% include 'EVA/_common/_statics/_tablas.html' with incCSS=True %}
+    {% include 'EVA/_common/_statics/_select2.html' with incCSS=True %}
+    {% include 'EVA/_common/_statics/_datepicker.html' with incCSS=True %}
+{% endblock styles %}
+{% block main %}
+    <div class="panel-container show">
+        <div class="header">
+            <h1 class="header-title">
+                <i class='far fa-user'></i> Actividades <span class='fw-300'></span>
+                <br>
+                <br>
+            </h1>
+        </div>
+        <div class="row">
+            <div class="col-xl-12">
+                <div id="panel-1" class="panel">
+                        {% if perms.GestionActividades.add_actividades %}
+                            <div class="col-md-10">
+                                <small>
+                                    <a class="far fa-3x far fa-plus-circle" href="javascript:abrirModalCrearActividad('{% url 'GestionActividades:actividades-crear'%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear Actividad"></a>
+                                </small>
+                            </div>
+                        {% else %}
+                            <div class="col-md-10"></div>
+                        {% endif %}
+                    <div class="panel-container show">
+                        <div class="panel-content">
+                            <div class="panel-group">
+                                <div class="panel-body">
+                                    {% include 'EVA/_common/_busqueda_paginacion.html'%}
+                                    <div class="form-group">
+                                         <div class="form-row">
+                                             <div class="col-xl-12">
+                                            </div>
+                                        </div>
+                                            {% for grupo in grupos %}
+                                            <div class="card mb-g border shadow-0">
+                                                <div class="card-header">
+                                                    <div class="row no-gutters align-items-center">
+                                                        <div class="col">
+                                                            <span class="h6 font-weight-bold text-uppercase">{{ grupo.nombre }}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="card-header p-0">
+                                                    <div class="row no-gutters row-grid align-items-stretch">
+                                                        <div class="col-12 col-md">
+                                                            <div class="text-uppercase text-white py-2 px-3 bg-primary-600">Actividad</div>
+                                                        </div>
+                                                        <div class="col-sm-4 col-md-2 col-xl-1 hidden-md-down">
+                                                            <div class="text-uppercase text-white py-2 px-3 bg-primary-600">Estado</div>
+                                                        </div>
+                                                        <div class="col-sm-6 col-md-3 hidden-md-down bg-primary-600">
+                                                            <div class="text-uppercase text-white py-2 px-3">Responsables</div>
+                                                        </div>
+                                                        <div class="col-sm-4 col-md-2 hidden-md-down bg-primary-600">
+                                                            <div class="text-uppercase text-white py-2 px-3">Progreso</div>
+                                                        </div>
+                                                        <div class="col-sm-4 col-md-1 hidden-md-down bg-primary-600">
+                                                            <div class="text-uppercase text-white py-2 px-3">Acción</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="card-body p-0">
+                                                    <div class="row no-gutters row-grid">
+                                                    <!-- thread -->
+                                                    {% for actividad in actividades %}
+                                                        {% if actividad.grupo_actividad_id ==  grupo.id %}
+                                                        <div class="col-12">
+                                                            <div class="row no-gutters row-grid align-items-stretch">
+                                                                <div class="col-md">
+                                                                    <div class="p-3">
+                                                                        <div class="d-flex">
+                                                                            <div class="d-inline-flex flex-column">
+                                                                                <a href="javascript:void(0)" class="fs-lg fw-500 d-block">
+                                                                                    {{ actividad.nombre }}
+                                                                                </a>
+                                                                                <div class="d-block text-muted fs-sm">
+                                                                                    {{ actividad.descripcion }}
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-4 col-md-2 col-xl-1 hidden-md-down">
+                                                                {% if actividad.estado == 1%}
+                                                                    <div class="p-3 p-md-3">
+                                                                        <span class="d-block text-muted"><i> Creada </i></span>
+                                                                    </div>
+                                                                {% endif %}
+                                                                {% if actividad.estado == 2%}
+                                                                    <div class="p-3 p-md-3">
+                                                                        <span class="d-block text-muted"><i> En Proceso </i></span>
+                                                                    </div>
+                                                                {% endif %}
+                                                                {% if actividad.estado == 3%}
+                                                                    <div class="p-3 p-md-3">
+                                                                        <span class="d-block text-muted"><i> Finalizada </i></span>
+                                                                    </div>
+                                                                {% endif %}
+                                                                {% if actividad.estado == 4%}
+                                                                    <div class="p-3 p-md-3">
+                                                                        <span class="d-block text-muted"><i> Cerrada </i></span>
+                                                                    </div>
+                                                                {% endif %}
+                                                                {% if actividad.estado == 5%}
+                                                                    <div class="p-3 p-md-3">
+                                                                        <span class="d-block text-muted"><i> Abierta </i></span>
+                                                                    </div>
+                                                                {% endif %}
+                                                                </div>
+                                                                <div class="col-8 col-md-3 hidden-md-down">
+                                                                    {% for responsable in responsable_actividad %}
+                                                                        {% if actividad.id == responsable.actividad_id %}
+                                                                            {% for colaborador in colaboradores %}
+                                                                                {% if responsable.responsable_id == colaborador.id %}
+                                                                                    <div class="p-3 p-md-3">
+                                                                                        <span class="d-block text-muted"><i>{{ colaborador.first_name}} {{colaborador.last_name}}</i></span>
+                                                                                    </div>
+                                                                                {% endif %}
+                                                                            {% endfor %}
+                                                                         {% endif %}
+                                                                    {% endfor %}
+                                                                </div>
+                                                                <div class="col-4 col-md-2 hidden-md-down">
+                                                                    <div class="p-3 p-md-3">
+                                                                        <div class="d-flex align-items-center">
+                                                                            <div class="flex-1 min-width-0">
+                                                                                    <a href="javascript:void(0)" class="d-block text-truncate">
+                                                                                        <div class="progress">
+                                                                                            <div class="progress-bar" role="progressbar" style="width:{{ actividad.porcentaje_avance }}%;" aria-valuenow="{{ actividad.porcentaje_avance }}" aria-valuemin="0" aria-valuemax="100">{{ actividad.porcentaje_avance }}%</div>
+                                                                                        </div>
+                                                                                    </a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-4 col-md-1 hidden-md-down">
+                                                                    <div class="p-3 p-md-3">
+                                                                        {% if perms.GestionActividades.change_grupoactividades %}
+                                                                            <small>
+                                                                                <a class="fad fa-3x fa-file-edit" id="editar_{{ actividad.id }}" href="javascript:abrirModalCrearActividad('{% url 'GestionActividades:actividades-editar' actividad.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar Actividad"></a>
+                                                                            </small>
+                                                                        {% endif %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                    </div>
+                                 {% include 'EVA/_common/_paginacion.html' with datos=actividad%}
+                                </div>
+                                <div class="card-footer small text-muted">Actualizado: {{fecha}} </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" tabindex="-1" id="crear-actividad" role="dialog"  aria-hidden="true"></div>
+{% endblock %}
+
+{% block scripts %}
+    {% include 'EVA/_common/_statics/_tablas.html' %}
+    {% include 'EVA/_common/_statics/_select2.html' %}
+    {% include 'EVA/_common/_statics/_datepicker.html'%}
+    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
+    <script src="{% static 'GestionDocumental/js/filtro_consecutivos.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/controlBusquedaPaginacion.js' %}"></script>
+    <script src="{% static 'GestionActividades/js/actividades.js' %}"></script>
+{% endblock scripts%}
