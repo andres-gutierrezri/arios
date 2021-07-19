@@ -15,10 +15,17 @@ Including another URLconf
 """
 
 from django.urls import path
-from GestionActividades.views import views
-
+from GestionActividades.views import views, grupo_actividades
 app_name = 'GestionActividades'
 
 urlpatterns = [
     path('index/', views.PrincipalView.as_view(), name='index'),
+    path('grupo-actividades/index', grupo_actividades.GruposActividadesIndexView.as_view(),
+         name='grupo-actividades-index'),
+    path('grupo-actividades/add', grupo_actividades.GruposActividadesCrearView.as_view(),
+         name='grupo-actividades-crear'),
+    path('grupo-actividades/<int:id_grupo>/editar', grupo_actividades.GruposActividadesEditarView.as_view(),
+         name='grupo-actividades-editar'),
+
+
 ]
