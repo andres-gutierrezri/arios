@@ -16,7 +16,7 @@ from EVA.General import app_datetime_now, app_date_now
 from EVA.General.modeljson import RespuestaJson
 from EVA.views.index import AbstractEvaLoggedView
 from GestionActividades.Enumeraciones import EstadosActividades
-from GestionActividades.models.models import Actividad, GrupoActividad, ResponsableActividad, Soporte
+from GestionActividades.models.models import Actividad, GrupoActividad, ResponsableActividad, Soporte, AvanceActividad
 
 LOGGER = logging.getLogger(__name__)
 
@@ -62,6 +62,9 @@ class ActividadesIndexView(AbstractEvaLoggedView):
         actividades = Actividad.objects.values('id', 'nombre', 'grupo_actividad_id', 'descripcion', 'fecha_fin',
                                                'estado', 'porcentaje_avance', 'soporte_requerido', 'fecha_inicio')
 
+        avances_actividad = AvanceActividad.objects.values('descripcion', 'fecha_avance', 'horas_empleadas',
+                                                           'porcentaje_avance', 'actividad_id')
+
         return render(request, 'GestionActividades/Actividades/index.html',
                       {'actividades': actividades,
                        'grupos': grupos,
@@ -70,6 +73,7 @@ class ActividadesIndexView(AbstractEvaLoggedView):
                        'buscar': search,
                        'archivos_soporte': archivos_soporte,
                        'EstadosActividades': EstadosActividades,
+                       'avances_actividad': avances_actividad,
                        'fecha': app_datetime_now()})
 
 
@@ -169,6 +173,30 @@ class ActividadesEditarView(AbstractEvaLoggedView):
             for responsable in responsables:
                 ResponsableActividad.objects.create(responsable_id=responsable, actividad_id=id_actividad)
 
+        return RespuestaJson.exitosa()
+
+
+class ActualizarActividadView(AbstractEvaLoggedView):
+    def get(self, request, id_actividad):
+        actividad = Actividad.objects.get(id=id_actividad)
+
+        return render(request, 'GestionActividades/Actividades/_actualizar_actividad_modal.html',
+                      {'fecha': app_datetime_now(),
+                       'actividad': actividad})
+
+    def post(self, request, id_actividad):
+        avance = AvanceActividad.from_dictionary(request.POST)
+        avance.actividad_id = id_actividad
+        avance.save()
+
+        # region Actualiza el porcentaje de avance de la actividad
+        update_fields = ['porcentaje_avance']
+        actividad_db = Actividad.objects.get(id=id_actividad)
+        actividad_db.porcentaje_avance += int(avance.porcentaje_avance)
+        actividad_db.save(update_fields=update_fields)
+        # endregion
+
+        messages.success(request, 'Se ha actualizado exitosamente la actividad')
         return RespuestaJson.exitosa()
 
 
