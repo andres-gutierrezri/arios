@@ -1,4 +1,4 @@
-{% if perms.GestionActividades.view_grupoactividades %}
+{% if perms.GestionActividades.view_grupoactividad %}
     <li {% if menu_actual == 'Grupo Actividades' %} class="active" {% endif %}>
         <a href="{% url 'GestionActividades:grupo-actividades-index' %}" title="Grupo Actividades" data-filter-tags="grupo actividades">
             <i class="fal fa-calendar-alt"></i>
@@ -6,7 +6,7 @@
         </a>
     </li>
 {% endif%}
-{% if perms.GestionActividades.view_actividades %}
+{% if perms.GestionActividades.view_actividad %}
 <li  {% if menu_actual == 'Actividades' %} class="active" {% endif %}>
     <a href="{% url 'GestionActividades:actividades-index'%}" title="Actividades" data-filter-tags="Actividades">
         <i class="fal fa-clipboard-check"></i>
