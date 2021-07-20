@@ -1,4 +1,5 @@
 import json
+from _decimal import Decimal
 from datetime import datetime
 
 from django.contrib.auth.models import User
@@ -14,6 +15,7 @@ from django.core.exceptions import ValidationError
 from Administracion.models import Proceso, TipoContrato
 from Administracion.utils import get_id_empresa_global
 from EVA.General import app_datetime_now
+from EVA.General.modeljson import RespuestaJson
 from EVA.views.index import AbstractEvaLoggedView
 from GestionActividades.Enumeraciones import PertenenciaGrupoActividades, EstadosActividades
 from GestionActividades.models.models import Actividad, GrupoActividad, ResponsableActividad
@@ -61,23 +63,22 @@ class ActividadesCrearView(AbstractEvaLoggedView):
                 grupo_generales = list(GrupoActividad.objects.values('id').filter(nombre__iexact='generales'))
                 actividad.grupo_actividad_id = grupo_generales[0].get('id')
             else:
-                messages.error(request, 'Falló editar. El grupo Generales no existe')
-                return redirect(reverse('GestionActividades:actividades-index'))
+                return RespuestaJson.error("Falló crear. El grupo Generales no existe")
 
         if Actividad.objects.filter(nombre__iexact=actividad.nombre,
                                     grupo_actividad_id__exact=actividad.grupo_actividad_id).exists():
-            messages.error(request, 'Falló crear. Ya existe una actividad con el mismo nombre dentro del grupo')
-            return redirect(reverse('GestionActividades:actividades-index'))
+            return RespuestaJson.error("Falló crear. Ya existe una actividad con el mismo nombre dentro del grupo")
+
         elif GrupoActividad.objects.filter(nombre__iexact=actividad.nombre).exists():
-            messages.error(request, 'Falló crear. No puede colocar el mismo nombre del grupo '
-                                    'que va a contener la actividad')
-            return redirect(reverse('GestionActividades:actividades-index'))
+            return RespuestaJson.error("Falló crear. No puede colocar el mismo nombre del grupo "
+                                       "que va a contener la actividad")
+
         else:
             actividad.save()
             for responsable in responsables:
                 ResponsableActividad.objects.create(responsable_id=responsable, actividad=actividad)
-            messages.success(request, 'Se ha creado la actividad <br> {0}'.format(grupo_actividad.nombre))
-            return redirect(reverse('GestionActividades:actividades-index'))
+
+        return RespuestaJson.exitosa()
 
 
 class ActividadesEditarView(AbstractEvaLoggedView):
@@ -106,8 +107,7 @@ class ActividadesEditarView(AbstractEvaLoggedView):
                 grupo_generales = list(GrupoActividad.objects.values('id').filter(nombre__iexact='generales'))
                 actividad.grupo_actividad_id = grupo_generales[0].get('id')
             else:
-                messages.error(request, 'Falló editar. El grupo Generales no existe')
-                return redirect(reverse('GestionActividades:actividades-index'))
+                return RespuestaJson.error("Falló crear. El grupo Generales no existe")
 
         responsables_actividad_db = ResponsableActividad.objects.filter(actividad_id=id_actividad)
         cantidad_responsables = responsables_actividad_db.count()
@@ -123,27 +123,24 @@ class ActividadesEditarView(AbstractEvaLoggedView):
         try:
             actividad.full_clean(validate_unique=False)
         except ValidationError as errores:
-            messages.error(request, 'Falló editar. Valide los datos ingresados al editar la actividad')
-            return redirect(reverse('GestionActividades:actividades-index'))
+            return RespuestaJson.error("Falló editar. Valide los datos ingresados al editar la actividad")
 
         if GrupoActividad.objects.filter(nombre__iexact=actividad.nombre).exists():
-            messages.error(request, 'Falló editar. No puede colocar el mismo nombre del grupo '
-                                    'que va a contener la actividad')
-            return redirect(reverse('GestionActividades:actividades-index'))
+            return RespuestaJson.error("Falló editar. No puede colocar el mismo nombre del grupo "
+                                       "que va a contener la actividad")
 
         if actividad_db.comparar(actividad, excluir=['fecha_modificacion', 'motivo', 'calificacion', 'codigo',
                                                      'porcentaje_avance']) \
                 and conteo_responsables == cantidad_responsables:
-            messages.success(request, 'No se hicieron cambios en la actividad {0}'
-                             .format(actividad.nombre))
-            return redirect(reverse('GestionActividades:actividades-index'))
+            return RespuestaJson.error("No se hicieron cambios en la actividad")
+
         else:
             actividad.save(update_fields=update_fields)
             ResponsableActividad.objects.filter(actividad_id=id_actividad).delete()
             for responsable in responsables:
                 ResponsableActividad.objects.create(responsable_id=responsable, actividad_id=id_actividad)
-            messages.success(request, 'Se ha editado la actividad <br> {0}'.format(actividad.nombre))
-            return redirect(reverse('GestionActividades:actividades-index'))
+
+        return RespuestaJson.exitosa()
 
 
 def datos_xa_render(request, actividad: Actividad = None) -> dict:
@@ -159,7 +156,6 @@ def datos_xa_render(request, actividad: Actividad = None) -> dict:
                                    'campo_texto': colaborador['first_name']+' '+colaborador['last_name']})
 
     responsable_actividad = ResponsableActividad.objects.get_ids_responsables_list(actividad)
-
     datos = {'fecha': app_datetime_now(),
              'grupos': lista_grupos,
              'colaboradores': lista_colaboradores,

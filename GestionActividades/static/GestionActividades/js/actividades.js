@@ -7,25 +7,47 @@ $(document).ready(function () {
     configurarFiltroConsecutivos();
 });
 
-function abrirModalCrearActividad(url) {
-    cargarAbrirModal(modalCrearActividad, url, configurarModalCrear);
+function abrirModalCrearActividad(url, grupo) {
+    cargarAbrirModal(modalCrearActividad, url, function () {
+        configurarModalCrear(grupo);
+        let form = $('#actividad_form')[0];
+        agregarValidacionForm(form, function (event) {
+            enviarFormularioAsync(form, url, "cargando").then(exitoso => {
+                if (exitoso) {
+                    EVANotificacion.toast.exitoso(`Se ha ${url.includes("editar") ? "editado" : "creado"} la actividad`);
+                    modalCrearActividad.modal('hide');
+                    Swal.clickCancel();
+                    setTimeout(function (){
+                        location.reload();
+                    },1000);
+                } else {
+                    Swal.clickCancel();
+                }
+            });
+            return true;
+        });
+    });
 }
 
-
-function configurarModalCrear() {
+function configurarModalCrear(grupo) {
 
     const idColaboradores = $('#responsables_id');
     const fechaInicioID = $('#fecha_inicio_id');
     const fechaFinalID = $('#fecha_final_id');
+    const idGrupo = $('#grupo_asociado_select_id');
 
     inicializarDatePicker('fecha_final_id');
     inicializarDatePicker('fecha_inicio_id');
     inicializarSelect2('responsables_id', modalCrearActividad);
     inicializarSelect2('supervisor_id_select_id', modalCrearActividad);
-    inicializarSelect2('grupo_pertenece_select_id', modalCrearActividad);
+    inicializarSelect2('grupo_asociado_select_id', modalCrearActividad);
     inicializarSelect2('estado_select_id', modalCrearActividad);
 
-    idColaboradores.val(JSON.parse($('#responsables_actividad').val())).trigger("change");
+
+    if ($('#responsables_actividad').length > 0) {
+        idColaboradores.val(JSON.parse($('#responsables_actividad').val())).trigger("change");
+        //form = $('#actividad_form_editar')[0];
+    }
 
     fechaInicioID.change(function () {
         if (new Date(fechaInicioID.val()) > new Date(fechaFinalID.val())) {
@@ -41,6 +63,9 @@ function configurarModalCrear() {
         }
     });
 
-    agregarValidacionFormularios();
+    if (grupo) {
+        idGrupo.val(grupo).trigger("change");
+    }
 
+    agregarValidacionFormularios();
 }

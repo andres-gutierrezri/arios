@@ -11,6 +11,7 @@ from django.core.exceptions import ValidationError
 from Administracion.models import Proceso, TipoContrato
 from Administracion.utils import get_id_empresa_global
 from EVA.General import app_datetime_now
+from EVA.General.modeljson import RespuestaJson
 from EVA.views.index import AbstractEvaLoggedView
 from GestionActividades.Enumeraciones import PertenenciaGrupoActividades
 from GestionActividades.models import GrupoActividad
@@ -21,16 +22,22 @@ from TalentoHumano.models.colaboradores import ColaboradorProceso
 
 class GruposActividadesIndexView(AbstractEvaLoggedView):
     def get(self, request):
-        grupos_actividades = GrupoActividad.objects.get_xa_select_activos().values('id', 'nombre')
+        grupos_actividades = GrupoActividad.objects.get_xa_select_activos().values('id', 'nombre',
+                                                                                   'contrato_id', 'proceso_id')
         contratos = Contrato.objects.get_xa_select_activos()
         procesos = Proceso.objects.get_xa_select_activos()
         colaboradores = Colaborador.objects.get_xa_select_activos()
+
+        lista_procesos = Proceso.objects.get_xa_select_activos().values('id', 'nombre')
+        lista_contratos = Contrato.objects.get_xa_select_activos().values('id', 'numero_contrato')
 
         return render(request, 'GestionActividades/GrupoActividades/index.html',
                       {'grupos_actividades': grupos_actividades,
                        'fecha': app_datetime_now(),
                        'contratos': contratos,
                        'colaboradores': colaboradores,
+                       'lista_procesos': lista_procesos,
+                       'lista_contratos': lista_contratos,
                        'procesos': procesos})
 
 
@@ -47,19 +54,19 @@ class GruposActividadesCrearView(AbstractEvaLoggedView):
 
         if grupo_actividad.grupo_actividad_id == '':
             grupo_actividad.grupo_actividad_id = None
-        if grupo_actividad.tipo_pertenencia == '1':
+        if grupo_actividad.tipo_asociado == '1':
             grupo_actividad.proceso_id = None
-        if grupo_actividad.tipo_pertenencia == '2':
+        if grupo_actividad.tipo_asociado == '2':
             grupo_actividad.contrato_id = None
 
         if GrupoActividad.objects.filter(nombre__iexact=grupo_actividad.nombre,
                                          grupo_actividad_id__exact=grupo_actividad.grupo_actividad_id).exists():
-            messages.error(request, 'Falló crear. Ya existe un grupo con el mismo nombre')
-            return redirect(reverse('GestionActividades:grupo-actividades-index'))
+            return RespuestaJson.error("Falló crear. Ya existe un grupo con el mismo nombre")
+
         else:
             grupo_actividad.save()
-            messages.success(request, 'Se ha creado el grupo de actividades <br> {0}'.format(grupo_actividad.nombre))
-            return redirect(reverse('GestionActividades:grupo-actividades-index'))
+
+        return RespuestaJson.exitosa()
 
 
 class GruposActividadesEditarView(AbstractEvaLoggedView):
@@ -71,7 +78,7 @@ class GruposActividadesEditarView(AbstractEvaLoggedView):
 
     def post(self, request, id_grupo):
         update_fields = ['fecha_modificacion', 'contrato_id', 'proceso_id', 'nombre', 'descripcion', 'fecha_crea',
-                         'tipo_pertenencia', 'motivo', 'usuario_modifica', 'usuario_crea', 'grupo_actividad_id']
+                         'tipo_asociado', 'motivo', 'usuario_modifica', 'usuario_crea', 'grupo_actividad_id']
 
         grupo_actividad = GrupoActividad.from_dictionary(request.POST)
         grupo_actividad_db = GrupoActividad.objects.get(id=id_grupo)
@@ -83,30 +90,28 @@ class GruposActividadesEditarView(AbstractEvaLoggedView):
 
         if grupo_actividad.grupo_actividad_id == '':
             grupo_actividad.grupo_actividad_id = None
-        if grupo_actividad.tipo_pertenencia == '1':
+        if grupo_actividad.tipo_asociado == '1':
             grupo_actividad.proceso_id = None
-        if grupo_actividad.tipo_pertenencia == '2':
+        if grupo_actividad.tipo_asociado == '2':
             grupo_actividad.contrato_id = None
 
         try:
             grupo_actividad.full_clean(validate_unique=False)
         except ValidationError as errores:
-            messages.error(request, 'Falló editar. Valide los datos ingresados al editar el grupo de actividades')
-            return redirect(reverse('GestionActividades:grupo-actividades-index'))
+            return RespuestaJson.error("Falló editar. Valide los datos ingresados al editar el grupo de actividades")
 
         if grupo_actividad_db.comparar(grupo_actividad, excluir=['fecha_modificacion', 'motivo']):
-            messages.success(request, 'No se hicieron cambios en el grupo de actividades {0}'
-                             .format(grupo_actividad.nombre))
-            return redirect(reverse('GestionActividades:grupo-actividades-index'))
+            return RespuestaJson.error("No se hicieron cambios en el grupo de actividades")
+
         else:
             grupo_actividad.save(update_fields=update_fields)
-            messages.success(request, 'Se ha editado el grupo de actividades <br> {0}'.format(grupo_actividad.nombre))
-            return redirect(reverse('GestionActividades:grupo-actividades-index'))
+
+        return RespuestaJson.exitosa()
 
 
 def datos_xa_render(request, grupo_actividad: GrupoActividad = None) -> dict:
-    tipo_pertenencia = [{'campo_valor': 1, 'campo_texto': 'Contrato'},
-                        {'campo_valor': 2, 'campo_texto': 'Proceso'}]
+    tipo_asociado = [{'campo_valor': 1, 'campo_texto': 'Contrato'},
+                     {'campo_valor': 2, 'campo_texto': 'Proceso'}]
 
     grupos = GrupoActividad.objects.values('id', 'nombre')
     lista_grupos = []
@@ -130,11 +135,15 @@ def datos_xa_render(request, grupo_actividad: GrupoActividad = None) -> dict:
     for proceso in procesos:
         lista_procesos.append({'campo_valor': proceso['id'], 'campo_texto': proceso['nombre']})
 
+    opciones_contrato_proceso = [{'valor': 1, 'texto': 'Contrato'},
+                                 {'valor': 2, 'texto': 'Proceso'}]
+
     datos = {'fecha': app_datetime_now(),
              'contratos': lista_contratos,
              'procesos': lista_procesos,
-             'tipo_pertenencia': tipo_pertenencia,
+             'tipo_asociado': tipo_asociado,
              'grupos': lista_grupos,
+             'opciones_contrato_proceso': opciones_contrato_proceso,
              'menu_actual': 'grupo-actividades'}
 
     if grupo_actividad:

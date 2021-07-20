@@ -19,6 +19,7 @@
         <div class="row">
             <div class="col-xl-12">
                 <div id="panel-1" class="panel">
+                <div class="panel-hdr">
                         {% if perms.GestionActividades.add_actividades %}
                             <div class="col-md-10">
                                 <small>
@@ -28,6 +29,7 @@
                         {% else %}
                             <div class="col-md-10"></div>
                         {% endif %}
+                 </div>
                     <div class="panel-container show">
                         <div class="panel-content">
                             <div class="panel-group">
@@ -44,6 +46,9 @@
                                                     <div class="row no-gutters align-items-center">
                                                         <div class="col">
                                                             <span class="h6 font-weight-bold text-uppercase">{{ grupo.nombre }}</span>
+                                                            <small>
+                                                                <a class="far fa-1x far fa-plus-circle" href="javascript:abrirModalCrearActividad('{% url 'GestionActividades:actividades-crear'%}','{{ grupo.id }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear Actividad" {{ grupo.id }}></a>
+                                                            </small>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -115,17 +120,17 @@
                                                                 {% endif %}
                                                                 </div>
                                                                 <div class="col-8 col-md-3 hidden-md-down">
+                                                                <div class="p-3 p-md-3">
                                                                     {% for responsable in responsable_actividad %}
                                                                         {% if actividad.id == responsable.actividad_id %}
                                                                             {% for colaborador in colaboradores %}
                                                                                 {% if responsable.responsable_id == colaborador.id %}
-                                                                                    <div class="p-3 p-md-3">
-                                                                                        <span class="d-block text-muted"><i>{{ colaborador.first_name}} {{colaborador.last_name}}</i></span>
-                                                                                    </div>
+                                                                                        <span class="badge badge-primary"><i>{{ colaborador.first_name}} {{colaborador.last_name}}</i></span>
                                                                                 {% endif %}
                                                                             {% endfor %}
                                                                          {% endif %}
                                                                     {% endfor %}
+                                                                </div>
                                                                 </div>
                                                                 <div class="col-4 col-md-2 hidden-md-down">
                                                                     <div class="p-3 p-md-3">
