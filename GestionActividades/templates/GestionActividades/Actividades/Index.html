@@ -23,7 +23,7 @@
             <div class="col-xl-12">
                 <div id="panel-1" class="panel">
                 <div class="panel-hdr">
-                        {% if perms.GestionActividades.add_actividades %}
+                        {% if perms.GestionActividades.add_actividad %}
                             <div class="col-md-10">
                                 <small>
                                     <a class="far fa-3x far fa-plus-circle" href="javascript:abrirModalCrearActividad('{% url 'GestionActividades:actividades-crear'%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear Actividad"></a>
@@ -44,257 +44,271 @@
                                             </div>
                                         </div>
                                             {% for grupo in grupos %}
-                                            <div class="card mb-g border shadow-0">
-                                                <div class="card-header">
-                                                    <div class="row no-gutters align-items-center">
-                                                        <div class="col">
-                                                            <span class="h6 font-weight-bold text-uppercase">{{ grupo.nombre }}</span>
-                                                            <small>
-                                                                <a class="far fa-1x far fa-plus-circle" href="javascript:abrirModalCrearActividad('{% url 'GestionActividades:actividades-crear'%}','{{ grupo.id }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear Actividad" {{ grupo.id }}></a>
-                                                            </small>
+                                                {% if grupo.estado == True %}
+                                                    <div class="card mb-g border shadow-0">
+                                                        <div class="card-header">
+                                                            <div class="row no-gutters align-items-center">
+                                                                <div class="col">
+                                                                    <span class="h6 font-weight-bold text-uppercase">{{ grupo.nombre }}</span>
+                                                                    <small>
+                                                                        <a class="far fa-1x far fa-plus-circle" href="javascript:abrirModalCrearActividad('{% url 'GestionActividades:actividades-crear'%}','{{ grupo.id }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear Actividad" {{ grupo.id }}></a>
+                                                                    </small>
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </div>
-                                                <div class="card-header p-0">
-                                                    <div class="row no-gutters row-grid align-items-stretch">
-                                                        <div class="col-sm-8 col-md-3 hidden-md-down bg-primary-600">
-                                                            <div class="text-uppercase text-white py-2 px-3">Actividad</div>
-                                                        </div>
-                                                        <div class="col-sm-4 col-md-1 hidden-md-down bg-primary-600">
-                                                            <div class="text-uppercase text-white py-2 px-3">Fecha Inicio</div>
-                                                        </div>
-                                                        <div class="col-sm-4 col-md-1 hidden-md-down bg-primary-600">
-                                                            <div class="text-uppercase text-white py-2 px-3">Fecha Fin</div>
-                                                        </div>
-                                                        <div class="col-sm-4 col-md-1 hidden-md-down bg-primary-600">
-                                                            <div class="text-uppercase text-white py-2 px-3">Estado</div>
-                                                        </div>
-                                                        <div class="col-sm-8 col-md-3 hidden-md-down bg-primary-600">
-                                                            <div class="text-uppercase text-white py-2 px-3">Responsables</div>
-                                                        </div>
-                                                        <div class="col-sm-4 col-md-2 hidden-md-down bg-primary-600">
-                                                            <div class="text-uppercase text-white py-2 px-3">Progreso</div>
-                                                        </div>
-                                                        <div class="col-sm-4 col-md-1 hidden-md-down bg-primary-600">
-                                                            <div class="text-uppercase text-white py-2 px-3">Acción</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="card-body p-0">
-                                                    <div class="row no-gutters row-grid">
-                                                    <!-- thread -->
-                                                    {% for actividad in actividades %}
-                                                        {% if actividad.grupo_actividad_id ==  grupo.id %}
-                                                        <div class="col-12 col">
+                                                        <div class="card-header p-0">
                                                             <div class="row no-gutters row-grid align-items-stretch">
-                                                                <div class="col-sm-8 col-md-3 hidden-md-down">
-                                                                    <div class="p-3">
-                                                                        <div class="d-flex">
-                                                                            <div class="d-inline-flex flex-column">
-                                                                                <a href="javascript:void(0)" class="fs-lg fw-500 d-block text-dark">
-                                                                                    {{ actividad.nombre }}
-                                                                                </a>
-                                                                                <div class="d-block text-justify text-muted fs-sm">
-                                                                                    {{ actividad.descripcion }}
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
+                                                                <div class="col-sm-8 col-md-3 hidden-md-down bg-primary-600">
+                                                                    <div class="text-uppercase text-white py-2 px-3">Actividad</div>
                                                                 </div>
-                                                                <div class="col-sm-4 col-md-1 hidden-md-down">
-                                                                    <div class="p-3 p-mt-3 p-md-3">
-                                                                        <span class="d-block text-left text-muted">{{ actividad.fecha_inicio|date:'Y-m-d' }}</span>
-                                                                    </div>
+                                                                <div class="col-sm-4 col-md-1 hidden-md-down bg-primary-600">
+                                                                    <div class="text-uppercase text-white py-2 px-3">Fecha Inicio</div>
                                                                 </div>
-                                                                <div class="col-sm-4 col-md-1 hidden-md-down">
-                                                                    <div class="p-3 p-mt-3 p-md-3">
-                                                                        <span class="d-block text-left text-muted">{{ actividad.fecha_fin|date:'Y-m-d' }}</span>
-                                                                    </div>
+                                                                <div class="col-sm-4 col-md-1 hidden-md-down bg-primary-600">
+                                                                    <div class="text-uppercase text-white py-2 px-3">Fecha Fin</div>
                                                                 </div>
-                                                                <div class="col-sm-4 col-md-1 hidden-md-down">
-                                                                {% if actividad.estado == EstadosActividades.CREADA%}
-                                                                    <div class="p-3 p-md-3">
-                                                                        <span class="d-block text-left text-muted">Creada</span>
-                                                                    </div>
-                                                                {% endif %}
-                                                                {% if actividad.estado == EstadosActividades.EN_PROCESO%}
-                                                                    <div class="p-3 p-md-3">
-                                                                        <span class="d-block text-left text-muted">En Proceso</span>
-                                                                    </div>
-                                                                {% endif %}
-                                                                {% if actividad.estado == EstadosActividades.FINALIZADO%}
-                                                                    <div class="p-3 p-md-3">
-                                                                        <span class="d-block text-left text-muted">Finalizada</span>
-                                                                    </div>
-                                                                {% endif %}
-                                                                {% if actividad.estado == EstadosActividades.CERRADA%}
-                                                                    <div class="p-3 p-md-3">
-                                                                        <span class="d-block text-left text-muted">Cerrada</span>
-                                                                    </div>
-                                                                {% endif %}
-                                                                {% if actividad.estado == EstadosActividades.REABIERTA%}
-                                                                    <div class="p-3 p-md-3">
-                                                                        <span class="d-block text-left text-muted">ReAbierta</span>
-                                                                    </div>
-                                                                {% endif %}
+                                                                <div class="col-sm-4 col-md-1 hidden-md-down bg-primary-600">
+                                                                    <div class="text-uppercase text-white py-2 px-3">Estado</div>
                                                                 </div>
-                                                                <div class="col-8 col-md-3 hidden-md-down">
-                                                                <div class="p-3 p-md-3">
-                                                                    {% for responsable in responsable_actividad %}
-                                                                        {% if actividad.id == responsable.actividad_id %}
-                                                                            {% for colaborador in colaboradores %}
-                                                                                {% if responsable.responsable_id == colaborador.id %}
-                                                                                        <span class="badge text-white bg-gray-700"><i>{{ colaborador.first_name}} {{colaborador.last_name}}</i></span>
-                                                                                {% endif %}
-                                                                            {% endfor %}
-                                                                        {% endif %}
-                                                                    {% endfor %}
+                                                                <div class="col-sm-8 col-md-2 hidden-md-down bg-primary-600">
+                                                                    <div class="text-uppercase text-white py-2 px-3">Responsables</div>
                                                                 </div>
+                                                                <div class="col-sm-4 col-md-2 hidden-md-down bg-primary-600">
+                                                                    <div class="text-uppercase text-white py-2 px-3">Progreso</div>
                                                                 </div>
-                                                                <div class="col-4 col-md-2 hidden-md-down">
-                                                                    <div class="p-3 p-md-3">
-                                                                        <div class="d-flex align-items-center">
-                                                                            <div class="flex-1 min-width-0">
-                                                                                    <a href="javascript:void(0)" class="d-block text-truncate">
-                                                                                        <div class="progress">
-                                                                                            <div class="progress-bar text-white bg-info-800" role="progressbar" style="width:{{ actividad.porcentaje_avance }}%;" aria-valuenow="{{ actividad.porcentaje_avance }}" aria-valuemin="0" aria-valuemax="100">{{ actividad.porcentaje_avance }}%</div>
-                                                                                        </div>
-                                                                                    </a>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
+                                                                <div class="col-sm-4 col-md-2 hidden-md-down bg-primary-600">
+                                                                    <div class="text-uppercase text-white py-2 px-3">Acción</div>
                                                                 </div>
-                                                                <div class="col-4 col-md-1 hidden-md-down">
-                                                                    <div class="p-3 p-md-3">
-                                                                        <div class="row">
-                                                                            {% if perms.GestionActividades.change_actividades %}
-                                                                                <div class="col-md-3">
-                                                                                    <small>
-                                                                                        <a class="fad fa-3x fa-file-edit" id="editar_{{ actividad.id }}" href="javascript:abrirModalCrearActividad('{% url 'GestionActividades:actividades-editar' actividad.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar Actividad"></a>
-                                                                                    </small>
-                                                                                </div>
-                                                                            {% endif %}
-                                                                            {% if perms.GestionActividades.add_avance %}
-                                                                                {% if actividad.porcentaje_avance != 100%}
-                                                                                    {% if actividad.estado == EstadosActividades.EN_PROCESO or actividad.estado == EstadosActividades.REABIERTA%}
-                                                                                        <div class="col-md-4">
-                                                                                            <small>
-                                                                                                <a class="fad fa-3x fa-undo-alt" id="actualizar_actividad_{{ actividad.id }}" href="javascript:abrirModalActualizarActividad('{% url 'GestionActividades:actividades-actualizar' actividad.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Actualizar Actividad"></a>
-                                                                                            </small>
-                                                                                        </div>
-                                                                                    {% endif %}
-                                                                                {% endif %}
-                                                                            {% endif %}
-                                                                            {% if perms.GestionActividades.add_archivo %}
-                                                                                {% if actividad.porcentaje_avance == 100%}
-                                                                                    {% if actividad.estado == EstadosActividades.EN_PROCESO or actividad.estado == EstadosActividades.REABIERTA%}
-                                                                                        <div class="col-md-3">
-                                                                                            <small>
-                                                                                                <a class="fas fa-3x fa-clipboard-check" id="cargar_soporte_{{ actividad.id }}" href="javascript:abrirModalCargarSoporte('{% url 'GestionActividades:soportes-cargar' actividad.id %}', '{{actividad.soporte_requerido}}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Finalizar Actividad"></a>
-                                                                                            </small>
-                                                                                        </div>
-                                                                                    {% endif %}
-                                                                                {% endif %}
-                                                                            {% endif %}
-                                                                            {%  if perms.GestionActividades.view_archivo %}
-                                                                                {% if actividad.estado == EstadosActividades.FINALIZADO and actividad.soporte_requerido %}
-                                                                                    <div class="col-2">
-                                                                                        <div class="row col-xl-6">
-                                                                                            <div class="accordion" id="accordionExample">
-                                                                                                <div class="card" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ver Soportes" >
-                                                                                                    <div class="card-header" id="heading{{actividad.id}}">
-                                                                                                        <a href="javascript:void(0);" class="card collapsed p-md-0 fas fa-2x fa-eye border-transparent align-content-center" data-toggle="collapse" data-target="#collapse{{actividad.id}}" aria-expanded="false" aria-controls="collapse{{actividad.id}}"></a>
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                            </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="card-body p-0">
+                                                            <div class="row no-gutters row-grid">
+                                                            <!-- thread -->
+                                                            {% for actividad in actividades %}
+                                                                {% if actividad.grupo_actividad_id ==  grupo.id and actividad.estado != EstadosActividades.ANULADA%}
+                                                                <div class="col-12 col">
+                                                                    <div class="row no-gutters row-grid align-items-stretch">
+                                                                        <div class="col-sm-8 col-md-3 hidden-md-down">
+                                                                            <div class="p-3">
+                                                                                <div class="d-flex">
+                                                                                    <div class="d-inline-flex flex-column">
+                                                                                        <a href="javascript:void(0)" class="fs-lg fw-500 d-block text-dark">
+                                                                                            {{ actividad.nombre }}
+                                                                                        </a>
+                                                                                        <div class="d-block text-justify text-muted fs-sm">
+                                                                                            {{ actividad.descripcion }}
                                                                                         </div>
                                                                                     </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-4 col-md-1 hidden-md-down">
+                                                                            <div class="p-3 p-mt-3 p-md-3">
+                                                                                <span class="d-block text-left text-muted">{{ actividad.fecha_inicio|date:'Y-m-d' }}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-4 col-md-1 hidden-md-down">
+                                                                            <div class="p-3 p-mt-3 p-md-3">
+                                                                                <span class="d-block text-left text-muted">{{ actividad.fecha_fin|date:'Y-m-d' }}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-4 col-md-1 hidden-md-down">
+                                                                        {% if actividad.estado == EstadosActividades.CREADA%}
+                                                                            <div class="p-3 p-md-3">
+                                                                                <span class="d-block text-left text-muted">Creada</span>
+                                                                            </div>
+                                                                        {% endif %}
+                                                                        {% if actividad.estado == EstadosActividades.EN_PROCESO%}
+                                                                            <div class="p-3 p-md-3">
+                                                                                <span class="d-block text-left text-muted">En Proceso</span>
+                                                                            </div>
+                                                                        {% endif %}
+                                                                        {% if actividad.estado == EstadosActividades.FINALIZADO%}
+                                                                            <div class="p-3 p-md-3">
+                                                                                <span class="d-block text-left text-muted">Finalizada</span>
+                                                                            </div>
+                                                                        {% endif %}
+                                                                        {% if actividad.estado == EstadosActividades.CERRADA%}
+                                                                            <div class="p-3 p-md-3">
+                                                                                <span class="d-block text-left text-muted">Cerrada</span>
+                                                                            </div>
+                                                                        {% endif %}
+                                                                        {% if actividad.estado == EstadosActividades.REABIERTA%}
+                                                                            <div class="p-3 p-md-3">
+                                                                                <span class="d-block text-left text-muted">ReAbierta</span>
+                                                                            </div>
+                                                                        {% endif %}
+                                                                        {% if actividad.estado == EstadosActividades.ANULADA%}
+                                                                            <div class="p-3 p-md-3">
+                                                                                <span class="d-block text-left text-muted">Anulada</span>
+                                                                            </div>
+                                                                        {% endif %}
+                                                                        </div>
+                                                                        <div class="col-8 col-md-2 hidden-md-down">
+                                                                        <div class="p-3 p-md-3">
+                                                                            {% for responsable in responsable_actividad %}
+                                                                                {% if actividad.id == responsable.actividad_id %}
+                                                                                    {% for colaborador in colaboradores %}
+                                                                                        {% if responsable.responsable_id == colaborador.id %}
+                                                                                                <span class="badge text-white bg-gray-700"><i>{{ colaborador.first_name}} {{colaborador.last_name}}</i></span>
+                                                                                        {% endif %}
+                                                                                    {% endfor %}
                                                                                 {% endif %}
-                                                                            {% endif %}
-                                                                            {%  if perms.GestionActividades.view_avance %}
-                                                                                {% if actividad.porcentaje_avance != 100%}
-                                                                                    {% if actividad.estado == EstadosActividades.EN_PROCESO or actividad.estado == EstadosActividades.REABIERTA %}
-                                                                                        <div class="col-2">
-                                                                                            <div class="row col-xl-6">
-                                                                                                <div class="accordion" id="accordionExample_avance">
-                                                                                                    <div class="card" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Mostrar Avances" >
-                                                                                                        <div class="card-header" id="heading{{actividad.id}}">
-                                                                                                            <a href="javascript:void(0);" class="card collapsed p-md-0 fas fa-2x fa-tasks border-transparent align-content-center" data-toggle="collapse" data-target="#collapse_avance{{actividad.id}}" aria-expanded="false" aria-controls="collapse_avance{{actividad.id}}"></a>
+                                                                            {% endfor %}
+                                                                        </div>
+                                                                        </div>
+                                                                        <div class="col-4 col-md-2 hidden-md-down">
+                                                                            <div class="p-3 p-md-3">
+                                                                                <div class="d-flex align-items-center">
+                                                                                    <div class="flex-1 min-width-0">
+                                                                                            <a href="javascript:void(0)" class="d-block text-truncate">
+                                                                                                <div class="progress">
+                                                                                                    <div class="progress-bar text-white bg-info-800" role="progressbar" style="width:{{ actividad.porcentaje_avance }}%;" aria-valuenow="{{ actividad.porcentaje_avance }}" aria-valuemin="0" aria-valuemax="100">{{ actividad.porcentaje_avance }}%</div>
+                                                                                                </div>
+                                                                                            </a>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-4 col-md-2 hidden-md-down">
+                                                                            <div class="p-3 p-md-3">
+                                                                                <div class="row">
+                                                                                    {% if perms.GestionActividades.change_actividad %}
+                                                                                        <div class="col-md-2">
+                                                                                            <small>
+                                                                                                <a class="fad fa-3x fa-file-edit" id="editar_{{ actividad.id }}" href="javascript:abrirModalCrearActividad('{% url 'GestionActividades:actividades-editar' actividad.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar Actividad"></a>
+                                                                                            </small>
+                                                                                        </div>
+                                                                                    {% endif %}
+                                                                                    {% if perms.GestionActividades.add_avanceactividad %}
+                                                                                        {% if actividad.porcentaje_avance != 100%}
+                                                                                            {% if actividad.estado == EstadosActividades.EN_PROCESO or actividad.estado == EstadosActividades.REABIERTA%}
+                                                                                                <div class="col-md-2">
+                                                                                                    <small>
+                                                                                                        <a class="fad fa-3x fa-undo-alt" id="actualizar_actividad_{{ actividad.id }}" href="javascript:abrirModalActualizarActividad('{% url 'GestionActividades:actividades-actualizar' actividad.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Actualizar Actividad"></a>
+                                                                                                    </small>
+                                                                                                </div>
+                                                                                            {% endif %}
+                                                                                        {% endif %}
+                                                                                    {% endif %}
+                                                                                    {% if perms.GestionActividades.add_soporte %}
+                                                                                        {% if actividad.porcentaje_avance == 100%}
+                                                                                            {% if actividad.estado == EstadosActividades.EN_PROCESO or actividad.estado == EstadosActividades.REABIERTA%}
+                                                                                                <div class="col-md-2">
+                                                                                                    <small>
+                                                                                                        <a class="fas fa-3x fa-clipboard-check" id="cargar_soporte_{{ actividad.id }}" href="javascript:abrirModalCargarSoporte('{% url 'GestionActividades:soportes-cargar' actividad.id %}', '{{actividad.soporte_requerido}}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Finalizar Actividad"></a>
+                                                                                                    </small>
+                                                                                                </div>
+                                                                                            {% endif %}
+                                                                                        {% endif %}
+                                                                                    {% endif %}
+                                                                                    {%  if perms.GestionActividades.view_avanceactividad %}
+                                                                                        {% if actividad.porcentaje_avance != 100%}
+                                                                                            {% if actividad.estado == EstadosActividades.EN_PROCESO or actividad.estado == EstadosActividades.REABIERTA %}
+                                                                                                <div class="col-2">
+                                                                                                    <div class="row col-xl-6">
+                                                                                                        <div class="accordion" id="accordionExample_avance">
+                                                                                                            <div class="card" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Mostrar Avances" >
+                                                                                                                <div class="card-header" id="heading{{actividad.id}}">
+                                                                                                                    <a href="javascript:void(0);" class="card collapsed p-md-0 fas fa-2x fa-tasks border-transparent align-content-center" data-toggle="collapse" data-target="#collapse_avance{{actividad.id}}" aria-expanded="false" aria-controls="collapse_avance{{actividad.id}}"></a>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            {% endif %}
+                                                                                        {% endif %}
+                                                                                    {% endif %}
+                                                                                    {% if perms.GestionActividades.delete_actividad %}
+                                                                                        <div class="col-md-2">
+                                                                                            <small>
+                                                                                                <a class="fad fa-3x fa-trash-alt color-danger-900" id="eliminar_{{ actividad.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ actividad.id }}, 2)" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar Actividad"></a>
+                                                                                            </small>
+                                                                                        </div>
+                                                                                    {% endif %}
+                                                                                    {%  if perms.GestionActividades.view_soporte %}
+                                                                                        {% if actividad.estado == EstadosActividades.FINALIZADO and actividad.soporte_requerido %}
+                                                                                            <div class="col-2">
+                                                                                                <div class="row col-xl-6">
+                                                                                                    <div class="accordion" id="accordionExample">
+                                                                                                        <div class="card" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ver Soportes" >
+                                                                                                            <div class="card-header" id="heading{{actividad.id}}">
+                                                                                                                <a href="javascript:void(0);" class="card collapsed p-md-0 fas fa-2x fa-eye border-transparent align-content-center" data-toggle="collapse" data-target="#collapse{{actividad.id}}" aria-expanded="false" aria-controls="collapse{{actividad.id}}"></a>
+                                                                                                            </div>
                                                                                                         </div>
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </div>
-                                                                                        </div>
+                                                                                        {% endif %}
                                                                                     {% endif %}
-                                                                                {% endif %}
-                                                                            {% endif %}
+                                                                                </div>
+                                                                             </div>
                                                                         </div>
-                                                                     </div>
-                                                                </div>
-                                                                <div></div>
-                                                                <div id="collapse{{actividad.id}}" class="collapse" aria-labelledby="heading{{actividad.id}}" data-parent="#accordionExample">
-                                                                    <div class="row p-6 p-md-4">
-                                                                        {% for archivo in archivos_soporte %}
-                                                                            {% if actividad.id == archivo.actividad_id %}
-                                                                                    <small>
-                                                                                        <div class="d-block p-2 text-muted fs-sm">
-                                                                                            {{ archivo.archivo }}
-                                                                                            <a class="fas fa-1x fa-download" style="text-decoration: none !important;" href="{% url 'GestionActividades:soportes-ver' actividad.id archivo.id archivo.archivo %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title=""></a>
-                                                                                        </div>
-                                                                                    </small>
-                                                                            {% endif %}
-                                                                        {% endfor %}
-                                                                    </div>
-                                                                </div>
-                                                                <div id="collapse_avance{{actividad.id}}" class="collapse container-demo" aria-labelledby="heading{{actividad.id}}" data-parent="#accordionExample_avance">
-                                                                    <div class="row p-6 p-md-4">
-                                                                        {% for avance in avances_actividad %}
-                                                                            {% if actividad.id == avance.actividad_id %}
-                                                                                    <div class="col-md-3">
-                                                                                        <small>
-                                                                                            <div class="card border shadow-0 mb-g shadow-sm-hover">
-                                                                                                <div class="card-header border-faded border-top-0 border-left-0 border-right-0 rounded-top mt-0 mb-0 pt-2 pb-0" style="height: 2.5rem;">
-                                                                                                    <a class="fs-xl p-md-2 text-primary">
-                                                                                                        Fecha:
-                                                                                                    </a>
-                                                                                                    <a class="fs-sm">
-                                                                                                        {{ avance.fecha_avance|date:'Y-m-d' }}
-                                                                                                    </a>
-                                                                                                    <br>
+                                                                        <div></div>
+                                                                        <div id="collapse{{actividad.id}}" class="collapse" aria-labelledby="heading{{actividad.id}}" data-parent="#accordionExample">
+                                                                            <div class="row p-6 p-md-4">
+                                                                                {% for archivo in archivos_soporte %}
+                                                                                    {% if actividad.id == archivo.actividad_id %}
+                                                                                            <small>
+                                                                                                <div class="d-block p-2 text-muted fs-sm">
+                                                                                                    {{ archivo.archivo }}
+                                                                                                    <a class="fas fa-1x fa-download" style="text-decoration: none !important;" href="{% url 'GestionActividades:soportes-ver' actividad.id archivo.id archivo.archivo %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title=""></a>
                                                                                                 </div>
-                                                                                                <div class="card-body text-justify border-faded border-top-0 border-left-0 border-right-0 rounded-top">
-                                                                                                    <div class="d-block p-2 text-muted fs-sm">
-                                                                                                        <a class="fs-lg text-dark" >
-                                                                                                            Descripción:
-                                                                                                        </a>
-                                                                                                        {{ avance.descripcion }}
-                                                                                                        <br><br>
-                                                                                                        <a class="fs-lg text-dark" >
-                                                                                                            Porcentaje:
-                                                                                                        </a>
-                                                                                                        {{ avance.porcentaje_avance }}%
-                                                                                                        <br><br>
-                                                                                                        <a class="fs-lg text-dark" >
-                                                                                                            Horas empleadas:
-                                                                                                        </a>
-                                                                                                        {{ avance.horas_empleadas }} h
-                                                                                                        <br><br>
+                                                                                            </small>
+                                                                                    {% endif %}
+                                                                                {% endfor %}
+                                                                            </div>
+                                                                        </div>
+                                                                        <div id="collapse_avance{{actividad.id}}" class="collapse container-demo" aria-labelledby="heading{{actividad.id}}" data-parent="#accordionExample_avance">
+                                                                            <div class="row p-6 p-md-4">
+                                                                                {% for avance in avances_actividad %}
+                                                                                    {% if actividad.id == avance.actividad_id %}
+                                                                                            <div class="col-md-3">
+                                                                                                <small>
+                                                                                                    <div class="card border shadow-0 mb-g shadow-sm-hover">
+                                                                                                        <div class="card-header border-faded border-top-0 border-left-0 border-right-0 rounded-top mt-0 mb-0 pt-2 pb-0" style="height: 2.5rem;">
+                                                                                                            <a class="fs-xl p-md-2 text-primary">
+                                                                                                                Fecha:
+                                                                                                            </a>
+                                                                                                            <a class="fs-sm">
+                                                                                                                {{ avance.fecha_avance|date:'Y-m-d' }}
+                                                                                                            </a>
+                                                                                                            <br>
+                                                                                                        </div>
+                                                                                                        <div class="card-body text-justify border-faded border-top-0 border-left-0 border-right-0 rounded-top">
+                                                                                                            <div class="d-block p-2 text-muted fs-sm">
+                                                                                                                <a class="fs-lg text-dark" >
+                                                                                                                    Descripción:
+                                                                                                                </a>
+                                                                                                                {{ avance.descripcion }}
+                                                                                                                <br><br>
+                                                                                                                <a class="fs-lg text-dark" >
+                                                                                                                    Porcentaje:
+                                                                                                                </a>
+                                                                                                                {{ avance.porcentaje_avance }}%
+                                                                                                                <br><br>
+                                                                                                                <a class="fs-lg text-dark" >
+                                                                                                                    Horas empleadas:
+                                                                                                                </a>
+                                                                                                                {{ avance.horas_empleadas }} h
+                                                                                                                <br><br>
+                                                                                                            </div>
+                                                                                                        </div>
                                                                                                     </div>
-                                                                                                </div>
+                                                                                                </small>
                                                                                             </div>
-                                                                                        </small>
-                                                                                    </div>
-                                                                            {% endif %}
-                                                                        {% endfor %}
+                                                                                    {% endif %}
+                                                                                {% endfor %}
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
+                                                                {% endif %}
+                                                            {% endfor %}
                                                             </div>
                                                         </div>
-                                                        {% endif %}
-                                                    {% endfor %}
                                                     </div>
-                                                </div>
-                                            </div>
+                                                {% endif %}
                                             {% endfor %}
                                         </div>
                                  {% include 'EVA/_common/_paginacion.html' with datos=actividad%}
@@ -307,6 +321,7 @@
             </div>
         </div>
     </div>
+    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='gestion-actividades/actividades' %}
     <div class="modal fade" tabindex="-1" id="crear-actividad" role="dialog"  aria-hidden="true"></div>
     <div class="modal fade" tabindex="-1" id="cargar-soporte" role="dialog"  aria-hidden="true"></div>
     <div class="modal fade" tabindex="-1" id="actualizar-actividad" role="dialog"  aria-hidden="true"></div>
@@ -329,4 +344,5 @@
     <script src="{% static 'GestionActividades/js/actualizar_actividad.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/app.bundle.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/dropzone/dropzone.js' %}"></script>
+    <script src="{% static 'GestionActividades/js/confirmar_eliminar_grupo_actividad.js' %}"></script>
 {% endblock scripts%}

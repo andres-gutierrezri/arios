@@ -9,13 +9,16 @@
                         <i class="fal fa-angle-down d-inline-block ml-1 fs-md"></i>
                     </a>
                     <div class="col-md-12">
-                    {% if perms.GestionActividades.view_grupoactividades %}
+                    {% if perms.GestionActividades.view_grupoactividad %}
                         <div class="dropdown-menu">
-                            {% if perms.GestionActividades.change_grupoactividades %}
+                            {% if perms.GestionActividades.change_grupoactividad %}
                                 <a class="dropdown-item" href="javascript:abrirModalCrearGrupoActividad('{% url 'GestionActividades:grupo-actividades-editar' grupo_actividad.id%}', '{{ asociado }}')">Editar</a>
                             {% endif %}
-                            {% if perms.GestionActividades.view_grupoactividades %}
+                            {% if perms.GestionActividades.view_grupoactividad %}
                                 <a class="dropdown-item" href="{% url 'GestionActividades:actividades-index' id_grupo%}">Detalle</a>
+                            {% endif %}
+                            {% if perms.GestionActividades.delete_grupoactividad %}
+                                <a class="dropdown-item" href="javascript:void(0);" id="eliminar_{{ id_grupo }}"   onclick="fConfirmarEliminar({{ id_grupo }}, 1)">Eliminar</a>
                             {% endif %}
                         </div>
                     {% endif %}

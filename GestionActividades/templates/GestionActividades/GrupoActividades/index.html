@@ -20,7 +20,7 @@
             <div class="col-xl-12">
                 <div id="panel-1" class="panel">
                     <div class="panel-hdr">
-                        {% if perms.GestionActividades.add_grupoactividades %}
+                        {% if perms.GestionActividades.add_grupoactividad %}
                             <div class="col-md-10">
                                 <small>
                                     <a class="far fa-3x far fa-plus-circle" href="javascript:abrirModalCrearGrupoActividad('{% url 'GestionActividades:grupo-actividades-crear' %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear Grupo"></a>
@@ -96,6 +96,7 @@
             </div>
         </div>
     </div>
+    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='gestion-actividades/grupo-actividades' %}
     <div class="modal fade" tabindex="-1" id="crear-grupo-actividad" role="dialog" aria-hidden="true"></div>
 {% endblock %}
 
@@ -108,6 +109,7 @@
     <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/controlBusquedaPaginacion.js' %}"></script>
     <script src="{% static 'GestionActividades/js/grupo_actividades.js' %}"></script>
+    <script src="{% static 'GestionActividades/js/confirmar_eliminar_grupo_actividad.js' %}"></script>
     <script>
         $(document).ready(function () {
 

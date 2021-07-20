@@ -1,12 +1,14 @@
 import logging
 import os
+import json
+from sqlite3 import IntegrityError
 import re
 from fileinput import filename
 
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.db.transaction import rollback, atomic
-from django.http import HttpResponse, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseServerError, JsonResponse
 from django.shortcuts import render
 
 from django.contrib import messages
@@ -30,13 +32,13 @@ class ActividadesIndexView(AbstractEvaLoggedView):
             if actividad['fecha_inicio'] <= app_date_now() and actividad['estado'] == EstadosActividades.CREADA:
                 actividad_db.estado = EstadosActividades.EN_PROCESO
                 actividad_db.save()
-            if actividad['fecha_inicio'] > app_date_now():
+            if actividad['fecha_inicio'] > app_date_now() and actividad['estado'] == EstadosActividades.EN_PROCESO:
                 actividad_db.estado = EstadosActividades.CREADA
                 actividad_db.save()
 
         responsable_actividad = ResponsableActividad.objects.values('responsable_id', 'actividad_id')
         colaboradores = User.objects.values('id', 'first_name', 'last_name')
-        grupos = GrupoActividad.objects.values('id', 'nombre', 'grupo_actividad_id')
+        grupos = GrupoActividad.objects.values('id', 'nombre', 'grupo_actividad_id', 'estado')
         search = request.GET.get('search', '')
 
         if search:
@@ -198,6 +200,26 @@ class ActualizarActividadView(AbstractEvaLoggedView):
 
         messages.success(request, 'Se ha actualizado exitosamente la actividad')
         return RespuestaJson.exitosa()
+
+
+class ActividadesEliminarView(AbstractEvaLoggedView):
+    def post(self, request, id_actividad):
+        actividad = Actividad.objects.get(id=id_actividad)
+        body_unicode = request.body.decode('utf-8')
+        datos_registro = json.loads(body_unicode)
+
+        motivo = datos_registro['justificacion']
+        if actividad.estado == EstadosActividades.ANULADA:
+            return RespuestaJson.error("Esta actividad ya ha sido eliminada.")
+        try:
+            actividad.estado = EstadosActividades.ANULADA
+            actividad.motivo = motivo
+            actividad.save(update_fields=['estado', 'motivo'])
+            messages.success(request, 'Se ha eliminado la actividad {0}'.format(actividad.nombre))
+            return RespuestaJson.exitosa()
+
+        except IntegrityError:
+            return RespuestaJson.error("Ha ocurrido un error al realizar la acción")
 
 
 class CargarSoporteView(AbstractEvaLoggedView):

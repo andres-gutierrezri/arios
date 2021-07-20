@@ -8,6 +8,7 @@ class EstadosActividades(models.IntegerChoices):
     FINALIZADO = 3, 'Finalizado'
     CERRADA = 4, 'Cerrada'
     REABIERTA = 5, 'Reabierta'
+    ANULADA = 6, 'Anulada'
 
 
 class PertenenciaGrupoActividades(models.IntegerChoices):

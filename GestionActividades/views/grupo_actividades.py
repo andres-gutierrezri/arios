@@ -15,7 +15,7 @@ from Administracion.utils import get_id_empresa_global
 from EVA.General import app_datetime_now
 from EVA.General.modeljson import RespuestaJson
 from EVA.views.index import AbstractEvaLoggedView
-from GestionActividades.Enumeraciones import PertenenciaGrupoActividades
+from GestionActividades.Enumeraciones import PertenenciaGrupoActividades, EstadosActividades
 from GestionActividades.models import GrupoActividad
 from GestionActividades.models.models import Actividad, ResponsableActividad
 from Proyectos.models import Contrato
@@ -47,16 +47,17 @@ class GruposActividadesIndexView(AbstractEvaLoggedView):
             datos_grupo.append({'id_grupo': grupo['id'], 'nombre': '', 'actividades': conteo_actividades,
                                 'actividades_pendientes': actividades_pendientes, 'progreso_porcentaje': progreso})
             for actividad in actividades:
-                if grupo['id'] == actividad['grupo_actividad_id']:
-                    lista_actividades.append(actividad['id'])
-                    for lista in lista_actividades:
-                        list_id_user = ResponsableActividad.objects.get_ids_responsables_list(lista)
-                        for id_user in list_id_user:
-                            if id_user not in lista_users:
-                                lista_users.append(id_user)
-                    conteo_actividades += 1
-                    if actividad['estado'] != 4:
-                        actividades_pendientes += 1
+                if actividad['estado'] != EstadosActividades.ANULADA:
+                    if grupo['id'] == actividad['grupo_actividad_id']:
+                        lista_actividades.append(actividad['id'])
+                        for lista in lista_actividades:
+                            list_id_user = ResponsableActividad.objects.get_ids_responsables_list(lista)
+                            for id_user in list_id_user:
+                                if id_user not in lista_users:
+                                    lista_users.append(id_user)
+                        conteo_actividades += 1
+                        if actividad['estado'] != 4:
+                            actividades_pendientes += 1
             for responsable in responsables:
                 if responsable['id'] in lista_users:
                     datos_grupo[int(indice)]['nombre'] += (responsable['first_name'] + ' ' +
@@ -147,6 +148,34 @@ class GruposActividadesEditarView(AbstractEvaLoggedView):
             grupo_actividad.save(update_fields=update_fields)
 
         return RespuestaJson.exitosa()
+
+
+class GruposActividadesEliminarView(AbstractEvaLoggedView):
+    def post(self, request, id_grupo):
+        grupo_actividad = GrupoActividad.objects.get(id=id_grupo)
+        body_unicode_grupo = request.body.decode('utf-8')
+        datos_registro_grupo = json.loads(body_unicode_grupo)
+        motivo_grupo = datos_registro_grupo['justificacion']
+
+        actividades = Actividad.objects.filter(grupo_actividad_id=id_grupo)
+        motivo_actividad = 'Se elimino el grupo de actividades que contenía la actividad'
+
+        if not grupo_actividad.estado:
+            return RespuestaJson.error("Este grupo de actividades ya ha sido eliminado.")
+
+        try:
+            grupo_actividad.estado = False
+            grupo_actividad.motivo = motivo_grupo
+            grupo_actividad.save(update_fields=['estado', 'motivo'])
+            for actividad in actividades:
+                actividad.estado = EstadosActividades.ANULADA
+                actividad.motivo = motivo_actividad
+                actividad.save(update_fields=['estado', 'motivo'])
+            messages.success(request, 'Se ha eliminado el grupo de actividades {0}'.format(grupo_actividad.nombre))
+            return RespuestaJson.exitosa()
+
+        except IntegrityError:
+            return RespuestaJson.error("Ha ocurrido un error al realizar la acción")
 
 
 def datos_xa_render(request, grupo_actividad: GrupoActividad = None) -> dict:
