@@ -76,7 +76,7 @@ class ReservaSalaJuntasCrearView(AbstractEvaLoggedView):
                 .exclude(estado=False).exists():
             return RespuestaJson.error("Ya existe una reunión asignada en este horario")
 
-        past_dates = ReservaSalaJuntas.objects.filter(fecha_fin__date=reserva.fecha_inicio.date()) \
+        past_dates = ReservaSalaJuntas.objects.filter(fecha_fin__date=reserva.fecha_inicio.astimezone().date()) \
             .filter(fecha_fin__lt=reserva.fecha_inicio).exclude(estado=False).values_list('fecha_fin', flat=True)
 
         # Parámetro de holgura
@@ -98,7 +98,7 @@ class ReservaSalaJuntasCrearView(AbstractEvaLoggedView):
                                            f'y el final de la anterior ({reserva_anterior.strftime("%H:%M")}). '
                                            f'Hay una diferencia de: {reserva_holgura} {tiempo}')
 
-        later_dates = ReservaSalaJuntas.objects.filter(fecha_inicio__date=reserva.fecha_fin.date()) \
+        later_dates = ReservaSalaJuntas.objects.filter(fecha_inicio__date=reserva.fecha_fin.astimezone().date()) \
             .filter(fecha_inicio__gt=reserva.fecha_fin).exclude(estado=False).values_list('fecha_inicio', flat=True)
 
         for date in range(len(later_dates)):
@@ -161,7 +161,7 @@ class ReservaSalaJuntasEditarView(AbstractEvaLoggedView):
         except ValidationError as errores:
             return RespuestaJson.error("Falló la edición. Valide los datos ingresados al editar la reserva")
 
-        past_dates = ReservaSalaJuntas.objects.filter(fecha_fin__date=reserva.fecha_inicio.date()) \
+        past_dates = ReservaSalaJuntas.objects.filter(fecha_fin__date=reserva.fecha_inicio.astimezone().date()) \
             .filter(fecha_fin__lt=reserva.fecha_inicio).exclude(estado=False) \
             .exclude(id=id_reserva).values_list('fecha_fin', flat=True)
 
@@ -184,7 +184,7 @@ class ReservaSalaJuntasEditarView(AbstractEvaLoggedView):
                                            f'y el final de la anterior ({reserva_anterior.strftime("%H:%M")}). '
                                            f'Hay una diferencia de: {reserva_holgura} {tiempo}')
 
-        later_dates = ReservaSalaJuntas.objects.filter(fecha_inicio__date=reserva.fecha_fin.date()) \
+        later_dates = ReservaSalaJuntas.objects.filter(fecha_inicio__date=reserva.fecha_fin.astimezone().date()) \
             .filter(fecha_inicio__gt=reserva.fecha_fin).exclude(estado=False) \
             .exclude(id=id_reserva).values_list('fecha_inicio', flat=True)
 
