@@ -25,7 +25,7 @@
             <div id="panel-1" class="panel">
                 <div class="panel-hdr">
                     <h2>
-                        {% if perms.Administracion.add_reserva_sala_juntas %}
+                        {% if perms.Administracion.add_reservasalajuntas %}
                             <span class="fad fa-2x fa-plus-circle cursor-pointer" onclick="abrirModalCrearReserva('{% url 'Administracion:reserva-sala-juntas-crear'%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear Reserva">
                             </span>
                         {% endif %}

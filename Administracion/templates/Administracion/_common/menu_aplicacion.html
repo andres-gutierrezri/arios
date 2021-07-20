@@ -85,7 +85,7 @@
         </ul>
     </li>
     {% endif %}
-    {% if perms.Administracion.view_reserva_sala_juntas %}
+    {% if perms.Administracion.view_reservasalajuntas %}
     <li {% if menu_actual == 'reserva-sala-juntas' %} class="active" {% endif %}>
         <a href="{% url 'Administracion:reserva-sala-juntas' %}" title="Reserva Sala de Juntas" data-filter-tags="reserva sala juntas">
             <i class="far fa-calendar-alt"></i>
