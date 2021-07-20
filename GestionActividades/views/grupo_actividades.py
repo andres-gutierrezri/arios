@@ -1,5 +1,7 @@
 import json
 from datetime import datetime
+
+from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
@@ -15,6 +17,7 @@ from EVA.General.modeljson import RespuestaJson
 from EVA.views.index import AbstractEvaLoggedView
 from GestionActividades.Enumeraciones import PertenenciaGrupoActividades
 from GestionActividades.models import GrupoActividad
+from GestionActividades.models.models import Actividad, ResponsableActividad
 from Proyectos.models import Contrato
 from TalentoHumano.models import Colaborador
 from TalentoHumano.models.colaboradores import ColaboradorProceso
@@ -24,20 +27,57 @@ class GruposActividadesIndexView(AbstractEvaLoggedView):
     def get(self, request):
         grupos_actividades = GrupoActividad.objects.get_xa_select_activos().values('id', 'nombre',
                                                                                    'contrato_id', 'proceso_id')
+        actividades = Actividad.objects.values('id', 'grupo_actividad_id', 'estado')
         contratos = Contrato.objects.get_xa_select_activos()
         procesos = Proceso.objects.get_xa_select_activos()
         colaboradores = Colaborador.objects.get_xa_select_activos()
+        responsables = User.objects.values('id', 'first_name', 'last_name')
 
         lista_procesos = Proceso.objects.get_xa_select_activos().values('id', 'nombre')
         lista_contratos = Contrato.objects.get_xa_select_activos().values('id', 'numero_contrato')
 
+        datos_grupo = []
+        indice = 0
+        for grupo in grupos_actividades:
+            conteo_actividades = 0
+            actividades_pendientes = 0
+            progreso = 0
+            lista_actividades = []
+            lista_users = []
+            datos_grupo.append({'id_grupo': grupo['id'], 'nombre': '', 'actividades': conteo_actividades,
+                                'actividades_pendientes': actividades_pendientes, 'progreso_porcentaje': progreso})
+            for actividad in actividades:
+                if grupo['id'] == actividad['grupo_actividad_id']:
+                    lista_actividades.append(actividad['id'])
+                    for lista in lista_actividades:
+                        list_id_user = ResponsableActividad.objects.get_ids_responsables_list(lista)
+                        for id_user in list_id_user:
+                            if id_user not in lista_users:
+                                lista_users.append(id_user)
+                    conteo_actividades += 1
+                    if actividad['estado'] != 4:
+                        actividades_pendientes += 1
+            for responsable in responsables:
+                if responsable['id'] in lista_users:
+                    datos_grupo[int(indice)]['nombre'] += (responsable['first_name'] + ' ' +
+                                                           responsable['last_name'] + ', ')
+            if conteo_actividades - actividades_pendientes != 0:
+                progreso = int(((conteo_actividades - actividades_pendientes)/conteo_actividades)*100)
+
+            datos_grupo[int(indice)]['actividades'] += conteo_actividades
+            datos_grupo[int(indice)]['actividades_pendientes'] += actividades_pendientes
+            datos_grupo[int(indice)]['progreso_porcentaje'] += progreso
+            indice += 1
+
         return render(request, 'GestionActividades/GrupoActividades/index.html',
                       {'grupos_actividades': grupos_actividades,
+                       'actividades': actividades,
                        'fecha': app_datetime_now(),
                        'contratos': contratos,
                        'colaboradores': colaboradores,
                        'lista_procesos': lista_procesos,
                        'lista_contratos': lista_contratos,
+                       'datos_grupo': datos_grupo,
                        'procesos': procesos})
 
 

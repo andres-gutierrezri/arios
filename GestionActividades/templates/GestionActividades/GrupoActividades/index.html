@@ -67,12 +67,20 @@
                                             {% for grupo_actividad in grupos_actividades %}
                                                 {% for proceso in lista_procesos %}
                                                     {% if grupo_actividad.proceso_id == proceso.id %}
-                                                        {% include 'GestionActividades/_common/_tarjeta_grupo_actividad.html' with nombre=grupo_actividad.nombre id_grupo=grupo_actividad.id  proceso=proceso.nombre asociado=2%}
+                                                        {% for dato_grupo in datos_grupo %}
+                                                            {% if grupo_actividad.id == dato_grupo.id_grupo %}
+                                                                {% include 'GestionActividades/_common/_tarjeta_grupo_actividad.html' with nombre=grupo_actividad.nombre id_grupo=grupo_actividad.id  proceso=proceso.nombre asociado=2 actividades=dato_grupo.actividades responsables=dato_grupo.nombre actividades_pendientes=dato_grupo.actividades_pendientes progreso=dato_grupo.progreso_porcentaje%}
+                                                            {% endif %}
+                                                        {% endfor %}
                                                     {% endif %}
                                                 {% endfor %}
                                                 {% for contrato in lista_contratos %}
                                                     {% if grupo_actividad.contrato_id == contrato.id %}
-                                                        {% include 'GestionActividades/_common/_tarjeta_grupo_actividad.html' with nombre=grupo_actividad.nombre id_grupo=grupo_actividad.id  contrato=contrato.numero_contrato asociado=1%}
+                                                        {% for dato_grupo in datos_grupo %}
+                                                            {% if grupo_actividad.id == dato_grupo.id_grupo %}
+                                                                {% include 'GestionActividades/_common/_tarjeta_grupo_actividad.html' with nombre=grupo_actividad.nombre id_grupo=grupo_actividad.id  contrato=contrato.numero_contrato asociado=1 actividades=dato_grupo.actividades responsables=dato_grupo.nombre actividades_pendientes=dato_grupo.actividades_pendientes progreso=dato_grupo.progreso_porcentaje%}
+                                                            {% endif %}
+                                                        {% endfor %}
                                                     {% endif %}
                                                 {% endfor %}
                                             {% endfor %}
