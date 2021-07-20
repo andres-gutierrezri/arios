@@ -9,4 +9,6 @@ permisos = [Permiso('index', None),
             Permiso('actividades-index', ['GestionActividades.view_actividades']),
             Permiso('actividades-crear', ['GestionActividades.add_actividades']),
             Permiso('actividades-editar', ['GestionActividades.change_actividades']),
+            Permiso('soportes-cargar', ['GestionActividades.add_archivo']),
+            Permiso('soportes-ver', ['GestionActividades.view_archivo']),
             ]

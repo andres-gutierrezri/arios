@@ -112,8 +112,7 @@ class Actividad(models.Model, ModelDjangoExtensiones):
         actividad.descripcion = datos.get('descripcion', '')
         actividad.motivo = datos.get('motivo', '')
         actividad.estado = datos.get('estado', 1)
-        actividad.codigo = datos.get('codigo', '100200')
-
+        actividad.codigo = datos.get('codigo', '')
 
         return actividad
 
@@ -145,6 +144,44 @@ class ResponsableActividad(models.Model):
 
     class Meta:
         unique_together = (('responsable', 'actividad'),)
+
+
+def custom_upload_to(instance, filename):
+    return '{2}/GestiónActividades/Actividades/Soportes/{0} {1}' \
+     .format(instance.actividad.codigo, filename, settings.EVA_PRIVATE_MEDIA)
+
+
+class Soporte(models.Model):
+    objects = ManagerGeneral()
+    actividad = models.ForeignKey(Actividad, on_delete=models.DO_NOTHING, verbose_name='Actividad', blank=False,
+                                  null=False)
+    archivo = models.FileField(upload_to=custom_upload_to, blank=False, max_length=250)
+    descripcion = models.TextField(max_length=500, verbose_name='Descripción', null=False, blank=False)
+    fecha_fin = models.DateField(verbose_name='Fecha Fin', null=False, blank=False)
+    motivo = models.TextField(max_length=500, verbose_name='motivo', null=False, blank=False)
+
+    def __str__(self):
+        return self.actividad.nombre
+
+    class Meta:
+        verbose_name = 'Soporte'
+        verbose_name_plural = 'Soportes'
+
+    @staticmethod
+    def from_dictionary(datos: dict) -> 'Soporte':
+        """
+        Crea una instancia de los Soportes con los datos pasados en el diccionario.
+        :param datos: Diccionario con los datos para cargar los Soportes.
+        :return: Instacia de los Soportes con la información especificada en el diccionario.
+        """
+
+        soporte = Soporte()
+        soporte.descripcion = datos.get('descripcion', '')
+        soporte.fecha_fin = datos.get('fecha_final', '')
+        soporte.motivo = datos.get('motivo', '')
+
+        return soporte
+
 
 
 

@@ -199,3 +199,7 @@ position: relative;
 .swal2-container {
   z-index: 10000;
 }
+
+.blue-color{
+    background: #21437b;
+}
