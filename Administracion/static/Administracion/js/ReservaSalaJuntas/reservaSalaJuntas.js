@@ -50,15 +50,17 @@ $(document).ready(function () {
         },
         // Evento para modificar un evento (Modificar una reserva haciendo Click sobre ella)
         eventClick: function(event) {
+            $(event.el).popover('hide');
             let fechaActual = moment(moment(),"DD-MM-YYYY HH:mm:ss");
-            let fechaFinal = moment(event.event.end,"DD-MM-YYYY HH:mm:ss");
+            let fechaFin = moment(event.event.end,"DD-MM-YYYY HH:mm:ss");
             let color = event.event.backgroundColor;
-            if (fechaFinal > fechaActual || color === "orange") {
+            if (fechaFin > fechaActual || color === "orange") {
                 modificarEventos(event);
             }
         },
         // Evento para cambio de posición de un evento (Cambio de posición de una reserva)
         eventDrop: function(event) {
+            $(event.el).popover('hide');
             let fechaActual = moment(moment(),"DD-MM-YYYY HH:mm:ss");
             let fechaNueva = moment(event.event.start,"DD-MM-YYYY HH:mm:ss");
             let color = event.event.backgroundColor;
@@ -69,38 +71,56 @@ $(document).ready(function () {
             }
         },
         // Evento de selección haciendo Click sobre el calendario (Creación de una reserva)
-        select: function(start, end) {
+        select: function(start) {
             let fechaActual = moment(moment(),"DD-MM-YYYY HH:mm:ss");
             let fechaFin = moment(start.end,"DD-MM-YYYY HH:mm:ss");
             let url = `/administracion/reservas-sala-juntas/add`;
             let fechas = {
                 'inicio': start.startStr,
-                'fin':start.endStr
+                'fin': start.endStr
             };
+            if (start.view.type === 'dayGridMonth') {
+                fechas = {
+                    'inicio': start.startStr + ' ' + moment().format('HH:mm:ss'),
+                    'fin': moment(start.end).subtract(1, 'd').format("YYYY-MM-DD")
+                        + ' ' + moment().add(1, 'hour').format('HH:mm:ss')
+                };
+            }
             if (fechaFin >= fechaActual) {
                 abrirModalCrearReserva(url, fechas);
             }
         },
-        // Evento de arrastre de un evento (Modificación da la fecha final de una reserva)
+        // Evento de arrastre de un evento (Modificación de la fecha final de una reserva)
         eventResize: function(event) {
-            if(event.view.type !== 'listWeek') {
-                $(event.el).popover('dispose');
-            }
+            $(event.el).popover('hide');
             let color = event.event.backgroundColor;
             if (color === "gray" || color === "orange") {
                 calendario.refetchEvents();
             } else {
                 modificarEventos(event);
             }
-
         },
+        // Evento - Popovers: Se activa cuando el usuario pasa el mouse sobre un evento (Mostrar popover)
         eventMouseEnter: mouseEnterInfo => {
+            let tema = mouseEnterInfo.event.title.split(' \n ')[0];
+            let responsable = mouseEnterInfo.event.title.split(' \n ')[1]
+            let fechaInicio = moment(mouseEnterInfo.event.start).format("YYYY-MM-DD HH:mm");
+            let fechaFin = moment(mouseEnterInfo.event.end).format("YYYY-MM-DD HH:mm");
+
             if(mouseEnterInfo.view.type !== 'listWeek') {
                 const elemento =  $(mouseEnterInfo.el);
-                elemento.popover({content: mouseEnterInfo.event.title, placement:'top'});
+                elemento.popover({
+                    html: true,
+                    animation: true,
+                    trigger: 'hover',
+                    title: '<div>' + tema + '</br>' + responsable + '</div>',
+                    content: '<div>' + 'Inicio: ' + fechaInicio + '</br>' + 'Final: &nbsp;' + fechaFin + '</div>',
+                    placement:'top'
+                });
                 elemento.popover('show');
             }
         },
+        // Evento - Popovers: Se activa cuando el usuario se retira de un evento (Oculta y destruye el popover)
         eventMouseLeave: mouseLeaveInfo => {
             if(mouseLeaveInfo.view.type !== 'listWeek') {
                 $(mouseLeaveInfo.el).popover('dispose');
@@ -129,7 +149,7 @@ function modificarEventos(event) {
 }
 
 function abrirModalCrearReserva(url, fechas) {
-    cargarAbrirModal(modalCrearReserva, url,function () {
+    cargarAbrirModal(modalCrearReserva, url, function () {
         configurarModalCrear(fechas);
         const form = $("#juntas_form")[0];
         agregarValidacionForm(form, function (event) {
@@ -185,7 +205,7 @@ function configurarModalCrear(fechas) {
     inicializarSelect2('responsable_select_id', modalCrearReserva);
     inicializarDateRangePicker('fecha_intervalo_id');
     $('#fecha_intervalo_id').data('daterangepicker').minDate=moment();
-    if (fechas){
+    if (fechas) {
         $('#fecha_intervalo_id').data('daterangepicker').setStartDate(fechas.inicio);
         $('#fecha_intervalo_id').data('daterangepicker').setEndDate(fechas.fin);
     }
