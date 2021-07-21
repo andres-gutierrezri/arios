@@ -244,6 +244,18 @@ class ConsecutivoPlanTrabajo(ConsecutivoBase):
 
         return consecutivo
 
+    def actualizar_codigo(self, consecutivo: int = None):
+        """
+        Actualiza el código del consecutivo de contratos, se debe asegurar que el campo tipo de contrato ya este
+        asignado.
+        :param consecutivo: Número del consecutivo del contrato, si no se especifica se toma el que tiene asignado la
+        instancia.
+        """
+        if not consecutivo:
+            consecutivo = self.consecutivo
+            anio = str(self.anio)[2:4]
+        self.codigo = f'PT_{consecutivo:03d}-{self.numero_contrato}-{anio}'
+
 
 class ConsecutivoViaticosComisiones(ConsecutivoBase):
     descripcion = models.CharField(max_length=100, verbose_name='Descripción', null=False, blank=False)
