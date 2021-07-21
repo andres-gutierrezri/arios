@@ -6,9 +6,9 @@ $(document).ready(function () {
     activarSelect2();
     configurarFiltroConsecutivos();
     const columnDefs = [
-        { "targets": [0], "width": '10%' },
+        { "targets": [0], "width": '15%' },
         { "targets": [1], "width": '7%' },
-        { "targets": [2], "width": '26%' },
+        { "targets": [2], "width": '21%' },
         { "targets": [3], "width": '25%' },
         { "targets": [4], "width": '11%' },
         { "targets": [5], "width": '10%' },
