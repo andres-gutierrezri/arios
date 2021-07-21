@@ -3,9 +3,10 @@ from django.db import models
 
 class TiposActas(models.IntegerChoices):
 
-    SUSPENSION = 0, 'Acta de suspensión'
-    REINICIO = 1, 'Acta de reinicio'
-    AMPLIACION = 2, 'Acta de ampliación de la suspensión'
+    TODAS = 0, 'Todas'
+    SUSPENSION = 1, 'Acta de suspensión'
+    REINICIO = 2, 'Acta de reinicio'
+    AMPLIACION = 3, 'Acta de ampliación de la suspensión'
 
     @classmethod
     def sigla(cls, tipo) -> str:

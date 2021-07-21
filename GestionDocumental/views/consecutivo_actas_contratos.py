@@ -21,7 +21,11 @@ LOGGER = logging.getLogger(__name__)
 class ConsecutivoActasContratosView(AbstractEvaLoggedView):
     def get(self, request, id):
 
-        consecutivos = ConsecutivoActasContratos.objects.filter(usuario_crea_id=request.user.id,
+        if id == 0:
+            consecutivos = ConsecutivoActasContratos.objects.filter(usuario_crea_id=request.user.id,
+                                                                empresa_id=get_id_empresa_global(request))
+        else:
+            consecutivos = ConsecutivoActasContratos.objects.filter(usuario_crea_id=request.user.id,
                                                                 empresa_id=get_id_empresa_global(request),
                                                                 tipo_acta=id)
 
@@ -39,8 +43,6 @@ class ConsecutivoActasContratosView(AbstractEvaLoggedView):
                                                Q(fecha_suspension__icontains=search))
         coincidencias = len(consecutivos)
         consecutivos = paginar(consecutivos.order_by('-id'), page, 10)
-
-        tipo_acta = request.POST.get('tipo_acta_id', '')
 
         return render(request, 'GestionDocumental/ConsecutivoActasContratos/index.html', {
             'consecutivos': consecutivos,
@@ -153,15 +155,18 @@ def datos_xa_render(request, consecutivo: ConsecutivoActasContratos = None) -> d
 
     conseccontrato = ConsecutivoContrato.objects.filter(estado=True).values('id', 'codigo')
     lista_consecutivos = []
+    tipos_actas = []
 
     for consecutivo_contrato in conseccontrato:
         lista_consecutivos.append({'campo_valor': consecutivo_contrato['id'], 'campo_texto': '{0}'
                                   .format(consecutivo_contrato['codigo'])})
+        tipos_actas = TiposActas.choices
+        del tipos_actas[0]
 
     datos = {'fecha': datetime.datetime.now(),
              'lista_consecutivos': lista_consecutivos,
              'menu_actual': 'consecutivos-actas-contratos',
-             'tipo_acta': TiposActas.choices}
+             'tipo_acta': tipos_actas}
 
     if consecutivo:
         print(consecutivo)
