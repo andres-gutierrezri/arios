@@ -125,22 +125,32 @@ function copiarAPortapapeles(texto)
  * @param fnCallback Función callback a ejecutar cuando se carga exitosamente el modal.
  */
 function cargarAbrirModal(modal, url, fnCallback) {
-        modal.load(url, function (responseText) {
-        try {
-            if (responseText.includes("<!DOCTYPE html>")) {
-                EVANotificacion.toast.error('No tiene permisos para acceder a esta funcionalidad');
-                return false;
-            }
-            $(this).modal('show');
+	if(typeof modal === 'string') {
+		modal = $(`#${modal}`);
+	}
 
-            if((fnCallback !== undefined) && (typeof(fnCallback) === 'function'))
-                fnCallback(url);
+	$.get(url).then(responseText => {
+		try {
+			if (responseText.includes("<!DOCTYPE html>")) {
+				EVANotificacion.toast.error('No tiene permisos para acceder a esta funcionalidad');
+				return false;
+			}
+			modal.html(responseText);
+			modal.modal('show');
 
-        } catch (err) {
-            console.log(err);
-            EVANotificacion.toast.error('Ha ocurrido un error');
-        }
-    });
+			if((fnCallback !== undefined) && (typeof(fnCallback) === 'function'))
+				fnCallback(url);
+
+		} catch (err) {
+			console.log(err);
+			EVANotificacion.toast.error('Ha ocurrido un error');
+		}
+	}).catch(error => {
+		console.log(error);
+		EVANotificacion.toast.error('Ha ocurrido un error');
+	});
+
+	return modal;
 }
 
 /**
