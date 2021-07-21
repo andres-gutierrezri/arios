@@ -6,7 +6,16 @@ let tipoActa = $('#tipo_acta_id_select_id');
 $(document).ready(function () {
     activarSelect2();
     configurarFiltroConsecutivos();
-    iniciarDataTableN({buscar: false, paginar: false, ordenar: false});
+    const columnDefs = [
+        { "targets": [0], "width": '20%' },
+        { "targets": [1], "width": '12%' },
+        { "targets": [2], "width": '12%' },
+        { "targets": [3], "width": '31%' },
+        { "targets": [4], "width": '10%' },
+        { "targets": [7], "width": '8%' },
+        { "targets": [8], "width": '7%' }
+    ]
+    iniciarDataTableN({buscar: false, paginar: false, ordenar: false, detallesColumnas: columnDefs});
 });
 
 function abrirModalCrear(url) {
