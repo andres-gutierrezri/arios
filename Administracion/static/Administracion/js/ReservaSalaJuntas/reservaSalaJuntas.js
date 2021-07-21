@@ -21,6 +21,7 @@ $(document).ready(function () {
         selectable: true,
         selectHelper: true,
         nowIndicator:true,
+        noEventsMessage: 'No hay reservas para mostrar',
         titleFormat: {
             year: 'numeric',
             month: 'long',
@@ -125,6 +126,13 @@ $(document).ready(function () {
             if(mouseLeaveInfo.view.type !== 'listWeek') {
                 $(mouseLeaveInfo.el).popover('dispose');
             }
+        },
+        eventSourceSuccess: (content, xhr) => {
+            return content.datos;
+        },
+        eventSourceFailure: (errorObj ) => {
+            console.error(errorObj.message);
+            EVANotificacion.toast.error("Error al cargar las reservas");
         }
     });
     calendario.render();

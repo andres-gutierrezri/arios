@@ -3,23 +3,20 @@ import random
 import datetime
 
 from django.core.exceptions import ValidationError
-from django.http import JsonResponse
+from django.db.transaction import atomic, rollback
 from django.shortcuts import render
-from sqlite3 import IntegrityError
 from django.db.models import Q
-from Administracion.models.models import ReservaSalaJuntas
+from Administracion.models.sala_juntas import ReservaSalaJuntas
 from Administracion.parametros import ParametrosAdministracion
 from Administracion.views.Proveedores.autenticacion import LOGGER
 from EVA.General import app_datetime_now
-from EVA.General.conversiones import datetime_to_isostring
+from EVA.General.conversiones import datetime_to_isostring, SEGUNDOS_EN_MIN
 from EVA.General.modeljson import RespuestaJson
 from EVA.views.index import AbstractEvaLoggedView
 from Notificaciones.models.models import EventoDesencadenador
 from Notificaciones.views.views import crear_notificacion_por_evento
 from TalentoHumano.models import Colaborador
 
-# Constante para convertir minutos a segundos y viceversa
-SEGUNDOS: int = 60
 
 # Colores para la reserva
 COLORES = ['#BDB4AB', '#BB9676', '#CFB606', '#B9B937', '#6BC41D', '#55A60E', '#5CB480', '#85AB8A', '#1EBE81', '#81B4A1',
@@ -41,7 +38,7 @@ class ReservaSalaJuntasView(AbstractEvaLoggedView):
                                       'color': self.get_color_reserva(reserva),
                                       'className': 'mostrar' if reserva.estado else 'ocultar'})
 
-            return JsonResponse(reservas_dict, safe=False)
+            return RespuestaJson.exitosa(reservas_dict)
         else:
             return render(request, 'Administracion/SalaJuntas/calendario.html',
                           {'menu_actual': 'reserva-sala-juntas'})
@@ -76,48 +73,15 @@ class ReservaSalaJuntasCrearView(AbstractEvaLoggedView):
                 .exclude(estado=False).exists():
             return RespuestaJson.error("Ya existe una reunión asignada en este horario")
 
-        past_dates = ReservaSalaJuntas.objects.filter(fecha_fin__date=reserva.fecha_inicio.astimezone().date()) \
-            .filter(fecha_fin__lt=reserva.fecha_inicio).exclude(estado=False).values_list('fecha_fin', flat=True)
+        resval = reserva.validar_holgura()
+        if resval:
+            return RespuestaJson.error(resval)
 
-        # Parámetro de holgura
-        params_sala_juntas = ParametrosAdministracion.get_params_sala_juntas()
-        param_holgura = params_sala_juntas.get_holgura()
-
-        for date in range(len(past_dates)):
-            holgura = (reserva.fecha_inicio - past_dates[date]).seconds
-            if holgura < param_holgura * SEGUNDOS:
-                reserva_actual = reserva.fecha_inicio.astimezone()
-                reserva_anterior = past_dates[date].astimezone()
-                reserva_holgura = (reserva_actual - reserva_anterior).seconds // SEGUNDOS
-                if reserva_holgura == 1:
-                    tiempo = "minuto"
-                else:
-                    tiempo = "minutos"
-                return RespuestaJson.error(f'Debe haber un espacio mínimo de {param_holgura} minutos '
-                                           f'entre el inicio de la de reunión ({reserva_actual.strftime("%H:%M")}) '
-                                           f'y el final de la anterior ({reserva_anterior.strftime("%H:%M")}). '
-                                           f'Hay una diferencia de: {reserva_holgura} {tiempo}')
-
-        later_dates = ReservaSalaJuntas.objects.filter(fecha_inicio__date=reserva.fecha_fin.astimezone().date()) \
-            .filter(fecha_inicio__gt=reserva.fecha_fin).exclude(estado=False).values_list('fecha_inicio', flat=True)
-
-        for date in range(len(later_dates)):
-            holgura = (later_dates[date] - reserva.fecha_fin).seconds
-            if holgura < param_holgura * SEGUNDOS:
-                reserva_actual = reserva.fecha_fin.astimezone()
-                reserva_posterior = later_dates[date].astimezone()
-                reserva_holgura = (reserva_posterior - reserva_actual).seconds // SEGUNDOS
-                if reserva_holgura == 1:
-                    tiempo = "minuto"
-                else:
-                    tiempo = "minutos"
-                return RespuestaJson.error(f'Debe haber un espacio mínimo de {param_holgura} minutos '
-                                           f'entre el final de la de reunión ({reserva_actual.strftime("%H:%M")}) '
-                                           f'y el inicio de la siguiente ({reserva_posterior.strftime("%H:%M")}). '
-                                           f'Hay una diferencia de: {reserva_holgura} {tiempo}')
         try:
-            reserva.save()
+            with atomic():
+                reserva.save()
         except:
+            rollback()
             LOGGER.exception("Error en la reserva")
             return RespuestaJson.error("Ha ocurrido un error al guardar la información")
 
@@ -161,53 +125,21 @@ class ReservaSalaJuntasEditarView(AbstractEvaLoggedView):
         except ValidationError as errores:
             return RespuestaJson.error("Falló la edición. Valide los datos ingresados al editar la reserva")
 
-        past_dates = ReservaSalaJuntas.objects.filter(fecha_fin__date=reserva.fecha_inicio.astimezone().date()) \
-            .filter(fecha_fin__lt=reserva.fecha_inicio).exclude(estado=False) \
-            .exclude(id=id_reserva).values_list('fecha_fin', flat=True)
-
-        # Parámetro de holgura
-        params_sala_juntas = ParametrosAdministracion.get_params_sala_juntas()
-        param_holgura = params_sala_juntas.get_holgura()
-
-        for date in range(len(past_dates)):
-            holgura = (reserva.fecha_inicio - past_dates[date]).seconds
-            if holgura < param_holgura * SEGUNDOS:
-                reserva_actual = reserva.fecha_inicio.astimezone()
-                reserva_anterior = past_dates[date].astimezone()
-                reserva_holgura = (reserva_actual - reserva_anterior).seconds // SEGUNDOS
-                if reserva_holgura == 1:
-                    tiempo = "minuto"
-                else:
-                    tiempo = "minutos"
-                return RespuestaJson.error(f'Debe haber un espacio mínimo de {param_holgura} minutos '
-                                           f'entre el inicio de la de reunión ({reserva_actual.strftime("%H:%M")}) '
-                                           f'y el final de la anterior ({reserva_anterior.strftime("%H:%M")}). '
-                                           f'Hay una diferencia de: {reserva_holgura} {tiempo}')
-
-        later_dates = ReservaSalaJuntas.objects.filter(fecha_inicio__date=reserva.fecha_fin.astimezone().date()) \
-            .filter(fecha_inicio__gt=reserva.fecha_fin).exclude(estado=False) \
-            .exclude(id=id_reserva).values_list('fecha_inicio', flat=True)
-
-        for date in range(len(later_dates)):
-            holgura = (later_dates[date] - reserva.fecha_fin).seconds
-            if holgura < param_holgura * SEGUNDOS:
-                reserva_actual = reserva.fecha_fin.astimezone()
-                reserva_posterior = later_dates[date].astimezone()
-                reserva_holgura = (reserva_posterior - reserva_actual).seconds // SEGUNDOS
-                if reserva_holgura == 1:
-                    tiempo = "minuto"
-                else:
-                    tiempo = "minutos"
-                return RespuestaJson.error(f'Debe haber un espacio mínimo de {param_holgura} minutos '
-                                           f'entre el final de la de reunión ({reserva_actual.strftime("%H:%M")}) '
-                                           f'y el inicio de la siguiente ({reserva_posterior.strftime("%H:%M")}). '
-                                           f'Hay una diferencia de: {reserva_holgura} {tiempo}')
+        resval = reserva.validar_holgura(True)
+        if resval:
+            return RespuestaJson.error(resval)
 
         if reserva_db.comparar(reserva, excluir=['fecha_modificacion', 'usuario_modifica', 'motivo']):
             return RespuestaJson.exitosa(mensaje="No se hicieron cambios en la reserva para la sala de juntas")
-        else:
-            reserva.save(update_fields=update_fields)
-            return RespuestaJson.exitosa(mensaje="Se ha editado la reserva para la sala de juntas")
+
+        try:
+            with atomic():
+                reserva.save(update_fields=update_fields)
+                return RespuestaJson.exitosa(mensaje="Se ha editado la reserva para la sala de juntas")
+        except:
+            rollback()
+            LOGGER.exception("Error editando una reserva de sala de juntas.")
+            return RespuestaJson.error("Se presentó un error al editar la reserva de sala de juntas.")
 
 
 class ReservaSalaJuntasEliminarView(AbstractEvaLoggedView):
@@ -220,13 +152,15 @@ class ReservaSalaJuntasEliminarView(AbstractEvaLoggedView):
         if not reserva_db.estado:
             return RespuestaJson.error("La reserva ya ha sido eliminada")
         try:
-            reserva_db.usuario_modifica = request.user
-            reserva_db.estado = False
-            reserva_db.motivo = motivo
-            reserva_db.save(update_fields=['estado', 'motivo', 'usuario_modifica', 'fecha_modificacion'])
-            return RespuestaJson.exitosa()
-
-        except IntegrityError:
+            with atomic():
+                reserva_db.usuario_modifica = request.user
+                reserva_db.estado = False
+                reserva_db.motivo = motivo
+                reserva_db.save(update_fields=['estado', 'motivo', 'usuario_modifica', 'fecha_modificacion'])
+                return RespuestaJson.exitosa()
+        except:
+            rollback()
+            LOGGER.exception("Error al eliminar una reserva de sala de juntas.")
             return RespuestaJson.error("No se puede eliminar la reserva {0}".format(reserva_db.tema))
 
 
@@ -237,14 +171,16 @@ class ReservaSalaJuntasFinalizarView(AbstractEvaLoggedView):
         if reserva_db.finalizacion:
             return RespuestaJson.error("La reserva ya ha sido finalizada")
         try:
-            if reserva_db.fecha_fin >= app_datetime_now():
-                reserva_db.fecha_fin = app_datetime_now()
-            reserva_db.usuario_modifica = request.user
-            reserva_db.finalizacion = True
-            reserva_db.save(update_fields=['fecha_fin','finalizacion', 'usuario_modifica', 'fecha_modificacion'])
-            return RespuestaJson.exitosa(mensaje="La reserva ha sido finalizada")
-
-        except IntegrityError:
+            with atomic():
+                if reserva_db.fecha_fin >= app_datetime_now():
+                    reserva_db.fecha_fin = app_datetime_now()
+                reserva_db.usuario_modifica = request.user
+                reserva_db.finalizacion = True
+                reserva_db.save(update_fields=['fecha_fin', 'finalizacion', 'usuario_modifica', 'fecha_modificacion'])
+                return RespuestaJson.exitosa(mensaje="La reserva ha sido finalizada")
+        except:
+            rollback()
+            LOGGER.exception("Error finalizando una reserva de sala de juntas.")
             return RespuestaJson.error("No se puede finalizar la reserva {0}".format(reserva_db.tema))
 
 
@@ -257,11 +193,10 @@ class ReservaSalaJuntasNotificacionView(AbstractEvaLoggedView):
             .exclude(estado=False)
 
         # Parámetro de holgura
-        params_sala_juntas = ParametrosAdministracion.get_params_sala_juntas()
-        param_holgura = params_sala_juntas.get_holgura()
+        param_holgura = ParametrosAdministracion.get_params_sala_juntas().get_holgura()
 
         for reserva in reservas:
-            if (app_datetime_now() - reserva.fecha_fin).seconds >= param_holgura * SEGUNDOS:
+            if (app_datetime_now() - reserva.fecha_fin).seconds >= param_holgura * SEGUNDOS_EN_MIN:
                 crear_notificacion_por_evento(EventoDesencadenador.CIERRE_RESERVA_SALA_JUNTAS, reserva.id,
                                               contenido={'titulo': 'Pendiente Finalizar Reserva Sala de Juntas',
                                                          'mensaje': f'Al terminar la reunión se debe finalizar '
@@ -272,9 +207,9 @@ class ReservaSalaJuntasNotificacionView(AbstractEvaLoggedView):
                 reserva.save(update_fields=['notificacion'])
 
         if notificaciones_generadas:
-            return JsonResponse({"estado": "OK", "mensaje": "Notificaciones generadas"})
+            return RespuestaJson.exitosa(mensaje='Notificaciones generadas')
         else:
-            return JsonResponse({"estado": "OK", "mensaje": "En espera para generar las notificaciones"})
+            return RespuestaJson.exitosa(mensaje='En espera para generar las notificaciones')
 
 
 def datos_xa_render(request, reserva: ReservaSalaJuntas = None) -> dict:
