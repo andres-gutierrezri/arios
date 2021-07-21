@@ -30,9 +30,8 @@ function configurarModalCrear() {
     inicializarDatePicker('fecha_reinicio_id');
 
 
-    if ($('#tipo_acta_id_select_id').val() === "1"){
-        $('#fecha_suspension_mostrar').hide();
-        $('#fecha_suspension_id').attr("required", false);
+    if ($('#tipo_acta_id_select_id').val() === "2"){
+        ocultarCamposFormulario([$("#fecha_suspension_mostrar")])
         $('#fecha_reinicio_id').attr("required", true);
     }
     else{
@@ -40,13 +39,12 @@ function configurarModalCrear() {
     }
      $('#tipo_acta_id_select_id').change(function () {
     let idActa = this.value;
-        if (idActa === "0" || idActa === "2"){
-            $('#fecha_suspension_mostrar').show();
-            $('#fecha_suspension_id').attr("required", true);
+        if (idActa === "1" || idActa === "3"){
             $('#fecha_reinicio_id').attr("required", false);
+            mostrarCamposFormulario([$("#fecha_suspension_mostrar")])
+
         }else{
-            $('#fecha_suspension_mostrar').hide();
-            $('#fecha_suspension_id').attr("required", false);
+            ocultarCamposFormulario([$("#fecha_suspension_mostrar")])
         }
     });
     agregarValidacionFormularios();
