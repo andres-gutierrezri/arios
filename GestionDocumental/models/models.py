@@ -155,6 +155,7 @@ class ConsecutivoReunion(ConsecutivoBase):
     fecha = models.DateField(verbose_name='Fecha', null=False, blank=False)
     tema = models.CharField(max_length=100, verbose_name='Tema', null=False, blank=False)
     descripcion = models.CharField(max_length=100, verbose_name='Descripción', null=False, blank=False)
+    consecutivo = models.IntegerField(verbose_name='Consecutivo', null=False, blank=False)
 
     class Meta:
         verbose_name = 'Consecutivo Reunión'
@@ -176,6 +177,17 @@ class ConsecutivoReunion(ConsecutivoBase):
         consecutivo.estado = True
 
         return consecutivo
+
+    def actualizar_codigo(self, consecutivo: int = None):
+        """
+        Actualiza el código del consecutivo de contratos, se debe asegurar que el campo tipo de contrato ya este
+        asignado.
+        :param consecutivo: Número del consecutivo del contrato, si no se especifica se toma el que tiene asignado la
+        instancia.
+        """
+        if not consecutivo:
+            consecutivo = self.consecutivo
+        self.codigo = f'ACR_{consecutivo:03d}-{str(app_date_now().year)[2:4]}'
 
 
 class ConsecutivoRequerimiento(ConsecutivoBase):
