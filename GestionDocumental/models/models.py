@@ -129,6 +129,17 @@ class ConsecutivoContrato(models.Model, ModelDjangoExtensiones):
 
         return consecutivo
 
+    def actualizar_codigo(self, consecutivo: int = None):
+        """
+        Actualiza el código del consecutivo de contratos, se debe asegurar que el campo tipo de contrato ya este
+        asignado.
+        :param consecutivo: Número del consecutivo del contrato, si no se especifica se toma el que tiene asignado la
+        instancia.
+        """
+        if not consecutivo:
+            consecutivo = self.numero_contrato
+        self.codigo = f'CTO_{consecutivo:03d}-{self.sigla}-{app_date_now().year}'
+
 
 class ConsecutivoReunion(ConsecutivoBase):
     fecha = models.DateField(verbose_name='Fecha', null=False, blank=False)

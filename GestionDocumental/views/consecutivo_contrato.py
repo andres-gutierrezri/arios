@@ -1,16 +1,17 @@
 import datetime
 import json
 import os
-from sqlite3 import IntegrityError
+import logging
 
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.db.models import Q
+from django.db.transaction import atomic, rollback
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.decorators.clickjacking import xframe_options_sameorigin
-
+from EVA.General.modeljson import RespuestaJson
 from Administracion.models import TipoContrato, TipoDocumento, ConsecutivoDocumento, Tercero
 from Administracion.utils import get_id_empresa_global
 from EVA.General.utilidades import paginar, app_datetime_now
@@ -18,6 +19,7 @@ from EVA.views.index import AbstractEvaLoggedView
 from GestionDocumental.models.models import ConsecutivoContrato
 from TalentoHumano.models import Colaborador
 
+LOGGER = logging.getLogger(__name__)
 
 class ConsecutivoContratoView(AbstractEvaLoggedView):
     def get(self, request, id):
@@ -62,15 +64,27 @@ class ConsecutivoContratoCrearView(AbstractEvaLoggedView):
     def post(self, request):
         consecutivo = ConsecutivoContrato.from_dictionary(request.POST)
         consecutivo.empresa_id = get_id_empresa_global(request)
-        consecutivo.numero_contrato = ConsecutivoDocumento\
-            .get_consecutivo_por_anho(tipo_documento_id=TipoDocumento.CONTRATOS,
-                                      empresa_id=get_id_empresa_global(request))
-        sigla = TipoContrato.objects.get(id=consecutivo.tipo_contrato_id).sigla
-        consecutivo.codigo = 'CTO_{0:03d}_{1}_{2}'.format(consecutivo.numero_contrato, sigla, app_datetime_now().year)
         consecutivo.usuario_crea = request.user
-        consecutivo.save()
-        messages.success(request, 'Se ha creado el consecutivo {0}'.format(consecutivo.codigo))
-        return redirect(reverse('GestionDocumental:consecutivo-contratos-index', args=[0]))
+        try:
+            consecutivo.full_clean(exclude=['codigo', 'numero_contrato'])
+        except ValidationError as errores:
+            messages.error(request, 'Falló generación del consecutivo. Valide los datos ingresados al crear '
+                                      'el consecutivo')
+            return redirect(reverse('GestionDocumental:consecutivo-contratos-index', args=[0]))
+        try:
+            with atomic():
+                consecutivo.numero_contrato = ConsecutivoDocumento\
+                    .get_consecutivo_por_anho(tipo_documento_id=TipoDocumento.CONTRATOS,
+                                              empresa_id=get_id_empresa_global(request))
+                consecutivo.sigla = TipoContrato.objects.get(id=consecutivo.tipo_contrato_id).sigla
+                consecutivo.actualizar_codigo()
+                consecutivo.save()
+                messages.success(request, 'Se ha creado el consecutivo {0}'.format(consecutivo.codigo))
+                return redirect(reverse('GestionDocumental:consecutivo-contratos-index', args=[0]))
+        except:
+            rollback()
+            LOGGER.exception('Falló la generación del consecutivo de actas de contrato.')
+            return RespuestaJson.error('Ha ocurrido un error al crear el consecutivo.')
 
 
 class ConsecutivoContratoEditarView(AbstractEvaLoggedView):
@@ -94,8 +108,8 @@ class ConsecutivoContratoEditarView(AbstractEvaLoggedView):
         consecutivo.usuario_crea = consecutivo_db.usuario_crea
         consecutivo.empresa = consecutivo_db.empresa
         consecutivo.usuario_modifica = request.user
-        sigla = TipoContrato.objects.get(id=consecutivo.tipo_contrato_id).sigla
-        consecutivo.codigo = 'CTO_{0:03d}_{1}_{2}'.format(consecutivo.numero_contrato, sigla, app_datetime_now().year)
+        consecutivo.sigla = TipoContrato.objects.get(id=consecutivo.tipo_contrato_id).sigla
+        consecutivo.actualizar_codigo(consecutivo_db.numero_contrato)
 
         try:
             consecutivo.full_clean(validate_unique=False)
@@ -104,12 +118,18 @@ class ConsecutivoContratoEditarView(AbstractEvaLoggedView):
             return redirect(reverse('GestionDocumental:consecutivo-contratos-index', args=[0]))
 
         if consecutivo_db.comparar(consecutivo, excluir=['fecha_modificacion', 'ruta_archivo']):
-            messages.success(request, 'No se hicieron cambios en la consecutivo {0}'.format(consecutivo.codigo))
+            messages.error(request, 'No se hicieron cambios en la consecutivo {0}'.format(consecutivo.codigo))
             return redirect(reverse('GestionDocumental:consecutivo-contratos-index', args=[0]))
         else:
-            consecutivo.save(update_fields=update_fields)
-            messages.success(request, 'Se ha editado el consecutivo {0}'.format(consecutivo.codigo))
-            return redirect(reverse('GestionDocumental:consecutivo-contratos-index', args=[0]))
+            try:
+                with atomic():
+                    consecutivo.save(update_fields=update_fields)
+                    messages.success(request, 'Se ha editado el consecutivo {0}'.format(consecutivo.codigo))
+                    return redirect(reverse('GestionDocumental:consecutivo-contratos-index', args=[0]))
+            except:
+                rollback()
+                LOGGER.exception('Falló la edición del consecutivo de actas de contrato.')
+                RespuestaJson.error('Falló la edición del consecutivo de actas de contrato.')
 
 
 class ConsecutivoContratoEliminarView(AbstractEvaLoggedView):
@@ -120,16 +140,18 @@ class ConsecutivoContratoEliminarView(AbstractEvaLoggedView):
 
         justificacion = datos_registro['justificacion']
         if not consecutivo.estado:
-            return JsonResponse({"estado": "error",
-                                 "mensaje": 'Este consecutivo ya ha sido eliminado.'})
+            return RespuestaJson.error(mensaje="Este consecutivo ya ha sido anulado.")
         try:
-            consecutivo.estado = False
-            consecutivo.justificacion = justificacion
-            consecutivo.save(update_fields=['estado', 'justificacion'])
-            messages.success(request, 'Se ha eliminado el consecutivo {0}'.format(consecutivo.codigo))
-            return JsonResponse({"estado": "OK"})
-
-        except IntegrityError:
+            with atomic():
+                consecutivo.estado = False
+                consecutivo.justificacion = justificacion
+                consecutivo.usuario_modifica = request.user
+                consecutivo.fecha_modificacion = app_datetime_now()
+                consecutivo.save(update_fields=['estado', 'justificacion', 'fecha_modificacion', 'usuario_modifica'])
+                messages.success(request, 'Se ha eliminado el consecutivo {0}'.format(consecutivo.codigo))
+                return JsonResponse({"estado": "OK"})
+        except:
+            rollback()
             return JsonResponse({"estado": "error",
                                  "mensaje": 'Ha ocurrido un erro al realizar la acción'})
 
