@@ -1,10 +1,11 @@
 import datetime
 import json
-from sqlite3 import IntegrityError
+import logging
 
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.db.models import Q
+from django.db.transaction import atomic, rollback
 from django.shortcuts import render
 from Administracion.utils import get_id_empresa_global
 from EVA.General.modeljson import RespuestaJson
@@ -16,6 +17,7 @@ from TalentoHumano.models.colaboradores import ColaboradorProceso
 from Administracion.models import ConsecutivoDocumento, TipoDocumento
 from Proyectos.models import Contrato
 
+LOGGER = logging.getLogger(__name__)
 
 class ConsecutivoViaticosComisionesView(AbstractEvaLoggedView):
     def get(self, request, id):
@@ -67,31 +69,37 @@ class ConsecutivoViaticosComisioneCrearView(AbstractEvaLoggedView):
         consecutivo = ConsecutivoViaticosComisiones.from_dictionary(request.POST)
         consecutivo.usuario_crea = request.user
         consecutivo.empresa_id = get_id_empresa_global(request)
-        consecutivo.consecutivo = ConsecutivoDocumento. \
-            get_consecutivo_por_anho(tipo_documento_id=TipoDocumento.VIATICOS_COMISIONES,
-                                     empresa_id=get_id_empresa_global(request))
-        proceso = request.POST.get('proceso_id', '')
-        if proceso:
-            proceso = ColaboradorProceso.objects.get(proceso_id=proceso, colaborador__usuario=request.user).proceso
-        else:
-            proceso = ColaboradorProceso.objects.filter(colaborador__usuario=request.user).first().proceso
-            anio = str(app_datetime_now().year)[2:4]
-
-        if not consecutivo.contrato_id:
-            contrato = proceso.sigla
-        else:
-            contrato = consecutivo.contrato.numero_contrato
-            anio = str(consecutivo.contrato.anho).upper()[2:4]
-
-        consecutivo.codigo = 'VT-{0:03d}-{1}-{2}-{3}'.format(consecutivo.consecutivo,
-                                                             contrato, anio,
-                                                             str(app_datetime_now().year)[2:4])
         try:
-            consecutivo.save()
+            consecutivo.full_clean(exclude=['consecutivo', 'codigo'])
+        except ValidationError as errores:
+            return RespuestaJson.error('Falló generación del consecutivo. '
+                                       'Valide los datos ingresados al editar el consecutivo')
+        try:
+            with atomic():
+                consecutivo.consecutivo = ConsecutivoDocumento. \
+                    get_consecutivo_por_anho(tipo_documento_id=TipoDocumento.VIATICOS_COMISIONES,
+                                             empresa_id=get_id_empresa_global(request))
+                proceso = request.POST.get('proceso_id', '')
+                if proceso:
+                    consecutivo.proceso = ColaboradorProceso.objects.get(proceso_id=proceso, colaborador__usuario=request.user).proceso
+                else:
+                    consecutivo.proceso = ColaboradorProceso.objects.filter(colaborador__usuario=request.user).first().proceso
+                    consecutivo.anio = app_datetime_now().year
+
+                if not consecutivo.contrato_id:
+                    consecutivo.numero_contrato = consecutivo.proceso.sigla
+                else:
+                    consecutivo.numero_contrato = consecutivo.contrato.numero_contrato
+                    consecutivo.anio = consecutivo.contrato.anho
+
+                consecutivo.actualizar_codigo()
+                consecutivo.save()
+                messages.success(request, 'Se ha creado el consecutivo {0}'.format(consecutivo.codigo))
+                return RespuestaJson.exitosa()
         except:
-            return RespuestaJson.error("Ha ocurrido un error al guardar la información")
-        messages.success(request, 'Se ha creado el consecutivo {0}'.format(consecutivo.codigo))
-        return RespuestaJson.exitosa()
+            rollback()
+            LOGGER.exception('Falló la generación del consecutivo de actas de viaticos y comisiones.')
+            return RespuestaJson.error('Ha ocurrido un error al crear el consecutivo.')
 
 
 class ConsecutivoViaticosComisioneEditarView(AbstractEvaLoggedView):
@@ -113,23 +121,23 @@ class ConsecutivoViaticosComisioneEditarView(AbstractEvaLoggedView):
         consecutivo.empresa = consecutivo_db.empresa
         consecutivo.usuario_modifica = request.user
         consecutivo.usuario_crea = request.user
-
         proceso = request.POST.get('proceso_id', '')
+
         if proceso:
-            proceso = ColaboradorProceso.objects.get(proceso_id=proceso, colaborador__usuario=request.user).proceso
+            consecutivo.proceso = ColaboradorProceso.objects.get(proceso_id=proceso,
+                                                                 colaborador__usuario=request.user).proceso
         else:
-            proceso = ColaboradorProceso.objects.filter(colaborador__usuario=request.user).first().proceso
-            anio = str(app_datetime_now().year)[2:4]
+            consecutivo.proceso = ColaboradorProceso.objects.filter(colaborador__usuario=
+                                                                    request.user).first().proceso
+            consecutivo.anio = app_datetime_now().year
 
         if not consecutivo.contrato_id:
-            contrato = proceso.sigla
+            consecutivo.numero_contrato = consecutivo.proceso.sigla
         else:
-            contrato = consecutivo.contrato.numero_contrato
-            anio = str(consecutivo.contrato.anho).upper()[2:4]
+            consecutivo.numero_contrato = consecutivo.contrato.numero_contrato
+            consecutivo.anio = consecutivo.contrato.anho
 
-        consecutivo.codigo = 'VT-{0:03d}-{1}-{2}-{3}'.format(consecutivo_db.consecutivo,
-                                                             contrato, anio,
-                                                             str(app_datetime_now().year)[2:4])
+        consecutivo.actualizar_codigo(consecutivo_db.consecutivo)
 
         try:
             consecutivo.full_clean(validate_unique=False, exclude=['usuario_crea'])
@@ -140,9 +148,15 @@ class ConsecutivoViaticosComisioneEditarView(AbstractEvaLoggedView):
                                                          'usuario_modifica', 'justificacion']):
             return RespuestaJson.error("No se hicieron cambios en la consecutivo")
         else:
-            consecutivo.save(update_fields=update_fields)
-            messages.success(request, 'Se ha editado el consecutivo {0}'.format(consecutivo.codigo))
-            return RespuestaJson.exitosa()
+            try:
+                with atomic():
+                    consecutivo.save(update_fields=update_fields)
+                    messages.success(request, 'Se ha editado el consecutivo {0}'.format(consecutivo.codigo))
+                    return RespuestaJson.exitosa()
+            except:
+                rollback()
+                LOGGER.exception('Falló la edición del consecutivo de viáticos y comisiones.')
+                RespuestaJson.error('Falló la edición del consecutivo de viáticos y comisiones.')
 
 
 class ConsecutivoViaticosComisioneEliminarView(AbstractEvaLoggedView):
@@ -152,15 +166,20 @@ class ConsecutivoViaticosComisioneEliminarView(AbstractEvaLoggedView):
         datos_registro = json.loads(body_unicode)
         justificacion = datos_registro['justificacion']
         if not consecutivo.estado:
-            return RespuestaJson.error(mensaje="Este consecutivo ya ha sido anulado.")
+            return RespuestaJson.error("Este consecutivo ya ha sido anulado.")
         try:
-            consecutivo.estado = False
-            consecutivo.justificacion = justificacion
-            consecutivo.save(update_fields=['estado', 'justificacion'])
-            messages.success(request, 'Consecutivo {0} anulado'.format(consecutivo.codigo))
-            return RespuestaJson.exitosa()
-        except IntegrityError:
-            return RespuestaJson.error(mensaje="Ha ocurrido un error al realizar la acción")
+            with atomic():
+                consecutivo.estado = False
+                consecutivo.justificacion = justificacion
+                consecutivo.usuario_modifica = request.user
+                consecutivo.fecha_modificacion = app_datetime_now()
+                consecutivo.save(update_fields=['estado', 'justificacion', 'fecha_modificacion', 'usuario_modifica'])
+                messages.success(request, 'Consecutivo {0} anulado'.format(consecutivo.codigo))
+                return RespuestaJson.exitosa()
+        except:
+            rollback()
+            LOGGER.exception('Error anulando el consecutivo de requerimiento interno')
+            return RespuestaJson.error('Ha ocurrido un error al realizar la acción')
 
 
 def datos_xa_render(request, consecutivo: ConsecutivoViaticosComisiones = None) -> dict:
