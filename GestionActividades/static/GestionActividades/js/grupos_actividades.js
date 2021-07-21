@@ -11,6 +11,33 @@ const modalCrearGrupoActividad = $('#crear-grupo-actividad');
 $(document).ready(function () {
     activarSelect2();
     configurarFiltroConsecutivos();
+    $('input[type=radio][name=contactview]').change(function () {
+        if (this.value == 'grid') {
+            $('#js-contacts .card').removeClassPrefix('mb-').addClass('mb-g');
+            $('#js-contacts .col-xl-12').removeClassPrefix('col-xl-').addClass('col-xl-4');
+            $('#js-contacts .js-expand-btn').addClass('d-none');
+            $('#js-contacts .card-body + .card-body').addClass('show');
+
+        } else if (this.value == 'table') {
+            $('#js-contacts .card').removeClassPrefix('mb-').addClass('mb-1');
+            $('#js-contacts .col-xl-4').removeClassPrefix('col-xl-').addClass('col-xl-12');
+            $('#js-contacts .js-expand-btn').removeClass('d-none');
+            $('#js-contacts .card-body + .card-body').removeClass('show');
+        }
+
+    });
+
+    //initialize filter
+    initApp.listFilter($('#js-contacts'), $('#js-filter-contacts'));
+
+    $('#procesos_id_select_id').on('change', function (e) {
+        $('#js-filter-contacts').val($(this).select2('data')[0].text).trigger('change');
+    });
+
+    $('#contratos_id_select_id').on('change', function (e) {
+        $('#js-filter-contacts').val($(this).select2('data')[0].text).trigger('change');
+    });
+
 
 });
 
@@ -21,12 +48,9 @@ function abrirModalCrearGrupoActividad(url, asociado) {
         agregarValidacionForm(form, function (event) {
             enviarFormularioAsync(form, url, "cargando").then(exitoso => {
                 if (exitoso) {
-                    EVANotificacion.toast.exitoso(`Se ha ${url.includes("editar") ? "editado" : "creado"} el grupo de actividades`);
                     modalCrearGrupoActividad.modal('hide');
                     Swal.clickCancel();
-                    setTimeout(function (){
-                        location.reload();
-                    },1000);
+                    location.reload();
                 }
                 else{
                     Swal.clickCancel();
@@ -80,12 +104,12 @@ function configurarModalCrear(asociado) {
 
 
 function cambiarSelect (actual){
-        let SELECCION_CONTRATO = "1";
-            if (actual === SELECCION_CONTRATO) {
-                mostrarOcultarTipoAsociado(true)
-            } else {
-                mostrarOcultarTipoAsociado(false)
-            }
+
+    if (actual === "1") {
+        mostrarOcultarTipoAsociado(true)
+    } else {
+        mostrarOcultarTipoAsociado(false)
+    }
 }
 
 function mostrarOcultarTipoAsociado(seleccion) {
