@@ -49,6 +49,7 @@
                                                     <th class="min-tablet-l">Descripción</th>
                                                     <th class="none">Usuario</th>
                                                     <th class="none">Motivo Editar/Anular</th>
+                                                    <th class="none">Fecha Creación</th>
                                                     <th class="min-desktop">Estado</th>
                                                     <th data-priority="2">Acción</th>
                                                 </tr>
@@ -75,6 +76,7 @@
                                                         <td>{{ consecutivo.descripcion}}</td>
                                                         <td>{{ consecutivo.usuario_crea.username }}</td>
                                                         <td>{% if consecutivo.justificacion %}{{ consecutivo.justificacion }}{% endif %}</td>
+                                                        <td>{{ consecutivo.fecha_creacion | date:'Y-m-d'}}</td>
                                                         <td>
                                                             {% if consecutivo.estado %}
                                                                 <span class="badge badge-primary">Vigente</span>
