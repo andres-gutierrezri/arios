@@ -103,7 +103,7 @@ class ConsecutivoContrato(models.Model, ModelDjangoExtensiones):
     usuario_crea = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario Crea',
                                      null=True, blank=True, related_name='consecutivo_contrato_usuario_crea')
     usuario_modifica = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario Modifica',
-                                     null=True, blank=True, related_name='consecutivo_contrato_usuario_Modifica')
+                                         null=True, blank=True, related_name='consecutivo_contrato_usuario_Modifica')
     justificacion = models.CharField(max_length=100, verbose_name='Justificacion', blank=True, null=True)
     estado = models.BooleanField(verbose_name='Estado', blank=False, null=False)
     ruta_archivo = models.FileField(blank=True, max_length=250, upload_to=custom_upload_to)
@@ -116,7 +116,6 @@ class ConsecutivoContrato(models.Model, ModelDjangoExtensiones):
     class Meta:
         verbose_name = 'Consecutivo Contrato'
         verbose_name_plural = 'Consecutivos Contratos'
-
 
     @staticmethod
     def from_dictionary(datos: dict) -> 'ConsecutivoContrato':
@@ -203,15 +202,25 @@ class ConsecutivoRequerimiento(ConsecutivoBase):
         consecutivo.justificacion = datos.get('motivo', '')
         consecutivo.descripcion = datos.get('descripcion', '')
         consecutivo.estado = True
-
         return consecutivo
+
+    def actualizar_codigo(self, consecutivo: int = None):
+        """
+        Actualiza el código del consecutivo de contratos, se debe asegurar que el campo tipo de contrato ya este
+        asignado.
+        :param consecutivo: Número del consecutivo del contrato, si no se especifica se toma el que tiene asignado la
+        instancia.
+        """
+        if not consecutivo:
+            consecutivo = self.consecutivo
+            anio = str(self.anio)[2:4]
+        self.codigo = f'RQ_{consecutivo:03d}-{self.numero_contrato}-{anio}-{str(app_date_now().year)[2:4]}'
 
 
 class ConsecutivoPlanTrabajo(ConsecutivoBase):
     descripcion = models.CharField(max_length=100, verbose_name='Descripción', null=False, blank=False)
     consecutivo = models.IntegerField(verbose_name='Consecutivo', null=False, blank=False)
     contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato', null=True, blank=True)
-
 
     def __str__(self):
         return self.codigo
