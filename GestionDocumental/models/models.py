@@ -70,6 +70,17 @@ class ConsecutivoOficio(models.Model, ModelDjangoExtensiones):
 
         return consecutivo
 
+    def actualizar_codigo(self, consecutivo: int = None):
+        """
+        Actualiza el código del consecutivo de contratos, se debe asegurar que el campo tipo de contrato ya este
+        asignado.
+        :param consecutivo: Número del consecutivo del contrato, si no se especifica se toma el que tiene asignado la
+        instancia.
+        """
+        if not consecutivo:
+            consecutivo = self.consecutivo
+        self.codigo = f'{self.sigla}-{consecutivo:03d}-{self.numero_contrato}-{app_date_now().year}'
+
 
 def custom_upload_to(instance, filename):
     return '{3}/contratos/{0}/{1}.{2}'.format(app_date_now().year, instance.codigo, filename.split(".")[-1],
