@@ -138,7 +138,7 @@ class ConsecutivoRequerimientoEditarView(AbstractEvaLoggedView):
             consecutivo.numero_contrato = consecutivo.contrato.numero_contrato
             consecutivo.anio = consecutivo.contrato.anho
 
-        consecutivo.actualizar_codigo()
+        consecutivo.actualizar_codigo(consecutivo_db.consecutivo)
 
         try:
             consecutivo.full_clean(validate_unique=False, exclude=['usuario_crea'])
