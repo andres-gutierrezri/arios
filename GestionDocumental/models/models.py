@@ -14,6 +14,7 @@ from GestionDocumental.Enumeraciones import TiposActas
 class ConsecutivoBase(ModeloBase, ModelDjangoExtensiones):
     objects = ManagerGeneral()
     codigo = models.CharField(max_length=50, verbose_name='Código', null=False, blank=False)
+    consecutivo = models.IntegerField(verbose_name='Consecutivo', null=False, blank=False)
     empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, verbose_name='Empresa', blank=False, null=False)
     justificacion = models.CharField(max_length=100, verbose_name='Justificación', blank=True, null=True)
     estado = models.BooleanField(verbose_name='Estado', blank=False, null=False)
@@ -191,7 +192,6 @@ class ConsecutivoReunion(ConsecutivoBase):
 
 class ConsecutivoRequerimiento(ConsecutivoBase):
     descripcion = models.CharField(max_length=100, verbose_name='Descripción', null=False, blank=False)
-    consecutivo = models.IntegerField(verbose_name='Consecutivo', null=False, blank=False)
     contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato', null=True, blank=True)
 
     def __str__(self):
@@ -230,7 +230,6 @@ class ConsecutivoRequerimiento(ConsecutivoBase):
 
 class ConsecutivoPlanTrabajo(ConsecutivoBase):
     descripcion = models.CharField(max_length=100, verbose_name='Descripción', null=False, blank=False)
-    consecutivo = models.IntegerField(verbose_name='Consecutivo', null=False, blank=False)
     contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato', null=True, blank=True)
 
     def __str__(self):
@@ -270,7 +269,6 @@ class ConsecutivoPlanTrabajo(ConsecutivoBase):
 
 class ConsecutivoViaticosComisiones(ConsecutivoBase):
     descripcion = models.CharField(max_length=100, verbose_name='Descripción', null=False, blank=False)
-    consecutivo = models.IntegerField(verbose_name='Consecutivo', null=False, blank=False)
     contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato', null=True, blank=True)
 
     def __str__(self):
@@ -312,7 +310,6 @@ class ConsecutivoOrdenesTrabajo(ConsecutivoBase):
     fecha_inicio = models.DateField(verbose_name='Fecha Inicial')
     fecha_final = models.DateField(verbose_name='Fecha Final')
     descripcion = models.CharField(max_length=100, verbose_name='Descripción', null=False, blank=False)
-    consecutivo = models.IntegerField(verbose_name='Consecutivo', null=False, blank=False)
     contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato', null=True, blank=True)
 
     def __str__(self):
@@ -359,7 +356,6 @@ class ConsecutivoActasContratos(ConsecutivoBase):
                                              verbose_name='Consecutivo Contrato', null=True, blank=True)
     tipo_acta = models.SmallIntegerField(choices=TiposActas.choices, verbose_name='Tipo de Acta',
                                          null=False, blank=False)
-    consecutivo = models.IntegerField(verbose_name='Consecutivo', null=False, blank=False)
 
     def __str__(self):
         return self.codigo
