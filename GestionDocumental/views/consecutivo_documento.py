@@ -83,13 +83,14 @@ class ConsecutivoOficiosCrearView(AbstractEvaLoggedView):
                     .get_consecutivo_por_anho(tipo_documento_id=TipoDocumento.OFICIOS,
                                               empresa_id=get_id_empresa_global(request))
                 if proceso:
-                    consecutivo.sigla = ColaboradorProceso.objects.get(proceso_id=proceso,
-                                                             colaborador__usuario=request.user).proceso
+                    consecutivo.proceso = ColaboradorProceso.objects.get(proceso_id=proceso,
+                                                                         colaborador__usuario=request.user).proceso
                 else:
-                    consecutivo.sigla = ColaboradorProceso.objects.filter(colaborador__usuario=request.user).first().proceso
+                    consecutivo.proceso = ColaboradorProceso.objects.filter(colaborador__usuario=
+                                                                            request.user).first().proceso
 
                 if not consecutivo.contrato_id:
-                    consecutivo.numero_contrato = consecutivo.sigla
+                    consecutivo.numero_contrato = consecutivo.proceso.sigla
                 else:
                     consecutivo.numero_contrato = consecutivo.contrato.numero_contrato
                 consecutivo.actualizar_codigo()
@@ -99,7 +100,8 @@ class ConsecutivoOficiosCrearView(AbstractEvaLoggedView):
         except:
             rollback()
             LOGGER.exception('Falló la generación del consecutivo de actas de contrato.')
-            return RespuestaJson.error('Ha ocurrido un error al crear el consecutivo.')
+            messages.error(request, 'Ha ocurrido un error al crear el consecutivo.')
+            return redirect(reverse('GestionDocumental:consecutivo-oficios-index', args=[1]))
 
 
 class ConsecutivoOficioEditarView(AbstractEvaLoggedView):
@@ -120,23 +122,47 @@ class ConsecutivoOficioEditarView(AbstractEvaLoggedView):
         consecutivo.empresa = consecutivo_db.empresa
         consecutivo.usuario_id = consecutivo_db.usuario_id
         consecutivo.fecha_modificacion = app_datetime_now()
+        proceso = request.POST.get('proceso_id', '')
 
-        sigla = Contrato.objects.get(id=consecutivo.contrato_id).numero_contrato
-        consecutivo.codigo = 'AYD_{0:03d}_{1}_{2}'.format(consecutivo_db.consecutivo, sigla, app_datetime_now().year)
+        if proceso:
+            consecutivo.proceso = ColaboradorProceso.objects.get(proceso_id=proceso,
+                                                                 colaborador__usuario=request.user).proceso
+        else:
+            consecutivo.proceso = ColaboradorProceso.objects.filter(colaborador__usuario=
+                                                                    request.user).first().proceso
+            consecutivo.anio = app_datetime_now().year
+
+        if not consecutivo.contrato_id:
+            consecutivo.numero_contrato = consecutivo.proceso.sigla
+        else:
+            consecutivo.numero_contrato = consecutivo.contrato.numero_contrato
+            consecutivo.anio = consecutivo.contrato.anho
+
+        consecutivo.actualizar_codigo(consecutivo_db.consecutivo)
 
         try:
-            consecutivo.full_clean(validate_unique=False)
+            consecutivo.full_clean(validate_unique=False, exclude=['usuario_crea'])
         except ValidationError as errores:
             messages.error(request, 'Falló editar. Valide los datos ingresados al editar el consecutivo')
             return redirect(reverse('GestionDocumental:consecutivo-oficios-index', args=[0]))
 
-        if consecutivo_db.comparar(consecutivo, excluir=['fecha_modificacion']):
-            messages.success(request, 'No se hicieron cambios en la consecutivo {0}'.format(consecutivo.codigo))
+        if consecutivo_db.comparar(consecutivo, excluir=['usuario_crea', 'fecha_creacion', 'fecha_modificacion',
+                                                         'usuario_modifica', 'justificacion']):
+
+            messages.error(request, 'No se hicieron cambios en la consecutivo {0}'.format(consecutivo.codigo))
             return redirect(reverse('GestionDocumental:consecutivo-oficios-index', args=[0]))
+
         else:
-            consecutivo.save(update_fields=update_fields)
-            messages.success(request, 'Se ha editado el consecutivo {0}'.format(consecutivo.codigo))
-            return redirect(reverse('GestionDocumental:consecutivo-oficios-index', args=[0]))
+            try:
+                with atomic():
+                    consecutivo.save(update_fields=update_fields)
+                    messages.success(request, 'Se ha editado el consecutivo {0}'.format(consecutivo.codigo))
+                    return redirect(reverse('GestionDocumental:consecutivo-oficios-index', args=[1]))
+            except:
+                rollback()
+                LOGGER.exception('Falló la edición del consecutivo de oficio.')
+                messages.error(request, 'Falló la edición del consecutivo de oficio')
+                return redirect(reverse('GestionDocumental:consecutivo-oficios-index', args=[1]))
 
 
 class ConsecutivoOficiosEliminarView(AbstractEvaLoggedView):

@@ -79,7 +79,7 @@ class ConsecutivoOficio(models.Model, ModelDjangoExtensiones):
         """
         if not consecutivo:
             consecutivo = self.consecutivo
-        self.codigo = f'{self.sigla}-{consecutivo:03d}-{self.numero_contrato}-{app_date_now().year}'
+        self.codigo = f'{self.proceso.sigla}-{consecutivo:03d}-{self.numero_contrato}-{app_date_now().year}'
 
 
 def custom_upload_to(instance, filename):

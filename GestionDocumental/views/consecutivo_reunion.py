@@ -122,8 +122,8 @@ class ConsecutivoReunionesEditarView(AbstractEvaLoggedView):
                     return redirect(reverse('GestionDocumental:consecutivo-reuniones-index', args=[0]))
             except:
                 rollback()
-                LOGGER.exception('Falló la edición del consecutivo de requerimiento interno.')
-            RespuestaJson.error('Falló la edición del consecutivo de requerimiento interno.')
+                LOGGER.exception('Falló la edición del consecutivo de reunión.')
+                RespuestaJson.error('Falló la edición del consecutivo de reunión.')
 
 
 class ConsecutivoReunionesEliminarView(AbstractEvaLoggedView):
