@@ -11,7 +11,7 @@ class EstadosActividades(models.IntegerChoices):
     ANULADA = 6, 'Anulada'
 
 
-class PertenenciaGrupoActividades(models.IntegerChoices):
+class AsociadoGrupoActividades(models.IntegerChoices):
 
     CONTRATO = 1, 'Contrato'
     PROCESO = 2, 'Proceso'

@@ -1,6 +1,6 @@
 {% if perms.GestionActividades.view_grupoactividad %}
-    <li {% if menu_actual == 'Grupo Actividades' %} class="active" {% endif %}>
-        <a href="{% url 'GestionActividades:grupo-actividades-index' %}" title="Grupo Actividades" data-filter-tags="grupo actividades">
+    <li {% if menu_actual == 'Grupos Actividades' %} class="active" {% endif %}>
+        <a href="{% url 'GestionActividades:grupos-actividades-index' %}" title="Grupo Actividades" data-filter-tags="grupos actividades">
             <i class="fal fa-calendar-alt"></i>
             <span class="nav-link-text" data-i18n="nav.gestionactividades_grupo-actividades">Grupos Actividades</span>
         </a>

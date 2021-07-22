@@ -8,7 +8,7 @@ from Administracion.models import Proceso
 from EVA.General import app_date_now
 from EVA.General.modeljson import ModelDjangoExtensiones
 from EVA.General.modelmanagers import ManagerGeneral
-from GestionActividades.Enumeraciones import EstadosActividades, PertenenciaGrupoActividades
+from GestionActividades.Enumeraciones import EstadosActividades, AsociadoGrupoActividades
 from Proyectos.models import Contrato
 from EVA import settings
 
@@ -21,7 +21,7 @@ class GrupoActividad(models.Model, ModelDjangoExtensiones):
     fecha_crea = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False, blank=False)
     fecha_modificacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Modificación', null=False,
                                               blank=False)
-    tipo_asociado = models.SmallIntegerField(choices=PertenenciaGrupoActividades.choices,
+    tipo_asociado = models.SmallIntegerField(choices=AsociadoGrupoActividades.choices,
                                              verbose_name='Asociado', null=False, blank=False)
     proceso = models.ForeignKey(Proceso, on_delete=models.DO_NOTHING, verbose_name='Proceso', null=True, blank=True)
     contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato', null=True, blank=True)

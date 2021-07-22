@@ -14,12 +14,9 @@ function abrirModalCrearActividad(url, grupo) {
         agregarValidacionForm(form, function (event) {
             enviarFormularioAsync(form, url, "cargando").then(exitoso => {
                 if (exitoso) {
-                    EVANotificacion.toast.exitoso(`Se ha ${url.includes("editar") ? "editado" : "creado"} la actividad`);
                     modalCrearActividad.modal('hide');
                     Swal.clickCancel();
-                    setTimeout(function (){
-                        location.reload();
-                    },1000);
+                    location.reload();
                 } else {
                     Swal.clickCancel();
                 }

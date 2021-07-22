@@ -85,34 +85,45 @@ class ActividadesCrearView(AbstractEvaLoggedView):
                       datos_xa_render(request))
 
     def post(self, request):
-        grupo_actividad = GrupoActividad.from_dictionary(request.POST)
-        actividad = Actividad.from_dictionary(request.POST)
-        actividad.usuario_crea = request.user
-        actividad.usuario_modifica = request.user
-        actividad.fecha_crea = app_datetime_now()
-        responsables = request.POST.getlist('responsables_id[]', None)
+        try:
+            with atomic():
+                grupo_actividad = GrupoActividad.from_dictionary(request.POST)
+                actividad = Actividad.from_dictionary(request.POST)
+                actividad.usuario_crea = request.user
+                actividad.usuario_modifica = request.user
+                responsables = request.POST.getlist('responsables_id[]', None)
 
-        if actividad.grupo_actividad_id == '':
-            if GrupoActividad.objects.filter(nombre__iexact='generales').exists():
-                grupo_generales = list(GrupoActividad.objects.values('id').filter(nombre__iexact='generales'))
-                actividad.grupo_actividad_id = grupo_generales[0].get('id')
-            else:
-                return RespuestaJson.error("Falló crear. El grupo Generales no existe")
+                if actividad.grupo_actividad_id == '':
+                    if GrupoActividad.objects.filter(nombre__iexact='generales').exists():
+                        grupo_generales = list(GrupoActividad.objects.values('id').filter(nombre__iexact='generales'))
+                        actividad.grupo_actividad_id = grupo_generales[0].get('id')
+                    else:
+                        return RespuestaJson.error("Falló crear. El grupo Generales no existe")
 
-        if Actividad.objects.filter(nombre__iexact=actividad.nombre,
-                                    grupo_actividad_id__exact=actividad.grupo_actividad_id).exists():
-            return RespuestaJson.error("Falló crear. Ya existe una actividad con el mismo nombre dentro del grupo")
+                try:
+                    actividad.full_clean(validate_unique=False)
+                except ValidationError as errores:
+                    return RespuestaJson.error("Falló crear. Valide los datos ingresados al crear la actividad")
 
-        elif GrupoActividad.objects.filter(nombre__iexact=actividad.nombre).exists():
-            return RespuestaJson.error("Falló crear. No puede colocar el mismo nombre del grupo "
-                                       "que va a contener la actividad")
+                if Actividad.objects.filter(nombre__iexact=actividad.nombre,
+                                            grupo_actividad_id__exact=actividad.grupo_actividad_id).exists():
+                    return RespuestaJson.error("Falló crear. Ya existe una actividad con el "
+                                               "mismo nombre dentro del grupo")
 
-        else:
-            actividad.save()
-            for responsable in responsables:
-                ResponsableActividad.objects.create(responsable_id=responsable, actividad=actividad)
+                elif GrupoActividad.objects.filter(nombre__iexact=actividad.nombre).exists():
+                    return RespuestaJson.error("Falló crear. No puede colocar el mismo nombre del grupo "
+                                               "que va a contener la actividad")
 
-        return RespuestaJson.exitosa()
+                else:
+                    actividad.save()
+                    messages.success(request, 'Se ha creado exitosamente la actividad')
+                    for responsable in responsables:
+                        ResponsableActividad.objects.create(responsable_id=responsable, actividad=actividad)
+
+                return RespuestaJson.exitosa()
+        except:
+            rollback()
+            return RespuestaJson.error("Falló al crear la actividad")
 
 
 class ActividadesEditarView(AbstractEvaLoggedView):
@@ -122,60 +133,65 @@ class ActividadesEditarView(AbstractEvaLoggedView):
                       datos_xa_render(request, actividad))
 
     def post(self, request, id_actividad):
-        update_fields = ['fecha_modificacion', 'codigo', 'supervisor_id', 'fecha_inicio', 'fecha_fin', 'nombre',
-                         'descripcion', 'fecha_crea', 'motivo', 'usuario_modifica', 'usuario_crea',
-                         'grupo_actividad_id', 'estado', 'soporte_requerido']
-        grupo_actividad = GrupoActividad.from_dictionary(request.POST)
-        actividad = Actividad.from_dictionary(request.POST)
-        actividad_db = Actividad.objects.get(id=id_actividad)
-        actividad.estado = actividad_db.estado
-        actividad.fecha_crea = actividad_db.fecha_crea
-        actividad.fecha_modificacion = app_datetime_now()
-        actividad.id = actividad_db.id
-        actividad.usuario_modifica = request.user
-        actividad.usuario_crea = actividad_db.usuario_crea
-        responsables = request.POST.getlist('responsables_id[]', None)
-        actividad.soporte_requerido = request.POST.get('soporte_requerido', 'False') == 'True'
-
-        if actividad.grupo_actividad_id == '':
-            if GrupoActividad.objects.filter(nombre__iexact='generales').exists():
-                grupo_generales = list(GrupoActividad.objects.values('id').filter(nombre__iexact='generales'))
-                actividad.grupo_actividad_id = grupo_generales[0].get('id')
-            else:
-                return RespuestaJson.error("Falló crear. El grupo Generales no existe")
-
-        responsables_actividad_db = ResponsableActividad.objects.filter(actividad_id=id_actividad)
-        cantidad_responsables = responsables_actividad_db.count()
-        conteo_responsables = 0
-        if cantidad_responsables == len(responsables):
-            for clb in responsables_actividad_db:
-                for ctr in responsables:
-                    if clb.responsable.id == int(ctr):
-                        conteo_responsables += 1
-        else:
-            conteo_responsables = len(responsables)
-
         try:
-            actividad.full_clean(validate_unique=False)
-        except ValidationError as errores:
-            return RespuestaJson.error("Falló editar. Valide los datos ingresados al editar la actividad")
+            with atomic():
+                update_fields = ['fecha_modificacion', 'codigo', 'supervisor_id', 'fecha_inicio', 'fecha_fin', 'nombre',
+                                 'descripcion', 'fecha_crea', 'motivo', 'usuario_modifica', 'usuario_crea',
+                                 'grupo_actividad_id', 'estado', 'soporte_requerido']
+                grupo_actividad = GrupoActividad.from_dictionary(request.POST)
+                actividad = Actividad.from_dictionary(request.POST)
+                actividad_db = Actividad.objects.get(id=id_actividad)
+                actividad.estado = actividad_db.estado
+                actividad.fecha_crea = actividad_db.fecha_crea
+                actividad.id = actividad_db.id
+                actividad.usuario_modifica = request.user
+                actividad.usuario_crea = actividad_db.usuario_crea
+                responsables = request.POST.getlist('responsables_id[]', None)
+                actividad.soporte_requerido = request.POST.get('soporte_requerido', 'False') == 'True'
 
-        if GrupoActividad.objects.filter(nombre__iexact=actividad.nombre).exists():
-            return RespuestaJson.error("Falló editar. No puede colocar el mismo nombre del grupo "
-                                       "que va a contener la actividad")
+                if actividad.grupo_actividad_id == '':
+                    if GrupoActividad.objects.filter(nombre__iexact='generales').exists():
+                        grupo_generales = list(GrupoActividad.objects.values('id').filter(nombre__iexact='generales'))
+                        actividad.grupo_actividad_id = grupo_generales[0].get('id')
+                    else:
+                        return RespuestaJson.error("Falló crear. El grupo Generales no existe")
 
-        if actividad_db.comparar(actividad, excluir=['fecha_modificacion', 'motivo', 'calificacion', 'codigo',
-                                                     'porcentaje_avance']) \
-                and conteo_responsables == cantidad_responsables:
-            return RespuestaJson.error("No se hicieron cambios en la actividad")
+                responsables_actividad_db = ResponsableActividad.objects.filter(actividad_id=id_actividad)
+                cantidad_responsables = responsables_actividad_db.count()
+                conteo_responsables = 0
+                if cantidad_responsables == len(responsables):
+                    for clb in responsables_actividad_db:
+                        for ctr in responsables:
+                            if clb.responsable.id == int(ctr):
+                                conteo_responsables += 1
+                else:
+                    conteo_responsables = len(responsables)
 
-        else:
-            actividad.save(update_fields=update_fields)
-            ResponsableActividad.objects.filter(actividad_id=id_actividad).delete()
-            for responsable in responsables:
-                ResponsableActividad.objects.create(responsable_id=responsable, actividad_id=id_actividad)
+                try:
+                    actividad.full_clean(validate_unique=False)
+                except ValidationError as errores:
+                    return RespuestaJson.error("Falló editar. Valide los datos ingresados al editar la actividad")
 
-        return RespuestaJson.exitosa()
+                if GrupoActividad.objects.filter(nombre__iexact=actividad.nombre).exists():
+                    return RespuestaJson.error("Falló editar. No puede colocar el mismo nombre del grupo "
+                                               "que va a contener la actividad")
+
+                if actividad_db.comparar(actividad, excluir=['fecha_modificacion', 'motivo', 'calificacion', 'codigo',
+                                                             'porcentaje_avance']) \
+                        and conteo_responsables == cantidad_responsables:
+                    return RespuestaJson.error("No se hicieron cambios en la actividad")
+
+                else:
+                    actividad.save(update_fields=update_fields)
+                    messages.success(request, 'Se ha editado exitosamente la actividad')
+                    ResponsableActividad.objects.filter(actividad_id=id_actividad).delete()
+                    for responsable in responsables:
+                        ResponsableActividad.objects.create(responsable_id=responsable, actividad_id=id_actividad)
+
+                return RespuestaJson.exitosa()
+        except:
+            rollback()
+            return RespuestaJson.error("Falló al editar la actividad")
 
 
 class ActualizarActividadView(AbstractEvaLoggedView):
@@ -187,39 +203,49 @@ class ActualizarActividadView(AbstractEvaLoggedView):
                        'actividad': actividad})
 
     def post(self, request, id_actividad):
-        avance = AvanceActividad.from_dictionary(request.POST)
-        avance.actividad_id = id_actividad
-        avance.save()
+        try:
+            with atomic():
+                avance = AvanceActividad.from_dictionary(request.POST)
+                avance.actividad_id = id_actividad
+                avance.save()
 
-        # region Actualiza el porcentaje de avance de la actividad
-        update_fields = ['porcentaje_avance']
-        actividad_db = Actividad.objects.get(id=id_actividad)
-        actividad_db.porcentaje_avance += int(avance.porcentaje_avance)
-        actividad_db.save(update_fields=update_fields)
-        # endregion
+                # region Actualiza el porcentaje de avance de la actividad
+                update_fields = ['porcentaje_avance']
+                actividad_db = Actividad.objects.get(id=id_actividad)
+                actividad_db.porcentaje_avance += int(avance.porcentaje_avance)
+                actividad_db.save(update_fields=update_fields)
+                # endregion
 
-        messages.success(request, 'Se ha actualizado exitosamente la actividad')
-        return RespuestaJson.exitosa()
+                messages.success(request, 'Se ha actualizado exitosamente la actividad')
+                return RespuestaJson.exitosa()
+        except:
+            rollback()
+            return RespuestaJson.error("Falló al actualizar la actividad")
 
 
 class ActividadesEliminarView(AbstractEvaLoggedView):
     def post(self, request, id_actividad):
         actividad = Actividad.objects.get(id=id_actividad)
-        body_unicode = request.body.decode('utf-8')
-        datos_registro = json.loads(body_unicode)
-
-        motivo = datos_registro['justificacion']
-        if actividad.estado == EstadosActividades.ANULADA:
-            return RespuestaJson.error("Esta actividad ya ha sido eliminada.")
         try:
-            actividad.estado = EstadosActividades.ANULADA
-            actividad.motivo = motivo
-            actividad.save(update_fields=['estado', 'motivo'])
-            messages.success(request, 'Se ha eliminado la actividad {0}'.format(actividad.nombre))
-            return RespuestaJson.exitosa()
+            with atomic():
+                body_unicode = request.body.decode('utf-8')
+                datos_registro = json.loads(body_unicode)
 
-        except IntegrityError:
-            return RespuestaJson.error("Ha ocurrido un error al realizar la acción")
+                motivo = datos_registro['justificacion']
+                if actividad.estado == EstadosActividades.ANULADA:
+                    return RespuestaJson.error("Esta actividad ya ha sido eliminada.")
+                try:
+                    actividad.estado = EstadosActividades.ANULADA
+                    actividad.motivo = motivo
+                    actividad.save(update_fields=['estado', 'motivo'])
+                    messages.success(request, 'Se ha eliminado la actividad {0}'.format(actividad.nombre))
+                    return RespuestaJson.exitosa()
+
+                except IntegrityError:
+                    return RespuestaJson.error("Ha ocurrido un error al realizar la acción")
+        except:
+            rollback()
+            return RespuestaJson.error("Falló al eliminar la actividad")
 
 
 class CargarSoporteView(AbstractEvaLoggedView):

@@ -23,7 +23,7 @@
                         {% if perms.GestionActividades.add_grupoactividad %}
                             <div class="col-md-10">
                                 <small>
-                                    <a class="far fa-3x far fa-plus-circle" href="javascript:abrirModalCrearGrupoActividad('{% url 'GestionActividades:grupo-actividades-crear' %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear Grupo"></a>
+                                    <a class="far fa-3x far fa-plus-circle" href="javascript:abrirModalCrearGrupoActividad('{% url 'GestionActividades:grupos-actividades-crear' %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear Grupo"></a>
                                 </small>
                             </div>
                         {% else %}
@@ -96,7 +96,7 @@
             </div>
         </div>
     </div>
-    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='gestion-actividades/grupo-actividades' %}
+    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='gestion-actividades/grupos-actividades' %}
     <div class="modal fade" tabindex="-1" id="crear-grupo-actividad" role="dialog" aria-hidden="true"></div>
 {% endblock %}
 
@@ -104,42 +104,9 @@
     {% include 'EVA/_common/_statics/_tablas.html' %}
     {% include 'EVA/_common/_statics/_select2.html' %}
     {% include 'EVA/_common/_statics/_datepicker.html' %}
-    <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
     <script src="{% static 'GestionDocumental/js/filtro_consecutivos.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/controlBusquedaPaginacion.js' %}"></script>
-    <script src="{% static 'GestionActividades/js/grupo_actividades.js' %}"></script>
+    <script src="{% static 'GestionActividades/js/grupos_actividades.js' %}"></script>
     <script src="{% static 'GestionActividades/js/confirmar_eliminar_grupo_actividad.js' %}"></script>
-    <script>
-        $(document).ready(function () {
-
-            $('input[type=radio][name=contactview]').change(function () {
-                if (this.value == 'grid') {
-                    $('#js-contacts .card').removeClassPrefix('mb-').addClass('mb-g');
-                    $('#js-contacts .col-xl-12').removeClassPrefix('col-xl-').addClass('col-xl-4');
-                    $('#js-contacts .js-expand-btn').addClass('d-none');
-                    $('#js-contacts .card-body + .card-body').addClass('show');
-
-                } else if (this.value == 'table') {
-                    $('#js-contacts .card').removeClassPrefix('mb-').addClass('mb-1');
-                    $('#js-contacts .col-xl-4').removeClassPrefix('col-xl-').addClass('col-xl-12');
-                    $('#js-contacts .js-expand-btn').removeClass('d-none');
-                    $('#js-contacts .card-body + .card-body').removeClass('show');
-                }
-
-            });
-
-            //initialize filter
-            initApp.listFilter($('#js-contacts'), $('#js-filter-contacts'));
-
-            $('#procesos_id_select_id').on('change', function (e) {
-                $('#js-filter-contacts').val($(this).select2('data')[0].text).trigger('change');
-            });
-
-            $('#contratos_id_select_id').on('change', function (e) {
-                $('#js-filter-contacts').val($(this).select2('data')[0].text).trigger('change');
-            });
-
-        });
-    </script>
 {% endblock scripts %}
