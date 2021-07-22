@@ -147,7 +147,7 @@ class ConsecutivoOficioEditarView(AbstractEvaLoggedView):
             return redirect(reverse('GestionDocumental:consecutivo-oficios-index', args=[0]))
 
         if consecutivo_db.comparar(consecutivo, excluir=['usuario_crea', 'fecha_creacion', 'fecha_modificacion',
-                                                         'usuario_modifica', 'justificacion']):
+                                                         'usuario_modifica', 'justificacion', 'contrato','contrato_id']):
 
             messages.error(request, 'No se hicieron cambios en la consecutivo {0}'.format(consecutivo.codigo))
             return redirect(reverse('GestionDocumental:consecutivo-oficios-index', args=[0]))
