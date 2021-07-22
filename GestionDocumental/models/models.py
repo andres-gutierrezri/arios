@@ -73,9 +73,8 @@ class ConsecutivoOficio(models.Model, ModelDjangoExtensiones):
 
     def actualizar_codigo(self, consecutivo: int = None):
         """
-        Actualiza el código del consecutivo de contratos, se debe asegurar que el campo tipo de contrato ya este
-        asignado.
-        :param consecutivo: Número del consecutivo del contrato, si no se especifica se toma el que tiene asignado la
+        Actualiza el código del consecutivo de oficios.
+        :param consecutivo: Número del consecutivo, si no se especifica se toma el que tiene asignado la
         instancia.
         """
         if not consecutivo:
@@ -142,9 +141,8 @@ class ConsecutivoContrato(models.Model, ModelDjangoExtensiones):
 
     def actualizar_codigo(self, consecutivo: int = None):
         """
-        Actualiza el código del consecutivo de contratos, se debe asegurar que el campo tipo de contrato ya este
-        asignado.
-        :param consecutivo: Número del consecutivo del contrato, si no se especifica se toma el que tiene asignado la
+        Actualiza el código del consecutivo de constratos.
+        :param consecutivo: Número del consecutivo, si no se especifica se toma el que tiene asignado la
         instancia.
         """
         if not consecutivo:
@@ -180,9 +178,8 @@ class ConsecutivoReunion(ConsecutivoBase):
 
     def actualizar_codigo(self, consecutivo: int = None):
         """
-        Actualiza el código del consecutivo de contratos, se debe asegurar que el campo tipo de contrato ya este
-        asignado.
-        :param consecutivo: Número del consecutivo del contrato, si no se especifica se toma el que tiene asignado la
+        Actualiza el código del consecutivo de reunión.
+        :param consecutivo: Número del consecutivo, si no se especifica se toma el que tiene asignado la
         instancia.
         """
         if not consecutivo:
@@ -217,9 +214,8 @@ class ConsecutivoRequerimiento(ConsecutivoBase):
 
     def actualizar_codigo(self, consecutivo: int = None):
         """
-        Actualiza el código del consecutivo de contratos, se debe asegurar que el campo tipo de contrato ya este
-        asignado.
-        :param consecutivo: Número del consecutivo del contrato, si no se especifica se toma el que tiene asignado la
+        Actualiza el código del consecutivo de requerimiento.
+        :param consecutivo: Número del consecutivo, si no se especifica se toma el que tiene asignado la
         instancia.
         """
         if not consecutivo:
@@ -256,9 +252,8 @@ class ConsecutivoPlanTrabajo(ConsecutivoBase):
 
     def actualizar_codigo(self, consecutivo: int = None):
         """
-        Actualiza el código del consecutivo de contratos, se debe asegurar que el campo tipo de contrato ya este
-        asignado.
-        :param consecutivo: Número del consecutivo del contrato, si no se especifica se toma el que tiene asignado la
+        Actualiza el código del consecutivo de plan de trabajo.
+        :param consecutivo: Número del consecutivo, si no se especifica se toma el que tiene asignado la
         instancia.
         """
         if not consecutivo:
@@ -295,9 +290,8 @@ class ConsecutivoViaticosComisiones(ConsecutivoBase):
 
     def actualizar_codigo(self, consecutivo: int = None):
         """
-        Actualiza el código del consecutivo de contratos, se debe asegurar que el campo tipo de contrato ya este
-        asignado.
-        :param consecutivo: Número del consecutivo del contrato, si no se especifica se toma el que tiene asignado la
+        Actualiza el código del consecutivo de viáticos y comisiones.
+        :param consecutivo: Número del consecutivo, si no se especifica se toma el que tiene asignado la
         instancia.
         """
         if not consecutivo:
@@ -338,9 +332,8 @@ class ConsecutivoOrdenesTrabajo(ConsecutivoBase):
 
     def actualizar_codigo(self, consecutivo: int = None):
         """
-        Actualiza el código del consecutivo de contratos, se debe asegurar que el campo tipo de contrato ya este
-        asignado.
-        :param consecutivo: Número del consecutivo del contrato, si no se especifica se toma el que tiene asignado la
+        Actualiza el código del consecutivo de ordenes de trabajo.
+        :param consecutivo: Número del consecutivo, si no se especifica se toma el que tiene asignado la
         instancia.
         """
         if not consecutivo:
@@ -389,9 +382,8 @@ class ConsecutivoActasContratos(ConsecutivoBase):
 
     def actualizar_codigo(self, consecutivo: int = None):
         """
-        Actualiza el código del consecutivo de contratos, se debe asegurar que el campo tipo de contrato ya este
-        asignado.
-        :param consecutivo: Número del consecutivo del contrato, si no se especifica se toma el que tiene asignado la
+        Actualiza el código del consecutivo de actas de contratos.
+        :param consecutivo: Número del consecutivo, si no se especifica se toma el que tiene asignado la
         instancia.
         """
         sigla_tipo_acta = TiposActas.sigla(self.tipo_acta)
