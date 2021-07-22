@@ -66,16 +66,17 @@ class ReservaSalaJuntasCrearView(AbstractEvaLoggedView):
         reserva.fecha_creacion = app_datetime_now()
         reserva.color = self.get_color_reserva(COLORES)
 
-        if ReservaSalaJuntas.objects \
-                .filter(Q(fecha_inicio__lte=reserva.fecha_inicio, fecha_fin__gte=reserva.fecha_inicio)
-                        | Q(fecha_inicio__lte=reserva.fecha_fin, fecha_fin__gte=reserva.fecha_fin)
-                        | Q(fecha_inicio__gt=reserva.fecha_inicio, fecha_fin__lt=reserva.fecha_fin)) \
-                .exclude(estado=False).exists():
-            return RespuestaJson.error("Ya existe una reunión asignada en este horario")
+        # Validar traslapos
+        validar_reserva = reserva.validar_reserva()
 
-        resval = reserva.validar_holgura()
-        if resval:
-            return RespuestaJson.error(resval)
+        if validar_reserva:
+            return RespuestaJson.error(validar_reserva)
+
+        # Validar parámetro de holgura
+        validar_holgura = reserva.validar_holgura()
+
+        if validar_holgura:
+            return RespuestaJson.error(validar_holgura)
 
         try:
             with atomic():
@@ -113,21 +114,22 @@ class ReservaSalaJuntasEditarView(AbstractEvaLoggedView):
         reserva.color = reserva_db.color
         reserva.usuario_modifica = request.user
 
-        if ReservaSalaJuntas.objects \
-                .filter(Q(fecha_inicio__lte=reserva.fecha_inicio, fecha_fin__gte=reserva.fecha_inicio)
-                        | Q(fecha_inicio__lte=reserva.fecha_fin, fecha_fin__gte=reserva.fecha_fin)
-                        | Q(fecha_inicio__gt=reserva.fecha_inicio, fecha_fin__lt=reserva.fecha_fin)) \
-                .exclude(estado=False).exclude(id=id_reserva).exists():
-            return RespuestaJson.error("Ya existe una reunión asignada en este horario")
+        # Validar traslapos
+        validar_reserva = reserva.validar_reserva(True)
+
+        if validar_reserva:
+            return RespuestaJson.error(validar_reserva)
 
         try:
             reserva.full_clean(validate_unique=False)
         except ValidationError as errores:
             return RespuestaJson.error("Falló la edición. Valide los datos ingresados al editar la reserva")
 
-        resval = reserva.validar_holgura(True)
-        if resval:
-            return RespuestaJson.error(resval)
+        # Validar parámetro de holgura
+        validar_holgura = reserva.validar_holgura(True)
+
+        if validar_holgura:
+            return RespuestaJson.error(validar_holgura)
 
         if reserva_db.comparar(reserva, excluir=['fecha_modificacion', 'usuario_modifica', 'motivo']):
             return RespuestaJson.exitosa(mensaje="No se hicieron cambios en la reserva para la sala de juntas")
