@@ -63,7 +63,6 @@ function configurarModalCrear() {
             if (actual === ""){
                  fechaFinal.show();
                  fechaFinalID.attr("required", true);
-                 mostrarOcultarColaboradorTercero("ninguno")
             }
         })
     }
@@ -75,7 +74,6 @@ function configurarModalCrear() {
             if (actual === ""){
                  fechaFinal.show();
                  fechaFinalID.attr("required", true);
-                 mostrarOcultarColaboradorTercero("ninguno")
             }
         })
     }
