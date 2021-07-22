@@ -1,8 +1,9 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import Q
 
 from Administracion.parametros import ParametrosAdministracion
-from EVA.General.conversiones import string_to_datetime_2, SEGUNDOS_EN_MIN
+from EVA.General.conversiones import string_to_datetime, SEGUNDOS_EN_MIN
 from EVA.General.modeljson import ModelDjangoExtensiones
 from EVA.General.modelmanagers import ManagerGeneral
 
@@ -44,13 +45,35 @@ class ReservaSalaJuntas(models.Model, ModelDjangoExtensiones):
         """
         reserva = ReservaSalaJuntas()
         reserva.responsable_id = datos.get('responsable', None)
-        reserva.fecha_inicio = string_to_datetime_2(datos.get('fecha_intervalo', '').split(' – ')[0])
-        reserva.fecha_fin = string_to_datetime_2(datos.get('fecha_intervalo', '').split(' – ')[1])
+        reserva.fecha_inicio = string_to_datetime(datos.get('fecha_intervalo', '').split(' – ')[0], "%Y-%m-%d %H:%M")
+        reserva.fecha_fin = string_to_datetime(datos.get('fecha_intervalo', '').split(' – ')[1], "%Y-%m-%d %H:%M")
         reserva.tema = datos.get('tema', '')
         reserva.descripcion = datos.get('descripcion', '')
         reserva.motivo = datos.get('motivo', '')
 
         return reserva
+
+    def validar_reserva(self, editando: bool = False) -> str:
+        """
+        Valida que al momento de crear o editar una reserva NO se encuentre traslapada con otra ya existente.
+        :param editando: True para indicar que es una instancia que se esta editando y en la comparación no se tenga en
+        cuenta a si misma.
+        :return: String vacío si pasa la validación de lo contrario un String con el mensaje de error correspondiente.
+        """
+
+        traslapos = ReservaSalaJuntas.objects \
+            .filter(Q(fecha_inicio__lte=self.fecha_inicio, fecha_fin__gte=self.fecha_inicio)
+                    | Q(fecha_inicio__lte=self.fecha_fin, fecha_fin__gte=self.fecha_fin)
+                    | Q(fecha_inicio__gt=self.fecha_inicio, fecha_fin__lt=self.fecha_fin)) \
+            .exclude(estado=False).values_list('tema', flat=True)
+
+        if editando:
+            traslapos = traslapos.exclude(id=self.id)
+
+        if traslapos.exists():
+            return 'Ya existe una reunión asignada en este horario'
+
+        return ''
 
     def validar_holgura(self, editando: bool = False) -> str:
         """
@@ -66,8 +89,9 @@ class ReservaSalaJuntas(models.Model, ModelDjangoExtensiones):
         param_holgura_min = ParametrosAdministracion.get_params_sala_juntas().get_holgura()
         param_holgura_seg = param_holgura_min * SEGUNDOS_EN_MIN
 
-        past_dates = ReservaSalaJuntas.objects.filter(fecha_fin__date=self.fecha_inicio.date()) \
-            .filter(fecha_fin__lt=self.fecha_inicio).exclude(estado=False).values_list('fecha_fin', flat=True)
+        past_dates = ReservaSalaJuntas.objects.filter(fecha_fin__date=self.fecha_inicio.astimezone().date()) \
+            .filter(fecha_fin__lt=self.fecha_inicio).exclude(finalizacion=True).exclude(estado=False) \
+            .values_list('fecha_fin', flat=True)
 
         if editando:
             past_dates = past_dates.exclude(id=self.id)
@@ -80,12 +104,12 @@ class ReservaSalaJuntas(models.Model, ModelDjangoExtensiones):
                 reserva_holgura = (reserva_actual - reserva_anterior).seconds // SEGUNDOS_EN_MIN
                 tiempo = 'minuto' if reserva_holgura == 1 else 'minutos'
 
-                return f'Debe haber un espacio mínimo de {param_holgura_min} minutos '\
+                return f'Debe haber un espacio mínimo de {param_holgura_min} minutos ' \
                        f'entre el inicio de la de reunión ({reserva_actual.strftime("%H:%M")}) ' \
                        f'y el final de la anterior ({reserva_anterior.strftime("%H:%M")}). ' \
                        f'Hay una diferencia de: {reserva_holgura} {tiempo}'
 
-        later_dates = ReservaSalaJuntas.objects.filter(fecha_inicio__date=self.fecha_fin.date()) \
+        later_dates = ReservaSalaJuntas.objects.filter(fecha_inicio__date=self.fecha_fin.astimezone().date()) \
             .filter(fecha_inicio__gt=self.fecha_fin).exclude(estado=False).values_list('fecha_inicio', flat=True)
 
         if editando:
