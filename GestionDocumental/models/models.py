@@ -154,8 +154,7 @@ class ConsecutivoContrato(models.Model, ModelDjangoExtensiones):
 class ConsecutivoReunion(ConsecutivoBase):
     fecha = models.DateField(verbose_name='Fecha', null=False, blank=False)
     tema = models.CharField(max_length=100, verbose_name='Tema', null=False, blank=False)
-    descripcion = models.CharField(max_length=100, verbose_name='Descripción', null=False, blank=False)
-    consecutivo = models.IntegerField(verbose_name='Consecutivo', null=False, blank=False)
+    descripcion = models.CharField(max_length=100, verbose_name='Descripción', null=True, blank=True)
 
     class Meta:
         verbose_name = 'Consecutivo Reunión'

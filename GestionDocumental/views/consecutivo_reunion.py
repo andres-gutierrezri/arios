@@ -66,8 +66,9 @@ class ConsecutivoReunionesCrearView(AbstractEvaLoggedView):
         try:
             consecutivo.full_clean(exclude=['consecutivo', 'codigo'])
         except ValidationError as errores:
-            return RespuestaJson.error('Falló generación del consecutivo. '
+            messages.error(request, 'Falló generación del consecutivo. '
                                        'Valide los datos ingresados al editar el consecutivo')
+            return redirect(reverse('GestionDocumental:consecutivo-reuniones-index', args=[0]))
         try:
             with atomic():
                 consecutivo.consecutivo = ConsecutivoDocumento\
