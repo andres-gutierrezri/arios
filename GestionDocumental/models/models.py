@@ -338,8 +338,7 @@ class ConsecutivoOrdenesTrabajo(ConsecutivoBase):
         """
         if not consecutivo:
             consecutivo = self.consecutivo
-        anio = str(self.anio)[2:4]
-        self.codigo = f'OT_{consecutivo:03d}-{self.numero_contrato}-{anio}'
+        self.codigo = f'OT_{consecutivo:03d}-{self.numero_contrato}-{str(app_date_now().year)[2:4]}'
 
 class ConsecutivoActasContratos(ConsecutivoBase):
     fecha_suspension = models.DateField(verbose_name='Fecha Suspensión', null=True, blank=True)

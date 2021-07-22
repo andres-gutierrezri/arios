@@ -81,17 +81,14 @@ class ConsecutivoOrdenesTrabajoCrearView(AbstractEvaLoggedView):
                                              empresa_id=get_id_empresa_global(request))
                 proceso = request.POST.get('proceso_id', '')
                 if proceso:
-                    proceso = ColaboradorProceso.objects.get(proceso_id=proceso, colaborador__usuario=request.user).proceso
+                    consecutivo.proceso = ColaboradorProceso.objects.get(proceso_id=proceso, colaborador__usuario=request.user).proceso
                 else:
-                    proceso = ColaboradorProceso.objects.filter(colaborador__usuario=request.user).first().proceso
+                    consecutivo.proceso = ColaboradorProceso.objects.filter(colaborador__usuario=request.user).first().proceso
 
                 if not consecutivo.contrato_id:
-                    contrato = proceso.sigla
+                    consecutivo.numero_contrato = consecutivo.proceso.sigla
                 else:
-                    contrato = consecutivo.contrato.numero_contrato
-
-                consecutivo.codigo = 'OT-{0:03d}-{1}-{2}'.format(consecutivo.consecutivo, contrato,
-                                                                 str(consecutivo.fecha_inicio)[2:4])
+                    consecutivo.numero_contrato = consecutivo.contrato.numero_contrato
 
                 consecutivo.actualizar_codigo()
                 consecutivo.save()
@@ -146,7 +143,8 @@ class ConsecutivoOrdenesTrabajoEditarView(AbstractEvaLoggedView):
             return RespuestaJson.error(mensaje="Falló editar. Valide los datos ingresados al editar el consecutivo")
 
         if consecutivo_db.comparar(consecutivo, excluir=['usuario_crea', 'fecha_crea', 'fecha_modificacion',
-                                                         'usuario_modifica', 'justificacion']):
+                                                         'usuario_modifica', 'justificacion','contrato',
+                                                         'contrato_id']):
             return RespuestaJson.error("No se hicieron cambios en la consecutivo")
         else:
             try:
