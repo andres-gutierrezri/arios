@@ -52,7 +52,7 @@ class GruposActividadesIndexView(AbstractEvaLoggedView):
                                 if id_user not in lista_users:
                                     lista_users.append(id_user)
                         conteo_actividades += 1
-                        if actividad['estado'] != 4:
+                        if actividad['estado'] != EstadosActividades.CERRADA:
                             actividades_pendientes += 1
             for responsable in responsables:
                 if responsable['id'] in lista_users:
@@ -66,6 +66,15 @@ class GruposActividadesIndexView(AbstractEvaLoggedView):
             datos_grupo[int(indice)]['progreso_porcentaje'] += progreso
             indice += 1
 
+        contratos_existente = Contrato.objects \
+            .filter(empresa_id=get_id_empresa_global(request)) \
+            .values('id', 'numero_contrato', 'cliente__nombre')
+
+        lista_contratos_selector = []
+        for contrato in contratos_existente:
+            lista_contratos_selector.append({'campo_valor': contrato['id'], 'campo_texto': '{0} - {1}'
+                                            .format(contrato['numero_contrato'], contrato['cliente__nombre'])})
+
         return render(request, 'GestionActividades/GruposActividades/index.html',
                       {'grupos_actividades': grupos_actividades,
                        'actividades': actividades,
@@ -74,6 +83,7 @@ class GruposActividadesIndexView(AbstractEvaLoggedView):
                        'colaboradores': colaboradores,
                        'lista_procesos': lista_procesos,
                        'lista_contratos': lista_contratos,
+                       'lista_contratos_selector': lista_contratos_selector,
                        'datos_grupo': datos_grupo,
                        'procesos': procesos})
 

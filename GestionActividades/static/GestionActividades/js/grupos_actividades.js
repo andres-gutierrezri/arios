@@ -35,7 +35,9 @@ $(document).ready(function () {
     });
 
     $('#contratos_id_select_id').on('change', function (e) {
-        $('#js-filter-contacts').val($(this).select2('data')[0].text).trigger('change');
+        let contratosNombre = $(this).select2('data')[0].text.split(' - ');
+        console.log(contratosNombre);
+        $('#js-filter-contacts').val(contratosNombre[0]).trigger('change');
     });
 
 

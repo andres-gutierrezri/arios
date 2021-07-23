@@ -27,12 +27,12 @@
                     </div>
                     <div class="form-group">
                         <div class="col-md-12">
-                            {% input_number_tag 'horas' 'Horas' placeholder="Ingrese el número de horas empleadas"  required="" type="number"  min="0" max="9999" step="1" value=''  mensaje_validacion='Por favor digite las horas en un número que no sea decimal' invalido=errores.version %}
+                            {% input_number_tag 'horas' 'Horas' placeholder="Ingrese el número de horas empleadas"  required=""  min="0" max="9999" step="0.01" value=''  mensaje_validacion='Por favor digite el número de horas' invalido=errores.horas %}
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="col-md-12">
-                            {% input_number_tag 'porcentaje' 'Porcentaje' placeholder="Ingrese el porcentaje del avance"  required="" type="number"  min="0" max="100" step="1" value=''  mensaje_validacion='Por favor digite el porcentaje en un número menor que 100 que no sea decimal' invalido=errores.version %}
+                            {% input_number_tag 'porcentaje' 'Porcentaje' placeholder="Ingrese el porcentaje del avance"  required="" type="number"  min="0" max="100" step="1" value=''  mensaje_validacion='Por favor digite el porcentaje en un número hasta 100 que no sea decimal' invalido=errores.porcentaje %}
                         </div>
                     </div>
                 </div>

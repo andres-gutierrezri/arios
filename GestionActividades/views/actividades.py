@@ -1,14 +1,11 @@
 import logging
 import os
 import json
-from sqlite3 import IntegrityError
-import re
-from fileinput import filename
 
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.db.transaction import rollback, atomic
-from django.http import HttpResponse, HttpResponseServerError, JsonResponse
+from django.http import HttpResponse, HttpResponseServerError
 from django.shortcuts import render
 
 from django.contrib import messages
@@ -18,7 +15,8 @@ from EVA.General import app_datetime_now, app_date_now
 from EVA.General.modeljson import RespuestaJson
 from EVA.views.index import AbstractEvaLoggedView
 from GestionActividades.Enumeraciones import EstadosActividades
-from GestionActividades.models.models import Actividad, GrupoActividad, ResponsableActividad, Soporte, AvanceActividad
+from GestionActividades.models.models import Actividad, GrupoActividad, ResponsableActividad, SoporteActividad, \
+    AvanceActividad
 
 LOGGER = logging.getLogger(__name__)
 
@@ -36,24 +34,27 @@ class ActividadesIndexView(AbstractEvaLoggedView):
                 actividad_db.estado = EstadosActividades.CREADA
                 actividad_db.save()
 
+        actividades = Actividad.objects.values('id', 'nombre', 'grupo_actividad_id', 'descripcion', 'fecha_fin',
+                                               'estado', 'porcentaje_avance', 'soporte_requerido', 'fecha_inicio',
+                                               'horas_invertidas', 'tiempo_estimado')
         responsable_actividad = ResponsableActividad.objects.values('responsable_id', 'actividad_id')
         colaboradores = User.objects.values('id', 'first_name', 'last_name')
         grupos = GrupoActividad.objects.values('id', 'nombre', 'grupo_actividad_id', 'estado')
         search = request.GET.get('search', '')
 
         if search:
-            grupos = grupos.filter(Q(nombre__icontains=search))
+            actividades = actividades.filter(Q(nombre__icontains=search))
 
         if id:
             grupos = grupos.filter(Q(id=id) | Q(nombre__iexact='Generales') | Q(grupo_actividad_id=id))
 
-        archivos = Soporte.objects.values('id', 'archivo', 'actividad_id')
+        archivos = SoporteActividad.objects.values('id', 'archivo', 'actividad_id')
 
         # Slice descartando de la url "privado/GestiónActividades/Actividades/Soportes/" para que solo se
         # visualice del archivo el código y el Filename
         archivos_soporte = []
         for archivo in archivos:
-            nombre_archivo = archivo['archivo'][48:]
+            nombre_archivo = archivo['archivo'].split("/")[-1]
             if not nombre_archivo:
                 nombre_archivo = '0'
 
@@ -61,11 +62,8 @@ class ActividadesIndexView(AbstractEvaLoggedView):
                                      'actividad_id': archivo['actividad_id']})
         # endregion
 
-        actividades = Actividad.objects.values('id', 'nombre', 'grupo_actividad_id', 'descripcion', 'fecha_fin',
-                                               'estado', 'porcentaje_avance', 'soporte_requerido', 'fecha_inicio')
-
         avances_actividad = AvanceActividad.objects.values('descripcion', 'fecha_avance', 'horas_empleadas',
-                                                           'porcentaje_avance', 'actividad_id')
+                                                           'porcentaje_avance', 'actividad_id', 'responsable_id')
 
         return render(request, 'GestionActividades/Actividades/index.html',
                       {'actividades': actividades,
@@ -137,7 +135,7 @@ class ActividadesEditarView(AbstractEvaLoggedView):
             with atomic():
                 update_fields = ['fecha_modificacion', 'codigo', 'supervisor_id', 'fecha_inicio', 'fecha_fin', 'nombre',
                                  'descripcion', 'fecha_crea', 'motivo', 'usuario_modifica', 'usuario_crea',
-                                 'grupo_actividad_id', 'estado', 'soporte_requerido']
+                                 'grupo_actividad_id', 'estado', 'soporte_requerido', 'tiempo_estimado']
                 grupo_actividad = GrupoActividad.from_dictionary(request.POST)
                 actividad = Actividad.from_dictionary(request.POST)
                 actividad_db = Actividad.objects.get(id=id_actividad)
@@ -205,14 +203,18 @@ class ActualizarActividadView(AbstractEvaLoggedView):
     def post(self, request, id_actividad):
         try:
             with atomic():
-                avance = AvanceActividad.from_dictionary(request.POST)
-                avance.actividad_id = id_actividad
-                avance.save()
+                avance_actividad = AvanceActividad.from_dictionary(request.POST)
+                avance_actividad.actividad_id = id_actividad
+                avance_actividad.responsable = request.user
+                avance_actividad.save()
 
-                # region Actualiza el porcentaje de avance de la actividad
-                update_fields = ['porcentaje_avance']
+                # region Actualiza el porcentaje y las horas de avance de la actividad
+                update_fields = ['porcentaje_avance', 'horas_invertidas']
                 actividad_db = Actividad.objects.get(id=id_actividad)
-                actividad_db.porcentaje_avance += int(avance.porcentaje_avance)
+                actividad_db.porcentaje_avance = int(avance_actividad.porcentaje_avance)
+                horas_empleadas = float(avance_actividad.horas_empleadas)
+                horas_invertidas_db = float(actividad_db.horas_invertidas)
+                actividad_db.horas_invertidas = horas_empleadas + horas_invertidas_db
                 actividad_db.save(update_fields=update_fields)
                 # endregion
 
@@ -241,7 +243,7 @@ class ActividadesEliminarView(AbstractEvaLoggedView):
                     messages.success(request, 'Se ha eliminado la actividad {0}'.format(actividad.nombre))
                     return RespuestaJson.exitosa()
 
-                except IntegrityError:
+                except:
                     return RespuestaJson.error("Ha ocurrido un error al realizar la acción")
         except:
             rollback()
@@ -251,7 +253,7 @@ class ActividadesEliminarView(AbstractEvaLoggedView):
 class CargarSoporteView(AbstractEvaLoggedView):
     def get(self, request, id_actividad):
         actividad = Actividad.objects.get(id=id_actividad)
-        soportes = Soporte.objects.filter(actividad_id=id_actividad)
+        soportes = SoporteActividad.objects.filter(actividad_id=id_actividad)
 
         if actividad.estado == EstadosActividades.FINALIZADO:
             soporte = soportes.values('fecha_fin', 'descripcion')
@@ -272,7 +274,7 @@ class CargarSoporteView(AbstractEvaLoggedView):
         actividad = Actividad.objects.get(id=id_actividad)
         try:
             with atomic():
-                soporte = Soporte.from_dictionary(request.POST)
+                soporte = SoporteActividad.from_dictionary(request.POST)
                 soporte.actividad_id = id_actividad
                 # region Guarda los archivos
                 for llave in request.FILES:
@@ -300,10 +302,12 @@ class CargarSoporteView(AbstractEvaLoggedView):
 
 
 class VerSoporteView(AbstractEvaLoggedView):
-    def get(self, request, id_soporte, id_actividad, archivo):
+    def get(self, request, id_soporte, id_actividad):
         actividad = Actividad.objects.get(id=id_actividad)
-        if Soporte.objects.filter(id=id_soporte).exists():
-            soporte = Soporte.objects.get(id=id_soporte)
+        if not FileNotFoundError:
+            soporte = SoporteActividad.objects.get(id=id_soporte)
+            soporte_url = str(soporte.archivo)
+            archivo = soporte_url.split("/")[-1]
             extension = os.path.splitext(soporte.archivo.url)[1]
             mime_types = {'.docx': 'application/msword', '.xls': 'application/vnd.ms-excel',
                           '.pptx': 'application/vnd.ms-powerpoint',
@@ -318,6 +322,7 @@ class VerSoporteView(AbstractEvaLoggedView):
             return response
 
         else:
+            messages.error(request, 'El archivo soporte no se encuentra disponible')
             return render(request, 'GestionActividades/Actividades/index.html')
 
 

@@ -37,13 +37,13 @@ urlpatterns = [
          name='actividades-crear'),
     path('actividades/<int:id_actividad>/editar', actividades.ActividadesEditarView.as_view(),
          name='actividades-editar'),
-    path('actividades/actividad/<int:id_actividad>/actualizar', actividades.ActualizarActividadView.as_view(),
+    path('actividades/<int:id_actividad>/actualizar', actividades.ActualizarActividadView.as_view(),
          name='actividades-actualizar'),
     path('actividades/<int:id_actividad>/delete', actividades.ActividadesEliminarView.as_view(),
          name='actividades-eliminar'),
-    path('actividades/actividad/<int:id_actividad>/cargar', actividades.CargarSoporteView.as_view(),
+    path('actividades/<int:id_actividad>/cargar', actividades.CargarSoporteView.as_view(),
          name='soportes-cargar'),
-    path('actividades/actividad/<int:id_actividad>/<int:id_soporte>/ver-soportes/<str:archivo>',
+    path('actividades/<int:id_actividad>/soportes/<int:id_soporte>/ver-soporte',
          actividades.VerSoporteView.as_view(), name='soportes-ver'),
 
 ]

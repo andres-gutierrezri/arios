@@ -161,11 +161,22 @@
                                                                             <div class="p-3 p-md-3">
                                                                                 <div class="d-flex align-items-center">
                                                                                     <div class="flex-1 min-width-0">
-                                                                                            <a href="javascript:void(0)" class="d-block text-truncate">
-                                                                                                <div class="progress">
-                                                                                                    <div class="progress-bar text-white bg-info-800" role="progressbar" style="width:{{ actividad.porcentaje_avance }}%;" aria-valuenow="{{ actividad.porcentaje_avance }}" aria-valuemin="0" aria-valuemax="100">{{ actividad.porcentaje_avance }}%</div>
-                                                                                                </div>
-                                                                                            </a>
+                                                                                        <a href="javascript:void(0)" class="d-block text-truncate">
+                                                                                            <div class="progress">
+                                                                                                <div class="progress-bar text-white bg-info-800" role="progressbar" style="width:{{ actividad.porcentaje_avance }}%;" aria-valuenow="{{ actividad.porcentaje_avance }}" aria-valuemin="0" aria-valuemax="100">{{ actividad.porcentaje_avance }}%</div>
+                                                                                            </div>
+                                                                                        </a>
+                                                                                        <br>
+                                                                                        <a class="fs-sm text-muted" >
+                                                                                            Tiempo Estimado:
+                                                                                        </a>
+                                                                                            {{ actividad.tiempo_estimado }} h
+                                                                                        <br>
+                                                                                        <a class="fs-sm text-muted" >
+                                                                                            Horas Invertidas:
+                                                                                        </a>
+                                                                                            {{ actividad.horas_invertidas }} h
+                                                                                        <br>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
@@ -181,40 +192,36 @@
                                                                                         </div>
                                                                                     {% endif %}
                                                                                     {% if perms.GestionActividades.add_avanceactividad %}
-                                                                                        {% if actividad.porcentaje_avance != 100%}
-                                                                                            {% if actividad.estado == EstadosActividades.EN_PROCESO or actividad.estado == EstadosActividades.REABIERTA%}
-                                                                                                <div class="col-md-2">
-                                                                                                    <small>
-                                                                                                        <a class="fad fa-3x fa-undo-alt" id="actualizar_actividad_{{ actividad.id }}" href="javascript:abrirModalActualizarActividad('{% url 'GestionActividades:actividades-actualizar' actividad.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Actualizar Actividad"></a>
-                                                                                                    </small>
-                                                                                                </div>
-                                                                                            {% endif %}
+                                                                                        {% if actividad.estado != EstadosActividades.CERRADA and actividad.estado != EstadosActividades.FINALIZADO%}
+                                                                                            <div class="col-md-2">
+                                                                                                <small>
+                                                                                                    <a class="fad fa-3x fa-undo-alt" id="actualizar_actividad_{{ actividad.id }}" href="javascript:abrirModalActualizarActividad('{% url 'GestionActividades:actividades-actualizar' actividad.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Actualizar Actividad"></a>
+                                                                                                </small>
+                                                                                            </div>
                                                                                         {% endif %}
                                                                                     {% endif %}
-                                                                                    {% if perms.GestionActividades.add_soporte %}
+                                                                                    {%  if perms.GestionActividades.view_avanceactividad %}
+                                                                                        {% if actividad.estado != EstadosActividades.CERRADA %}
+                                                                                            <div class="col-2">
+                                                                                                <div class="row col-xl-6">
+                                                                                                    <div class="accordion" id="accordionExample_avance">
+                                                                                                        <div class="card" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Mostrar Avances" >
+                                                                                                            <div class="card-header" id="heading{{actividad.id}}">
+                                                                                                                <a href="javascript:void(0);" class="card collapsed p-md-0 fas fa-2x fa-tasks border-transparent align-content-center" data-toggle="collapse" data-target="#collapse_avance{{actividad.id}}" aria-expanded="false" aria-controls="collapse_avance{{actividad.id}}"></a>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        {% endif %}
+                                                                                    {% endif %}
+                                                                                    {% if perms.GestionActividades.add_soporteactividad %}
                                                                                         {% if actividad.porcentaje_avance == 100%}
                                                                                             {% if actividad.estado == EstadosActividades.EN_PROCESO or actividad.estado == EstadosActividades.REABIERTA%}
                                                                                                 <div class="col-md-2">
                                                                                                     <small>
                                                                                                         <a class="fas fa-3x fa-clipboard-check" id="cargar_soporte_{{ actividad.id }}" href="javascript:abrirModalCargarSoporte('{% url 'GestionActividades:soportes-cargar' actividad.id %}', '{{actividad.soporte_requerido}}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Finalizar Actividad"></a>
                                                                                                     </small>
-                                                                                                </div>
-                                                                                            {% endif %}
-                                                                                        {% endif %}
-                                                                                    {% endif %}
-                                                                                    {%  if perms.GestionActividades.view_avanceactividad %}
-                                                                                        {% if actividad.porcentaje_avance != 100%}
-                                                                                            {% if actividad.estado == EstadosActividades.EN_PROCESO or actividad.estado == EstadosActividades.REABIERTA %}
-                                                                                                <div class="col-2">
-                                                                                                    <div class="row col-xl-6">
-                                                                                                        <div class="accordion" id="accordionExample_avance">
-                                                                                                            <div class="card" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Mostrar Avances" >
-                                                                                                                <div class="card-header" id="heading{{actividad.id}}">
-                                                                                                                    <a href="javascript:void(0);" class="card collapsed p-md-0 fas fa-2x fa-tasks border-transparent align-content-center" data-toggle="collapse" data-target="#collapse_avance{{actividad.id}}" aria-expanded="false" aria-controls="collapse_avance{{actividad.id}}"></a>
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                    </div>
                                                                                                 </div>
                                                                                             {% endif %}
                                                                                         {% endif %}
@@ -226,7 +233,7 @@
                                                                                             </small>
                                                                                         </div>
                                                                                     {% endif %}
-                                                                                    {%  if perms.GestionActividades.view_soporte %}
+                                                                                    {%  if perms.GestionActividades.view_soporteactividad %}
                                                                                         {% if actividad.estado == EstadosActividades.FINALIZADO and actividad.soporte_requerido %}
                                                                                             <div class="col-2">
                                                                                                 <div class="row col-xl-6">
@@ -252,7 +259,7 @@
                                                                                             <small>
                                                                                                 <div class="d-block p-2 text-muted fs-sm">
                                                                                                     {{ archivo.archivo }}
-                                                                                                    <a class="fas fa-1x fa-download" style="text-decoration: none !important;" href="{% url 'GestionActividades:soportes-ver' actividad.id archivo.id archivo.archivo %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title=""></a>
+                                                                                                    <a class="fas fa-1x fa-download" style="text-decoration: none !important;" href="{% url 'GestionActividades:soportes-ver' actividad.id archivo.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title=""></a>
                                                                                                 </div>
                                                                                             </small>
                                                                                     {% endif %}
@@ -291,6 +298,11 @@
                                                                                                                     Horas empleadas:
                                                                                                                 </a>
                                                                                                                 {{ avance.horas_empleadas }} h
+                                                                                                                <br><br>
+                                                                                                                <a class="fs-lg text-dark" >
+                                                                                                                    Responsable:
+                                                                                                                </a>
+                                                                                                                {{ avance.responsable_id }}
                                                                                                                 <br><br>
                                                                                                             </div>
                                                                                                         </div>
@@ -334,15 +346,12 @@
     {% include 'EVA/_common/_statics/_select2.html' %}
     {% include 'EVA/_common/_statics/_datepicker.html'%}
     <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
-    <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
-    <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
     <script src="{% static 'GestionDocumental/js/filtro_consecutivos.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/controlBusquedaPaginacion.js' %}"></script>
     <script src="{% static 'GestionActividades/js/actividades.js' %}"></script>
     <script src="{% static 'GestionActividades/js/cargar_soporte.js' %}"></script>
     <script src="{% static 'GestionActividades/js/actualizar_actividad.js' %}"></script>
-    <script src="{% static 'EVA/Plantilla/js/app.bundle.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/dropzone/dropzone.js' %}"></script>
     <script src="{% static 'GestionActividades/js/confirmar_eliminar_grupo_actividad.js' %}"></script>
 {% endblock scripts%}

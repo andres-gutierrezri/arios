@@ -13,6 +13,6 @@ permisos = [Permiso('index', None),
             Permiso('actividades-actualizar', ['GestionActividades.add_avanceactividad']),
             Permiso('actividades-eliminar', ['GestionActividades.delete_actividad']),
             Permiso('actividades-ver', ['GestionActividades.view_avanceactividad']),
-            Permiso('soportes-cargar', ['GestionActividades.add_soporte']),
-            Permiso('soportes-ver', ['GestionActividades.view_soporte']),
+            Permiso('soportes-cargar', ['GestionActividades.add_soporteactividad']),
+            Permiso('soportes-ver', ['GestionActividades.view_soporteactividad']),
             ]
