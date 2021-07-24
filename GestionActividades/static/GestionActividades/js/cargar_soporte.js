@@ -25,13 +25,7 @@ function abrirModalCargarSoporte(url, soporte) {
             else if (soporte === 'False'){
                 enviarFormularioAsync(form, url, "cargando").then(exitoso => {
                 if (exitoso) {
-                    modalCargarSoporte.modal('hide');
-                    Swal.clickCancel();
-                    setTimeout(function (){
-                        location.reload();
-                    },1000);
-                } else {
-                    Swal.clickCancel();
+                    location.reload();
                 }
             });
             return true;

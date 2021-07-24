@@ -147,7 +147,7 @@ class ResponsableActividad(models.Model):
                                   verbose_name='Actividad', blank=False, null=False)
 
     def __str__(self):
-        return str.format(self.responsable, self.actividad)
+        return 'Responsable: {0} - Actividad: {1}'.format(self.responsable, self.actividad)
 
     class Meta:
         unique_together = (('responsable', 'actividad'),)

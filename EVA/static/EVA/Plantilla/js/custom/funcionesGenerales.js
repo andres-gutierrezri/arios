@@ -2,15 +2,15 @@
 
 function mostrarCamposFormulario(lista){
     lista.forEach(function (objeto){
-        objeto.attr('required', 'true');
-        objeto.removeAttr('hidden', 'true')
+        objeto.attr("required", true)
+        objeto.show()
     })
 }
 
 function ocultarCamposFormulario(lista) {
     lista.forEach(function (objeto){
-        objeto.removeAttr('required', 'true')
-        objeto.attr('hidden', 'true')
+        objeto.removeAttr('required')
+        objeto.hide()
     })
 }
 

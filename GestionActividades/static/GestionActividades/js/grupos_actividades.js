@@ -36,11 +36,13 @@ $(document).ready(function () {
 
     $('#contratos_id_select_id').on('change', function (e) {
         let contratosNombre = $(this).select2('data')[0].text.split(' - ');
-        console.log(contratosNombre);
         $('#js-filter-contacts').val(contratosNombre[0]).trigger('change');
     });
 
+    $('#colaboradores_id_select_id').on('change', function (e) {
+         $('#js-filter-contacts').val($(this).select2('data')[0].text).trigger('change');
 
+    });
 });
 
 function abrirModalCrearGrupoActividad(url, asociado) {
@@ -50,12 +52,7 @@ function abrirModalCrearGrupoActividad(url, asociado) {
         agregarValidacionForm(form, function (event) {
             enviarFormularioAsync(form, url, "cargando").then(exitoso => {
                 if (exitoso) {
-                    modalCrearGrupoActividad.modal('hide');
-                    Swal.clickCancel();
                     location.reload();
-                }
-                else{
-                    Swal.clickCancel();
                 }
             });
             return true;
@@ -70,7 +67,7 @@ function configurarModalCrear(asociado) {
     contratoSelectID = $('#contrato_id_select_id');
     procesoSelectID = $('#proceso_id_select_id');
     grupoSelectID = $('#grupo_asociado_select_id');
-    let idTipoAsociado = $('#tipo_asociado_id')
+    let idTipoAsociado = $('#tipo_asociado_id');
 
     inicializarSelect2('tipo_asociado_select_id', modalCrearGrupoActividad);
     inicializarSelect2('contrato_id_select_id', modalCrearGrupoActividad);
@@ -93,20 +90,18 @@ function configurarModalCrear(asociado) {
 
     if (asociado){
         idTipoAsociado.val(asociado).trigger("change");
-         if (idTipoAsociado === "1") {
-             mostrarOcultarTipoAsociado(true)
+        if (idTipoAsociado === "1") {
+            mostrarOcultarTipoAsociado(true)
         }
         else if (idTipoAsociado === "2") {
-             mostrarOcultarTipoAsociado(false)
+            mostrarOcultarTipoAsociado(false)
         }
     }
 
     agregarValidacionFormularios();
 }
 
-
 function cambiarSelect (actual){
-
     if (actual === "1") {
         mostrarOcultarTipoAsociado(true)
     } else {
@@ -116,14 +111,10 @@ function cambiarSelect (actual){
 
 function mostrarOcultarTipoAsociado(seleccion) {
     if (seleccion){
-        contratoSelect.show();
-        contratoSelectID.attr("required", true);
-        procesoSelect.hide();
-        procesoSelectID.removeAttr('required');
+        mostrarCamposFormulario([contratoSelect, contratoSelectID])
+        ocultarCamposFormulario([procesoSelect, procesoSelectID])
     }else{
-        procesoSelect.show();
-        procesoSelectID.attr("required", true);
-        contratoSelect.hide();
-        contratoSelectID.removeAttr('required');
+        mostrarCamposFormulario([procesoSelect, procesoSelectID])
+        ocultarCamposFormulario([contratoSelect, contratoSelectID])
     }
 }

@@ -66,12 +66,12 @@ class GruposActividadesIndexView(AbstractEvaLoggedView):
             datos_grupo[int(indice)]['progreso_porcentaje'] += progreso
             indice += 1
 
-        contratos_existente = Contrato.objects \
+        contratos_existentes = Contrato.objects \
             .filter(empresa_id=get_id_empresa_global(request)) \
             .values('id', 'numero_contrato', 'cliente__nombre')
 
         lista_contratos_selector = []
-        for contrato in contratos_existente:
+        for contrato in contratos_existentes:
             lista_contratos_selector.append({'campo_valor': contrato['id'], 'campo_texto': '{0} - {1}'
                                             .format(contrato['numero_contrato'], contrato['cliente__nombre'])})
 
@@ -85,7 +85,8 @@ class GruposActividadesIndexView(AbstractEvaLoggedView):
                        'lista_contratos': lista_contratos,
                        'lista_contratos_selector': lista_contratos_selector,
                        'datos_grupo': datos_grupo,
-                       'procesos': procesos})
+                       'procesos': procesos,
+                       'menu_actual': 'grupos-actividades'})
 
 
 class GruposActividadesCrearView(AbstractEvaLoggedView):
@@ -108,7 +109,7 @@ class GruposActividadesCrearView(AbstractEvaLoggedView):
                     grupo_actividad.contrato_id = None
 
                 try:
-                    grupo_actividad.full_clean(validate_unique=False)
+                    grupo_actividad.full_clean(validate_unique=False, exclude=['motivo'])
                 except ValidationError as errores:
                     return RespuestaJson.error("Falló crear. Valide los datos ingresados "
                                                "al crear el grupo de actividades")
@@ -145,14 +146,15 @@ class GruposActividadesEditarView(AbstractEvaLoggedView):
                 grupo_actividad_db = GrupoActividad.objects.get(id=id_grupo)
                 grupo_actividad.fecha_crea = grupo_actividad_db.fecha_crea
                 grupo_actividad.id = grupo_actividad_db.id
+                grupo_actividad.fecha_modificacion = app_datetime_now()
                 grupo_actividad.usuario_modifica = request.user
                 grupo_actividad.usuario_crea = grupo_actividad_db.usuario_crea
 
                 if grupo_actividad.grupo_actividad_id == '':
                     grupo_actividad.grupo_actividad_id = None
-                if grupo_actividad.tipo_asociado == AsociadoGrupoActividades.CONTRATO:
+                if int(grupo_actividad.tipo_asociado) == AsociadoGrupoActividades.CONTRATO:
                     grupo_actividad.proceso_id = None
-                if grupo_actividad.tipo_asociado == AsociadoGrupoActividades.PROCESO:
+                if int(grupo_actividad.tipo_asociado) == AsociadoGrupoActividades.PROCESO:
                     grupo_actividad.contrato_id = None
 
                 try:
@@ -161,7 +163,8 @@ class GruposActividadesEditarView(AbstractEvaLoggedView):
                     return RespuestaJson.error("Falló editar. Valide los datos ingresados "
                                                "al editar el grupo de actividades")
 
-                if grupo_actividad_db.comparar(grupo_actividad, excluir=['fecha_modificacion', 'motivo']):
+                if grupo_actividad_db.comparar(grupo_actividad, excluir=['fecha_modificacion', 'usuario_modifica',
+                                                                         'motivo']):
                     return RespuestaJson.error("No se hicieron cambios en el grupo de actividades")
 
                 else:
@@ -210,11 +213,7 @@ class GruposActividadesEliminarView(AbstractEvaLoggedView):
 
 def datos_xa_render(request, grupo_actividad: GrupoActividad = None) -> dict:
 
-    grupos = GrupoActividad.objects.values('id', 'nombre', 'estado')
-    lista_grupos = []
-    for grupo in grupos:
-        if grupo['estado']:
-            lista_grupos.append({'campo_valor': grupo['id'], 'campo_texto': grupo['nombre']})
+    grupos = GrupoActividad.objects.get_xa_select_activos()
 
     contratos = Contrato.objects \
         .filter(empresa_id=get_id_empresa_global(request)) \
@@ -240,7 +239,7 @@ def datos_xa_render(request, grupo_actividad: GrupoActividad = None) -> dict:
              'contratos': lista_contratos,
              'procesos': lista_procesos,
              'tipo_asociado': AsociadoGrupoActividades.choices,
-             'grupos': lista_grupos,
+             'grupos': grupos,
              'opciones_contrato_proceso': opciones_contrato_proceso,
              'menu_actual': 'grupo-actividades'}
 

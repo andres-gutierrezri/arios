@@ -302,7 +302,11 @@
                                                                                                                 <a class="fs-lg text-dark" >
                                                                                                                     Responsable:
                                                                                                                 </a>
-                                                                                                                {{ avance.responsable_id }}
+                                                                                                                {% for colaborador in colaboradores %}
+                                                                                                                    {% if colaborador.id == avance.responsable_id %}
+                                                                                                                        {{ colaborador.first_name}} {{colaborador.last_name}}
+                                                                                                                    {% endif %}
+                                                                                                                {% endfor %}
                                                                                                                 <br><br>
                                                                                                             </div>
                                                                                                         </div>

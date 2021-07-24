@@ -1,5 +1,6 @@
 {% load eva_tags %}
 {% load static %}
+{% load humanize %}
 <form id="actividad_form" method="post" class="needs-validation" novalidate>
 {% csrf_token %}
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -54,7 +55,7 @@
                                 {% select_tag grupos 'grupo_asociado' 'Seleccione el grupo asociado' texto_label="Seleccione un grupo"  value=actividad.grupo_actividad_id %}
                             </div>
                             <div class="col-md-6">
-                                {% input_number_tag 'tiempo_estimado' 'Tiempo Estimado' placeholder="Ingrese el número de horas estimadas" required="" type="number"  min="0" max="9999" step="0.01" value=actividad.tiempo_estimado mensaje_validacion='Por favor digite el número de horas' invalido=errores.tiempo_estimado %}
+                                {% input_number_tag 'tiempo_estimado' 'Tiempo Estimado' placeholder="Ingrese el número de horas estimadas" required="" type="number"  min="0" max="9999" step="0.01" value=actividad.tiempo_estimado|intcomma:False mensaje_validacion='Por favor digite el número de horas' invalido=errores.tiempo_estimado %}
                             </div>
                         </div>
                     </div>

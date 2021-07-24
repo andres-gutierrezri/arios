@@ -14,14 +14,7 @@ function abrirModalActualizarActividad(url) {
         agregarValidacionForm(form, function (event) {
             enviarFormularioAsync(form, url, "cargando").then(exitoso => {
                 if (exitoso) {
-                    modalActualizarActividad.modal('hide');
-                    Swal.clickCancel();
-                    setTimeout(function (){
-                        location.reload();
-                    },1000);
-                }
-                else{
-                    Swal.clickCancel();
+                    location.reload();
                 }
             });
             return true;

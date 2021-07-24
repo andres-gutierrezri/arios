@@ -17,6 +17,7 @@ from EVA.views.index import AbstractEvaLoggedView
 from GestionActividades.Enumeraciones import EstadosActividades
 from GestionActividades.models.models import Actividad, GrupoActividad, ResponsableActividad, SoporteActividad, \
     AvanceActividad
+from TalentoHumano.models import Colaborador
 
 LOGGER = logging.getLogger(__name__)
 
@@ -74,7 +75,8 @@ class ActividadesIndexView(AbstractEvaLoggedView):
                        'archivos_soporte': archivos_soporte,
                        'EstadosActividades': EstadosActividades,
                        'avances_actividad': avances_actividad,
-                       'fecha': app_datetime_now()})
+                       'fecha': app_datetime_now(),
+                       'menu_actual': 'actividades'})
 
 
 class ActividadesCrearView(AbstractEvaLoggedView):
@@ -99,7 +101,7 @@ class ActividadesCrearView(AbstractEvaLoggedView):
                         return RespuestaJson.error("Falló crear. El grupo Generales no existe")
 
                 try:
-                    actividad.full_clean(validate_unique=False)
+                    actividad.full_clean(validate_unique=False, exclude=['motivo'])
                 except ValidationError as errores:
                     return RespuestaJson.error("Falló crear. Valide los datos ingresados al crear la actividad")
 
@@ -143,6 +145,7 @@ class ActividadesEditarView(AbstractEvaLoggedView):
                 actividad.fecha_crea = actividad_db.fecha_crea
                 actividad.id = actividad_db.id
                 actividad.usuario_modifica = request.user
+                actividad.fecha_modificacion = app_datetime_now()
                 actividad.usuario_crea = actividad_db.usuario_crea
                 responsables = request.POST.getlist('responsables_id[]', None)
                 actividad.soporte_requerido = request.POST.get('soporte_requerido', 'False') == 'True'
@@ -327,20 +330,21 @@ class VerSoporteView(AbstractEvaLoggedView):
 
 
 def datos_xa_render(request, actividad: Actividad = None) -> dict:
-    grupos = GrupoActividad.objects.values('id', 'nombre')
-    lista_grupos = []
-    for grupo in grupos:
-        lista_grupos.append({'campo_valor': grupo['id'], 'campo_texto': grupo['nombre']})
 
-    colaboradores = User.objects.values('id', 'first_name', 'last_name')
+    grupos = GrupoActividad.objects.get_xa_select_activos()
+
+    usuarios = User.objects.values('id', 'first_name', 'last_name')
+    colaboradores = Colaborador.objects.values('usuario_id')
     lista_colaboradores = []
-    for colaborador in colaboradores:
-        lista_colaboradores.append({'campo_valor': colaborador['id'],
-                                    'campo_texto': colaborador['first_name'] + ' ' + colaborador['last_name']})
+    for usuario in usuarios:
+        for colaborador in colaboradores:
+            if usuario['id'] == colaborador['usuario_id']:
+                lista_colaboradores.append({'campo_valor': usuario['id'],
+                                            'campo_texto': usuario['first_name'] + ' ' + usuario['last_name']})
 
     responsable_actividad = ResponsableActividad.objects.get_ids_responsables_list(actividad)
     datos = {'fecha': app_datetime_now(),
-             'grupos': lista_grupos,
+             'grupos': grupos,
              'colaboradores': lista_colaboradores,
              'menu_actual': 'actividades',
              'responsable_actividad': responsable_actividad,
