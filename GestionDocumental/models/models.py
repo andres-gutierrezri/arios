@@ -184,7 +184,7 @@ class ConsecutivoReunion(ConsecutivoBase):
         """
         if not consecutivo:
             consecutivo = self.consecutivo
-        self.codigo = f'ACR_{consecutivo:03d}-{str(app_date_now().year)[2:4]}'
+        self.codigo = f'ACR_{consecutivo:03d}-{app_date_now():%y}'
 
 
 class ConsecutivoRequerimiento(ConsecutivoBase):
@@ -221,7 +221,7 @@ class ConsecutivoRequerimiento(ConsecutivoBase):
         if not consecutivo:
             consecutivo = self.consecutivo
         anio = str(self.anio)[2:4]
-        self.codigo = f'RQ_{consecutivo:03d}-{self.numero_contrato}-{anio}-{str(app_date_now().year)[2:4]}'
+        self.codigo = f'RQ_{consecutivo:03d}-{self.numero_contrato}-{anio}-{app_date_now():%y}'
 
 
 class ConsecutivoPlanTrabajo(ConsecutivoBase):
@@ -297,7 +297,7 @@ class ConsecutivoViaticosComisiones(ConsecutivoBase):
         if not consecutivo:
             consecutivo = self.consecutivo
         anio = str(self.anio)[2:4]
-        self.codigo = f'VT_{consecutivo:03d}-{self.numero_contrato}-{anio}-{str(app_date_now().year)[2:4]}'
+        self.codigo = f'VT_{consecutivo:03d}-{self.numero_contrato}-{anio}-{app_date_now():%y}'
 
 
 class ConsecutivoOrdenesTrabajo(ConsecutivoBase):
@@ -338,7 +338,8 @@ class ConsecutivoOrdenesTrabajo(ConsecutivoBase):
         """
         if not consecutivo:
             consecutivo = self.consecutivo
-        self.codigo = f'OT_{consecutivo:03d}-{self.numero_contrato}-{str(app_date_now().year)[2:4]}'
+        self.codigo = f'OT_{consecutivo:03d}-{self.numero_contrato}-{app_date_now():%y}'
+
 
 class ConsecutivoActasContratos(ConsecutivoBase):
     fecha_suspension = models.DateField(verbose_name='Fecha Suspensión', null=True, blank=True)
