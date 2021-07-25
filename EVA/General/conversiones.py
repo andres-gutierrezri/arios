@@ -18,27 +18,15 @@ Cantidad de segundos en un minuto
 """
 
 
-def string_to_datetime(fecha_string: str) -> Optional[datetime]:
+def string_to_datetime(fecha_string: str, formato: str = "%Y-%m-%d") -> Optional[datetime]:
     """
     Convierte un string a datetime, la fecha se toma con el timezone configurado en settings.TIME_ZONE
-    :param fecha_string: string con formato "%Y-%m-%d"
+    :param fecha_string: fecha tipo string
+    :param formato: formato de la fecha tipo string (Valor por defecto = "%Y-%m-%d")
     :return: retorna el datetime en UTC, si falla la conversión retorna None.
     """
     try:
-        return datetime.strptime(fecha_string, "%Y-%m-%d").astimezone(pytz.timezone(settings.TIME_ZONE))\
-            .astimezone(pytz.timezone('UTC'))
-    except ValueError:
-        return None
-
-
-def string_to_datetime_2(fecha_string: str) -> Optional[datetime]:
-    """
-    Convierte un string a datetime, la fecha se toma con el timezone configurado en settings.TIME_ZONE
-    :param fecha_string: string con formato "%Y-%m-%d %H:%M"
-    :return: retorna el datetime en UTC, si falla la conversión retorna None.
-    """
-    try:
-        return datetime.strptime(fecha_string, "%Y-%m-%d %H:%M").astimezone(pytz.timezone(settings.TIME_ZONE))\
+        return datetime.strptime(fecha_string, formato).astimezone(pytz.timezone(settings.TIME_ZONE))\
             .astimezone(pytz.timezone('UTC'))
     except ValueError:
         return None
