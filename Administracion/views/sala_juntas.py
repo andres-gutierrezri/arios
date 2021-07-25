@@ -67,16 +67,16 @@ class ReservaSalaJuntasCrearView(AbstractEvaLoggedView):
         reserva.color = self.get_color_reserva(COLORES)
 
         # Validar traslapos
-        validar_reserva = reserva.validar_reserva()
+        resultado = reserva.validar_reserva()
 
-        if validar_reserva:
-            return RespuestaJson.error(validar_reserva)
+        if resultado:
+            return RespuestaJson.error(resultado)
 
         # Validar parámetro de holgura
-        validar_holgura = reserva.validar_holgura()
+        resultado = reserva.validar_holgura()
 
-        if validar_holgura:
-            return RespuestaJson.error(validar_holgura)
+        if resultado:
+            return RespuestaJson.error(resultado)
 
         try:
             with atomic():
@@ -115,10 +115,10 @@ class ReservaSalaJuntasEditarView(AbstractEvaLoggedView):
         reserva.usuario_modifica = request.user
 
         # Validar traslapos
-        validar_reserva = reserva.validar_reserva(True)
+        resultado = reserva.validar_reserva(True)
 
-        if validar_reserva:
-            return RespuestaJson.error(validar_reserva)
+        if resultado:
+            return RespuestaJson.error(resultado)
 
         try:
             reserva.full_clean(validate_unique=False)
@@ -126,10 +126,10 @@ class ReservaSalaJuntasEditarView(AbstractEvaLoggedView):
             return RespuestaJson.error("Falló la edición. Valide los datos ingresados al editar la reserva")
 
         # Validar parámetro de holgura
-        validar_holgura = reserva.validar_holgura(True)
+        resultado = reserva.validar_holgura(True)
 
-        if validar_holgura:
-            return RespuestaJson.error(validar_holgura)
+        if resultado:
+            return RespuestaJson.error(resultado)
 
         if reserva_db.comparar(reserva, excluir=['fecha_modificacion', 'usuario_modifica', 'motivo']):
             return RespuestaJson.exitosa(mensaje="No se hicieron cambios en la reserva para la sala de juntas")
