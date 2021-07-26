@@ -45,5 +45,6 @@ urlpatterns = [
          name='soportes-cargar'),
     path('actividades/<int:id_actividad>/soportes/<int:id_soporte>/ver-soporte',
          actividades.VerSoporteView.as_view(), name='soportes-ver'),
-
+    path('actividades/<int:id_actividad>/cerrar-reabrir', actividades.CerrarReabrirActividadView.as_view(),
+         name='actividades-cerrar-reabrir'),
 ]
