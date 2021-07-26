@@ -120,6 +120,7 @@ class Actividad(models.Model, ModelDjangoExtensiones):
         actividad.codigo = datos.get('codigo', 1)
         actividad.calificacion = datos.get('calificacion', 0)
         actividad.porcentaje_avance = datos.get('porcentaje', 0)
+        actividad.soporte_requerido = datos.get('soporte_requerido', False)
 
         return actividad
 

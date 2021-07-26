@@ -60,7 +60,7 @@ function configurarModalSoporte(soporte) {
 
     if (soporte === 'True') {
         $("#dZUpload").dropzone({
-            url: `/gestion-actividades/actividades/actividad/${idActividad}/cargar`,
+            url: `/gestion-actividades/actividades/${idActividad}/cargar`,
             autoProcessQueue: false,
             addRemoveLinks: true,
             acceptedFiles: 'image/*,application/pdf,application/msword,application/vnd.ms-excel,' +

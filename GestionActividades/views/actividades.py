@@ -111,8 +111,8 @@ class ActividadesCrearView(AbstractEvaLoggedView):
                                                "mismo nombre dentro del grupo")
 
                 elif GrupoActividad.objects.filter(nombre__iexact=actividad.nombre).exists():
-                    return RespuestaJson.error("Falló crear. No puede colocar el mismo nombre del grupo "
-                                               "que va a contener la actividad")
+                    return RespuestaJson.error("Falló crear. No puede colocar el mismo nombre de un grupo existente ni"
+                                               " del grupo que va a contener la actividad")
 
                 else:
                     actividad.save()
@@ -147,6 +147,7 @@ class ActividadesEditarView(AbstractEvaLoggedView):
                 actividad.usuario_modifica = request.user
                 actividad.fecha_modificacion = app_datetime_now()
                 actividad.usuario_crea = actividad_db.usuario_crea
+                actividad.horas_invertidas = actividad_db.horas_invertidas
                 responsables = request.POST.getlist('responsables_id[]', None)
                 actividad.soporte_requerido = request.POST.get('soporte_requerido', 'False') == 'True'
 
@@ -178,7 +179,7 @@ class ActividadesEditarView(AbstractEvaLoggedView):
                                                "que va a contener la actividad")
 
                 if actividad_db.comparar(actividad, excluir=['fecha_modificacion', 'motivo', 'calificacion', 'codigo',
-                                                             'porcentaje_avance']) \
+                                                             'porcentaje_avance', 'usuario_modifica']) \
                         and conteo_responsables == cantidad_responsables:
                     return RespuestaJson.error("No se hicieron cambios en la actividad")
 
@@ -307,24 +308,28 @@ class CargarSoporteView(AbstractEvaLoggedView):
 class VerSoporteView(AbstractEvaLoggedView):
     def get(self, request, id_soporte, id_actividad):
         actividad = Actividad.objects.get(id=id_actividad)
-        if not FileNotFoundError:
-            soporte = SoporteActividad.objects.get(id=id_soporte)
+        soporte = SoporteActividad.objects.get(id=id_soporte)
+
+        try:
             soporte_url = str(soporte.archivo)
-            archivo = soporte_url.split("/")[-1]
+            nombre_archivo = soporte_url.split("/")[-1]
             extension = os.path.splitext(soporte.archivo.url)[1]
             mime_types = {'.docx': 'application/msword', '.xls': 'application/vnd.ms-excel',
-                          '.pptx': 'application/vnd.ms-powerpoint',
+                          '.pptx': 'application/vnd.ms-powerpoint', '.DOC': 'application/msword',
                           '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                          '.xlsm': 'application/vnd.ms-excel.sheet.macroenabled.12',
+                          '.xlsm': 'application/vnd.ms-excel.sheet.macroenabled.12', '.doc': 'application/msword',
                           '.dwg': 'application/octet-stream', '.pdf': 'application/pdf',
                           '.png': 'image/png', '.jpeg': 'image/jpeg', '.jpg': 'image/jpeg'
                           }
-            response = HttpResponse(soporte.archivo, content_type=mime_types)
+            mime_type = mime_types.get(extension, 'application/pdf')
+
+            response = HttpResponse(soporte.archivo, content_type=mime_type)
             response['Content-Disposition'] = 'inline; filename="{0}"' \
-                .format(archivo)
+                .format(nombre_archivo)
+
             return response
 
-        else:
+        except:
             messages.error(request, 'El archivo soporte no se encuentra disponible')
             return render(request, 'GestionActividades/Actividades/index.html')
 

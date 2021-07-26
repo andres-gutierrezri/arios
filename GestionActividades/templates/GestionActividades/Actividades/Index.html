@@ -259,7 +259,7 @@
                                                                                             <small>
                                                                                                 <div class="d-block p-2 text-muted fs-sm">
                                                                                                     {{ archivo.archivo }}
-                                                                                                    <a class="fas fa-1x fa-download" style="text-decoration: none !important;" href="{% url 'GestionActividades:soportes-ver' actividad.id archivo.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title=""></a>
+                                                                                                    <a class="fas fa-1x fa-download" style="text-decoration: none !important;" href="{% url 'GestionActividades:soportes-ver' actividad.id archivo.id %}" target="_blank" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title=""></a>
                                                                                                 </div>
                                                                                             </small>
                                                                                     {% endif %}
