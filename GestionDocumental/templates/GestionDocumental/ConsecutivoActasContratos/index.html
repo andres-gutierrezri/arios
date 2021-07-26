@@ -76,7 +76,7 @@
                                                         <td>{{ consecutivo.descripcion}}</td>
                                                         <td>{{ consecutivo.usuario_crea.username }}</td>
                                                         <td>{% if consecutivo.justificacion %}{{ consecutivo.justificacion }}{% endif %}</td>
-                                                        <td>{{ consecutivo.fecha_creacion | date:'Y-m-d'}}</td>
+                                                        <td>{{ consecutivo.fecha_creacion | date:'Y-m-d H:i'}}</td>
                                                         <td>
                                                             {% if consecutivo.estado %}
                                                                 <span class="badge badge-primary">Vigente</span>
