@@ -331,4 +331,3 @@ class SubproductoSubservicio(models.Model, ModelDjangoExtensiones):
     class Meta:
         verbose_name = 'Subproducto y Subservicio'
         verbose_name_plural = 'Subproductos y Subservicios'
-

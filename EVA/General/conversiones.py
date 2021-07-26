@@ -12,14 +12,21 @@ from django.utils.translation import ngettext_lazy
 from EVA.General import app_datetime_now
 
 
-def string_to_datetime(fecha_string: str) -> Optional[datetime]:
+SEGUNDOS_EN_MIN: int = 60
+"""
+Cantidad de segundos en un minuto
+"""
+
+
+def string_to_datetime(fecha_string: str, formato: str = "%Y-%m-%d") -> Optional[datetime]:
     """
     Convierte un string a datetime, la fecha se toma con el timezone configurado en settings.TIME_ZONE
-    :param fecha_string: string con formato "%Y-%m-%d"
+    :param fecha_string: fecha tipo string
+    :param formato: formato de la fecha tipo string (Valor por defecto = "%Y-%m-%d")
     :return: retorna el datetime en UTC, si falla la conversión retorna None.
     """
     try:
-        return datetime.strptime(fecha_string, "%Y-%m-%d").astimezone(pytz.timezone(settings.TIME_ZONE))\
+        return datetime.strptime(fecha_string, formato).astimezone(pytz.timezone(settings.TIME_ZONE))\
             .astimezone(pytz.timezone('UTC'))
     except ValueError:
         return None
@@ -49,6 +56,18 @@ def string_to_date(fecha_string: str) -> Optional[date]:
         return None
 
 
+def datetime_to_isostring(fecha) -> str:
+    """
+    Convierte una fecha a string con formato AAAA-MM-DDTHH:hh:ss.sssZ.
+    :param fecha: fecha con formato date o datetime
+    :return: retorna la fecha en string, Si falla la conversión, retorna vacío.
+    """
+    try:
+        return fecha.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+    except ValueError:
+        return ''
+
+
 def datetime_to_string(fecha) -> str:
     """
     Convierte una fecha a string con formato AAAA-MM-DD.
@@ -59,6 +78,19 @@ def datetime_to_string(fecha) -> str:
         return fecha.strftime("%Y-%m-%d")
     except ValueError:
         return ''
+
+
+def datetime_to_utc(fecha: datetime) -> Optional[datetime]:
+    """
+    Convierte un string a datetime, la fecha se toma con el timezone configurado en settings.TIME_ZONE
+    :param fecha_string: string con formato "%Y-%m-%d"
+    :return: retorna el datetime en UTC, si falla la conversión retorna None.
+    """
+    try:
+        return fecha.astimezone(pytz.timezone(settings.TIME_ZONE))\
+            .astimezone(pytz.timezone('UTC'))
+    except ValueError:
+        return None
 
 
 def datetime_to_filename(fecha) -> str:

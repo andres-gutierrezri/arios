@@ -1,0 +1,60 @@
+{% extends 'Administracion/_common/base_administracion.html' %}
+{% load static %}
+{% load eva_tags %}
+<title>{% block titulo %}Reserva de la Sala de Juntas{% endblock %}</title>
+
+{% block styles %}
+    {% include 'EVA/_common/_statics/_select2.html' with incCSS=True %}
+    {% include 'EVA/_common/_statics/_datepicker.html' with incCSS=True %}
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/miscellaneous/fullcalendar/fullcalendar.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.css' %}">
+{% endblock styles %}
+
+{% block main %}
+    <div class="panel-container show">
+        <div class="header">
+             <h1 class="header-title">
+                <i class='fad fa-calendar-alt'></i> Reserva de la Sala de Juntas <span class='fw-300'></span>
+                 <br>
+                 <br>
+             </h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xl-12">
+            <div id="panel-1" class="panel">
+                <div class="panel-hdr">
+                    <h2>
+                        {% if perms.Administracion.add_reservasalajuntas %}
+                            <span class="fad fa-2x fa-plus-circle cursor-pointer" onclick="abrirModalCrearReserva('{% url 'Administracion:reserva-sala-juntas-crear'%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear Reserva">
+                            </span>
+                        {% endif %}
+                    </h2>
+                    <div class="panel-toolbar">
+                        <button class="btn btn-panel" data-action="panel-fullscreen" data-toggle="tooltip" data-offset="0,10" data-original-title="Pantalla completa"></button>
+                    </div>
+                </div>
+                <div class="panel-container show">
+                    <div class="panel-content">
+                        <div id="calendar"></div>
+                        <!-- Modal : TODO -->
+                        <!-- Modal end -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='administracion/reservas-sala-juntas' %}
+    <div class="modal fade" tabindex="-1" id="crear-reserva" role="dialog"  aria-hidden="true"></div>
+{% endblock %}
+
+{% block scripts %}
+    {% include 'EVA/_common/_statics/_select2.html' %}
+    {% include 'EVA/_common/_statics/_datepicker.html'%}
+    <script src="{% static 'Administracion/js/confirmarEliminar.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/miscellaneous/fullcalendar/fullcalendar.bundle.js' %}"></script>
+    <script src="{% static 'Administracion/js/ReservaSalaJuntas/reservaSalaJuntas.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/dependency/moment/moment.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.js' %}"></script>
+{% endblock %}
