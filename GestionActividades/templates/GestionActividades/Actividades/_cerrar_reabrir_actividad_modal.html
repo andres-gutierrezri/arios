@@ -1,0 +1,39 @@
+{% load eva_tags %}
+{% load static %}
+<form id="cerrar_reabrir_actividad_form" method="post" class="needs-validation" enctype="multipart/form-data" novalidate>
+{% csrf_token %}
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header p-b-0">
+                <h4 class="modal-title">
+                     {% if actividad.estado == EstadosActividades.FINALIZADO %} Cerrar Actividad: {{ actividad.nombre }}{% else %} Reabrir Actividad: {{ actividad.nombre }} {% endif %}
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input hidden id="id_actividad" value="{{ actividad.id }}">
+                <div class="form-group">
+                    {% if actividad.estado == EstadosActividades.FINALIZADO %}
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            {% input_number_tag 'calificacion' 'Calificación' placeholder="Ingrese la calificación"  required=""  min="0" max="10" step="1" value=actividad.calificacion  mensaje_validacion='Por favor digite la calificación en un número de 1 a 10 entero' invalido=errores.horas %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="form-group">
+                        <div id="motivo" class="col-md-12">
+                            {% input_textarea_tag 'motivo' 'Motivo' placeholder="Digite Motivo" value="" required="" mensaje_validacion='Por favor digite el motivo.' %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-danger btn-pills">Cancelar</button>
+                <button id="agregar" type="submit" class="btn btn-primary btn-pills"> {% if actividad.estado == EstadosActividades.FINALIZADO %}Cerrar{% else %}Reabrir{% endif %} </button>
+            </div>
+        </div>
+    </div>
+</form>
+

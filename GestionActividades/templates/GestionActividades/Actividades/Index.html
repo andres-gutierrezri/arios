@@ -185,14 +185,16 @@
                                                                             <div class="p-3 p-md-3">
                                                                                 <div class="row">
                                                                                     {% if perms.GestionActividades.change_actividad %}
-                                                                                        <div class="col-md-2">
-                                                                                            <small>
-                                                                                                <a class="fad fa-3x fa-file-edit" id="editar_{{ actividad.id }}" href="javascript:abrirModalCrearActividad('{% url 'GestionActividades:actividades-editar' actividad.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar Actividad"></a>
-                                                                                            </small>
-                                                                                        </div>
+                                                                                        {% if actividad.estado != EstadosActividades.CERRADA %}
+                                                                                            <div class="col-md-2">
+                                                                                                <small>
+                                                                                                    <a class="fad fa-3x fa-file-edit" id="editar_{{ actividad.id }}" href="javascript:abrirModalCrearActividad('{% url 'GestionActividades:actividades-editar' actividad.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar Actividad"></a>
+                                                                                                </small>
+                                                                                            </div>
+                                                                                        {% endif %}
                                                                                     {% endif %}
                                                                                     {% if perms.GestionActividades.add_avanceactividad %}
-                                                                                        {% if actividad.estado != EstadosActividades.CERRADA and actividad.estado != EstadosActividades.FINALIZADO%}
+                                                                                        {% if actividad.estado == EstadosActividades.CREADA or actividad.estado == EstadosActividades.EN_PROCESO%}
                                                                                             <div class="col-md-2">
                                                                                                 <small>
                                                                                                     <a class="fad fa-3x fa-undo-alt" id="actualizar_actividad_{{ actividad.id }}" href="javascript:abrirModalActualizarActividad('{% url 'GestionActividades:actividades-actualizar' actividad.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Actualizar Actividad"></a>
@@ -201,19 +203,17 @@
                                                                                         {% endif %}
                                                                                     {% endif %}
                                                                                     {%  if perms.GestionActividades.view_avanceactividad %}
-                                                                                        {% if actividad.estado != EstadosActividades.CERRADA %}
-                                                                                            <div class="col-2">
-                                                                                                <div class="row col-xl-6">
-                                                                                                    <div class="accordion" id="accordionExample_avance">
-                                                                                                        <div class="card" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Mostrar Avances" >
-                                                                                                            <div class="card-header" id="heading{{actividad.id}}">
-                                                                                                                <a href="javascript:void(0);" class="card collapsed p-md-0 fas fa-2x fa-tasks border-transparent align-content-center" data-toggle="collapse" data-target="#collapse_avance{{actividad.id}}" aria-expanded="false" aria-controls="collapse_avance{{actividad.id}}"></a>
-                                                                                                            </div>
+                                                                                        <div class="col-2">
+                                                                                            <div class="row col-xl-6">
+                                                                                                <div class="accordion" id="accordionExample_avance">
+                                                                                                    <div class="card" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Mostrar Avances" >
+                                                                                                        <div class="card-header" id="heading{{actividad.id}}">
+                                                                                                            <a href="javascript:void(0);" class="card collapsed p-md-0 fas fa-2x fa-tasks border-transparent align-content-center" data-toggle="collapse" data-target="#collapse_avance{{actividad.id}}" aria-expanded="false" aria-controls="collapse_avance{{actividad.id}}"></a>
                                                                                                         </div>
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </div>
-                                                                                        {% endif %}
+                                                                                        </div>
                                                                                     {% endif %}
                                                                                     {% if perms.GestionActividades.add_soporteactividad %}
                                                                                         {% if actividad.porcentaje_avance == 100%}
@@ -227,14 +227,16 @@
                                                                                         {% endif %}
                                                                                     {% endif %}
                                                                                     {% if perms.GestionActividades.delete_actividad %}
-                                                                                        <div class="col-md-2">
-                                                                                            <small>
-                                                                                                <a class="fad fa-3x fa-trash-alt color-danger-900" id="eliminar_{{ actividad.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ actividad.id }}, 2)" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar Actividad"></a>
-                                                                                            </small>
-                                                                                        </div>
+                                                                                        {% if actividad.estado != EstadosActividades.CERRADA %}
+                                                                                            <div class="col-md-2">
+                                                                                                <small>
+                                                                                                    <a class="fad fa-3x fa-trash-alt color-danger-900" id="eliminar_{{ actividad.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ actividad.id }}, 2)" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar Actividad"></a>
+                                                                                                </small>
+                                                                                            </div>
+                                                                                        {% endif %}
                                                                                     {% endif %}
                                                                                     {%  if perms.GestionActividades.view_soporteactividad %}
-                                                                                        {% if actividad.estado == EstadosActividades.FINALIZADO and actividad.soporte_requerido %}
+                                                                                        {% if actividad.estado != EstadosActividades.CREADA and actividad.estado != EstadosActividades.EN_PROCESO and actividad.soporte_requerido  %}
                                                                                             <div class="col-2">
                                                                                                 <div class="row col-xl-6">
                                                                                                     <div class="accordion" id="accordionExample">
@@ -245,6 +247,15 @@
                                                                                                         </div>
                                                                                                     </div>
                                                                                                 </div>
+                                                                                            </div>
+                                                                                        {% endif %}
+                                                                                    {% endif %}
+                                                                                    {% if perms.GestionActividades.change_actividad %}
+                                                                                        {% if actividad.estado == EstadosActividades.FINALIZADO or actividad.estado == EstadosActividades.CERRADA %}
+                                                                                            <div class="col-md-2">
+                                                                                                <small>
+                                                                                                    <a class="fad fa-3x fa-lock-alt" id="cerrar_reabrir_actividad_{{ actividad.id }}" href="javascript:abrirModalCerrarReabrirActividad('{% url 'GestionActividades:actividades-cerrar-reabrir' actividad.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Cerrar/Reabrir Actividad"></a>
+                                                                                                </small>
                                                                                             </div>
                                                                                         {% endif %}
                                                                                     {% endif %}
@@ -341,6 +352,7 @@
     <div class="modal fade" tabindex="-1" id="crear-actividad" role="dialog"  aria-hidden="true"></div>
     <div class="modal fade" tabindex="-1" id="cargar-soporte" role="dialog"  aria-hidden="true"></div>
     <div class="modal fade" tabindex="-1" id="actualizar-actividad" role="dialog"  aria-hidden="true"></div>
+    <div class="modal fade" tabindex="-1" id="cerrar-reabrir-actividad" role="dialog"  aria-hidden="true"></div>
 
 
 {% endblock %}
@@ -356,6 +368,7 @@
     <script src="{% static 'GestionActividades/js/actividades.js' %}"></script>
     <script src="{% static 'GestionActividades/js/cargar_soporte.js' %}"></script>
     <script src="{% static 'GestionActividades/js/actualizar_actividad.js' %}"></script>
+    <script src="{% static 'GestionActividades/js/cerrar_reabrir_actividad.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/dropzone/dropzone.js' %}"></script>
     <script src="{% static 'GestionActividades/js/confirmar_eliminar_grupo_actividad.js' %}"></script>
 {% endblock scripts%}
