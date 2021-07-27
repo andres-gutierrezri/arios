@@ -347,10 +347,12 @@ class CerrarReabrirActividadView(AbstractEvaLoggedView):
         try:
             with atomic():
                 # region Actualiza el estado y el motivo al Cerrar/Reabrir la actividad
-                update_fields = ['calificacion', 'estado', 'motivo']
+                update_fields = ['calificacion', 'estado', 'motivo', 'usuario_modifica', 'fecha_modificacion']
                 actividad_db = Actividad.objects.get(id=id_actividad)
+                actividad_db.usuario_modifica = request.user
                 actividad_db.motivo = request.POST.get('motivo')
-                if actividad_db.estado == EstadosActividades.FINALIZADO:
+                if actividad_db.estado == EstadosActividades.FINALIZADO or \
+                        actividad_db.estado == EstadosActividades.REABIERTA:
                     actividad_db.estado = EstadosActividades.CERRADA
                     actividad_db.calificacion = request.POST.get('calificacion')
                     messages.success(request, 'Se ha Cerrado exitosamente la actividad')

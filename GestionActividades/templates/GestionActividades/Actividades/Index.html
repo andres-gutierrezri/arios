@@ -251,7 +251,7 @@
                                                                                         {% endif %}
                                                                                     {% endif %}
                                                                                     {% if perms.GestionActividades.change_actividad %}
-                                                                                        {% if actividad.estado == EstadosActividades.FINALIZADO or actividad.estado == EstadosActividades.CERRADA %}
+                                                                                        {% if actividad.estado == EstadosActividades.FINALIZADO or actividad.estado == EstadosActividades.CERRADA or actividad.estado == EstadosActividades.REABIERTA%}
                                                                                             <div class="col-md-2">
                                                                                                 <small>
                                                                                                     <a class="fad fa-3x fa-lock-alt" id="cerrar_reabrir_actividad_{{ actividad.id }}" href="javascript:abrirModalCerrarReabrirActividad('{% url 'GestionActividades:actividades-cerrar-reabrir' actividad.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Cerrar/Reabrir Actividad"></a>
