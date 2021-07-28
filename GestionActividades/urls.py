@@ -47,4 +47,8 @@ urlpatterns = [
          actividades.VerSoporteView.as_view(), name='soportes-ver'),
     path('actividades/<int:id_actividad>/cerrar-reabrir', actividades.CerrarReabrirActividadView.as_view(),
          name='actividades-cerrar-reabrir'),
+    path('actividades/aprobaciones/index', actividades.AprobacionesActividadesIndexView.as_view(),
+         name='aprobaciones-actividades-index'),
+    path('actividades/<int:id_actividad>/aprobaciones/add', actividades.AprobacionesActividadesCrearView.as_view(),
+         name='aprobaciones-actividades-crear'),
 ]
