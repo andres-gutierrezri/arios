@@ -8,7 +8,8 @@ from Administracion.models import Proceso
 from EVA.General import app_date_now
 from EVA.General.modeljson import ModelDjangoExtensiones
 from EVA.General.modelmanagers import ManagerGeneral
-from GestionActividades.Enumeraciones import EstadosActividades, AsociadoGrupoActividades
+from GestionActividades.Enumeraciones import EstadosActividades, AsociadoGrupoActividades, \
+    EstadosModificacionActividad
 from Proyectos.models import Contrato
 from EVA import settings
 
@@ -228,3 +229,80 @@ class AvanceActividad(models.Model):
         avance_actividad.porcentaje_avance = datos.get('porcentaje', '')
 
         return avance_actividad
+
+
+class ModificacionActividad(models.Model, ModelDjangoExtensiones):
+    objects = ManagerGeneral()
+    actividad = models.ForeignKey(Actividad, on_delete=models.DO_NOTHING, verbose_name='Actividad', blank=False,
+                                  null=False)
+    nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
+    supervisor = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Supervisor', null=False, blank=False,
+                                   related_name='modificación_actividad_supervisor')
+    descripcion = models.TextField(max_length=500, verbose_name='Descripción', null=False, blank=False)
+    fecha_inicio = models.DateField(verbose_name='Fecha de Inicio', null=False, blank=False)
+    fecha_fin = models.DateField(verbose_name='Fecha Fin', null=False, blank=False)
+    estado = models.SmallIntegerField(default=1, choices=EstadosModificacionActividad.choices,
+                                      verbose_name='Estado', null=False, blank=False)
+    grupo_actividad = models.ForeignKey(GrupoActividad, on_delete=models.DO_NOTHING, verbose_name='Grupo Actividad',
+                                        blank=True, null=True)
+    tiempo_estimado = models.DecimalField(max_digits=7, decimal_places=2, default=0,
+                                          verbose_name='Tiempo Estimado', null=False, blank=False)
+    motivo = models.TextField(max_length=500, verbose_name='motivo', null=False, blank=False)
+    soporte_requerido = models.BooleanField(verbose_name='Soporte Requerido', blank=False, null=False, default=False)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name = 'Modificacion Actividad'
+        verbose_name_plural = 'Modificaciones Actividad'
+
+    @staticmethod
+    def from_dictionary(datos: dict) -> 'ModificacionActividad':
+        """
+        Crea una instancia de Actividad con los datos pasados en el diccionario.
+        :param datos: Diccionario con los datos para crear Actividades.
+        :return: Instacia de actividades con la información especificada en el diccionario.
+        """
+        modificacion_actividad = ModificacionActividad()
+        modificacion_actividad.nombre = datos.get('nombre', None)
+        modificacion_actividad.supervisor_id = datos.get('supervisor_id', None)
+        modificacion_actividad.fecha_inicio = datos.get('fecha_inicio', '')
+        modificacion_actividad.fecha_fin = datos.get('fecha_final', '')
+        modificacion_actividad.grupo_actividad_id = datos.get('grupo_asociado', None)
+        modificacion_actividad.descripcion = datos.get('descripcion', '')
+        modificacion_actividad.tiempo_estimado = datos.get('tiempo_estimado', '')
+        modificacion_actividad.motivo = datos.get('motivo', '')
+        modificacion_actividad.estado = datos.get('estado', 1)
+        modificacion_actividad.soporte_requerido = datos.get('soporte_requerido', False)
+
+        return modificacion_actividad
+
+
+class ResponsableActividadMangerModificacion(models.Manager):
+    def get_ids_responsables(self, actividad_id: int = None, actividad: Actividad = None) -> QuerySet:
+        if actividad:
+            actividad_id = actividad.id
+
+        filtro = {}
+        if actividad_id:
+            filtro['actividad_id'] = actividad_id
+
+        return super().get_queryset().filter(**filtro).values_list('responsable_id', flat=True)
+
+    def get_ids_responsables_list(self, actividad_id: int = None,  actividad: Actividad = None) -> list:
+        return list(self.get_ids_responsables(actividad_id, actividad))
+
+
+class ResponsableActividadModificacion(models.Model):
+    objects = ResponsableActividadMangerModificacion()
+    responsable = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Responsable',
+                                    blank=False, null=False)
+    actividad = models.ForeignKey(Actividad, on_delete=models.DO_NOTHING,
+                                  verbose_name='Actividad', blank=False, null=False)
+
+    def __str__(self):
+        return 'Responsable: {0} - Actividad: {1}'.format(self.responsable, self.actividad)
+
+    class Meta:
+        unique_together = (('responsable', 'actividad'),)
