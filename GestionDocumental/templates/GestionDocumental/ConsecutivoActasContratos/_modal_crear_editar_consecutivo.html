@@ -21,7 +21,7 @@
                     </div>
                     <div class="form-group">
                         <div class="col-md-12">
-                            {% select_tag lista_consecutivos 'consecutivo_contrato_id' 'Seleccione un consecutivo' value=consecutivo.consecutivo_contrato_id texto_label="Consecutivo de contrato" required="" mensaje_validacion='Por favor seleccione un consecutivo' %}
+                            {% select_tag lista_consecutivos 'consecutivo_contrato_id' 'Seleccione contrato sociado' value=consecutivo.consecutivo_contrato_id texto_label="Asociado al contrato" required="" mensaje_validacion='Por favor seleccione un consecutivo de contrato' %}
                         </div>
                     </div>
                     <div class="form-group">
@@ -36,7 +36,7 @@
                     </div>
                     <div class="form-group">
                         <div class="col-md-12">
-                            {% input_textarea_tag 'descripcion' 'Descripción del Documento' placeholder="Ingrese una descripción" required="" maxlength="300" value=consecutivo.descripcion mensaje_validacion='Por favor digite una descripción.' invalido=errores.descripcion %}
+                            {% input_textarea_tag 'descripcion' 'Descripción' placeholder="Ingrese una descripción" required="" maxlength="300" value=consecutivo.descripcion mensaje_validacion='Por favor digite una descripción.' invalido=errores.descripcion %}
                         </div>
                     </div>
                     {% if editar %}

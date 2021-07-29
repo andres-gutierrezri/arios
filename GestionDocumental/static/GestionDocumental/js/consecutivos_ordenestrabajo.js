@@ -7,8 +7,17 @@ let fechaFinalID = $('#fecha_final_id');
 $(document).ready(function () {
     activarSelect2();
     configurarFiltroConsecutivos();
-
-    iniciarDataTableN({buscar: false, paginar: false, ordenar: false});
+     const columnDefs = [
+        { "targets": [0], "width": '16%' },
+        { "targets": [1], "width": '8%' },
+        { "targets": [2], "width": '8%' },
+        { "targets": [3], "width": '26%' },
+        { "targets": [4], "width": '23%' },
+        { "targets": [5], "width": '9%' },
+        { "targets": [8], "width": '5%' },
+        { "targets": [9], "width": '5%' }
+    ]
+    iniciarDataTableN({buscar: false, paginar: false, ordenar: false, detallesColumnas: columnDefs});
 });
 
 
