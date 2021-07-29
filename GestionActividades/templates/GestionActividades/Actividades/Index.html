@@ -193,6 +193,15 @@
                                                                                             </div>
                                                                                         {% endif %}
                                                                                     {% endif %}
+                                                                                    {% if perms.GestionActividades.add_modificacionactividad %}
+                                                                                        {% if actividad.estado != EstadosActividades.CERRADA %}
+                                                                                            <div class="col-md-2">
+                                                                                                <small>
+                                                                                                    <a class="fad fa-3x fa-edit" id="modificar_actividad_{{ actividad.id }}" href="javascript:abrirModalModificarActividad('{% url 'GestionActividades:modificaciones-actividad-crear' actividad.id %}', '{{ grupo.id }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar Actividad"></a>
+                                                                                                </small>
+                                                                                            </div>
+                                                                                        {% endif %}
+                                                                                    {% endif %}
                                                                                     {% if perms.GestionActividades.add_avanceactividad %}
                                                                                         {% if actividad.estado == EstadosActividades.CREADA or actividad.estado == EstadosActividades.EN_PROCESO%}
                                                                                             <div class="col-md-2">
@@ -353,6 +362,7 @@
     <div class="modal fade" tabindex="-1" id="cargar-soporte" role="dialog"  aria-hidden="true"></div>
     <div class="modal fade" tabindex="-1" id="actualizar-actividad" role="dialog"  aria-hidden="true"></div>
     <div class="modal fade" tabindex="-1" id="cerrar-reabrir-actividad" role="dialog"  aria-hidden="true"></div>
+    <div class="modal fade" tabindex="-1" id="modificar-actividad" role="dialog"  aria-hidden="true"></div>
 
 
 {% endblock %}
@@ -371,4 +381,5 @@
     <script src="{% static 'GestionActividades/js/cerrar_reabrir_actividad.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/dropzone/dropzone.js' %}"></script>
     <script src="{% static 'GestionActividades/js/confirmar_eliminar_grupo_actividad.js' %}"></script>
+    <script src="{% static 'GestionActividades/js/modificar_actividad.js' %}"></script>
 {% endblock scripts%}

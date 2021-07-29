@@ -14,9 +14,9 @@ from django.core.exceptions import ValidationError
 from EVA.General import app_datetime_now, app_date_now
 from EVA.General.modeljson import RespuestaJson
 from EVA.views.index import AbstractEvaLoggedView
-from GestionActividades.Enumeraciones import EstadosActividades
+from GestionActividades.Enumeraciones import EstadosActividades, EstadosModificacionActividad
 from GestionActividades.models.models import Actividad, GrupoActividad, ResponsableActividad, SoporteActividad, \
-    AvanceActividad
+    AvanceActividad, ModificacionActividad, ResponsableActividadModificacion
 from TalentoHumano.models import Colaborador
 
 LOGGER = logging.getLogger(__name__)
@@ -156,7 +156,7 @@ class ActividadesEditarView(AbstractEvaLoggedView):
                         grupo_generales = list(GrupoActividad.objects.values('id').filter(nombre__iexact='generales'))
                         actividad.grupo_actividad_id = grupo_generales[0].get('id')
                     else:
-                        return RespuestaJson.error("Falló crear. El grupo Generales no existe")
+                        return RespuestaJson.error("Falló editar. El grupo Generales no existe")
 
                 responsables_actividad_db = ResponsableActividad.objects.filter(actividad_id=id_actividad)
                 cantidad_responsables = responsables_actividad_db.count()
@@ -175,8 +175,8 @@ class ActividadesEditarView(AbstractEvaLoggedView):
                     return RespuestaJson.error("Falló editar. Valide los datos ingresados al editar la actividad")
 
                 if GrupoActividad.objects.filter(nombre__iexact=actividad.nombre).exists():
-                    return RespuestaJson.error("Falló editar. No puede colocar el mismo nombre del grupo "
-                                               "que va a contener la actividad")
+                    return RespuestaJson.error("Falló editar. No puede colocar el mismo nombre de un grupo existente ni"
+                                               " del grupo que va a contener la actividad")
 
                 if actividad_db.comparar(actividad, excluir=['fecha_modificacion', 'motivo', 'calificacion', 'codigo',
                                                              'porcentaje_avance', 'usuario_modifica']) \
@@ -366,6 +366,113 @@ class CerrarReabrirActividadView(AbstractEvaLoggedView):
         except:
             rollback()
             return RespuestaJson.error("Falló al Cerrar/Reabrir la actividad")
+
+
+class SolicitudesAprobacionActividadIndexView(AbstractEvaLoggedView):
+    def get(self, request):
+        actividades = ModificacionActividad.objects.values('id', 'nombre', 'motivo', 'estado', 'comentario_supervisor',
+                                                           'fecha_solicitud', 'fecha_respuesta_solicitud')
+
+        return render(request, 'GestionActividades/AprobacionActividades/index.html',
+                      {'actividades': actividades,
+                       'fecha': app_datetime_now(),
+                       'EstadosModificacionActividad': EstadosModificacionActividad,
+                       'menu_actual': 'solicitudes-aprobación'})
+
+
+class ModificacionesActividadCrearView(AbstractEvaLoggedView):
+    def get(self, request, id_actividad):
+        actividad = Actividad.objects.get(id=id_actividad)
+        return render(request, 'GestionActividades/AprobacionActividades/_crear_modificaciones_actividad_modal.html',
+                      datos_xa_render(request, actividad))
+
+    def post(self, request, id_actividad):
+        try:
+            with atomic():
+                modificacion_actividad = ModificacionActividad.from_dictionary(request.POST)
+                modificacion_actividad.actividad_id = id_actividad
+                actividad_db = Actividad.objects.get(id=id_actividad)
+                responsables = request.POST.getlist('responsables_id[]', None)
+
+                if modificacion_actividad.grupo_actividad_id == '':
+                    if GrupoActividad.objects.filter(nombre__iexact='generales').exists():
+                        grupo_generales = list(GrupoActividad.objects.values('id').filter(nombre__iexact='generales'))
+                        modificacion_actividad.grupo_actividad_id = grupo_generales[0].get('id')
+                    else:
+                        return RespuestaJson.error("Falló editar. El grupo Generales no existe")
+
+                responsables_actividad_db = ResponsableActividad.objects.filter(actividad_id=id_actividad)
+                cantidad_responsables = responsables_actividad_db.count()
+                conteo_responsables = 0
+                if cantidad_responsables == len(responsables):
+                    for clb in responsables_actividad_db:
+                        for ctr in responsables:
+                            if clb.responsable.id == int(ctr):
+                                conteo_responsables += 1
+                else:
+                    conteo_responsables = len(responsables)
+                try:
+                    modificacion_actividad.full_clean(validate_unique=False, exclude=['comentario_supervisor'])
+                except ValidationError as errores:
+                    return RespuestaJson.error("Falló editar. Valide los datos ingresados al editar la actividad")
+
+                if GrupoActividad.objects.filter(nombre__iexact=modificacion_actividad.nombre).exists():
+                    return RespuestaJson.error("Falló editar. No puede colocar el mismo nombre de un grupo existente ni"
+                                               " del grupo que va a contener la actividad")
+
+                if actividad_db.comparar(modificacion_actividad, excluir=['fecha_modificacion', 'motivo', 'fecha_crea',
+                                                                          'calificacion', 'codigo', 'estado',
+                                                                          'usuario_crea', 'actividad_id',
+                                                                          'horas_invertidas', 'porcentaje_avance',
+                                                                          'usuario_modifica',
+                                                                          'comentario_supervisor', 'id']) \
+                        and conteo_responsables == cantidad_responsables:
+                    return RespuestaJson.error("No se hicieron cambios en la actividad")
+
+                else:
+                    modificacion_actividad.save()
+                    messages.success(request, 'Se han enviado exitosamente las modificaciones de la '
+                                              'actividad al supervisor')
+                    for responsable in responsables:
+                        ResponsableActividadModificacion.objects.create(responsable_id=responsable,
+                                                                        actividad_id=id_actividad)
+
+                return RespuestaJson.exitosa()
+        except:
+            rollback()
+            return RespuestaJson.error("Falló al Editar la actividad")
+
+
+class AccionModificacionesActividadView(AbstractEvaLoggedView):
+    def get(self, request, id_actividad):
+        actividad = ModificacionActividad.objects.get(id=id_actividad)
+        opciones_aprobar_rechazar = [{'valor': 2, 'texto': 'Aprobar'},
+                                     {'valor': 3, 'texto': 'Rechazar'}]
+        return render(request, 'GestionActividades/AprobacionActividades/_accion_modificaciones_actividad_modal.html',
+                      {'actividad': actividad,
+                       'opciones_aprobar_rechazar': opciones_aprobar_rechazar})
+
+    def post(self, request, id_actividad):
+        try:
+            with atomic():
+                modificacion_actividad = ModificacionActividad.objects.get(id=id_actividad)
+
+                # region Actualiza el estado y el comentario del supervisor al Aprobar/Rechazar cambios de la actividad
+                modificacion_actividad.estado = request.POST.get('accion_actividad')
+                modificacion_actividad.comentario_supervisor = request.POST.get('comentario_supervisor')
+                update_fields = ['estado', 'comentario_supervisor']
+                modificacion_actividad.save(update_fields=update_fields)
+                # endregion
+                print(modificacion_actividad.estado)
+                print(EstadosModificacionActividad.APROBADA)
+                if int(modificacion_actividad.estado) == EstadosModificacionActividad.APROBADA:
+                    messages.success(request, 'Se han aprobado las modificaciones en la actividad')
+                else:
+                    messages.success(request, 'Se han rechazado las modificaciones en la actividad')
+                return RespuestaJson.exitosa()
+        except:
+            rollback()
+            return RespuestaJson.error("Falló al Editar la actividad")
 
 
 def datos_xa_render(request, actividad: Actividad = None) -> dict:
