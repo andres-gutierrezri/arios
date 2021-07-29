@@ -1,0 +1,92 @@
+{% extends 'GestionActividades/_common/base_gestion_actividades.html' %}
+{% load static %}
+{% load eva_tags %}
+{% block styles %}
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-solid.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/skins/skin-master.css' %}">
+    {% include 'EVA/_common/_statics/_tablas.html' with incCSS=True %}
+    {% include 'EVA/_common/_statics/_select2.html' with incCSS=True %}
+    {% include 'EVA/_common/_statics/_datepicker.html' with incCSS=True %}
+{% endblock styles %}
+{% block main %}
+
+    <div class="panel-container show">
+        <div class="header">
+             <h1 class="header-title">
+                <i class='far fa-check'></i> Aprobación de Modificaciones en las Actividades<span class='fw-300'></span>
+                 <br>
+                 <br>
+             </h1>
+        </div>
+        <div class="row">
+            <div class="col-xl-12">
+                <div id="panel-1" class="panel">
+                    <div class="panel-container show">
+                        <div class="panel-content">
+                            <div class="panel-group">
+                                <div class="panel-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered w-100" id="dataTable">
+                                            <thead class="bg-primary-600">
+                                                <tr>
+                                                    <th>Nombre Actividad</th>
+                                                    <th>Modificaciones</th>
+                                                    <th>Motivo Modificación</th>
+                                                    <th>Fecha Solicitud</th>
+                                                    <th>Comentario Aprobación/Rechazo</th>
+                                                    <th>Fecha Respuesta Solicitud</th>
+                                                    <th>Estado</th>
+                                                    <th>Acción</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for actividad in actividades %}
+                                                    <tr>
+                                                        <td>{{ actividad.nombre }}</td>
+                                                        <td></td>
+                                                        <td>{{ actividad.motivo }}</td>
+                                                        <td>{{ actividad.fecha_solicitud|date:'Y-m-d' }}</td>
+                                                        <td>{{ actividad.comentario_supervisor }}</td>
+                                                        <td>{{ actividad.fecha_respuesta_solicitud|date:'Y-m-d' }}</td>
+                                                        <td>
+                                                        {% if actividad.estado == EstadosModificacionActividad.PENDIENTE%}
+                                                            <span class="badge badge-warning">PENDIENTE</span>
+                                                        {% endif %}
+                                                        {% if actividad.estado == EstadosModificacionActividad.APROBADA%}
+                                                            <span class="badge badge-primary">APROBADA</span>
+                                                        {% endif %}
+                                                        {% if actividad.estado == EstadosModificacionActividad.RECHAZADA%}
+                                                            <span class="badge badge-danger">RECHAZADA</span>
+                                                        {% endif %}
+                                                        </td>
+                                                        <td>
+{#                                                            <a class="far fa-2x fa-eye" style="padding-left: 10px; text-decoration: none !important;" href="{% url 'sgi:documentos-ver' %}" target="_blank" data-original-title="Ver"  data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="Ver Documento"></a>#}
+                                                            &nbsp;&nbsp;<a class="far fa-2x fa-check-square" id="accion_modificaciones_actividad_{{ actividad.id }}"  href="javascript:abrirModalAccionActividad('{% url 'GestionActividades:accion-modificaciones-actividad' actividad.id %}');" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Aprobar/Rechazar"></a>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="card-footer small text-muted">Actualizado: {{ fecha }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" tabindex="-1" id="accion-actividad" role="dialog">
+    </div>
+{% endblock %}
+{% block scripts %}
+    {% include 'EVA/_common/_statics/_tablas.html' %}
+    {% include 'EVA/_common/_statics/_select2.html' %}
+    {% include 'EVA/_common/_statics/_datepicker.html'%}
+    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
+    <script src="{% static 'GestionDocumental/js/filtro_consecutivos.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/controlBusquedaPaginacion.js' %}"></script>
+    <script src="{% static 'GestionActividades/js/accion_actividad_modal.js' %}"></script>
+{% endblock scripts%}
