@@ -249,6 +249,11 @@ class ModificacionActividad(models.Model, ModelDjangoExtensiones):
                                           verbose_name='Tiempo Estimado', null=False, blank=False)
     motivo = models.TextField(max_length=500, verbose_name='motivo', null=False, blank=False)
     soporte_requerido = models.BooleanField(verbose_name='Soporte Requerido', blank=False, null=False, default=False)
+    comentario_supervisor = models.TextField(max_length=500, verbose_name='comentario', null=False, blank=False)
+    fecha_solicitud = models.DateTimeField(auto_now=True, verbose_name='Fecha de Solicitud', null=False,
+                                           blank=False)
+    fecha_respuesta_solicitud = models.DateTimeField(verbose_name='Fecha Respuesta de Solicitud', null=False,
+                                                     blank=False)
 
     def __str__(self):
         return self.nombre
@@ -265,37 +270,22 @@ class ModificacionActividad(models.Model, ModelDjangoExtensiones):
         :return: Instacia de actividades con la información especificada en el diccionario.
         """
         modificacion_actividad = ModificacionActividad()
-        modificacion_actividad.nombre = datos.get('nombre', None)
-        modificacion_actividad.supervisor_id = datos.get('supervisor_id', None)
-        modificacion_actividad.fecha_inicio = datos.get('fecha_inicio', '')
-        modificacion_actividad.fecha_fin = datos.get('fecha_final', '')
-        modificacion_actividad.grupo_actividad_id = datos.get('grupo_asociado', None)
-        modificacion_actividad.descripcion = datos.get('descripcion', '')
-        modificacion_actividad.tiempo_estimado = datos.get('tiempo_estimado', '')
-        modificacion_actividad.motivo = datos.get('motivo', '')
+        modificacion_actividad.nombre = datos.get('_nombre', None)
+        modificacion_actividad.supervisor_id = datos.get('_supervisor_id', None)
+        modificacion_actividad.fecha_inicio = datos.get('_fecha_inicio', '')
+        modificacion_actividad.fecha_fin = datos.get('_fecha_final', '')
+        modificacion_actividad.grupo_actividad_id = datos.get('_grupo_asociado', None)
+        modificacion_actividad.descripcion = datos.get('_descripcion', '')
+        modificacion_actividad.tiempo_estimado = datos.get('_tiempo_estimado', '')
+        modificacion_actividad.motivo = datos.get('_motivo', '')
         modificacion_actividad.estado = datos.get('estado', 1)
-        modificacion_actividad.soporte_requerido = datos.get('soporte_requerido', False)
+        modificacion_actividad.soporte_requerido = datos.get('_soporte_requerido', False)
+        modificacion_actividad.comentario_supervisor = datos.get('comentario_supervisor', '')
 
         return modificacion_actividad
 
 
-class ResponsableActividadMangerModificacion(models.Manager):
-    def get_ids_responsables(self, actividad_id: int = None, actividad: Actividad = None) -> QuerySet:
-        if actividad:
-            actividad_id = actividad.id
-
-        filtro = {}
-        if actividad_id:
-            filtro['actividad_id'] = actividad_id
-
-        return super().get_queryset().filter(**filtro).values_list('responsable_id', flat=True)
-
-    def get_ids_responsables_list(self, actividad_id: int = None,  actividad: Actividad = None) -> list:
-        return list(self.get_ids_responsables(actividad_id, actividad))
-
-
 class ResponsableActividadModificacion(models.Model):
-    objects = ResponsableActividadMangerModificacion()
     responsable = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Responsable',
                                     blank=False, null=False)
     actividad = models.ForeignKey(Actividad, on_delete=models.DO_NOTHING,
