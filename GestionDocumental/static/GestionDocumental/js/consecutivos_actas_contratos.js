@@ -7,13 +7,14 @@ $(document).ready(function () {
     activarSelect2();
     configurarFiltroConsecutivos();
     const columnDefs = [
-        { "targets": [0], "width": '20%' },
+        { "targets": [0], "width": '15%' },
         { "targets": [1], "width": '12%' },
         { "targets": [2], "width": '12%' },
-        { "targets": [3], "width": '31%' },
-        { "targets": [4], "width": '10%' },
-        { "targets": [7], "width": '8%' },
-        { "targets": [8], "width": '7%' }
+        { "targets": [3], "width": '12%' },
+        { "targets": [4], "width": '28%' },
+        { "targets": [7], "width": '10%' },
+        { "targets": [8], "width": '6%' },
+        { "targets": [9], "width": '5%' }
     ]
     iniciarDataTableN({buscar: false, paginar: false, ordenar: false, detallesColumnas: columnDefs});
 });
