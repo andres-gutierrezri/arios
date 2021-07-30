@@ -44,10 +44,10 @@ class PermisoLaboral (models.Model, ModelDjangoExtensiones):
                                      blank=False, related_name='PermisoLaboralCrea')
     usuario_modifica = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario Modifica", null=True,
                                          blank=False, related_name='PermisoLaboralModifica')
-    fecha_inicio = models.DateTimeField(verbose_name='Fecha de Inicio', null=False, blank=False)
+    fecha_inicio = models.DateTimeField(verbose_name='Fecha Inicio', null=False, blank=False)
     fecha_fin = models.DateTimeField(verbose_name='Fecha Fin', null=False, blank=False)
-    fecha_crea = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False, blank=False)
-    fecha_modifica = models.DateTimeField(auto_now=True, verbose_name='Fecha de Modificación', null=True, blank=False)
+    fecha_crea = models.DateTimeField(auto_now_add=True, verbose_name='Fecha Crea', null=False, blank=False)
+    fecha_modifica = models.DateTimeField(auto_now=True, verbose_name='Fecha Modifica', null=True, blank=False)
     tipo_permiso = models.ForeignKey(TipoPermiso, on_delete=models.DO_NOTHING, verbose_name='Tipo de Permiso',
                                      null=False, blank=False)
     jefe_inmediato = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Jefe Inmediato', null=True,
@@ -59,9 +59,9 @@ class PermisoLaboral (models.Model, ModelDjangoExtensiones):
     estado_th = models.BooleanField(verbose_name='Estado TH', null=False, blank=False)
     estado_jefe = models.BooleanField(verbose_name='Estado Jefe', null=False, blank=False)
     estado_gerencia = models.BooleanField(verbose_name='Estado Gerencia', null=False, blank=False)
-    motivo_th = models.CharField(max_length=300, verbose_name='Motivo TH', null=False, blank=False)
-    motivo_jefe = models.CharField(max_length=300, verbose_name='Motivo Jefe', null=False, blank=False)
-    motivo_gerencia = models.CharField(max_length=300, verbose_name='Motivo Gerencia', null=False, blank=False)
+    motivo_th = models.CharField(max_length=300, verbose_name='Motivo TH', null=True, blank=False)
+    motivo_jefe = models.CharField(max_length=300, verbose_name='Motivo Jefe', null=True, blank=False)
+    motivo_gerencia = models.CharField(max_length=300, verbose_name='Motivo Gerencia', null=True, blank=False)
     remuneracion = models.BooleanField(verbose_name='Remuneración', null=False, blank=False)
 
     def __str__(self):
