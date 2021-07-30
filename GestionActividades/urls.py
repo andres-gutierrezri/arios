@@ -41,8 +41,6 @@ urlpatterns = [
          name='actividades-actualizar'),
     path('actividades/<int:id_actividad>/delete', actividades.ActividadesEliminarView.as_view(),
          name='actividades-eliminar'),
-    path('actividades/modificaciones/<int:id_actividad>/add', actividades.ModificacionesActividadCrearView.as_view(),
-         name='modificaciones-actividad-crear'),
     path('actividades/<int:id_actividad>/cargar', actividades.CargarSoporteView.as_view(),
          name='soportes-cargar'),
     path('actividades/<int:id_actividad>/soportes/<int:id_soporte>/ver-soporte',
@@ -51,7 +49,9 @@ urlpatterns = [
          name='actividades-cerrar-reabrir'),
     path('aprobacion-actividades/solicitudes_aprobacion/index',
          actividades.SolicitudesAprobacionActividadIndexView.as_view(), name='solicitudes-aprobacion-index'),
-    path('aprobacion-actividades/<int:id_actividad>/aprobar', actividades.AccionModificacionesActividadView.as_view(),
+    path('aprobacion-actividades/<int:id_actividad>/accion', actividades.AccionModificacionesActividadView.as_view(),
          name='accion-modificaciones-actividad'),
+    path('aprobacion-actividades/<int:id_actividad>/ver-modificaciones',
+         actividades.VerModificacionesActividadView.as_view(), name='ver-modificaciones-actividad'),
 
 ]

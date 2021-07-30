@@ -252,8 +252,8 @@ class ModificacionActividad(models.Model, ModelDjangoExtensiones):
     comentario_supervisor = models.TextField(max_length=500, verbose_name='comentario', null=False, blank=False)
     fecha_solicitud = models.DateTimeField(auto_now=True, verbose_name='Fecha de Solicitud', null=False,
                                            blank=False)
-    fecha_respuesta_solicitud = models.DateTimeField(verbose_name='Fecha Respuesta de Solicitud', null=False,
-                                                     blank=False)
+    fecha_respuesta_solicitud = models.DateTimeField(verbose_name='Fecha Respuesta de Solicitud', null=True,
+                                                     blank=True)
 
     def __str__(self):
         return self.nombre
@@ -270,17 +270,18 @@ class ModificacionActividad(models.Model, ModelDjangoExtensiones):
         :return: Instacia de actividades con la información especificada en el diccionario.
         """
         modificacion_actividad = ModificacionActividad()
-        modificacion_actividad.nombre = datos.get('_nombre', None)
-        modificacion_actividad.supervisor_id = datos.get('_supervisor_id', None)
-        modificacion_actividad.fecha_inicio = datos.get('_fecha_inicio', '')
-        modificacion_actividad.fecha_fin = datos.get('_fecha_final', '')
-        modificacion_actividad.grupo_actividad_id = datos.get('_grupo_asociado', None)
-        modificacion_actividad.descripcion = datos.get('_descripcion', '')
-        modificacion_actividad.tiempo_estimado = datos.get('_tiempo_estimado', '')
-        modificacion_actividad.motivo = datos.get('_motivo', '')
+        modificacion_actividad.nombre = datos.get('nombre', None)
+        modificacion_actividad.supervisor_id = datos.get('supervisor_id', None)
+        modificacion_actividad.fecha_inicio = datos.get('fecha_inicio', '')
+        modificacion_actividad.fecha_fin = datos.get('fecha_final', '')
+        modificacion_actividad.grupo_actividad_id = datos.get('grupo_asociado', None)
+        modificacion_actividad.descripcion = datos.get('descripcion', '')
+        modificacion_actividad.tiempo_estimado = datos.get('tiempo_estimado', '')
+        modificacion_actividad.motivo = datos.get('motivo', '')
         modificacion_actividad.estado = datos.get('estado', 1)
-        modificacion_actividad.soporte_requerido = datos.get('_soporte_requerido', False)
+        modificacion_actividad.soporte_requerido = datos.get('soporte_requerido', False)
         modificacion_actividad.comentario_supervisor = datos.get('comentario_supervisor', '')
+        modificacion_actividad.fecha_respuesta_solicitud = datos.get('fecha_respuesta', None)
 
         return modificacion_actividad
 
