@@ -6,7 +6,17 @@ let tipoActa = $('#tipo_acta_id_select_id');
 $(document).ready(function () {
     activarSelect2();
     configurarFiltroConsecutivos();
-    iniciarDataTableN({buscar: false, paginar: false, ordenar: false});
+    const columnDefs = [
+        { "targets": [0], "width": '15%' },
+        { "targets": [1], "width": '12%' },
+        { "targets": [2], "width": '12%' },
+        { "targets": [3], "width": '12%' },
+        { "targets": [4], "width": '28%' },
+        { "targets": [7], "width": '10%' },
+        { "targets": [8], "width": '6%' },
+        { "targets": [9], "width": '5%' }
+    ]
+    iniciarDataTableN({buscar: false, paginar: false, ordenar: false, detallesColumnas: columnDefs});
 });
 
 function abrirModalCrear(url) {
@@ -30,9 +40,8 @@ function configurarModalCrear() {
     inicializarDatePicker('fecha_reinicio_id');
 
 
-    if ($('#tipo_acta_id_select_id').val() === "1"){
-        $('#fecha_suspension_mostrar').hide();
-        $('#fecha_suspension_id').attr("required", false);
+    if ($('#tipo_acta_id_select_id').val() === "2"){
+        ocultarCamposFormulario([$("#fecha_suspension_mostrar"), $('#fecha_suspension_id')])
         $('#fecha_reinicio_id').attr("required", true);
     }
     else{
@@ -40,13 +49,11 @@ function configurarModalCrear() {
     }
      $('#tipo_acta_id_select_id').change(function () {
     let idActa = this.value;
-        if (idActa === "0" || idActa === "2"){
-            $('#fecha_suspension_mostrar').show();
-            $('#fecha_suspension_id').attr("required", true);
+        if (idActa === "1" || idActa === "3"){
             $('#fecha_reinicio_id').attr("required", false);
+            mostrarCamposFormulario([$('#fecha_suspension_id'), $("#fecha_suspension_mostrar")])
         }else{
-            $('#fecha_suspension_mostrar').hide();
-            $('#fecha_suspension_id').attr("required", false);
+            ocultarCamposFormulario([$("#fecha_suspension_mostrar"), $('#fecha_suspension_id')])
         }
     });
     agregarValidacionFormularios();

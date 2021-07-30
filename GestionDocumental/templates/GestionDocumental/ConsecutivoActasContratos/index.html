@@ -44,11 +44,13 @@
                                             <thead class="bg-primary-600">
                                                 <tr>
                                                     <th data-priority="1" >Código</th>
+                                                    <th>Contrato Asociado</th>
                                                     <th>Fecha Suspensión</th>
                                                     <th>Fecha Reinicio</th>
                                                     <th class="min-tablet-l">Descripción</th>
                                                     <th class="none">Usuario</th>
                                                     <th class="none">Motivo Editar/Anular</th>
+                                                    <th class="none">Fecha de Creación</th>
                                                     <th class="min-desktop">Estado</th>
                                                     <th data-priority="2">Acción</th>
                                                 </tr>
@@ -59,6 +61,7 @@
                                                         <td><span id="copiar_{{ consecutivo.id }}">{{ consecutivo.codigo }}</span>
                                                             <span><a class="fad fa-copy" href="javascript:void(0);"  onclick="copiarAPortapapeles('{{ consecutivo.codigo }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Copiar"></a></span>
                                                         </td>
+                                                        <td>{{ consecutivo.consecutivo_contrato.codigo}}</td>
                                                         <td>
                                                             {% if consecutivo.fecha_suspension %}
                                                                 {{ consecutivo.fecha_suspension | date:'Y-m-d'}}</td>
@@ -75,6 +78,7 @@
                                                         <td>{{ consecutivo.descripcion}}</td>
                                                         <td>{{ consecutivo.usuario_crea.username }}</td>
                                                         <td>{% if consecutivo.justificacion %}{{ consecutivo.justificacion }}{% endif %}</td>
+                                                        <td>{{ consecutivo.fecha_creacion | date:'Y-m-d H:i'}}</td>
                                                         <td>
                                                             {% if consecutivo.estado %}
                                                                 <span class="badge badge-primary">Vigente</span>

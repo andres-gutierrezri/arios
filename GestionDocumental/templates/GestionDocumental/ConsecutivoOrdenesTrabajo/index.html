@@ -53,6 +53,7 @@
                                                     <th class="min-tablet-l">Descripción</th>
                                                     <th class="none">Usuario</th>
                                                     <th class="none">Motivo Editar/Anular</th>
+                                                    <th class="none">Fecha de Creación</th>
                                                     <th class="min-desktop">Estado</th>
                                                     <th data-priority="2">Acción</th>
                                                 </tr>
@@ -79,6 +80,7 @@
                                                         <td>{{ consecutivo.descripcion}}</td>
                                                         <td>{{ consecutivo.usuario_crea.username }}</td>
                                                         <td>{% if consecutivo.justificacion %}{{ consecutivo.justificacion }}{% endif %}</td>
+                                                        <td>{{ consecutivo.fecha_creacion | date:'Y-m-d H:i'}}</td>
                                                         <td>
                                                             {% if consecutivo.estado %}
                                                                 <span class="badge badge-primary">Vigente</span>
@@ -86,6 +88,7 @@
                                                                 <span class="badge badge-secondary">Anulado</span>
                                                             {% endif %}
                                                         </td>
+
                                                         <td>
                                                             {% if perms.GestionDocumental.change_ordenestrabajo and consecutivo.estado %}
                                                               <a class="fad fa-2x fa-file-edit" id="editar_{{ consecutivo.id }}" href="javascript:abrirModalCrear('{% url 'GestionDocumental:consecutivo-ordenestrabajo-editar' consecutivo.id%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
