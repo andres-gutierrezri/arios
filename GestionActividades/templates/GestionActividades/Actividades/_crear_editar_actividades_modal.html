@@ -15,7 +15,7 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <div class="form-group">
+                    <div class="form-group {% if actividad_modificada == True %} mt-0 mb-0 pt-0 pb-0 {% endif %}">
                         <div class="row">
                             <div class="col-md-6">
                                 {% input_text_tag 'nombre' 'Nombre' placeholder="Ingrese un nombre" required="" maxlength="100"  value=actividad.nombre mensaje_validacion='Por favor digite un nombre para la actividad' invalido=errores.nombre %}
@@ -25,21 +25,71 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group">
+                    {% if actividad_modificada == True %}
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {% if actividad.nombre != actividad_db.nombre %}
+                                        <a class="badge badge-warning text-white" > Nombre actual: {{ actividad_db.nombre }}</a>
+                                    {% else %}
+                                        <a class="badge badge-primary text-white" >Campo no modificado</a>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    {% if actividad.supervisor_id != actividad_db.supervisor_id %}
+                                        {% for colaborador in colaboradores %}
+                                            {% if actividad_db.supervisor_id == colaborador.campo_valor %}
+                                                <a class="badge badge-warning text-white" > Supervisor actual: {{ colaborador.campo_texto}}</a>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        <a class="badge badge-primary text-white" >Campo no modificado</a>
+                                    {% endif %}
+                                </div>
+                             </div>
+                        </div>
+                    {% endif %}
+                    <div class="form-group {% if actividad_modificada == True %} mt-0 mb-0 pt-0 pb-0 {% endif %} ">
                         <div class="row">
                             <div class="col-md-12">
                                 {% input_textarea_tag 'descripcion' 'Descripción' placeholder="Ingrese una descripción" required="" maxlength="300" value=actividad.descripcion mensaje_validacion='Por favor digite una descripción.' invalido=errores.descripcion %}
                             </div>
                         </div>
                     </div>
-                    <div class="form-group">
+                    {% if actividad_modificada == True %}
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    {% if actividad.descripcion != actividad_db.descripcion %}
+                                        <a class="badge badge-warning text-white" > Descripción actual: {{ actividad_db.descripcion }}</a>
+                                    {% else %}
+                                        <a class="badge badge-primary text-white" >Campo no modificado</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="form-group {% if actividad_modificada == True %} mt-0 mb-0 pt-0 pb-0 {% endif %} ">
                         <div class="row">
                             <div class="col-md-12">
                                 {% select_multiple_tag colaboradores 'responsables_id[]' 'responsables_id' 'Seleccione responsables' texto_label="Responsables" value="" required=""  mensaje_validacion='Por favor seleccione un responsable' multiple='multiple' invalido=errores.responsables%}
                             </div>
                         </div>
                     </div>
-                    <div class="form-group">
+                    {% if actividad_modificada == True %}
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    {% if actividad.descripcion != actividad_db.descripcion %}
+                                        <a class="badge badge-warning text-white" > Descripción actual: {{ actividad_db.descripcion }}</a>
+                                    {% else %}
+                                        <a class="badge badge-primary text-white" >Campo no modificado</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="form-group {% if actividad_modificada == True %} mt-0 mb-0 pt-0 pb-0 {% endif %}">
                         <div class="row">
                             <div class="col-md-6">
                                 {% input_date_tag 'fecha_inicio' 'Fecha de inicio' placeholder="Seleccione una fecha de inicio" value=actividad.fecha_inicio required="" autocomplete="off" mensaje_validacion='Por favor seleccione una fecha de inicio.' %}
@@ -49,7 +99,27 @@
                             </div>
                          </div>
                     </div>
+                    {% if actividad_modificada == True %}
                     <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-6">
+                            {% if actividad.fecha_inicio != actividad_db.fecha_inicio %}
+                                <a class="badge badge-warning text-white" > Fecha Inicio actual: {{ actividad_db.fecha_inicio|date:'Y-m-d' }}</a>
+                            {% else %}
+                                <a class="badge badge-primary text-white" >Campo no modificado</a>
+                            {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                            {% if actividad.fecha_fin != actividad_db.fecha_fin %}
+                                <a class="badge badge-warning text-white" > Fecha Fin actual: {{ actividad_db.fecha_fin|date:'Y-m-d' }}</a>
+                            {% else %}
+                                <a class="badge badge-primary text-white" >Campo no modificado</a>
+                            {% endif %}
+                            </div>
+                         </div>
+                    </div>
+                    {% endif %}
+                    <div class="form-group {% if actividad_modificada == True %} mt-0 mb-0 pt-0 pb-0 {% endif %}">
                         <div class="row">
                             <div class="col-md-6">
                                 {% select_tag grupos 'grupo_asociado' 'Seleccione el grupo asociado' texto_label="Seleccione un grupo"  value=actividad.grupo_actividad_id %}
@@ -59,6 +129,30 @@
                             </div>
                         </div>
                     </div>
+                    {% if actividad_modificada == True %}
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-6">
+                            {% if actividad.grupo_actividad_id != actividad_db.grupo_actividad_id %}
+                                {% for grupo in grupos %}
+                                    {% if grupo.id == actividad_db.grupo_actividad_id %}
+                                    <a class="badge badge-warning text-white" > Grupos asociado actual: {{ grupo.nombre }}</a>
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <a class="badge badge-primary text-white" >Campo no modificado</a>
+                            {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                            {% if actividad.tiempo_estimado != actividad_db.tiempo_estimado %}
+                                <a class="badge badge-warning text-white" > Tiempo estimado actual: {{ actividad_db.tiempo_estimado }} h</a>
+                            {% else %}
+                                <a class="badge badge-primary text-white" >Campo no modificado</a>
+                            {% endif %}
+                            </div>
+                         </div>
+                    </div>
+                    {% endif %}
                     {% if editar %}
                         <input id="responsables_actividad"  hidden value="{{ responsable_actividad }}">
                         <div class="form-group">
@@ -79,10 +173,12 @@
                     </div>
                 </div>
             </div>
+            {% if ocultar_botones_modal == False %}
             <div class="modal-footer">
                 <button data-dismiss="modal" class="btn btn-danger btn-pills">Cancelar</button>
                 <button id="agregar" type="submit" class="btn btn-primary btn-pills"> {% if editar %}Editar{% else %}Agregar{% endif %} </button>
             </div>
+            {% endif %}
         </div>
     </div>
 </form>
