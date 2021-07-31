@@ -25,13 +25,7 @@ function abrirModalCargarSoporte(url, soporte) {
             else if (soporte === 'False'){
                 enviarFormularioAsync(form, url, "cargando").then(exitoso => {
                 if (exitoso) {
-                    modalCargarSoporte.modal('hide');
-                    Swal.clickCancel();
-                    setTimeout(function (){
-                        location.reload();
-                    },1000);
-                } else {
-                    Swal.clickCancel();
+                    location.reload();
                 }
             });
             return true;
@@ -66,7 +60,7 @@ function configurarModalSoporte(soporte) {
 
     if (soporte === 'True') {
         $("#dZUpload").dropzone({
-            url: `/gestion-actividades/actividades/actividad/${idActividad}/cargar`,
+            url: `/gestion-actividades/actividades/${idActividad}/cargar`,
             autoProcessQueue: false,
             addRemoveLinks: true,
             acceptedFiles: 'image/*,application/pdf,application/msword,application/vnd.ms-excel,' +

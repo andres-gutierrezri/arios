@@ -1,6 +1,6 @@
 {% load static %}
 <div class="col-xl-4">
-    <div id="c_{{ id_grupo }}" class="card border shadow-0 mb-g shadow-sm-hover" data-filter-tags="{{ nombre | lower }}{{ proceso | lower }}{{ contrato | lower }}">
+    <div id="c_{{ id_grupo }}" class="card border shadow-0 mb-g shadow-sm-hover" data-filter-tags="{{ nombre | lower }}{{ proceso | lower }}{{ contrato | lower }}{{ responsables | lower }}">
         <div class="card-body border-faded border-top-0 border-left-0 border-right-0 rounded-top">
             <div class="d-flex flex-row align-items-center">
                 <div class="info-card-text flex-1">
@@ -12,7 +12,7 @@
                     {% if perms.GestionActividades.view_grupoactividad %}
                         <div class="dropdown-menu">
                             {% if perms.GestionActividades.change_grupoactividad %}
-                                <a class="dropdown-item" href="javascript:abrirModalCrearGrupoActividad('{% url 'GestionActividades:grupo-actividades-editar' grupo_actividad.id%}', '{{ asociado }}')">Editar</a>
+                                <a class="dropdown-item" href="javascript:abrirModalCrearGrupoActividad('{% url 'GestionActividades:grupos-actividades-editar' grupo_actividad.id%}', '{{ asociado }}')">Editar</a>
                             {% endif %}
                             {% if perms.GestionActividades.view_grupoactividad %}
                                 <a class="dropdown-item" href="{% url 'GestionActividades:actividades-index' id_grupo%}">Detalle</a>
@@ -37,7 +37,7 @@
                                 <div class="flex-1 min-width-0">
                                     <a href="javascript:void(0)" class="d-block text-truncate">
                                         <div class="progress">
-                                            <div class="progress-bar" role="progressbar" style="width:{{ progreso }}%;" aria-valuenow="{{ progreso }}" aria-valuemin="0" aria-valuemax="100">{{ progreso }}%</div>
+                                            <div class="progress-bar text-white bg-info-800" role="progressbar" style="width:{{ progreso }}%;" aria-valuenow="{{ progreso }}" aria-valuemin="0" aria-valuemax="100">{{ progreso }}%</div>
                                         </div>
                                     </a>
                                 </div>
@@ -46,11 +46,11 @@
                     </div>
                 </div>
                 <a  class="mt-1 d-block fs-sm fw-400 text-dark">
-                    <i class="fas fa-users text-muted mr-2"> Responsables </i> {{responsables}}</a>
+                    <i class="fas fa-users text-muted mr-2"> Responsables </i><i class="fas fs-md text-primary mr-2">{{responsables}}</i></a>
                 <a class="mt-1 d-block fs-sm fw-400 text-dark">
-                    <i class="fas fa-calendar-check text-muted mr-2"> Número Actividades </i> {{actividades}}</a>
+                    <i class="fas fa-calendar-check text-muted mr-2"> Número Actividades </i><i class="fas fs-lg text-primary mr-2">{{actividades}}</i></a>
                 <a class="mt-1 d-block fs-sm fw-400 text-dark">
-                    <i class="fas fa-calendar-times text-muted mr-2"> Actividades Pendientes</i> {{actividades_pendientes}}</a>
+                    <i class="fas fa-calendar-times text-muted mr-2"> Actividades Pendientes</i><i class="fas fs-lg text-primary mr-2">{{actividades_pendientes}}</i></a>
             </div>
         </div>
     </div>

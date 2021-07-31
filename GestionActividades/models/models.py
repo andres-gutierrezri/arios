@@ -8,7 +8,7 @@ from Administracion.models import Proceso
 from EVA.General import app_date_now
 from EVA.General.modeljson import ModelDjangoExtensiones
 from EVA.General.modelmanagers import ManagerGeneral
-from GestionActividades.Enumeraciones import EstadosActividades, PertenenciaGrupoActividades
+from GestionActividades.Enumeraciones import EstadosActividades, AsociadoGrupoActividades
 from Proyectos.models import Contrato
 from EVA import settings
 
@@ -21,7 +21,7 @@ class GrupoActividad(models.Model, ModelDjangoExtensiones):
     fecha_crea = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False, blank=False)
     fecha_modificacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Modificación', null=False,
                                               blank=False)
-    tipo_asociado = models.SmallIntegerField(choices=PertenenciaGrupoActividades.choices,
+    tipo_asociado = models.SmallIntegerField(choices=AsociadoGrupoActividades.choices,
                                              verbose_name='Asociado', null=False, blank=False)
     proceso = models.ForeignKey(Proceso, on_delete=models.DO_NOTHING, verbose_name='Proceso', null=True, blank=True)
     contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato', null=True, blank=True)
@@ -79,6 +79,10 @@ class Actividad(models.Model, ModelDjangoExtensiones):
                                                     null=False, blank=False)
     grupo_actividad = models.ForeignKey(GrupoActividad, on_delete=models.DO_NOTHING, verbose_name='Grupo Actividad',
                                         blank=True, null=True)
+    tiempo_estimado = models.DecimalField(max_digits=7, decimal_places=2, default=0,
+                                          verbose_name='Tiempo Estimado', null=False, blank=False)
+    horas_invertidas = models.DecimalField(max_digits=7, decimal_places=2, default=0,
+                                           verbose_name='Horas Invertidas', null=False, blank=False)
     usuario_crea = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario Crea',
                                      null=False, blank=False, related_name='Actividad_usuario_crea')
     usuario_modifica = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario Modifica',
@@ -110,9 +114,13 @@ class Actividad(models.Model, ModelDjangoExtensiones):
         actividad.fecha_fin = datos.get('fecha_final', '')
         actividad.grupo_actividad_id = datos.get('grupo_asociado', None)
         actividad.descripcion = datos.get('descripcion', '')
+        actividad.tiempo_estimado = datos.get('tiempo_estimado', '')
         actividad.motivo = datos.get('motivo', '')
         actividad.estado = datos.get('estado', 1)
-        actividad.codigo = datos.get('codigo', '')
+        actividad.codigo = datos.get('codigo', 1)
+        actividad.calificacion = datos.get('calificacion', 0)
+        actividad.porcentaje_avance = datos.get('porcentaje', 0)
+        actividad.soporte_requerido = datos.get('soporte_requerido', False)
 
         return actividad
 
@@ -140,7 +148,7 @@ class ResponsableActividad(models.Model):
                                   verbose_name='Actividad', blank=False, null=False)
 
     def __str__(self):
-        return str.format(self.responsable, self.actividad)
+        return 'Responsable: {0} - Actividad: {1}'.format(self.responsable, self.actividad)
 
     class Meta:
         unique_together = (('responsable', 'actividad'),)
@@ -151,7 +159,7 @@ def custom_upload_to(instance, filename):
      .format(instance.actividad.codigo, filename, settings.EVA_PRIVATE_MEDIA)
 
 
-class Soporte(models.Model):
+class SoporteActividad(models.Model):
     objects = ManagerGeneral()
     actividad = models.ForeignKey(Actividad, on_delete=models.DO_NOTHING, verbose_name='Actividad', blank=False,
                                   null=False)
@@ -168,14 +176,14 @@ class Soporte(models.Model):
         verbose_name_plural = 'Soportes'
 
     @staticmethod
-    def from_dictionary(datos: dict) -> 'Soporte':
+    def from_dictionary(datos: dict) -> 'SoporteActividad':
         """
         Crea una instancia de los Soportes con los datos pasados en el diccionario.
         :param datos: Diccionario con los datos para cargar los Soportes.
         :return: Instacia de los Soportes con la información especificada en el diccionario.
         """
 
-        soporte = Soporte()
+        soporte = SoporteActividad()
         soporte.descripcion = datos.get('descripcion', '')
         soporte.fecha_fin = datos.get('fecha_final', '')
         soporte.motivo = datos.get('motivo', '')
@@ -189,11 +197,14 @@ class AvanceActividad(models.Model):
                                   null=False)
     descripcion = models.TextField(max_length=500, verbose_name='Descripción', null=False, blank=False)
     fecha_avance = models.DateField(verbose_name='Fecha Avance', null=False, blank=False)
-    horas_empleadas = models.SmallIntegerField(default=0, verbose_name='Horas Empleadas', null=False, blank=False)
+    horas_empleadas = models.DecimalField(max_digits=7, decimal_places=2, default=0, verbose_name='Horas Empleadas',
+                                          null=False, blank=False)
     porcentaje_avance = models.PositiveIntegerField(default=0, validators=[MinValueValidator(0),
                                                                            MaxValueValidator(100)],
                                                     verbose_name='Porcentaje Avance',
                                                     null=False, blank=False)
+    responsable = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Responsable',
+                                    blank=False, null=False)
 
     def __str__(self):
         return self.actividad.nombre

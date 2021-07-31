@@ -15,20 +15,20 @@ Including another URLconf
 """
 
 from django.urls import path
-from GestionActividades.views import views, grupo_actividades, actividades
+from GestionActividades.views import views, grupos_actividades, actividades
 
 app_name = 'GestionActividades'
 
 urlpatterns = [
     path('index/', views.PrincipalView.as_view(), name='index'),
-    path('grupo-actividades/index', grupo_actividades.GruposActividadesIndexView.as_view(),
-         name='grupo-actividades-index'),
-    path('grupo-actividades/add', grupo_actividades.GruposActividadesCrearView.as_view(),
-         name='grupo-actividades-crear'),
-    path('grupo-actividades/<int:id_grupo>/editar', grupo_actividades.GruposActividadesEditarView.as_view(),
-         name='grupo-actividades-editar'),
-    path('grupo-actividades/<int:id_grupo>/delete', grupo_actividades.GruposActividadesEliminarView.as_view(),
-         name='grupo-actividades-eliminar'),
+    path('grupos-actividades/index', grupos_actividades.GruposActividadesIndexView.as_view(),
+         name='grupos-actividades-index'),
+    path('grupos-actividades/add', grupos_actividades.GruposActividadesCrearView.as_view(),
+         name='grupos-actividades-crear'),
+    path('grupos-actividades/<int:id_grupo>/editar', grupos_actividades.GruposActividadesEditarView.as_view(),
+         name='grupos-actividades-editar'),
+    path('grupos-actividades/<int:id_grupo>/delete', grupos_actividades.GruposActividadesEliminarView.as_view(),
+         name='grupos-actividades-eliminar'),
     path('actividades/index', actividades.ActividadesIndexView.as_view(),
          name='actividades-index'),
     path('actividades/index/<int:id>', actividades.ActividadesIndexView.as_view(),
@@ -37,13 +37,13 @@ urlpatterns = [
          name='actividades-crear'),
     path('actividades/<int:id_actividad>/editar', actividades.ActividadesEditarView.as_view(),
          name='actividades-editar'),
-    path('actividades/actividad/<int:id_actividad>/actualizar', actividades.ActualizarActividadView.as_view(),
+    path('actividades/<int:id_actividad>/actualizar', actividades.ActualizarActividadView.as_view(),
          name='actividades-actualizar'),
     path('actividades/<int:id_actividad>/delete', actividades.ActividadesEliminarView.as_view(),
          name='actividades-eliminar'),
-    path('actividades/actividad/<int:id_actividad>/cargar', actividades.CargarSoporteView.as_view(),
+    path('actividades/<int:id_actividad>/cargar', actividades.CargarSoporteView.as_view(),
          name='soportes-cargar'),
-    path('actividades/actividad/<int:id_actividad>/<int:id_soporte>/ver-soportes/<str:archivo>',
+    path('actividades/<int:id_actividad>/soportes/<int:id_soporte>/ver-soporte',
          actividades.VerSoporteView.as_view(), name='soportes-ver'),
 
 ]

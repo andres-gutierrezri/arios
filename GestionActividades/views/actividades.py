@@ -1,14 +1,11 @@
 import logging
 import os
 import json
-from sqlite3 import IntegrityError
-import re
-from fileinput import filename
 
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.db.transaction import rollback, atomic
-from django.http import HttpResponse, HttpResponseServerError, JsonResponse
+from django.http import HttpResponse, HttpResponseServerError
 from django.shortcuts import render
 
 from django.contrib import messages
@@ -18,7 +15,9 @@ from EVA.General import app_datetime_now, app_date_now
 from EVA.General.modeljson import RespuestaJson
 from EVA.views.index import AbstractEvaLoggedView
 from GestionActividades.Enumeraciones import EstadosActividades
-from GestionActividades.models.models import Actividad, GrupoActividad, ResponsableActividad, Soporte, AvanceActividad
+from GestionActividades.models.models import Actividad, GrupoActividad, ResponsableActividad, SoporteActividad, \
+    AvanceActividad
+from TalentoHumano.models import Colaborador
 
 LOGGER = logging.getLogger(__name__)
 
@@ -36,24 +35,27 @@ class ActividadesIndexView(AbstractEvaLoggedView):
                 actividad_db.estado = EstadosActividades.CREADA
                 actividad_db.save()
 
+        actividades = Actividad.objects.values('id', 'nombre', 'grupo_actividad_id', 'descripcion', 'fecha_fin',
+                                               'estado', 'porcentaje_avance', 'soporte_requerido', 'fecha_inicio',
+                                               'horas_invertidas', 'tiempo_estimado')
         responsable_actividad = ResponsableActividad.objects.values('responsable_id', 'actividad_id')
         colaboradores = User.objects.values('id', 'first_name', 'last_name')
         grupos = GrupoActividad.objects.values('id', 'nombre', 'grupo_actividad_id', 'estado')
         search = request.GET.get('search', '')
 
         if search:
-            grupos = grupos.filter(Q(nombre__icontains=search))
+            actividades = actividades.filter(Q(nombre__icontains=search))
 
         if id:
             grupos = grupos.filter(Q(id=id) | Q(nombre__iexact='Generales') | Q(grupo_actividad_id=id))
 
-        archivos = Soporte.objects.values('id', 'archivo', 'actividad_id')
+        archivos = SoporteActividad.objects.values('id', 'archivo', 'actividad_id')
 
         # Slice descartando de la url "privado/GestiónActividades/Actividades/Soportes/" para que solo se
         # visualice del archivo el código y el Filename
         archivos_soporte = []
         for archivo in archivos:
-            nombre_archivo = archivo['archivo'][48:]
+            nombre_archivo = archivo['archivo'].split("/")[-1]
             if not nombre_archivo:
                 nombre_archivo = '0'
 
@@ -61,11 +63,8 @@ class ActividadesIndexView(AbstractEvaLoggedView):
                                      'actividad_id': archivo['actividad_id']})
         # endregion
 
-        actividades = Actividad.objects.values('id', 'nombre', 'grupo_actividad_id', 'descripcion', 'fecha_fin',
-                                               'estado', 'porcentaje_avance', 'soporte_requerido', 'fecha_inicio')
-
         avances_actividad = AvanceActividad.objects.values('descripcion', 'fecha_avance', 'horas_empleadas',
-                                                           'porcentaje_avance', 'actividad_id')
+                                                           'porcentaje_avance', 'actividad_id', 'responsable_id')
 
         return render(request, 'GestionActividades/Actividades/index.html',
                       {'actividades': actividades,
@@ -76,7 +75,8 @@ class ActividadesIndexView(AbstractEvaLoggedView):
                        'archivos_soporte': archivos_soporte,
                        'EstadosActividades': EstadosActividades,
                        'avances_actividad': avances_actividad,
-                       'fecha': app_datetime_now()})
+                       'fecha': app_datetime_now(),
+                       'menu_actual': 'actividades'})
 
 
 class ActividadesCrearView(AbstractEvaLoggedView):
@@ -85,34 +85,45 @@ class ActividadesCrearView(AbstractEvaLoggedView):
                       datos_xa_render(request))
 
     def post(self, request):
-        grupo_actividad = GrupoActividad.from_dictionary(request.POST)
-        actividad = Actividad.from_dictionary(request.POST)
-        actividad.usuario_crea = request.user
-        actividad.usuario_modifica = request.user
-        actividad.fecha_crea = app_datetime_now()
-        responsables = request.POST.getlist('responsables_id[]', None)
+        try:
+            with atomic():
+                grupo_actividad = GrupoActividad.from_dictionary(request.POST)
+                actividad = Actividad.from_dictionary(request.POST)
+                actividad.usuario_crea = request.user
+                actividad.usuario_modifica = request.user
+                responsables = request.POST.getlist('responsables_id[]', None)
 
-        if actividad.grupo_actividad_id == '':
-            if GrupoActividad.objects.filter(nombre__iexact='generales').exists():
-                grupo_generales = list(GrupoActividad.objects.values('id').filter(nombre__iexact='generales'))
-                actividad.grupo_actividad_id = grupo_generales[0].get('id')
-            else:
-                return RespuestaJson.error("Falló crear. El grupo Generales no existe")
+                if actividad.grupo_actividad_id == '':
+                    if GrupoActividad.objects.filter(nombre__iexact='generales').exists():
+                        grupo_generales = list(GrupoActividad.objects.values('id').filter(nombre__iexact='generales'))
+                        actividad.grupo_actividad_id = grupo_generales[0].get('id')
+                    else:
+                        return RespuestaJson.error("Falló crear. El grupo Generales no existe")
 
-        if Actividad.objects.filter(nombre__iexact=actividad.nombre,
-                                    grupo_actividad_id__exact=actividad.grupo_actividad_id).exists():
-            return RespuestaJson.error("Falló crear. Ya existe una actividad con el mismo nombre dentro del grupo")
+                try:
+                    actividad.full_clean(validate_unique=False, exclude=['motivo'])
+                except ValidationError as errores:
+                    return RespuestaJson.error("Falló crear. Valide los datos ingresados al crear la actividad")
 
-        elif GrupoActividad.objects.filter(nombre__iexact=actividad.nombre).exists():
-            return RespuestaJson.error("Falló crear. No puede colocar el mismo nombre del grupo "
-                                       "que va a contener la actividad")
+                if Actividad.objects.filter(nombre__iexact=actividad.nombre,
+                                            grupo_actividad_id__exact=actividad.grupo_actividad_id).exists():
+                    return RespuestaJson.error("Falló crear. Ya existe una actividad con el "
+                                               "mismo nombre dentro del grupo")
 
-        else:
-            actividad.save()
-            for responsable in responsables:
-                ResponsableActividad.objects.create(responsable_id=responsable, actividad=actividad)
+                elif GrupoActividad.objects.filter(nombre__iexact=actividad.nombre).exists():
+                    return RespuestaJson.error("Falló crear. No puede colocar el mismo nombre de un grupo existente ni"
+                                               " del grupo que va a contener la actividad")
 
-        return RespuestaJson.exitosa()
+                else:
+                    actividad.save()
+                    messages.success(request, 'Se ha creado exitosamente la actividad')
+                    for responsable in responsables:
+                        ResponsableActividad.objects.create(responsable_id=responsable, actividad=actividad)
+
+                return RespuestaJson.exitosa()
+        except:
+            rollback()
+            return RespuestaJson.error("Falló al crear la actividad")
 
 
 class ActividadesEditarView(AbstractEvaLoggedView):
@@ -122,60 +133,67 @@ class ActividadesEditarView(AbstractEvaLoggedView):
                       datos_xa_render(request, actividad))
 
     def post(self, request, id_actividad):
-        update_fields = ['fecha_modificacion', 'codigo', 'supervisor_id', 'fecha_inicio', 'fecha_fin', 'nombre',
-                         'descripcion', 'fecha_crea', 'motivo', 'usuario_modifica', 'usuario_crea',
-                         'grupo_actividad_id', 'estado', 'soporte_requerido']
-        grupo_actividad = GrupoActividad.from_dictionary(request.POST)
-        actividad = Actividad.from_dictionary(request.POST)
-        actividad_db = Actividad.objects.get(id=id_actividad)
-        actividad.estado = actividad_db.estado
-        actividad.fecha_crea = actividad_db.fecha_crea
-        actividad.fecha_modificacion = app_datetime_now()
-        actividad.id = actividad_db.id
-        actividad.usuario_modifica = request.user
-        actividad.usuario_crea = actividad_db.usuario_crea
-        responsables = request.POST.getlist('responsables_id[]', None)
-        actividad.soporte_requerido = request.POST.get('soporte_requerido', 'False') == 'True'
-
-        if actividad.grupo_actividad_id == '':
-            if GrupoActividad.objects.filter(nombre__iexact='generales').exists():
-                grupo_generales = list(GrupoActividad.objects.values('id').filter(nombre__iexact='generales'))
-                actividad.grupo_actividad_id = grupo_generales[0].get('id')
-            else:
-                return RespuestaJson.error("Falló crear. El grupo Generales no existe")
-
-        responsables_actividad_db = ResponsableActividad.objects.filter(actividad_id=id_actividad)
-        cantidad_responsables = responsables_actividad_db.count()
-        conteo_responsables = 0
-        if cantidad_responsables == len(responsables):
-            for clb in responsables_actividad_db:
-                for ctr in responsables:
-                    if clb.responsable.id == int(ctr):
-                        conteo_responsables += 1
-        else:
-            conteo_responsables = len(responsables)
-
         try:
-            actividad.full_clean(validate_unique=False)
-        except ValidationError as errores:
-            return RespuestaJson.error("Falló editar. Valide los datos ingresados al editar la actividad")
+            with atomic():
+                update_fields = ['fecha_modificacion', 'codigo', 'supervisor_id', 'fecha_inicio', 'fecha_fin', 'nombre',
+                                 'descripcion', 'fecha_crea', 'motivo', 'usuario_modifica', 'usuario_crea',
+                                 'grupo_actividad_id', 'estado', 'soporte_requerido', 'tiempo_estimado']
+                grupo_actividad = GrupoActividad.from_dictionary(request.POST)
+                actividad = Actividad.from_dictionary(request.POST)
+                actividad_db = Actividad.objects.get(id=id_actividad)
+                actividad.estado = actividad_db.estado
+                actividad.fecha_crea = actividad_db.fecha_crea
+                actividad.id = actividad_db.id
+                actividad.usuario_modifica = request.user
+                actividad.fecha_modificacion = app_datetime_now()
+                actividad.usuario_crea = actividad_db.usuario_crea
+                actividad.horas_invertidas = actividad_db.horas_invertidas
+                responsables = request.POST.getlist('responsables_id[]', None)
+                actividad.soporte_requerido = request.POST.get('soporte_requerido', 'False') == 'True'
 
-        if GrupoActividad.objects.filter(nombre__iexact=actividad.nombre).exists():
-            return RespuestaJson.error("Falló editar. No puede colocar el mismo nombre del grupo "
-                                       "que va a contener la actividad")
+                if actividad.grupo_actividad_id == '':
+                    if GrupoActividad.objects.filter(nombre__iexact='generales').exists():
+                        grupo_generales = list(GrupoActividad.objects.values('id').filter(nombre__iexact='generales'))
+                        actividad.grupo_actividad_id = grupo_generales[0].get('id')
+                    else:
+                        return RespuestaJson.error("Falló crear. El grupo Generales no existe")
 
-        if actividad_db.comparar(actividad, excluir=['fecha_modificacion', 'motivo', 'calificacion', 'codigo',
-                                                     'porcentaje_avance']) \
-                and conteo_responsables == cantidad_responsables:
-            return RespuestaJson.error("No se hicieron cambios en la actividad")
+                responsables_actividad_db = ResponsableActividad.objects.filter(actividad_id=id_actividad)
+                cantidad_responsables = responsables_actividad_db.count()
+                conteo_responsables = 0
+                if cantidad_responsables == len(responsables):
+                    for clb in responsables_actividad_db:
+                        for ctr in responsables:
+                            if clb.responsable.id == int(ctr):
+                                conteo_responsables += 1
+                else:
+                    conteo_responsables = len(responsables)
 
-        else:
-            actividad.save(update_fields=update_fields)
-            ResponsableActividad.objects.filter(actividad_id=id_actividad).delete()
-            for responsable in responsables:
-                ResponsableActividad.objects.create(responsable_id=responsable, actividad_id=id_actividad)
+                try:
+                    actividad.full_clean(validate_unique=False)
+                except ValidationError as errores:
+                    return RespuestaJson.error("Falló editar. Valide los datos ingresados al editar la actividad")
 
-        return RespuestaJson.exitosa()
+                if GrupoActividad.objects.filter(nombre__iexact=actividad.nombre).exists():
+                    return RespuestaJson.error("Falló editar. No puede colocar el mismo nombre del grupo "
+                                               "que va a contener la actividad")
+
+                if actividad_db.comparar(actividad, excluir=['fecha_modificacion', 'motivo', 'calificacion', 'codigo',
+                                                             'porcentaje_avance', 'usuario_modifica']) \
+                        and conteo_responsables == cantidad_responsables:
+                    return RespuestaJson.error("No se hicieron cambios en la actividad")
+
+                else:
+                    actividad.save(update_fields=update_fields)
+                    messages.success(request, 'Se ha editado exitosamente la actividad')
+                    ResponsableActividad.objects.filter(actividad_id=id_actividad).delete()
+                    for responsable in responsables:
+                        ResponsableActividad.objects.create(responsable_id=responsable, actividad_id=id_actividad)
+
+                return RespuestaJson.exitosa()
+        except:
+            rollback()
+            return RespuestaJson.error("Falló al editar la actividad")
 
 
 class ActualizarActividadView(AbstractEvaLoggedView):
@@ -187,45 +205,59 @@ class ActualizarActividadView(AbstractEvaLoggedView):
                        'actividad': actividad})
 
     def post(self, request, id_actividad):
-        avance = AvanceActividad.from_dictionary(request.POST)
-        avance.actividad_id = id_actividad
-        avance.save()
+        try:
+            with atomic():
+                avance_actividad = AvanceActividad.from_dictionary(request.POST)
+                avance_actividad.actividad_id = id_actividad
+                avance_actividad.responsable = request.user
+                avance_actividad.save()
 
-        # region Actualiza el porcentaje de avance de la actividad
-        update_fields = ['porcentaje_avance']
-        actividad_db = Actividad.objects.get(id=id_actividad)
-        actividad_db.porcentaje_avance += int(avance.porcentaje_avance)
-        actividad_db.save(update_fields=update_fields)
-        # endregion
+                # region Actualiza el porcentaje y las horas de avance de la actividad
+                update_fields = ['porcentaje_avance', 'horas_invertidas']
+                actividad_db = Actividad.objects.get(id=id_actividad)
+                actividad_db.porcentaje_avance = int(avance_actividad.porcentaje_avance)
+                horas_empleadas = float(avance_actividad.horas_empleadas)
+                horas_invertidas_db = float(actividad_db.horas_invertidas)
+                actividad_db.horas_invertidas = horas_empleadas + horas_invertidas_db
+                actividad_db.save(update_fields=update_fields)
+                # endregion
 
-        messages.success(request, 'Se ha actualizado exitosamente la actividad')
-        return RespuestaJson.exitosa()
+                messages.success(request, 'Se ha actualizado exitosamente la actividad')
+                return RespuestaJson.exitosa()
+        except:
+            rollback()
+            return RespuestaJson.error("Falló al actualizar la actividad")
 
 
 class ActividadesEliminarView(AbstractEvaLoggedView):
     def post(self, request, id_actividad):
         actividad = Actividad.objects.get(id=id_actividad)
-        body_unicode = request.body.decode('utf-8')
-        datos_registro = json.loads(body_unicode)
-
-        motivo = datos_registro['justificacion']
-        if actividad.estado == EstadosActividades.ANULADA:
-            return RespuestaJson.error("Esta actividad ya ha sido eliminada.")
         try:
-            actividad.estado = EstadosActividades.ANULADA
-            actividad.motivo = motivo
-            actividad.save(update_fields=['estado', 'motivo'])
-            messages.success(request, 'Se ha eliminado la actividad {0}'.format(actividad.nombre))
-            return RespuestaJson.exitosa()
+            with atomic():
+                body_unicode = request.body.decode('utf-8')
+                datos_registro = json.loads(body_unicode)
 
-        except IntegrityError:
-            return RespuestaJson.error("Ha ocurrido un error al realizar la acción")
+                motivo = datos_registro['justificacion']
+                if actividad.estado == EstadosActividades.ANULADA:
+                    return RespuestaJson.error("Esta actividad ya ha sido eliminada.")
+                try:
+                    actividad.estado = EstadosActividades.ANULADA
+                    actividad.motivo = motivo
+                    actividad.save(update_fields=['estado', 'motivo'])
+                    messages.success(request, 'Se ha eliminado la actividad {0}'.format(actividad.nombre))
+                    return RespuestaJson.exitosa()
+
+                except:
+                    return RespuestaJson.error("Ha ocurrido un error al realizar la acción")
+        except:
+            rollback()
+            return RespuestaJson.error("Falló al eliminar la actividad")
 
 
 class CargarSoporteView(AbstractEvaLoggedView):
     def get(self, request, id_actividad):
         actividad = Actividad.objects.get(id=id_actividad)
-        soportes = Soporte.objects.filter(actividad_id=id_actividad)
+        soportes = SoporteActividad.objects.filter(actividad_id=id_actividad)
 
         if actividad.estado == EstadosActividades.FINALIZADO:
             soporte = soportes.values('fecha_fin', 'descripcion')
@@ -246,7 +278,7 @@ class CargarSoporteView(AbstractEvaLoggedView):
         actividad = Actividad.objects.get(id=id_actividad)
         try:
             with atomic():
-                soporte = Soporte.from_dictionary(request.POST)
+                soporte = SoporteActividad.from_dictionary(request.POST)
                 soporte.actividad_id = id_actividad
                 # region Guarda los archivos
                 for llave in request.FILES:
@@ -274,42 +306,50 @@ class CargarSoporteView(AbstractEvaLoggedView):
 
 
 class VerSoporteView(AbstractEvaLoggedView):
-    def get(self, request, id_soporte, id_actividad, archivo):
+    def get(self, request, id_soporte, id_actividad):
         actividad = Actividad.objects.get(id=id_actividad)
-        if Soporte.objects.filter(id=id_soporte).exists():
-            soporte = Soporte.objects.get(id=id_soporte)
+        soporte = SoporteActividad.objects.get(id=id_soporte)
+
+        try:
+            soporte_url = str(soporte.archivo)
+            nombre_archivo = soporte_url.split("/")[-1]
             extension = os.path.splitext(soporte.archivo.url)[1]
             mime_types = {'.docx': 'application/msword', '.xls': 'application/vnd.ms-excel',
-                          '.pptx': 'application/vnd.ms-powerpoint',
+                          '.pptx': 'application/vnd.ms-powerpoint', '.DOC': 'application/msword',
                           '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                          '.xlsm': 'application/vnd.ms-excel.sheet.macroenabled.12',
+                          '.xlsm': 'application/vnd.ms-excel.sheet.macroenabled.12', '.doc': 'application/msword',
                           '.dwg': 'application/octet-stream', '.pdf': 'application/pdf',
                           '.png': 'image/png', '.jpeg': 'image/jpeg', '.jpg': 'image/jpeg'
                           }
-            response = HttpResponse(soporte.archivo, content_type=mime_types)
+            mime_type = mime_types.get(extension, 'application/pdf')
+
+            response = HttpResponse(soporte.archivo, content_type=mime_type)
             response['Content-Disposition'] = 'inline; filename="{0}"' \
-                .format(archivo)
+                .format(nombre_archivo)
+
             return response
 
-        else:
+        except:
+            messages.error(request, 'El archivo soporte no se encuentra disponible')
             return render(request, 'GestionActividades/Actividades/index.html')
 
 
 def datos_xa_render(request, actividad: Actividad = None) -> dict:
-    grupos = GrupoActividad.objects.values('id', 'nombre')
-    lista_grupos = []
-    for grupo in grupos:
-        lista_grupos.append({'campo_valor': grupo['id'], 'campo_texto': grupo['nombre']})
 
-    colaboradores = User.objects.values('id', 'first_name', 'last_name')
+    grupos = GrupoActividad.objects.get_xa_select_activos()
+
+    usuarios = User.objects.values('id', 'first_name', 'last_name')
+    colaboradores = Colaborador.objects.values('usuario_id')
     lista_colaboradores = []
-    for colaborador in colaboradores:
-        lista_colaboradores.append({'campo_valor': colaborador['id'],
-                                    'campo_texto': colaborador['first_name'] + ' ' + colaborador['last_name']})
+    for usuario in usuarios:
+        for colaborador in colaboradores:
+            if usuario['id'] == colaborador['usuario_id']:
+                lista_colaboradores.append({'campo_valor': usuario['id'],
+                                            'campo_texto': usuario['first_name'] + ' ' + usuario['last_name']})
 
     responsable_actividad = ResponsableActividad.objects.get_ids_responsables_list(actividad)
     datos = {'fecha': app_datetime_now(),
-             'grupos': lista_grupos,
+             'grupos': grupos,
              'colaboradores': lista_colaboradores,
              'menu_actual': 'actividades',
              'responsable_actividad': responsable_actividad,
