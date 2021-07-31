@@ -14,7 +14,7 @@ from django.core.exceptions import ValidationError
 from EVA.General import app_datetime_now, app_date_now
 from EVA.General.modeljson import RespuestaJson
 from EVA.views.index import AbstractEvaLoggedView
-from GestionActividades.Enumeraciones import EstadosActividades, EstadosModificacionActividad
+from GestionActividades.Enumeraciones import EstadosActividades, EstadosModificacionActividad, TiposUsuariosActividad
 from GestionActividades.models.models import Actividad, GrupoActividad, ResponsableActividad, SoporteActividad, \
     AvanceActividad, ModificacionActividad
 from TalentoHumano.models import Colaborador
@@ -37,7 +37,7 @@ class ActividadesIndexView(AbstractEvaLoggedView):
 
         actividades = Actividad.objects.values('id', 'nombre', 'grupo_actividad_id', 'descripcion', 'fecha_fin',
                                                'estado', 'porcentaje_avance', 'soporte_requerido', 'fecha_inicio',
-                                               'horas_invertidas', 'tiempo_estimado')
+                                               'horas_invertidas', 'tiempo_estimado', 'supervisor_id')
         responsable_actividad = ResponsableActividad.objects.values('responsable_id', 'actividad_id')
         colaboradores = User.objects.values('id', 'first_name', 'last_name')
         grupos = GrupoActividad.objects.values('id', 'nombre', 'grupo_actividad_id', 'estado')
@@ -159,16 +159,16 @@ class ActividadesEditarView(AbstractEvaLoggedView):
                 user = User.objects.get(username=user_modifica)
 
                 if supervisor_actividad.supervisor_id == user.id:
-                    usuario = 'es supervisor'
+                    usuario = TiposUsuariosActividad.SUPERVISOR
                 else:
-                    usuario = 'no tiene la actividad asignada'
+                    usuario = TiposUsuariosActividad.NO_ASIGNADO
 
                 for responsable_actividad in responsables_actividad:
                     if responsable_actividad['responsable_id'] == user.id:
-                        usuario = 'es responsable'
+                        usuario = TiposUsuariosActividad.RESPONSABLE
                 # Endregion
 
-                if usuario == 'es supervisor':
+                if usuario == TiposUsuariosActividad.SUPERVISOR:
                     update_fields = ['fecha_modificacion', 'codigo', 'supervisor_id', 'fecha_inicio', 'fecha_fin',
                                      'nombre', 'descripcion', 'fecha_crea', 'motivo', 'usuario_modifica',
                                      'usuario_crea', 'grupo_actividad_id', 'estado', 'soporte_requerido',
@@ -214,7 +214,7 @@ class ActividadesEditarView(AbstractEvaLoggedView):
                         for responsable in responsables:
                             ResponsableActividad.objects.create(responsable_id=responsable, actividad_id=id_actividad)
 
-                elif usuario == 'es responsable':
+                elif usuario == TiposUsuariosActividad.RESPONSABLE:
                     modificacion_actividad = ModificacionActividad.from_dictionary(request.POST)
                     modificacion_actividad.actividad_id = id_actividad
                     actividad = Actividad.from_dictionary(request.POST)
