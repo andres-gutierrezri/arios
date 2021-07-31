@@ -6,12 +6,13 @@ $(document).ready(function () {
     activarSelect2();
     configurarFiltroConsecutivos();
     const columnDefs = [
-        { "targets": [0], "width": '12%' },
+        { "targets": [0], "width": '10%' },
         { "targets": [1], "width": '10%' },
-        { "targets": [2], "width": '28%' },
-        { "targets": [4], "width": '28%' },
-        { "targets": [6], "width": '11%' },
-        { "targets": [7], "width": '11%' },
+        { "targets": [2], "width": '10%' },
+        { "targets": [3], "width": '28%' },
+        { "targets": [5], "width": '28%' },
+        { "targets": [7], "width": '7%' },
+        { "targets": [8], "width": '7%' },
     ]
     iniciarDataTableN({buscar: false, paginar: false, ordenar: false, detallesColumnas: columnDefs});
 });

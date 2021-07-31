@@ -31,6 +31,7 @@
                                                 <tr>
                                                     <th data-priority="1" >Nombre Actividad</th>
                                                     <th>Descripción</th>
+                                                    <th>Responsable</th>
                                                     <th>Motivo Modificación</th>
                                                     <th class="none" >Fecha Solicitud</th>
                                                     <th>Comentario Aprobación/Rechazo</th>
@@ -44,6 +45,13 @@
                                                     <tr>
                                                         <td>{{ actividad.nombre }}</td>
                                                         <td>{{ actividad.descripcion }}</td>
+                                                        <td>
+                                                        {% for responsable in responsables %}
+                                                            {% if responsable.id == actividad.usuario_modifica_id%}
+                                                                <span class="badge text-white bg-gray-700"><i>{{ responsable.first_name }} {{ responsable.last_name }}</i></span>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                        </td>
                                                         <td>{{ actividad.motivo }}</td>
                                                         <td>{{ actividad.fecha_solicitud|date:'Y-m-d' }}</td>
                                                         <td>{{ actividad.comentario_supervisor }}</td>
@@ -60,13 +68,20 @@
                                                         {% endif %}
                                                         </td>
                                                         <td>
-                                                            {% if perms.GestionActividades.view_modificacionactividad %}
-                                                                {% if actividad.estado != EstadosActividades.CERRADA %}
-                                                                    <a class="fad fa-2x fa-eye" id="editar_{{ actividad.id }}" href="javascript:abrirModalCrearActividad('{% url 'GestionActividades:ver-modificaciones-actividad' actividad.actividad_id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ver Modificaciones"></a>
+                                                        {% if actividad.estado == EstadosModificacionActividad.PENDIENTE %}
+                                                            {% for responsable in responsables %}
+                                                                {% if responsable.id == actividad.supervisor_id and responsable.username == usuario %}
+                                                                    {% if perms.GestionActividades.view_modificacionactividad %}
+                                                                        {% if actividad.estado != EstadosActividades.CERRADA %}
+                                                                            <a class="fad fa-2x fa-eye" id="editar_{{ actividad.id }}" href="javascript:abrirModalCrearActividad('{% url 'GestionActividades:ver-modificaciones-actividad' actividad.actividad_id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ver Modificaciones"></a>
+                                                                        {% endif %}
+                                                                    {% endif %}
+                                                                    {% if perms.GestionActividades.change_modificacionactividad %}
+                                                                        &nbsp;&nbsp;<a class="far fa-2x fa-check-square" id="accion_modificaciones_actividad_{{ actividad.id }}"  href="javascript:abrirModalAccionActividad('{% url 'GestionActividades:accion-modificaciones-actividad' actividad.id %}');" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Aprobar/Rechazar"></a>
+                                                                    {% endif %}
                                                                 {% endif %}
-                                                            {% endif %}
-{#                                                            <a class="far fa-2x fa-eye" style="padding-left: 10px; text-decoration: none !important;" href="{% url 'sgi:documentos-ver' %}" target="_blank" data-original-title="Ver"  data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="Ver Documento"></a>#}
-                                                            &nbsp;&nbsp;<a class="far fa-2x fa-check-square" id="accion_modificaciones_actividad_{{ actividad.id }}"  href="javascript:abrirModalAccionActividad('{% url 'GestionActividades:accion-modificaciones-actividad' actividad.id %}');" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Aprobar/Rechazar"></a>
+                                                            {% endfor %}
+                                                        {% endif %}
                                                         </td>
                                                     </tr>
                                                 {% endfor %}
