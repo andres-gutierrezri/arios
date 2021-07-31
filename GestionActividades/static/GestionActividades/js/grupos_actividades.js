@@ -77,36 +77,14 @@ function configurarModalCrear(asociado) {
     //$("input:radio[name=tipo_asociado][value=asociado]").attr('checked', true);
 
     $('input:radio[name=tipo_asociado]').change(function() {
-        idTipoAsociado = this.value
-        if (idTipoAsociado === "1") {
-            let actual = this.value;
-            cambiarSelect(actual);
-        }
-        else if (idTipoAsociado === "2") {
-            let actual = this.value;
-            cambiarSelect(actual);
-        }
+        mostrarOcultarTipoAsociado(this.value === "1");
     });
 
     if (asociado){
         idTipoAsociado.val(asociado).trigger("change");
-        if (idTipoAsociado === "1") {
-            mostrarOcultarTipoAsociado(true)
-        }
-        else if (idTipoAsociado === "2") {
-            mostrarOcultarTipoAsociado(false)
-        }
     }
 
     agregarValidacionFormularios();
-}
-
-function cambiarSelect (actual){
-    if (actual === "1") {
-        mostrarOcultarTipoAsociado(true)
-    } else {
-        mostrarOcultarTipoAsociado(false)
-    }
 }
 
 function mostrarOcultarTipoAsociado(seleccion) {
