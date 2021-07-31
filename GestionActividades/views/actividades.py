@@ -334,6 +334,40 @@ class VerSoporteView(AbstractEvaLoggedView):
             return render(request, 'GestionActividades/Actividades/index.html')
 
 
+class CerrarReabrirActividadView(AbstractEvaLoggedView):
+    def get(self, request, id_actividad):
+        actividad = Actividad.objects.get(id=id_actividad)
+
+        return render(request, 'GestionActividades/Actividades/_cerrar_reabrir_actividad_modal.html',
+                      {'fecha': app_datetime_now(),
+                       'EstadosActividades': EstadosActividades,
+                       'actividad': actividad})
+
+    def post(self, request, id_actividad):
+        try:
+            with atomic():
+                # region Actualiza el estado y el motivo al Cerrar/Reabrir la actividad
+                update_fields = ['calificacion', 'estado', 'motivo', 'usuario_modifica', 'fecha_modificacion']
+                actividad_db = Actividad.objects.get(id=id_actividad)
+                actividad_db.usuario_modifica = request.user
+                actividad_db.motivo = request.POST.get('motivo')
+                if actividad_db.estado == EstadosActividades.FINALIZADO or \
+                        actividad_db.estado == EstadosActividades.REABIERTA:
+                    actividad_db.estado = EstadosActividades.CERRADA
+                    actividad_db.calificacion = request.POST.get('calificacion')
+                    messages.success(request, 'Se ha Cerrado exitosamente la actividad')
+                else:
+                    actividad_db.estado = EstadosActividades.REABIERTA
+                    messages.success(request, 'Se ha Reabierto exitosamente la actividad')
+                actividad_db.save(update_fields=update_fields)
+                # endregion
+
+                return RespuestaJson.exitosa()
+        except:
+            rollback()
+            return RespuestaJson.error("Falló al Cerrar/Reabrir la actividad")
+
+
 def datos_xa_render(request, actividad: Actividad = None) -> dict:
 
     grupos = GrupoActividad.objects.get_xa_select_activos()
