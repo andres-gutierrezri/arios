@@ -14,4 +14,12 @@
         </a>
     </li>
 {% endif %}
+{% if perms.GestionActividades.view_modificacionactividad %}
+    <li  {% if menu_actual == 'solicitudes-aprobación' %} class="active" {% endif %}>
+        <a href="{% url 'GestionActividades:solicitudes-aprobacion-index' %}" title="Solicitudes Aprobacion" data-filter-tags="solicitudes-aprobación">
+            <i class="fal fa-tasks"></i>
+            <span class="nav-link-text" data-i18n="nav.gestion_actividades_solicitudes_aprobacion">Solicitudes de Aprobación</span>
+        </a>
+    </li>
+{% endif %}
 

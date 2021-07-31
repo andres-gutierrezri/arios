@@ -15,3 +15,17 @@ class AsociadoGrupoActividades(models.IntegerChoices):
 
     CONTRATO = 1, 'Contrato'
     PROCESO = 2, 'Proceso'
+
+
+class EstadosModificacionActividad(models.IntegerChoices):
+
+    PENDIENTE = 1, 'Pendiente'
+    APROBADA = 2, 'Aprobada'
+    RECHAZADA = 3, 'Rechazada'
+
+
+class TiposUsuariosActividad(models.IntegerChoices):
+
+    NO_ASIGNADO = 1, 'No Asignado'
+    SUPERVISOR = 2, 'Supervisor'
+    RESPONSABLE = 3, 'Responsable'

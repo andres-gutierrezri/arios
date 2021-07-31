@@ -16,4 +16,7 @@ permisos = [Permiso('index', None),
             Permiso('actividades-ver', ['GestionActividades.view_avanceactividad']),
             Permiso('soportes-cargar', ['GestionActividades.add_soporteactividad']),
             Permiso('soportes-ver', ['GestionActividades.view_soporteactividad']),
+            Permiso('solicitudes-aprobacion-index', ['GestionActividades.view_modificacionactividad']),
+            Permiso('accion-modificaciones-actividad', ['GestionActividades.change_modificacionactividad']),
+            Permiso('ver-modificaciones-actividad', ['GestionActividades.view_modificacionactividad'])
             ]

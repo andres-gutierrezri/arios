@@ -47,4 +47,11 @@ urlpatterns = [
          actividades.VerSoporteView.as_view(), name='soportes-ver'),
     path('actividades/<int:id_actividad>/cerrar-reabrir', actividades.CerrarReabrirActividadView.as_view(),
          name='actividades-cerrar-reabrir'),
+    path('aprobacion-actividades/solicitudes_aprobacion/index',
+         actividades.SolicitudesAprobacionActividadIndexView.as_view(), name='solicitudes-aprobacion-index'),
+    path('aprobacion-actividades/<int:id_actividad>/accion', actividades.AccionModificacionesActividadView.as_view(),
+         name='accion-modificaciones-actividad'),
+    path('aprobacion-actividades/<int:id_actividad>/ver-modificaciones',
+         actividades.VerModificacionesActividadView.as_view(), name='ver-modificaciones-actividad'),
+
 ]

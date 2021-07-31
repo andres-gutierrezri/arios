@@ -98,6 +98,13 @@
                                                                                         <div class="d-block text-justify text-muted fs-sm">
                                                                                             {{ actividad.descripcion }}
                                                                                         </div>
+                                                                                        <div class="d-block text-justify text-muted fs-sm pt-3">
+                                                                                            {% for colaborador in colaboradores %}
+                                                                                                {% if actividad.supervisor_id == colaborador.id %}
+                                                                                                   <b>Supervisor:  </b><span class="badge text-white bg-gray-700"> {{ colaborador.first_name}} {{colaborador.last_name}}</span>
+                                                                                                {% endif %}
+                                                                                            {% endfor %}
+                                                                                        </div>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
@@ -150,7 +157,7 @@
                                                                                 {% if actividad.id == responsable.actividad_id %}
                                                                                     {% for colaborador in colaboradores %}
                                                                                         {% if responsable.responsable_id == colaborador.id %}
-                                                                                                <span class="badge text-white bg-gray-700"><i>{{ colaborador.first_name}} {{colaborador.last_name}}</i></span>
+                                                                                                <span class="badge text-white bg-gray-700">{{ colaborador.first_name}} {{colaborador.last_name}}</span>
                                                                                         {% endif %}
                                                                                     {% endfor %}
                                                                                 {% endif %}

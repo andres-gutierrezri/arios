@@ -1,0 +1,113 @@
+{% extends 'GestionActividades/_common/base_gestion_actividades.html' %}
+{% load static %}
+{% load eva_tags %}
+{% block styles %}
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-solid.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/skins/skin-master.css' %}">
+    {% include 'EVA/_common/_statics/_tablas.html' with incCSS=True %}
+    {% include 'EVA/_common/_statics/_select2.html' with incCSS=True %}
+    {% include 'EVA/_common/_statics/_datepicker.html' with incCSS=True %}
+{% endblock styles %}
+{% block main %}
+
+    <div class="panel-container show">
+        <div class="header">
+             <h1 class="header-title">
+                <i class='far fa-check'></i> Aprobación de Modificaciones en las Actividades<span class='fw-300'></span>
+                 <br>
+                 <br>
+             </h1>
+        </div>
+        <div class="row">
+            <div class="col-xl-12">
+                <div id="panel-1" class="panel">
+                    <div class="panel-container show">
+                        <div class="panel-content">
+                            <div class="panel-group">
+                                <div class="panel-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered w-100" id="dataTable">
+                                            <thead class="bg-primary-600">
+                                                <tr>
+                                                    <th data-priority="1" >Nombre Actividad</th>
+                                                    <th>Descripción</th>
+                                                    <th>Responsable</th>
+                                                    <th>Motivo Modificación</th>
+                                                    <th class="none" >Fecha Solicitud</th>
+                                                    <th>Comentario Aprobación/Rechazo</th>
+                                                    <th class="none" >Fecha Respuesta Solicitud</th>
+                                                    <th data-priority="2" >Estado</th>
+                                                    <th>Acción</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for actividad in actividades %}
+                                                    <tr>
+                                                        <td>{{ actividad.nombre }}</td>
+                                                        <td>{{ actividad.descripcion }}</td>
+                                                        <td>
+                                                        {% for responsable in responsables %}
+                                                            {% if responsable.id == actividad.usuario_modifica_id%}
+                                                                <span class="badge text-white bg-gray-700"><i>{{ responsable.first_name }} {{ responsable.last_name }}</i></span>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                        </td>
+                                                        <td>{{ actividad.motivo }}</td>
+                                                        <td>{{ actividad.fecha_solicitud|date:'Y-m-d' }}</td>
+                                                        <td>{{ actividad.comentario_supervisor }}</td>
+                                                        <td>{{ actividad.fecha_respuesta_solicitud|date:'Y-m-d' }}</td>
+                                                        <td>
+                                                        {% if actividad.estado == EstadosModificacionActividad.PENDIENTE%}
+                                                            <span class="badge badge-warning">PENDIENTE</span>
+                                                        {% endif %}
+                                                        {% if actividad.estado == EstadosModificacionActividad.APROBADA%}
+                                                            <span class="badge badge-primary">APROBADA</span>
+                                                        {% endif %}
+                                                        {% if actividad.estado == EstadosModificacionActividad.RECHAZADA%}
+                                                            <span class="badge badge-danger">RECHAZADA</span>
+                                                        {% endif %}
+                                                        </td>
+                                                        <td>
+                                                        {% if actividad.estado == EstadosModificacionActividad.PENDIENTE %}
+                                                            {% for responsable in responsables %}
+                                                                {% if responsable.id == actividad.supervisor_id and responsable.username == usuario %}
+                                                                    {% if perms.GestionActividades.view_modificacionactividad %}
+                                                                        {% if actividad.estado != EstadosActividades.CERRADA %}
+                                                                            <a class="fad fa-2x fa-eye" id="editar_{{ actividad.id }}" href="javascript:abrirModalCrearActividad('{% url 'GestionActividades:ver-modificaciones-actividad' actividad.actividad_id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ver Modificaciones"></a>
+                                                                        {% endif %}
+                                                                    {% endif %}
+                                                                    {% if perms.GestionActividades.change_modificacionactividad %}
+                                                                        &nbsp;&nbsp;<a class="far fa-2x fa-check-square" id="accion_modificaciones_actividad_{{ actividad.id }}"  href="javascript:abrirModalAccionActividad('{% url 'GestionActividades:accion-modificaciones-actividad' actividad.id %}');" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Aprobar/Rechazar"></a>
+                                                                    {% endif %}
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="card-footer small text-muted">Actualizado: {{ fecha }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" tabindex="-1" id="accion-actividad" role="dialog" aria-hidden="true"></div>
+    <div class="modal fade" tabindex="-1" id="crear-actividad" role="dialog"  aria-hidden="true"></div>
+{% endblock %}
+{% block scripts %}
+    {% include 'EVA/_common/_statics/_tablas.html' %}
+    {% include 'EVA/_common/_statics/_select2.html' %}
+    {% include 'EVA/_common/_statics/_datepicker.html'%}
+    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
+    <script src="{% static 'GestionDocumental/js/filtro_consecutivos.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/controlBusquedaPaginacion.js' %}"></script>
+    <script src="{% static 'GestionActividades/js/accion_actividad_modal.js' %}"></script>
+    <script src="{% static 'GestionActividades/js/actividades.js' %}"></script>
+{% endblock scripts%}

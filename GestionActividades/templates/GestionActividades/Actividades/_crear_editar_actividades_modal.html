@@ -39,7 +39,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group {% if actividad_modificada == True %} mt-0 mb-0 pt-0 pb-0 {% endif %} ">
                         <div class="row">
                             <div class="col-md-6">
                                 {% input_date_tag 'fecha_inicio' 'Fecha de inicio' placeholder="Seleccione una fecha de inicio" value=actividad.fecha_inicio required="" autocomplete="off" mensaje_validacion='Por favor seleccione una fecha de inicio.' %}
@@ -49,7 +49,27 @@
                             </div>
                          </div>
                     </div>
+                    {% if actividad_modificada == True %}
                     <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-6">
+                            {% if modificacion_actividad.fecha_inicio != actividad.fecha_inicio %}
+                                <a class="badge badge-warning text-white" > Fecha Inicio Solicitada: {{ modificacion_actividad.fecha_inicio|date:'Y-m-d' }}</a>
+                            {% else %}
+                                <a class="badge badge-primary text-white" >Campo no modificado</a>
+                            {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                            {% if modificacion_actividad.fecha_fin != actividad.fecha_fin %}
+                                <a class="badge badge-warning text-white" > Fecha Fin Solicitada: {{ modificacion_actividad.fecha_fin|date:'Y-m-d' }}</a>
+                            {% else %}
+                                <a class="badge badge-primary text-white" >Campo no modificado</a>
+                            {% endif %}
+                            </div>
+                         </div>
+                    </div>
+                    {% endif %}
+                    <div class="form-group {% if actividad_modificada == True %} mt-0 mb-0 pt-0 pb-0 {% endif %}">
                         <div class="row">
                             <div class="col-md-6">
                                 {% select_tag grupos 'grupo_asociado' 'Seleccione el grupo asociado' texto_label="Seleccione un grupo"  value=actividad.grupo_actividad_id %}
@@ -59,15 +79,32 @@
                             </div>
                         </div>
                     </div>
+                    {% if actividad_modificada == True %}
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-6">
+                            </div>
+                            <div class="col-md-6">
+                            {% if modificacion_actividad.tiempo_estimado != actividad.tiempo_estimado %}
+                                <a class="badge badge-warning text-white" > Tiempo Estimado Solicitado: {{ modificacion_actividad.tiempo_estimado }} h</a>
+                            {% else %}
+                                <a class="badge badge-primary text-white" >Campo no modificado</a>
+                            {% endif %}
+                            </div>
+                         </div>
+                    </div>
+                    {% endif %}
                     {% if editar %}
                         <input id="responsables_actividad"  hidden value="{{ responsable_actividad }}">
-                        <div class="form-group">
-                            <div class="row">
-                                <div id="motivo" class="col-md-12">
-                                    {% input_textarea_tag 'motivo' 'Motivo' placeholder="Digite Motivo" value=actividad.motivo|default_if_none:"" required="" mensaje_validacion='Por favor digite el motivo.' %}
+                        {% if actividad_modificada == False %}
+                            <div class="form-group">
+                                <div class="row">
+                                    <div id="motivo" class="col-md-12">
+                                        {% input_textarea_tag 'motivo' 'Motivo' placeholder="Digite Motivo" value=actividad.motivo|default_if_none:"" required="" mensaje_validacion='Por favor digite el motivo.' %}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        {% endif %}
                     {% endif %}
                     <div class="form-group">
                         <div class="row">
@@ -79,10 +116,12 @@
                     </div>
                 </div>
             </div>
+            {% if ocultar_botones_modal == False %}
             <div class="modal-footer">
                 <button data-dismiss="modal" class="btn btn-danger btn-pills">Cancelar</button>
                 <button id="agregar" type="submit" class="btn btn-primary btn-pills"> {% if editar %}Editar{% else %}Agregar{% endif %} </button>
             </div>
+            {% endif %}
         </div>
     </div>
 </form>
