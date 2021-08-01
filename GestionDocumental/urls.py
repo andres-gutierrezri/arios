@@ -15,7 +15,9 @@ Including another URLconf
 """
 
 from django.urls import path
-from GestionDocumental.views import views, consecutivo_documento, consecutivo_contrato, consecutivo_reunion
+from GestionDocumental.views import views, consecutivo_documento, consecutivo_contrato, consecutivo_reunion, \
+    consecutivo_requerimientos, consecutivo_plantrabajo, consecutivo_viaticoscomisiones, consecutivo_ordenes, \
+    consecutivo_actas_contratos
 
 app_name = 'GestionDocumental'
 
@@ -49,4 +51,45 @@ urlpatterns = [
          name='consecutivo-reuniones-editar'),
     path('consecutivo-reuniones/<int:id>/delete', consecutivo_reunion.ConsecutivoReunionesEliminarView.as_view(),
          name='consecutivo-reuniones-eliminar'),
+    path('consecutivo-requerimientos/<int:id>/index', consecutivo_requerimientos.ConsecutivoRequerimientoView.as_view(),
+         name='consecutivo-requerimientos-index'),
+    path('consecutivo-requerimientos/add', consecutivo_requerimientos.ConsecutivoRequerimientoCrearView.as_view(),
+         name='consecutivo-requerimientos-crear'),
+    path('consecutivo-requerimientos/<int:id>/editar', consecutivo_requerimientos.
+         ConsecutivoRequerimientoEditarView.as_view(), name='consecutivo-requerimientos-editar'),
+    path('consecutivo-requerimientos/<int:id>/delete', consecutivo_requerimientos.
+         ConsecutivoRequerimientoEliminarView.as_view(), name='consecutivo-requerimientos-delete'),
+    path('consecutivo-plantrabajo/<int:id>/index', consecutivo_plantrabajo.ConsecutivoPlanTrabajoView.as_view(),
+         name='consecutivo-plantrabajo-index'),
+    path('consecutivo-plantrabajo/add', consecutivo_plantrabajo.ConsecutivoPlanTrabajoCrearView.as_view(),
+         name='consecutivo-plantrabajo-crear'),
+    path('consecutivo-plantrabajo/<int:id>/editar', consecutivo_plantrabajo.ConsecutivoPlanTrabajoEditarView.as_view(),
+         name='consecutivo-plantrabajo-editar'),
+    path('consecutivo-plantrabajo/<int:id>/delete', consecutivo_plantrabajo.ConsecutivoPlanTrabajoEliminarView.as_view(),
+         name='consecutivo-plantrabajo-delete'),
+    path('consecutivo-viaticoscomisiones/<int:id>/index', consecutivo_viaticoscomisiones.
+         ConsecutivoViaticosComisionesView.as_view(), name='consecutivo-viaticoscomisiones-index'),
+    path('consecutivo-viaticoscomisiones/add', consecutivo_viaticoscomisiones.
+         ConsecutivoViaticosComisioneCrearView.as_view(), name='consecutivo-viaticoscomisiones-crear'),
+    path('consecutivo-viaticoscomisiones/<int:id>/editar', consecutivo_viaticoscomisiones.
+         ConsecutivoViaticosComisioneEditarView.as_view(),name='consecutivo-viaticoscomisiones-editar'),
+    path('consecutivo-viaticoscomisiones/<int:id>/delete', consecutivo_viaticoscomisiones.
+         ConsecutivoViaticosComisioneEliminarView.as_view(), name='consecutivo-viaticoscomisiones-delete'),
+    path('consecutivo-ordenestrabajo/<int:id>/index', consecutivo_ordenes.ConsecutivoOrdenesTrabajoView.as_view(),
+         name='consecutivo-ordenestrabajo-index'),
+    path('consecutivo-ordenestrabajo/add', consecutivo_ordenes.ConsecutivoOrdenesTrabajoCrearView.as_view(),
+         name='consecutivo-ordenestrabajo-crear'),
+    path('consecutivo-ordenestrabajo/<int:id>/editar', consecutivo_ordenes.ConsecutivoOrdenesTrabajoEditarView.as_view(),
+         name='consecutivo-ordenestrabajo-editar'),
+    path('consecutivo-ordenestrabajo/<int:id>/delete', consecutivo_ordenes.ConsecutivoOrdenesTrabajoEliminarView.as_view(),
+         name='consecutivo-ordenestrabajo-delete'),
+    path('consecutivo-actascontratos/<int:id>/index',
+         consecutivo_actas_contratos.ConsecutivoActasContratosView.as_view(), name='consecutivo-actascontratos-index'),
+    path('consecutivo-actascontratos/add', consecutivo_actas_contratos.ConsecutivoActasContratosCrearView.as_view(),
+         name='consecutivo-actascontratos-crear'),
+    path('consecutivo-actascontratos/<int:id>/editar', consecutivo_actas_contratos.
+         ConsecutivoActasContratosEditarView.as_view(), name='consecutivo-actascontratos-editar'),
+    path('consecutivo-actascontratos/<int:id>/delete', consecutivo_actas_contratos.
+         ConsecutivoActasContratosEliminarView.as_view(), name='consecutivo-actascontratos-delete'),
+
 ]

@@ -15,7 +15,8 @@ Including another URLconf
 """
 
 from django.urls import path
-from Administracion.views import terceros, administracion, inicio_sesion, empresas, grupos_permisos, procesos
+from Administracion.views import terceros, administracion, inicio_sesion, empresas, grupos_permisos, \
+    procesos, sala_juntas
 from Administracion.views.Proveedores import autenticacion, proveedores, gestion_proveedores
 from Administracion.views.seleccion_empresa import SeleccionEmpresaModalView
 
@@ -112,4 +113,16 @@ urlpatterns = [
     path('proveedores/certificaciones', proveedores.CertificacionesView.as_view(), name='proveedor-certificaciones'),
     path('proveedores/certificacion/generar/<int:id>', proveedores.GenerarCertificacionView.as_view(),
          name='proveedor-generar-certificacion'),
+    path('reservas-sala-juntas/', sala_juntas.ReservaSalaJuntasView.as_view(), name='reserva-sala-juntas'),
+    path('reservas-sala-juntas/json', sala_juntas.ReservaSalaJuntasView.as_view(), name='reserva-sala-juntas-json'),
+    path('reservas-sala-juntas/add', sala_juntas.ReservaSalaJuntasCrearView.as_view(),
+         name='reserva-sala-juntas-crear'),
+    path('reservas-sala-juntas/<int:id_reserva>/editar', sala_juntas.ReservaSalaJuntasEditarView.as_view(),
+         name='reserva-sala-juntas-editar'),
+    path('reservas-sala-juntas/<int:id_reserva>/delete', sala_juntas.ReservaSalaJuntasEliminarView.as_view(),
+         name='reserva-sala-juntas-eliminar'),
+    path('reservas-sala-juntas/<int:id_reserva>/finalizar', sala_juntas.ReservaSalaJuntasFinalizarView.as_view(),
+         name='reserva-sala-juntas-finalizar'),
+    path('reservas-sala-juntas/notificaciones', sala_juntas.ReservaSalaJuntasNotificacionView.as_view(),
+         name='reserva-sala-juntas-notificaciones'),
 ]

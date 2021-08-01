@@ -21,18 +21,18 @@
             <div class="row">
                 <div class="col-xl-12">
                     <div id="panel-1" class="panel">
+
                         <div class="panel-hdr">
-                            {% if perms.GestionDocumental.add_consecutivocontrato %}
-                            <div class="col-md-10">
-                                <small>
-                                    <a class="fad fa-3x fad fa-plus-circle" href="javascript:abrirModalCrear('{% url 'GestionDocumental:consecutivo-contratos-crear'%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar consecutivo de contrato"></a>
-                                </small>
-                            </div>
-                            {% else %}
-                            <div class="col-md-10"></div>
-                            {% endif %}
-                            <div class="col-md-2" style="float: right" >
-                                {% select_tag tipo_contratos 'tipo_consecutivos' '' value=id_tipo_contrato  %}
+                            <h2 class="small">
+                                {% if perms.GestionDocumental.add_consecutivocontrato %}
+                                    <span class="fad fa-2x fa-plus-circle cursor-pointer" onclick="abrirModalCrear('{% url 'GestionDocumental:consecutivo-contratos-crear'%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar consecutivo de contrato">
+                                    </span>
+                                {% endif %}
+                            </h2>
+                            <div class="panel-toolbar">
+                                 <div class="d-flex position-relative ml-auto mr-2" style="min-width: 10rem;">
+                                    {% select_tag tipo_contratos 'tipo_consecutivos' '' value=id_tipo_contrato  %}
+                                 </div>
                             </div>
                         </div>
                         <div class="panel-container show">
@@ -40,12 +40,12 @@
                                 <div class="panel-group">
                                     <div class="panel-body">
                                         {% include 'EVA/_common/_busqueda_paginacion.html' %}
-                                        <table class="table table-bordered w-100 table-striped" id="dataTable">
+                                        <table class="table table-bordered w-100 table-striped table-sm" id="dataTable">
                                             <thead class="bg-primary-600">
                                                 <tr>
                                                     <th data-priority="1" class="min-w-100">Consecutivo</th>
                                                     <th>Nombre</th>
-                                                    <th class="min-desktop">Fecha de Creación</th>
+                                                    <th class="none">Fecha de Creación</th>
                                                     <th>Fecha de Inicio</th>
                                                     <th>Fecha Final</th>
                                                     <th class="min-tablet-l">Tipo de Contrato</th>

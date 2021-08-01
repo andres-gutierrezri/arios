@@ -6,30 +6,28 @@ from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.db.transaction import atomic, rollback
-from EVA.General.modeljson import RespuestaJson
-from django.http import JsonResponse
-from django.shortcuts import render, redirect
-from django.urls import reverse
-from Administracion.models import ConsecutivoDocumento, TipoDocumento
+from django.shortcuts import render
 from Administracion.utils import get_id_empresa_global
+from EVA.General.modeljson import RespuestaJson
 from EVA.General.utilidades import paginar, app_datetime_now
 from EVA.views.index import AbstractEvaLoggedView
-from GestionDocumental.models import ConsecutivoOficio
-from Proyectos.models import Contrato
+from GestionDocumental.models.models import ConsecutivoRequerimiento
 from TalentoHumano.models import Colaborador
 from TalentoHumano.models.colaboradores import ColaboradorProceso
+from Administracion.models import ConsecutivoDocumento, TipoDocumento
+from Proyectos.models import Contrato
 
 LOGGER = logging.getLogger(__name__)
 
-class ConsecutivoOficiosView(AbstractEvaLoggedView):
+class ConsecutivoRequerimientoView(AbstractEvaLoggedView):
     def get(self, request, id):
         if id == 0:
-            consecutivos = ConsecutivoOficio.objects.filter(empresa_id=get_id_empresa_global(request))
+            consecutivos = ConsecutivoRequerimiento.objects.filter(empresa_id=get_id_empresa_global(request))
             colaborador = Colaborador.objects.values('usuario_id')
         else:
             colaborador = Colaborador.objects.filter(usuario=request.user).values('usuario_id')
-            consecutivos = ConsecutivoOficio.objects.filter(usuario_id=request.user.id,
-                                                            empresa_id=get_id_empresa_global(request))
+            consecutivos = ConsecutivoRequerimiento.objects.filter(usuario_crea_id=request.user.id,
+                                                                   empresa_id=get_id_empresa_global(request))
 
         opciones_filtro = [{'campo_valor': 0, 'campo_texto': 'Todos'},
                            {'campo_valor': 1, 'campo_texto': 'Mis consecutivos'}]
@@ -40,88 +38,90 @@ class ConsecutivoOficiosView(AbstractEvaLoggedView):
 
         if search:
             consecutivos = consecutivos.filter(Q(codigo__icontains=search) |
-                                               Q(fecha__icontains=search) |
+                                               Q(fecha_creacion__icontains=search) |
                                                Q(contrato__numero_contrato__icontains=search) |
                                                Q(contrato__cliente__nombre__icontains=search) |
-                                               Q(detalle__icontains=search) |
-                                               Q(destinatario__icontains=search) |
-                                               Q(usuario__first_name__icontains=search) |
+                                               Q(descripcion__icontains=search) |
                                                Q(justificacion__icontains=search) |
-                                               Q(usuario__last_name__icontains=search))
+                                               Q(usuario_crea__username__icontains=search))
         coincidencias = len(consecutivos)
         consecutivos = paginar(consecutivos.order_by('-id'), page, 10)
-        return render(request, 'GestionDocumental/ConsecutivoOficios/index.html', {'consecutivos': consecutivos,
-                                                                                   'opciones_filtro': opciones_filtro,
-                                                                                   'colaborador': colaborador,
-                                                                                   'fecha': datetime.datetime.now(),
-                                                                                   'buscar': search,
-                                                                                   'coincidencias': coincidencias,
-                                                                                   'total': total,
-                                                                                   'menu_actual': 'consecutivos-oficios',
-                                                                                   'id_filtro': id})
+
+        return render(request, 'GestionDocumental/ConsecutivoRequerimientos/index.html', {
+            'consecutivos': consecutivos,
+            'opciones_filtro': opciones_filtro,
+            'colaborador': colaborador,
+            'fecha': datetime.datetime.now(),
+            'buscar': search,
+            'coincidencias': coincidencias,
+            'total': total,
+            'menu_actual': 'consecutivos-requerimientos',
+            'id_filtro': id})
 
 
-class ConsecutivoOficiosCrearView(AbstractEvaLoggedView):
+class ConsecutivoRequerimientoCrearView(AbstractEvaLoggedView):
     def get(self, request):
-        return render(request, 'GestionDocumental/ConsecutivoOficios/_modal_crear_editar_oficio.html',
+        return render(request, 'GestionDocumental/ConsecutivoRequerimientos/_modal_crear_editar_consecutivo.html',
                       datos_xa_render(request))
 
     def post(self, request):
-        consecutivo = ConsecutivoOficio.from_dictionary(request.POST)
-        consecutivo.usuario = request.user
+        consecutivo = ConsecutivoRequerimiento.from_dictionary(request.POST)
+        consecutivo.usuario_crea = request.user
         consecutivo.empresa_id = get_id_empresa_global(request)
-        proceso = request.POST.get('proceso_id', '')
         try:
             consecutivo.full_clean(exclude=['consecutivo', 'codigo'])
         except ValidationError as errores:
             return RespuestaJson.error('Falló generación del consecutivo. '
                                        'Valide los datos ingresados al editar el consecutivo')
-
         try:
             with atomic():
-                consecutivo.consecutivo = ConsecutivoDocumento \
-                    .get_consecutivo_por_anho(tipo_documento_id=TipoDocumento.OFICIOS,
-                                              empresa_id=get_id_empresa_global(request))
+                consecutivo.consecutivo = ConsecutivoDocumento. \
+                    get_consecutivo_por_anho(tipo_documento_id=TipoDocumento.REQUERIMIENTO_INT,
+                                             empresa_id=get_id_empresa_global(request))
+                proceso = request.POST.get('proceso_id', '')
                 if proceso:
                     consecutivo.proceso = ColaboradorProceso.objects.get(proceso_id=proceso,
                                                                          colaborador__usuario=request.user).proceso
                 else:
                     consecutivo.proceso = ColaboradorProceso.objects.filter(colaborador__usuario=
                                                                             request.user).first().proceso
+                    consecutivo.anio = app_datetime_now().year
 
                 if not consecutivo.contrato_id:
                     consecutivo.numero_contrato = consecutivo.proceso.sigla
                 else:
                     consecutivo.numero_contrato = consecutivo.contrato.numero_contrato
+                    consecutivo.anio = consecutivo.contrato.anho
+
                 consecutivo.actualizar_codigo()
                 consecutivo.save()
-                messages.success(request, 'Se ha creado el consecutivo <br> {0}'.format(consecutivo.codigo))
-                return redirect(reverse('GestionDocumental:consecutivo-oficios-index', args=[1]))
+                messages.success(request, 'Se ha creado el consecutivo {0}'.format(consecutivo.codigo))
+                return RespuestaJson.exitosa()
         except:
             rollback()
             LOGGER.exception('Falló la generación del consecutivo de actas de contrato.')
-            messages.error(request, 'Ha ocurrido un error al crear el consecutivo.')
-            return redirect(reverse('GestionDocumental:consecutivo-oficios-index', args=[1]))
+            return RespuestaJson.error('Ha ocurrido un error al crear el consecutivo.')
 
 
-class ConsecutivoOficioEditarView(AbstractEvaLoggedView):
+class ConsecutivoRequerimientoEditarView(AbstractEvaLoggedView):
     def get(self, request, id):
-        consecutivo = ConsecutivoOficio.objects.get(id=id)
-        return render(request, 'GestionDocumental/ConsecutivoOficios/_modal_crear_editar_oficio.html',
+        consecutivo = ConsecutivoRequerimiento.objects.get(id=id)
+        return render(request, 'GestionDocumental/ConsecutivoRequerimientos/_modal_crear_editar_consecutivo.html',
                       datos_xa_render(request, consecutivo))
 
     def post(self, request, id):
-        update_fields = ['fecha_modificacion', 'contrato_id', 'codigo', 'detalle', 'destinatario', 'justificacion']
+        update_fields = ['fecha_modificacion', 'contrato_id', 'codigo', 'descripcion',
+                         'justificacion', 'usuario_modifica']
 
-        consecutivo = ConsecutivoOficio.from_dictionary(request.POST)
-        consecutivo_db = ConsecutivoOficio.objects.get(id=id)
+        consecutivo = ConsecutivoRequerimiento.from_dictionary(request.POST)
+        consecutivo_db = ConsecutivoRequerimiento.objects.get(id=id)
 
-        consecutivo.fecha = consecutivo_db.fecha
+        consecutivo.fecha_creacion = consecutivo_db.fecha_creacion
         consecutivo.id = consecutivo_db.id
         consecutivo.consecutivo = consecutivo_db.consecutivo
         consecutivo.empresa = consecutivo_db.empresa
-        consecutivo.usuario_id = consecutivo_db.usuario_id
-        consecutivo.fecha_modificacion = app_datetime_now()
+        consecutivo.usuario_modifica = request.user
+        consecutivo.usuario_crea = request.user
         proceso = request.POST.get('proceso_id', '')
 
         if proceso:
@@ -143,34 +143,28 @@ class ConsecutivoOficioEditarView(AbstractEvaLoggedView):
         try:
             consecutivo.full_clean(validate_unique=False, exclude=['usuario_crea'])
         except ValidationError as errores:
-            messages.error(request, 'Falló editar. Valide los datos ingresados al editar el consecutivo')
-            return redirect(reverse('GestionDocumental:consecutivo-oficios-index', args=[0]))
+            return RespuestaJson.error(mensaje="Falló editar. Valide los datos ingresados al editar el consecutivo")
 
         if consecutivo_db.comparar(consecutivo, excluir=['usuario_crea', 'fecha_creacion', 'fecha_modificacion',
-                                                         'usuario_modifica', 'justificacion', 'contrato','contrato_id']):
-
-            messages.error(request, 'No se hicieron cambios en la consecutivo {0}'.format(consecutivo.codigo))
-            return redirect(reverse('GestionDocumental:consecutivo-oficios-index', args=[0]))
-
+                                                         'usuario_modifica', 'justificacion']):
+            return RespuestaJson.error("No se hicieron cambios en la consecutivo")
         else:
             try:
                 with atomic():
                     consecutivo.save(update_fields=update_fields)
                     messages.success(request, 'Se ha editado el consecutivo {0}'.format(consecutivo.codigo))
-                    return redirect(reverse('GestionDocumental:consecutivo-oficios-index', args=[1]))
+                    return RespuestaJson.exitosa()
             except:
                 rollback()
-                LOGGER.exception('Falló la edición del consecutivo de oficio.')
-                messages.error(request, 'Falló la edición del consecutivo de oficio')
-                return redirect(reverse('GestionDocumental:consecutivo-oficios-index', args=[1]))
+                LOGGER.exception('Falló la edición del consecutivo de requerimiento interno.')
+                RespuestaJson.error('Falló la edición del consecutivo de requerimiento interno.')
 
 
-class ConsecutivoOficiosEliminarView(AbstractEvaLoggedView):
+class ConsecutivoRequerimientoEliminarView(AbstractEvaLoggedView):
     def post(self, request, id):
-        consecutivo = ConsecutivoOficio.objects.get(id=id)
+        consecutivo = ConsecutivoRequerimiento.objects.get(id=id)
         body_unicode = request.body.decode('utf-8')
         datos_registro = json.loads(body_unicode)
-
         justificacion = datos_registro['justificacion']
         if not consecutivo.estado:
             return RespuestaJson.error("Este consecutivo ya ha sido anulado.")
@@ -178,23 +172,25 @@ class ConsecutivoOficiosEliminarView(AbstractEvaLoggedView):
             with atomic():
                 consecutivo.estado = False
                 consecutivo.justificacion = justificacion
-                consecutivo.save(update_fields=['estado', 'justificacion', 'fecha_modificacion'])
+                consecutivo.usuario_modifica = request.user
+                consecutivo.fecha_modificacion = app_datetime_now()
+                consecutivo.save(update_fields=['estado', 'justificacion', 'fecha_modificacion', 'usuario_modifica'])
                 messages.success(request, 'Consecutivo {0} anulado'.format(consecutivo.codigo))
                 return RespuestaJson.exitosa()
         except:
             rollback()
-            LOGGER.exception('Error anulando el consecutivo de actas de oficios')
+            LOGGER.exception('Error anulando el consecutivo de requerimiento interno')
             return RespuestaJson.error('Ha ocurrido un error al realizar la acción')
 
 
-def datos_xa_render(request, consecutivo: ConsecutivoOficio = None) -> dict:
+def datos_xa_render(request, consecutivo: ConsecutivoRequerimiento = None) -> dict:
     contratos = Contrato.objects \
-                .filter(empresa_id=get_id_empresa_global(request)) \
-                .values('id', 'numero_contrato', 'cliente__nombre')
+        .filter(empresa_id=get_id_empresa_global(request)) \
+        .values('id', 'numero_contrato', 'cliente__nombre')
     lista_contratos = []
     for contrato in contratos:
         lista_contratos.append({'campo_valor': contrato['id'], 'campo_texto': '{0} - {1}'
-                                .format(contrato['numero_contrato'], contrato['cliente__nombre'])})
+                               .format(contrato['numero_contrato'], contrato['cliente__nombre'])})
 
     procesos = ColaboradorProceso.objects.filter(colaborador__usuario=request.user)
     lista_procesos = []
@@ -206,7 +202,7 @@ def datos_xa_render(request, consecutivo: ConsecutivoOficio = None) -> dict:
              'contratos': lista_contratos,
              'procesos': lista_procesos,
              'lista_procesos': lista_procesos,
-             'menu_actual': 'consecutivos-oficios'}
+             'menu_actual': 'consecutivos-requerimientos'}
 
     if consecutivo:
         print(consecutivo)
@@ -214,5 +210,3 @@ def datos_xa_render(request, consecutivo: ConsecutivoOficio = None) -> dict:
         datos['editar'] = True
 
     return datos
-
-

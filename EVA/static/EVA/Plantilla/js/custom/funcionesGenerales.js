@@ -43,6 +43,34 @@ function inicializarDatePicker(inputId) {
     });
 }
 
+/**
+ * Inicializa un input como un daterangepicker.
+ * @param inputId id del input que se quiere inicializar.
+ */
+
+function inicializarDateRangePicker(inputId) {
+
+    $(`#${inputId}`).daterangepicker({
+        timePicker: true,
+        minDate: new Date(),
+        startDate: moment(),
+        endDate: moment().add(1, 'hour'),
+        timePicker24Hour: true,
+        timePickerSeconds: false,
+        locale:
+            {
+                applyLabel: 'Aplicar',
+                cancelLabel: 'Cancelar',
+                separator: ' – ',
+                format: 'YYYY-MM-DD HH:mm',
+                firstDay: 0,
+                daysOfWeek: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá'],
+                monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+            },
+    });
+}
+
 const CONFIG_BASE_SELECT2 = {
     language: {
         noResults: function () {
@@ -97,22 +125,32 @@ function copiarAPortapapeles(texto)
  * @param fnCallback Función callback a ejecutar cuando se carga exitosamente el modal.
  */
 function cargarAbrirModal(modal, url, fnCallback) {
-        modal.load(url, function (responseText) {
-        try {
-            if (responseText.includes("<!DOCTYPE html>")) {
-                EVANotificacion.toast.error('No tiene permisos para acceder a esta funcionalidad');
-                return false;
-            }
-            $(this).modal('show');
+	if(typeof modal === 'string') {
+		modal = $(`#${modal}`);
+	}
 
-            if((fnCallback !== undefined) && (typeof(fnCallback) === 'function'))
-                fnCallback(url);
+	$.get(url).then(responseText => {
+		try {
+			if (responseText.includes("<!DOCTYPE html>")) {
+				EVANotificacion.toast.error('No tiene permisos para acceder a esta funcionalidad');
+				return false;
+			}
+			modal.html(responseText);
+			modal.modal('show');
 
-        } catch (err) {
-            console.log(err);
-            EVANotificacion.toast.error('Ha ocurrido un error');
-        }
-    });
+			if((fnCallback !== undefined) && (typeof(fnCallback) === 'function'))
+				fnCallback(url);
+
+		} catch (err) {
+			console.log(err);
+			EVANotificacion.toast.error('Ha ocurrido un error');
+		}
+	}).catch(error => {
+		console.log(error);
+		EVANotificacion.toast.error('Ha ocurrido un error');
+	});
+
+	return modal;
 }
 
 /**
@@ -143,6 +181,8 @@ async function enviarFormularioAsync(form, url, mensaje='') {
         }));
 
         if (datos.estado === 'OK') {
+            if(datos.mensaje)
+                EVANotificacion.toast.exitoso(datos.mensaje);
             return true;
         } else {
             EVANotificacion.toast.error(datos.estado === 'error' ? datos.mensaje : 'No tiene permisos para acceder a esta funcionalidad');
