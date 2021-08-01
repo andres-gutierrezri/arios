@@ -94,10 +94,10 @@ class ActividadesCrearView(AbstractEvaLoggedView):
                 responsables = request.POST.getlist('responsables_id[]', None)
 
                 if actividad.grupo_actividad_id == '':
-                    if GrupoActividad.objects.filter(nombre__iexact='generales').exists():
-                        grupo_generales = list(GrupoActividad.objects.values('id').filter(nombre__iexact='generales'))
-                        actividad.grupo_actividad_id = grupo_generales[0].get('id')
-                    else:
+                    try:
+                        grupo_general = GrupoActividad.objects.get(nombre__iexact='generales')
+                        actividad.grupo_actividad_id = grupo_general.id
+                    except (GrupoActividad.DoesNotExist, GrupoActividad.MultipleObjectsReturned):
                         return RespuestaJson.error("Falló crear. El grupo Generales no existe")
 
                 try:
