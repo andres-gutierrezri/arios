@@ -496,14 +496,7 @@ def datos_xa_render(request, actividad: Actividad = None, modificacion_actividad
 
     grupos = GrupoActividad.objects.get_xa_select_activos()
 
-    usuarios = User.objects.values('id', 'first_name', 'last_name')
-    colaboradores = Colaborador.objects.values('usuario_id')
-    lista_colaboradores = []
-    for usuario in usuarios:
-        for colaborador in colaboradores:
-            if usuario['id'] == colaborador['usuario_id']:
-                lista_colaboradores.append({'campo_valor': usuario['id'],
-                                            'campo_texto': usuario['first_name'] + ' ' + usuario['last_name']})
+    lista_colaboradores = Colaborador.objects.get_xa_select_usuarios_activos()
 
     responsable_actividad = ResponsableActividad.objects.get_ids_responsables_list(actividad)
     datos = {'fecha': app_datetime_now(),
