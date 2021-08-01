@@ -7,31 +7,24 @@ import GestionActividades
 from Administracion.models import Proceso
 from EVA.General import app_date_now
 from EVA.General.modeljson import ModelDjangoExtensiones
-from EVA.General.modelmanagers import ManagerGeneral
+from EVA.General.modelmanagers import ManagerGeneral, ModeloBase
 from GestionActividades.Enumeraciones import EstadosActividades, AsociadoGrupoActividades, \
     EstadosModificacionActividad
 from Proyectos.models import Contrato
 from EVA import settings
 
 
-class GrupoActividad(models.Model, ModelDjangoExtensiones):
+class GrupoActividad(ModeloBase, ModelDjangoExtensiones):
     objects = ManagerGeneral()
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     descripcion = models.TextField(max_length=500, verbose_name='Descripción', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False,)
-    fecha_crea = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False, blank=False)
-    fecha_modificacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Modificación', null=False,
-                                              blank=False)
     tipo_asociado = models.SmallIntegerField(choices=AsociadoGrupoActividades.choices,
                                              verbose_name='Asociado', null=False, blank=False)
     proceso = models.ForeignKey(Proceso, on_delete=models.DO_NOTHING, verbose_name='Proceso', null=True, blank=True)
     contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato', null=True, blank=True)
     grupo_actividad = models.ForeignKey('self', on_delete=models.DO_NOTHING, verbose_name='Grupo Actividad', null=True,
                                         blank=True)
-    usuario_crea = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario Crea',
-                                     null=False, blank=False, related_name='GrupoActividad_usuario_crea')
-    usuario_modifica = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario Modifica',
-                                         null=False, blank=False, related_name='GrupoActividad_usuario_Modifica')
     motivo = models.TextField(max_length=500, verbose_name='motivo', null=False, blank=False)
 
     def __str__(self):
@@ -61,15 +54,12 @@ class GrupoActividad(models.Model, ModelDjangoExtensiones):
         return grupo_actividad
 
 
-class Actividad(models.Model, ModelDjangoExtensiones):
+class Actividad(ModeloBase, ModelDjangoExtensiones):
     objects = ManagerGeneral()
     codigo = models.CharField(max_length=50, verbose_name='Código', null=False, blank=False)
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     fecha_inicio = models.DateField(verbose_name='Fecha de Inicio', null=False, blank=False)
     fecha_fin = models.DateField(verbose_name='Fecha Fin', null=False, blank=False)
-    fecha_crea = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False, blank=False)
-    fecha_modificacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Modificación', null=False,
-                                              blank=False)
     supervisor = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Supervisor', null=False, blank=False,
                                    related_name='actividad_supervisor')
     descripcion = models.TextField(max_length=500, verbose_name='Descripción', null=False, blank=False)
@@ -84,10 +74,6 @@ class Actividad(models.Model, ModelDjangoExtensiones):
                                           verbose_name='Tiempo Estimado', null=False, blank=False)
     horas_invertidas = models.DecimalField(max_digits=7, decimal_places=2, default=0,
                                            verbose_name='Horas Invertidas', null=False, blank=False)
-    usuario_crea = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario Crea',
-                                     null=False, blank=False, related_name='Actividad_usuario_crea')
-    usuario_modifica = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario Modifica',
-                                         null=False, blank=False, related_name='Actividad_usuario_Modifica')
     calificacion = models.PositiveIntegerField(default=0, validators=[MinValueValidator(0),
                                                MaxValueValidator(10)], verbose_name='Calificación',
                                                null=False, blank=False)
