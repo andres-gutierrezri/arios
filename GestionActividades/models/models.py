@@ -3,9 +3,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.db.models import QuerySet
 
-import GestionActividades
 from Administracion.models import Proceso
-from EVA.General import app_date_now
 from EVA.General.modeljson import ModelDjangoExtensiones
 from EVA.General.modelmanagers import ManagerGeneral, ModeloBase
 from GestionActividades.Enumeraciones import EstadosActividades, AsociadoGrupoActividades, \
@@ -72,8 +70,8 @@ class Actividad(ModeloBase, ModelDjangoExtensiones):
                                         blank=True, null=True)
     tiempo_estimado = models.DecimalField(max_digits=7, decimal_places=2, default=0,
                                           verbose_name='Tiempo Estimado', null=False, blank=False)
-    horas_invertidas = models.DecimalField(max_digits=7, decimal_places=2, default=0,
-                                           verbose_name='Horas Invertidas', null=False, blank=False)
+    tiempo_invertido = models.DecimalField(max_digits=7, decimal_places=2, default=0,
+                                           verbose_name='Tiempo Invertido', null=False, blank=False)
     calificacion = models.PositiveIntegerField(default=0, validators=[MinValueValidator(0),
                                                MaxValueValidator(10)], verbose_name='Calificación',
                                                null=False, blank=False)
@@ -184,8 +182,8 @@ class AvanceActividad(models.Model):
                                   null=False)
     descripcion = models.TextField(max_length=500, verbose_name='Descripción', null=False, blank=False)
     fecha_avance = models.DateField(verbose_name='Fecha Avance', null=False, blank=False)
-    horas_empleadas = models.DecimalField(max_digits=7, decimal_places=2, default=0, verbose_name='Horas Empleadas',
-                                          null=False, blank=False)
+    tiempo_invertido = models.DecimalField(max_digits=7, decimal_places=2, default=0, verbose_name='Tiempo Invertido',
+                                           null=False, blank=False)
     porcentaje_avance = models.PositiveIntegerField(default=0, validators=[MinValueValidator(0),
                                                                            MaxValueValidator(100)],
                                                     verbose_name='Porcentaje Avance',
@@ -211,7 +209,7 @@ class AvanceActividad(models.Model):
         avance_actividad = AvanceActividad()
         avance_actividad.descripcion = datos.get('descripcion', '')
         avance_actividad.fecha_avance = datos.get('fecha_avance', '')
-        avance_actividad.horas_empleadas = datos.get('horas', '')
+        avance_actividad.tiempo_invertido = datos.get('tiempo_invertido', '')
         avance_actividad.porcentaje_avance = datos.get('porcentaje', '')
 
         return avance_actividad
