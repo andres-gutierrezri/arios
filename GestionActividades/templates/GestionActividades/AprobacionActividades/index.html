@@ -34,7 +34,7 @@
                                                     <th>Responsable</th>
                                                     <th>Motivo Modificación</th>
                                                     <th class="none" >Fecha Solicitud</th>
-                                                    <th>Comentario Aprobación/Rechazo</th>
+                                                    <th>Comentarios Supervisor</th>
                                                     <th class="none" >Fecha Respuesta Solicitud</th>
                                                     <th data-priority="2" >Estado</th>
                                                     <th>Acción</th>
@@ -48,7 +48,7 @@
                                                         <td>
                                                         {% for responsable in responsables %}
                                                             {% if responsable.id == actividad.usuario_modifica_id%}
-                                                                <span class="badge text-white bg-gray-700"><i>{{ responsable.first_name }} {{ responsable.last_name }}</i></span>
+                                                                <span class="badge text-white bg-gray-700">{{ responsable.first_name }} {{ responsable.last_name }}</span>
                                                             {% endif %}
                                                         {% endfor %}
                                                         </td>
@@ -58,13 +58,13 @@
                                                         <td>{{ actividad.fecha_respuesta_solicitud|date:'Y-m-d' }}</td>
                                                         <td>
                                                         {% if actividad.estado == EstadosModificacionActividad.PENDIENTE%}
-                                                            <span class="badge badge-warning">PENDIENTE</span>
+                                                            <span class="badge badge-warning">Pendiente</span>
                                                         {% endif %}
                                                         {% if actividad.estado == EstadosModificacionActividad.APROBADA%}
-                                                            <span class="badge badge-primary">APROBADA</span>
+                                                            <span class="badge badge-primary">Aprobada</span>
                                                         {% endif %}
                                                         {% if actividad.estado == EstadosModificacionActividad.RECHAZADA%}
-                                                            <span class="badge badge-danger">RECHAZADA</span>
+                                                            <span class="badge badge-danger">Rechazada</span>
                                                         {% endif %}
                                                         </td>
                                                         <td>
