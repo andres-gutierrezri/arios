@@ -7,10 +7,10 @@ $(document).ready(function () {
     configurarFiltroConsecutivos();
     const columnDefs = [
         { "targets": [0], "width": '10%' },
-        { "targets": [1], "width": '10%' },
+        { "targets": [1], "width": '22%' },
         { "targets": [2], "width": '10%' },
-        { "targets": [3], "width": '28%' },
-        { "targets": [5], "width": '28%' },
+        { "targets": [3], "width": '22%' },
+        { "targets": [5], "width": '22%' },
         { "targets": [7], "width": '7%' },
         { "targets": [8], "width": '7%' },
     ]
@@ -35,5 +35,23 @@ function abrirModalAccionActividad(url) {
 
 function configurarModalAccionActividad() {
 
+    let comentarioSupervisor = $('#comentario_supervisor');
+    let accionActividad = $('#accion_actividad_id');
+
+    if (accionActividad !== "2" || accionActividad !== "3" ){
+        comentarioSupervisor.hide();
+    }
+
+    $('input:radio[name=accion_actividad]').change(function() {
+        if (this.value === "2"){
+           comentarioSupervisor.hide();
+        }
+        else{
+            comentarioSupervisor.show();
+        }
+    });
+
     agregarValidacionFormularios();
 }
+
+
