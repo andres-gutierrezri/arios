@@ -1,10 +1,138 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'TalentoHumano/_common/base_talento_humano.html' %}
+{% load static %}
+{% load eva_tags %}
+<title>{% block titulo %}Solicitud de Permisos Laborales{% endblock %}</title>
 
-</body>
-</html>
+{% block styles %}
+    {% include 'EVA/_common/_statics/_tablas.html' with incCSS=True %}
+    {% include 'EVA/_common/_statics/_select2.html' with incCSS=True %}
+    {% include 'EVA/_common/_statics/_datepicker.html' with incCSS=True %}
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.css' %}">
+{% endblock styles %}
+
+{% block main %}
+    <div class="panel-container show">
+        <div class="header">
+             <h1 class="header-title">
+                <i class='fad fa-id-card-alt'></i> Solicitud de Permisos Laborales <span class='fw-300'></span>
+                 <br>
+                 <br>
+             </h1>
+        </div>
+        <div class="row">
+            <div class="col-xl-12">
+                <div id="panel-1" class="panel">
+                    <div class="panel-hdr">
+                        <h2 class="small">
+                            <span class="fad fa-2x fa-plus-circle cursor-pointer" onclick="" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear Permiso Laboral">
+                            </span>
+                        </h2>
+                        <div class="panel-toolbar">
+                            <div class="d-flex position-relative ml-auto mr-2" style="min-width: 10rem;">
+                                {# % select_tag % #}
+                            </div>
+                            <div class="mx-2">
+                                <button class="btn btn-panel" data-action="panel-fullscreen" data-toggle="tooltip" data-offset="0,10" data-original-title="Pantalla completa"></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-container show">
+                        <div class="panel-content">
+                            <div class="panel-group">
+                                <div class="panel-body">
+                                    {% include 'EVA/_common/_busqueda_paginacion.html' %}
+                                    <table class="table table-bordered w-100 table-striped table-sm" id="dataTable">
+                                        <thead class="bg-primary-600">
+                                            <tr>
+                                                <th>Fecha de Solicitud</th>
+                                                <th>Tipo de Permiso</th>
+                                                <th>Tiempo</th>
+                                                <th>Motivo del Permiso</th>
+                                                <th>Soporte</th>
+                                                <th>Acción</th>
+                                                <th>Motivo Editar/Anular</th>
+                                                <th>Estado RRHH</th>
+                                                <th>Estado Jefe Inmediato</th>
+                                                <th>Estado Gerencia</th>
+                                                <th>Motivo Rechazo RRHH</th>
+                                                <th>Motivo Rechazo Jefe Inmediato</th>
+                                                <th>Motivo Rechazo Gerencia</th>
+                                                <th>Remuneración</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for permiso in permisos %}
+                                                <tr>
+                                                    <td>{{ permiso.fecha_creacion | date:'Y-m-d H:i' }}</td>
+                                                    <td>{{ permiso.tipo_permiso }}</td>
+                                                    <td>{{ permiso.fecha_inicio | date:'Y-m-d H:i' }}</td>
+                                                    <td>{{ permiso.motivo_permiso }}</td>
+                                                    <td class="text-center">
+                                                        <a class="fad fa-2x fa-eye" href="" data-original-title="Ver" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="Ver Soporte Cargado"></a>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <a class="fad fa-2x fa-file-edit" id="editar_{{ permiso.id }}" href="" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                    </td>
+                                                    <td>{{ permiso.motivo_editar }}</td>
+                                                    <td>
+                                                        {% if permiso.estado_rrhh %}
+                                                            <span class="badge badge-primary">Aprobado</span>
+                                                        {% else %}
+                                                            <span class="badge badge-secondary">Denegado</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        {% if permiso.estado_jefe %}
+                                                            <span class="badge badge-primary">Aprobado</span>
+                                                        {% else %}
+                                                            <span class="badge badge-secondary">Denegado</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        {% if permiso.estado_gerencia %}
+                                                            <span class="badge badge-primary">Aprobado</span>
+                                                        {% else %}
+                                                            <span class="badge badge-secondary">Denegado</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>{{ permiso.motivo_rrhh }}</td>
+                                                    <td>{{ permiso.motivo_jefe }}</td>
+                                                    <td>{{ permiso.motivo_gerencia }}</td>
+                                                    <td>
+                                                        {% if permiso.remuneracion %}
+                                                            <span class="badge badge-primary">SI</span>
+                                                        {% else %}
+                                                            <span class="badge badge-secondary">NO</span>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    {% include 'EVA/_common/_paginacion.html' with datos=permisos %}
+                                </div>
+                                <div class="card-footer small text-muted">Actualizado: {{ fecha }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='talento-humano/permiso-laboral' %}
+    {% include 'EVA/_common/_vista_previa_modal.html' with titulo_modal='Vista Documento' %}
+    <div class="modal fade" tabindex="-1" id="crear" role="dialog"  aria-hidden="true"></div>
+    <div class="modal fade" tabindex="-1" id="cargar" role="dialog"></div>
+{% endblock %}
+
+{% block scripts %}
+    {% include 'EVA/_common/_statics/_tablas.html' %}
+    {% include 'EVA/_common/_statics/_select2.html' %}
+    {% include 'EVA/_common/_statics/_datepicker.html'%}
+    <script src="{% static 'Administracion/js/confirmarEliminar.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/dependency/moment/moment.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/controlBusquedaPaginacion.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.js' %}"></script>
+{% endblock %}
