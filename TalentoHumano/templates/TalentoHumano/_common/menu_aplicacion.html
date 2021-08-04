@@ -14,4 +14,11 @@
     </a>
 </li>
 {% endif %}
-
+{% if perms.Administracion.view_reservasalajuntas %}
+<li {% if menu_actual == 'permisos-laborales' %} class="active" {% endif %}>
+    <a href="{% url 'TalentoHumano:permisos-laborales-index' %}" title="Permisos Laborales" data-filter-tags="permisos laborales">
+        <i class="far fa-id-card-alt"></i>
+        <span class="nav-link-text" data-i18n="nav.talentohumano_permisos_laborales">Permisos Laborales</span>
+    </a>
+</li>
+{% endif %}
