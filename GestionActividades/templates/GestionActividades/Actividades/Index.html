@@ -1,9 +1,11 @@
 {% extends 'GestionActividades/_common/base_gestion_actividades.html' %}
 {% load static %}
 {% load eva_tags %}
+<title>{% block titulo %}Actividades{% endblock %}</title>
 {% block styles %}
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-solid.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/dropzone/dropzone.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/skins/skin-master.css' %}">
     <link rel="stylesheet" href="{% static 'GestionActividades/css/cargar_soportes.css' %}">
     {% include 'EVA/_common/_statics/_tablas.html' with incCSS=True %}
@@ -142,7 +144,7 @@
                                                                         {% endif %}
                                                                         {% if actividad.estado == EstadosActividades.REABIERTA%}
                                                                             <div class="p-3 p-md-3">
-                                                                                <span class="d-block text-left text-muted">ReAbierta</span>
+                                                                                <span class="d-block text-left text-muted">Reabierta</span>
                                                                             </div>
                                                                         {% endif %}
                                                                         {% if actividad.estado == EstadosActividades.ANULADA%}
@@ -180,9 +182,9 @@
                                                                                             {{ actividad.tiempo_estimado }} h
                                                                                         <br>
                                                                                         <a class="fs-sm text-muted" >
-                                                                                            Horas Invertidas:
+                                                                                            Tiempo Invertido:
                                                                                         </a>
-                                                                                            {{ actividad.horas_invertidas }} h
+                                                                                            {{ actividad.tiempo_invertido }} h
                                                                                         <br>
                                                                                     </div>
                                                                                 </div>
@@ -195,7 +197,7 @@
                                                                                         {% if actividad.estado != EstadosActividades.CERRADA %}
                                                                                             <div class="col-md-2">
                                                                                                 <small>
-                                                                                                    <a class="fad fa-3x fa-file-edit" id="editar_{{ actividad.id }}" href="javascript:abrirModalCrearActividad('{% url 'GestionActividades:actividades-editar' actividad.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar Actividad"></a>
+                                                                                                    <a class="fad fa-3x fa-file-edit" id="editar_{{ actividad.id }}" href="javascript:abrirModalCrearActividad('{% url 'GestionActividades:actividades-editar' actividad.id %}', '{{ grupo.id }}', {{ usuario_id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar Actividad"></a>
                                                                                                 </small>
                                                                                             </div>
                                                                                         {% endif %}
@@ -313,9 +315,9 @@
                                                                                                                 {{ avance.porcentaje_avance }}%
                                                                                                                 <br><br>
                                                                                                                 <a class="fs-lg text-dark" >
-                                                                                                                    Horas empleadas:
+                                                                                                                    Tiempo Invertido:
                                                                                                                 </a>
-                                                                                                                {{ avance.horas_empleadas }} h
+                                                                                                                {{ avance.tiempo_invertido }} h
                                                                                                                 <br><br>
                                                                                                                 <a class="fs-lg text-dark" >
                                                                                                                     Responsable:
@@ -378,4 +380,8 @@
     <script src="{% static 'GestionActividades/js/cerrar_reabrir_actividad.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/dropzone/dropzone.js' %}"></script>
     <script src="{% static 'GestionActividades/js/confirmar_eliminar_grupo_actividad.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/dependency/moment/moment.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.js' %}"></script>
+
+
 {% endblock scripts%}

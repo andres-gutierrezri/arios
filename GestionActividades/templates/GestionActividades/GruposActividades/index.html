@@ -1,6 +1,7 @@
 {% extends 'GestionActividades/_common/base_gestion_actividades.html' %}
 {% load static %}
 {% load eva_tags %}
+<title>{% block titulo %}Grupos Actividades{% endblock %}</title>
 {% block styles %}
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-solid.css' %}">
     {% include 'EVA/_common/_statics/_tablas.html' with incCSS=True %}

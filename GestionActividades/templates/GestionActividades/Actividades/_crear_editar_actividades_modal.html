@@ -39,6 +39,13 @@
                             </div>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-12">
+                                {% input_date_tag 'fecha_inicio_fin' 'Fecha Inicio - Fecha Fin' placeholder="Seleccione una fecha de inicio" class="form-control" value="01/01/2018 - 01/15/2018" required="" mensaje_validacion='Por favor seleccione una fecha.' %}
+                            </div>
+                         </div>
+                    </div>
                     <div class="form-group {% if actividad_modificada == True %} mt-0 mb-0 pt-0 pb-0 {% endif %} ">
                         <div class="row">
                             <div class="col-md-6">
@@ -53,17 +60,35 @@
                     <div class="form-group">
                         <div class="row">
                             <div class="col-md-6">
-                            {% if modificacion_actividad.fecha_inicio != actividad.fecha_inicio %}
-                                <a class="badge badge-warning text-white" > Fecha Inicio Solicitada: {{ modificacion_actividad.fecha_inicio|date:'Y-m-d' }}</a>
-                            {% else %}
-                                <a class="badge badge-primary text-white" >Campo no modificado</a>
+                            {% if actividad.estado == EstadosModificacionActividad.RECHAZADA %}
+                                {% if modificacion_actividad.fecha_inicio != actividad.fecha_inicio %}
+                                    <a class="badge badge-danger text-white" > Fecha Inicio Rechazada</a>
+                                {% else %}
+                                    <a class="badge badge-primary text-white" >Campo no modificado</a>
+                                {% endif %}
+                            {% endif %}
+                            {% if actividad.estado == EstadosModificacionActividad.PENDIENTE %}
+                                {% if modificacion_actividad.fecha_inicio != actividad.fecha_inicio %}
+                                    <a class="badge badge-warning text-white" > Fecha Inicio Actual: {{ modificacion_actividad.fecha_inicio|date:'Y-m-d' }}</a>
+                                {% else %}
+                                    <a class="badge badge-primary text-white" >Campo no modificado</a>
+                                {% endif %}
                             {% endif %}
                             </div>
                             <div class="col-md-6">
-                            {% if modificacion_actividad.fecha_fin != actividad.fecha_fin %}
-                                <a class="badge badge-warning text-white" > Fecha Fin Solicitada: {{ modificacion_actividad.fecha_fin|date:'Y-m-d' }}</a>
-                            {% else %}
-                                <a class="badge badge-primary text-white" >Campo no modificado</a>
+                            {% if actividad.estado == EstadosModificacionActividad.RECHAZADA %}
+                                {% if modificacion_actividad.fecha_fin != actividad.fecha_fin %}
+                                    <a class="badge badge-danger text-white" > Fecha Fin Rechazada</a>
+                                {% else %}
+                                    <a class="badge badge-primary text-white" >Campo no modificado</a>
+                                {% endif %}
+                            {% endif %}
+                            {% if actividad.estado == EstadosModificacionActividad.PENDIENTE %}
+                                {% if modificacion_actividad.fecha_fin != actividad.fecha_fin %}
+                                    <a class="badge badge-warning text-white" > Fecha Fin Actual: {{ modificacion_actividad.fecha_fin|date:'Y-m-d' }}</a>
+                                {% else %}
+                                    <a class="badge badge-primary text-white" >Campo no modificado</a>
+                                {% endif %}
                             {% endif %}
                             </div>
                          </div>
@@ -85,10 +110,19 @@
                             <div class="col-md-6">
                             </div>
                             <div class="col-md-6">
-                            {% if modificacion_actividad.tiempo_estimado != actividad.tiempo_estimado %}
-                                <a class="badge badge-warning text-white" > Tiempo Estimado Solicitado: {{ modificacion_actividad.tiempo_estimado }} h</a>
-                            {% else %}
-                                <a class="badge badge-primary text-white" >Campo no modificado</a>
+                            {% if actividad.estado == EstadosModificacionActividad.RECHAZADA %}
+                                {% if modificacion_actividad.tiempo_estimado != actividad.tiempo_estimado %}
+                                    <a class="badge badge-danger text-white" > Tiempo Estimado Rechazado</a>
+                                {% else %}
+                                    <a class="badge badge-primary text-white" >Campo no modificado</a>
+                                {% endif %}
+                            {% endif %}
+                            {% if actividad.estado == EstadosModificacionActividad.PENDIENTE %}
+                                 {% if modificacion_actividad.tiempo_estimado != actividad.tiempo_estimado %}
+                                    <a class="badge badge-warning text-white" > Tiempo Estimado Actual: {{ modificacion_actividad.tiempo_estimado }} h</a>
+                                 {% else %}
+                                    <a class="badge badge-primary text-white" >Campo no modificado</a>
+                                 {% endif %}
                             {% endif %}
                             </div>
                          </div>
