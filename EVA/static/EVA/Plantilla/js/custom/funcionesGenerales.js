@@ -14,6 +14,15 @@ function ocultarCamposFormulario(lista) {
     })
 }
 
+/**
+ * Función que recibe los campos que se quieren deshabilitar a través de una lista de sus id's
+ */
+function deshabilitarCamposFormulario(lista){
+    lista.forEach(function (objeto){
+        document.getElementById(objeto).disabled = true;
+    })
+}
+
 function abrirModalVistaPrevia(urlDocumento) {
     const ifVista =  $("#if_vista_previa");
 

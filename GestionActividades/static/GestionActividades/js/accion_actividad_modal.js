@@ -35,7 +35,8 @@ function abrirModalAccionActividad(url) {
 
 function configurarModalAccionActividad() {
 
-    let comentarioSupervisor = $('#comentario_supervisor');
+    const comentarioSupervisor = $('#comentario_supervisor');
+    const comentarioSupervisorId = $('#comentario_supervisor_id');
     let accionActividad = $('#accion_actividad_id');
 
     if (accionActividad !== "2" || accionActividad !== "3" ){
@@ -44,10 +45,11 @@ function configurarModalAccionActividad() {
 
     $('input:radio[name=accion_actividad]').change(function() {
         if (this.value === "2"){
-           comentarioSupervisor.hide();
+            ocultarCamposFormulario([comentarioSupervisor, comentarioSupervisorId])
+
         }
         else{
-            comentarioSupervisor.show();
+            mostrarCamposFormulario([comentarioSupervisor, comentarioSupervisorId])
         }
     });
 
