@@ -197,7 +197,7 @@
                                                                                         {% if actividad.estado != EstadosActividades.CERRADA %}
                                                                                             <div class="col-md-2">
                                                                                                 <small>
-                                                                                                    <a class="fad fa-3x fa-file-edit" id="editar_{{ actividad.id }}" href="javascript:abrirModalCrearActividad('{% url 'GestionActividades:actividades-editar' actividad.id %}', '{{ grupo.id }}', {{ usuario_id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar Actividad"></a>
+                                                                                                    <a class="fad fa-3x fa-file-edit" id="editar_{{ actividad.id }}" href="javascript:abrirModalCrearActividad('{% url 'GestionActividades:actividades-editar' actividad.id %}', '{{ grupo.id }}', {{ usuario_id }}, '{{ actividad.fecha_inicio|date:'Y/m/d' }}', '{{ actividad.fecha_fin|date:'Y/m/d' }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar Actividad"></a>
                                                                                                 </small>
                                                                                             </div>
                                                                                         {% endif %}
