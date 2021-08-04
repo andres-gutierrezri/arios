@@ -15,7 +15,7 @@ Including another URLconf
 """
 
 from django.urls import path
-from TalentoHumano.views import talento_humano, entidades_cafe, colaboradores, gestion_permisos
+from TalentoHumano.views import talento_humano, entidades_cafe, colaboradores, gestion_permisos, permisos_laborales
 
 app_name = 'TalentoHumano'
 
@@ -43,4 +43,7 @@ urlpatterns = [
          name='colaboradores-novedad-agregar'),
     path('colaboradores/seleccion-empresas/<int:id_usuario>', colaboradores.SeleccionEmpresaView.as_view(),
          name='colaboradores-seleccion-empresas'),
+    path('permisos-laborales/index', permisos_laborales.PermisosLaboralesIndexView.as_view(),
+         name='permisos-laborales-index'),
+    path('permiso-laboral/add', permisos_laborales.PermisoLaboralCrearView.as_view(), name='permiso-laboral-crear'),
 ]
