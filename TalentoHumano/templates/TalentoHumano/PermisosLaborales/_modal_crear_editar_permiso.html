@@ -1,10 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
-</html>
+{% load eva_tags %}
+{% load static %}
+<form action= "{% url 'TalentoHumano:permiso-laboral-crear' %}" id="permiso_laboral_form" method="post" class="needs-validation" novalidate>
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header p-b-0">
+                <h4 class="modal-title">
+                    Crear Solicitud Permiso Laboral
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% csrf_token %}
+                <div class="form-row">
+                    <div id="tipo_permiso" class="form-group col-md-12">
+                        {% select_tag tipo 'nombre' 'Seleccione el tipo de permiso' value=permiso.tipo_permiso texto_label="Tipo Permiso" required="" mensaje_validacion='Por favor seleccione el tipo de permiso' %}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div id="fecha_intervalo" class="form-group col-md-12">
+                        {% input_date_tag 'fecha_intervalo' 'Tiempo' placeholder="Seleccione el tiempo" required="" autocomplete="off" mensaje_validacion='Por favor seleccione el tiempo' %}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div id="motivo_permiso" class="form-group col-md-12">
+                        {% input_textarea_tag 'motivo_permiso' 'Motivo del Permiso (Justificación)' placeholder="Ingrese el motivo del permiso" maxlength="100" value=permiso.motivo_permiso mensaje_validacion='Por favor digite el motivo del permiso' %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button data-dismiss="modal" class="btn btn-danger btn-pills">Cancelar</button>
+                    <button id="agregar" type="submit" class="btn btn-primary btn-pills">Agregar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
