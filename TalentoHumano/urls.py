@@ -43,7 +43,7 @@ urlpatterns = [
          name='colaboradores-novedad-agregar'),
     path('colaboradores/seleccion-empresas/<int:id_usuario>', colaboradores.SeleccionEmpresaView.as_view(),
          name='colaboradores-seleccion-empresas'),
-    path('permisos-laborales/index', permisos_laborales.PermisosLaboralesIndexView.as_view(),
+    path('permisos-laborales/<int:id_tipo_permiso>/index', permisos_laborales.PermisosLaboralesIndexView.as_view(),
          name='permisos-laborales-index'),
     path('permiso-laboral/add', permisos_laborales.PermisoLaboralCrearView.as_view(), name='permiso-laboral-crear'),
 ]
