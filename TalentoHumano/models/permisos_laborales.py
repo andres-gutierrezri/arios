@@ -34,7 +34,7 @@ class TipoPermiso (models.Model):
 
 
 def custom_upload_to(instance, filename):
-    return '{3}/Permisos/Soportes/{0}/{1}/{2}'.format(app_date_now().year, instance.usuario_crea.username, filename,
+    return '{3}/permisos/soportes/{0}/{1}/{2}'.format(app_date_now().year, instance.usuario_crea.username, filename,
                                                       settings.EVA_PRIVATE_MEDIA)
 
 
@@ -50,13 +50,13 @@ class PermisoLaboral (ModeloBase, ModelDjangoExtensiones):
     motivo_editar = models.TextField(max_length=100, verbose_name='Motivo Editar', null=False, blank=False)
     soporte = models.FileField(upload_to=custom_upload_to, verbose_name='Documento Soporte', null=False, blank=False,
                                max_length=250)
-    estado_rrhh = models.BooleanField(verbose_name='Estado RRHH', null=False, blank=False)
-    estado_jefe = models.BooleanField(verbose_name='Estado Jefe', null=False, blank=False)
-    estado_gerencia = models.BooleanField(verbose_name='Estado Gerencia', null=False, blank=False)
+    estado_rrhh = models.BooleanField(verbose_name='Estado RRHH', null=True, blank=False)
+    estado_jefe = models.BooleanField(verbose_name='Estado Jefe', null=True, blank=False)
+    estado_gerencia = models.BooleanField(verbose_name='Estado Gerencia', null=True, blank=False)
     motivo_rrhh = models.CharField(max_length=300, verbose_name='Motivo RRHH', null=True, blank=False)
     motivo_jefe = models.CharField(max_length=300, verbose_name='Motivo Jefe', null=True, blank=False)
     motivo_gerencia = models.CharField(max_length=300, verbose_name='Motivo Gerencia', null=True, blank=False)
-    remuneracion = models.BooleanField(verbose_name='Remuneración', null=False, blank=False)
+    remuneracion = models.BooleanField(verbose_name='Remuneración', null=True, blank=False)
 
     def __str__(self):
         return self.usuario_crea
