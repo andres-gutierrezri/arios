@@ -139,12 +139,12 @@ class GruposActividadesEditarView(AbstractEvaLoggedView):
         try:
             with atomic():
                 update_fields = ['fecha_modificacion', 'contrato_id', 'proceso_id', 'nombre', 'descripcion',
-                                 'fecha_crea', 'tipo_asociado', 'motivo', 'usuario_modifica', 'usuario_crea',
+                                 'fecha_creacion', 'tipo_asociado', 'motivo', 'usuario_modifica', 'usuario_crea',
                                  'grupo_actividad_id']
 
                 grupo_actividad = GrupoActividad.from_dictionary(request.POST)
                 grupo_actividad_db = GrupoActividad.objects.get(id=id_grupo)
-                grupo_actividad.fecha_crea = grupo_actividad_db.fecha_crea
+                grupo_actividad.fecha_creacion = grupo_actividad_db.fecha_creacion
                 grupo_actividad.id = grupo_actividad_db.id
                 grupo_actividad.fecha_modificacion = app_datetime_now()
                 grupo_actividad.usuario_modifica = request.user

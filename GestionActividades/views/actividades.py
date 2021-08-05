@@ -65,6 +65,9 @@ class ActividadesIndexView(AbstractEvaLoggedView):
         avances_actividad = AvanceActividad.objects.values('descripcion', 'fecha_avance', 'tiempo_invertido',
                                                            'porcentaje_avance', 'actividad_id', 'responsable_id')
 
+        usuario_modifica = request.user
+        usuario_id = User.objects.get(username=usuario_modifica)
+
         return render(request, 'GestionActividades/Actividades/index.html',
                       {'actividades': actividades,
                        'grupos': grupos,
@@ -75,6 +78,7 @@ class ActividadesIndexView(AbstractEvaLoggedView):
                        'EstadosActividades': EstadosActividades,
                        'avances_actividad': avances_actividad,
                        'fecha': app_datetime_now(),
+                       'usuario_id': usuario_id.id,
                        'menu_actual': 'actividades'})
 
 
@@ -90,6 +94,8 @@ class ActividadesCrearView(AbstractEvaLoggedView):
                 actividad.usuario_crea = request.user
                 actividad.usuario_modifica = request.user
                 responsables = request.POST.getlist('responsables_id[]', None)
+                actividad.fecha_inicio = request.POST.get('fecha_inicio_fin').split(" - ")[0]
+                actividad.fecha_fin = request.POST.get('fecha_inicio_fin').split(" - ")[-1]
 
                 if actividad.grupo_actividad_id == '':
                     try:
@@ -104,7 +110,8 @@ class ActividadesCrearView(AbstractEvaLoggedView):
                     return RespuestaJson.error("Falló crear. Valide los datos ingresados al crear la actividad")
 
                 if Actividad.objects.filter(nombre__iexact=actividad.nombre,
-                                            grupo_actividad_id__exact=actividad.grupo_actividad_id).exists():
+                                            grupo_actividad_id__exact=actividad.grupo_actividad_id).\
+                        exclude(estado=EstadosActividades.ANULADA).exists():
                     return RespuestaJson.error("Falló crear. Ya existe una actividad con el "
                                                "mismo nombre dentro del grupo")
 
@@ -166,14 +173,16 @@ class ActividadesEditarView(AbstractEvaLoggedView):
 
                 if usuario == TiposUsuariosActividad.SUPERVISOR:
                     update_fields = ['fecha_modificacion', 'codigo', 'supervisor_id', 'fecha_inicio', 'fecha_fin',
-                                     'nombre', 'descripcion', 'fecha_crea', 'motivo', 'usuario_modifica',
+                                     'nombre', 'descripcion', 'fecha_creacion', 'motivo', 'usuario_modifica',
                                      'usuario_crea', 'grupo_actividad_id', 'estado', 'soporte_requerido',
                                      'tiempo_estimado']
 
-                    actividad = Actividad.from_dictionary(request.POST)
                     actividad_db = Actividad.objects.get(id=id_actividad)
+                    actividad = Actividad.from_dictionary(request.POST)
+                    actividad.fecha_inicio = request.POST.get('fecha_inicio_fin').split(" - ")[0]
+                    actividad.fecha_fin = request.POST.get('fecha_inicio_fin').split(" - ")[-1]
                     actividad.estado = actividad_db.estado
-                    actividad.fecha_crea = actividad_db.fecha_crea
+                    actividad.fecha_creacion = actividad_db.fecha_creacion
                     actividad.id = actividad_db.id
                     actividad.usuario_modifica = request.user
                     actividad.usuario_crea = actividad_db.usuario_crea
@@ -210,25 +219,28 @@ class ActividadesEditarView(AbstractEvaLoggedView):
                             ResponsableActividad.objects.create(responsable_id=responsable, actividad_id=id_actividad)
 
                 elif usuario == TiposUsuariosActividad.RESPONSABLE:
-                    modificacion_actividad = ModificacionActividad.from_dictionary(request.POST)
-                    modificacion_actividad.actividad_id = id_actividad
-                    actividad = Actividad.from_dictionary(request.POST)
+
+                    if ModificacionActividad.objects.filter(Q(estado=EstadosModificacionActividad.PENDIENTE)
+                                                            & Q(actividad_id=id_actividad)).exists():
+                        return RespuestaJson.error("Falló editar.Ya existe una solicitud pendiente por "
+                                                   "aprobación para la actividad")
+
                     actividad_db = Actividad.objects.get(id=id_actividad)
+                    modificacion_actividad = ModificacionActividad.from_dictionary(request.POST)
+                    modificacion_actividad.fecha_inicio = request.POST.get('fecha_inicio_fin').split(" - ")[0]
+                    modificacion_actividad.fecha_fin = request.POST.get('fecha_inicio_fin').split(" - ")[-1]
+                    modificacion_actividad.actividad_id = id_actividad
+                    modificacion_actividad.nombre = actividad_db.nombre
+                    modificacion_actividad.supervisor_id = actividad_db.supervisor_id
+                    modificacion_actividad.descripcion = actividad_db.descripcion
+                    modificacion_actividad.grupo_actividad_id = actividad_db.grupo_actividad_id
+                    modificacion_actividad.soporte_requerido = actividad_db.soporte_requerido
                     modificacion_actividad.usuario_modifica = request.user
 
                     try:
                         modificacion_actividad.full_clean(validate_unique=False, exclude=['comentario_supervisor'])
                     except ValidationError as errores:
                         return RespuestaJson.error("Falló editar. Valide los datos ingresados al editar la actividad")
-
-                    if actividad_db.nombre != actividad.nombre \
-                            or int(actividad_db.supervisor_id) != int(actividad.supervisor_id) \
-                            or int(actividad_db.grupo_actividad_id) != int(actividad.grupo_actividad_id) \
-                            or bool(actividad_db.soporte_requerido) != bool(actividad.soporte_requerido) \
-                            or actividad_db.descripcion != actividad.descripcion \
-                            or conteo_responsables != cantidad_responsables:
-                        return RespuestaJson.error("Fallo editar: Solamente puede modificar los campos fecha inicio, "
-                                                   "fecha fin y tiempo estimado")
 
                     if actividad_db.fecha_inicio == modificacion_actividad.fecha_inicio \
                             and actividad_db.fecha_fin == modificacion_actividad.fecha_fin \
@@ -424,9 +436,9 @@ class CerrarReabrirActividadView(AbstractEvaLoggedView):
 class SolicitudesAprobacionActividadIndexView(AbstractEvaLoggedView):
     def get(self, request):
         actividades = ModificacionActividad.objects.values('id', 'nombre', 'motivo', 'estado', 'comentario_supervisor',
-                                                           'fecha_solicitud', 'fecha_respuesta_solicitud',
+                                                           'fecha_solicitud', 'fecha_respuesta_solicitud', 'fecha_fin',
                                                            'supervisor_id', 'descripcion', 'actividad_id',
-                                                           'usuario_modifica_id')
+                                                           'usuario_modifica_id', 'fecha_inicio')
 
         responsables = User.objects.values('id', 'username', 'first_name', 'last_name')
 
@@ -481,8 +493,8 @@ class AccionModificacionesActividadView(AbstractEvaLoggedView):
 
 class VerModificacionesActividadView(AbstractEvaLoggedView):
     def get(self, request, id_actividad):
-        actividad = Actividad.objects.get(id=id_actividad)
-        modificacion_actividad = ModificacionActividad.objects.get(actividad_id=id_actividad)
+        modificacion_actividad = ModificacionActividad.objects.get(id=id_actividad)
+        actividad = Actividad.objects.get(id=modificacion_actividad.actividad_id)
         return render(request, 'GestionActividades/Actividades/_crear_editar_actividades_modal.html',
                       datos_xa_render(request, actividad, modificacion_actividad))
 
@@ -508,8 +520,9 @@ def datos_xa_render(request, actividad: Actividad = None, modificacion_actividad
         datos['editar'] = True
 
     if modificacion_actividad:
-        datos['actividad'] = actividad
-        datos['modificacion_actividad'] = modificacion_actividad
+        datos['actividad'] = modificacion_actividad
+        datos['modificacion_actividad'] = actividad
+        datos['EstadosModificacionActividad'] = EstadosModificacionActividad
         datos['editar'] = True
         datos['ocultar_botones_modal'] = True
         datos['actividad_modificada'] = True
