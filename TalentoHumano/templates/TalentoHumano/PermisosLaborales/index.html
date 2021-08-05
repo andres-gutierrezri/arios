@@ -30,7 +30,7 @@
                         </h2>
                         <div class="panel-toolbar">
                             <div class="d-flex position-relative ml-auto mr-2" style="min-width: 10rem;">
-                                {# % select_tag % #}
+                                {% select_tag tipos_permiso 'tipo_permisos' '' value=id_tipo_permiso %}
                             </div>
                             <div class="mx-2">
                                 <button class="btn btn-panel" data-action="panel-fullscreen" data-toggle="tooltip" data-offset="0,10" data-original-title="Pantalla completa"></button>
@@ -45,20 +45,20 @@
                                     <table class="table table-bordered w-100 table-striped table-sm" id="dataTable">
                                         <thead class="bg-primary-600">
                                             <tr>
-                                                <th>Fecha de Solicitud</th>
-                                                <th>Tipo de Permiso</th>
-                                                <th>Tiempo</th>
-                                                <th>Motivo del Permiso</th>
-                                                <th>Soporte</th>
-                                                <th>Acción</th>
-                                                <th>Motivo Editar/Anular</th>
-                                                <th>Estado RRHH</th>
-                                                <th>Estado Jefe Inmediato</th>
-                                                <th>Estado Gerencia</th>
-                                                <th>Motivo Rechazo RRHH</th>
-                                                <th>Motivo Rechazo Jefe Inmediato</th>
-                                                <th>Motivo Rechazo Gerencia</th>
-                                                <th>Remuneración</th>
+                                                <th data-priority="2">Fecha de Solicitud</th>
+                                                <th class="col-sm-auto">Tipo de Permiso</th>
+                                                <th data-priority="1" class="col-sm-2">Tiempo</th>
+                                                <th class="none">Motivo del Permiso</th>
+                                                <th class="none">Motivo Editar/Anular</th>
+                                                <th class="col-sm-1">Estado RRHH</th>
+                                                <th class="col-sm-1">Estado Jefe Inmediato</th>
+                                                <th class="col-sm-1">Estado Gerencia</th>
+                                                <th class="none">Motivo Rechazo RRHH</th>
+                                                <th class="none">Motivo Rechazo Jefe Inmediato</th>
+                                                <th class="none">Motivo Rechazo Gerencia</th>
+                                                <th class="none">Remuneración</th>
+                                                <th class="col-sm-1">Soporte</th>
+                                                <th class="col-sm-1">Acción</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -66,44 +66,66 @@
                                                 <tr>
                                                     <td>{{ permiso.fecha_creacion | date:'Y-m-d H:i' }}</td>
                                                     <td>{{ permiso.tipo_permiso }}</td>
-                                                    <td>{{ permiso.fecha_inicio | date:'Y-m-d H:i' }}</td>
-                                                    <td>{{ permiso.motivo_permiso }}</td>
-                                                    <td class="text-center">
-                                                        <a class="fad fa-2x fa-eye" href="" data-original-title="Ver" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="Ver Soporte Cargado"></a>
-                                                    </td>
-                                                    <td class="text-center">
-                                                        <a class="fad fa-2x fa-file-edit" id="editar_{{ permiso.id }}" href="" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
-                                                    </td>
-                                                    <td>{{ permiso.motivo_editar }}</td>
                                                     <td>
+                                                        Inicio: {{ permiso.fecha_inicio | date:'Y-m-d H:i' }}
+                                                        <br>
+                                                        Final: &nbsp;{{ permiso.fecha_fin | date:'Y-m-d H:i' }}
+                                                    </td>
+                                                    <td>{{ permiso.motivo_permiso }}</td>
+                                                    <td>{{ permiso.motivo_editar }}</td>
+                                                    <td class="text-center">
                                                         {% if permiso.estado_rrhh %}
                                                             <span class="badge badge-primary">Aprobado</span>
-                                                        {% else %}
+                                                        {% elif permiso.estado_rrhh == False %}
                                                             <span class="badge badge-secondary">Denegado</span>
+                                                        {% else %}
+                                                            <span class="badge badge-warning">Pendiente</span>
                                                         {% endif %}
                                                     </td>
-                                                    <td>
+                                                    <td class="text-center">
                                                         {% if permiso.estado_jefe %}
                                                             <span class="badge badge-primary">Aprobado</span>
-                                                        {% else %}
+                                                        {% elif permiso.estado_jefe == False %}
                                                             <span class="badge badge-secondary">Denegado</span>
+                                                        {% else %}
+                                                            <span class="badge badge-warning">Pendiente</span>
                                                         {% endif %}
                                                     </td>
-                                                    <td>
+                                                    <td class="text-center">
                                                         {% if permiso.estado_gerencia %}
                                                             <span class="badge badge-primary">Aprobado</span>
-                                                        {% else %}
+                                                        {% elif permiso.estado_gerencia == False %}
                                                             <span class="badge badge-secondary">Denegado</span>
+                                                        {% else %}
+                                                            <span class="badge badge-warning">Pendiente</span>
                                                         {% endif %}
                                                     </td>
                                                     <td>{{ permiso.motivo_rrhh }}</td>
                                                     <td>{{ permiso.motivo_jefe }}</td>
                                                     <td>{{ permiso.motivo_gerencia }}</td>
-                                                    <td>
+                                                    <td class="text-center">
                                                         {% if permiso.remuneracion %}
                                                             <span class="badge badge-primary">SI</span>
-                                                        {% else %}
+                                                        {% elif permiso.remuneracion == False %}
                                                             <span class="badge badge-secondary">NO</span>
+                                                        {% else %}
+                                                            <span class="badge badge-warning">Pendiente</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="text-center">
+                                                        {% if permiso.estado_rrhh == None %}
+                                                            <a class="fad fa-2x fa-file-upload" href="" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Cargar Soporte"></a>
+                                                        {% endif %}
+                                                        {% if permiso.soporte %}
+                                                            <a class="fad fa-2x fa-eye" href="" data-original-title="Ver" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="Ver Soporte"></a>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="text-center">
+                                                        {% if permiso.estado_rrhh == None %}
+                                                          <a class="fad fa-2x fa-file-edit" id="editar_{{ consecutivo.id }}" href="" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                        {% endif %}
+                                                        {% if permiso.estado_rrhh == None %}
+                                                          <a class="fad fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ permiso.id }}" href="javascript:void(0);" onclick="fConfirmarEliminar({{ permiso.id }}, true)" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Anular"></a>
                                                         {% endif %}
                                                     </td>
                                                 </tr>
@@ -131,6 +153,7 @@
     {% include 'EVA/_common/_statics/_select2.html' %}
     {% include 'EVA/_common/_statics/_datepicker.html'%}
     <script src="{% static 'Administracion/js/confirmarEliminar.js' %}"></script>
+    <script src="{% static 'TalentoHumano/js/PermisosLaborales/permisosLaborales.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/dependency/moment/moment.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/controlBusquedaPaginacion.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
