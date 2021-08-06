@@ -15,7 +15,7 @@
                 {% csrf_token %}
                 <div class="form-row">
                     <div id="tipo_permiso" class="form-group col-md-12">
-                        {% select_tag tipo 'nombre' 'Seleccione el tipo de permiso' value=permiso.tipo_permiso texto_label="Tipo Permiso" required="" mensaje_validacion='Por favor seleccione el tipo de permiso' %}
+                        {% select_tag tipo_permiso 'tipo_permiso' 'Seleccione el tipo de permiso' value=permiso.tipo_permiso texto_label="Tipo Permiso" required="" mensaje_validacion='Por favor seleccione el tipo de permiso' %}
                     </div>
                 </div>
                 <div class="form-row">
@@ -25,8 +25,12 @@
                 </div>
                 <div class="form-row">
                     <div id="motivo_permiso" class="form-group col-md-12">
-                        {% input_textarea_tag 'motivo_permiso' 'Motivo del Permiso (Justificación)' placeholder="Ingrese el motivo del permiso" maxlength="100" value=permiso.motivo_permiso mensaje_validacion='Por favor digite el motivo del permiso' %}
+                        {% input_textarea_tag 'motivo_permiso' 'Motivo del Permiso (Justificación)' placeholder="Ingrese el motivo del permiso" maxlength="100" value=permiso.motivo_permiso required="" mensaje_validacion='Por favor digite el motivo del permiso' %}
                     </div>
+                </div>
+                <div class="container small font-weight-light text-justify">
+                    <p>Las solicitudes de permiso laboral se deben presentar ocho (8) días antes del primer día en que se estará ausente, a excepción del permiso por enfermedad.</p>
+                    <p>De igual forma soy consciente de que la empresa no tiene responsabilidad alguna sobre los hechos que puedan suceder durante este periodo de tiempo en el cual estoy ausente de mis labores, así mismo que el tiempo empleado en este permiso puede ser objeto de compensación con el tiempo igual al utilizado en dicho permiso o descontado de nómina a opción de la Empresa.</p>
                 </div>
                 <div class="modal-footer">
                     <button data-dismiss="modal" class="btn btn-danger btn-pills">Cancelar</button>
