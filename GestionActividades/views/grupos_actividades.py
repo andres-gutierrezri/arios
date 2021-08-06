@@ -1,7 +1,8 @@
 import json
-
+from datetime import datetime
 from django.contrib.auth.models import User
 from django.db import IntegrityError
+from django.db.models import Q
 from django.db.transaction import atomic, rollback
 from django.shortcuts import render
 from django.contrib import messages
@@ -14,7 +15,7 @@ from EVA.General.modeljson import RespuestaJson
 from EVA.views.index import AbstractEvaLoggedView
 from GestionActividades.Enumeraciones import EstadosActividades, AsociadoGrupoActividades
 from GestionActividades.models import GrupoActividad
-from GestionActividades.models.models import Actividad, ResponsableActividad
+from GestionActividades.models.models import Actividad, ResponsableActividad, SoporteActividad
 from Proyectos.models import Contrato
 from TalentoHumano.models import Colaborador
 
@@ -59,7 +60,7 @@ class GruposActividadesIndexView(AbstractEvaLoggedView):
                     datos_grupo[int(indice)]['nombre'] += (responsable['first_name'] + ' ' +
                                                            responsable['last_name'] + ', ')
             if conteo_actividades - actividades_pendientes != 0:
-                progreso = int(((conteo_actividades - actividades_pendientes)/conteo_actividades)*100)
+                progreso = int(((conteo_actividades - actividades_pendientes) / conteo_actividades) * 100)
 
             datos_grupo[int(indice)]['actividades'] += conteo_actividades
             datos_grupo[int(indice)]['actividades_pendientes'] += actividades_pendientes
@@ -211,8 +212,110 @@ class GruposActividadesEliminarView(AbstractEvaLoggedView):
             return RespuestaJson.error("Falló al eliminar el grupo de actividades")
 
 
-def datos_xa_render(request, grupo_actividad: GrupoActividad = None) -> dict:
+class GruposActividadesReporteEficienciaView(AbstractEvaLoggedView):
+    def get(self, request, id_grupo):
+        grupo_actividad = GrupoActividad.objects.get(id=id_grupo)
+        actividades = Actividad.objects.filter(grupo_actividad_id=id_grupo)
+        actividades = actividades.values('id', 'nombre', 'fecha_fin', 'estado', 'porcentaje_avance', 'fecha_inicio',
+                                         'tiempo_invertido', 'tiempo_estimado')
 
+        actividades_proceso = Actividad.objects.filter(Q(estado=EstadosActividades.EN_PROCESO)
+                                                       & Q(grupo_actividad_id=id_grupo)).order_by('fecha_fin')
+        actividades_proceso = actividades_proceso.values('fecha_fin')
+
+        numero_actividades_finalizadas = actividades_proceso.count()
+        igual_fecha_fin = actividades_proceso[0]
+
+        coordenadas_grafica = [{'fecha': str(igual_fecha_fin['fecha_fin']),
+                                'numero_actividades_finalizadas': numero_actividades_finalizadas}]
+
+        for actividad_proceso in actividades_proceso:
+            if actividad_proceso != igual_fecha_fin:
+                coordenadas_grafica.append({'fecha': str(actividad_proceso['fecha_fin']),
+                                            'numero_actividades_finalizadas': numero_actividades_finalizadas})
+                igual_fecha_fin = actividad_proceso
+                numero_actividades_finalizadas -= 1
+            else:
+                numero_actividades_finalizadas -= 1
+
+        # actividades_finalizadas = SoporteActividad.objects.all().order_by('fecha_fin')
+        # actividades_finalizadas = actividades_finalizadas.values('fecha_fin')
+
+        actividades_en_proceso = actividades.filter(estado=EstadosActividades.EN_PROCESO).count()
+        actividades_cerradas = actividades.filter(estado=EstadosActividades.CERRADA).count()
+
+        # region Explicación prefijos usados.
+        """
+        tet: tiempo estimado total.
+        tit: tiempo invertido total.
+        pat: porcentaje avance total.
+        adte: actividades dentro tiempo estimado
+        pte: promedio tiempo estimado
+        pti: promedio tiempo invertido
+        ppa: promedio porcentaje avance
+        pe: porcentaje eficiencia
+        """
+        # endregion
+        tet_actividades_en_proceso = 0
+        tit_actividades_en_proceso = 0
+        pat_actividades_en_proceso = 0
+        tet_actividades_cerradas = 0
+        tit_actividades_cerradas = 0
+        numero_actividades_en_proceso = 0
+        numero_actividades_cerradas = 0
+        adte_actividades_cerradas = 0
+
+        for actividad in actividades:
+            if actividad['estado'] == EstadosActividades.EN_PROCESO:
+                tet_actividades_en_proceso += actividad['tiempo_estimado']
+                tit_actividades_en_proceso += actividad['tiempo_invertido']
+                pat_actividades_en_proceso += actividad['porcentaje_avance']
+                numero_actividades_en_proceso += 1
+
+            if actividad['estado'] == EstadosActividades.CERRADA:
+                tet_actividades_cerradas += actividad['tiempo_estimado']
+                tit_actividades_cerradas += actividad['tiempo_invertido']
+                numero_actividades_cerradas += 1
+                if actividad['tiempo_invertido'] <= actividad['tiempo_estimado']:
+                    adte_actividades_cerradas += 1
+
+        if actividades_en_proceso > 0:
+            pte_actividades_en_proceso = "{0:.2f}".format(tet_actividades_en_proceso / numero_actividades_en_proceso)
+            pti_actividades_en_proceso = "{0:.2f}".format(tit_actividades_en_proceso / numero_actividades_en_proceso)
+            ppa_actividades_en_proceso = "{0:.2f}".format(pat_actividades_en_proceso / numero_actividades_en_proceso)
+
+        else:
+            pte_actividades_en_proceso = 0
+            pti_actividades_en_proceso = 0
+            ppa_actividades_en_proceso = 0
+
+        if actividades_cerradas > 0:
+            pte_actividades_cerradas = "{0:.2f}".format(tet_actividades_cerradas / numero_actividades_cerradas)
+            pti_actividades_cerradas = "{0:.2f}".format(tit_actividades_cerradas / numero_actividades_cerradas)
+            pe_actividades_cerradas = "{0:.2f}".format((adte_actividades_cerradas / numero_actividades_cerradas) * 100)
+        else:
+            pte_actividades_cerradas = 0
+            pti_actividades_cerradas = 0
+            pe_actividades_cerradas = 0
+
+        return render(request, 'GestionActividades/GruposActividades/_reporte_eficiencia_grupos_actividades_index.html',
+                      {'grupo_actividad': grupo_actividad,
+                       'actividades': actividades,
+                       'fecha': app_datetime_now(),
+                       'pte_actividades_en_proceso': pte_actividades_en_proceso,
+                       'pti_actividades_en_proceso': pti_actividades_en_proceso,
+                       'ppa_actividades_en_proceso': ppa_actividades_en_proceso,
+                       'pte_actividades_cerradas': pte_actividades_cerradas,
+                       'pti_actividades_cerradas': pti_actividades_cerradas,
+                       'adte_actividades_cerradas': adte_actividades_cerradas,
+                       'pe_actividades_cerradas': pe_actividades_cerradas,
+                       'actividades_en_proceso': actividades_en_proceso,
+                       'actividades_cerradas': actividades_cerradas,
+                       'coordenadas_grafica': coordenadas_grafica,
+                       'EstadosActividades': EstadosActividades})
+
+
+def datos_xa_render(request, grupo_actividad: GrupoActividad = None) -> dict:
     grupos = GrupoActividad.objects.get_xa_select_activos()
 
     contratos = Contrato.objects \
