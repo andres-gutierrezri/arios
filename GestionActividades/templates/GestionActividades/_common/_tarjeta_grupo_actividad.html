@@ -19,6 +19,9 @@
                             {% if perms.GestionActividades.delete_grupoactividad %}
                                 <a class="dropdown-item" href="javascript:void(0);" id="eliminar_{{ id_grupo }}"   onclick="fConfirmarEliminar({{ id_grupo }}, 1)">Eliminar</a>
                             {% endif %}
+                            {% if perms.GestionActividades.view_grupoactividad %}
+                                <a class="dropdown-item" href="{% url 'GestionActividades:reporte-eficiencia-grupo' id_grupo%}">Reporte Eficiencia</a>
+                            {% endif %}
                         </div>
                     {% endif %}
                 </div>
