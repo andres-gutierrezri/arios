@@ -33,6 +33,18 @@ class PermisosLaboralesIndexView(AbstractEvaLoggedView):
 
 class PermisoLaboralCrearView(AbstractEvaLoggedView):
     def get(self, request):
-        return render(request, 'TalentoHumano/PermisosLaborales/_modal_crear_editar_permiso.html',
-                      {'fecha': datetime.datetime.now(),
-                       'menu_actual': 'permisos-laborales'})
+        return render(request, 'TalentoHumano/PermisosLaborales/_modal_crear_editar_permiso.html', datos_xa_render())
+
+
+def datos_xa_render(permiso: PermisoLaboral = None) -> dict:
+    tipo_permiso = TipoPermiso.objects.get_xa_select_activos()
+
+    datos = {'tipo_permiso': tipo_permiso,
+             'fecha': datetime.datetime.now(),
+             'menu_actual': 'permisos-laborales'}
+
+    if permiso:
+        datos['permiso'] = permiso
+        datos['editar'] = True
+
+    return datos
