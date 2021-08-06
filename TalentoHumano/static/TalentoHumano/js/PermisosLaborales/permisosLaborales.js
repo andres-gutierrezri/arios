@@ -1,5 +1,7 @@
 'use strict';
 
+const modalCrear = $('#crear');
+
 $(document).ready(function () {
     activarSelect2();
     $('#tipo_permisos_select_id').change(function () {
@@ -18,3 +20,13 @@ $(document).ready(function () {
     ]
     iniciarDataTableN({buscar: false, paginar: false, ordenar: false, detallesColumnas: columnDefs});
 });
+
+function abrirModalCrear(url) {
+    cargarAbrirModal(modalCrear, url, configurarModalCrear);
+}
+
+function configurarModalCrear() {
+    inicializarSelect2('tipo_permiso_select_id', modalCrear);
+    inicializarDateRangePicker('fecha_intervalo_id');
+    agregarValidacionFormularios();
+}
