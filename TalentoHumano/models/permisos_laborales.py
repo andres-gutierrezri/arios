@@ -50,13 +50,13 @@ class PermisoLaboral (ModeloBase, ModelDjangoExtensiones):
     motivo_editar = models.TextField(max_length=100, verbose_name='Motivo Editar', null=False, blank=False)
     soporte = models.FileField(upload_to=custom_upload_to, verbose_name='Documento Soporte', null=False, blank=False,
                                max_length=250)
-    estado_rrhh = models.BooleanField(verbose_name='Estado RRHH', null=True, blank=False)
-    estado_jefe = models.BooleanField(verbose_name='Estado Jefe', null=True, blank=False)
-    estado_gerencia = models.BooleanField(verbose_name='Estado Gerencia', null=True, blank=False)
-    motivo_rrhh = models.CharField(max_length=300, verbose_name='Motivo RRHH', null=True, blank=False)
-    motivo_jefe = models.CharField(max_length=300, verbose_name='Motivo Jefe', null=True, blank=False)
-    motivo_gerencia = models.CharField(max_length=300, verbose_name='Motivo Gerencia', null=True, blank=False)
-    remuneracion = models.BooleanField(verbose_name='Remuneración', null=True, blank=False)
+    estado_rrhh = models.BooleanField(verbose_name='Estado RRHH', null=True, blank=True)
+    estado_jefe = models.BooleanField(verbose_name='Estado Jefe', null=True, blank=True)
+    estado_gerencia = models.BooleanField(verbose_name='Estado Gerencia', null=True, blank=True)
+    motivo_rrhh = models.CharField(max_length=300, verbose_name='Motivo RRHH', null=True, blank=True)
+    motivo_jefe = models.CharField(max_length=300, verbose_name='Motivo Jefe', null=True, blank=True)
+    motivo_gerencia = models.CharField(max_length=300, verbose_name='Motivo Gerencia', null=True, blank=True)
+    remuneracion = models.BooleanField(verbose_name='Remuneración', null=True, blank=True)
 
     def __str__(self):
         return self.usuario_crea
@@ -73,11 +73,14 @@ class PermisoLaboral (ModeloBase, ModelDjangoExtensiones):
         :return: Instancia de Permiso Laboral con la información especificada en el diccionario.
         """
         permiso = PermisoLaboral()
-        permiso.tipo_permiso = datos.get('tipo_permiso', '')
+        permiso.tipo_permiso_id = datos.get('tipo_permiso', None)
         permiso.fecha_inicio = string_to_datetime(datos.get('fecha_intervalo', '').split(' – ')[0], "%Y-%m-%d %H:%M")
         permiso.fecha_fin = string_to_datetime(datos.get('fecha_intervalo', '').split(' – ')[1], "%Y-%m-%d %H:%M")
         permiso.motivo_permiso = datos.get('motivo_permiso', '')
         permiso.motivo_editar = datos.get('motivo_editar', '')
+        permiso.motivo_rrhh = datos.get('motivo_rrhh', '')
+        permiso.motivo_jefe = datos.get('motivo_jefe', '')
+        permiso.motivo_gerencia = datos.get('motivo_gerencia', '')
         permiso.soporte = datos.get('soporte', None)
 
         return permiso
