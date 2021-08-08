@@ -15,7 +15,7 @@
                 {% csrf_token %}
                 <div class="form-row">
                     <div id="tipo_permiso" class="form-group col-md-12">
-                        {% select_tag tipo_permiso 'tipo_permiso' 'Seleccione el tipo de permiso' value=permiso.tipo_permiso texto_label="Tipo Permiso" required="" mensaje_validacion='Por favor seleccione el tipo de permiso' %}
+                        {% select_tag tipos_permiso 'tipo_permiso' 'Seleccione el tipo de permiso' value=permiso.tipo_permiso_id texto_label="Tipo Permiso" required="" mensaje_validacion='Por favor seleccione el tipo de permiso' %}
                     </div>
                 </div>
                 <div class="form-row">
