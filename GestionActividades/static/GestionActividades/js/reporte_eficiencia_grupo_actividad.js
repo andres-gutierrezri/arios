@@ -1,39 +1,50 @@
 'use strict';
 
 $(document).ready(function () {
+    function parseDate(fecha) {
+        return new Date(Date.parse(fecha)).getTime();
+    }
+
+    function formatoFlot(dt) {
+        let retorno = [];
+        for (let i = 0; i < dt.length; i++) {
+            retorno.push([parseDate(dt[i].fecha), dt[i].numero_actividades_finalizadas]);
+        }
+        return retorno;
+    }
 
     var dataTargetProfit = [
         [1627362000000, 10],
         [1627621200000, 7],
-        [1628485200000, 6],
-        [1628726400000, 4],
-        [1628812800000, 3],
-        [1628899200000, 2],
-        [1630213200000, 1],
+        // [1628485200000, 6],
+        // [1628726400000, 4],
+        // [1628812800000, 3],
+        // [1628899200000, 2],
+        // [1630213200000, 1],
     ]
     var dataProfit = [
         [1627362000000, 10],
         [1627621200000, 7],
-        [1628485200000, 6],
-        [1628726400000, 4],
-        [1628812800000, 3],
-        [1628899200000, 2],
-        [1630213200000, 1],
+        // [1628485200000, 6],
+        // [1628726400000, 4],
+        // [1628812800000, 3],
+        // [1628899200000, 2],
+        // [1630213200000, 1],
     ]
     var dataSignups = [
         [1627362000000, 10],
         [1627621200000, 8],
-        [1628485200000, 7],
-        [1628726400000, 6],
-        [1628812800000, 4],
-        [1628899200000, 3],
-        [1630213200000, 3],
+        // [1628485200000, 7],
+        // [1628726400000, 6],
+        // [1628812800000, 4],
+        // [1628899200000, 3],
+        // [1630213200000, 3],
     ]
     var flot_toggle = function () {
         var data = [
             {
                 label: "Target Profit",
-                data: dataTargetProfit,
+                data: formatoFlot(coordenadas_grafica),
                 color: color.danger._500,
                 bars:
                     {
@@ -51,7 +62,7 @@ $(document).ready(function () {
             },
             {
                 label: "Tiempo Estimado",
-                data: dataProfit,
+                data: formatoFlot(coordenadas_grafica),
                 color: color.info._500,
                 lines:
                     {
@@ -66,7 +77,7 @@ $(document).ready(function () {
             },
             {
                 label: "Tiempo Real",
-                data: dataSignups,
+                data: formatoFlot(coordenadas_grafica),
                 color: color.danger._500,
                 lines:
                     {
@@ -98,8 +109,8 @@ $(document).ready(function () {
             xaxis:
                 {
                     mode: "time",
-                    // timeBase: "milliseconds",
-                    // timeformat: "%Y/%m/%d"
+                    timeBase: "milliseconds",
+                    timeformat: "%b %Y"
                 },
             yaxes:
                 {
@@ -139,4 +150,16 @@ $(document).ready(function () {
     flot_toggle();
 
     configurarFiltroConsecutivos();
+
 });
+
+function unescapep(s) {
+    return s.replace(/&amp;/g, "&")
+        .replace(/&apos;/g, "'")
+        .replace(/&#x27;/g, "'")
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&quot;/g, "\"")
+        .replace(/\\u00ed/g, "í")
+        .replace(/\\u00f3/g, "í");
+}

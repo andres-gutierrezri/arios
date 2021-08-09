@@ -13,7 +13,8 @@
     <div class="panel-container show">
         <div class="header">
             <h1 class="header-title">
-                <i class='far fa-chart-bar'></i> Reporte de Eficiencia - Grupo Actividades: {{ grupo_actividad.nombre }} <span class='fw-300'></span>
+                <i class='far fa-chart-bar'></i> Reporte de Eficiencia - Grupo Actividades: {{ grupo_actividad.nombre }}
+                <span class='fw-300'></span>
                 <br>
                 <br>
             </h1>
@@ -26,18 +27,21 @@
                             Grafico Actividades <span class="fw-300"></span>
                         </h2>
                         <div class="panel-toolbar">
-                            <button class="btn btn-panel" data-action="panel-collapse" data-toggle="tooltip" data-offset="0,10" data-original-title="Ocultar"></button>
+                            <button class="btn btn-panel" data-action="panel-collapse" data-toggle="tooltip"
+                                    data-offset="0,10" data-original-title="Ocultar"></button>
                         </div>
                     </div>
                     <div class="panel-container show">
                         <div class="panel-content">
                             <div id="js-checkbox-toggles" class="d-flex mb-3">
                                 <div class="custom-control custom-switch mr-2">
-                                    <input type="checkbox" class="custom-control-input" name="gra-1" id="gra-1" checked="">
+                                    <input type="checkbox" class="custom-control-input" name="gra-1" id="gra-1"
+                                           checked="">
                                     <label class="custom-control-label" for="gra-1">Tiempo Estimado</label>
                                 </div>
                                 <div class="custom-control custom-switch mr-2">
-                                    <input type="checkbox" class="custom-control-input" name="gra-2" id="gra-2" checked="">
+                                    <input type="checkbox" class="custom-control-input" name="gra-2" id="gra-2"
+                                           checked="">
                                     <label class="custom-control-label" for="gra-2">Tiempo Real</label>
                                 </div>
                             </div>
@@ -94,7 +98,7 @@
                                     <tbody class="text-center">
                                     <tr>
                                         <td>{{ actividades_cerradas }} Actividades</td>
-                                        <td>{{ adte_actividades_cerradas}} Actividades</td>
+                                        <td>{{ adte_actividades_cerradas }} Actividades</td>
                                         <td>{{ pte_actividades_cerradas }} Horas</td>
                                         <td>{{ pti_actividades_cerradas }} Horas</td>
                                         <td>{{ pe_actividades_cerradas }} %</td>
@@ -123,4 +127,8 @@
     <script src="{% static 'EVA/Plantilla/js/custom/controlBusquedaPaginacion.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/statistics/flot/flot.bundle.js' %}"></script>
     <script src="{% static 'GestionActividades/js/reporte_eficiencia_grupo_actividad.js' %}"></script>
+    <script>
+        var coordenadas_grafica = unescapep('{{ coordenadas_grafica }}').replaceAll("'","\"");
+        coordenadas_grafica = JSON.parse(coordenadas_grafica);
+    </script>
 {% endblock scripts %}
