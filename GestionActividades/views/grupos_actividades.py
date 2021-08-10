@@ -1,8 +1,10 @@
 import json
 
+
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.db.models import Q
+from django.http import HttpResponse
 from django.db.transaction import atomic, rollback
 from django.shortcuts import render
 from django.contrib import messages
@@ -219,27 +221,49 @@ class GruposActividadesReporteEficienciaView(AbstractEvaLoggedView):
         actividades = actividades.values('id', 'nombre', 'fecha_fin', 'estado', 'porcentaje_avance', 'fecha_inicio',
                                          'tiempo_invertido', 'tiempo_estimado')
 
-        actividades_proceso = Actividad.objects.filter(Q(estado=EstadosActividades.EN_PROCESO)
-                                                       & Q(grupo_actividad_id=id_grupo)).order_by('fecha_fin')
-        actividades_proceso = actividades_proceso.values('fecha_fin')
+        actividades_fechas_ordenadas = Actividad.objects.filter(grupo_actividad_id=id_grupo).order_by('fecha_fin').\
+            exclude(estado=EstadosActividades.ANULADA).values('fecha_fin')
 
-        numero_actividades_finalizadas = actividades_proceso.count()
-        igual_fecha_fin = actividades_proceso[0]
+        numero_actividades_pendientes = actividades_fechas_ordenadas.count()
+        igual_fecha_fin = actividades_fechas_ordenadas[0]
 
-        coordenadas_grafica = [{'fecha': str(igual_fecha_fin['fecha_fin']),
-                                'numero_actividades_finalizadas': numero_actividades_finalizadas}]
+        coordenadas_tiempo_estimado = [{'fecha': str(igual_fecha_fin['fecha_fin']),
+                                        'numero_actividades_pendientes': numero_actividades_pendientes}]
 
-        for actividad_proceso in actividades_proceso:
-            if actividad_proceso != igual_fecha_fin:
-                coordenadas_grafica.append({'fecha': str(actividad_proceso['fecha_fin']),
-                                            'numero_actividades_finalizadas': numero_actividades_finalizadas})
-                igual_fecha_fin = actividad_proceso
-                numero_actividades_finalizadas -= 1
+        for actividad_fecha_fin in actividades_fechas_ordenadas:
+            if actividad_fecha_fin != igual_fecha_fin:
+                coordenadas_tiempo_estimado.append({'fecha': str(actividad_fecha_fin['fecha_fin']),
+                                                    'numero_actividades_pendientes': numero_actividades_pendientes})
+                igual_fecha_fin = actividad_fecha_fin
+                numero_actividades_pendientes -= 1
             else:
-                numero_actividades_finalizadas -= 1
+                numero_actividades_pendientes -= 1
 
-        # actividades_finalizadas = SoporteActividad.objects.all().order_by('fecha_fin')
-        # actividades_finalizadas = actividades_finalizadas.values('fecha_fin')
+        actividades_ids_grupo = actividades_fechas_ordenadas.values('id')
+
+        actividades_finalizadas = SoporteActividad.objects.filter(actividad_id__in=actividades_ids_grupo)\
+            .distinct('actividad_id').values('fecha_fin')
+
+        fechas_fin_ordenadas = []
+
+        for actividad_fecha_fin in actividades_finalizadas:
+            fechas_fin_ordenadas.append(actividad_fecha_fin['fecha_fin'])
+
+        fechas_fin_ordenadas = sorted(fechas_fin_ordenadas)
+        numero_actividades = actividades_fechas_ordenadas.count()
+        fecha_fin_igual = fechas_fin_ordenadas[0]
+
+        coordenadas_tiempo_real = [{'fecha': str(fecha_fin_igual),
+                                    'numero_actividades_pendientes': numero_actividades}]
+
+        for fecha_fin in fechas_fin_ordenadas:
+            if fecha_fin != fecha_fin_igual:
+                coordenadas_tiempo_real.append({'fecha': str(fecha_fin),
+                                                'numero_actividades_pendientes': numero_actividades})
+                fecha_fin_igual = fecha_fin
+                numero_actividades -= 1
+            else:
+                numero_actividades -= 1
 
         actividades_en_proceso = actividades.filter(estado=EstadosActividades.EN_PROCESO).count()
         actividades_cerradas = actividades.filter(estado=EstadosActividades.CERRADA).count()
@@ -311,8 +335,15 @@ class GruposActividadesReporteEficienciaView(AbstractEvaLoggedView):
                        'pe_actividades_cerradas': pe_actividades_cerradas,
                        'actividades_en_proceso': actividades_en_proceso,
                        'actividades_cerradas': actividades_cerradas,
-                       'coordenadas_grafica': coordenadas_grafica,
+                       'coordenadas_tiempo_estimado': coordenadas_tiempo_estimado,
+                       'coordenadas_tiempo_real': coordenadas_tiempo_real,
                        'EstadosActividades': EstadosActividades})
+
+
+class GruposActividadesReporteEficienciaGraficaView(AbstractEvaLoggedView):
+    def post(self, request):
+
+        return RespuestaJson.exitosa(datos=[1, 2, 3])
 
 
 def datos_xa_render(request, grupo_actividad: GrupoActividad = None) -> dict:

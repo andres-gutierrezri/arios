@@ -1,6 +1,8 @@
 'use strict';
 
 $(document).ready(function () {
+    const rangoFechasID = $('#rango_fechas_id');
+
     function parseDate(fecha) {
         return new Date(Date.parse(fecha)).getTime();
     }
@@ -8,61 +10,17 @@ $(document).ready(function () {
     function formatoFlot(dt) {
         let retorno = [];
         for (let i = 0; i < dt.length; i++) {
-            retorno.push([parseDate(dt[i].fecha), dt[i].numero_actividades_finalizadas]);
+            retorno.push([parseDate(dt[i].fecha), dt[i].numero_actividades_pendientes]);
         }
         return retorno;
     }
 
-    var dataTargetProfit = [
-        [1627362000000, 10],
-        [1627621200000, 7],
-        // [1628485200000, 6],
-        // [1628726400000, 4],
-        // [1628812800000, 3],
-        // [1628899200000, 2],
-        // [1630213200000, 1],
-    ]
-    var dataProfit = [
-        [1627362000000, 10],
-        [1627621200000, 7],
-        // [1628485200000, 6],
-        // [1628726400000, 4],
-        // [1628812800000, 3],
-        // [1628899200000, 2],
-        // [1630213200000, 1],
-    ]
-    var dataSignups = [
-        [1627362000000, 10],
-        [1627621200000, 8],
-        // [1628485200000, 7],
-        // [1628726400000, 6],
-        // [1628812800000, 4],
-        // [1628899200000, 3],
-        // [1630213200000, 3],
-    ]
     var flot_toggle = function () {
         var data = [
+            {},
             {
-                label: "Target Profit",
-                data: formatoFlot(coordenadas_grafica),
-                color: color.danger._500,
-                bars:
-                    {
-                        show: true,
-                        align: "center",
-                        barWidth: 30 * 30 * 60 * 1000 * 80,
-                        lineWidth: 0,
-                        fillColor:
-                            {
-                                colors: [color.danger._900, color.danger._100]
-                            }
-                    },
-                highlightColor: 'rgba(255,255,255,0.3)',
-                shadowSize: 0
-            },
-            {
-                label: "Tiempo Estimado",
-                data: formatoFlot(coordenadas_grafica),
+                label: "Progreso Estimado",
+                data: formatoFlot(coordenadas_tiempo_estimado),
                 color: color.info._500,
                 lines:
                     {
@@ -76,8 +34,8 @@ $(document).ready(function () {
                     }
             },
             {
-                label: "Tiempo Real",
-                data: formatoFlot(coordenadas_grafica),
+                label: "Progreso Real",
+                data: formatoFlot(coordenadas_tiempo_real),
                 color: color.danger._500,
                 lines:
                     {
@@ -145,13 +103,35 @@ $(document).ready(function () {
         $("#js-checkbox-toggles").find(':checkbox').on('change', function () {
             plotNow();
         });
-        plotNow()
+        plotNow();
+
     }
     flot_toggle();
 
+    inicializarDateRangePicker('rango_fechas_id');
+    rangoFechasID.daterangepicker({
+            startDate: moment(),
+            endDate: moment().add(1, 'month'),
+            locale: {format: 'YYYY-MM-DD',}
+        }
+    );
+    rangoFechasID.on('change', onChangeFechas);
     configurarFiltroConsecutivos();
 
 });
+
+function onChangeFechas(e) {
+    console.log("Submit");
+    let form = $('#rango_fechas_form')[0];
+    enviarFormularioAsyncCallBack(form,  `/gestion-actividades/grupos-actividades/reporte-eficiencia-grafica`, "cargando").then(json => {
+        if (json.estado === 'OK') {
+            var datos = json.datos;
+            console.log(datos);
+        } else {
+            EVANotificacion.toast.error(json.estado === 'error' ? json.mensaje : 'No tiene permisos para acceder a esta funcionalidad');
+        }
+    });
+}
 
 function unescapep(s) {
     return s.replace(/&amp;/g, "&")

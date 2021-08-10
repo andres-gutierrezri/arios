@@ -4,6 +4,8 @@
 <title>{% block titulo %}Reporte eficiencia{% endblock %}</title>
 {% block styles %}
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-solid.css' %}">
+    <link rel="stylesheet" media="screen, print"
+          href="{% static 'EVA/Plantilla/css/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.css' %}">
     {% include 'EVA/_common/_statics/_tablas.html' with incCSS=True %}
     {% include 'EVA/_common/_statics/_select2.html' with incCSS=True %}
     {% include 'EVA/_common/_statics/_datepicker.html' with incCSS=True %}
@@ -33,19 +35,26 @@
                     </div>
                     <div class="panel-container show">
                         <div class="panel-content">
+                            <div class="row">
+                                <form id="rango_fechas_form" method="post" class="needs-validation" novalidate>
+                                    <div class="col-12 mt-0 mb-3 pt-0 pb-0">
+                                        {% input_date_tag 'rango_fechas' '' placeholder="Seleccione el rango de fechas para graficar" class="form-control" value='' required="" mensaje_validacion='Por favor seleccione un rango de fechas.' %}
+                                    </div>
+                                </form>
+                            </div>
                             <div id="js-checkbox-toggles" class="d-flex mb-3">
                                 <div class="custom-control custom-switch mr-2">
                                     <input type="checkbox" class="custom-control-input" name="gra-1" id="gra-1"
                                            checked="">
-                                    <label class="custom-control-label" for="gra-1">Tiempo Estimado</label>
+                                    <label class="custom-control-label" for="gra-1">Progreso Estimado</label>
                                 </div>
                                 <div class="custom-control custom-switch mr-2">
                                     <input type="checkbox" class="custom-control-input" name="gra-2" id="gra-2"
                                            checked="">
-                                    <label class="custom-control-label" for="gra-2">Tiempo Real</label>
+                                    <label class="custom-control-label" for="gra-2">Progreso Real</label>
                                 </div>
                             </div>
-                            <div id="flot-toggles" class="w-100 mt-4" style="height: 300px"></div>
+                            <div id="flot-toggles" class="w-100 mt-4" style="height: 400px"></div>
                         </div>
                     </div>
                 </div>
@@ -127,8 +136,13 @@
     <script src="{% static 'EVA/Plantilla/js/custom/controlBusquedaPaginacion.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/statistics/flot/flot.bundle.js' %}"></script>
     <script src="{% static 'GestionActividades/js/reporte_eficiencia_grupo_actividad.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/dependency/moment/moment.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.js' %}"></script>
     <script>
-        var coordenadas_grafica = unescapep('{{ coordenadas_grafica }}').replaceAll("'","\"");
-        coordenadas_grafica = JSON.parse(coordenadas_grafica);
+        var coordenadas_tiempo_estimado = unescapep('{{  coordenadas_tiempo_estimado }}').replaceAll("'", "\"");
+        coordenadas_tiempo_estimado = JSON.parse(coordenadas_tiempo_estimado);
+
+        var coordenadas_tiempo_real = unescapep('{{  coordenadas_tiempo_real }}').replaceAll("'", "\"");
+        coordenadas_tiempo_real = JSON.parse(coordenadas_tiempo_real);
     </script>
 {% endblock scripts %}
