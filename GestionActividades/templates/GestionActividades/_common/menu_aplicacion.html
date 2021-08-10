@@ -1,25 +1,25 @@
-{% if perms.GestionActividades.view_grupoactividad %}
-    <li {% if menu_actual == 'grupos-actividades' %} class="active" {% endif %}>
-        <a href="{% url 'GestionActividades:grupos-actividades-index' %}" title="Grupo Actividades" data-filter-tags="grupos-actividades">
-            <i class="fal fa-calendar-alt"></i>
-            <span class="nav-link-text" data-i18n="nav.gestion_actividades_grupos-actividades">Grupos Actividades</span>
-        </a>
-    </li>
+{% if perms.TalentoHumano.permission_director_proceso or perms.TalentoHumano.permission_gerencial %}
+        <li {% if menu_actual == 'grupos-actividades' %} class="active" {% endif %}>
+            <a href="{% url 'GestionActividades:grupos-actividades-index' %}" title="Grupo Actividades" data-filter-tags="grupos-actividades">
+                <i class="fal fa-calendar-alt"></i>
+                <span class="nav-link-text" data-i18n="nav.gestion_actividades_grupos-actividades">Grupos Actividades</span>
+            </a>
+        </li>
 {% endif%}
-{% if perms.GestionActividades.view_actividad %}
-    <li  {% if menu_actual == 'actividades' %} class="active" {% endif %}>
-        <a href="{% url 'GestionActividades:actividades-index' %}" title="Actividades" data-filter-tags="actividades">
-            <i class="fal fa-clipboard-check"></i>
-            <span class="nav-link-text" data-i18n="nav.gestion_actividades_actividades">Actividades</span>
-        </a>
-    </li>
+{% if perms.TalentoHumano.permission_director_proceso or perms.TalentoHumano.permission_colaborador_actividad or perms.TalentoHumano.permission_gerencial %}
+        <li  {% if menu_actual == 'actividades' %} class="active" {% endif %}>
+            <a href="{% url 'GestionActividades:actividades-index' %}" title="Actividades" data-filter-tags="actividades">
+                <i class="fal fa-clipboard-check"></i>
+                <span class="nav-link-text" data-i18n="nav.gestion_actividades_actividades">Actividades</span>
+            </a>
+        </li>
 {% endif %}
-{% if perms.GestionActividades.view_modificacionactividad %}
-    <li  {% if menu_actual == 'solicitudes-aprobación' %} class="active" {% endif %}>
-        <a href="{% url 'GestionActividades:solicitudes-aprobacion-index' %}" title="Solicitudes Aprobacion" data-filter-tags="solicitudes-aprobación">
-            <i class="fal fa-tasks"></i>
-            <span class="nav-link-text" data-i18n="nav.gestion_actividades_solicitudes_aprobacion">Solicitudes de Aprobación</span>
-        </a>
-    </li>
+{% if perms.TalentoHumano.permission_director_proceso or perms.TalentoHumano.permission_colaborador_actividad or perms.TalentoHumano.permission_gerencial %}
+        <li  {% if menu_actual == 'solicitudes-aprobación' %} class="active" {% endif %}>
+            <a href="{% url 'GestionActividades:solicitudes-aprobacion-index' %}" title="Solicitudes Aprobacion" data-filter-tags="solicitudes-aprobación">
+                <i class="fal fa-tasks"></i>
+                <span class="nav-link-text" data-i18n="nav.gestion_actividades_solicitudes_aprobacion">Solicitudes de Aprobación</span>
+            </a>
+        </li>
 {% endif %}
 
