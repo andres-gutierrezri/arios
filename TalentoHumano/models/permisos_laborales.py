@@ -81,6 +81,5 @@ class PermisoLaboral (ModeloBase, ModelDjangoExtensiones):
         permiso.motivo_rrhh = datos.get('motivo_rrhh', '')
         permiso.motivo_jefe = datos.get('motivo_jefe', '')
         permiso.motivo_gerencia = datos.get('motivo_gerencia', '')
-        permiso.soporte = datos.get('soporte', None)
 
         return permiso
