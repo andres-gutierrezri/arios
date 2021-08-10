@@ -1,6 +1,6 @@
 'use strict';
 
-const modalCrear = $('#crear');
+const modalCrearPermiso = $('#crear-permiso');
 
 $(document).ready(function () {
     activarSelect2();
@@ -22,11 +22,25 @@ $(document).ready(function () {
 });
 
 function abrirModalCrear(url) {
-    cargarAbrirModal(modalCrear, url, configurarModalCrear);
+    cargarAbrirModal(modalCrearPermiso, url, configurarModalCrear);
 }
 
 function configurarModalCrear() {
-    inicializarSelect2('tipo_permiso_select_id', modalCrear);
+    inicializarSelect2('tipo_permiso_select_id', modalCrearPermiso);
     inicializarDateRangePicker('fecha_intervalo_id');
+
+    $('#archivo_id').change(function (e) {
+        let label_input = $('.custom-file-label');
+        let extension = e.target.files[0].name.split('.').pop();
+        if (extension === 'pdf' || extension === 'docx'){
+            label_input.html(e.target.files[0].name);
+        }else{
+            label_input.html('Seleccione un archivo');
+            e.target.value = '';
+            EVANotificacion.toast.error('El archivo ingresado no tiene un formato compatible. ' +
+                                        '(Formatos Aceptados: PDF o Documento Word)');
+            return false;
+        }
+    });
     agregarValidacionFormularios();
 }

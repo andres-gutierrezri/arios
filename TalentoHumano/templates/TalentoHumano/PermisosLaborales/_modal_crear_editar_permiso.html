@@ -1,6 +1,6 @@
 {% load eva_tags %}
 {% load static %}
-<form action= "{% url 'TalentoHumano:permiso-laboral-crear' %}" id="permiso_laboral_form" method="post" class="needs-validation" novalidate>
+<form action= "{% url 'TalentoHumano:permiso-laboral-crear' %}" id="permiso_laboral_form" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header p-b-0">
@@ -26,6 +26,11 @@
                 <div class="form-row">
                     <div id="motivo_permiso" class="form-group col-md-12">
                         {% input_textarea_tag 'motivo_permiso' 'Motivo del Permiso (Justificación)' placeholder="Ingrese el motivo del permiso" maxlength="100" value=permiso.motivo_permiso required="" mensaje_validacion='Por favor digite el motivo del permiso' %}
+                    </div>
+                </div>
+                <div class="form-row div_archivo">
+                    <div class="form-group col-12">
+                        {% input_file_tag 'archivo' 'Documento Soporte' placeholder="Seleccione un archivo" value=permiso.soporte invalido=errores.logo accept=".docx, .pdf" required="" autocomplete="off" mensaje_validacion='Por favor seleccione un archivo'%}
                     </div>
                 </div>
                 <div class="container small font-weight-light text-justify">
