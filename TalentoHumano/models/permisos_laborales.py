@@ -50,6 +50,7 @@ class PermisoLaboral (ModeloBase, ModelDjangoExtensiones):
     motivo_editar = models.TextField(max_length=100, verbose_name='Motivo Editar', null=False, blank=False)
     soporte = models.FileField(upload_to=custom_upload_to, verbose_name='Documento Soporte', null=False, blank=False,
                                max_length=250)
+    estado_empleado = models.BooleanField(verbose_name='Estado Empleado', blank=False, null=False, default=True)
     estado_rrhh = models.BooleanField(verbose_name='Estado RRHH', null=True, blank=True)
     estado_jefe = models.BooleanField(verbose_name='Estado Jefe', null=True, blank=True)
     estado_gerencia = models.BooleanField(verbose_name='Estado Gerencia', null=True, blank=True)
