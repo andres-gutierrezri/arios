@@ -1,11 +1,15 @@
 {% load eva_tags %}
 {% load static %}
-<form action= "{% url 'TalentoHumano:permiso-laboral-crear' %}" id="permiso_laboral_form" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+{% if editar %}
+    <form action= "{% url 'TalentoHumano:permiso-laboral-editar' permiso.id %}" id="permiso_laboral_form_editar" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+{% else %}
+    <form action= "{% url 'TalentoHumano:permiso-laboral-crear' %}" id="permiso_laboral_form" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+{% endif %}
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header p-b-0">
                 <h4 class="modal-title">
-                    Crear Solicitud Permiso Laboral
+                    {% if editar %}Editar Solicitud Permiso Laboral{% else %}Crear Solicitud Permiso Laboral{% endif %}
                 </h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true"><i class="fal fa-times"></i></span>
@@ -30,16 +34,24 @@
                 </div>
                 <div class="form-row div_archivo">
                     <div class="form-group col-12">
-                        {% input_file_tag 'archivo' 'Documento Soporte' placeholder="Seleccione un archivo" value=permiso.soporte invalido=errores.logo accept=".docx, .pdf" required="" autocomplete="off" mensaje_validacion='Por favor seleccione un archivo'%}
+                        {% input_file_tag 'archivo' 'Documento Soporte' placeholder="Seleccione un archivo" value=permiso.soporte.name invalido=errores.logo accept=".doc, .docx, .pdf, .jpg, .png, .jpeg, .gif" mensaje_validacion='Por favor seleccione un archivo' %}
                     </div>
                 </div>
+                {% if editar %}
+                    <div class="form-row">
+                        <div id="motivo_editar" class="form-group col-md-12">
+                            {% input_textarea_tag 'motivo_editar' 'Motivo de la Edición' placeholder="Ingrese el motivo de la edición" value=permiso.motivo_editar|default_if_none:"" required="" mensaje_validacion='Por favor ingrese el motivo de la edición' %}
+                        </div>
+                    </div>
+                {% endif %}
                 <div class="container small font-weight-light text-justify">
                     <p>Las solicitudes de permiso laboral se deben presentar ocho (8) días antes del primer día en que se estará ausente, a excepción del permiso por enfermedad.</p>
                     <p>De igual forma soy consciente de que la empresa no tiene responsabilidad alguna sobre los hechos que puedan suceder durante este periodo de tiempo en el cual estoy ausente de mis labores, así mismo que el tiempo empleado en este permiso puede ser objeto de compensación con el tiempo igual al utilizado en dicho permiso o descontado de nómina a opción de la Empresa.</p>
                 </div>
                 <div class="modal-footer">
                     <button data-dismiss="modal" class="btn btn-danger btn-pills">Cancelar</button>
-                    <button id="agregar" type="submit" class="btn btn-primary btn-pills">Agregar</button>
+                    <button id="agregar" type="submit" class="btn btn-primary btn-pills">{% if editar %}Editar{% else %}Agregar{% endif %}
+                    </button>
                 </div>
             </div>
         </div>
