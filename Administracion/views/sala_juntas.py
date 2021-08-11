@@ -66,6 +66,10 @@ class ReservaSalaJuntasCrearView(AbstractEvaLoggedView):
         reserva.fecha_creacion = app_datetime_now()
         reserva.color = self.get_color_reserva(COLORES)
 
+        # Validar fechas
+        if reserva.fecha_fin <= reserva.fecha_inicio:
+            reserva.fecha_fin = reserva.fecha_inicio
+
         # Validar traslapos
         resultado = reserva.validar_reserva()
 
@@ -105,14 +109,18 @@ class ReservaSalaJuntasEditarView(AbstractEvaLoggedView):
         update_fields = ['responsable', 'tema', 'fecha_inicio', 'fecha_fin', 'descripcion', 'motivo',
                          'fecha_modificacion', 'usuario_modifica']
 
-        reserva = ReservaSalaJuntas.from_dictionary(request.POST)
         reserva_db = ReservaSalaJuntas.objects.get(id=id_reserva)
+        reserva = ReservaSalaJuntas.from_dictionary(request.POST)
 
         reserva.id = reserva_db.id
         reserva.fecha_creacion = reserva_db.fecha_creacion
         reserva.usuario_crea = reserva_db.usuario_crea
         reserva.color = reserva_db.color
         reserva.usuario_modifica = request.user
+
+        # Validar fechas
+        if reserva.fecha_fin <= reserva.fecha_inicio:
+            reserva.fecha_fin = reserva.fecha_inicio
 
         # Validar traslapos
         resultado = reserva.validar_reserva(True)
