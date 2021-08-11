@@ -52,6 +52,7 @@
                                                 <th data-priority="1" class="col-sm-2">Tiempo</th>
                                                 <th class="none">Motivo del Permiso</th>
                                                 <th class="none">Motivo Editar/Anular</th>
+                                                <th class="col-sm-1">Estado Empleado</th>
                                                 <th class="col-sm-1">Estado RRHH</th>
                                                 <th class="col-sm-1">Estado Jefe Inmediato</th>
                                                 <th class="col-sm-1">Estado Gerencia</th>
@@ -76,55 +77,70 @@
                                                     <td>{{ permiso.motivo_permiso }}</td>
                                                     <td>{{ permiso.motivo_editar }}</td>
                                                     <td class="text-center">
-                                                        {% if permiso.estado_rrhh %}
-                                                            <span class="badge badge-primary">Aprobado</span>
-                                                        {% elif permiso.estado_rrhh == False %}
-                                                            <span class="badge badge-secondary">Denegado</span>
+                                                        {% if permiso.estado_empleado %}
+                                                            <span class="badge badge-primary">Activo</span>
                                                         {% else %}
-                                                            <span class="badge badge-warning">Pendiente</span>
+                                                            <span class="badge badge-secondary">Anulado</span>
                                                         {% endif %}
                                                     </td>
                                                     <td class="text-center">
-                                                        {% if permiso.estado_jefe %}
-                                                            <span class="badge badge-primary">Aprobado</span>
-                                                        {% elif permiso.estado_jefe == False %}
-                                                            <span class="badge badge-secondary">Denegado</span>
-                                                        {% else %}
-                                                            <span class="badge badge-warning">Pendiente</span>
+                                                        {% if permiso.estado_empleado %}
+                                                            {% if permiso.estado_rrhh %}
+                                                                <span class="badge badge-primary">Aprobado</span>
+                                                            {% elif permiso.estado_rrhh == False %}
+                                                                <span class="badge badge-secondary">Denegado</span>
+                                                            {% else %}
+                                                                <span class="badge badge-warning">Pendiente</span>
+                                                            {% endif %}
                                                         {% endif %}
                                                     </td>
                                                     <td class="text-center">
-                                                        {% if permiso.estado_gerencia %}
-                                                            <span class="badge badge-primary">Aprobado</span>
-                                                        {% elif permiso.estado_gerencia == False %}
-                                                            <span class="badge badge-secondary">Denegado</span>
-                                                        {% else %}
-                                                            <span class="badge badge-warning">Pendiente</span>
+                                                        {% if permiso.estado_empleado %}
+                                                            {% if permiso.estado_jefe %}
+                                                                <span class="badge badge-primary">Aprobado</span>
+                                                            {% elif permiso.estado_jefe == False %}
+                                                                <span class="badge badge-secondary">Denegado</span>
+                                                            {% else %}
+                                                                <span class="badge badge-warning">Pendiente</span>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="text-center">
+                                                        {% if permiso.estado_empleado %}
+                                                            {% if permiso.estado_gerencia %}
+                                                                <span class="badge badge-primary">Aprobado</span>
+                                                            {% elif permiso.estado_gerencia == False %}
+                                                                <span class="badge badge-secondary">Denegado</span>
+                                                            {% else %}
+                                                                <span class="badge badge-warning">Pendiente</span>
+                                                            {% endif %}
                                                         {% endif %}
                                                     </td>
                                                     <td>{{ permiso.motivo_rrhh }}</td>
                                                     <td>{{ permiso.motivo_jefe }}</td>
                                                     <td>{{ permiso.motivo_gerencia }}</td>
                                                     <td class="text-center">
-                                                        {% if permiso.remuneracion %}
-                                                            <span class="badge badge-primary">SI</span>
-                                                        {% elif permiso.remuneracion == False %}
-                                                            <span class="badge badge-secondary">NO</span>
-                                                        {% else %}
-                                                            <span class="badge badge-warning">Pendiente</span>
+                                                        {% if permiso.estado_empleado %}
+                                                            {% if permiso.remuneracion %}
+                                                                <span class="badge badge-primary">SI</span>
+                                                            {% elif permiso.remuneracion == False %}
+                                                                <span class="badge badge-secondary">NO</span>
+                                                            {% else %}
+                                                                <span class="badge badge-warning">Pendiente</span>
+                                                            {% endif %}
                                                         {% endif %}
                                                     </td>
                                                     <td class="text-center">
                                                         {% if perms.TalentoHumano.view_permisolaboral and permiso.soporte %}
-                                                            <a class="fad fa-2x fa-eye" href="javascript:abrirModalVistaPrevia('{% url 'TalentoHumano:permiso-laboral-ver' permiso.id%}')" data-original-title="Ver" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="Ver Soporte"></a>
+                                                            <a class="fad fa-2x fa-eye" href="javascript:abrirModalVistaPrevia('{% url 'TalentoHumano:permiso-laboral-ver' permiso.id %}')" data-original-title="Ver" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="Ver Soporte"></a>
                                                         {% endif %}
                                                     </td>
                                                     <td class="text-center">
-                                                        {% if perms.TalentoHumano.change_permisolaboral and permiso.estado_rrhh == None %}
-                                                          <a class="fad fa-2x fa-file-edit" id="editar_{{ consecutivo.id }}" href="" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                        {% if perms.TalentoHumano.change_permisolaboral and permiso.estado_empleado and permiso.estado_rrhh == None %}
+                                                            <a class="fad fa-2x fa-file-edit" id="editar_{{ permiso.id }}" href="javascript:abrirModalCrear('{% url 'TalentoHumano:permiso-laboral-editar' permiso.id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
                                                         {% endif %}
-                                                        {% if perms.TalentoHumano.delete_permisolaboral and permiso.estado_rrhh == None %}
-                                                          <a class="fad fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ permiso.id }}" href="javascript:void(0);" onclick="fConfirmarEliminar({{ permiso.id }}, true)" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Anular"></a>
+                                                        {% if perms.TalentoHumano.delete_permisolaboral and permiso.estado_empleado and permiso.estado_rrhh == None %}
+                                                            <a class="fad fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ permiso.id }}" href="javascript:void(0);" onclick="fConfirmarEliminar({{ permiso.id }}, true)" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Anular"></a>
                                                         {% endif %}
                                                     </td>
                                                 </tr>
