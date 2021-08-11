@@ -20,7 +20,7 @@ $(document).ready(function () {
         eventLimitText: 'reservas',
         selectable: true,
         selectHelper: true,
-        nowIndicator:true,
+        nowIndicator: true,
         noEventsMessage: 'No hay reservas para mostrar',
         titleFormat: {
             year: 'numeric',
@@ -40,8 +40,8 @@ $(document).ready(function () {
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
         },
-         validRange: {
-            start: moment().format('YYYY-MM-DD')
+        validRange: {
+            start: moment().format("YYYY-MM-DD HH:mm")
         },
         // Evento para mostrar, ocultar o modificar los eventos al momento de hacer render
         // Mostrar y ocultar reservas
@@ -55,7 +55,12 @@ $(document).ready(function () {
             let fechaActual = moment(moment(),"DD-MM-YYYY HH:mm:ss");
             let fechaFin = moment(event.event.end,"DD-MM-YYYY HH:mm:ss");
             let color = event.event.backgroundColor;
-            if (fechaFin > fechaActual || color === "orange") {
+
+            if (!fechaFin.isValid()) {
+                fechaFin = fechaActual;
+            }
+
+            if (fechaFin >= fechaActual || color === "orange") {
                 modificarEventos(event);
             }
         },
@@ -108,6 +113,10 @@ $(document).ready(function () {
             let fechaInicio = moment(mouseEnterInfo.event.start).format("YYYY-MM-DD HH:mm");
             let fechaFin = moment(mouseEnterInfo.event.end).format("YYYY-MM-DD HH:mm");
 
+            if (fechaFin === "Invalid date") {
+                fechaFin = fechaInicio;
+            }
+
             if(mouseEnterInfo.view.type !== 'listWeek') {
                 const elemento =  $(mouseEnterInfo.el);
                 elemento.popover({
@@ -147,10 +156,10 @@ function modificarEventos(event) {
         let idEvento = eventObj.id
         let url = `/administracion/reservas-sala-juntas/${idEvento}/editar`;
         let fechaInicial = moment(eventObj.start).format('YYYY-MM-DD HH:mm:ss');
-        let fechaFinal = moment(eventObj.end).format('YYYY-MM-DD HH:mm:ss');
+        let fechaFin = moment(eventObj.end).format('YYYY-MM-DD HH:mm:ss');
         let fechas = {
             'inicio': fechaInicial,
-            'fin': eventObj.end ? fechaFinal : fechaInicial
+            'fin': eventObj.end ? fechaFin : fechaInicial
         };
         abrirModalCrearReserva(url, fechas);
     }
@@ -215,7 +224,7 @@ function configurarModalCrear(fechas) {
     inicializarSelect2('responsable_select_id', modalCrearReserva);
     inicializarDateRangePicker('fecha_intervalo_id');
 
-    fechaIntervalo.data('daterangepicker').minDate = moment().format('YYYY-MM-DD HH:mm:ss');
+    fechaIntervalo.data('daterangepicker').minDate = moment();
 
     if (fechas) {
         fechaIntervalo.data('daterangepicker').setStartDate(fechas.inicio);
