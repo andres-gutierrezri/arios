@@ -12,4 +12,8 @@ permisos = [Permiso('index', None),
             Permiso('colaboradores-editar', ['TalentoHumano.change_colaborador']),
             Permiso('colaboradores-eliminar', ['TalentoHumano.delete_colaborador']),
             Permiso('colaboradores-permisos', ['auth.change_permission']),
+            Permiso('permiso-laboral-index', ['TalentoHumano.view_permisolaboral']),
+            Permiso('permiso-laboral-crear', ['TalentoHumano.add_permisolaboral']),
+            Permiso('permiso-laboral-editar', ['TalentoHumano.change_permisolaboral']),
+            Permiso('permiso-laboral-eliminar', ['TalentoHumano.delete_permisolaboral']),
             ]
