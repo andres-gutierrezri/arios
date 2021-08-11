@@ -31,7 +31,7 @@ urlpatterns = [
          name='grupos-actividades-eliminar'),
     path('grupos-actividades/<int:id_grupo>/reporte-eficiencia',
          grupos_actividades.GruposActividadesReporteEficienciaView.as_view(), name='reporte-eficiencia-grupo'),
-    path('grupos-actividades/reporte-eficiencia-grafica',
+    path('grupos-actividades/<int:id_grupo>/reporte-eficiencia-grafica',
          grupos_actividades.GruposActividadesReporteEficienciaGraficaView.as_view(), name='reporte-eficiencia-grafica'),
     path('actividades/index', actividades.ActividadesIndexView.as_view(),
          name='actividades-index'),

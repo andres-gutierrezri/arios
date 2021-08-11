@@ -259,7 +259,7 @@
                                                                                             </div>
                                                                                         {% endif %}
                                                                                     {% endif %}
-                                                                                    {% if perms.GestionActividades.change_actividad %}
+                                                                                    {% if perms.TalentoHumano.permission_director_proceso or perms.TalentoHumano.permission_gerencial %}
                                                                                         {% if actividad.estado == EstadosActividades.FINALIZADO or actividad.estado == EstadosActividades.CERRADA or actividad.estado == EstadosActividades.REABIERTA%}
                                                                                             <div class="col-md-2">
                                                                                                 <small>

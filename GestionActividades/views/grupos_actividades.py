@@ -2,6 +2,7 @@ import json
 
 from django.contrib.auth.models import User
 from django.db import IntegrityError
+from django.db.models import Q
 from django.db.transaction import atomic, rollback
 from django.shortcuts import render
 from django.contrib import messages
@@ -246,50 +247,6 @@ class GruposActividadesReporteEficienciaView(AbstractEvaLoggedView):
         actividades = actividades.values('id', 'nombre', 'fecha_fin', 'estado', 'porcentaje_avance', 'fecha_inicio',
                                          'tiempo_invertido', 'tiempo_estimado')
 
-        actividades_fechas_ordenadas = Actividad.objects.filter(grupo_actividad_id=id_grupo).order_by('fecha_fin').\
-            exclude(estado=EstadosActividades.ANULADA).values('fecha_fin')
-
-        numero_actividades_pendientes = actividades_fechas_ordenadas.count()
-        igual_fecha_fin = actividades_fechas_ordenadas[0]
-
-        coordenadas_tiempo_estimado = [{'fecha': str(igual_fecha_fin['fecha_fin']),
-                                        'numero_actividades_pendientes': numero_actividades_pendientes}]
-
-        for actividad_fecha_fin in actividades_fechas_ordenadas:
-            if actividad_fecha_fin != igual_fecha_fin:
-                coordenadas_tiempo_estimado.append({'fecha': str(actividad_fecha_fin['fecha_fin']),
-                                                    'numero_actividades_pendientes': numero_actividades_pendientes})
-                igual_fecha_fin = actividad_fecha_fin
-                numero_actividades_pendientes -= 1
-            else:
-                numero_actividades_pendientes -= 1
-
-        actividades_ids_grupo = actividades_fechas_ordenadas.values('id')
-
-        actividades_finalizadas = SoporteActividad.objects.filter(actividad_id__in=actividades_ids_grupo)\
-            .distinct('actividad_id').values('fecha_fin')
-
-        fechas_fin_ordenadas = []
-
-        for actividad_fecha_fin in actividades_finalizadas:
-            fechas_fin_ordenadas.append(actividad_fecha_fin['fecha_fin'])
-
-        fechas_fin_ordenadas = sorted(fechas_fin_ordenadas)
-        numero_actividades = actividades_fechas_ordenadas.count()
-        fecha_fin_igual = fechas_fin_ordenadas[0]
-
-        coordenadas_tiempo_real = [{'fecha': str(fecha_fin_igual),
-                                    'numero_actividades_pendientes': numero_actividades}]
-
-        for fecha_fin in fechas_fin_ordenadas:
-            if fecha_fin != fecha_fin_igual:
-                coordenadas_tiempo_real.append({'fecha': str(fecha_fin),
-                                                'numero_actividades_pendientes': numero_actividades})
-                fecha_fin_igual = fecha_fin
-                numero_actividades -= 1
-            else:
-                numero_actividades -= 1
-
         actividades_en_proceso = actividades.filter(estado=EstadosActividades.EN_PROCESO).count()
         actividades_cerradas = actividades.filter(estado=EstadosActividades.CERRADA).count()
 
@@ -360,19 +317,74 @@ class GruposActividadesReporteEficienciaView(AbstractEvaLoggedView):
                        'pe_actividades_cerradas': pe_actividades_cerradas,
                        'actividades_en_proceso': actividades_en_proceso,
                        'actividades_cerradas': actividades_cerradas,
-                       'coordenadas_tiempo_estimado': coordenadas_tiempo_estimado,
-                       'coordenadas_tiempo_real': coordenadas_tiempo_real,
                        'EstadosActividades': EstadosActividades})
 
 
 class GruposActividadesReporteEficienciaGraficaView(AbstractEvaLoggedView):
-    def post(self, request):
+    def post(self, request, id_grupo):
+        fecha_minima = request.POST['rango_fechas'].split(" - ")[0]
+        fecha_maxima = request.POST['rango_fechas'].split(" - ")[-1]
 
-        return RespuestaJson.exitosa(datos=[1, 2, 3])
+        actividades_fechas_ordenadas = Actividad.objects.filter(grupo_actividad_id=id_grupo).order_by('fecha_fin'). \
+            exclude(estado=EstadosActividades.ANULADA).values('fecha_fin')
+
+        numero_actividades_pendientes = actividades_fechas_ordenadas.count()
+        igual_fecha_fin = actividades_fechas_ordenadas[0]
+
+        coordenadas_tiempo_estimado = [{'fecha': str(igual_fecha_fin['fecha_fin']),
+                                        'numero_actividades_pendientes': numero_actividades_pendientes}]
+
+        for actividad_fecha_fin in actividades_fechas_ordenadas:
+            if actividad_fecha_fin != igual_fecha_fin:
+                coordenadas_tiempo_estimado.append({'fecha': str(actividad_fecha_fin['fecha_fin']),
+                                                    'numero_actividades_pendientes': numero_actividades_pendientes})
+                igual_fecha_fin = actividad_fecha_fin
+                numero_actividades_pendientes -= 1
+            else:
+                numero_actividades_pendientes -= 1
+
+        actividades_ids_grupo = actividades_fechas_ordenadas.values('id')
+
+        actividades_finalizadas = SoporteActividad.objects.filter(actividad_id__in=actividades_ids_grupo) \
+            .distinct('actividad_id').values('fecha_fin')
+
+        fechas_fin_ordenadas = []
+
+        for actividad_fecha_fin in actividades_finalizadas:
+            fechas_fin_ordenadas.append(actividad_fecha_fin['fecha_fin'])
+
+        fechas_fin_ordenadas = sorted(fechas_fin_ordenadas)
+        numero_actividades = actividades_fechas_ordenadas.count()
+        fecha_fin_igual = fechas_fin_ordenadas[0]
+
+        coordenadas_tiempo_real = [{'fecha': str(fecha_fin_igual),
+                                    'numero_actividades_pendientes': numero_actividades}]
+
+        for fecha_fin in fechas_fin_ordenadas:
+            if fecha_fin != fecha_fin_igual:
+                coordenadas_tiempo_real.append({'fecha': str(fecha_fin),
+                                                'numero_actividades_pendientes': numero_actividades})
+                fecha_fin_igual = fecha_fin
+                numero_actividades -= 1
+            else:
+                numero_actividades -= 1
+
+        progreso_estimado = []
+        for coordenada_tiempo_estimado in coordenadas_tiempo_estimado:
+            if fecha_minima < coordenada_tiempo_estimado['fecha'] < fecha_maxima:
+                progreso_estimado.append(coordenada_tiempo_estimado)
+
+        progreso_real = []
+        for coordenada_tiempo_real in coordenadas_tiempo_real:
+            if fecha_minima < coordenada_tiempo_real['fecha'] < fecha_maxima:
+               progreso_real.append(coordenada_tiempo_real)
+
+        listas_progreso = {'progreso_estimado': progreso_estimado, 'progreso_real': progreso_real}
+
+        return RespuestaJson.exitosa(datos=listas_progreso)
 
 
 def datos_xa_render(request, grupo_actividad: GrupoActividad = None) -> dict:
-
     grupos = GrupoActividad.objects.get_xa_select_activos()
 
     contratos = Contrato.objects \

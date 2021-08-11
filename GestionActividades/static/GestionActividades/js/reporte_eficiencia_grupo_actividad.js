@@ -3,11 +3,26 @@
 $(document).ready(function () {
     const rangoFechasID = $('#rango_fechas_id');
 
-    function parseDate(fecha) {
+    inicializarDateRangePicker('rango_fechas_id');
+    rangoFechasID.daterangepicker({
+            startDate: moment().add(-1, 'month'),
+            endDate: moment().add(1, 'month'),
+            locale: {format: 'YYYY-MM-DD',}
+        }
+    );
+
+    onChangeFechas(rangoFechasID)
+    rangoFechasID.on('change', onChangeFechas);
+
+    configurarFiltroConsecutivos();
+
+});
+
+function parseDate(fecha) {
         return new Date(Date.parse(fecha)).getTime();
     }
 
-    function formatoFlot(dt) {
+function formatoFlot(dt) {
         let retorno = [];
         for (let i = 0; i < dt.length; i++) {
             retorno.push([parseDate(dt[i].fecha), dt[i].numero_actividades_pendientes]);
@@ -15,7 +30,14 @@ $(document).ready(function () {
         return retorno;
     }
 
-    var flot_toggle = function () {
+function onChangeFechas(e) {
+    let form = $('#rango_fechas_form')[0];
+    enviarFormularioAsyncCallBack(form,  `/gestion-actividades/grupos-actividades/${grupoID}/reporte-eficiencia-grafica`, "cargando").then(json => {
+        if (json.estado === 'OK') {
+            var datos = json.datos;
+            let coordenadas_tiempo_estimado = Object.values(datos["progreso_estimado"]);
+            let coordenadas_tiempo_real = Object.values(datos["progreso_real"]);
+            var flot_toggle = function () {
         var data = [
             {},
             {
@@ -108,25 +130,6 @@ $(document).ready(function () {
     }
     flot_toggle();
 
-    inicializarDateRangePicker('rango_fechas_id');
-    rangoFechasID.daterangepicker({
-            startDate: moment(),
-            endDate: moment().add(1, 'month'),
-            locale: {format: 'YYYY-MM-DD',}
-        }
-    );
-    rangoFechasID.on('change', onChangeFechas);
-    configurarFiltroConsecutivos();
-
-});
-
-function onChangeFechas(e) {
-    console.log("Submit");
-    let form = $('#rango_fechas_form')[0];
-    enviarFormularioAsyncCallBack(form,  `/gestion-actividades/grupos-actividades/reporte-eficiencia-grafica`, "cargando").then(json => {
-        if (json.estado === 'OK') {
-            var datos = json.datos;
-            console.log(datos);
         } else {
             EVANotificacion.toast.error(json.estado === 'error' ? json.mensaje : 'No tiene permisos para acceder a esta funcionalidad');
         }
