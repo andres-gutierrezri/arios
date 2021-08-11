@@ -150,9 +150,9 @@ function modificarEventos(event) {
         let fechaFinal = moment(eventObj.end).format('YYYY-MM-DD HH:mm:ss');
         let fechas = {
             'inicio': fechaInicial,
-            'fin':eventObj.end ? fechaFinal : fechaInicial
+            'fin': eventObj.end ? fechaFinal : fechaInicial
         };
-        abrirModalCrearReserva(url, fechas, true);
+        abrirModalCrearReserva(url, fechas);
     }
 }
 
@@ -210,15 +210,21 @@ function fFinalizarReunion(valor) {
 }
 
 function configurarModalCrear(fechas) {
+    let fechaIntervalo = $('#fecha_intervalo_id');
+
     inicializarSelect2('responsable_select_id', modalCrearReserva);
     inicializarDateRangePicker('fecha_intervalo_id');
-    $('#fecha_intervalo_id').data('daterangepicker').minDate=moment();
+
+    fechaIntervalo.data('daterangepicker').minDate = moment().format('YYYY-MM-DD HH:mm:ss');
+
     if (fechas) {
-        $('#fecha_intervalo_id').data('daterangepicker').setStartDate(fechas.inicio);
-        $('#fecha_intervalo_id').data('daterangepicker').setEndDate(fechas.fin);
+        fechaIntervalo.data('daterangepicker').setStartDate(fechas.inicio);
+        fechaIntervalo.data('daterangepicker').setEndDate(fechas.fin);
     }
+
     modalCrearReserva.on('hidden.bs.modal', function () {
         calendario.refetchEvents();
     });
+
     agregarValidacionFormularios();
 }
