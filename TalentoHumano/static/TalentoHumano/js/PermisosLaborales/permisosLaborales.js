@@ -32,13 +32,14 @@ function configurarModalCrear() {
     $('#archivo_id').change(function (e) {
         let label_input = $('.custom-file-label');
         let extension = e.target.files[0].name.split('.').pop();
-        if (extension === 'pdf' || extension === 'docx'){
+        if (extension === 'pdf' || extension === 'doc' || extension === 'docx' || extension === 'jpeg' ||
+            extension === 'jpg' || extension === 'png' || extension === 'gif') {
             label_input.html(e.target.files[0].name);
-        }else{
+        } else {
             label_input.html('Seleccione un archivo');
             e.target.value = '';
             EVANotificacion.toast.error('El archivo ingresado no tiene un formato compatible. ' +
-                                        '(Formatos Aceptados: PDF o Documento Word)');
+                                        '(Formatos Aceptados: PDF, Documento Word o Imagen)');
             return false;
         }
     });
