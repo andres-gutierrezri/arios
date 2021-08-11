@@ -104,6 +104,9 @@ class Colaborador(Persona, ModelDjangoExtensiones):
                        ("view_archivo_historial", "Can view archivo historial"),
                        ("can_gestioncompletasgi", "Can gestion completa SGI"),
                        ("can_access_usuarioespecial", "Can access like usuario especial"),
+                       ("permission_colaborador_actividad", "Can access the activities assigned"),
+                       ("permission_director_proceso", "Can access assigned activities and process groups"),
+                       ("permission_gerencial", "Can access the entire activity management module"),
                        )
 
     def empresa_to_dict(self):

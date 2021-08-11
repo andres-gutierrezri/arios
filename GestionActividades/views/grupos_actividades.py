@@ -1,10 +1,7 @@
 import json
 
-
 from django.contrib.auth.models import User
 from django.db import IntegrityError
-from django.db.models import Q
-from django.http import HttpResponse
 from django.db.transaction import atomic, rollback
 from django.shortcuts import render
 from django.contrib import messages
@@ -24,9 +21,37 @@ from TalentoHumano.models import Colaborador
 
 class GruposActividadesIndexView(AbstractEvaLoggedView):
     def get(self, request):
-        grupos_actividades = GrupoActividad.objects.get_xa_select_activos().values('id', 'nombre',
-                                                                                   'contrato_id', 'proceso_id')
-        actividades = Actividad.objects.values('id', 'grupo_actividad_id', 'estado')
+        grupos_actividades = []
+        actividades = []
+        if request.user.has_perm('TalentoHumano.permission_gerencial'):
+            grupos_actividades = GrupoActividad.objects.get_xa_select_activos().values('id', 'nombre',
+                                                                                       'contrato_id', 'proceso_id')
+            actividades = Actividad.objects.values('id', 'grupo_actividad_id', 'estado').\
+                exclude(estado=EstadosActividades.ANULADA)
+
+        if request.user.has_perm('TalentoHumano.permission_director_proceso'):
+            usuario_id = User.objects.get(username=request.user)
+            colaborador_id = Colaborador.objects.get(usuario_id=usuario_id)
+            contratos_id = Contrato.objects.get_xa_select_activos().filter(proceso_a_cargo_id=colaborador_id.proceso_id)
+            contratos_id = contratos_id.values('id')
+            actividades_responsable = ResponsableActividad.objects.filter(responsable_id=colaborador_id.usuario_id)
+            actividades_responsable = actividades_responsable.values('actividad_id')
+
+            actividades = Actividad.objects.filter(Q(id__in=actividades_responsable) |
+                                                   Q(supervisor_id=colaborador_id.usuario_id)). \
+                exclude(estado=EstadosActividades.ANULADA)
+
+            grupos_actividades_ids = actividades.values('grupo_actividad_id')
+            grupos_actividades = GrupoActividad.objects.get_xa_select_activos().filter(Q(contrato_id__in=contratos_id) |
+                                                                                       Q(proceso_id=colaborador_id.
+                                                                                         proceso_id) |
+                                                                                       Q(id__in=grupos_actividades_ids) |
+                                                                                       Q(nombre__iexact='Generales'))
+
+            grupos_actividades = grupos_actividades.values('id', 'nombre', 'contrato_id', 'proceso_id')
+
+            actividades = actividades.values('id', 'grupo_actividad_id', 'estado')
+
         contratos = Contrato.objects.get_xa_select_activos()
         procesos = Proceso.objects.get_xa_select_activos()
         colaboradores = Colaborador.objects.get_xa_select_activos()
@@ -62,7 +87,7 @@ class GruposActividadesIndexView(AbstractEvaLoggedView):
                     datos_grupo[int(indice)]['nombre'] += (responsable['first_name'] + ' ' +
                                                            responsable['last_name'] + ', ')
             if conteo_actividades - actividades_pendientes != 0:
-                progreso = int(((conteo_actividades - actividades_pendientes) / conteo_actividades) * 100)
+                progreso = int(((conteo_actividades - actividades_pendientes)/conteo_actividades)*100)
 
             datos_grupo[int(indice)]['actividades'] += conteo_actividades
             datos_grupo[int(indice)]['actividades_pendientes'] += actividades_pendientes
@@ -347,6 +372,7 @@ class GruposActividadesReporteEficienciaGraficaView(AbstractEvaLoggedView):
 
 
 def datos_xa_render(request, grupo_actividad: GrupoActividad = None) -> dict:
+
     grupos = GrupoActividad.objects.get_xa_select_activos()
 
     contratos = Contrato.objects \
