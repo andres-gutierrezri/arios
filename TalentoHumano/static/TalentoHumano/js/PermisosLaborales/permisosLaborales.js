@@ -21,13 +21,22 @@ $(document).ready(function () {
     iniciarDataTableN({buscar: false, paginar: false, ordenar: false, detallesColumnas: columnDefs});
 });
 
-function abrirModalCrear(url) {
-    cargarAbrirModal(modalCrearPermiso, url, configurarModalCrear);
+function abrirModalCrear(url, fechaStart = moment().format('YYYY-MM-DD HH:mm:ss'),
+                         fechaEnd = moment().add(1, 'd').format('YYYY-MM-DD HH:mm:ss')) {
+    cargarAbrirModal(modalCrearPermiso, url, function () {
+        configurarModalCrear(fechaStart, fechaEnd);
+    });
 }
 
-function configurarModalCrear() {
+function configurarModalCrear(fechaStart, fechaEnd) {
+    let fechas = $('#fecha_intervalo_id');
+
     inicializarSelect2('tipo_permiso_select_id', modalCrearPermiso);
     inicializarDateRangePicker('fecha_intervalo_id');
+
+    fechas.data('daterangepicker').minDate = false;
+    fechas.data('daterangepicker').setStartDate(fechaStart);
+    fechas.data('daterangepicker').setEndDate(fechaEnd);
 
     $('#archivo_id').change(function (e) {
         let label_input = $('.custom-file-label');
