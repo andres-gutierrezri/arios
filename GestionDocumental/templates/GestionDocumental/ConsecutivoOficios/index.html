@@ -65,7 +65,7 @@
                                                         </td>
                                                         <td>{{ consecutivo.fecha | date:'Y-m-d H:i'}}</td>
                                                         <td>{% if consecutivo.contrato %}
-                                                                {{ consecutivo.contrato}} - {{ consecutivo.contrato.cliente }}
+                                                                {{ consecutivo.contrato}}
                                                             {% else %}
                                                                 {% for col in colaborador %}
                                                                     {% if col.usuario_id == consecutivo.usuario.id %}
