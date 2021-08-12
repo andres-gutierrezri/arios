@@ -209,7 +209,6 @@ def datos_xa_render(request, consecutivo: ConsecutivoOficio = None) -> dict:
              'menu_actual': 'consecutivos-oficios'}
 
     if consecutivo:
-        print(consecutivo)
         datos['consecutivo'] = consecutivo
         datos['editar'] = True
 

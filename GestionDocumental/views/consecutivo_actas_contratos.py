@@ -169,7 +169,6 @@ def datos_xa_render(request, consecutivo: ConsecutivoActasContratos = None) -> d
              'tipo_acta': tipos_actas}
 
     if consecutivo:
-        print(consecutivo)
         datos['consecutivo'] = consecutivo
         datos['editar'] = True
 
