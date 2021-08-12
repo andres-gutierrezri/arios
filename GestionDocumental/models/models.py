@@ -270,8 +270,8 @@ class ConsecutivoViaticosComisiones(ConsecutivoBase):
         return self.codigo
 
     class Meta:
-        verbose_name = 'Consecutivo Plan de trabajo'
-        verbose_name_plural = 'Consecutivos Plan de trabajo'
+        verbose_name = 'Consecutivo Viáticos y Comisiones'
+        verbose_name_plural = 'Consecutivos Viáticos y Comisiones'
 
     @staticmethod
     def from_dictionary(datos: dict) -> 'ConsecutivoViaticosComisiones':
