@@ -90,7 +90,7 @@ function onChangeFechas(e) {
                 {
                     mode: "time",
                     timeBase: "milliseconds",
-                    timeformat: "%b %Y"
+                    timeformat: "%Y-%m-%d"
                 },
             yaxes:
                 {
@@ -134,15 +134,4 @@ function onChangeFechas(e) {
             EVANotificacion.toast.error(json.estado === 'error' ? json.mensaje : 'No tiene permisos para acceder a esta funcionalidad');
         }
     });
-}
-
-function unescapep(s) {
-    return s.replace(/&amp;/g, "&")
-        .replace(/&apos;/g, "'")
-        .replace(/&#x27;/g, "'")
-        .replace(/&lt;/g, "<")
-        .replace(/&gt;/g, ">")
-        .replace(/&quot;/g, "\"")
-        .replace(/\\u00ed/g, "í")
-        .replace(/\\u00f3/g, "í");
 }
