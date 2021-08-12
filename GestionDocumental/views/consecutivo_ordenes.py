@@ -73,7 +73,7 @@ class ConsecutivoOrdenesTrabajoCrearView(AbstractEvaLoggedView):
         consecutivo.usuario_crea = request.user
         consecutivo.empresa_id = get_id_empresa_global(request)
         try:
-            consecutivo.full_clean(exclude=['consecutivo', 'codigo'])
+            consecutivo.full_clean(exclude=['consecutivo', 'codigo', 'fecha_final'])
         except ValidationError as errores:
             return RespuestaJson.error('Falló generación del consecutivo. '
                                        'Valide los datos ingresados al editar el consecutivo')

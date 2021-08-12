@@ -40,6 +40,7 @@ function configurarModalCrear() {
     inicializarSelect2('proceso_id_select_id', modalCrearEditar);
     inicializarDatePicker('fecha_inicio_id');
     inicializarDatePicker('fecha_final_id');
+    $('#fecha_final_id').attr("required", false);
 
     fechaInicioID.change(function () {
         if (new Date(fechaInicioID.val()) > new Date(fechaFinalID.val())) {
