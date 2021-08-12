@@ -25,7 +25,7 @@
                         <div class="panel-hdr">
                             <h2 class="small">
                                 {% if  perms.GestionDocumental.add_ordenestrabajo %}
-                                    <span class="fad fa-2x fa-plus-circle cursor-pointer" onclick="abrirModalCrear('{% url 'GestionDocumental:consecutivo-ordenestrabajo-crear'%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar consecutivo de orden de trabajo">
+                                    <span class="fad fa-2x fa-plus-circle cursor-pointer" onclick="abrirModalCrear('{% url 'GestionDocumental:consecutivo-ordenestrabajo-crear' 0%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar consecutivo de orden de trabajo">
                                     </span>
                                 {% endif %}
                             </h2>
@@ -66,9 +66,15 @@
                                                             <span><a class="fad fa-copy" href="javascript:void(0);"  onclick="copiarAPortapapeles('{{ consecutivo.codigo }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Copiar"></a></span>
                                                         </td>
                                                         <td>{{ consecutivo.fecha_inicio | date:'Y-m-d'}}</td>
-                                                        <td>{{ consecutivo.fecha_final | date:'Y-m-d'}}</td>
+                                                        <td>
+                                                            {% if consecutivo.fecha_final %}
+                                                                {{ consecutivo.fecha_final | date:'Y-m-d'}}
+                                                            {% else %}
+                                                                Indefinido
+                                                            {% endif %}
+                                                        </td>
                                                         <td>{% if consecutivo.contrato %}
-                                                                {{ consecutivo.contrato}} - {{ consecutivo.contrato.cliente }}
+                                                                {{ consecutivo.contrato}}
                                                             {% else %}
                                                                 {% for col in colaborador %}
                                                                     {% if col.usuario_id == consecutivo.usuario.id %}
@@ -95,6 +101,9 @@
                                                             {% endif %}
                                                             {% if perms.GestionDocumental.delete_ordenestrabajo and consecutivo.estado %}
                                                               <a class="fad fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ consecutivo.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ consecutivo.id }}, true)" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+                                                            {% endif %}
+                                                            {% if perms.GestionDocumental.add_ordenestrabajo  and consecutivo.estado %}
+                                                              <a class="fad fa-2x fad fa-retweet" href="javascript:void(0);" onclick="abrirModalCrear('{% url 'GestionDocumental:consecutivo-ordenestrabajo-crear' consecutivo.id%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Reutilizar"></a>
                                                             {% endif %}
                                                         </td>
                                                     </tr>

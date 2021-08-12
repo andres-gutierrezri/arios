@@ -204,7 +204,6 @@ def datos_xa_render(request, consecutivo: ConsecutivoViaticosComisiones = None) 
              'menu_actual': 'consecutivos-requerimientos'}
 
     if consecutivo:
-        print(consecutivo)
         datos['consecutivo'] = consecutivo
         datos['editar'] = True
 

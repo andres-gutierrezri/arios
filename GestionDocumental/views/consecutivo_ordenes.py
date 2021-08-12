@@ -61,16 +61,19 @@ class ConsecutivoOrdenesTrabajoView(AbstractEvaLoggedView):
 
 
 class ConsecutivoOrdenesTrabajoCrearView(AbstractEvaLoggedView):
-    def get(self, request):
+    def get(self, request, id):
+        consecutivo = ''
+        if id != 0:
+            consecutivo = ConsecutivoOrdenesTrabajo.objects.get(id=id)
         return render(request, 'GestionDocumental/ConsecutivoOrdenesTrabajo/_modal_crear_editar_consecutivo.html',
-                      datos_xa_render(request))
+                      datos_xa_render(request, False, consecutivo))
 
-    def post(self, request):
+    def post(self, request, id):
         consecutivo = ConsecutivoOrdenesTrabajo.from_dictionary(request.POST)
         consecutivo.usuario_crea = request.user
         consecutivo.empresa_id = get_id_empresa_global(request)
         try:
-            consecutivo.full_clean(exclude=['consecutivo', 'codigo'])
+            consecutivo.full_clean(exclude=['consecutivo', 'codigo', 'fecha_final'])
         except ValidationError as errores:
             return RespuestaJson.error('Falló generación del consecutivo. '
                                        'Valide los datos ingresados al editar el consecutivo')
@@ -104,7 +107,7 @@ class ConsecutivoOrdenesTrabajoEditarView(AbstractEvaLoggedView):
     def get(self, request, id):
         consecutivo = ConsecutivoOrdenesTrabajo.objects.get(id=id)
         return render(request, 'GestionDocumental/ConsecutivoOrdenesTrabajo/_modal_crear_editar_consecutivo.html',
-                      datos_xa_render(request, consecutivo))
+                      datos_xa_render(request, True, consecutivo))
 
     def post(self, request, id):
         update_fields = ['fecha_modificacion', 'contrato_id', 'codigo', 'descripcion',
@@ -181,7 +184,7 @@ class ConsecutivoOrdenesTrabajoEliminarView(AbstractEvaLoggedView):
             return RespuestaJson.error('Ha ocurrido un error al realizar la acción')
 
 
-def datos_xa_render(request, consecutivo: ConsecutivoOrdenesTrabajo = None) -> dict:
+def datos_xa_render(request, editar, consecutivo: ConsecutivoOrdenesTrabajo = None) -> dict:
     contratos = Contrato.objects \
         .filter(empresa_id=get_id_empresa_global(request)) \
         .values('id', 'numero_contrato', 'cliente__nombre')
@@ -203,8 +206,7 @@ def datos_xa_render(request, consecutivo: ConsecutivoOrdenesTrabajo = None) -> d
              'menu_actual': 'consecutivos-ordenestrabajo'}
 
     if consecutivo:
-        print(consecutivo)
         datos['consecutivo'] = consecutivo
-        datos['editar'] = True
+        datos['editar'] = editar
 
     return datos
