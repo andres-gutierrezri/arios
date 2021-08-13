@@ -23,7 +23,7 @@
                     <div id="panel-1" class="panel">
                         <div class="panel-hdr">
                             <h2 class="small">
-                            {% if perms.GestionDocumental.add_consecutivorequerimientos %}
+                            {% if perms.GestionDocumental.add_consecutivorequerimiento %}
                                     <span class="fad fa-2x fa-plus-circle cursor-pointer" onclick="abrirModalCrear('{% url 'GestionDocumental:consecutivo-requerimientos-crear'%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar consecutivo de requerimiento interno">
                                     </span>
                                 {% endif %}
@@ -83,10 +83,10 @@
                                                             {% endif %}
                                                         </td>
                                                         <td>
-                                                            {% if perms.GestionDocumental.change_consecutivorequerimientos and consecutivo.estado %}
+                                                            {% if perms.GestionDocumental.change_consecutivorequerimiento and consecutivo.estado %}
                                                               <a class="fad fa-2x fa-file-edit" id="editar_{{ consecutivo.id }}" href="javascript:abrirModalCrear('{% url 'GestionDocumental:consecutivo-requerimientos-editar' consecutivo.id%}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
                                                             {% endif %}
-                                                            {% if perms.GestionDocumental.delete_consecutivorequerimientos and consecutivo.estado %}
+                                                            {% if perms.GestionDocumental.delete_consecutivorequerimiento and consecutivo.estado %}
                                                               <a class="fad fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ consecutivo.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ consecutivo.id }}, true)" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
                                                             {% endif %}
                                                         </td>
