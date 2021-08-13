@@ -71,10 +71,24 @@ class ActividadesIndexView(AbstractEvaLoggedView):
 
         responsable_actividad = ResponsableActividad.objects.values('responsable_id', 'actividad_id')
         colaboradores = User.objects.values('id', 'first_name', 'last_name')
-        search = request.GET.get('search', '')
+        search = request.GET.get('search', 'En Proceso')
 
         if search:
-            actividades = actividades.filter(Q(nombre__icontains=search))
+            if search == 'Creada':
+                actividades = actividades.filter(Q(estado=EstadosActividades.CREADA))
+            elif search == 'En Proceso':
+                actividades = actividades.filter(Q(estado=EstadosActividades.EN_PROCESO))
+            elif search == 'Finalizada':
+                actividades = actividades.filter(Q(estado=EstadosActividades.FINALIZADO))
+            elif search == 'Cerrada':
+                actividades = actividades.filter(Q(estado=EstadosActividades.CERRADA))
+            elif search == 'Reabierta':
+                actividades = actividades.filter(Q(estado=EstadosActividades.REABIERTA))
+            else:
+                actividades = actividades.filter(Q(nombre__icontains=search))
+            grupos_actividades_ids = actividades.values('grupo_actividad_id')
+            grupos = grupos.filter(Q(id__in=grupos_actividades_ids)).values('id', 'nombre', 'grupo_actividad_id',
+                                                                            'estado')
 
         if id:
             grupos = grupos.filter(Q(id=id) | Q(nombre__iexact='Generales') | Q(grupo_actividad_id=id))
@@ -98,6 +112,13 @@ class ActividadesIndexView(AbstractEvaLoggedView):
         usuario_modifica = request.user
         usuario_id = User.objects.get(username=usuario_modifica)
 
+        estados = []
+        estados_count = 0
+        for estado in EstadosActividades.choices:
+            estados_count += 1
+            if estados_count < 6:
+                estados.append(estado)
+
         return render(request, 'GestionActividades/Actividades/index.html',
                       {'actividades': actividades,
                        'grupos': grupos,
@@ -106,6 +127,7 @@ class ActividadesIndexView(AbstractEvaLoggedView):
                        'buscar': search,
                        'archivos_soporte': archivos_soporte,
                        'EstadosActividades': EstadosActividades,
+                       'estados': estados,
                        'avances_actividad': avances_actividad,
                        'fecha': app_datetime_now(),
                        'usuario_id': usuario_id.id,

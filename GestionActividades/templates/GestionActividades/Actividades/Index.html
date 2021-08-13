@@ -39,7 +39,18 @@
                         <div class="panel-content">
                             <div class="panel-group">
                                 <div class="panel-body">
-                                    {% include 'EVA/_common/_busqueda_paginacion.html'%}
+                                    <div class="form-group">
+                                         <div class="form-row">
+                                                {% include 'EVA/_common/_busqueda_paginacion.html'%}
+                                             <div class="col-md-2">
+                                                <form id="rango_fechas_form" method="post" class="needs-validation" novalidate>
+                                                    <div class="text-muted mt-0 mb-0 pt-0 pb-0">
+                                                        {% select_tag estados 'estados_actividades' 'Busqueda por estado' texto_label="" value='' is_tupla=True required="" mensaje_validacion='Por favor seleccione un supervisor' invalido=errores.supervisor %}
+                                                    </div>
+                                                </form>
+                                            </div>
+                                         </div>
+                                    </div>
                                     <div class="form-group">
                                          <div class="form-row">
                                              <div class="col-xl-12">

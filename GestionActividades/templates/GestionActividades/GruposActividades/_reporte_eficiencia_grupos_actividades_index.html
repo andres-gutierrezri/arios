@@ -15,7 +15,7 @@
     <div class="panel-container show">
         <div class="header">
             <h1 class="header-title">
-                <i class='far fa-chart-bar'></i> Reporte de Eficiencia - Grupo Actividades: {{ grupo_actividad.nombre }}
+                <i class='far fa-chart-bar'></i> Reporte de Eficiencia - {{ grupo_actividad.nombre }}
                 <span class='fw-300'></span>
                 <br>
                 <br>
@@ -26,7 +26,8 @@
                 <div id="panel-1" class="panel">
                     <div class="panel-hdr">
                         <h2>
-                            Grafico Actividades <span class="fw-300"></span>
+                            <a class="fs-lg text-dark mr-2">GRAFICA BURN DOWN CHART</a>
+                            <a class="fs-sm text-muted">(Fecha Finalización vs Número de Actividades Pendientes)</a><span class="fw-300"></span>
                         </h2>
                         <div class="panel-toolbar">
                             <button class="btn btn-panel" data-action="panel-collapse" data-toggle="tooltip"
@@ -35,13 +36,17 @@
                     </div>
                     <div class="panel-container show">
                         <div class="panel-content">
-                            <div class="row">
-                                <form id="rango_fechas_form" method="post" class="needs-validation" novalidate>
-                                    <div class="col-12 mt-0 mb-3 pt-0 pb-0">
-                                        {% input_date_tag 'rango_fechas' '' placeholder="Seleccione el rango de fechas para graficar" class="form-control" value='' required="" mensaje_validacion='Por favor seleccione un rango de fechas.' %}
+                             <div class="form-group">
+                                 <div class="form-row">
+                                     <div class="col-md-2">
+                                        <form id="rango_fechas_form" method="post" class="needs-validation" novalidate>
+                                            <div class="mt-0 mb-0 pt-0 pb-0">
+                                                {% input_date_tag 'rango_fechas' '' placeholder="Seleccione el rango de fechas para graficar" class="form-control text-center" value='' required="" mensaje_validacion='Por favor seleccione un rango de fechas.' %}
+                                            </div>
+                                        </form>
                                     </div>
-                                </form>
-                            </div>
+                                 </div>
+                             </div>
                             <div id="js-checkbox-toggles" class="d-flex mb-3">
                                 <div class="custom-control custom-switch mr-2">
                                     <input type="checkbox" class="custom-control-input" name="gra-1" id="gra-1"

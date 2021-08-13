@@ -328,20 +328,13 @@ class GruposActividadesReporteEficienciaGraficaView(AbstractEvaLoggedView):
         actividades_fechas_ordenadas = Actividad.objects.filter(grupo_actividad_id=id_grupo).order_by('fecha_fin'). \
             exclude(estado=EstadosActividades.ANULADA).values('fecha_fin')
 
-        numero_actividades_pendientes = actividades_fechas_ordenadas.count()
-        igual_fecha_fin = actividades_fechas_ordenadas[0]
+        numero_actividades_pendientes = actividades_fechas_ordenadas.count() - 1
 
-        coordenadas_tiempo_estimado = [{'fecha': str(igual_fecha_fin['fecha_fin']),
-                                        'numero_actividades_pendientes': numero_actividades_pendientes}]
-
+        coordenadas_tiempo_estimado = []
         for actividad_fecha_fin in actividades_fechas_ordenadas:
-            if actividad_fecha_fin != igual_fecha_fin:
-                coordenadas_tiempo_estimado.append({'fecha': str(actividad_fecha_fin['fecha_fin']),
-                                                    'numero_actividades_pendientes': numero_actividades_pendientes})
-                igual_fecha_fin = actividad_fecha_fin
-                numero_actividades_pendientes -= 1
-            else:
-                numero_actividades_pendientes -= 1
+            coordenadas_tiempo_estimado.append({'fecha': str(actividad_fecha_fin['fecha_fin']),
+                                                'numero_actividades_pendientes': numero_actividades_pendientes})
+            numero_actividades_pendientes -= 1
 
         actividades_ids_grupo = actividades_fechas_ordenadas.values('id')
 
@@ -354,20 +347,13 @@ class GruposActividadesReporteEficienciaGraficaView(AbstractEvaLoggedView):
             fechas_fin_ordenadas.append(actividad_fecha_fin['fecha_fin'])
 
         fechas_fin_ordenadas = sorted(fechas_fin_ordenadas)
-        numero_actividades = actividades_fechas_ordenadas.count()
-        fecha_fin_igual = fechas_fin_ordenadas[0]
+        numero_actividades = actividades_fechas_ordenadas.count() - 1
 
-        coordenadas_tiempo_real = [{'fecha': str(fecha_fin_igual),
-                                    'numero_actividades_pendientes': numero_actividades}]
-
+        coordenadas_tiempo_real = []
         for fecha_fin in fechas_fin_ordenadas:
-            if fecha_fin != fecha_fin_igual:
-                coordenadas_tiempo_real.append({'fecha': str(fecha_fin),
-                                                'numero_actividades_pendientes': numero_actividades})
-                fecha_fin_igual = fecha_fin
-                numero_actividades -= 1
-            else:
-                numero_actividades -= 1
+            coordenadas_tiempo_real.append({'fecha': str(fecha_fin),
+                                            'numero_actividades_pendientes': numero_actividades})
+            numero_actividades -= 1
 
         progreso_estimado = []
         for coordenada_tiempo_estimado in coordenadas_tiempo_estimado:
