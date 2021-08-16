@@ -12,10 +12,10 @@ $(document).ready(function () {
         { "targets": [1], "width": '8%' },
         { "targets": [2], "width": '8%' },
         { "targets": [3], "width": '26%' },
-        { "targets": [4], "width": '23%' },
+        { "targets": [4], "width": '20%' },
         { "targets": [5], "width": '9%' },
         { "targets": [8], "width": '5%' },
-        { "targets": [9], "width": '5%' }
+        { "targets": [9], "width": '8%' }
     ]
     iniciarDataTableN({buscar: false, paginar: false, ordenar: false, detallesColumnas: columnDefs});
 });
@@ -40,6 +40,7 @@ function configurarModalCrear() {
     inicializarSelect2('proceso_id_select_id', modalCrearEditar);
     inicializarDatePicker('fecha_inicio_id');
     inicializarDatePicker('fecha_final_id');
+    $('#fecha_final_id').attr("required", false);
 
     fechaInicioID.change(function () {
         if (new Date(fechaInicioID.val()) > new Date(fechaFinalID.val())) {

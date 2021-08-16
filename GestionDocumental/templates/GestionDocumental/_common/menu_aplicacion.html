@@ -29,7 +29,7 @@
             </a>
         </li>
         {% endif %}
-        {% if perms.GestionDocumental.view_consecutivorequerimientos %}
+        {% if perms.GestionDocumental.view_consecutivorequerimiento %}
             <li {% if menu_actual == 'consecutivos-requerimientos' %} class="active" {% endif %}>
             <a href="{% url 'GestionDocumental:consecutivo-requerimientos-index' 0 %}" title="Consecutivo de requerimiento interno" data-filter-tags="consecutivo requerimiento">
                 <i class="far fa-file-alt"></i>
@@ -37,7 +37,7 @@
             </a>
         </li>
         {% endif %}
-        {% if perms.GestionDocumental.view_plandetrabajo %}
+        {% if perms.GestionDocumental.view_consecutivoplantrabajo %}
             <li {% if menu_actual == 'consecutivos-plantrabajo' %} class="active" {% endif %}>
             <a href="{% url 'GestionDocumental:consecutivo-plantrabajo-index' 0 %}" title="Consecutivo de plan de trabajo" data-filter-tags="consecutivo plandetrabajo">
                 <i class="far fa-file-alt"></i>
@@ -45,7 +45,7 @@
             </a>
         </li>
         {% endif %}
-        {% if perms.GestionDocumental.view_viaticoscomisiones %}
+        {% if perms.GestionDocumental.view_consecutivoviaticoscomisiones %}
             <li {% if menu_actual == 'consecutivos-viaticoscomisiones' %} class="active" {% endif %}>
             <a href="{% url 'GestionDocumental:consecutivo-viaticoscomisiones-index' 0 %}" title="Consecutivo de viaticos y comisiones" data-filter-tags="consecutivo viaticoscomisiones">
                 <i class="far fa-file-alt"></i>
@@ -53,7 +53,7 @@
             </a>
         </li>
         {% endif %}
-        {% if perms.GestionDocumental.view_ordenestrabajo %}
+        {% if perms.GestionDocumental.view_consecutivoordenestrabajo %}
             <li {% if menu_actual == 'consecutivos-ordenestrabajo' %} class="active" {% endif %}>
             <a href="{% url 'GestionDocumental:consecutivo-ordenestrabajo-index' 0 %}" title="Consecutivo de ordenes de trabajo" data-filter-tags="consecutivo ordenestrabajo">
                 <i class="far fa-file-alt"></i>
@@ -61,7 +61,7 @@
             </a>
         </li>
         {% endif %}
-       {% if perms.GestionDocumental.view_actascontratos %}
+       {% if perms.GestionDocumental.view_consecutivoactascontratos %}
             <li {% if menu_actual == 'consecutivos-actas-contratos' %} class="active" {% endif %}>
             <a href="{% url 'GestionDocumental:consecutivo-actascontratos-index' 0 %}" title="Consecutivo actas de contratos" data-filter-tags="consecutivo actascontratos">
                 <i class="far fa-file-alt"></i>

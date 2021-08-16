@@ -77,7 +77,7 @@ urlpatterns = [
          ConsecutivoViaticosComisioneEliminarView.as_view(), name='consecutivo-viaticoscomisiones-delete'),
     path('consecutivo-ordenestrabajo/<int:id>/index', consecutivo_ordenes.ConsecutivoOrdenesTrabajoView.as_view(),
          name='consecutivo-ordenestrabajo-index'),
-    path('consecutivo-ordenestrabajo/add', consecutivo_ordenes.ConsecutivoOrdenesTrabajoCrearView.as_view(),
+    path('consecutivo-ordenestrabajo/<int:id>/add', consecutivo_ordenes.ConsecutivoOrdenesTrabajoCrearView.as_view(),
          name='consecutivo-ordenestrabajo-crear'),
     path('consecutivo-ordenestrabajo/<int:id>/editar', consecutivo_ordenes.ConsecutivoOrdenesTrabajoEditarView.as_view(),
          name='consecutivo-ordenestrabajo-editar'),

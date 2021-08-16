@@ -270,8 +270,8 @@ class ConsecutivoViaticosComisiones(ConsecutivoBase):
         return self.codigo
 
     class Meta:
-        verbose_name = 'Consecutivo Plan de trabajo'
-        verbose_name_plural = 'Consecutivos Plan de trabajo'
+        verbose_name = 'Consecutivo Viáticos y Comisiones'
+        verbose_name_plural = 'Consecutivos Viáticos y Comisiones'
 
     @staticmethod
     def from_dictionary(datos: dict) -> 'ConsecutivoViaticosComisiones':
@@ -302,7 +302,7 @@ class ConsecutivoViaticosComisiones(ConsecutivoBase):
 
 class ConsecutivoOrdenesTrabajo(ConsecutivoBase):
     fecha_inicio = models.DateField(verbose_name='Fecha Inicial')
-    fecha_final = models.DateField(verbose_name='Fecha Final')
+    fecha_final = models.DateField(verbose_name='Fecha Final', null=True, blank=True)
     descripcion = models.CharField(max_length=100, verbose_name='Descripción', null=False, blank=False)
     contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato', null=True, blank=True)
 
@@ -327,6 +327,8 @@ class ConsecutivoOrdenesTrabajo(ConsecutivoBase):
         consecutivo.fecha_inicio = datos.get('fecha_inicio', '')
         consecutivo.fecha_final = datos.get('fecha_final', '')
         consecutivo.estado = True
+        if not consecutivo.fecha_final:
+            consecutivo.fecha_final = None
 
         return consecutivo
 
