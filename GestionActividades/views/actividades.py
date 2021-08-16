@@ -37,7 +37,7 @@ class ActividadesIndexView(AbstractEvaLoggedView):
 
         actividades = Actividad.objects.values('id', 'nombre', 'grupo_actividad_id', 'descripcion', 'fecha_fin',
                                                'estado', 'porcentaje_avance', 'soporte_requerido', 'fecha_inicio',
-                                               'horas_invertidas', 'tiempo_estimado', 'supervisor_id')
+                                               'tiempo_invertido', 'tiempo_estimado', 'supervisor_id')
         responsable_actividad = ResponsableActividad.objects.values('responsable_id', 'actividad_id')
         colaboradores = User.objects.values('id', 'first_name', 'last_name')
         grupos = GrupoActividad.objects.values('id', 'nombre', 'grupo_actividad_id', 'estado')
@@ -51,8 +51,7 @@ class ActividadesIndexView(AbstractEvaLoggedView):
 
         archivos = SoporteActividad.objects.values('id', 'archivo', 'actividad_id')
 
-        # Slice descartando de la url "privado/GestiónActividades/Actividades/Soportes/" para que solo se
-        # visualice del archivo el código y el Filename
+        # region Slice para que solo visualizar del archivo el código y el Filename
         archivos_soporte = []
         for archivo in archivos:
             nombre_archivo = archivo['archivo'].split("/")[-1]
@@ -63,8 +62,11 @@ class ActividadesIndexView(AbstractEvaLoggedView):
                                      'actividad_id': archivo['actividad_id']})
         # endregion
 
-        avances_actividad = AvanceActividad.objects.values('descripcion', 'fecha_avance', 'horas_empleadas',
+        avances_actividad = AvanceActividad.objects.values('descripcion', 'fecha_avance', 'tiempo_invertido',
                                                            'porcentaje_avance', 'actividad_id', 'responsable_id')
+
+        usuario_modifica = request.user
+        usuario_id = User.objects.get(username=usuario_modifica)
 
         return render(request, 'GestionActividades/Actividades/index.html',
                       {'actividades': actividades,
@@ -76,6 +78,7 @@ class ActividadesIndexView(AbstractEvaLoggedView):
                        'EstadosActividades': EstadosActividades,
                        'avances_actividad': avances_actividad,
                        'fecha': app_datetime_now(),
+                       'usuario_id': usuario_id.id,
                        'menu_actual': 'actividades'})
 
 
@@ -87,11 +90,12 @@ class ActividadesCrearView(AbstractEvaLoggedView):
     def post(self, request):
         try:
             with atomic():
-                grupo_actividad = GrupoActividad.from_dictionary(request.POST)
                 actividad = Actividad.from_dictionary(request.POST)
                 actividad.usuario_crea = request.user
                 actividad.usuario_modifica = request.user
                 responsables = request.POST.getlist('responsables_id[]', None)
+                actividad.fecha_inicio = request.POST.get('fecha_inicio_fin').split(" - ")[0]
+                actividad.fecha_fin = request.POST.get('fecha_inicio_fin').split(" - ")[-1]
 
                 if actividad.grupo_actividad_id == '':
                     try:
@@ -106,7 +110,8 @@ class ActividadesCrearView(AbstractEvaLoggedView):
                     return RespuestaJson.error("Falló crear. Valide los datos ingresados al crear la actividad")
 
                 if Actividad.objects.filter(nombre__iexact=actividad.nombre,
-                                            grupo_actividad_id__exact=actividad.grupo_actividad_id).exists():
+                                            grupo_actividad_id__exact=actividad.grupo_actividad_id).\
+                        exclude(estado=EstadosActividades.ANULADA).exists():
                     return RespuestaJson.error("Falló crear. Ya existe una actividad con el "
                                                "mismo nombre dentro del grupo")
 
@@ -135,8 +140,7 @@ class ActividadesEditarView(AbstractEvaLoggedView):
     def post(self, request, id_actividad):
         try:
             with atomic():
-                # Region que sirve para definir las variables conteo_responsables y cantidad_responsables que son las
-                # que permiten comparar si hubo modificaciones en los responsables de la actividad o no.
+                # region Validación si hubo cambios en los responsables de la actividad
                 responsables = request.POST.getlist('responsables_id[]', None)
 
                 responsables_actividad_db = ResponsableActividad.objects.filter(actividad_id=id_actividad)
@@ -149,12 +153,11 @@ class ActividadesEditarView(AbstractEvaLoggedView):
                                 conteo_responsables += 1
                 else:
                     conteo_responsables = len(responsables)
-                # Endregion
+                # endregion
 
-                # Region que permite determinar si el usuario es supervisor, responsable o ninguno.
+                # region Permite determinar si el usuario es supervisor, responsable o ninguno.
                 supervisor_actividad = Actividad.objects.get(id=id_actividad)
-                responsables_actividad = ResponsableActividad.objects.filter(actividad_id=id_actividad)
-                responsables_actividad = responsables_actividad.values('responsable_id')
+                responsables_actividad = responsables_actividad_db.values('responsable_id')
                 user_modifica = request.user
                 user = User.objects.get(username=user_modifica)
 
@@ -166,30 +169,31 @@ class ActividadesEditarView(AbstractEvaLoggedView):
                 for responsable_actividad in responsables_actividad:
                     if responsable_actividad['responsable_id'] == user.id:
                         usuario = TiposUsuariosActividad.RESPONSABLE
-                # Endregion
+                # endregion
 
                 if usuario == TiposUsuariosActividad.SUPERVISOR:
                     update_fields = ['fecha_modificacion', 'codigo', 'supervisor_id', 'fecha_inicio', 'fecha_fin',
-                                     'nombre', 'descripcion', 'fecha_crea', 'motivo', 'usuario_modifica',
+                                     'nombre', 'descripcion', 'fecha_creacion', 'motivo', 'usuario_modifica',
                                      'usuario_crea', 'grupo_actividad_id', 'estado', 'soporte_requerido',
                                      'tiempo_estimado']
-                    grupo_actividad = GrupoActividad.from_dictionary(request.POST)
-                    actividad = Actividad.from_dictionary(request.POST)
+
                     actividad_db = Actividad.objects.get(id=id_actividad)
+                    actividad = Actividad.from_dictionary(request.POST)
+                    actividad.fecha_inicio = request.POST.get('fecha_inicio_fin').split(" - ")[0]
+                    actividad.fecha_fin = request.POST.get('fecha_inicio_fin').split(" - ")[-1]
                     actividad.estado = actividad_db.estado
-                    actividad.fecha_crea = actividad_db.fecha_crea
+                    actividad.fecha_creacion = actividad_db.fecha_creacion
                     actividad.id = actividad_db.id
                     actividad.usuario_modifica = request.user
-                    actividad.fecha_modificacion = app_datetime_now()
                     actividad.usuario_crea = actividad_db.usuario_crea
-                    actividad.horas_invertidas = actividad_db.horas_invertidas
+                    actividad.tiempo_invertido = actividad_db.tiempo_invertido
                     actividad.soporte_requerido = request.POST.get('soporte_requerido', 'False') == 'True'
 
                     if actividad.grupo_actividad_id == '':
-                        if GrupoActividad.objects.filter(nombre__iexact='generales').exists():
-                            grupo_generales = list(GrupoActividad.objects.values('id').filter(nombre__iexact='generales'))
-                            actividad.grupo_actividad_id = grupo_generales[0].get('id')
-                        else:
+                        try:
+                            grupo_general = GrupoActividad.objects.get(nombre__iexact='generales')
+                            actividad.grupo_actividad_id = grupo_general.id
+                        except (GrupoActividad.DoesNotExist, GrupoActividad.MultipleObjectsReturned):
                             return RespuestaJson.error("Falló editar. El grupo Generales no existe")
 
                     try:
@@ -215,25 +219,28 @@ class ActividadesEditarView(AbstractEvaLoggedView):
                             ResponsableActividad.objects.create(responsable_id=responsable, actividad_id=id_actividad)
 
                 elif usuario == TiposUsuariosActividad.RESPONSABLE:
-                    modificacion_actividad = ModificacionActividad.from_dictionary(request.POST)
-                    modificacion_actividad.actividad_id = id_actividad
-                    actividad = Actividad.from_dictionary(request.POST)
+
+                    if ModificacionActividad.objects.filter(Q(estado=EstadosModificacionActividad.PENDIENTE)
+                                                            & Q(actividad_id=id_actividad)).exists():
+                        return RespuestaJson.error("Falló editar.Ya existe una solicitud pendiente por "
+                                                   "aprobación para la actividad")
+
                     actividad_db = Actividad.objects.get(id=id_actividad)
+                    modificacion_actividad = ModificacionActividad.from_dictionary(request.POST)
+                    modificacion_actividad.fecha_inicio = request.POST.get('fecha_inicio_fin').split(" - ")[0]
+                    modificacion_actividad.fecha_fin = request.POST.get('fecha_inicio_fin').split(" - ")[-1]
+                    modificacion_actividad.actividad_id = id_actividad
+                    modificacion_actividad.nombre = actividad_db.nombre
+                    modificacion_actividad.supervisor_id = actividad_db.supervisor_id
+                    modificacion_actividad.descripcion = actividad_db.descripcion
+                    modificacion_actividad.grupo_actividad_id = actividad_db.grupo_actividad_id
+                    modificacion_actividad.soporte_requerido = actividad_db.soporte_requerido
                     modificacion_actividad.usuario_modifica = request.user
 
                     try:
                         modificacion_actividad.full_clean(validate_unique=False, exclude=['comentario_supervisor'])
                     except ValidationError as errores:
                         return RespuestaJson.error("Falló editar. Valide los datos ingresados al editar la actividad")
-
-                    if actividad_db.nombre != actividad.nombre \
-                            or int(actividad_db.supervisor_id) != int(actividad.supervisor_id) \
-                            or int(actividad_db.grupo_actividad_id) != int(actividad.grupo_actividad_id) \
-                            or bool(actividad_db.soporte_requerido) != bool(actividad.soporte_requerido) \
-                            or actividad_db.descripcion != actividad.descripcion \
-                            or conteo_responsables != cantidad_responsables:
-                        return RespuestaJson.error("Fallo editar: Solamente puede modificar los campos fecha inicio, "
-                                                   "fecha fin y tiempo estimado")
 
                     if actividad_db.fecha_inicio == modificacion_actividad.fecha_inicio \
                             and actividad_db.fecha_fin == modificacion_actividad.fecha_fin \
@@ -271,12 +278,12 @@ class ActualizarActividadView(AbstractEvaLoggedView):
                 avance_actividad.save()
 
                 # region Actualiza el porcentaje y las horas de avance de la actividad
-                update_fields = ['porcentaje_avance', 'horas_invertidas']
+                update_fields = ['porcentaje_avance', 'tiempo_invertido']
                 actividad_db = Actividad.objects.get(id=id_actividad)
                 actividad_db.porcentaje_avance = int(avance_actividad.porcentaje_avance)
-                horas_empleadas = float(avance_actividad.horas_empleadas)
-                horas_invertidas_db = float(actividad_db.horas_invertidas)
-                actividad_db.horas_invertidas = horas_empleadas + horas_invertidas_db
+                tiempo_invertido_avance = float(avance_actividad.tiempo_invertido)
+                tiempo_invertido_db = float(actividad_db.tiempo_invertido)
+                actividad_db.tiempo_invertido = tiempo_invertido_avance + tiempo_invertido_db
                 actividad_db.save(update_fields=update_fields)
                 # endregion
 
@@ -429,9 +436,9 @@ class CerrarReabrirActividadView(AbstractEvaLoggedView):
 class SolicitudesAprobacionActividadIndexView(AbstractEvaLoggedView):
     def get(self, request):
         actividades = ModificacionActividad.objects.values('id', 'nombre', 'motivo', 'estado', 'comentario_supervisor',
-                                                           'fecha_solicitud', 'fecha_respuesta_solicitud',
+                                                           'fecha_solicitud', 'fecha_respuesta_solicitud', 'fecha_fin',
                                                            'supervisor_id', 'descripcion', 'actividad_id',
-                                                           'usuario_modifica_id')
+                                                           'usuario_modifica_id', 'fecha_inicio')
 
         responsables = User.objects.values('id', 'username', 'first_name', 'last_name')
 
@@ -486,8 +493,8 @@ class AccionModificacionesActividadView(AbstractEvaLoggedView):
 
 class VerModificacionesActividadView(AbstractEvaLoggedView):
     def get(self, request, id_actividad):
-        actividad = Actividad.objects.get(id=id_actividad)
-        modificacion_actividad = ModificacionActividad.objects.get(actividad_id=id_actividad)
+        modificacion_actividad = ModificacionActividad.objects.get(id=id_actividad)
+        actividad = Actividad.objects.get(id=modificacion_actividad.actividad_id)
         return render(request, 'GestionActividades/Actividades/_crear_editar_actividades_modal.html',
                       datos_xa_render(request, actividad, modificacion_actividad))
 
@@ -513,8 +520,9 @@ def datos_xa_render(request, actividad: Actividad = None, modificacion_actividad
         datos['editar'] = True
 
     if modificacion_actividad:
-        datos['actividad'] = actividad
-        datos['modificacion_actividad'] = modificacion_actividad
+        datos['actividad'] = modificacion_actividad
+        datos['modificacion_actividad'] = actividad
+        datos['EstadosModificacionActividad'] = EstadosModificacionActividad
         datos['editar'] = True
         datos['ocultar_botones_modal'] = True
         datos['actividad_modificada'] = True

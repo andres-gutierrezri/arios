@@ -7,9 +7,9 @@ $(document).ready(function () {
     configurarFiltroConsecutivos();
 });
 
-function abrirModalCrearActividad(url, grupo) {
+function abrirModalCrearActividad(url, grupo, usuario, fecha_inicio, fecha_fin) {
     cargarAbrirModal(modalCrearActividad, url, function () {
-        configurarModalCrear(grupo);
+        configurarModalCrear(grupo, usuario, fecha_inicio, fecha_fin);
         let form = $('#actividad_form')[0];
         agregarValidacionForm(form, function (event) {
             enviarFormularioAsync(form, url, "cargando").then(exitoso => {
@@ -23,15 +23,15 @@ function abrirModalCrearActividad(url, grupo) {
     });
 }
 
-function configurarModalCrear(grupo) {
+function configurarModalCrear(grupo, usuario, fecha_inicio, fecha_fin) {
 
     const idColaboradores = $('#responsables_id');
     const fechaInicioID = $('#fecha_inicio_id');
     const fechaFinalID = $('#fecha_final_id');
+    const fechaInicioFinID = $('#fecha_inicio_fin_id');
     const idGrupo = $('#grupo_asociado_select_id');
 
-    inicializarDatePicker('fecha_final_id');
-    inicializarDatePicker('fecha_inicio_id');
+    inicializarDateRangePicker('fecha_inicio_fin_id');
     inicializarSelect2('responsables_id', modalCrearActividad);
     inicializarSelect2('supervisor_id_select_id', modalCrearActividad);
     inicializarSelect2('grupo_asociado_select_id', modalCrearActividad);
@@ -43,22 +43,28 @@ function configurarModalCrear(grupo) {
         //form = $('#actividad_form_editar')[0];
     }
 
-    fechaInicioID.change(function () {
-        if (new Date(fechaInicioID.val()) > new Date(fechaFinalID.val())) {
-            fechaFinalID.val('');
-            EVANotificacion.toast.advertencia('La fecha inicial no puede ser mayor a la fecha final');
+    fechaInicioFinID.daterangepicker({
+            locale: { format: 'YYYY-MM-DD',}
         }
-    });
+    )
 
-    fechaFinalID.change(function () {
-        if (new Date(fechaFinalID.val()) < new Date(fechaInicioID.val())) {
-            fechaInicioID.val('');
-            EVANotificacion.toast.advertencia('La fecha final no puede ser menor a la fecha inicial');
-        }
-    });
+    if (fecha_inicio && fecha_fin){
+           fechaInicioFinID.daterangepicker({
+               startDate: fecha_inicio,
+               endDate: fecha_fin,
+               locale: { format: 'YYYY-MM-DD',}
+           })
+    }
 
     if (grupo) {
         idGrupo.val(grupo).trigger("change");
+    }
+
+    if (usuario) {
+        if (usuario !== parseInt($('#supervisor_id_select_id').val())){
+            deshabilitarCamposFormulario(['nombre_id', 'supervisor_id_select_id', 'grupo_asociado_select_id',
+                                               'descripcion_id', 'responsables_id', 'soporte_requerido_id'])
+        }
     }
 
     agregarValidacionFormularios();

@@ -3,9 +3,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.db.models import QuerySet
 
-import GestionActividades
 from Administracion.models import Proceso
-from EVA.General import app_date_now
 from EVA.General.modeljson import ModelDjangoExtensiones
 from EVA.General.modelmanagers import ManagerGeneral, ModeloBase
 from GestionActividades.Enumeraciones import EstadosActividades, AsociadoGrupoActividades, \
@@ -72,8 +70,8 @@ class Actividad(ModeloBase, ModelDjangoExtensiones):
                                         blank=True, null=True)
     tiempo_estimado = models.DecimalField(max_digits=7, decimal_places=2, default=0,
                                           verbose_name='Tiempo Estimado', null=False, blank=False)
-    horas_invertidas = models.DecimalField(max_digits=7, decimal_places=2, default=0,
-                                           verbose_name='Horas Invertidas', null=False, blank=False)
+    tiempo_invertido = models.DecimalField(max_digits=7, decimal_places=2, default=0,
+                                           verbose_name='Tiempo Invertido', null=False, blank=False)
     calificacion = models.PositiveIntegerField(default=0, validators=[MinValueValidator(0),
                                                MaxValueValidator(10)], verbose_name='Calificación',
                                                null=False, blank=False)
@@ -97,8 +95,6 @@ class Actividad(ModeloBase, ModelDjangoExtensiones):
         actividad = Actividad()
         actividad.nombre = datos.get('nombre', None)
         actividad.supervisor_id = datos.get('supervisor_id', None)
-        actividad.fecha_inicio = datos.get('fecha_inicio', '')
-        actividad.fecha_fin = datos.get('fecha_final', '')
         actividad.grupo_actividad_id = datos.get('grupo_asociado', None)
         actividad.descripcion = datos.get('descripcion', '')
         actividad.tiempo_estimado = datos.get('tiempo_estimado', '')
@@ -184,8 +180,8 @@ class AvanceActividad(models.Model):
                                   null=False)
     descripcion = models.TextField(max_length=500, verbose_name='Descripción', null=False, blank=False)
     fecha_avance = models.DateField(verbose_name='Fecha Avance', null=False, blank=False)
-    horas_empleadas = models.DecimalField(max_digits=7, decimal_places=2, default=0, verbose_name='Horas Empleadas',
-                                          null=False, blank=False)
+    tiempo_invertido = models.DecimalField(max_digits=7, decimal_places=2, default=0, verbose_name='Tiempo Invertido',
+                                           null=False, blank=False)
     porcentaje_avance = models.PositiveIntegerField(default=0, validators=[MinValueValidator(0),
                                                                            MaxValueValidator(100)],
                                                     verbose_name='Porcentaje Avance',
@@ -211,7 +207,7 @@ class AvanceActividad(models.Model):
         avance_actividad = AvanceActividad()
         avance_actividad.descripcion = datos.get('descripcion', '')
         avance_actividad.fecha_avance = datos.get('fecha_avance', '')
-        avance_actividad.horas_empleadas = datos.get('horas', '')
+        avance_actividad.tiempo_invertido = datos.get('tiempo_invertido', '')
         avance_actividad.porcentaje_avance = datos.get('porcentaje', '')
 
         return avance_actividad
@@ -229,6 +225,8 @@ class ModificacionActividad(models.Model, ModelDjangoExtensiones):
     fecha_fin = models.DateField(verbose_name='Fecha Fin', null=False, blank=False)
     estado = models.SmallIntegerField(default=1, choices=EstadosModificacionActividad.choices,
                                       verbose_name='Estado', null=False, blank=False)
+    grupo_actividad = models.ForeignKey(GrupoActividad, on_delete=models.DO_NOTHING, verbose_name='Grupo Actividad',
+                                        blank=True, null=True)
     tiempo_estimado = models.DecimalField(max_digits=7, decimal_places=2, default=0,
                                           verbose_name='Tiempo Estimado', null=False, blank=False)
     usuario_modifica = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario Modifica', null=False,
@@ -239,6 +237,7 @@ class ModificacionActividad(models.Model, ModelDjangoExtensiones):
                                            blank=False)
     fecha_respuesta_solicitud = models.DateTimeField(verbose_name='Fecha Respuesta de Solicitud', null=True,
                                                      blank=True)
+    soporte_requerido = models.BooleanField(verbose_name='Soporte Requerido', blank=False, null=False, default=False)
 
     def __str__(self):
         return self.nombre
@@ -255,11 +254,6 @@ class ModificacionActividad(models.Model, ModelDjangoExtensiones):
         :return: Instacia de actividades con la información especificada en el diccionario.
         """
         modificacion_actividad = ModificacionActividad()
-        modificacion_actividad.nombre = datos.get('nombre', None)
-        modificacion_actividad.descripcion = datos.get('descripcion', '')
-        modificacion_actividad.fecha_inicio = datos.get('fecha_inicio', '')
-        modificacion_actividad.supervisor_id = datos.get('supervisor_id', None)
-        modificacion_actividad.fecha_fin = datos.get('fecha_final', '')
         modificacion_actividad.tiempo_estimado = datos.get('tiempo_estimado', '')
         modificacion_actividad.motivo = datos.get('motivo', '')
         modificacion_actividad.estado = datos.get('estado', 1)

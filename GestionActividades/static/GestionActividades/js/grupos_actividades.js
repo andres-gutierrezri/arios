@@ -89,10 +89,10 @@ function configurarModalCrear(asociado) {
 
 function mostrarOcultarTipoAsociado(seleccion) {
     if (seleccion){
-        mostrarCamposFormulario([contratoSelect, contratoSelectID])
-        ocultarCamposFormulario([procesoSelect, procesoSelectID])
+        mostrarCamposFormulario([contratoSelect, contratoSelectID]);
+        ocultarCamposFormulario([procesoSelect, procesoSelectID]);
     }else{
-        mostrarCamposFormulario([procesoSelect, procesoSelectID])
-        ocultarCamposFormulario([contratoSelect, contratoSelectID])
+        mostrarCamposFormulario([procesoSelect, procesoSelectID]);
+        ocultarCamposFormulario([contratoSelect, contratoSelectID]);
     }
 }

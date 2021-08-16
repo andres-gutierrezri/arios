@@ -1,9 +1,11 @@
 {% extends 'GestionActividades/_common/base_gestion_actividades.html' %}
 {% load static %}
 {% load eva_tags %}
+<title>{% block titulo %}Aprobación Actividades{% endblock %}</title>
 {% block styles %}
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-solid.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/skins/skin-master.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.css' %}">
     {% include 'EVA/_common/_statics/_tablas.html' with incCSS=True %}
     {% include 'EVA/_common/_statics/_select2.html' with incCSS=True %}
     {% include 'EVA/_common/_statics/_datepicker.html' with incCSS=True %}
@@ -34,7 +36,7 @@
                                                     <th>Responsable</th>
                                                     <th>Motivo Modificación</th>
                                                     <th class="none" >Fecha Solicitud</th>
-                                                    <th>Comentario Aprobación/Rechazo</th>
+                                                    <th>Comentarios Supervisor</th>
                                                     <th class="none" >Fecha Respuesta Solicitud</th>
                                                     <th data-priority="2" >Estado</th>
                                                     <th>Acción</th>
@@ -48,7 +50,7 @@
                                                         <td>
                                                         {% for responsable in responsables %}
                                                             {% if responsable.id == actividad.usuario_modifica_id%}
-                                                                <span class="badge text-white bg-gray-700"><i>{{ responsable.first_name }} {{ responsable.last_name }}</i></span>
+                                                                <span class="badge text-white bg-gray-700">{{ responsable.first_name }} {{ responsable.last_name }}</span>
                                                             {% endif %}
                                                         {% endfor %}
                                                         </td>
@@ -58,24 +60,24 @@
                                                         <td>{{ actividad.fecha_respuesta_solicitud|date:'Y-m-d' }}</td>
                                                         <td>
                                                         {% if actividad.estado == EstadosModificacionActividad.PENDIENTE%}
-                                                            <span class="badge badge-warning">PENDIENTE</span>
+                                                            <span class="badge badge-warning">Pendiente</span>
                                                         {% endif %}
                                                         {% if actividad.estado == EstadosModificacionActividad.APROBADA%}
-                                                            <span class="badge badge-primary">APROBADA</span>
+                                                            <span class="badge badge-primary">Aprobada</span>
                                                         {% endif %}
                                                         {% if actividad.estado == EstadosModificacionActividad.RECHAZADA%}
-                                                            <span class="badge badge-danger">RECHAZADA</span>
+                                                            <span class="badge badge-danger">Rechazada</span>
                                                         {% endif %}
                                                         </td>
                                                         <td>
+                                                        {% if perms.GestionActividades.view_modificacionactividad %}
+                                                            {% if actividad.estado != EstadosActividades.CERRADA %}
+                                                                <a class="fad fa-2x fa-eye" id="editar_{{ actividad.id }}" href="javascript:abrirModalCrearActividad('{% url 'GestionActividades:ver-modificaciones-actividad' actividad.id %}', '' , '' , '{{ actividad.fecha_inicio|date:'Y/m/d' }}', '{{ actividad.fecha_fin|date:'Y/m/d' }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ver Modificaciones"></a>
+                                                            {% endif %}
+                                                        {% endif %}
                                                         {% if actividad.estado == EstadosModificacionActividad.PENDIENTE %}
                                                             {% for responsable in responsables %}
                                                                 {% if responsable.id == actividad.supervisor_id and responsable.username == usuario %}
-                                                                    {% if perms.GestionActividades.view_modificacionactividad %}
-                                                                        {% if actividad.estado != EstadosActividades.CERRADA %}
-                                                                            <a class="fad fa-2x fa-eye" id="editar_{{ actividad.id }}" href="javascript:abrirModalCrearActividad('{% url 'GestionActividades:ver-modificaciones-actividad' actividad.actividad_id %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ver Modificaciones"></a>
-                                                                        {% endif %}
-                                                                    {% endif %}
                                                                     {% if perms.GestionActividades.change_modificacionactividad %}
                                                                         &nbsp;&nbsp;<a class="far fa-2x fa-check-square" id="accion_modificaciones_actividad_{{ actividad.id }}"  href="javascript:abrirModalAccionActividad('{% url 'GestionActividades:accion-modificaciones-actividad' actividad.id %}');" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Aprobar/Rechazar"></a>
                                                                     {% endif %}
@@ -110,4 +112,6 @@
     <script src="{% static 'EVA/Plantilla/js/custom/controlBusquedaPaginacion.js' %}"></script>
     <script src="{% static 'GestionActividades/js/accion_actividad_modal.js' %}"></script>
     <script src="{% static 'GestionActividades/js/actividades.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/dependency/moment/moment.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.js' %}"></script>
 {% endblock scripts%}
