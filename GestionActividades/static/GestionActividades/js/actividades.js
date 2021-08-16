@@ -3,8 +3,16 @@
 const modalCrearActividad = $('#crear-actividad');
 
 $(document).ready(function () {
+    var eKeydown = jQuery.Event("keydown");
     activarSelect2();
     configurarFiltroConsecutivos();
+
+    $('#estados_actividades_select_id').on('change', function (e) {
+        $('#busqueda').val($(this).select2('data')[0].text).trigger('change');
+        eKeydown.which=13;
+        $('#busqueda').trigger(eKeydown);
+    });
+
 });
 
 function abrirModalCrearActividad(url, grupo, usuario, fecha_inicio, fecha_fin) {

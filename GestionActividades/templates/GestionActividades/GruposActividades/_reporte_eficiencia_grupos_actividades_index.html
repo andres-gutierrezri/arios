@@ -1,0 +1,149 @@
+{% extends 'GestionActividades/_common/base_gestion_actividades.html' %}
+{% load static %}
+{% load eva_tags %}
+<title>{% block titulo %}Reporte eficiencia{% endblock %}</title>
+{% block styles %}
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-solid.css' %}">
+    <link rel="stylesheet" media="screen, print"
+          href="{% static 'EVA/Plantilla/css/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.css' %}">
+    {% include 'EVA/_common/_statics/_tablas.html' with incCSS=True %}
+    {% include 'EVA/_common/_statics/_select2.html' with incCSS=True %}
+    {% include 'EVA/_common/_statics/_datepicker.html' with incCSS=True %}
+{% endblock styles %}
+
+{% block main %}
+    <div class="panel-container show">
+        <div class="header">
+            <h1 class="header-title">
+                <i class='far fa-chart-bar'></i> Reporte de Eficiencia - {{ grupo_actividad.nombre }}
+                <span class='fw-300'></span>
+                <br>
+                <br>
+            </h1>
+        </div>
+        <div class="row">
+            <div class="col-xl-12">
+                <div id="panel-1" class="panel">
+                    <div class="panel-hdr">
+                        <h2>
+                            <a class="fs-lg text-dark mr-2">GRAFICA BURN DOWN CHART</a>
+                            <a class="fs-sm text-muted">(Fecha Finalización vs Número de Actividades Pendientes)</a><span class="fw-300"></span>
+                        </h2>
+                        <div class="panel-toolbar">
+                            <button class="btn btn-panel" data-action="panel-collapse" data-toggle="tooltip"
+                                    data-offset="0,10" data-original-title="Ocultar"></button>
+                        </div>
+                    </div>
+                    <div class="panel-container show">
+                        <div class="panel-content">
+                             <div class="form-group">
+                                 <div class="form-row">
+                                     <div class="col-md-2">
+                                        <form id="rango_fechas_form" method="post" class="needs-validation" novalidate>
+                                            <div class="mt-0 mb-0 pt-0 pb-0">
+                                                {% input_date_tag 'rango_fechas' '' placeholder="Seleccione el rango de fechas para graficar" class="form-control text-center" value='' required="" mensaje_validacion='Por favor seleccione un rango de fechas.' %}
+                                            </div>
+                                        </form>
+                                    </div>
+                                 </div>
+                             </div>
+                            <div id="js-checkbox-toggles" class="d-flex mb-3">
+                                <div class="custom-control custom-switch mr-2">
+                                    <input type="checkbox" class="custom-control-input" name="gra-1" id="gra-1"
+                                           checked="">
+                                    <label class="custom-control-label" for="gra-1">Progreso Estimado</label>
+                                </div>
+                                <div class="custom-control custom-switch mr-2">
+                                    <input type="checkbox" class="custom-control-input" name="gra-2" id="gra-2"
+                                           checked="">
+                                    <label class="custom-control-label" for="gra-2">Progreso Real</label>
+                                </div>
+                            </div>
+                            <div id="flot-toggles" class="w-100 mt-4" style="height: 400px"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel-container show">
+        <div class="form-row">
+            <div class="col-xl-12">
+                <div id="panel-2" class="panel">
+                    <div class="panel-container show">
+                        <div class="panel-content">
+                            <div class="form-group">
+                                <a class="fs-lg">Actividades Estado: En Proceso</a>
+                            </div>
+                            <div class="form-group">
+                                <table class="table table-bordered w-100 text-center" id="dataTable">
+                                    <thead class="bg-primary-600">
+                                    <tr>
+                                        <th data-priority="1">Número Actividades</th>
+                                        <th>Promedio Tiempo Estimado (Horas)</th>
+                                        <th>Promedio Tiempo Invertido (Horas)</th>
+                                        <th>Promedio Porcentaje Avance</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="text-center">
+                                    <tr>
+                                        <td>{{ actividades_en_proceso }} </td>
+                                        <td>{{ pte_actividades_en_proceso }} </td>
+                                        <td>{{ pti_actividades_en_proceso }} </td>
+                                        <td>{{ ppa_actividades_en_proceso }} </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="form-group">
+                                <a class="fs-lg">Actividades Estado: Cerrada</a>
+                            </div>
+                            <div class="form-group">
+                                <table class="table table-bordered w-100 text-center" id="dataTable">
+                                    <thead class="bg-primary-600">
+                                    <tr>
+                                        <th data-priority="1">Número Actividades</th>
+                                        <th>Número Actividades dentro del Tiempo Estimado</th>
+                                        <th>Promedio Tiempo Estimado (Horas)</th>
+                                        <th>Promedio Tiempo Invertido (Horas)</th>
+                                        <th>Porcentaje Eficiencia</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="text-center">
+                                    <tr>
+                                        <td>{{ actividades_cerradas }} </td>
+                                        <td>{{ adte_actividades_cerradas }} </td>
+                                        <td>{{ pte_actividades_cerradas }} </td>
+                                        <td>{{ pti_actividades_cerradas }} </td>
+                                        <td>{{ pe_actividades_cerradas }} </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        {% include 'EVA/_common/_paginacion.html' with datos=grupo_actividad %}
+                    </div>
+                    <div class="card-footer small text-muted">Actualizado: {{ fecha }} </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+{% block scripts %}
+    {% include 'EVA/_common/_statics/_tablas.html' %}
+    {% include 'EVA/_common/_statics/_select2.html' %}
+    {% include 'EVA/_common/_statics/_datepicker.html' %}
+    <script src="{% static 'GestionDocumental/js/filtro_consecutivos.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/controlBusquedaPaginacion.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/statistics/flot/flot.bundle.js' %}"></script>
+    <script src="{% static 'GestionActividades/js/reporte_eficiencia_grupo_actividad.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/dependency/moment/moment.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.js' %}"></script>
+    <script>
+        var grupoID = {{ grupo_actividad.id }}
+    </script>
+{% endblock scripts %}
