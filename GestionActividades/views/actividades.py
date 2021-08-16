@@ -17,6 +17,7 @@ from EVA.views.index import AbstractEvaLoggedView
 from GestionActividades.Enumeraciones import EstadosActividades, EstadosModificacionActividad, TiposUsuariosActividad
 from GestionActividades.models.models import Actividad, GrupoActividad, ResponsableActividad, SoporteActividad, \
     AvanceActividad, ModificacionActividad
+from Proyectos.models import Contrato
 from TalentoHumano.models import Colaborador
 
 LOGGER = logging.getLogger(__name__)
@@ -35,12 +36,41 @@ class ActividadesIndexView(AbstractEvaLoggedView):
                 actividad_db.estado = EstadosActividades.CREADA
                 actividad_db.save()
 
-        actividades = Actividad.objects.values('id', 'nombre', 'grupo_actividad_id', 'descripcion', 'fecha_fin',
-                                               'estado', 'porcentaje_avance', 'soporte_requerido', 'fecha_inicio',
-                                               'tiempo_invertido', 'tiempo_estimado', 'supervisor_id')
+        grupos = []
+        actividades = []
+
+        if request.user.has_perm('TalentoHumano.permission_gerencial'):
+            actividades = Actividad.objects.all().exclude(estado=EstadosActividades.ANULADA)
+            grupos = GrupoActividad.objects.get_xa_select_activos().values('id', 'nombre',
+                                                                           'grupo_actividad_id', 'estado')
+
+        if request.user.has_perm('TalentoHumano.permission_director_proceso') \
+                or request.user.has_perm('TalentoHumano.permission_colaborador_actividad'):
+            usuario_id = User.objects.get(username=request.user)
+            colaborador_id = Colaborador.objects.get(usuario_id=usuario_id)
+            contratos_id = Contrato.objects.get_xa_select_activos().filter(proceso_a_cargo_id=colaborador_id.proceso_id)
+            contratos_id = contratos_id.values('id')
+            actividades_responsable = ResponsableActividad.objects.filter(responsable_id=colaborador_id.usuario_id)
+            actividades_responsable = actividades_responsable.values('actividad_id')
+
+            actividades = Actividad.objects.filter(Q(id__in=actividades_responsable) |
+                                                   Q(supervisor_id=colaborador_id.usuario_id)). \
+                exclude(estado=EstadosActividades.ANULADA)
+
+            grupos_actividades_ids = actividades.values('grupo_actividad_id')
+
+            grupos = GrupoActividad.objects.get_xa_select_activos().filter(Q(contrato_id__in=contratos_id) |
+                                                                           Q(proceso_id=colaborador_id.proceso_id) |
+                                                                           Q(id__in=grupos_actividades_ids) |
+                                                                           Q(nombre__iexact='Generales'))
+            grupos = grupos.values('id', 'nombre', 'grupo_actividad_id', 'estado')
+
+        actividades = actividades.values('id', 'nombre', 'grupo_actividad_id', 'descripcion', 'fecha_fin',
+                                         'estado', 'porcentaje_avance', 'soporte_requerido', 'fecha_inicio',
+                                         'tiempo_invertido', 'tiempo_estimado', 'supervisor_id')
+
         responsable_actividad = ResponsableActividad.objects.values('responsable_id', 'actividad_id')
         colaboradores = User.objects.values('id', 'first_name', 'last_name')
-        grupos = GrupoActividad.objects.values('id', 'nombre', 'grupo_actividad_id', 'estado')
         search = request.GET.get('search', '')
 
         if search:
@@ -435,10 +465,27 @@ class CerrarReabrirActividadView(AbstractEvaLoggedView):
 
 class SolicitudesAprobacionActividadIndexView(AbstractEvaLoggedView):
     def get(self, request):
-        actividades = ModificacionActividad.objects.values('id', 'nombre', 'motivo', 'estado', 'comentario_supervisor',
-                                                           'fecha_solicitud', 'fecha_respuesta_solicitud', 'fecha_fin',
-                                                           'supervisor_id', 'descripcion', 'actividad_id',
-                                                           'usuario_modifica_id', 'fecha_inicio')
+
+        actividades = []
+
+        if request.user.has_perm('TalentoHumano.permission_gerencial'):
+            actividades = ModificacionActividad.objects.all()
+
+        if request.user.has_perm('TalentoHumano.permission_director_proceso') or \
+                request.user.has_perm('TalentoHumano.permission_colaborador_actividad'):
+            usuario_id = User.objects.get(username=request.user)
+            colaborador_id = Colaborador.objects.get(usuario_id=usuario_id)
+            actividades_responsable = ResponsableActividad.objects.filter(responsable_id=colaborador_id.usuario_id)
+            actividades_responsable = actividades_responsable.values('actividad_id')
+            actividades_ids = Actividad.objects.filter(Q(id__in=actividades_responsable)).\
+                exclude(estado=EstadosActividades.ANULADA)
+            actividades_ids = actividades_ids.values('id')
+            actividades = ModificacionActividad.objects.filter(Q(supervisor_id=colaborador_id.usuario_id) |
+                                                               Q(actividad_id__in=actividades_ids))
+
+        actividades = actividades.values('id', 'nombre', 'motivo', 'estado', 'comentario_supervisor', 'fecha_solicitud',
+                                         'fecha_respuesta_solicitud', 'fecha_fin', 'supervisor_id', 'descripcion',
+                                         'actividad_id', 'usuario_modifica_id', 'fecha_inicio')
 
         responsables = User.objects.values('id', 'username', 'first_name', 'last_name')
 
