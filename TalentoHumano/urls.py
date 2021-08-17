@@ -51,6 +51,6 @@ urlpatterns = [
          name='permiso-laboral-editar'),
     path('permiso-laboral/<int:id_permiso>/delete', permisos_laborales.PermisoLaboralEliminarView.as_view(),
          name='permiso-laboral-eliminar'),
-    path('permisos-laborales/<int:id_permiso>/ver', permisos_laborales.VerSoporteView.as_view(),
+    path('permiso-laboral/<int:id_permiso>/ver', permisos_laborales.VerSoporteView.as_view(),
          name='permiso-laboral-ver')
 ]
