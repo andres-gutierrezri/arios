@@ -3,7 +3,7 @@
 {% if editar %}
     <form action= "{% url 'TalentoHumano:permiso-laboral-editar' permiso.id %}" id="permiso_laboral_form_editar" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
 {% else %}
-    <form action= "{% url 'TalentoHumano:permiso-laboral-crear' %}" id="permiso_laboral_form" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+    <form action= "{% url 'TalentoHumano:permiso-laboral-crear' %}" id="permiso_laboral_form_crear" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
 {% endif %}
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -33,7 +33,7 @@
                     </div>
                 </div>
                 <div class="form-row div_archivo">
-                    <div class="form-group col-12">
+                    <div id="archivo" class="form-group col-12">
                         {% input_file_tag 'archivo' 'Documento Soporte' placeholder="Seleccione un archivo" value=permiso.soporte.name invalido=errores.logo accept=".doc, .docx, .pdf, .jpg, .png, .jpeg, .gif" mensaje_validacion='Por favor seleccione un archivo' %}
                     </div>
                 </div>
