@@ -18,7 +18,6 @@ from EVA.views.index import AbstractEvaLoggedView
 
 from TalentoHumano.models import PermisoLaboral, TipoPermiso
 
-
 LOGGER = logging.getLogger(__name__)
 
 
@@ -152,6 +151,7 @@ class PermisoLaboralEliminarView(AbstractEvaLoggedView):
                 permiso_db.motivo_editar = motivo_eliminar
                 permiso_db.save(update_fields=['estado_empleado', 'motivo_editar',
                                                'usuario_modifica', 'fecha_modificacion'])
+                messages.success(request, "La solicitud del permiso laboral ha sido eliminada")
                 return RespuestaJson.exitosa()
         except:
             rollback()
