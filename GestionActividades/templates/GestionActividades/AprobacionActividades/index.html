@@ -60,13 +60,13 @@
                                                         <td>{{ actividad.fecha_respuesta_solicitud|date:'Y-m-d' }}</td>
                                                         <td>
                                                         {% if actividad.estado == EstadosModificacionActividad.PENDIENTE%}
-                                                            <span class="badge badge-warning">Pendiente</span>
+                                                            <span class="badge badge-warning">{{ EstadosModificacionActividad.PENDIENTE.label }}</span>
                                                         {% endif %}
                                                         {% if actividad.estado == EstadosModificacionActividad.APROBADA%}
-                                                            <span class="badge badge-primary">Aprobada</span>
+                                                            <span class="badge badge-primary">{{ EstadosModificacionActividad.APROBADA.label }}</span>
                                                         {% endif %}
                                                         {% if actividad.estado == EstadosModificacionActividad.RECHAZADA%}
-                                                            <span class="badge badge-danger">Rechazada</span>
+                                                            <span class="badge badge-danger">{{ EstadosModificacionActividad.RECHAZADA.label }}</span>
                                                         {% endif %}
                                                         </td>
                                                         <td>
