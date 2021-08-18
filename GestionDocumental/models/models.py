@@ -188,7 +188,7 @@ class ConsecutivoReunion(ConsecutivoBase):
 
 
 class ConsecutivoRequerimiento(ConsecutivoBase):
-    descripcion = models.CharField(max_length=100, verbose_name='Descripción', null=False, blank=False)
+    descripcion = models.CharField(max_length=1000, verbose_name='Descripción', null=False, blank=False)
     contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato', null=True, blank=True)
 
     def __str__(self):
@@ -225,7 +225,7 @@ class ConsecutivoRequerimiento(ConsecutivoBase):
 
 
 class ConsecutivoPlanTrabajo(ConsecutivoBase):
-    descripcion = models.CharField(max_length=100, verbose_name='Descripción', null=False, blank=False)
+    descripcion = models.CharField(max_length=1000, verbose_name='Descripción', null=False, blank=False)
     contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato', null=True, blank=True)
 
     def __str__(self):
@@ -263,7 +263,7 @@ class ConsecutivoPlanTrabajo(ConsecutivoBase):
 
 
 class ConsecutivoViaticosComisiones(ConsecutivoBase):
-    descripcion = models.CharField(max_length=100, verbose_name='Descripción', null=False, blank=False)
+    descripcion = models.CharField(max_length=1000, verbose_name='Descripción', null=False, blank=False)
     contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato', null=True, blank=True)
 
     def __str__(self):
@@ -303,7 +303,7 @@ class ConsecutivoViaticosComisiones(ConsecutivoBase):
 class ConsecutivoOrdenesTrabajo(ConsecutivoBase):
     fecha_inicio = models.DateField(verbose_name='Fecha Inicial')
     fecha_final = models.DateField(verbose_name='Fecha Final', null=True, blank=True)
-    descripcion = models.CharField(max_length=100, verbose_name='Descripción', null=False, blank=False)
+    descripcion = models.CharField(max_length=1000, verbose_name='Descripción', null=False, blank=False)
     contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name='Contrato', null=True, blank=True)
 
     def __str__(self):
