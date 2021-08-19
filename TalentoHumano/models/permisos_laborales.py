@@ -8,7 +8,7 @@ from EVA.General.modeljson import ModelDjangoExtensiones
 from EVA.General.modelmanagers import ManagerGeneral, ModeloBase
 
 
-class TipoPermiso (models.Model):
+class TipoPermiso(models.Model):
     objects = ManagerGeneral()
     nombre = models.CharField(max_length=100, verbose_name='Tipo de Permiso', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False, default=True)
@@ -38,18 +38,20 @@ def custom_upload_to(instance, filename):
                                                       settings.EVA_PRIVATE_MEDIA)
 
 
-class PermisoLaboral (ModeloBase, ModelDjangoExtensiones):
+class PermisoLaboral(ModeloBase, ModelDjangoExtensiones):
     objects = ManagerGeneral()
     fecha_inicio = models.DateTimeField(verbose_name='Fecha Inicio', null=False, blank=False)
     fecha_fin = models.DateTimeField(verbose_name='Fecha Fin', null=False, blank=False)
     tipo_permiso = models.ForeignKey(TipoPermiso, on_delete=models.DO_NOTHING, verbose_name='Tipo de Permiso',
                                      null=False, blank=False)
+    tipo_permiso_otro = models.TextField(max_length=60, verbose_name='Tipo de Permiso Otro', null=True, blank=True,
+                                         default='')
     jefe_inmediato = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Jefe Inmediato', null=True,
                                        blank=True)
     motivo_permiso = models.CharField(max_length=300, verbose_name='Motivo Permiso', null=False, blank=False)
     motivo_editar = models.TextField(max_length=100, verbose_name='Motivo Editar', null=False, blank=False)
-    soporte = models.FileField(upload_to=custom_upload_to, verbose_name='Documento Soporte', null=False, blank=False,
-                               max_length=250)
+    soporte = models.FileField(upload_to=custom_upload_to, verbose_name='Documento Soporte', null=True, blank=True,
+                               max_length=250, default='')
     estado_empleado = models.BooleanField(verbose_name='Estado Empleado', blank=False, null=False, default=True)
     estado_rrhh = models.BooleanField(verbose_name='Estado RRHH', null=True, blank=True)
     estado_jefe = models.BooleanField(verbose_name='Estado Jefe', null=True, blank=True)
@@ -75,6 +77,7 @@ class PermisoLaboral (ModeloBase, ModelDjangoExtensiones):
         """
         permiso = PermisoLaboral()
         permiso.tipo_permiso_id = datos.get('tipo_permiso', None)
+        permiso.tipo_permiso_otro = datos.get('tipo_permiso_otro', '')
         permiso.fecha_inicio = string_to_datetime(datos.get('fecha_intervalo', '').split(' – ')[0], "%Y-%m-%d %H:%M")
         permiso.fecha_fin = string_to_datetime(datos.get('fecha_intervalo', '').split(' – ')[1], "%Y-%m-%d %H:%M")
         permiso.motivo_permiso = datos.get('motivo_permiso', '')
