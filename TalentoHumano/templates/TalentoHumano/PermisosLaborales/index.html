@@ -68,7 +68,13 @@
                                             {% for permiso in permisos %}
                                                 <tr>
                                                     <td>{{ permiso.fecha_creacion | date:'Y-m-d H:i' }}</td>
-                                                    <td>{{ permiso.tipo_permiso }}</td>
+                                                    <td>
+                                                        {% if permiso.tipo_permiso_id == 7 %}
+                                                            Otro: {{ permiso.tipo_permiso_otro }}
+                                                        {% else %}
+                                                            {{ permiso.tipo_permiso }}
+                                                        {% endif %}
+                                                    </td>
                                                     <td>
                                                         Inicio: {{ permiso.fecha_inicio | date:'Y-m-d H:i' }}
                                                         <br>
