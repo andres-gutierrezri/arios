@@ -30,10 +30,46 @@ function abrirModalCrear(url, fechaStart = moment().format('YYYY-MM-DD HH:mm:ss'
 
 function configurarModalCrear(fechaStart, fechaEnd) {
     let soporte = $('#archivo_id');
+    let mensaje = $("#mensaje_soporte");
     let fechas = $('#fecha_intervalo_id');
+
+    let idTipoPermiso = $('#tipo_permiso_select_id');
+    let idTipoPermisoOtro = $('#tipo_permiso_otro_id');
+    let tipoPermisoOtroMostrar = $('#tipo_permiso_otro_mostrar');
+
+    let valorTipoPermiso = idTipoPermiso.val();
+    let formEditarPermisoLaboral = $('#permiso_laboral_form_editar');
 
     inicializarSelect2('tipo_permiso_select_id', modalCrearPermiso);
     inicializarDateRangePicker('fecha_intervalo_id');
+
+    if (idTipoPermiso.val() !== "7") {
+        ocultarCamposFormulario([tipoPermisoOtroMostrar, idTipoPermisoOtro]);
+    }
+
+    idTipoPermiso.change(function () {
+        let actual = this.value;
+        if (actual === "7") {
+            mensaje.html("");
+            soporte.removeAttr('required');
+            mostrarCamposFormulario([tipoPermisoOtroMostrar, idTipoPermisoOtro]);
+        } else {
+            ocultarCamposFormulario([tipoPermisoOtroMostrar, idTipoPermisoOtro]);
+            if (actual === "2" || actual === "4" || actual === "5" || actual === "6") {
+                if (formEditarPermisoLaboral.val() === "" && valorTipoPermiso === actual) {
+                    mensaje.html("");
+                    soporte.removeAttr('required');
+                } else {
+                    mensaje.html("Debe adjuntar documento soporte");
+                    soporte.attr('required', true);
+                    soporte.focus();
+                }
+            } else {
+                mensaje.html("");
+                soporte.removeAttr('required');
+            }
+        }
+    });
 
     fechas.data('daterangepicker').minDate = false;
     fechas.data('daterangepicker').setStartDate(fechaStart);
