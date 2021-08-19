@@ -75,7 +75,7 @@ class PermisoLaboralCrearView(AbstractEvaLoggedView):
         permiso.soporte = request.FILES.get('archivo', None)
 
         try:
-            permiso.full_clean(exclude=['motivo_editar', 'soporte'])
+            permiso.full_clean(exclude=['motivo_editar'])
         except ValidationError as errores:
             messages.error(request, "Falló la creación del permiso laboral. Valide los datos ingresados")
             return redirect(reverse('TalentoHumano:permisos-laborales-index', args=[0]))
@@ -99,8 +99,8 @@ class PermisoLaboralEditarView(AbstractEvaLoggedView):
                       datos_xa_render(request, permiso))
 
     def post(self, request, id_permiso):
-        update_fields = ['tipo_permiso', 'fecha_inicio', 'fecha_fin', 'motivo_permiso', 'soporte', 'motivo_editar',
-                         'fecha_modificacion', 'usuario_modifica']
+        update_fields = ['tipo_permiso', 'tipo_permiso_otro', 'fecha_inicio', 'fecha_fin', 'motivo_permiso', 'soporte',
+                         'motivo_editar', 'fecha_modificacion', 'usuario_modifica']
 
         permiso_db = PermisoLaboral.objects.get(id=id_permiso)
         permiso = PermisoLaboral.from_dictionary(request.POST)
@@ -111,7 +111,10 @@ class PermisoLaboralEditarView(AbstractEvaLoggedView):
         permiso.usuario_modifica = request.user
         permiso.soporte = request.FILES.get('archivo', None)
 
-        if not permiso.soporte:
+        if permiso.tipo_permiso_id != '7':
+            permiso.tipo_permiso_otro = ''
+
+        if int(permiso.tipo_permiso_id) == permiso_db.tipo_permiso_id and not permiso.soporte:
             permiso.soporte = permiso_db.soporte
 
         try:
