@@ -8,17 +8,20 @@
     {% include 'EVA/_common/_statics/_select2.html' with incCSS=True %}
     {% include 'EVA/_common/_statics/_datepicker.html' with incCSS=True %}
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/datagrid/datatables/datatables.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/sweetalert2/sweetalert2.bundle.css' %}">
     <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.css' %}">
 {% endblock styles %}
 
 {% block main %}
     <div class="panel-container show">
         <div class="header">
-             <h1 class="header-title">
+            <h1 class="header-title">
                 <i class='fad fa-id-card-alt'></i> Solicitud de Permisos Laborales <span class='fw-300'></span>
-                 <br>
-                 <br>
-             </h1>
+                <br>
+                <br>
+            </h1>
         </div>
         <div class="row">
             <div class="col-xl-12">
@@ -26,7 +29,10 @@
                     <div class="panel-hdr">
                         <h2 class="small">
                             {% if perms.TalentoHumano.add_permisolaboral %}
-                                <span class="fad fa-2x fa-plus-circle cursor-pointer" onclick="abrirModalCrear('{% url 'TalentoHumano:permiso-laboral-crear' %}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear Permiso Laboral">
+                                <span class="fad fa-2x fa-plus-circle cursor-pointer"
+                                      onclick="abrirModalCrear('{% url 'TalentoHumano:permiso-laboral-crear' %}')"
+                                      data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>'
+                                      data-toggle="tooltip" title="" data-original-title="Crear Permiso Laboral">
                                 </span>
                             {% endif %}
                         </h2>
@@ -35,7 +41,8 @@
                                 {% select_tag tipos_permiso 'tipo_permisos' '' value=id_tipo_permiso %}
                             </div>
                             <div class="mx-2">
-                                <button class="btn btn-panel" data-action="panel-fullscreen" data-toggle="tooltip" data-offset="0,10" data-original-title="Pantalla completa"></button>
+                                <button class="btn btn-panel" data-action="panel-fullscreen" data-toggle="tooltip"
+                                        data-offset="0,10" data-original-title="Pantalla completa"></button>
                             </div>
                         </div>
                     </div>
@@ -43,9 +50,10 @@
                         <div class="panel-content">
                             <div class="panel-group">
                                 <div class="panel-body">
-                                    {% include 'EVA/_common/_busqueda_paginacion.html' %}
-                                    <table class="table table-bordered w-100 table-striped table-sm" id="dataTable">
-                                        <thead class="bg-primary-600">
+                                    <div class="table-responsive">
+                                        {% include 'EVA/_common/_busqueda_paginacion.html' %}
+                                        <table class="table table-bordered w-100 table-striped table-sm" id="dataTable">
+                                            <thead class="bg-primary-600">
                                             <tr>
                                                 <th data-priority="2">Fecha de Solicitud</th>
                                                 <th class="col-sm-auto">Tipo de Permiso</th>
@@ -56,15 +64,15 @@
                                                 <th class="col-sm-1">Estado RRHH</th>
                                                 <th class="col-sm-1">Estado Jefe Inmediato</th>
                                                 <th class="col-sm-1">Estado Gerencia</th>
-                                                <th class="none">Motivo Rechazo RRHH</th>
-                                                <th class="none">Motivo Rechazo Jefe Inmediato</th>
-                                                <th class="none">Motivo Rechazo Gerencia</th>
+                                                <th class="none">Descripción RRHH</th>
+                                                <th class="none">Descripción Jefe Inmediato</th>
+                                                <th class="none">Descripción Gerencia</th>
                                                 <th class="none">Remuneración</th>
                                                 <th class="col-sm-1">Soporte</th>
                                                 <th class="col-sm-1">Acción</th>
                                             </tr>
-                                        </thead>
-                                        <tbody>
+                                            </thead>
+                                            <tbody>
                                             {% for permiso in permisos %}
                                                 <tr>
                                                     <td>{{ permiso.fecha_creacion | date:'Y-m-d H:i' }}</td>
@@ -122,9 +130,9 @@
                                                             {% endif %}
                                                         {% endif %}
                                                     </td>
-                                                    <td>{{ permiso.motivo_rrhh }}</td>
-                                                    <td>{{ permiso.motivo_jefe }}</td>
-                                                    <td>{{ permiso.motivo_gerencia }}</td>
+                                                    <td>{{ permiso.descripcion_rrhh }}</td>
+                                                    <td>{{ permiso.descripcion_jefe }}</td>
+                                                    <td>{{ permiso.descripcion_gerencia }}</td>
                                                     <td class="text-center">
                                                         {% if permiso.estado_empleado %}
                                                             {% if permiso.remuneracion %}
@@ -138,22 +146,36 @@
                                                     </td>
                                                     <td class="text-center">
                                                         {% if perms.TalentoHumano.view_permisolaboral and permiso.soporte %}
-                                                            <a class="fad fa-2x fa-eye" href="javascript:abrirModalVistaPrevia('{% url 'TalentoHumano:permiso-laboral-ver' permiso.id %}')" data-original-title="Ver" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="Ver Soporte"></a>
+                                                            <a class="far fa-2x fa-eye"
+                                                               href="javascript:abrirModalVistaPrevia('{% url 'TalentoHumano:permiso-laboral-ver' permiso.id %}')"
+                                                               data-original-title="Ver"
+                                                               data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>'
+                                                               data-toggle="tooltip" title="Ver Soporte"></a>
                                                         {% endif %}
                                                     </td>
                                                     <td class="text-center">
                                                         {% if perms.TalentoHumano.change_permisolaboral and permiso.estado_empleado and permiso.estado_rrhh == None %}
-                                                            <a class="fad fa-2x fa-file-edit" id="editar_{{ permiso.id }}" href="javascript:abrirModalCrear('{% url 'TalentoHumano:permiso-laboral-editar' permiso.id %}', '{{ permiso.fecha_inicio | date:'Y-m-d H:i' }}', '{{ permiso.fecha_fin | date:'Y-m-d H:i' }}')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                            <a class="far fa-2x fa-edit" id="editar_{{ permiso.id }}"
+                                                               href="javascript:abrirModalCrear('{% url 'TalentoHumano:permiso-laboral-editar' permiso.id %}', '{{ permiso.fecha_inicio | date:'Y-m-d H:i' }}', '{{ permiso.fecha_fin | date:'Y-m-d H:i' }}')"
+                                                               data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>'
+                                                               data-toggle="tooltip" title=""
+                                                               data-original-title="Editar"></a>
                                                         {% endif %}
                                                         {% if perms.TalentoHumano.delete_permisolaboral and permiso.estado_empleado and permiso.estado_rrhh == None %}
-                                                            <a class="fad fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ permiso.id }}" href="javascript:void(0);" onclick="fConfirmarEliminar({{ permiso.id }}, true)" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Anular"></a>
+                                                            <a class="far fa-2x fa-trash-alt color-danger-900"
+                                                               id="eliminar_{{ permiso.id }}" href="javascript:void(0);"
+                                                               onclick="fConfirmarEliminar({{ permiso.id }}, true)"
+                                                               data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>'
+                                                               data-toggle="tooltip" title=""
+                                                               data-original-title="Anular"></a>
                                                         {% endif %}
                                                     </td>
                                                 </tr>
                                             {% endfor %}
-                                        </tbody>
-                                    </table>
-                                    {% include 'EVA/_common/_paginacion.html' with datos=permisos %}
+                                            </tbody>
+                                        </table>
+                                        {% include 'EVA/_common/_paginacion.html' with datos=permisos %}
+                                    </div>
                                 </div>
                                 <div class="card-footer small text-muted">Actualizado: {{ fecha }}</div>
                             </div>
@@ -165,17 +187,24 @@
     </div>
     {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='talento-humano/permiso-laboral' %}
     {% include 'EVA/_common/_vista_previa_modal.html' with titulo_modal='Vista Documento' %}
-    <div class="modal fade" tabindex="-1" id="crear-permiso" role="dialog"  aria-hidden="true"></div>
+    <div class="modal fade" tabindex="-1" id="crear-permiso" role="dialog" aria-hidden="true"></div>
 {% endblock %}
 
 {% block scripts %}
     {% include 'EVA/_common/_statics/_tablas.html' %}
     {% include 'EVA/_common/_statics/_select2.html' %}
-    {% include 'EVA/_common/_statics/_datepicker.html'%}
+    {% include 'EVA/_common/_statics/_datepicker.html' %}
     <script src="{% static 'Administracion/js/confirmarEliminar.js' %}"></script>
     <script src="{% static 'TalentoHumano/js/PermisosLaborales/permisosLaborales.js' %}"></script>
-    <script src="{% static 'EVA/Plantilla/js/dependency/moment/moment.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.export.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/controlBusquedaPaginacion.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/dependency/moment/moment.js' %}"></script>
     <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.js' %}"></script>
 {% endblock %}
