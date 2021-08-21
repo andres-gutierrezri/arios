@@ -103,7 +103,12 @@ class Colaborador(Persona, ModelDjangoExtensiones):
                        ("view_archivo_historial", "Can view archivo historial"),
                        ("can_gestioncompletasgi", "Can gestion completa SGI"),
                        ("can_access_usuarioespecial", "Can access like usuario especial"),
-                       )
+                       ("can_access_aprobacion_permisolaboral_rrhh",
+                        "Can access aprobacion permiso laboral recursos humanos"),
+                       ("can_access_aprobacion_permisolaboral_jefe",
+                        "Can access aprobacion permiso laboral jefe inmediato"),
+                       ("can_access_aprobacion_permisolaboral_gerencia",
+                        "Can access aprobacion permiso laboral gerencia"))
 
     def empresa_to_dict(self):
         if self.empresa_sesion:
