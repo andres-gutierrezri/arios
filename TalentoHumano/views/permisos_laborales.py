@@ -49,7 +49,7 @@ class PermisosLaboralesIndexView(AbstractEvaLoggedView):
                  'coincidencias': coincidencias,
                  'total': total,
                  'fecha': datetime.datetime.now(),
-                 'menu_actual': 'permisos-laborales'}
+                 'menu_actual': ['permisos-laborales', 'mis-permisos']}
 
         return render(request, 'TalentoHumano/PermisosLaborales/index.html', datos)
 
@@ -182,6 +182,7 @@ class VerSoporteView(AbstractEvaLoggedView):
         return response
 
 
+# region Métodos de ayuda
 def datos_xa_render(request, permiso: PermisoLaboral = None) -> dict:
     tipos_permiso = TipoPermiso.objects.get_xa_select_activos()
 
@@ -194,3 +195,4 @@ def datos_xa_render(request, permiso: PermisoLaboral = None) -> dict:
         datos['editar'] = True
 
     return datos
+# endregion
