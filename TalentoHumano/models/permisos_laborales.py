@@ -56,9 +56,12 @@ class PermisoLaboral(ModeloBase, ModelDjangoExtensiones):
     estado_rrhh = models.BooleanField(verbose_name='Estado RRHH', null=True, blank=True)
     estado_jefe = models.BooleanField(verbose_name='Estado Jefe', null=True, blank=True)
     estado_gerencia = models.BooleanField(verbose_name='Estado Gerencia', null=True, blank=True)
-    motivo_rrhh = models.CharField(max_length=300, verbose_name='Motivo RRHH', null=True, blank=True)
-    motivo_jefe = models.CharField(max_length=300, verbose_name='Motivo Jefe', null=True, blank=True)
-    motivo_gerencia = models.CharField(max_length=300, verbose_name='Motivo Gerencia', null=True, blank=True)
+    descripcion_rrhh = models.CharField(max_length=300, verbose_name='Descripción RRHH', null=True, blank=True,
+                                        default='')
+    descripcion_jefe = models.CharField(max_length=300, verbose_name='Descripción Jefe', null=True, blank=True,
+                                        default='')
+    descripcion_gerencia = models.CharField(max_length=300, verbose_name='Descripción Gerencia', null=True, blank=True,
+                                            default='')
     remuneracion = models.BooleanField(verbose_name='Remuneración', null=True, blank=True)
 
     def __str__(self):
@@ -82,8 +85,8 @@ class PermisoLaboral(ModeloBase, ModelDjangoExtensiones):
         permiso.fecha_fin = string_to_datetime(datos.get('fecha_intervalo', '').split(' – ')[1], "%Y-%m-%d %H:%M")
         permiso.motivo_permiso = datos.get('motivo_permiso', '')
         permiso.motivo_editar = datos.get('motivo_editar', '')
-        permiso.motivo_rrhh = datos.get('motivo_rrhh', '')
-        permiso.motivo_jefe = datos.get('motivo_jefe', '')
-        permiso.motivo_gerencia = datos.get('motivo_gerencia', '')
+        permiso.descripcion_rrhh = datos.get('descripcion_rrhh', '')
+        permiso.descripcion_jefe = datos.get('descripcion_jefe', '')
+        permiso.descripcion_gerencia = datos.get('descripcion_gerencia', '')
 
         return permiso
