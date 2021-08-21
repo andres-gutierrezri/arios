@@ -3,26 +3,36 @@
 const modalCrearPermiso = $('#crear-permiso');
 
 $(document).ready(function () {
-    activarSelect2();
-    $('#tipo_permisos_select_id').change(function () {
-        window.location = '/talento-humano/permisos-laborales/' + this.value + '/index';
-    });
+    let selectTipoPermiso = $('#tipo_permisos_select_id');
 
     const columnDefs = [
-        {"targets": [0], "width": '18%'},
+        {"targets": [0], "width": '15%'},
         {"targets": [1], "width": '17%'},
-        {"targets": [3], "width": '10%'},
-        {"targets": [4], "width": '10%'},
-        {"targets": [5], "width": '25%'},
-        {"targets": [6], "width": '12%'},
+        {"targets": [2], "width": '19%'},
+        {"targets": [3], "width": '7%'},
+        {"targets": [4], "width": '7%'},
+        {"targets": [5], "width": '7%'},
+        {"targets": [6], "width": '7%'},
         {"targets": [7], "width": '4%'},
         {"targets": [8], "width": '4%'}
     ]
-    iniciarDataTableN({buscar: false, paginar: false, ordenar: false, detallesColumnas: columnDefs});
+
+    activarSelect2();
+
+    iniciarDataTableN({
+        buscar: false,
+        paginar: false,
+        ordenar: true,
+        ordenInicial: [[0, 'desc']],
+        detallesColumnas: columnDefs
+    });
+
+    selectTipoPermiso.change(function () {
+        window.location = '/talento-humano/permisos-laborales/' + this.value + '/index';
+    });
 });
 
-function abrirModalCrear(url, fechaStart = moment().format('YYYY-MM-DD HH:mm:ss'),
-                         fechaEnd = moment().add(1, 'd').format('YYYY-MM-DD HH:mm:ss')) {
+function abrirModalCrear(url, fechaStart = moment().format('YYYY-MM-DD HH:mm:ss'), fechaEnd = moment().add(1, 'd').format('YYYY-MM-DD HH:mm:ss')) {
     cargarAbrirModal(modalCrearPermiso, url, function () {
         configurarModalCrear(fechaStart, fechaEnd);
     });
