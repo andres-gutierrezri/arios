@@ -146,7 +146,7 @@
                                                     </td>
                                                     <td class="text-center">
                                                         {% if perms.TalentoHumano.view_permisolaboral and permiso.soporte %}
-                                                            <a class="far fa-2x fa-eye"
+                                                            <a class="fad fa-2x fa-eye color-info-900"
                                                                href="javascript:abrirModalVistaPrevia('{% url 'TalentoHumano:permiso-laboral-ver' permiso.id %}')"
                                                                data-original-title="Ver"
                                                                data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>'
@@ -155,14 +155,14 @@
                                                     </td>
                                                     <td class="text-center">
                                                         {% if perms.TalentoHumano.change_permisolaboral and permiso.estado_empleado and permiso.estado_rrhh == None %}
-                                                            <a class="far fa-2x fa-edit" id="editar_{{ permiso.id }}"
+                                                            <a class="fad fa-2x fa-edit color-fusion-300" id="editar_{{ permiso.id }}"
                                                                href="javascript:abrirModalCrear('{% url 'TalentoHumano:permiso-laboral-editar' permiso.id %}', '{{ permiso.fecha_inicio | date:'Y-m-d H:i' }}', '{{ permiso.fecha_fin | date:'Y-m-d H:i' }}')"
                                                                data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>'
                                                                data-toggle="tooltip" title=""
                                                                data-original-title="Editar"></a>
                                                         {% endif %}
                                                         {% if perms.TalentoHumano.delete_permisolaboral and permiso.estado_empleado and permiso.estado_rrhh == None %}
-                                                            <a class="far fa-2x fa-trash-alt color-danger-900"
+                                                            <a class="fad fa-2x fa-trash-alt color-danger-900"
                                                                id="eliminar_{{ permiso.id }}" href="javascript:void(0);"
                                                                onclick="fConfirmarEliminar({{ permiso.id }}, true)"
                                                                data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>'
