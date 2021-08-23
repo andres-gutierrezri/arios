@@ -1,0 +1,29 @@
+{% block inicio_modal %}
+{% endblock %}
+<div class="modal-dialog {% block class_modal %}{% endblock %}" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">
+                {% block titulo_modal%}
+                {% endblock %}
+            </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"><i class="fal fa-times"></i></span>
+            </button>
+        </div>
+
+        <div class="modal-body">
+            {% block contenido_modal%}
+            {% endblock %}
+        </div>
+
+        <div class="modal-footer">
+            {% block footer_modal %}
+                <button type="button" class="btn btn-danger btn-pills" data-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-primary btn-pills">Aceptar</button>
+            {% endblock %}
+        </div>
+    </div>
+</div>
+{% block fin_modal %}
+{% endblock %}
