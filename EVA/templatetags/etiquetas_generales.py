@@ -254,6 +254,12 @@ def model_autoinput_tag(modelo, nombre_campo, incluir_label, **kwargs):
             'propiedades': propiedades_to_str(kwargs)}
 
 
+@register.simple_tag
+def tooltip(texto, bg_color):
+    return mark_safe(f'data-template=\'<div class="tooltip" role="tooltip"><div class="tooltip-inner {bg_color}">'
+                     f'</div></div>\' data-toggle="tooltip" title="" data-original-title="{texto}"')
+
+
 # region Métodos Ayuda
 def arma_input_general_tag(nombre, **kwargs):
     valor = kwargs.pop('value', '')
