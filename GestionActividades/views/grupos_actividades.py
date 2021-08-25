@@ -321,9 +321,10 @@ class GruposActividadesReporteEficienciaView(AbstractEvaLoggedView):
 
 
 class GruposActividadesReporteEficienciaGraficaView(AbstractEvaLoggedView):
-    def post(self, request, id_grupo):
-        fecha_minima = request.POST['rango_fechas'].split(" - ")[0]
-        fecha_maxima = request.POST['rango_fechas'].split(" - ")[-1]
+    def get(self, request, id_grupo):
+
+        fecha_minima = request.GET['rango_fechas'].split(" - ")[0]
+        fecha_maxima = request.GET['rango_fechas'].split(" - ")[-1]
 
         actividades_fechas_ordenadas = Actividad.objects.filter(grupo_actividad_id=id_grupo).order_by('fecha_fin'). \
             exclude(estado=EstadosActividades.ANULADA).values('fecha_fin')

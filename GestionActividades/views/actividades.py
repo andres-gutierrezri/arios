@@ -225,7 +225,7 @@ class ActividadesEditarView(AbstractEvaLoggedView):
 
                 if usuario == TiposUsuariosActividad.SUPERVISOR:
                     update_fields = ['fecha_modificacion', 'codigo', 'supervisor_id', 'fecha_inicio', 'fecha_fin',
-                                     'nombre', 'descripcion', 'fecha_creacion', 'motivo', 'usuario_modifica',
+                                     'nombre', 'descripcion', 'motivo', 'usuario_modifica',
                                      'usuario_crea', 'grupo_actividad_id', 'estado', 'soporte_requerido',
                                      'tiempo_estimado']
 
@@ -234,7 +234,6 @@ class ActividadesEditarView(AbstractEvaLoggedView):
                     actividad.fecha_inicio = request.POST.get('fecha_inicio_fin').split(" - ")[0]
                     actividad.fecha_fin = request.POST.get('fecha_inicio_fin').split(" - ")[-1]
                     actividad.estado = actividad_db.estado
-                    actividad.fecha_creacion = actividad_db.fecha_creacion
                     actividad.id = actividad_db.id
                     actividad.usuario_modifica = request.user
                     actividad.usuario_crea = actividad_db.usuario_crea
@@ -249,7 +248,8 @@ class ActividadesEditarView(AbstractEvaLoggedView):
                             return RespuestaJson.error("Falló editar. El grupo Generales no existe")
 
                     try:
-                        actividad.full_clean(validate_unique=False)
+                        # Se omite la fecha de creación porque esta no se actualiza.
+                        actividad.full_clean(validate_unique=False, exclude=['fecha_creacion'])
                     except ValidationError as errores:
                         return RespuestaJson.error("Falló editar. Valide los datos ingresados al editar la actividad")
 
