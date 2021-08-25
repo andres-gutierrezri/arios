@@ -40,28 +40,28 @@
                     <ul>
                         {% if perms.TalentoHumano.can_access_aprobacion_permisolaboral_rrhh %}
                             <li {% if menu_actual|last == 'recursos-humanos' %} class="active" {% endif %}>
-                                <a href="{% url 'TalentoHumano:permisos-laborales-index' 0 %}" title="Recursos Humanos"
+                                <a href="{% url 'TalentoHumano:permisos-laborales-rrhh-index' 0 %}" title="Recursos Humanos"
                                    data-filter-tags="aprobaciones recursos humanos">
                                     <i class="far fa-check"></i>
-                                    <span class="nav-link-text" data-i18n="nav.talentohumano_aprobacion_permisolaboral_rrhh">Recursos Humanos</span>
+                                    <span class="nav-link-text" data-i18n="nav.talentohumano_permisoslaborales_rrhh">Recursos Humanos</span>
                                 </a>
                             </li>
                         {% endif %}
                         {% if perms.TalentoHumano.can_access_aprobacion_permisolaboral_jefe %}
                             <li {% if menu_actual|last == 'jefe-inmediato' %} class="active" {% endif %}>
-                                <a href="{% url 'TalentoHumano:permisos-laborales-index' 0 %}" title="Jefe Inmediato"
+                                <a href="{% url 'TalentoHumano:permisos-laborales-jefe-index' 0 %}" title="Jefe Inmediato"
                                    data-filter-tags="aprobaciones jefe inmediato">
                                     <i class="far fa-check"></i>
-                                    <span class="nav-link-text" data-i18n="nav.talentohumano_aprobacion_permisolaboral_jefe">Jefe Inmediato</span>
+                                    <span class="nav-link-text" data-i18n="nav.talentohumano_permisoslaborales_jefe">Jefe Inmediato</span>
                                 </a>
                             </li>
                         {% endif %}
                         {% if perms.TalentoHumano.can_access_aprobacion_permisolaboral_gerencia %}
                             <li {% if menu_actual|last == 'gerencia' %} class="active" {% endif %}>
-                                <a href="{% url 'TalentoHumano:permisos-laborales-index' 0 %}" title="Gerencia"
+                                <a href="{% url 'TalentoHumano:permisos-laborales-gerencia-index' 0 %}" title="Gerencia"
                                    data-filter-tags="aprobaciones gerencia">
                                     <i class="far fa-check"></i>
-                                    <span class="nav-link-text" data-i18n="nav.talentohumano_aprobacion_permisolaboral_gerencia">Gerencia</span>
+                                    <span class="nav-link-text" data-i18n="nav.talentohumano_permisoslaborales_gerencia">Gerencia</span>
                                 </a>
                             </li>
                         {% endif %}
