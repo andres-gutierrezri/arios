@@ -28,7 +28,15 @@ $(document).ready(function () {
     });
 
     selectTipoPermiso.change(function () {
-        window.location = '/talento-humano/permisos-laborales/' + this.value + '/index';
+        if (window.location.href.search('recursos-humanos') !== -1) {
+            window.location = '/talento-humano/permisos-laborales/recursos-humanos/' + this.value + '/index';
+        } else if (window.location.href.search('jefe-inmediato') !== -1) {
+            window.location = '/talento-humano/permisos-laborales/jefe-inmediato/' + this.value + '/index';
+        } else if (window.location.href.search('gerencia') !== -1) {
+            window.location = '/talento-humano/permisos-laborales/gerencia/' + this.value + '/index';
+        } else {
+            window.location = '/talento-humano/permisos-laborales/' + this.value + '/index';
+        }
     });
 });
 
