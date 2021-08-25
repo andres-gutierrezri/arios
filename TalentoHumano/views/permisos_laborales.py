@@ -5,7 +5,7 @@ import os
 
 from django.contrib import messages
 from django.core.exceptions import ValidationError
-from django.db.models import Q
+from django.db.models import Q, QuerySet
 from django.db.transaction import atomic, rollback
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -23,49 +23,79 @@ LOGGER = logging.getLogger(__name__)
 
 class PermisosLaboralesIndexView(AbstractEvaLoggedView):
     def get(self, request, id_tipo_permiso):
-        if id_tipo_permiso == 0:
-            permisos = PermisoLaboral.objects.filter(usuario_crea_id=request.user.id)
-        else:
-            permisos = PermisoLaboral.objects.filter(tipo_permiso_id=id_tipo_permiso, usuario_crea_id=request.user.id)
+        last_tipo_permiso_id = TipoPermiso.objects.last().id
+        permisos = PermisoLaboral.objects.filter(usuario_crea_id=request.user.id)
 
-        search = request.GET.get('search', '')
-        page = request.GET.get('page', 1)
-        total = len(permisos)
+        if 0 < id_tipo_permiso <= last_tipo_permiso_id:
+            permisos = permisos.filter(tipo_permiso_id=id_tipo_permiso)
+        elif id_tipo_permiso == last_tipo_permiso_id + 1:
+            permisos = permisos.filter(Q(estado_rrhh=None) | Q(estado_jefe=None) | Q(estado_gerencia=None))
+        elif id_tipo_permiso == last_tipo_permiso_id + 2:
+            permisos = permisos.filter(Q(estado_rrhh=True) | Q(estado_jefe=True) | Q(estado_gerencia=True))
+        elif id_tipo_permiso == last_tipo_permiso_id + 3:
+            permisos = permisos.filter(Q(estado_rrhh=False) | Q(estado_jefe=False) | Q(estado_gerencia=False))
 
-        if search:
-            permisos = permisos.filter(Q(fecha_creacion__icontains=search) |
-                                       Q(fecha_inicio__icontains=search) |
-                                       Q(fecha_fin__icontains=search) |
-                                       Q(motivo_permiso__icontains=search) |
-                                       Q(tipo_permiso__nombre__icontains=search))
+        datos = datos_paginar_index(request, id_tipo_permiso, permisos, ['permisos-laborales', 'mis-permisos'])
+        return render(request, 'TalentoHumano/PermisosLaborales/index_permisos.html', datos)
 
-        coincidencias = len(permisos)
-        permisos = paginar(permisos.order_by('-id'), page, 10)
 
-        datos = {'permisos': permisos,
-                 'id_tipo_permiso': id_tipo_permiso,
-                 'tipos_permiso': self.tipos_permiso_filtro(),
-                 'buscar': search,
-                 'coincidencias': coincidencias,
-                 'total': total,
-                 'fecha': datetime.datetime.now(),
-                 'menu_actual': ['permisos-laborales', 'mis-permisos']}
+class PermisosLaboralesRRHHIndexView(AbstractEvaLoggedView):
+    def get(self, request, id_tipo_permiso):
+        last_tipo_permiso_id = TipoPermiso.objects.last().id
+        permisos = PermisoLaboral.objects.all().exclude(estado_empleado=False)
 
-        return render(request, 'TalentoHumano/PermisosLaborales/index.html', datos)
+        if 0 < id_tipo_permiso <= last_tipo_permiso_id:
+            permisos = permisos.filter(tipo_permiso_id=id_tipo_permiso)
+        elif id_tipo_permiso == last_tipo_permiso_id + 1:
+            permisos = permisos.filter(estado_rrhh=None)
+        elif id_tipo_permiso == last_tipo_permiso_id + 2:
+            permisos = permisos.filter(estado_rrhh=True)
+        elif id_tipo_permiso == last_tipo_permiso_id + 3:
+            permisos = permisos.filter(estado_rrhh=False)
 
-    @staticmethod
-    def tipos_permiso_filtro() -> list:
-        tipos_permiso = TipoPermiso.objects.filter(estado=True)
-        lista_tipo_permiso = [{'campo_valor': 0, 'campo_texto': 'Todos'}]
+        datos = datos_paginar_index(request, id_tipo_permiso, permisos, ['permisos-laborales', 'recursos-humanos'])
+        return render(request, 'TalentoHumano/PermisosLaborales/index_permisos.html', datos)
 
-        for tipo_permiso in tipos_permiso:
-            lista_tipo_permiso.append({'campo_valor': tipo_permiso.id, 'campo_texto': tipo_permiso.nombre})
-        return lista_tipo_permiso
+
+class PermisosLaboralesJefeIndexView(AbstractEvaLoggedView):
+    def get(self, request, id_tipo_permiso):
+        last_tipo_permiso_id = TipoPermiso.objects.last().id
+        permisos = PermisoLaboral.objects.filter(jefe_inmediato_id=request.user.id)
+
+        if 0 < id_tipo_permiso <= last_tipo_permiso_id:
+            permisos = permisos.filter(tipo_permiso_id=id_tipo_permiso)
+        elif id_tipo_permiso == last_tipo_permiso_id + 1:
+            permisos = permisos.filter(estado_jefe=None)
+        elif id_tipo_permiso == last_tipo_permiso_id + 2:
+            permisos = permisos.filter(estado_jefe=True)
+        elif id_tipo_permiso == last_tipo_permiso_id + 3:
+            permisos = permisos.filter(estado_jefe=False)
+
+        datos = datos_paginar_index(request, id_tipo_permiso, permisos, ['permisos-laborales', 'jefe-inmediato'])
+        return render(request, 'TalentoHumano/PermisosLaborales/index_permisos.html', datos)
+
+
+class PermisosLaboralesGerenciaIndexView(AbstractEvaLoggedView):
+    def get(self, request, id_tipo_permiso):
+        last_tipo_permiso_id = TipoPermiso.objects.last().id
+        permisos = PermisoLaboral.objects.filter(estado_rrhh=True, estado_jefe=True)
+
+        if 0 < id_tipo_permiso <= last_tipo_permiso_id:
+            permisos = permisos.filter(tipo_permiso_id=id_tipo_permiso)
+        elif id_tipo_permiso == last_tipo_permiso_id + 1:
+            permisos = permisos.filter(estado_gerencia=None)
+        elif id_tipo_permiso == last_tipo_permiso_id + 2:
+            permisos = permisos.filter(estado_gerencia=True)
+        elif id_tipo_permiso == last_tipo_permiso_id + 3:
+            permisos = permisos.filter(estado_gerencia=False)
+
+        datos = datos_paginar_index(request, id_tipo_permiso, permisos, ['permisos-laborales', 'gerencia'])
+        return render(request, 'TalentoHumano/PermisosLaborales/index_permisos.html', datos)
 
 
 class PermisoLaboralCrearView(AbstractEvaLoggedView):
     def get(self, request):
-        return render(request, 'TalentoHumano/PermisosLaborales/_modal_crear_editar_permiso.html',
+        return render(request, 'TalentoHumano/PermisosLaborales/modal_crear_editar_permiso.html',
                       datos_xa_render(request))
 
     def post(self, request):
@@ -95,7 +125,7 @@ class PermisoLaboralEditarView(AbstractEvaLoggedView):
     def get(self, request, id_permiso):
         permiso = PermisoLaboral.objects.get(id=id_permiso)
 
-        return render(request, 'TalentoHumano/PermisosLaborales/_modal_crear_editar_permiso.html',
+        return render(request, 'TalentoHumano/PermisosLaborales/modal_crear_editar_permiso.html',
                       datos_xa_render(request, permiso))
 
     def post(self, request, id_permiso):
@@ -183,6 +213,7 @@ class VerSoporteView(AbstractEvaLoggedView):
 
 
 # region Métodos de ayuda
+
 def datos_xa_render(request, permiso: PermisoLaboral = None) -> dict:
     tipos_permiso = TipoPermiso.objects.get_xa_select_activos()
 
@@ -195,4 +226,46 @@ def datos_xa_render(request, permiso: PermisoLaboral = None) -> dict:
         datos['editar'] = True
 
     return datos
+
+
+def tipos_permiso_filtro() -> list:
+    tipos_permiso = TipoPermiso.objects.filter(estado=True)
+    last_tipo_permiso_id = TipoPermiso.objects.last().id
+    lista_tipo_permiso = [{'campo_valor': 0, 'campo_texto': 'Todos'},
+                          {'campo_valor': last_tipo_permiso_id + 1, 'campo_texto': 'Pendiente'},
+                          {'campo_valor': last_tipo_permiso_id + 2, 'campo_texto': 'Aprobado'},
+                          {'campo_valor': last_tipo_permiso_id + 3, 'campo_texto': 'Denegado'}]
+
+    for tipo_permiso in tipos_permiso:
+        lista_tipo_permiso.append({'campo_valor': tipo_permiso.id, 'campo_texto': tipo_permiso.nombre})
+
+    return lista_tipo_permiso
+
+
+def datos_paginar_index(request, id_tipo_permiso: int, permisos: QuerySet, menu_actual: list) -> dict:
+    search = request.GET.get('search', '')
+    page = request.GET.get('page', 1)
+    total = len(permisos)
+
+    if search:
+        permisos = permisos.filter(Q(fecha_creacion__icontains=search) |
+                                   Q(fecha_inicio__icontains=search) |
+                                   Q(fecha_fin__icontains=search) |
+                                   Q(motivo_permiso__icontains=search) |
+                                   Q(tipo_permiso__nombre__icontains=search))
+
+    coincidencias = len(permisos)
+    permisos = paginar(permisos.order_by('-id'), page, 10)
+
+    datos = {'permisos': permisos,
+             'id_tipo_permiso': id_tipo_permiso,
+             'tipos_permiso': tipos_permiso_filtro(),
+             'buscar': search,
+             'coincidencias': coincidencias,
+             'total': total,
+             'fecha': datetime.datetime.now(),
+             'menu_actual': menu_actual}
+
+    return datos
+
 # endregion
