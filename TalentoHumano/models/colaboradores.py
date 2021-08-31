@@ -24,25 +24,25 @@ class ColaboradorManger(ManagerGeneral):
         if estado is not None and 'estado' in self.model._meta._forward_fields_map:
             filtro['estado'] = estado
         if xa_select:
-            return super().get_queryset().filter(**filtro).\
+            return super().get_queryset().filter(**filtro). \
                 values(campo_valor=F('id')).annotate(campo_texto=Concat('usuario__first_name', Value(' '),
                                                                         'usuario__last_name',
-                                                                        output_field=CharField()))\
+                                                                        output_field=CharField())) \
                 .order_by('usuario__first_name', 'usuario__last_name')
         else:
             return super().get_queryset().filter(**filtro)
 
     def get_xa_select_usuarios_activos(self) -> QuerySet:
-        return super().get_queryset().filter(estado=True).values(campo_valor=F('usuario_id'))\
+        return super().get_queryset().filter(estado=True).values(campo_valor=F('usuario_id')) \
             .annotate(campo_texto=Concat('usuario__first_name', Value(' '), 'usuario__last_name',
-                                         output_field=CharField()))\
+                                         output_field=CharField())) \
             .order_by('usuario__first_name', 'usuario__last_name')
 
     def get_xa_select_usuarios_activos_x_empresa(self, request) -> QuerySet:
-        return super().get_queryset().filter(estado=True, empresa_id=get_id_empresa_global(request))\
-            .values(campo_valor=F('usuario_id'))\
+        return super().get_queryset().filter(estado=True, empresa_id=get_id_empresa_global(request)) \
+            .values(campo_valor=F('usuario_id')) \
             .annotate(campo_texto=Concat('usuario__first_name', Value(' '), 'usuario__last_name',
-                                         output_field=CharField()))\
+                                         output_field=CharField())) \
             .order_by('usuario__first_name', 'usuario__last_name')
 
 
@@ -60,7 +60,7 @@ class Colaborador(Persona, ModelDjangoExtensiones):
                             related_name='%(app_label)s_%(class)s_afp')
     caja_compensacion = models.ForeignKey(EntidadesCAFE, on_delete=models.DO_NOTHING,
                                           verbose_name='Caja de compensación', null=False, blank=False,
-                                           related_name='%(app_label)s_%(class)s_caja_compensacion')
+                                          related_name='%(app_label)s_%(class)s_caja_compensacion')
     cesantias = models.ForeignKey(EntidadesCAFE, on_delete=models.DO_NOTHING,
                                   verbose_name='Cesantias', null=False, blank=False,
                                   related_name='%(app_label)s_%(class)s_cesantias')
@@ -158,7 +158,7 @@ class Colaborador(Persona, ModelDjangoExtensiones):
         colaborador.foto_perfil = datos.get('foto_perfil', None)
         colaborador.usuario_id = datos.get('usuario_id', None)
         usuario_creado = Colaborador.crear_usuario(datos.get('nombre', ''), datos.get('apellido', ''),
-                                                   datos.get('correo', ''),  int(colaborador.usuario_id)
+                                                   datos.get('correo', ''), int(colaborador.usuario_id)
                                                    if colaborador.usuario else colaborador.usuario)
         colaborador.usuario = usuario_creado
         colaborador.nombre_contacto = datos.get('nombre_contacto', '')
@@ -182,7 +182,7 @@ class Colaborador(Persona, ModelDjangoExtensiones):
         usuario_n = usuario.username.replace("[", "").replace("'", "").replace("]", "")
 
         while True:
-            existe = User.objects.filter(username=usuario_n).exclude(id=usuario_id).exists() if usuario_id else User.\
+            existe = User.objects.filter(username=usuario_n).exclude(id=usuario_id).exists() if usuario_id else User. \
                 objects.filter(username=usuario_n).exists()
 
             if existe:
