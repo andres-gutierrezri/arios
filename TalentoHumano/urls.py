@@ -15,7 +15,7 @@ Including another URLconf
 """
 
 from django.urls import path
-from TalentoHumano.views import talento_humano, entidades_cafe, colaboradores, gestion_permisos
+from TalentoHumano.views import talento_humano, entidades_cafe, colaboradores, gestion_permisos, permisos_laborales
 
 app_name = 'TalentoHumano'
 
@@ -43,4 +43,23 @@ urlpatterns = [
          name='colaboradores-novedad-agregar'),
     path('colaboradores/seleccion-empresas/<int:id_usuario>', colaboradores.SeleccionEmpresaView.as_view(),
          name='colaboradores-seleccion-empresas'),
+    path('permisos-laborales/<int:id_tipo_permiso>/index', permisos_laborales.PermisosLaboralesIndexView.as_view(),
+         name='permisos-laborales-index'),
+    path('permisos-laborales/recursos-humanos/<int:id_tipo_permiso>/index',
+         permisos_laborales.PermisosLaboralesRRHHIndexView.as_view(),
+         name='permisos-laborales-rrhh-index'),
+    path('permisos-laborales/jefe-inmediato/<int:id_tipo_permiso>/index',
+         permisos_laborales.PermisosLaboralesJefeIndexView.as_view(),
+         name='permisos-laborales-jefe-index'),
+    path('permisos-laborales/gerencia/<int:id_tipo_permiso>/index',
+         permisos_laborales.PermisosLaboralesGerenciaIndexView.as_view(),
+         name='permisos-laborales-gerencia-index'),
+    path('permiso-laboral/add', permisos_laborales.PermisoLaboralCrearView.as_view(),
+         name='permiso-laboral-crear'),
+    path('permiso-laboral/<int:id_permiso>/editar', permisos_laborales.PermisoLaboralEditarView.as_view(),
+         name='permiso-laboral-editar'),
+    path('permiso-laboral/<int:id_permiso>/delete', permisos_laborales.PermisoLaboralEliminarView.as_view(),
+         name='permiso-laboral-eliminar'),
+    path('permiso-laboral/<int:id_permiso>/ver', permisos_laborales.VerSoporteView.as_view(),
+         name='permiso-laboral-ver')
 ]

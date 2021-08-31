@@ -107,7 +107,12 @@ class Colaborador(Persona, ModelDjangoExtensiones):
                        ("permission_colaborador_actividad", "Can access the activities assigned"),
                        ("permission_director_proceso", "Can access assigned activities and process groups"),
                        ("permission_gerencial", "Can access the entire activity management module"),
-                       )
+                       ("can_access_aprobacion_permisolaboral_rrhh",
+                        "Can access aprobacion permiso laboral recursos humanos"),
+                       ("can_access_aprobacion_permisolaboral_jefe",
+                        "Can access aprobacion permiso laboral jefe inmediato"),
+                       ("can_access_aprobacion_permisolaboral_gerencia",
+                        "Can access aprobacion permiso laboral gerencia"))
 
     def empresa_to_dict(self):
         if self.empresa_sesion:
