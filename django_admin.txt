@@ -1,0 +1,10 @@
+--------------------
+Super Usuario Django
+--------------------
+
+Username: admin
+Email address: admin@gmail.com
+Password: admin-django
+
+Abrir en el Navegador
+http://localhost:8000/admin
