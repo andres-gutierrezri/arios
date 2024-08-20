@@ -1,7 +1,39 @@
-.idea/
-env/
-/media/
+# Django stuff:
+*.log
+*.pot
 *.pyc
+__pycache__/
+.idea/
+/media/
 /staticfiles/
-migrations/
+
+# Distribution / packaging
+# Environments
+.venv/
+
+# Byte-compiled / optimized / DLL files
+*.py[cod]
+*$py.class
+
+# If you are using SQLite
+db.sqlite3
+*.sqlite3
+
+# If you are using MySQL
+*.pyo
+
+# If you are using PostgreSQL
+*.psql
+
+# Ignore Django migration files
+*/migrations/*
+!*/migrations/__init__.py
+
+# Ignore ".log"
 eva.log
+
+# Ignore ".git"
+._.git
+
+# Ignore Visual Studio Code Settings
+.vscode/

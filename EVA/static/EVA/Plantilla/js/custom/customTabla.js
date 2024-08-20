@@ -9,7 +9,7 @@ const IDIOMA_TABLA = {
         },
     },
     info: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
-    infoEmpty:'Mostrando registros del 0 al 0 de un total de 0 registros',
+    infoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
     emptyTable: 'No hay registros disponibles'
 }
 
@@ -74,26 +74,25 @@ function getBotonesExportar(columnasExportar) {
  *     select: {}
  *  }
  */
-function iniciarDataTableN(config = {})
-{
+function iniciarDataTableN(config = {}) {
     // initialize datatable
     config.idTabla = config.idTabla ?? 'dataTable'
     $(`#${config.idTabla}`).dataTable(
-    {
-        responsive: true,
-        lengthChange: false,
-        dom:
-            "<'row mb-3'<'col-sm-12 col-md-6 d-flex align-items-center justify-content-start'f><'col-sm-12 col-md-6 d-flex align-items-center justify-content-end'lB>>" +
-            "<'row'<'col-sm-12'tr>>" +
-            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
-        aaSorting:config.ordenInicial ?? [[0, 'asc']],
-        columnDefs: config.detallesColumnas ?? [],
-        buttons: config.columnasExportar ? getBotonesExportar(config.columnasExportar) : config.botones ?? [],
-        language:IDIOMA_TABLA,
-        searching:config.buscar ?? true,
-        paging: config.paginar ?? true,
-        ordering: config.ordenar ?? true,
-        select: config.select ?? null
-    });
+        {
+            responsive: true,
+            lengthChange: false,
+            dom:
+                "<'row mb-3'<'col-sm-12 col-md-6 d-flex align-items-center justify-content-start'f><'col-sm-12 col-md-6 d-flex align-items-center justify-content-end'lB>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+            aaSorting: config.ordenInicial ?? [[0, 'asc']],
+            columnDefs: config.detallesColumnas ?? [],
+            buttons: config.columnasExportar ? getBotonesExportar(config.columnasExportar) : config.botones ?? [],
+            language: IDIOMA_TABLA,
+            searching: config.buscar ?? true,
+            paging: config.paginar ?? true,
+            ordering: config.ordenar ?? true,
+            select: config.select ?? null
+        });
     $(`#${config.idTabla}_filter`).find("input").attr("placeholder", "Buscar");
 }
