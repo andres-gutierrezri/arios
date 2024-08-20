@@ -6,7 +6,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-IS_DEPLOYED = bool(os.environ.get('is_deployed', ''))
+# IS_DEPLOYED = bool(os.environ.get('is_deployed', ''))
+IS_DEPLOYED = True
 
 if IS_DEPLOYED:
     DATABASE_DICT = dj_database_url.config(
