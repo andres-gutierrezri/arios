@@ -35,5 +35,5 @@ eva.log
 # Ignore ".git"
 ._.git
 
-# Ignore Visual Studio Code Settings
+# Ignore Visual Studio Code Settings (.vscode)
 .vscode/
