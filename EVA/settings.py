@@ -37,8 +37,9 @@ SECRET_KEY = 'a1e+7^&ozbdlfhmkdmg@ic9-%*brp1khg%b_#1v-bksm#=-ehw'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = not IS_DEPLOYED
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.1.102', 'eva.arios-ing.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.railway.app', 'arios-eva.com']
 
+CSRF_TRUSTED_ORIGINS = ['http://*', 'https://*']
 
 # Application definition
 
@@ -50,6 +51,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'whitenoise.runserver_nostatic',
     'Administracion.apps.AdministracionConfig',
     'Proyectos.apps.ProyectosConfig',
     'TalentoHumano.apps.TalentohumanoConfig',
@@ -67,6 +69,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 ROOT_URLCONF = 'EVA.urls'
@@ -178,5 +181,4 @@ JASPERSERVER_CLAVE = os.environ.get('jasperserver_clave', 'jasperadmin')
 EVA_RECAPTCHA_SITE_KEY = os.environ.get('eva_recaptcha_site_key', '6Ld5nDgaAAAAAEMfhGZpUy48mKaGvowqVJyOulqI')
 EVA_RECAPTCHA_SECRET_KEY = os.environ.get('eva_recaptcha_secret_key', '6Ld5nDgaAAAAAJf0aZ4axs6ocqqk6SXk5bQk7tLH')
 
-EVA_RUTA_ARCHIVOS_TEMPORALES = os.environ.get('eva_ruta_archivos_temporales',
-                                              os.path.join(MEDIA_ROOT, EVA_PRIVATE_MEDIA, 'Temp'))
+EVA_RUTA_ARCHIVOS_TEMPORALES = os.environ.get('eva_ruta_archivos_temporales', os.path.join(MEDIA_ROOT, EVA_PRIVATE_MEDIA, 'Temp'))

@@ -2,12 +2,15 @@
 
 import os
 import dj_database_url
+from dotenv import load_dotenv
+
+load_dotenv()
 
 IS_DEPLOYED = bool(os.environ.get('is_deployed', ''))
 
 if IS_DEPLOYED:
     DATABASE_DICT = dj_database_url.config(
-        default=os.environ.get('DATABASE_URL', ''))
+        default=os.getenv('DATABASE_URL'))
 else:
     DATABASE_DICT = {
         'ENGINE': 'django.db.backends.postgresql',
