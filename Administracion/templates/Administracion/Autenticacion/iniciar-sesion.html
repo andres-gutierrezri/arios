@@ -1,0 +1,61 @@
+{% extends 'Administracion/Autenticacion/_common/base_autenticacion.html' %}
+{% load static %}
+{% block titulo %}
+    Inicio de sesión EVA
+{% endblock %}
+
+{% block main %}
+
+    <div class="flex-1 fondo-autenticacion">
+        <div class="container py-4 py-lg-5 my-lg-5 px-4 px-sm-0">
+            <div class="row">
+                <div class="col-sm-12 col-md-6 col-lg-5 col-xl-4 ml-auto">
+                    <div class="card p-4 rounded-plus bg-faded" style="justify-content: center">
+                        <div class="card p-4 mt-6 rounded-plus bg-faded-white" style="justify-content: center">
+                            <div style="display: flex; justify-content: center;">
+                                <img src="{% static 'EVA/Plantilla/img/custom/logo-eva.svg' %}" alt="logo eva">
+                            </div>
+                            <br>
+                            <div style="display: flex; justify-content: center;">
+                                <h2 class="titulo-autenticacion">Inicio de Sesión</h2>
+                            </div>
+                            <form action="{% url 'Administracion:iniciar-sesion' %}" id="iniciar-sesion-form" method="post" class="needs-validation" novalidate>
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label class="form-label" for="username">Usuario</label>
+                                    <input type="text" id="username" name="username" class="form-control" placeholder="Digite su usuario"  required>
+                                    <div class="invalid-feedback">Por favor digite su usuario</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="password">Contraseña</label>
+                                    <input type="password" id="password" name="password" class="form-control" placeholder="Digite su contraseña"  required style="font-size: 0.8125rem;">
+                                    <div class="invalid-feedback">Por favor digite su contraseña</div>
+                                </div>
+                                <div class="form-group text-left" style="align-items: center">
+                                    <div class="row">
+                                         <div class="col-6">
+                                             <a href="{% url 'Administracion:olvido-contrasena' %}">¿Olvidó su contraseña?</a>
+                                         </div>
+                                        <div class="col-6">
+                                            <a href="{% url 'Administracion:proveedor-iniciar-sesion' %}"> Soy un proveedor </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input id="datos_token" name="datos" hidden value="{{ datos }}" aria-label="">
+                                <div class="row no-gutters">
+                                    <div class="col-lg-6 pl-lg-1 my-2">
+                                        <button id="js-login-btn" type="submit" class="btn btn-primary btn-block ">Iniciar sesión</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="mt-4" style="display: flex; justify-content: center;">
+                                <img src="{% static 'EVA/Plantilla/img/custom/logo-arios-blanco.svg' %}" style="width: 50%" alt="logo arios">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

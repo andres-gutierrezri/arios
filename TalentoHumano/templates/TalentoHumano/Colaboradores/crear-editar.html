@@ -1,0 +1,304 @@
+{% extends 'TalentoHumano/_common/base_talento_humano.html' %}
+{% load static %}
+{% load eva_tags %}
+<title>{% block titulo %}{% if opcion == 'editar' %}Editar Colaboradores{% else %} Crear Colaboradores {% endif %}{% endblock %}</title>
+{% block styles %}
+    <!-- DEMO related CSS below -->
+    <link rel="stylesheet" media="screen, print" href="{%static 'EVA/Plantilla/css/fa-brands.css' %}">
+    <!-- page related CSS below -->
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/bootstrap-datepicker/bootstrap-datepicker.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/smartwizard/smartwizard.css' %}">
+{% endblock styles%}
+
+{% block main %}
+    <div class="panel-container show">
+        <div class="header">
+            <h1 class="header-title">
+                <i class='far fa-user'></i> Colaboradores: <span class='fw-300'>{% if opcion == 'editar' %} Editar {% else%} Crear {% endif %}</span>
+                <br>
+                <br>
+            </h1>
+        </div>
+        <div class="row">
+            <div class="col-xl-12">
+                <div id="panel-1" class="panel">
+                    <div class="panel-hdr">
+                        <br>
+                        <div class="col-md-10">
+                            <small>
+                                <a class="far fa-3x far fa-times-circle"  href="{% url 'TalentoHumano:colaboradores-index' 0 %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Cancelar"></a>
+                            </small>
+                        </div>
+                    </div>
+                    <div class="panel-container show">
+                        <div class="panel-content">
+                            <div class="panel-group">
+                                <div class="panel-body">
+                                    <div class="panel-container show">
+                                        <div class="panel-content">
+                                            {% if opcion == 'editar' %}
+                                                <form action="{% url 'TalentoHumano:colaboradores-editar' colaborador.id %}" id="colaboradores-form" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                                                <input type="hidden" name="usuario_id" id="usuario_id" value="{{ colaborador.usuario_id }}">
+                                            {% else %}
+                                                <form action="{% url 'TalentoHumano:colaboradores-crear' %}" id="colaboradores-form" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                                            {% endif %}
+                                            {% csrf_token %}
+                                            <div id="smartwizard">
+                                                <ul>
+                                                    <li><a href="#step-1">Información básica</a></li>
+                                                    <li><a href="#step-2">Vinculación a entidades CAFE</a></li>
+                                                    <li><a href="#step-3">Información laboral</a></li>
+                                                    <li><a href="#step-4">Entrega de dotación</a></li>
+                                                </ul>
+                                                <div class="p-3">
+                                                    <div id="step-1" class="">
+                                                        <div id="form-step-0" class="form-group" data-toggle="validator">
+                                                            <div class="form-group">
+                                                                <div class="form-row">
+                                                                    <div class="col-md-6">
+                                                                        {% input_text_tag 'nombre' 'Nombres' placeholder="Ingrese los nombres" required="" maxlength="100" value=colaborador.nombres mensaje_validacion='Por favor digite el nombre' invalido=errores.nombre %}
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        {% input_text_tag 'apellido' 'Apellidos' placeholder="Ingrese los apellidos" required="" maxlength="100" value=colaborador.apellidos mensaje_validacion='Por favor digite el apellido' invalido=errores.apellido %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <div class="form-row">
+                                                                    <div class="col-md-6">
+                                                                        {% select_tag tipo_identificacion 'tipo_identificacion_id' 'Seleccione un tipo de identificación' texto_label="Tipo de identificación" value=colaborador.tipo_identificacion_id required="" mensaje_validacion='Por favor seleccione un tipo de identificación' invalido=errores.tipo_identificacion %}
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        {% input_number_tag 'identificacion' 'Identificación' placeholder="Ingrese el número de identificación" required="" min='0' max="99999999999" onInput="validarLongitud(11,this)" value=colaborador.identificacion mensaje_validacion='Por favor digite el número de identificación' invalido=errores.identificación %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <div class="form-row">
+                                                                    <div class="col-md-6">
+                                                                        {% input_date_tag 'fecha_expedicion' 'Fecha de expedición' placeholder="Seleccione una fecha" required="" autocomplete="off" value=colaborador.fecha_expedicion  mensaje_validacion='Por favor seleccione una fecha' invalido=errores.fecha_expedicion %}
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        {% select_tag genero 'genero' 'Seleccione un género' texto_label="Género" value=colaborador.genero required="" mensaje_validacion='Por favor seleccione un género' invalido=errores.genero %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <div class="form-row">
+                                                                    <div class="col-md-6">
+                                                                        {% input_text_tag 'direccion' 'Dirección' placeholder="Ingrese la dirección" required="" maxlength="100" value=colaborador.direccion mensaje_validacion='Por favor digite la dirección.' invalido=errores.direccion %}
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        {% input_email_tag 'correo' 'Correo electrónico' placeholder="Ingrese el correo electrónico" required="" maxlength="100" value=colaborador.usuario.email mensaje_validacion='Por favor digite el correo electrónico del colaborador.' invalido=errores.correo %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <div class="form-row">
+                                                                    <div class="col-md-6">
+                                                                        {% input_number_tag 'telefono' 'Teléfono' placeholder="Ingrese el número telefónico" required="" min='0' max="9999999999" onInput="validarLongitud(10,this)" value=colaborador.telefono mensaje_validacion='Por favor digite el número telefónico' invalido=errores.telefono %}
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        {% input_date_tag 'fecha_nacimiento' 'Fecha de nacimiento' placeholder="Seleccione una fecha" required="" autocomplete="off" value=colaborador.fecha_nacimiento  mensaje_validacion='Por favor seleccione una fecha.' invalido=errores.fecha_nacimiento %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <div class="form-row">
+                                                                    <div class="col-md-6">
+                                                                        {% select_tag departamentos 'departamento_id' 'Seleccione un departamento' texto_label="Departamento" value=colaborador.lugar_nacimiento.municipio.departamento.id required="" mensaje_validacion='Por favor seleccione un departamento' %}
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        {% select_tag municipios 'municipio_id' 'Seleccione un municipio' texto_label="Municipio" value=colaborador.lugar_nacimiento.municipio.id required="" mensaje_validacion='Por favor seleccione un municipio'  %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <div class="form-row">
+                                                                    <div class="col-md-6">
+                                                                        {% select_tag lugar_nacimiento 'centro_poblado_id' 'Seleccione un centro poblado' texto_label="Lugar de nacimiento" value=colaborador.lugar_nacimiento.id required="" mensaje_validacion='Por favor seleccione un centro poblado' invalido=errores.lugar_nacimiento %}
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        {% input_file_tag 'foto_perfil' 'Foto de perfil' placeholder="Seleccione la foto de perfil"   value=colaborador.foto_perfil  invalido=errores.foto_perfil  %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <div class="form-row">
+                                                                    <div class="col-md-6">
+                                                                        {% select_tag grupo_sanguineo 'grupo_sanguineo' 'Seleccione un grupo sanguíneo' texto_label="Grupo sanguíneo" value=colaborador.grupo_sanguineo required="" mensaje_validacion='Por favor seleccione un grupo sanguíneo' invalido=errores.grupo_sanguineo %}
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        {% input_text_tag 'nombre_contacto' 'Nombre del contacto' placeholder="Ingrese el nombre del contacto" required="" maxlength="100" value=colaborador.nombre_contacto mensaje_validacion='Por favor digite el nombre del contacto' invalido=errores.nombre_contacto %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <div class="form-row">
+                                                                    <div class="col-md-6">
+                                                                        {% input_text_tag 'parentesco' 'Parentesco' placeholder="Ingrese el parentesco" required="" maxlength="100" value=colaborador.parentesco mensaje_validacion='Por favor digite el parentesco' invalido=errores.parentesco %}
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        {% input_number_tag 'telefono_contacto' 'Teléfono del contacto' placeholder="Ingrese el número telefónico del contacto" required="" maxlength="20" onInput="validarLongitud(13,this)" value=colaborador.telefono_contacto mensaje_validacion='Por favor digite el número telefónico del contacto' invalido=errores.telefono_contacto %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div id="step-2" class="">
+                                                        <div id="form-step-1" data-toggle="validator">
+                                                            <div class="form-group">
+                                                                <div class="form-row">
+                                                                    <div class="col-md-6">
+                                                                        {% select_tag eps 'eps_id' 'Seleccione una EPS' texto_label="EPS" value=colaborador.eps_id required="" mensaje_validacion='Por favor seleccione una EPS.' invalido=errores.eps %}
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        {% select_tag caja_compensacion 'caja_compensacion_id' 'Seleccione una caja de compensación' texto_label="Caja de compensación" value=colaborador.caja_compensacion_id required="" mensaje_validacion='Por favor seleccione una caja de compensación.' invalido=errores.caja_compensacion %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <div class="form-row">
+                                                                    <div class="col-md-6">
+                                                                        {% select_tag afp 'afp_id' 'Seleccione una AFP' texto_label="AFP" value=colaborador.afp_id required="" mensaje_validacion='Por favor seleccione una AFP.' invalido=errores.afp %}
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        {% select_tag cesantias 'cesantias_id' 'Seleccione un fondo de cesantías' texto_label="Cesantías" value=colaborador.cesantias_id required="" mensaje_validacion='Por favor seleccione un fondo de cesantías.' invalido=errores.censantias %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <div class="form-row">
+                                                                    <div class="col-md-6">
+                                                                        {% select_tag arl 'arl_id' 'Seleccione una ARL' texto_label="ARL" value=colaborador.arl_id required="" mensaje_validacion='Por favor seleccione una ARL.' invalido=errores.arl %}
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        {% select_tag arl_nivel 'arl_nivel_id' 'Seleccione el nivel de riesgo de ARL' texto_label="Nivel de Riesgo ARL" value=colaborador.arl_nivel_id required="" mensaje_validacion='Por favor seleccione el nivel de riesgo de ARL.' invalido=errores.arl_nivel %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div id="step-3" class="">
+                                                        <div id="form-step-2" data-toggle="validator">
+                                                            <div class="form-group">
+                                                                <div class="form-row">
+                                                                    <input id="multiple"  hidden value="{{ contratos_colaborador }}">
+                                                                    <div class="col-md-6">
+                                                                        {% select_tag jefe_inmediato 'jefe_inmediato_id' 'Seleccione el jefe inmediato' texto_label="Jefe inmediato" value=colaborador.jefe_inmediato_id  mensaje_validacion='Por favor seleccione un jefe inmediato.' invalido=errores.jefe_inmediato %}
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        {% select_multiple_tag contrato 'contrato_id[]' 'contrato_id' 'Seleccione un contrato' texto_label="Contrato" value="" required="" mensaje_validacion='Por favor seleccione un contrato' multiple='multiple' invalido=errores.contrato %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <div class="form-row">
+                                                                    <div class="col-md-6">
+                                                                        {% select_tag tipo_contrato 'tipo_contrato_id' 'Seleccione un tipo de contrato' texto_label="Tipo de contrato" value=colaborador.tipo_contrato_id required="" mensaje_validacion='Por favor seleccione un tipo de contrato.' invalido=errores.tipo_contrato %}
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        {% select_tag cargo 'cargo_id' 'Seleccione un cargo' texto_label="Cargo" value=colaborador.cargo_id required="" mensaje_validacion='Por favor seleccione un cargo' invalido=errores.cargo %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <div class="form-row">
+                                                                    <div class="col-md-6">
+                                                                        {% input_date_tag 'fecha_ingreso' 'Fecha de ingreso' placeholder="Seleccione una fecha" required="" autocomplete="off" value=colaborador.fecha_ingreso  mensaje_validacion='Por favor seleccione una fecha.' invalido=errores.fecha_ingreso %}
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        {% input_date_tag 'fecha_examen' 'Fecha de examen' placeholder="Seleccione una fecha" required="" autocomplete="off" value=colaborador.fecha_examen  mensaje_validacion='Por favor seleccione una fecha.' invalido=errores.fecha_examen %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <div class="form-row">
+                                                                    <div class="col-md-6">
+                                                                        {% select_multiple_tag proceso 'proceso_id[]' 'proceso_id' 'Seleccione un a opción' texto_label="Procesos" value=procesos_selecciones required="" mensaje_validacion='Por favor seleccione un proceso' multiple='multiple' invalido=errores.proceso %}
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        {% input_number_tag 'salario' 'Salario' placeholder="Ingrese el salario" required="" min='0' max="99999999" onInput="validarLongitud(8,this)" value=colaborador.salario mensaje_validacion='Por favor digite el salario.' invalido=errores.salario %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <div class="form-row">
+                                                                    <div class="col-md-6">
+                                                                        {% select_tag rango 'rango_id' 'Seleccione un rango' texto_label="Rango" value=colaborador.rango_id required="" mensaje_validacion='Por favor seleccione un rango' invalido=errores.rango %}
+                                                                    </div>
+                                                                    {% if opcion == 'crear' %}
+                                                                    <input id="multiple_grupos"  hidden value="{{ grupos_colaborador }}">
+                                                                    <div class="col-md-6">
+                                                                        {% select_multiple_tag grupos 'grupo_id[]' 'grupo_id' 'Seleccione un grupo' placeholder="Seleccione un grupo de permisos" texto_label="Grupo de Permisos" value="" required="" mensaje_validacion='Por favor seleccione un grupo de permisos' multiple='multiple' invalido=errores.grupo %}
+                                                                    </div>
+                                                                    {% endif %}
+                                                                    {% if opcion == 'editar' %}
+                                                                    <div class="col-md-6">
+                                                                        {% select_tag empresa 'empresa_id' 'Seleccione una empresa' texto_label="Empresa" value=colaborador.empresa_id required="" mensaje_validacion='Por favor seleccione una empresa' invalido=errores.empresa %}
+                                                                    </div>
+                                                                    {% endif %}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div id="step-4" class="">
+                                                        <div id="form-step-3" data-toggle="validator">
+                                                            <div class="form-group">
+                                                                <div class="form-row">
+                                                                    <div class="col-md-6">
+                                                                        {% select_tag talla_zapatos 'talla_zapatos' 'Seleccione una talla' texto_label="Talla zapatos" value=colaborador.talla_zapatos  mensaje_validacion='Por favor seleccione una talla.' invalido=errores.talla_zapatos %}
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        {% select_tag talla_pantalon 'talla_pantalon' 'Seleccione una talla' texto_label="Talla pantalón" value=colaborador.talla_pantalon  mensaje_validacion='Por favor seleccione una talla.' invalido=errores.talla_pantalon %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <div class="form-row">
+                                                                    <div class="col-md-6">
+                                                                        {% select_tag talla_camisa 'talla_camisa' 'Seleccione una talla' texto_label="Talla camisa" value=colaborador.talla_camisa  mensaje_validacion='Por favor seleccione una talla.' invalido=errores.talla_camisa %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-row">
+                                                                <div >
+                                                                    <button id="guardar" class="btn btn-primary btn-block">{% if opcion == 'editar' %} Actualizar {% else %} Agregar {% endif %}</button>
+                                                                </div>
+                                                                <div style="padding-left: 15px">
+                                                                    <a href="{% url 'TalentoHumano:colaboradores-index' 0  %}" class="btn btn-danger btn-block">Cancelar</a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock main %}
+
+{% block scripts %}
+    <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
+    <script src="{% static 'Administracion/js/select_divipol.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js' %}"></script>
+    <script src="{% static 'TalentoHumano/js/date_picker.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/smartwizard/smartwizard.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/wizard.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
+    <script src="{% static 'TalentoHumano/js/selectMultipleContratos.js' %}"></script>
+    <script src="{% static 'TalentoHumano/js/selectMultipleGruposPermisos.js' %}"></script>
+    <script src="{% static 'TalentoHumano/js/controlWizardForm.js' %}"></script>
+{% endblock scripts%}

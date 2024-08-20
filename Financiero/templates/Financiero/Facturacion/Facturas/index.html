@@ -1,0 +1,131 @@
+{% extends 'Financiero/_common/base_financiero.html' %}
+{% load static %}
+{% load humanize %}
+<title>{% block titulo %}Facturas{% endblock %}</title>
+{% block styles %}
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/datagrid/datatables/datatables.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
+{% endblock styles %}
+
+{% block main %}
+    <div class="panel-container show">
+        <div class="header">
+            <h1 class="header-title">
+                <i class='far fa-calculator'></i> Facturas <span class='fw-300'></span>
+                 <br>
+                 <br>
+            </h1>
+        </div>
+    </div>
+    <div id="panel-3" class="panel">
+        {% if perms.Financiero.add_facturaencabezado %}
+        <div class="panel-hdr">
+            <small>
+                <a class="far fa-3x far fa-plus-circle"  href="{% url 'Financiero:factura-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Crear factura"></a>
+            </small>
+        </div>
+        {% endif %}
+        <div class="panel-container show">
+            <div class="panel-content">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#tab_generadas" role="tab">Generadas</a></li>
+                    {% if perms.Financiero.change_facturaencabezado %}
+                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab_borradores" role="tab">Borradores</a></li>
+                    {% endif %}
+                </ul>
+                <div class="tab-content p-3">
+                    <div class="tab-pane fade show active" id="tab_generadas" role="tabpanel">
+                        <div class="table-responsive">
+                            <table class="table table-bordered w-100" id="tabla-facturas">
+                                <thead  class="bg-primary-600">
+                                    <tr>
+                                        <th>Número</th>
+                                        <th>Nombre cliente</th>
+                                        <th>Ítems</th>
+                                        <th>Total</th>
+                                        <th>Estado</th>
+                                        <th>Fecha</th>
+                                        <th>Usuario</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for factura in facturas %}
+                                        <tr>
+                                            <td>{{ factura.numero_factura }}</td>
+                                            <td>{{ factura.tercero.nombre}}</td>
+                                            <td>{{ factura.can_items }}</td>
+                                            <td class="text-right">{{ factura.total_factura | intcomma:False }}</td>
+                                            <td><span class="badge {% if factura.estado >= 30 %}badge-warning{% else %}badge-primary{% endif %} badge-pill">{{ factura.get_estado_display }}</span></td>
+                                            <td>{{ factura.fecha_creacion |date:'Y-m-d' }}</td>
+                                            <td>{{ factura.usuario_crea.username}}</td>
+                                            <td>
+                                                <a class="far fa-2x fa-eye" href="javascript:abrirModalVistaPrevia('{% url 'Financiero:factura-imprimir' factura.id %}')"></a>
+                                                {% if perms.Financeiro.delete_facturaencabezado %}
+                                                    {% if factura.estado == 10 or factura.estado == 14 %}
+                                                        <a class="far fa-2x fa-times-circle color-danger-900" id="eliminar_{{ factura.id }}" href="javascript:void(0);"  onclick="anularFacturaModal({{ factura.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-danger-900"></div></div>' data-toggle="tooltip" title="" data-original-title="Anular"></a>
+                                                    {% endif %}
+                                                    {% if factura.estado == 14 %}
+                                                        <a class="far fa-2x fa-plus-hexagon color-info-900" id="notadebito_{{ factura.id }}" href="javascript:void(0);"  onclick="generarNotaDebito({{ factura.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-info-900"></div></div>' data-toggle="tooltip" title="" data-original-title="Nota Débito"></a>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% include 'EVA/_common/_paginacion.html' with datos=facturas %}
+                    </div>
+                    <div class="tab-pane fade" id="tab_borradores" role="tabpanel">
+                        <div class="table-responsive">
+                            <table class="table table-bordered w-100" id="tabla-facturas">
+                                <thead  class="bg-primary-600">
+                                    <tr>
+                                        <th>Id Borrador</th>
+                                        <th>Nombre cliente</th>
+                                        <th>Ítems</th>
+                                        <th>Total</th>
+                                        <th>Fecha</th>
+                                        <th>Usuario</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for factura in borradores %}
+                                        <tr>
+                                            <td>{{ factura.id}}</td>
+                                            <td>{{ factura.tercero.nombre}}</td>
+                                            <td>{{ factura.can_items }}</td>
+                                            <td class="text-right">{{ factura.total_factura | intcomma:False }}</td>
+                                            <td>{{ factura.fecha_creacion |date:'Y-m-d' }}</td>
+                                            <td>{{ factura.usuario_crea.username}}</td>
+                                            <td>
+                                                <a class="far fa-2x fa-eye" href="javascript:abrirModalVistaPrevia('{% url 'Financiero:factura-imprimir' factura.id %}')"></a>
+                                                {% if perms.Financiero.change_facturaencabezado %}
+                                                <a class="far fa-2x fa-edit"  href="{% url 'Financiero:factura-editar' factura.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% include 'EVA/_common/_paginacion.html' with datos=borradores %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% include 'Financiero/Facturacion/_anular_modal.html'%}
+    {% include 'EVA/_common/_vista_previa_modal.html' with titulo_modal='Vista previa de factura' %}
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
+    <script src="{% static 'Financiero/js/Facturacion/indexFactura.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/funcionesGenerales.js' %}"></script>
+
+{% endblock %}

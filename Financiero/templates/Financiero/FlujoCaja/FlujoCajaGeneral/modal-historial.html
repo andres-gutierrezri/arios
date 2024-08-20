@@ -1,0 +1,51 @@
+{% load eva_tags %}
+{% load static %}
+{% load humanize %}
+<div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+        <div class="modal-header p-b-0">
+            <h4 class="modal-title">
+                Historial de Cambios
+            </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"><i class="fal fa-times"></i></span>
+            </button>
+        </div>
+        <div class="modal-body p-b-0">
+            <div class="table-responsive p-b-30">
+                <table class="table table-bordered w-100" id="dataTableHistorial">
+                    <thead class="bg-primary-600">
+                        <tr>
+                            <th hidden>id</th>
+                            <th>Fecha</th>
+                            <th>Tipo</th>
+                            <th>Valor</th>
+                            <th>Usuario</th>
+                            <th>Creado</th>
+                            <th>Modificado</th>
+                            <th>Comentarios</th>
+                            <th>Motivo Edición</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for movimiento in historial %}
+                            <tr>
+                                <td hidden>{{ movimiento.id }}</td>
+                                <td>{{ movimiento.fecha_movimiento|date:'Y-m-d' }}</td>
+                                <td><strong>{{ movimiento.subtipo_movimiento }}</strong><br>{{ movimiento.agrupacion }}</td>
+                                <td>{{ movimiento.valor|intcomma:False }}</td>
+                                <td>{{ movimiento.usuario_modifica }}</td>
+                                <td>{{ movimiento.fecha_crea|date:'Y-m-d' }}</td>
+                                <td>{{ movimiento.fecha_modifica|date:'Y-m-d' }}</td>
+                                <td>{{ movimiento.comentarios |default_if_none:'' }}</td>
+                                <td>{{ movimiento.motivo_edicion |default_if_none:''}}</td>
+                                <td><span class="badge {% if movimiento.estado_id == ELIMINADO %} badge-danger {% else %} badge-primary {% endif %} fw-300 ml-auto">{{ movimiento.estado }}</span></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

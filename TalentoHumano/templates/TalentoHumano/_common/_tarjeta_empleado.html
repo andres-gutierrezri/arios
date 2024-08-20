@@ -1,0 +1,63 @@
+{% load static %}
+<div class="col-xl-4">
+    <div id="c_{{ id_tarjeta }}" class="card border shadow-0 mb-g shadow-sm-hover" data-filter-tags="{{ nombre | lower }}">
+        <div class="card-body border-faded border-top-0 border-left-0 border-right-0 rounded-top">
+            <div class="d-flex flex-row align-items-center">
+                <span class="status status-success mr-3">
+                    <span class="rounded-circle profile-image d-block " style="background-image:url({{ foto_perfil }}); background-size: cover;"></span>
+                </span>
+                <div class="info-card-text flex-1">
+                    <a href="javascript:void(0);" class="fs-xl text-truncate text-truncate-lg text-primary" data-toggle="dropdown" aria-expanded="false">
+                        {{ nombre }}
+                        <i class="fal fa-angle-down d-inline-block ml-1 fs-md"></i>
+                    </a>
+                    {% if perms.TalentoHumano.view_colaborador %}
+                    <div class="dropdown-menu">
+                        {% if perms.TalentoHumano.view_colaborador %}
+                        <a class="dropdown-item" href="{% url 'TalentoHumano:colaboradores-perfil' colaborador.id %}">Ver perfil</a>
+                        {% endif %}
+                        {% if perms.TalentoHumano.change_colaborador %}
+                        <a class="dropdown-item" href="{% url 'TalentoHumano:colaboradores-editar' id_tarjeta %}">Editar</a>
+                        {% endif %}
+                        {% if perms.Notificaciones.add_eventodesencadenador %}
+                        <a class="dropdown-item" href="{% url 'Notificaciones:notificaciones-asignacion' colaborador.usuario_id %}">Asignar Notificaciones</a>
+                        {% endif %}
+                        {% if perms.auth.change_permission and request.user.id != colaborador.usuario_id and not colaborador.usuario.is_superuser %}
+                        <a class="dropdown-item" href="{% url 'TalentoHumano:colaboradores-permisos' colaborador.usuario_id 0 %}">Gestionar Permisos</a>
+                        {% endif %}
+                        {% if perms.TalentoHumano.add_novedadcolaborador %}
+                        <a class="dropdown-item" href="javascript: agregarNovedad({{ colaborador.usuario_id }})">Agregar Novedad</a>
+                        {% endif %}
+                        {% if perms.TalentoHumano.add_colaboradorempresa %}
+                        <a class="dropdown-item" href="javascript: seleccionarEmpresas({{ colaborador.usuario_id }})">Empresas</a>
+                        {% endif %}
+                        {% if perms.TalentoHumano.delete_colaborador %}
+                        <a class="dropdown-item" href="javascript:void(0);" id="eliminar_{{ id_tarjeta }}"   onclick="fConfirmarEliminar({{ id_tarjeta }})">Eliminar</a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    <span class="text-truncate text-truncate-xl">{{ cargo }}</span>
+                </div>
+                <button class="js-expand-btn btn btn-sm btn-default d-none" data-toggle="collapse" data-target="#c_{{ id_tarjeta }} > .card-body + .card-body" aria-expanded="false">
+                    <span class="collapsed-hidden">+</span>
+                    <span class="collapsed-reveal">-</span>
+                </button>
+            </div>
+        </div>
+        <div class="card-body p-0 collapse show">
+            <div class="p-3">
+                <a  class="mt-1 d-block fs-sm fw-400 text-dark">
+                    <i class="fas fa-user text-muted mr-2"></i> {{colaborador.usuario.username}}</a>
+                <a  class="mt-1 d-block fs-sm fw-400 text-dark">
+                    <i class="fas fa-mobile-alt text-muted mr-2"></i> {{telefono}}</a>
+                <a class="mt-1 d-block fs-sm fw-400 text-dark">
+                    <i class="fas fa-address-card text-muted mr-2"></i> {{identificacion}}</a>
+                <a href="mailto: {{ correo }}" class="mt-1 d-block fs-sm fw-400 text-dark">
+                    <i class="fas fa-envelope text-muted mr-2"></i> {{correo }}</a>
+                <a  class="mt-1 d-block fs-sm fw-400 text-dark">
+                    <i class="fas fa-tint text-muted mr-2"></i> {{grupo_sanguineo }}</a>
+                <address class=" text-muted"><i class="fas fa-map-pin mr-2"></i> {{direccion }}</address>
+            </div>
+        </div>
+    </div>
+</div>

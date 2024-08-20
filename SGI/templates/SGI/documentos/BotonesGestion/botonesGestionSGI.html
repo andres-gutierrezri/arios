@@ -1,0 +1,9 @@
+{% if perms.SGI.add_archivo %}
+<a class="fad fa-custom fa-long-arrow-alt-up p-l-10" {% if proceso.id %}href="javascript:abrir_modal_cargar('{% url 'sgi:documentos-cargar' proceso.id  grupo_documento.id documento.id %}');" {% else %}href="javascript:abrir_modal_cargar('{% url 'sgi:documentos-cargar' 1  grupo_documento.id documento.id %}');"{% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Cargar"></a>
+{% endif %}
+{% if perms.SGI.change_documento %}
+<a class="fad fa-custom fa-edit p-l-10" {% if proceso.id %}href="{% url 'sgi:documentos-editar' proceso.id  grupo_documento.id documento.id %}" {% else %}href="{% url 'sgi:documentos-editar' 1  grupo_documento.id documento.id %}"{% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+{% endif %}
+{% if perms.SGI.delete_documento %}
+<a class="fad fa-custom fa-trash-alt color-danger-900 p-l-10" id="eliminar_{{ documento.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ documento.id }}, 'sgi/documentos')" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-danger-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+{% endif %}

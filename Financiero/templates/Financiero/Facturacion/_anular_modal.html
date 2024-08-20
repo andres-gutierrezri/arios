@@ -1,0 +1,35 @@
+{% load eva_tags %}
+<form id="fanular_factura" novalidate>
+    <div class="modal fade"  tabindex="-1" id="anular_modal" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        Factura - Anular
+                    </h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group col-12">
+                            {% input_general_tag 'motivo_anulacion' texto_label="Motivo de anulación:" type="textarea" required="" placeholder="Ingrese el motivo por el cual se anula." minlength="10" maxlength="1000" mensaje_validacion="El motivo debe tener mínimo 10 caracteres" %}
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-12">
+                            {% input_general_tag 'observaciones' texto_label="Observaciones" type="textarea" placeholder="Ingrese aquí las observaciones si aplica." minlength="15" maxlength="1000" mensaje_validacion="La observación debe tener mínimo 15 caracteres" %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger btn-pills" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary btn-pills" id="btn_anular_id">Anular</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

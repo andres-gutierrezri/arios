@@ -1,0 +1,97 @@
+{% extends 'TalentoHumano/_common/base_talento_humano.html' %}
+{% load static %}
+{% load eva_tags %}
+<title>{% block titulo %}{% if opcion == 'editar' %}Editar Entidades CAFE{% else %} Crear Entidades CAFE {% endif %}{% endblock %}</title>
+{% block styles %}
+<!-- DEMO related CSS below -->
+	<link rel="stylesheet" media="screen, print" href="{%static 'EVA/Plantilla/css/fa-brands.css' %}">
+	<!-- page related CSS below -->
+	<link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
+{% endblock styles%}
+
+{% block main %}
+    <div class="panel-container show">
+        <div class="header">
+             <h1 class="header-title">
+                <i class='far fa-hand-receiving'></i> Entidades CAFE: <span class='fw-300'>{% if opcion == 'editar' %} Editar {% else%} Crear {% endif %}</span>
+                 <br>
+                 <br>
+             </h1>
+        </div>
+        <div class="row">
+            <div class="col-xl-12">
+                <div id="panel-1" class="panel">
+                    <div class="panel-container show">
+                        <div class="panel-content">
+                            <div class="panel-group">
+                                <div class="panel-body">
+                                     {% if opcion == 'editar' %}
+                                    <form action="{% url 'TalentoHumano:entidades-cafe-editar' entidad_cafe.id %}" id="entidades-form" method="post" class="needs-validation" novalidate>
+                                     {% else %}
+                                    <form action="{% url 'TalentoHumano:entidades-cafe-crear' %}" id="entidades-form" method="post" class="needs-validation" novalidate>
+                                     {% endif %}
+                                        {% csrf_token %}
+                                        {{ entid }}
+                                        <div class="form-group">
+                                            <div class="form-row">
+                                                <div class="col-md-6">
+                                                    {% select_tag tipos_entidades 'tipo_entidad_id' 'Seleccione un tipo de entidad' texto_label="Tipo de entidad" value=entidad_cafe.tipo_entidad_id required="" mensaje_validacion='Por favor seleccione un tipo de entidad.' invalido=errores.tipo_entidad %}
+                                                </div>
+                                                <div class="col-md-6">
+                                                    {% input_text_tag 'nombre' 'Nombre' placeholder="Ingrese el nombre" required="" maxlength="100" value=entidad_cafe.nombre mensaje_validacion='Por favor digite el nombre.' invalido=errores.nombre %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="form-row">
+                                                <div class="col-md-6">
+                                                {% input_text_tag 'direccion' 'Dirección' placeholder="Ingrese la dirección" required="" maxlength="100" value=entidad_cafe.direccion mensaje_validacion='Por favor digite la dirección.' invalido=errores.direccion %}
+                                                </div>
+                                                <div class="col-md-6">
+                                                {% input_text_tag 'nombre_contacto' 'Nombre del contacto' placeholder="Ingrese el nombre del contacto" required="" maxlength="100" value=entidad_cafe.nombre_contacto mensaje_validacion='Por favor digite el nombre del contacto.' invalido=errores.nombre_contacto %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="form-row">
+                                                <div class="col-md-6">
+                                                {% input_text_tag 'telefono_contacto' 'Teléfono del contacto' placeholder="Ingrese el número telefónico del contacto" required="" maxlength="30" value=entidad_cafe.telefono_contacto mensaje_validacion='Por favor digite el número telefónico del contacto.' invalido=errores.telefono_contacto %}
+                                                </div>
+                                                 <div class="col-md-6">
+                                                 {% input_email_tag 'correo' 'Correo electrónico de la entidad' placeholder="Ingrese el correo electrónico" required="" maxlength="100" value=entidad_cafe.correo mensaje_validacion='Por favor digite el correo electrónico.' invalido=errores.correo %}
+                                                 </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="form-row">
+                                                <div class="col-md-6">
+                                                {% input_text_tag 'direccion_web' 'Sitio WEB' placeholder="Ingrese el sitio WEB" required="" maxlength="100" value=entidad_cafe.direccion_web mensaje_validacion='Por favor digite el sitio web.' invalido=errores.direccion_web %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                            <div class="form-row">
+                                                <div >
+                                                    <button id="guardar" class="btn btn-primary btn-block">{% if opcion == 'editar' %} Actualizar {% else %} Agregar {% endif %}</button>
+                                                </div>
+                                                <div style="padding-left: 15px">
+                                                    <a href="{% url 'TalentoHumano:entidades-cafe-index' 0 %}" class="btn btn-danger btn-block">Cancelar</a>
+                                                </div>
+                                            </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock main %}
+
+{% block scripts %}
+    <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
+    <script src="{% static 'Administracion/js/select_divipol.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
+	<script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
+{% endblock scripts%}

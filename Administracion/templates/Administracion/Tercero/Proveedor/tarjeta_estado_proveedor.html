@@ -1,0 +1,71 @@
+<style>
+    .js-percent:after{
+        content: "%";
+    }
+</style>
+<div id="panel-6" class="panel shadow-5">
+    <div class="panel-container show">
+        <div class="panel-content">
+            {% if estado_doc %}
+                <div class="info-card-text flex-1">
+                    <h4><b>Documentos</b></h4>
+                </div>
+            {% endif %}
+            <div id="update-chart" class="d-flex flex-column align-items-center">
+                <div class="row w-100">
+                    <div class="col-md-6 p-0 align-items-center">
+                        {% if n_doc_oblig and n_doc_oblig == n_tip_oblig %}
+                            <div class="js-easy-pie-chart color-primary-900 position-relative d-flex align-items-center justify-content-center" data-percent="{{ total }}" data-piesize="100" data-linewidth="15" data-trackcolor="#EDEDED" data-scalelength="1" data-scaleColor="#ffffff00">
+                                <div class="d-flex flex-column align-items-center justify-content-center position-absolute pos-left pos-right pos-top pos-bottom fw-300 fs-xl">
+                                    <span class="js-percent d-block text-dark">{{ total }}</span>
+                                    <div class="d-block fs-xs text-dark opacity-70">
+                                        <small>Completado</small>
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="js-easy-pie-chart {% if total == 100 and not datos_estado.estado_solicitud %}color-primary-900{% elif datos_estado.estado_solicitud %}color-danger-500{% else %}color-primary-200{% endif %} position-relative d-flex align-items-center justify-content-center" data-percent="{{ total }}" data-piesize="100" data-linewidth="15" data-trackcolor="#EDEDED" data-scalelength="1" data-scaleColor="#ffffff00">
+                                <div class="d-flex flex-column align-items-center justify-content-center position-absolute pos-left pos-right pos-top pos-bottom fw-300 fs-xl">
+                                    <span class="js-percent d-block text-dark">{{ total }}</span>
+                                    <div class="d-block fs-xs text-dark opacity-70">
+                                        <small>Completado</small>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% if estado_doc %}
+                        <div class="col-md-6 p-0">
+                            <div class="mt-2 mb-1 m-l-20 fs-xs text-primary">
+                                <b>Estado: </b>
+                                {% if doc_cargados ==  doc_pendientes or n_doc_oblig == n_tip_oblig %}
+                                    <span class="badge badge-primary">Completado</span><br>
+                                {% else %}
+                                    <span class="badge badge-secondary">Incompletos</span><br>
+                                {% endif %}
+                                <b>Documentos Cargados: </b>{{ doc_cargados }} de {{ doc_pendientes }}<br>
+                                <b>Documentos Obligatorios: </b>{{ n_doc_oblig }} de {{ n_tip_oblig }}<br>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="col-md-6">
+                            <div class="mt-2 mb-1 fs-xs text-primary">
+                                <b>Proveedor: </b>{% if datos_estado.estado == True %}<span class="badge badge-primary">Activo</span>{% else %}<span class="badge badge-secondary">Inactivo</span>{% endif %}<br>
+                                <b>Estado: </b>{{ datos_estado.estado_descripcion }}<br>
+                                {% if datos_estado.ultima_act %}
+                                    <b>Última Aprobación:</b> {{ datos_estado.ultima_act |date:'Y-m-d H:i'}}<br>
+                                {% endif %}
+                                {% if datos_estado.estado_solicitud %}
+                                    <b>Causa de la Denegación: </b>{{ datos_estado.estado_solicitud }}
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% if btn_enviar and not perfil_activo and not solicitud_activa and not estado_doc%}
+                <a href="javascript:enviarSolicitudProveedor({{ proveedor_id }})" class="btn btn-primary btn-pills btn-block mt-2">Enviar Solicitud</a>
+            {% endif %}
+        </div>
+    </div>
+</div>

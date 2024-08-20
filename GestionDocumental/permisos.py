@@ -1,0 +1,38 @@
+from EVA.permisos import Permiso
+
+app_name = 'GestionDocumental'
+
+permisos = [Permiso('index', None),
+            Permiso('consecutivo-oficios-index', ['GestionDocumental.view_consecutivooficio']),
+            Permiso('consecutivo-oficios-crear', ['GestionDocumental.add_consecutivooficio']),
+            Permiso('consecutivo-oficios-eliminar', ['GestionDocumental.delete_consecutivooficio']),
+            Permiso('consecutivo-contratos-index', ['GestionDocumental.view_consecutivocontrato']),
+            Permiso('consecutivo-contratos-crear', ['GestionDocumental.add_consecutivocontrato']),
+            Permiso('consecutivo-contratos-eliminar', ['GestionDocumental.delete_consecutivocontrato']),
+            Permiso('consecutivo-contratos-editar', ['GestionDocumental.change_consecutivocontrato']),
+            Permiso('consecutivo-contratos-cargar', ['GestionDocumental.add_consecutivocontrato']),
+            Permiso('consecutivo-contratos-ver', ['GestionDocumental.view_consecutivocontrato']),
+            Permiso('consecutivo-reuniones-index', ['GestionDocumental.view_consecutivoreunion']),
+            Permiso('consecutivo-reuniones-crear', ['GestionDocumental.add_consecutivoreunion']),
+            Permiso('consecutivo-reuniones-eliminar', ['GestionDocumental.delete_consecutivoreunion']),
+            Permiso('consecutivo-requerimientos-index', ['GestionDocumental.view_consecutivorequerimiento']),
+            Permiso('consecutivo-requerimientos-crear', ['GestionDocumental.add_consecutivorequerimiento']),
+            Permiso('consecutivo-requerimientos-editar', ['GestionDocumental.change_consecutivorequerimiento']),
+            Permiso('consecutivo-requerimientos-eliminar', ['GestionDocumental.delete_consecutivorequerimiento']),
+            Permiso('consecutivo-plantrabajo-index', ['GestionDocumental.view_consecutivoplantrabajo']),
+            Permiso('consecutivo-plantrabajo-crear', ['GestionDocumental.add_consecutivoplantrabajo']),
+            Permiso('consecutivo-plantrabajo-editar', ['GestionDocumental.change_consecutivoplantrabajo']),
+            Permiso('consecutivo-plantrabajo-eliminar', ['GestionDocumental.delete_consecutivoplantrabajo']),
+            Permiso('consecutivo-viaticoscomisiones-index', ['GestionDocumental.view_consecutivoviaticoscomisiones']),
+            Permiso('consecutivo-viaticoscomisiones-crear', ['GestionDocumental.add_consecutivoviaticoscomisiones']),
+            Permiso('consecutivo-viaticoscomisiones-editar', ['GestionDocumental.change_consecutivoviaticoscomisiones']),
+            Permiso('consecutivo-viaticoscomisiones-eliminar', ['GestionDocumental.delete_consecutivoviaticoscomisiones']),
+            Permiso('consecutivo-ordenestrabajo-index', ['GestionDocumental.view_consecutivoordenestrabajo']),
+            Permiso('consecutivo-ordenestrabajo-crear', ['GestionDocumental.add_consecutivoordenestrabajo']),
+            Permiso('consecutivo-ordenestrabajo-editar', ['GestionDocumental.change_consecutivoordenestrabajo']),
+            Permiso('consecutivo-ordenestrabajo-eliminar', ['GestionDocumental.delete_consecutivoordenestrabajo']),
+            Permiso('consecutivo-actascontratos-index', ['GestionDocumental.view_consecutivoactascontratos']),
+            Permiso('consecutivo-actascontratos-crear', ['GestionDocumental.add_consecutivoactascontratos']),
+            Permiso('consecutivo-actascontratos-editar', ['GestionDocumental.change_consecutivoactascontratos']),
+            Permiso('consecutivo-actascontratos-eliminar', ['GestionDocumental.delete_consecutivoactascontratos'])
+            ]

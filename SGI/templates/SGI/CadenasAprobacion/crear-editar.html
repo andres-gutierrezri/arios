@@ -1,0 +1,81 @@
+{% extends 'SGI/_common/base_sgi.html' %}
+{% load static %}
+{% load eva_tags %}
+<title>{% block titulo %}{% if opcion == 'editar' %}Editar Cadena de Aprobación {% else %} Crear Cadena de Aprobación {% endif %}{% endblock %}</title>
+{% block styles %}
+<!-- DEMO related CSS below -->
+	<link rel="stylesheet" media="screen, print" href="{%static 'EVA/Plantilla/css/fa-brands.css' %}">
+	<!-- page related CSS below -->
+	<link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
+{% endblock styles%}
+
+{% block main %}
+    <div class="panel-container show">
+        <div class="header">
+             <h1 class="header-title">
+                <i class='far fa-handshake'></i> Cadena de Aprobación: <span class='fw-300'>{% if opcion == 'editar' %} Editar {% else%} Crear {% endif %}</span>
+                 <br>
+                 <br>
+             </h1>
+        </div>
+        <div class="row">
+            <div class="col-xl-3"></div>
+            <div class="col-xl-6">
+                <div id="panel-1" class="panel">
+                    <div class="panel-container show">
+                        <div class="panel-content">
+                            <div class="panel-group">
+                                <div class="panel-body">
+                                     {% if opcion == 'editar' %}
+                                    <form action="{% url 'SGI:cadenas-aprobacion-editar' cadena.id %}" id="cadenas-aprobacion-form" method="post" class="needs-validation" novalidate>
+                                     {% else %}
+                                    <form action="{% url 'SGI:cadenas-aprobacion-crear' %}" id="cadenas-aprobacion-form" method="post" class="needs-validation" novalidate>
+                                     {% endif %}
+                                        {% csrf_token %}
+                                        <div class="form-group">
+                                            <div class="form-row">
+                                                <div class="col-md-12">
+                                                    {% input_text_tag 'nombre' 'Nombre' placeholder="Ingrese el nombre" required="" maxlength="100" value=cadena.nombre mensaje_validacion='Por favor digite el nombre.' invalido=errores.nombre %}
+                                                </div>
+                                                <div class="col-md-6"></div>
+                                            </div>
+                                        </div>
+                                        <input id="valores_selectores" value="{{ valores_selectores }}" style="display:none">
+                                        <div id="contenedor_selectores" style="padding-bottom: 20px"></div>
+                                        <input name="usuarios_seleccionados" type="text" id="usuarios_seleccionados" style="display: none">
+                                        {% if opcion == 'editar' %}
+                                             <div class="form-group">
+                                                <div class="form-row">
+                                                    <div class="col-md-6">
+                                                        {% input_checkbox_tag 'estado' 'Estado' value=cadena.estado  %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                        <div class="form-row">
+                                            <div >
+                                                <button id="guardar" class="btn btn-primary btn-block">{% if opcion == 'editar' %} Actualizar {% else %} Agregar {% endif %}</button>
+                                            </div>
+                                            <div style="padding-left: 15px">
+                                                <a href="{% url 'SGI:cadenas-aprobacion-ver' %}" class="btn btn-danger btn-block">Cancelar</a>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3"></div>
+        </div>
+    </div>
+{% endblock main %}
+
+{% block scripts %}
+    <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
+    <script src="{% static 'SGI/js/cadenaDeAprobacion.js' %}"></script>
+	<script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
+{% endblock scripts%}

@@ -1,0 +1,43 @@
+{% load eva_tags %}
+<form id="faiu_factura" novalidate>
+    <div class="modal fade"  tabindex="-1" id="agregar_aiu_modal" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        Factura - Agregar AIU
+                    </h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="form-row">
+                        <div class="form-group col-12">
+                            {% input_number_format_tag 'porcentaje_administracion' "Administración (%):" placeholder="Ingrese  administración" required="" min="0.00" max="100.00" step="0.01" %}
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-12">
+                            {% input_number_format_tag 'porcentaje_imprevistos' "Imprevistos (%):" placeholder="Ingrese % imprevistos" required="" min="0.00" max="100.00" step="0.01" %}
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-12">
+                            {% input_number_format_tag 'porcentaje_utilidad' "Utilidad (%):" placeholder="Ingrese % utilidad" required="" min="0.00" max="100.00" step="0.01" %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger btn-pills" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary btn-pills agregarAIU ">Agregar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

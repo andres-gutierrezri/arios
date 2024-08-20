@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>
+        Restablecer contraseña
+    </title>
+    <meta name="description" content="EVA Autenticación">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no, minimal-ui">
+    <!-- Call App Mode on ios devices -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <!-- Remove Tap Highlight on Windows Phone IE -->
+    <meta name="msapplication-tap-highlight" content="no">
+    <!-- base css -->
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/vendors.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static  'EVA/Plantilla/css/app.bundle.css' %}">
+    <!-- Place favicon.ico in the root directory -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'EVA/Plantilla/img/favicon/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/svg+xml" sizes="32x32" href="{% static 'EVA/Plantilla/img/custom/logo-eva-rd.svg' %}">
+    <link rel="mask-icon" href="{% static 'EVA/Plantilla/img/favicon/safari-pinned-tab.svg' %}" color="#5bbad5">
+    <!-- Optional: page related CSS-->
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-brands.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/custom/generales.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/toastr/toastr.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/sweetalert2/sweetalert2.bundle.css'%}">
+</head>
+<body>
+<div class="messages">
+    {% if messages %}
+        {% for message in messages %}
+            <input class="alert.{{ message.tags }}" style="display: none" id="mensaje" value="{{ message }}">
+        {% endfor %}
+    {% endif %}
+</div>
+<div class="page-wrapper">
+    <div class="page-inner bg-brand-gradient">
+        <div class="page-content-wrapper bg-transparent m-0">
+
+            <div class="flex-1" style="background: url('{% static 'EVA/Plantilla/img/svg/pattern-1.svg' %}') no-repeat center bottom fixed; background-size: cover ">
+                <div class="container py-4 py-lg-5 my-lg-5 px-4 px-sm-0">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-3 col-lg-3 col-xl-4"></div>
+                        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4">
+                            <div class="card p-4 rounded-plus bg-faded" style="justify-content: center">
+                                <div style="display: flex; justify-content: center;">
+                                    <img src="https://www.arios-ing.com/images/Logos_Arios/LOGO_HEAD.jpg" style="width: 30%">
+                                </div>
+                                <br>
+                                <p>Hola {{ nombre }}, te estamos enviando este correo para que asignes una nueva contraseña a tu cuenta en EVA.</p>
+
+
+                                <p>Tu usuario es: {{usuario}}</p>
+
+                                <p>El siguiente enlace te llevará a EVA donde puedes realizar el cambio:</p>
+
+                                <a href="http://{{dominio}}/password-reset-confirm/{{uidb64}}/{{token}}">Ir a EVA para asignación de una contraseña nueva</a>
+
+                                <p>*** Si al hacer clic no no funciona, por favor, copia y pega la URL en tu navegador favorito.</p>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- base vendor bundle:
+     DOC: if you remove pace.js from core please note on Internet Explorer some CSS animations may execute before a page is fully loaded, resulting 'jump' animations
+                + pace.js (recommended)
+                + jquery.js (core)
+                + jquery-ui-cust.js (core)
+                + popper.js (core)
+                + bootstrap.js (core)
+                + slimscroll.js (extension)
+                + app.navigation.js (core)
+                + ba-throttle-debounce.js (core)
+                + waves.js (extension)
+                + smartpanels.js (extension)
+                + src/../jquery-snippets.js (core) -->
+<script src="{% static 'EVA/Plantilla/js/vendors.bundle.js' %}"></script>
+<script src="{% static 'EVA/Plantilla/js/app.bundle.js' %}"></script>
+<script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
+<script src="{% static 'EVA/Plantilla/js/notifications/toastr/toastr.js' %}"></script>
+<script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
+<script src="{% static 'EVA/Plantilla/js/custom/notificaciones_eva.js' %}"></script>
+<script>
+    $("#js-login-btn").click(function(event)
+    {
+
+        // Fetch form to apply custom Bootstrap validation
+        let form = $("#js-login");
+
+        if (form[0].checkValidity() === false)
+        {
+            event.preventDefault();
+            event.stopPropagation()
+        }
+
+        form.addClass('was-validated');
+        // Perform ajax submit here...
+    });
+
+</script>
+</body>
+</html>
+

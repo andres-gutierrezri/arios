@@ -1,0 +1,96 @@
+{% extends 'Administracion/_common/base_administracion.html' %}
+{% load static %}
+<title>{% block titulo %}Empresas{% endblock %}</title>
+{% block styles %}
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/datagrid/datatables/datatables.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/sweetalert2/sweetalert2.bundle.css'%}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'Administracion/css/Empresas/generales.css' %}">
+{% endblock styles %}
+
+{% block main %}
+    <div class="panel-container show">
+            <div class="header">
+                 <h1 class="header-title">
+                    <i class='far fa-briefcase'></i> Empresas <span class='fw-300'></span>
+                     <br>
+                     <br>
+                 </h1>
+            </div>
+            <div class="row">
+                <div class="col-xl-12">
+                    <div id="panel-1" class="panel">
+                        {% if perms.Administracion.add_empresa %}
+                            <div class="panel-hdr">
+                                <small>
+                                     <a class="far fa-3x far fa-plus-circle"  href="{% url 'Administracion:empresas-crear' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Agregar empresa"></a>
+                                </small>
+                            </div>
+                        {% endif %}
+                        <div class="panel-container show">
+                            <div class="panel-content">
+                                    <div class="panel-group">
+                                        <div class="panel-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered w-100" id="dataTable">
+                                                    <thead class="bg-primary-600">
+                                                        <tr>
+                                                            <th>Nombre</th>
+                                                            <th>NIT</th>
+                                                            <th>Logo</th>
+                                                            <th>Estado</th>
+                                                            {% if perms.Administracion.change_empresa or perms.Administracion.delete_empresa %}
+                                                                <th>Acción</th>
+                                                            {% endif %}
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for empresa in empresas %}
+                                                            <tr>
+                                                                <td>{{ empresa.nombre }}</td>
+                                                                <td>{{ empresa.nit}}-{{ empresa.digito_verificacion }}</td>
+                                                                <td><img class="empresa-logo-index" src="{{ empresa.logo.url }}" alt=""></td>
+                                                                <td>{% if empresa.estado == True %}
+                                                                    <span class="badge badge-primary">Activo</span>
+                                                                    {% else %}
+                                                                    <span class="badge badge-secondary">Inactivo</span>
+                                                                    {% endif %}
+                                                                </td>
+                                                                {% if perms.Administracion.change_empresa or perms.Administracion.delete_empresa %}
+                                                                    <td>
+                                                                        {% if perms.Administracion.change_empresa %}
+                                                                          <a class="far fa-2x fa-edit"  href="{% url 'Administracion:empresas-editar' empresa.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Editar"></a>
+                                                                        {% endif %}
+                                                                        {% if perms.Administracion.delete_empresa %}
+                                                                          <a class="far fa-2x fa-trash-alt color-danger-900" id="eliminar_{{ empresa.id }}" href="javascript:void(0);"  onclick="fConfirmarEliminar({{ empresa.id }})" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Eliminar"></a>
+                                                                        {% endif %}
+                                                                    </td>
+                                                                {% endif %}
+                                                            </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer small text-muted">Actualizado: {{ fecha }}</div>
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+
+    {% include 'Administracion/_elements/_modal_confirmar_eliminar.html' with objeto='administracion/empresas' %}
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
+    <script src="{% static 'Administracion/js/confirmarEliminar.js' %}"></script>
+    <script src="{% static 'Administracion/js/select_divipol.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/ajaxDjango.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.export.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script>
+    <script src="{% static 'Administracion/js/Empresas/exportar_tabla.js' %}"></script>
+{% endblock %}

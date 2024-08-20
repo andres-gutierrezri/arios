@@ -1,0 +1,152 @@
+{% load static %}
+<!-- BEGIN Page Header -->
+<header class="page-header" role="banner">
+    <!-- we need this logo when user switches to nav-function-top -->
+    <div class="page-logo">
+        <a href="#" class="page-logo-link press-scale-down d-flex align-items-center position-relative" data-toggle="modal" data-target="#modal-shortcut">
+            <img src="{% static 'EVA/Plantilla/img/logo.png' %}" alt="EVA" aria-roledescription="logo">
+            <span class="page-logo-text mr-1">{% if request.session.colaborador %}EVA{{ request.session.colaborador }}{% else %}Proveedores{% endif %}</span>
+            <span class="position-absolute text-white opacity-50 small pos-top pos-right mr-2 mt-n2"></span>
+            <i class="fal fa-angle-down d-inline-block ml-1 fs-lg color-primary-300"></i>
+        </a>
+    </div>
+
+    <!-- DOC: nav menu layout change shortcut -->
+    <div class="hidden-md-down dropdown-icon-menu position-relative">
+        <a href="#" class="header-btn btn js-waves-off" data-action="toggle" data-class="nav-function-hidden" title="Ocultar menú lateral">
+            <i class="ni ni-menu"></i>
+        </a>
+        <ul>
+            <li>
+                <a href="#" class="btn js-waves-off" data-action="toggle" data-class="nav-function-minify" title="Minimizar menú lateral">
+                    <i class="ni ni-minify-nav"></i>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="btn js-waves-off" data-action="toggle" data-class="nav-function-fixed" title="Bloquear menú lateral">
+                    <i class="ni ni-lock-nav"></i>
+                </a>
+            </li>
+        </ul>
+    </div>
+    {% if request.session.colaborador %}
+    <div class="hidden-md-down dropdown-icon-menu position-relative">
+        <img class="seleccionEmpresaGlobal logo-nav" src="{{ request.session.empresa.logo }}"  data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="{{ request.session.empresa.nombre }}">
+    </div>
+    {% else %}
+        <div class="hidden-md-down dropdown-icon-menu position-relative">
+            <img class="seleccionEmpresaGlobal logo-nav" src="{{ request.session.proveedor_empresa.logo }}"  data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip">
+        </div>
+    {% endif %}
+
+    <!-- DOC: mobile button appears during mobile width -->
+    <div class="hidden-lg-up">
+        <a href="#" class="header-btn btn press-scale-down" data-action="toggle" data-class="mobile-nav-on">
+            <i class="ni ni-menu"></i>
+        </a>
+    </div>
+
+    <div class="ml-auto d-flex">
+        <!-- app notification -->
+        <div>
+            <a href="#" class="header-icon" id="btn_not" data-toggle="dropdown" title="Haz clic para ver tus notificaciones">
+                <i class="fal fa-bell"></i>
+                <span class="badge badge-icon" id="icono_not" style="display: none"></span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-animated dropdown-xl">
+                <div class="dropdown-header bg-trans-gradient d-flex justify-content-center align-items-center rounded-top mb-2">
+                    <h4 class="m-0 text-center color-white">
+                        <a id="texto_not"></a>
+                        <small class="mb-0 opacity-80">Tus Notificaciones</small>
+                    </h4>
+                </div>
+                <ul class="nav nav-tabs nav-tabs-clean" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link px-4 fs-md js-waves-on fw-500" data-toggle="tab" href="#tab-messages" data-i18n="dropdown.messages">Notificaciones</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-4 fs-md js-waves-on fw-500" data-toggle="tab" href="#tab-settings" data-i18n="dropdown.settings">Configuraciones</a>
+                    </li>
+                </ul>
+                <div class="tab-content tab-notification">
+                    <div id="not_empty" class="tab-pane p-3 text-center">
+                        <h5 class="mt-4 pt-4 fw-500">
+                            <span class="d-block fa-3x pb-4 text-muted">
+                                <i class="ni ni-arrow-up text-gradient opacity-70"></i>
+                            </span> Aqui se muestran tus notificaciones
+                            <small class="mt-3 fs-b fw-400 text-muted">
+                                En este lugar podrás ver todos los mensajes que se han generado en la aplicación
+                                con el fin de informarte sobre eventos y acciones realizadas.
+                            </small>
+                        </h5>
+                    </div>
+                    <div class="tab-pane" id="tab-messages" role="tabpanel">
+                        <div class="custom-scroll h-100">
+                            <ul class="notification" id="cargar_notificaciones">
+
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="tab-settings" role="tabpanel">
+                        <div class="custom-scroll h-100">
+                            <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 100%;">
+                                <ul class="notification" style="overflow: hidden; width: auto; height: 100%;">
+                                    <li>
+                                        <div class="d-flex align-items-center ">
+                                            {% if request.session.colaborador %}
+                                            <span class="d-flex flex-column flex-1">
+                                                <a class="dropdown-item" href="{% url 'Notificaciones:notificaciones-seleccion-email' request.user.id %}"><strong style="size: 20px">Seleccionar notificaciones por correo</strong></a>
+                                            </span>
+                                            {% endif %}
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="py-2 px-3 bg-faded d-block rounded-bottom text-right border-faded border-bottom-0 border-right-0 border-left-0">
+                    <a id="ver_todas" disabled="" href="{% url 'notificaciones:notificaciones-ver-todas' %}" class="fs-xs fw-500 ml-auto">Ver todas</a>
+                </div>
+            </div>
+        </div>
+        <!-- app user menu -->
+        <div>
+            <a href="#" data-toggle="dropdown" title="Usuario" class="header-icon d-flex align-items-center justify-content-center ml-2">
+                <img src="{% if request.session.colaborador %}{{ request.session.colaborador }}{% else%}{% static 'EVA/Plantilla/img/profile.png' %}{% endif %}" class="profile-image rounded-circle" alt="Nombre Usuario">
+                <!-- you can also add username next to the avatar with the codes below:-->
+                <span class="ml-1 mr-1 text-truncate text-truncate-header hidden-xs-down">{% if request.session.colaborador %}{{ request.user.username }}{% else %}{{ request.session.proveedor_nombre }}{% endif %}</span>
+                <i class="ni ni-chevron-down hidden-xs-down"></i>
+            </a>
+            <div class="dropdown-menu dropdown-menu-animated dropdown-lg">
+                <div class="dropdown-header bg-trans-gradient d-flex flex-row py-4 rounded-top">
+                    <div class="d-flex flex-row align-items-center mt-1 mb-1 color-white">
+                        <span class="mr-2">
+                            <img src="{% if request.session.colaborador %}{{ request.session.colaborador }}{% else%}{% static 'EVA/Plantilla/img/profile.png' %}{% endif %}" class="rounded-circle profile-image" alt="Nombre  Usuario">
+                        </span>
+                        <div class="info-card-text">
+                            {% if request.session.colaborador %}
+                                <div id="identificacion_us" class="fs-lg text-truncate text-truncate-lg"><a style="color: white" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ver perfil" href="{% url 'TalentoHumano:colaboradores-perfil' request.session.colaborador_id %}"> {{ request.user.first_name.split | first }}{{ ' ' }}{{ request.user.last_name.split | first }}</a></div>
+                                <span class="text-truncate text-truncate-md opacity-80">{{ request.user.username }}</span>
+                            {% else %}
+                                <div id="identificacion_us" class="fs-lg text-truncate text-truncate-lg"><a style="color: white" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""> {{ request.session.proveedor_nombre }}</a></div>
+                                <span class="text-truncate text-truncate-md opacity-80">{{ request.session.proveedor_correo }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="dropdown-divider m-0"></div>
+                <a href="#" class="dropdown-item" data-action="app-fullscreen">
+                    <span data-i18n="drpdwn.fullscreen">Pantalla Completa</span>
+                    <i class="float-right text-muted fw-n">F11</i>
+                </a>
+
+                <div class="dropdown-divider m-0"></div>
+                <a class="dropdown-item fw-500 pt-3 pb-3" href="{% url 'administracion:cerrar-sesion' %}">
+                    <span data-i18n="drpdwn.page-logout">Cerrar Sesión</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</header>
+<!-- END Page Header -->

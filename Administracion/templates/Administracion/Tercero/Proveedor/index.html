@@ -1,0 +1,151 @@
+{% extends 'Administracion/_common/base_administracion.html' %}
+{% load static %}
+{% load eva_tags %}
+<title>{% block titulo %}Proveedores{% endblock %}</title>
+{% block styles %}
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/datagrid/datatables/datatables.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/sweetalert2/sweetalert2.bundle.css'%}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
+{% endblock styles %}
+
+{% block main %}
+
+    <div class="panel-container show">
+            <div class="header">
+                 <h1 class="header-title">
+                    <i class='far fa-hand-receiving'></i> Proveedores <span class='fw-300'></span>
+                     <br>
+                     <br>
+                 </h1>
+            </div>
+            <div class="row">
+                <div class="col-xl-12">
+                    <div id="panel-busqueda" class="panel">
+                        <div class="panel-hdr">
+                            <h2>
+                                Búsqueda Por Producto o Servicio
+                            </h2>
+                            <div class="panel-toolbar">
+                                <button class="btn btn-panel" data-action="panel-collapse" data-toggle="tooltip" data-offset="0,10" data-original-title="Collapse"></button>
+                            </div>
+                        </div>
+                        <div class="panel-container show">
+                            <div class="panel-content">
+                                <form action="{% url 'Administracion:proveedor-administracion-index' %}" id="filtro-proveedores-form" method="get" class="needs-validation col-12" novalidate>
+                                    <div class="form-group">
+                                        <div class="form-row">
+                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                                                {% select_tag tipos_productos_servicios 'tipo_producto_servicio_' 'Seleccione una opción' required="" value=valor_tipo_producto_servicio texto_label="Producto/Servicio" onchange="cambioTipoProductoServicio('')" %}
+                                            </div>
+                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                                                {% select_tag productos_servicios 'producto_servicio_' 'Seleccione una opción' required="" value=valor_producto_servicio texto_label=label_producto_servicio onchange="cambioProductoServicio('')" id_label="producto_servicio_" %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="form-row">
+                                            <div class="col-xl-10 col-lg-10 col-md-12 col-sm-12">
+                                                {% select_multiple_tag subproductos_subservicios 'subproducto_subservicio_' 'subproducto_subservicio_' 'Seleccione una opción' required="" value=valor_subproducto_subservicio texto_label=label_subproducto_subservicio multiple=multiple id_label="subproducto_subservicio_" %}
+                                            </div>
+                                            <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12" style="padding-top: 23px">
+                                                <button id="filtrar" class="btn btn-primary btn-block btn-pills ">Buscar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-12">
+                    <div id="panel-busqueda" class="panel">
+                        <div class="panel-hdr">
+                            <h2>
+                                {% if resutados_busqueda %}
+                                    Resultados de la búsqueda: {{ resutados_busqueda }}&nbsp;&nbsp;&nbsp;<a class="far fa-2x far fa-times-circle"  href="{% url 'Administracion:proveedor-administracion-index' %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Borrar Búsqueda"></a>
+                                {% else %}
+                                    Lista de Proveedores
+                                {% endif %}
+                            </h2>
+                            <div class="panel-toolbar">
+                                <button class="btn btn-panel" data-action="panel-collapse" data-toggle="tooltip" data-offset="0,10" data-original-title="Collapse"></button>
+                            </div>
+                        </div>
+                        <div class="panel-container show">
+                            <div class="panel-content">
+                                    <div class="panel-group">
+                                        <div class="panel-body">
+                                            <div class="table-responsive">
+                                                {% include 'EVA/_common/_busqueda_paginacion.html' %}
+                                                <table class="table table-bordered w-100" id="dataTable">
+                                                    <thead class="bg-primary-600">
+                                                        <tr>
+                                                            <th>Nombre</th>
+                                                            <th>Identificación</th>
+                                                            <th>Ubicación</th>
+                                                            <th>Teléfono</th>
+                                                            <th>Correo</th>
+                                                            <th>Productos/Servicios</th>
+                                                            <th>Fecha de Envío de Solicitud</th>
+                                                            <th>Estado</th>
+                                                            <th>Acción</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for pps in proveedores_pro_serv %}
+                                                            <tr>
+                                                                <td>{{ pps.proveedor.nombre }}</td>
+                                                                <td>{{ pps.proveedor.tipo_identificacion.sigla }} {{ pps.proveedor.identificacion }}{% if pps.proveedor.tipo_identificacion.sigla == 'NIT' and not pps.proveedor.extranjero %}-{{ pps.proveedor.digito_verificacion }}{% endif %}</td>
+                                                                <td>{{ pps.proveedor.ciudad.obtener_mun_dpto_pais }}</td>
+                                                                <td>{{ pps.proveedor.telefono_movil_principal }}</td>
+                                                                <td>{{ pps.proveedor.correo_principal }}</td>
+                                                                <td>
+                                                                    {% for aps in all_productos_servicios %}
+                                                                        {% if aps.proveedor_id == pps.proveedor_id %}
+                                                                            <span class="badge badge-primary">{{ aps.subproducto_subservicio }}</span>
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                </td>
+                                                                <td>{{ pps.proveedor.fecha_creacion |date:'Y-m-d' }}</td>
+                                                                <td>
+                                                                    {% if pps.proveedor.estado == True %}
+                                                                        <span class="badge badge-primary">Activo</span>
+                                                                    {% else %}
+                                                                        <span class="badge badge-secondary">Inactivo</span>
+                                                                    {% endif %}
+                                                                </td>
+                                                                <td>
+                                                                    <a class="far fa-2x fa-eye" href="{% url 'Administracion:proveedor-solicitudes-perfil' pps.proveedor.id %}" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Ver Perfil"></a>
+                                                                    {% if perms.Administracion.manage_proveedor %}
+                                                                        <a class="far fa-2x fa-edit" {% if pps.proveedor.estado %} href="javascript:cambiarEstadoProveedor('{{ pps.proveedor.id }}', 'desactivar')" data-original-title="Desactivar" {% else %} href="javascript:cambiarEstadoProveedor('{{ pps.proveedor.id }}', 'activar')" data-original-title="Activar" {% endif %} data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title=""></a>
+                                                                    {% endif %}
+                                                                </td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                                {% include 'EVA/_common/_paginacion.html' with datos=proveedores_pro_serv busqueda_avanzada=valor_subproducto_subservicio %}
+                                            </div>
+                                        </div>
+                                        <div class="card-footer small text-muted">Actualizado: {{ fecha }}</div>
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/datagrid/datatables/datatables.export.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/exportar_tabla.js' %}"></script>
+    <script src="{% static 'Administracion/js/Tercero/exportarTablaProveedores.js' %}"></script>
+    <script src="{% static 'Administracion/js/Tercero/proveedorIndex.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
+    <script src="{% static 'Administracion/js/Tercero/productosServicios.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/controlBusquedaPaginacion.js' %}"></script>
+{% endblock %}

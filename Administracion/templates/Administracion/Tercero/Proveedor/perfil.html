@@ -1,0 +1,122 @@
+{% extends 'Administracion/_common/base_administracion.html' %}
+{% load static %}
+{% load eva_tags %}
+<title>{% block titulo %}{% if solicitud_proveedor %}Perfil del Proveedor{% else %}Mi Perfil{% endif %}{% endblock %}</title>
+{% block styles %}
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-brands.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-solid.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/notifications/sweetalert2/sweetalert2.bundle.css'%}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
+    <link rel="mask-icon" href="{% static 'EVA/Plantilla/img/favicon/safari-pinned-tab.svg' %}" color="#5bbad5">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/bootstrap-datepicker/bootstrap-datepicker.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'TalentoHumano/css/seleccionEmpresas.css' %}">
+{% endblock styles %}
+
+{% block main %}
+    <div class="panel-container show">
+        <div class="header">
+            <h1 class="header-title row">
+                {% if solicitud_proveedor %}
+                    <div class="col-6"><i class='fal fa-hand-holding-box'></i>  Proveedor: {{ solicitud_proveedor.nombre }} <span class='fw-300'></span></div>
+                {% else %}
+                    <div class="col-6"><i class='far fa-user'></i> Mi Perfil <span class='fw-300'></span></div>
+                {% endif %}
+                <br>
+            </h1>
+        </div>
+        <div class="row">
+            <div class="col-xl-12">
+                <div id="panel-1" class="panel">
+                    {% if solicitud_proveedor %}
+                    <div class="panel-hdr">
+                        <div class="col-md-10">
+                            <small>
+                                 <a class="far fa-3x fa-arrow-circle-left"  href="javascript:history.back()" data-template='<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-primary-500"></div></div>' data-toggle="tooltip" title="" data-original-title="Volver"></a>
+                            </small>
+                        </div>
+                        <div class="col-md-2"></div>
+                    </div>
+                {% endif %}
+                {% if btn_enviar and perfil_activo and not solicitud_activa %}
+                    <div class="panel-hdr">
+                        <div class="col-md-10"></div>
+                        <div class="col-md-2" style="float: right" >
+                            <small style="float: right">
+                                <a href="javascript:modificarPerfilProveedor({{ proveedor_id }})" class="btn btn-primary btn-pills btn-block">Modificar Mi Perfil</a>
+                            </small>
+                        </div>
+                    </div>
+                {% endif %}
+                    <div class="panel-container show">
+                        <div class="panel-content">
+                            <div class="panel-group">
+                                <div class="panel-body">
+                                    <div class="row" id="js-contacts">
+                                        <div class="form-group col-xl-4 col-lg-6 col-md-6 col-sm-6">
+                                            {% if not solicitud_proveedor %}
+                                                {% include 'Administracion/Tercero/Proveedor/tarjeta_estado_proveedor.html' %}
+                                            {% elif modificaciones_perfil %}
+                                                {% include 'Administracion/_common/_tarjeta_proveedor.html' with objeto=modificaciones_perfil %}
+                                            {% endif %}
+                                            {% include 'Administracion/_common/_tarjeta_proveedor.html' with objeto=datos_proveedor.informacion_basica %}
+                                            <div id="cuarto_div"></div>
+                                        </div>
+                                        <div class="form-group col-xl-4 col-lg-6 col-md-6 col-sm-6">
+                                            {% include 'Administracion/_common/_tarjeta_proveedor.html' with objeto=datos_proveedor.actividades_economicas %}
+                                            {% include 'Administracion/_common/_tarjeta_proveedor.html' with objeto=datos_proveedor.documentos %}
+                                            <div id="primer_div"></div>
+                                        </div>
+                                        <div class="form-group col-xl-4 col-lg-6 col-md-6 col-sm-6">
+                                            <div id="tercer_div">
+                                                {% include 'Administracion/_common/_tarjeta_proveedor.html' with objeto=datos_proveedor.entidades_bancarias %}
+                                            </div>
+                                            <div id="segundo_div">
+                                                {% include 'Administracion/_common/_tarjeta_proveedor.html' with objeto=datos_proveedor.bienes_servicios pro_ser=True %}
+                                                {% if datos_proveedor.documentos_adicionales.datos and solicitud_proveedor %}
+                                                    {% include 'Administracion/_common/_tarjeta_proveedor.html' with objeto=datos_proveedor.documentos_adicionales %}
+                                                {% elif not solicitud_proveedor %}
+                                                    {% include 'Administracion/_common/_tarjeta_proveedor.html' with objeto=datos_proveedor.documentos_adicionales %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-row justify-content-end">
+                                        <div class="pl-2">
+                                            {% if perms.Administracion.manage_proveedor %}
+                                                {% if solicitud_proveedor %}
+                                                    {% if solicitud_activa %}
+                                                        <small style="float: right">
+                                                            <a href="javascript:abrir_modal_aprobar_rechazar('{% url 'Administracion:proveedor-solicitudes-aprobar-rechazar' solicitud_proveedor.id %}')" class="btn btn-primary btn-pills btn-block">Aprobar/Denegar</a>
+                                                        </small>
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" tabindex="-1" id="accion_proveedor" role="dialog"></div>
+    {% include 'EVA/_common/_vista_previa_modal.html' with titulo_modal='Vista Documento' %}
+{% endblock main%}
+
+{% block scripts %}
+    <script src="{% static 'EVA/Plantilla/js/notifications/sweetalert2/sweetalert2.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/funcionesGenerales.js' %}"></script>
+    <script src="{% static 'Administracion/js/Tercero/entidadesBancarias.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/funcionesGenerales.js' %}"></script>
+    <script src="{% static 'Administracion/js/Tercero/proveedor.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/statistics/easypiechart/easypiechart.bundle.js' %}"></script>
+    <script src="{% static 'Administracion/js/Tercero/controlEstadoProveedor.js' %}"></script>
+
+{% endblock scripts%}

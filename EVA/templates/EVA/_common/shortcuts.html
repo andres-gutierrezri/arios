@@ -1,0 +1,126 @@
+<!-- BEGIN Shortcuts -->
+<div class="modal fade modal-backdrop-transparent" id="modal-shortcut" tabindex="-1" role="dialog" aria-labelledby="modal-shortcut" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-top modal-transparent" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <ul class="app-list w-auto h-auto p-0 text-left">
+                    <li>
+                        <a href="/" class="app-list-item text-white border-0 m-0">
+                            <div class="icon-stack">
+                                <i class="base base-7 icon-stack-3x opacity-100 color-primary-500 "></i>
+                                <i class="base base-7 icon-stack-2x opacity-100 color-white "></i>
+                                <i class="fal fa-home icon-stack-1x opacity-100 color-info-700"></i>
+                            </div>
+                            <span class="app-list-name">
+                                Home
+                            </span>
+                        </a>
+                    </li>
+                    {% if request.session.colaborador %}
+                        {% if perms.TalentoHumano.can_menu_administracion %}
+                        <li>
+                            <a href="{% url 'Administracion:index' %}" class="app-list-item text-white border-0 m-0">
+                                <div class="icon-stack">
+                                    <i class="base base-7 icon-stack-3x opacity-100 color-primary-500 "></i>
+                                    <i class="base base-7 icon-stack-2x opacity-100 color-white "></i>
+                                    <i class="fal fa-cog icon-stack-1x opacity-100 color-info-700"></i>
+                                </div>
+                                <span class="app-list-name">
+                                    Administración
+                                </span>
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if perms.TalentoHumano.can_menu_proyectos %}
+                         <li>
+                            <a href="{% url 'Proyectos:index' %}" class="app-list-item text-white border-0 m-0">
+                                <div class="icon-stack">
+                                    <i class="base base-7 icon-stack-3x opacity-100 color-primary-500 "></i>
+                                    <i class="base base-7 icon-stack-2x opacity-100 color-white "></i>
+                                    <i class="fal fa-building icon-stack-1x opacity-100 color-info-700"></i>
+                                </div>
+                                <span class="app-list-name">
+                                    Proyectos
+                                </span>
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if perms.TalentoHumano.can_menu_talentohumano %}
+                        <li>
+                            <a href="{% url 'TalentoHumano:index' %}" class="app-list-item text-white border-0 m-0">
+                                <div class="icon-stack">
+                                    <i class="base base-7 icon-stack-3x opacity-100 color-primary-500 "></i>
+                                    <i class="base base-7 icon-stack-2x opacity-100 color-white "></i>
+                                    <i class="fal fa-users icon-stack-1x opacity-100 color-info-700"></i>
+                                </div>
+                                <span class="app-list-name">
+                                    Talento Humano
+                                </span>
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if perms.TalentoHumano.can_menu_sgi %}
+                        <li>
+                            <a href="{% url 'SGI:index' %}" class="app-list-item text-white border-0 m-0">
+                                <div class="icon-stack">
+                                    <i class="base base-7 icon-stack-3x opacity-100 color-primary-500 "></i>
+                                    <i class="base base-7 icon-stack-2x opacity-100 color-white "></i>
+                                    <i class="fal fa-dot-circle icon-stack-1x opacity-100 color-info-700"></i>
+                                </div>
+                                <span class="app-list-name">
+                                    SGI
+                                </span>
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if perms.TalentoHumano.can_menu_financiero %}
+                        <li>
+                            <a href="{% url 'Financiero:index' %}" class="app-list-item text-white border-0 m-0">
+                                <div class="icon-stack">
+                                    <i class="base base-7 icon-stack-3x opacity-100 color-primary-500 "></i>
+                                    <i class="base base-7 icon-stack-2x opacity-100 color-white "></i>
+                                    <i class="fal fa-usd-square icon-stack-1x opacity-100 color-info-700"></i>
+                                </div>
+                                <span class="app-list-name">
+                                    Financiero
+                                </span>
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if perms.TalentoHumano.can_menu_gestiondocumental %}
+                        <li>
+                            <a href="{% url 'GestionDocumental:index' %}" class="app-list-item text-white border-0 m-0">
+                                <div class="icon-stack">
+                                    <i class="base base-7 icon-stack-3x opacity-100 color-primary-500 "></i>
+                                    <i class="base base-7 icon-stack-2x opacity-100 color-white "></i>
+                                    <i class="fal fa-archive icon-stack-1x opacity-100 color-info-700"></i>
+                                </div>
+                                <span class="app-list-name">
+                                    Gestión<br>Documental
+                                </span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    {% else %}
+                        <li>
+                            <a href="{% url 'Administracion:proveedor-index' %}" class="app-list-item text-white border-0 m-0">
+                                <div class="icon-stack">
+                                    <i class="base base-7 icon-stack-3x opacity-100 color-primary-500 "></i>
+                                    <i class="base base-7 icon-stack-2x opacity-100 color-white "></i>
+                                    <i class="fal fa-archive icon-stack-1x opacity-100 color-info-700"></i>
+                                </div>
+                                <span class="app-list-name">
+                                    Proveedores
+                                </span>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- END Shortcuts -->

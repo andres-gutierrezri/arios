@@ -1,0 +1,1 @@
+http://{{dominio}}/password-reset-confirm/{{uidb64}}/{{token}}

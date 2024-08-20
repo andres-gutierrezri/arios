@@ -1,0 +1,74 @@
+{%  if perms.SGI.view_documento %}
+    <li {% if menu_actual == 'busqueda' %} class="active" {% endif %}>
+        <a href="#" title="Realizar Búsqueda" data-filter-tags="busqueda">
+            <i class="fal fa-search"></i>
+            <span class="nav-link-text" data-i18n="nav.sgi_busqueda_documentos">Buscar Documento</span>
+        </a>
+        <ul>
+            <li {% if menu_actual == 'busqueda' %} class="active" {% endif %}>
+                <a href="#" title="Ingrese su Búsqueda">
+                    <div>
+                        <form action="{% url 'SGI:documentos-buscar' %}" method="get" id="form_busqueda">
+                            <div class="input-group">
+                                <input type="search" class="form-control form-control-md shadow-inset-2" placeholder="Buscar" name="texto_busqueda" id="texto_busqueda" value="{{ texto_busqueda }}">
+                                <div class="input-group-append">
+                                    <div class="input-group-text" id="id_buscar" onclick="$('#form_busqueda').submit()">
+                                        <i class="fal fa-search fs-xl" ></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </a>
+            </li>
+        </ul>
+    </li>
+    {% for proc in procesos %}
+        <li {% if proc.id == proceso.id %} class="active open" {% endif %}>
+            <a href="#" title="{{ proc.nombre }}" data-filter-tags="{{ proc.nombre | lower }}">
+                <i class="fal fa-cog"></i>
+                <span class="nav-link-text" >{{ proc.nombre }}</span>
+            </a>
+            <ul>
+                <li {% if proc.id == proceso.id %} class="active" {% endif %}>
+                    <a href="{% url 'SGI:documentos-index' proc.id  %}" title="Documentos" data-filter-tags="{{ proc.nombre | lower }} documentos">
+                        <i class="fal fa-file-alt"></i>
+                        <span class="nav-link-text" data-i18n="nav.sgi_documentos">Documentos</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+    {% endfor %}
+{% endif %}
+{% if perms.SGI.view_cadenaaprobacionencabezado %}
+    <li {% if menu_actual == 'cadenas_aprobacion' %} class="active" {% endif %}>
+        <a href="{% url 'SGI:cadenas-aprobacion-ver' %}" title="Cadenas de Aprobación" data-filter-tags="cadenas aprobacion">
+            <i class="fal fa-link"></i>
+            <span class="nav-link-text" data-i18n="nav.sgi_cadenas_aprobacion">Cadenas de Aprobación</span>
+        </a>
+    </li>
+{% endif %}
+{% if perms.SGI.view_resultadosaprobacion %}
+    <li {% if menu_actual == 'aprobacion_documentos' %} class="active" {% endif %}>
+        <a href="{% url 'SGI:aprobacion-documentos-ver' %}" title="Aprobación de Documentos" data-filter-tags="aprobacion documentos">
+            <i class="fal fa-check"></i>
+            <span class="nav-link-text" data-i18n="nav.sgi_cadenas_aprobacion">Aprobación de Documentos</span>
+        </a>
+    </li>
+{% endif %}
+{% if perms.SGI.add_archivo %}
+    <li {% if menu_actual == 'solicitudes_aprobacion' %} class="active" {% endif %}>
+        <a href="{% url 'SGI:solicitudes-aprobacion' %}" title="Solicitudes de Aprobación" data-filter-tags="solicitudes aprobacion">
+            <i class="fal fa-tasks"></i>
+            <span class="nav-link-text" data-i18n="nav.sgi_solicitudes_aprobacion">Solicitudes de Aprobación</span>
+        </a>
+    </li>
+{% endif %}
+{% if perms.TalentoHumano.can_gestioncompletasgi %}
+    <li {% if menu_actual == 'reportes' %} class="active" {% endif %}>
+        <a href="{% url 'SGI:reportes' %}" title="Reportes" data-filter-tags="reportes">
+            <i class="fal fa-file-chart-line"></i>
+            <span class="nav-link-text" data-i18n="nav.sgi_reportes">Reportes</span>
+        </a>
+    </li>
+{% endif %}

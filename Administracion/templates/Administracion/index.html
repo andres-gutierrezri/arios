@@ -1,0 +1,27 @@
+{% extends 'Administracion/_common/base_administracion.html' %}
+{% load static %}
+{% block styles %}
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
+{% endblock styles %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block titulo %}Administración{% endblock %}</title>
+    </head>
+    <body>
+    {% block main %}
+        <div class="subheader">
+            <h1 class="subheader-title">
+                <i class='fal fa-cog'></i> Administración <span class='fw-300'></span>
+                <small>
+
+                </small>
+            </h1>
+            <div class="subheader-block">
+
+            </div>
+        </div>
+    {% endblock %}
+    </body>
+</html>

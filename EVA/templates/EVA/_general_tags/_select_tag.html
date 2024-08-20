@@ -1,0 +1,31 @@
+{% if texto_label %}
+    <label for="{{ nombre }}_select_id" {% if id_label %}id="{{ id_label }}_label_id"{% endif %}>{{ texto_label }}</label>
+{% endif %}
+<select class="select2 form-control" id="{{ nombre }}_select_id" name="{{ nombre }}" {{ propiedades }} {% if disabled %}disabled{% endif %}>
+    {% if texto_seleccion %}
+        <option {% if primer_valor %}{% if primer_campo_valor %} value="{{ primer_campo_valor }}" {% else %} value="0" {% endif %} {% else %}value=""{% endif %}>{{ texto_seleccion }}</option>
+    {% endif %}
+    {% if is_tupla %}
+        {% for item in lista %}
+            <option value="{{ item.0 }}" {% if item.0 == valor %} selected {% endif %}>{{ item.1 }}</option>
+        {% endfor %}
+    {% else %}
+        {% if agrupar %}
+            {% regroup lista by agrupacion as lista_agrupada %}
+            {% for grupo in lista_agrupada %}
+                <optgroup label="{{ grupo.grouper }}">
+                    {% for item in grupo.list %}
+                        <option value="{{ item.campo_valor }}" {% if item.campo_valor == valor %} selected {% endif %}>{{ item.campo_texto }}</option>
+                    {% endfor %}
+                </optgroup>
+            {% endfor %}
+        {% else %}
+            {% for item in lista %}
+                <option value="{{ item.campo_valor }}" {% if item.campo_valor == valor %} selected {% endif %}>{{ item.campo_texto }}</option>
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+</select>
+{% if mensaje_validacion %}
+<div class="invalid-tooltip {% if modal %}invalid-tooltip-modal{% endif %}">{{ mensaje_validacion }}</div>
+{% endif %}

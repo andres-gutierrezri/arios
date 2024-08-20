@@ -1,0 +1,32 @@
+{% extends 'EVA/_common/base.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block titulo %}Index{% endblock %}</title>
+    </head>
+    <body>
+    {% block main %}
+        <div class="subheader">
+            <h1 class="subheader-title">
+                <i class='subheader-icon fal fa-'></i> Bienvenido a <span class='fw-300'>Espacio Virtual de ARIOS</span>
+                <small>
+                </small>
+            </h1>
+            <div class="subheader-block">
+
+            </div>
+        </div>
+        <div class="container h-100" style="display: flex; justify-content: center;">
+{#            <div class="row">#}
+{#                <div class="col-xl-12">#}
+{#                    <div style="display: flex; justify-content: center;">#}
+                        <img src="{% static 'EVA/Plantilla/img/custom/logo-eva-rd.svg' %}" style="width: 50%; height: auto"/>
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+        </div>
+    {% endblock %}
+    </body>
+</html>

@@ -1,0 +1,61 @@
+{% load eva_tags %}
+{% load static %}
+{% load humanize %}
+<form id="formAplicarMovimiento" action="{% url 'Financiero:flujo-caja-movimiento-aplicar' flujo_detalle.id %}" method="post" class="needs-validation" novalidate>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    Aplicar al Flujo de Caja Real
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                {% csrf_token %}
+                <input id="valores" name="valores" type="hidden" value="vacio">
+                <div class="form-row">
+                    <div class="form-group col-12">
+                        <label for="subtipo_movimiento_id_select_id">Subtipo de Movimiento</label>
+                        <select class="select2 form-control" id="subtipo_movimiento_id_select_id" name="subtipo_movimiento_id" disabled>
+                            <option value="{{ flujo_detalle.subtipo_movimiento_id }}" selected="">{{ flujo_detalle.subtipo_movimiento.nombre }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-12">
+                        {% input_currency_tag 'valor' 'Valor' placeholder="Ingrese una Valor" required="" min="0.00" max="99999999999.99" step="0.01" value=flujo_detalle.valor|intcomma:False mensaje_validacion='Por favor ingrese un valor.' invalido=errores.descripcion removeMaskOnSubmit=True %}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-12">
+                        <label for="fecha_movimiento_id">Fecha de movimiento</label>
+                        <div class="input-group">
+                            <input type="text" disabled id="fecha_movimiento_id" name="fecha_movimiento" value="{{ flujo_detalle.fecha_movimiento |date:'Y-m-d' }}" placeholder="Seleccione una fecha" required="" autocomplete="off" class="form-control fecha-control">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-12">
+                        {% input_textarea_tag 'comentarios' 'Comentarios' placeholder="(Opcional) Ingrese comentarios si aplica" maxlength="100" value=flujo_detalle.comentarios mensaje_validacion='Por favor ingrese los comentarios.' invalido=errores.comentarios %}
+                    </div>
+                </div>
+
+                {% if opcion == 'editar' %}
+                    <div class="form-row">
+                        <div class="form-group col-12">
+                            {% input_textarea_tag 'motivo' 'Motivo' placeholder="Ingrese el motivo de la edición" maxlength="100" required="" mensaje_validacion='Por favor ingrese el motivo.' invalido=errores.motivo %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-danger btn-pills">Cancelar</button>
+                <button id="guardar" type="submit" class="btn btn-primary btn-pills">Aplicar al Real</button>
+            </div>
+        </div>
+    </div>
+</form>

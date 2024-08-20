@@ -1,0 +1,57 @@
+{% load eva_tags %}
+{% load static %}
+<form id="actascontratos_form" method="post" class="needs-validation" novalidate>
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header p-b-0">
+                <h4 class="modal-title">
+                    {% if editar %}Editar consecutivo de actas de contratos: {{ consecutivo.codigo }}{% else %}Crear consecutivo de actas de contratos {% endif %}
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                </button>
+            </div>
+         {% csrf_token %}
+            <div class="modal-body">
+                <div class="form-group">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            {% select_tag tipo_acta 'tipo_acta_id' 'Seleccione tipo de acta' is_tupla=True value=consecutivo.tipo_acta texto_label="Tipo de acta" required="" mensaje_validacion='Por favor seleccione un tipo de acta' %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            {% select_tag lista_consecutivos 'consecutivo_contrato_id' 'Seleccione contrato sociado' value=consecutivo.consecutivo_contrato_id texto_label="Asociado al contrato" required="" mensaje_validacion='Por favor seleccione un consecutivo de contrato' %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div id="fecha_suspension_mostrar" class="col-md-12">
+                            {% input_date_tag 'fecha_suspension' 'Fecha de suspensión' placeholder="Seleccione una fecha de suspensión" value=consecutivo.fecha_suspension required="false" autocomplete="off" mensaje_validacion='Por favor seleccione una fecha de suspensión.' %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            {% input_date_tag 'fecha_reinicio' 'Fecha de reinicio' placeholder="Seleccione una fecha de reinicio" value=consecutivo.fecha_reinicio required="" autocomplete="off" mensaje_validacion='Por favor seleccione una fecha de reinicio.' %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            {% input_textarea_tag 'descripcion' 'Descripción' placeholder="Ingrese una descripción" required="" maxlength="300" value=consecutivo.descripcion mensaje_validacion='Por favor digite una descripción.' invalido=errores.descripcion %}
+                        </div>
+                    </div>
+                    {% if editar %}
+                        <div class="form-group">
+                            <div id="motivo" class="col-md-12">
+                                {% input_textarea_tag 'motivo' 'Motivo' placeholder="Digite Motivo" value=consecutivo.justificacion|default_if_none:"" required="" mensaje_validacion='Por favor digite el motivo.' %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-danger btn-pills">Cancelar</button>
+                <button id="agregar" type="submit" class="btn btn-primary btn-pills"> {% if editar %}Editar{% else %}Agregar{% endif %} </button>
+            </div>
+        </div>
+    </div>
+</form>

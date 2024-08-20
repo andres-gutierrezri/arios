@@ -1,0 +1,29 @@
+<b> EVA </b>
+<br><br>
+Estimado(a) usuario(a): {{ nombre }}
+<br>
+<h1>{{ asunto }}</h1>
+<div style="max-width: 800px;padding:20px;background:#ededed;border-radius:5px">
+{{ mensaje | safe }}
+<br>
+{% if token %}
+    <br>
+    Enlaces para acceder a la aplicación EVA:
+    <br>
+    <br>
+    <a target="_blank" href='http://{{ eva_acceso_externo }}/notificaciones/token/{{ token }}'>Acceso Externo</a><br>
+    <br>
+    <a target="_blank" href='http://{{ eva_acceso_interno }}/notificaciones/token/{{ token }}'>Acceso Local</a><br>
+{% endif %}
+</div>
+<br>
+<i>*** Si al hacer clic no funciona, por favor, copia y pega la URL en tu navegador favorito.
+    <br><br>
+    <div style="background-color: #f9f9f9; text-align:center; font-family:'Lato','Helvetica Neue',Helvetica,Arial,sans-serif; padding:10px 5px; font-size:12px; line-height:1.2; color:#666666">
+    &nbsp;Por favor no responda este correo. Este buzón de mensajes no esta monitoreado y no recibirá ninguna respuesta. </div>
+
+    <div style="background-color: #f9f9f9; text-align:center; font-family:'Lato','Helvetica Neue',Helvetica,Arial,sans-serif; padding:10px 5px; font-size:12px; line-height:1.2; color:#666666">
+    &nbsp;AVISO DE CONFIDENCIALIDAD <br>Este mensaje es para uso del destinatario y puede contener información confidencial o protegida por la ley, por lo que el uso, difusión,
+    retención o copia con cualquier propósito por personas distintas de su destinatario está prohibido. Si obtiene esta comunicación por error, por favor avise al remitente
+    y proceda a eliminar el original. Antes de imprimir este mensaje, asegúrese que es indispensable. <br>¡Proteger el medio ambiente también está en sus manos!</div>
+</i>

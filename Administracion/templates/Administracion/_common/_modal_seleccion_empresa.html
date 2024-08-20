@@ -1,0 +1,29 @@
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">
+                Empresas vinculadas al colaborador {{ colaborador.nombre_completo }}
+                <small class="m-0 text-muted">
+                    Seleccione una Empresa
+                </small>
+            </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"><i class="fal fa-times"></i></span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-row">
+                {% for empresa in empresas %}
+                    <div class="col-lg-6 col-md-6 col-sm-12" style="text-align: center; position: relative; cursor: pointer; {% if empresa_actual.id != empresa.id %} opacity: 0.5 {% endif %}"
+                         onmouseover="$(this).find('.text-logo').fadeIn(0); $(this).css('opacity','1');"
+                         onmouseleave="$(this).find('.text-logo').fadeOut(0);$(this).css('opacity',{% if empresa_actual.id != empresa.id %} '0.5' {% else %} '1' {% endif %});"
+                         onclick="clicEmpresa({{ empresa.id }})">
+                        <img class="seleccionEmpresaGlobal logo-nav" style="position: relative;" src="{{ empresa.logo.url }}" >
+                        <div style="height: 31px"><h3 class="text-logo" style="position: relative; display: none;" ><strong>{{ empresa.nombre }}</strong></h3></div>
+                        <br>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>

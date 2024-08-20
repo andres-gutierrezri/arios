@@ -1,0 +1,55 @@
+{% if tipo == 'checkbox' %}
+    <div class="custom-control custom-switch">
+        <div class="custom-control custom-checkbox">
+{% else %}
+    {% if texto_label %}
+        <label for="{{ nombre }}_id" {% if label_id %}id="label_{{ nombre }}_id" {% endif %}>{{ texto_label}}</label>
+    {% endif %}
+{% endif %}
+
+{% if is_fecha %}
+    <div class="input-group">
+{% endif %}
+
+{% if tipo == 'textarea' %}
+    <textarea id="{{ nombre }}_id" name="{{ nombre }}" {{ propiedades }}>{{ valor }}</textarea>
+{% elif tipo == 'checkbox' %}
+     <input type="{{ tipo }}"  {% if valor %}checked {% endif %}   value="True" id="{{ nombre }}_id" name="{{ nombre }}" {{ propiedades }}>
+{% else %}
+    {% if tipo == 'file' %}
+        <div class="custom-file">
+    {% endif %}
+
+    <input type="{{ tipo }}" id="{{ nombre }}_id" name="{{ nombre }}"  {% if is_fecha  %} value="{{ valor|date:'Y-m-d' }}" {% else %} value="{{ valor|default_if_none:'' }}" {% endif %} {{ propiedades }}>
+
+    {% if tipo == 'file' %}
+        <label class="custom-file-label" for="{{nombre}}_id">Seleccione un archivo</label>
+        </div>
+    {% endif %}
+{% endif %}
+{% if tipo == 'checkbox' %}
+            <label for="{{ nombre }}_id" class="custom-control-label">{{ texto_label}}</label>
+        </div>
+    </div>
+{% endif %}
+
+{% if tipo == 'radio' %}
+    {% for opcion in opciones %}
+    {% if not forloop.first %}&nbsp;&nbsp;{% endif %}<div class="custom-control custom-radio custom-control-inline">
+        <input type="radio" class="custom-control-input" id="{{ opcion.texto }}_id" name="{{ nombre }}" value="{{ opcion.valor }}" required {% if opcion.valor == valor %}checked{% endif %}>
+        <label class="custom-control-label" for="{{ opcion.texto }}_id">{{ opcion.texto }}</label>
+    </div>
+    {% endfor %}
+{% endif %}
+
+{% if mensaje_validacion %}
+     <div class="invalid-tooltip {% if modal %}invalid-tooltip-modal{% endif %}">{{ mensaje_validacion }}</div>
+{% endif %}
+{% if is_fecha %}
+    <div class="input-group-append">
+        <span class="input-group-text fs-xl">
+            <i class="fal fa-calendar-alt"></i>
+        </span>
+    </div>
+    </div>
+{% endif %}

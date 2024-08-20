@@ -1,0 +1,31 @@
+from EVA.permisos import Permiso
+
+app_name = 'Administracion'
+
+permisos = [Permiso('index', None),
+            Permiso('terceros', ['Administracion.view_tercero']),
+            Permiso('terceros-crear', ['Administracion.add_tercero']),
+            Permiso('terceros-editar', ['Administracion.change_tercero']),
+            Permiso('terceros-eliminar', ['Administracion.delete_tercero']),
+            Permiso('empresas', ['Administracion.view_empresa']),
+            Permiso('empresas-crear', ['Administracion.add_empresa']),
+            Permiso('empresas-editar', ['Administracion.change_empresa']),
+            Permiso('empresas-eliminar', ['Administracion.delete_empresa']),
+            Permiso('sub-empresas', ['Administracion.view_empresa']),
+            Permiso('sub-empresas-crear', ['Administracion.add_empresa']),
+            Permiso('sub-empresas-editar', ['Administracion.change_empresa']),
+            Permiso('sub-empresas-eliminar', ['Administracion.delete_empresa']),
+            Permiso('grupos-permisos', ['auth.view_group']),
+            Permiso('grupos-permisos-crear', ['auth.add_group']),
+            Permiso('grupos-permisos-editar', ['auth.change_group']),
+            Permiso('grupos-permisos-eliminar', ['auth.delete_group']),
+            Permiso('proveedor-solicitudes', ['Administracion.manage_proveedor']),
+            Permiso('proveedor-solicitudes-perfil', ['Administracion.view_proveedor']),
+            Permiso('proveedor-cambiar-estado', ['Administracion.manage_proveedor']),
+            Permiso('proveedor-administracion-index', ['Administracion.view_proveedor']),
+            Permiso('proveedor-solicitudes-aprobar-rechazar', ['Administracion.manage_proveedor']),
+            Permiso('reserva-sala-juntas', ['Administracion.view_reservasalajuntas']),
+            Permiso('reserva-sala-juntas-crear', ['Administracion.add_reservasalajuntas']),
+            Permiso('reserva-sala-juntas-editar', ['Administracion.change_reservasalajuntas']),
+            Permiso('reserva-sala-juntas-eliminar', ['Administracion.delete_reservasalajuntas']),
+            ]

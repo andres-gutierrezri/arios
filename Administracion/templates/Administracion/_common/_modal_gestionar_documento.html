@@ -1,0 +1,43 @@
+{% load eva_tags %}
+{% load static %}
+
+<form id="documentos_form" method="post" class="needs-validation" novalidate>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header p-b-0">
+                <h4 class="modal-title">
+                    {% if documento %}Editar Documento{% else %}Agregar Documento{% endif %}
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% csrf_token %}
+                <div class="form-row">
+                    {% if not documento and not documento_adicional %}
+                    <div class="form-group col-12">
+                        {% select_tag tipos_documentos 'tipo_documento' 'Seleccione un tipo de documento' texto_label="Tipo de Documento" required="" value=documento.tipo_documento_id mensaje_validacion='Por favor seleccione una opción' %}
+                    </div>
+                    {% endif %}
+                    {% if documento_adicional %}
+                        <div class="form-group col-12">
+                            {% input_text_tag 'nombre' 'Nombre' placeholder="Ingrese el nombre" required="" maxlength="100" value=documento.nombre mensaje_validacion='Por favor digite el nombre.' invalido=errores.nombre %}
+                        </div>
+                    {% endif %}
+                    <div class="form-group col-12">
+                        {% if documento %}
+                            {% input_file_tag 'documento' 'Documento' placeholder="Seleccione un archivo" invalido=errores.logo accept=".pdf" mensaje_validacion='Por favor seleccione un archivo'%}
+                        {% else %}
+                            {% input_file_tag 'documento' 'Documento' placeholder="Seleccione un archivo" required="" invalido=errores.logo accept=".pdf" mensaje_validacion='Por favor seleccione un archivo'%}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-danger btn-pills">Cancelar</button>
+                <button id="guardar" type="submit" class="btn btn-primary btn-pills">{% if objeto or documento%} Guardar {% else %} Cargar {% endif %} </button>
+            </div>
+        </div>
+    </div>
+</form>

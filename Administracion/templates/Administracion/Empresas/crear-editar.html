@@ -1,0 +1,131 @@
+{% extends 'Administracion/_common/base_administracion.html' %}
+{% load static %}
+{% load eva_tags %}
+<title>{% block titulo %}{% if opcion == 'editar' %}Editar Empresas{% else %} Crear Empresas {% endif %}{% endblock %}</title>
+{% block styles %}
+<!-- DEMO related CSS below -->
+	<link rel="stylesheet" media="screen, print" href="{%static 'EVA/Plantilla/css/fa-brands.css' %}">
+	<!-- page related CSS below -->
+	<link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/formplugins/select2/select2.bundle.css' %}">
+    <link rel="stylesheet" media="screen, print" href="{% static 'EVA/Plantilla/css/fa-regular.css' %}">
+{% endblock styles%}
+
+{% block main %}
+    <div class="panel-container show">
+        <div class="header">
+             <h1 class="header-title">
+                <i class='far fa-briefcase'></i> Empresas: <span class='fw-300'>{% if opcion == 'editar' %} Editar {% else%} Crear {% endif %}</span>
+                 <br>
+                 <br>
+             </h1>
+        </div>
+        <div class="row">
+            <div class="col-xl-12">
+                <div id="panel-1" class="panel">
+                    <div class="panel-container show">
+                        <div class="panel-content">
+                            <div class="panel-group">
+                                <div class="panel-body">
+                                     {% if opcion == 'editar' %}
+                                    <form action="{% url 'Administracion:empresas-editar' empresa.id %}" id="empresas-form" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                                     {% else %}
+                                    <form action="{% url 'Administracion:empresas-crear' %}" id="empresas-form" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                                     {% endif %}
+                                        {% csrf_token %}
+                                        <div class="form-group">
+                                            <div class="form-row">
+                                                <div class="col-md-6">
+                                                    {% input_text_tag 'nombre' 'Nombre' placeholder="Ingrese el nombre" required="" maxlength="100" value=empresa.nombre mensaje_validacion='Por favor digite el nombre.' invalido=errores.nombre %}
+                                                </div>
+                                                <div class="col-md-5">
+                                                    {% input_text_tag 'nit' 'NIT' placeholder="Ingrese el nit de la empresa" required="" maxlength="20" pattern="[0-9]*" value=empresa.nit mensaje_validacion='Por favor digite el nit de la empresa' invalido=errores.nit%}
+                                                </div>
+                                                 <div class="col-md-1">
+                                                    {% input_number_tag 'digito_verificacion' 'DV' placeholder='Ingrese el DV' required='' min='0' max='9' value=empresa.digito_verificacion mensaje_validacion='Por favor ingrese el digito de verificación' invalido=errores.digito_verificacion %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="form-row">
+                                                <div class="col-md-6">
+                                                    {% input_text_tag 'direccion' 'Dirección' placeholder='Ingrese la dirección' maxlength='100' value=empresa.direccion mensaje_validacion='Por favor digite una dirección' invalido=errores.direccion %}
+                                                </div>
+                                                <div class="col-md-6">
+                                                    {% input_text_tag 'codigo_postal' 'Código Postal' placeholder="Ingrese el código postal" required="" maxlength="6" minlength="6" pattern='[0-9]{6,6}' value=empresa.codigo_postal mensaje_validacion='Por favor digite el código postal.' invalido=errores.codigo_postal %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="form-row">
+                                                <div class="col-md-6">
+                                                 {% select_tag departamentos 'departamento_id' 'Seleccione un departamento' texto_label="Departamento" value=empresa.municipio.departamento.id required="" mensaje_validacion='Por favor seleccione un departamento.'  %}
+                                                 </div>
+                                                <div class="col-md-6">
+                                                {% select_tag municipios 'municipio_id' 'Seleccione un municipio' texto_label="Municipio" value=empresa.municipio_id required="" mensaje_validacion='Por favor seleccione un municipio.'  %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="form-row">
+                                                <div class="col-md-6">
+                                                    {% select_tag tipos_persona 'tipo_persona' 'Seleccione un tipo de persona' is_tupla=True texto_label="Tipo de Persona" value=empresa.tipo_persona required="" mensaje_validacion='Por favor seleccione un tipo de persona.' invalido=errores.tipo_persona %}
+                                                </div>
+                                                <div class="col-md-6">
+                                                    {% select_tag regimenes_fiscales 'regimen_fiscal' 'Seleccione un régimen fiscal' is_tupla=True texto_label="Régimen Fiscal" value=empresa.regimen_fiscal required="" mensaje_validacion='Por favor seleccione un régimen fiscal.' invalido=errores.regimen_fiscal %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="form-row">
+                                                <div class="col-md-6">
+                                                    {% select_multiple_tag responsabilidades 'responsabilidades' 'responsabilidades_id' 'Seleccione una responsabilidad fiscal' is_tupla=True texto_label="Responsabilidad Fiscal" value=responsabilidades_empresa required="" mensaje_validacion='Por favor seleccione una responsabilidad fiscal.' multiple='multiple' invalido=errores.responsabilidades %}
+                                                </div>
+                                                <div class="col-md-6">
+                                                    {% select_tag tributos 'tributo' 'Seleccione un tributo' is_tupla=True texto_label="Tributo" value=empresa.tributos required="" mensaje_validacion='Por favor seleccione un tributo.' invalido=errores.tributos%}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="form-row">
+                                                <div class="col-md-6">
+                                                    {% input_text_tag 'matricula_mercantil' 'Matrícula Mercantil' placeholder='Ingrese la matrícula mercantil' maxlength='20' value=empresa.matricula_mercantil mensaje_validacion='Por favor digitee la matrícula mercantil' invalido=errores.matricula_mercantil %}
+                                                </div>
+                                                <div class="col-md-6">
+                                                    {% input_file_tag 'logo' 'Logo de la Empresa' placeholder="Seleccione el logo de la Empresa"  invalido=errores.logo accept="image/png, .jpeg, .jpg, image/gif"  %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% if opcion == 'editar' %}
+                                             <div class="form-group">
+                                                <div class="form-row">
+                                                    <div class="col-md-6">
+                                                        {% input_checkbox_tag 'estado' 'Estado' value=empresa.estado  %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                        <div class="form-row justify-content-end">
+                                            <div>
+                                                <a href="{% url 'Administracion:empresas' %}" class="btn btn-danger btn-pills">Cancelar</a>
+                                            </div>
+                                            <div class="pl-2">
+                                                <button id="guardar" class="btn btn-primary btn-pills">{% if opcion == 'editar' %} Actualizar {% else %} Agregar {% endif %}</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock main %}
+
+{% block scripts %}
+    <script src="{% static 'EVA/Plantilla/js/formplugins/select2/select2.bundle.js' %}"></script>
+    <script src="{% static 'Administracion/js/select_divipol.js' %}"></script>
+    <script src="{% static 'EVA/Plantilla/js/custom/validaciones/validar_formulario.js' %}"></script>
+	<script src="{% static 'EVA/Plantilla/js/custom/modificacionesSelect2.js' %}"></script>
+{% endblock scripts%}
