@@ -37,7 +37,7 @@ SECRET_KEY = 'a1e+7^&ozbdlfhmkdmg@ic9-%*brp1khg%b_#1v-bksm#=-ehw'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = not IS_DEPLOYED
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'arios-eva.up.railway.app']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0', 'arios-eva.up.railway.app']
 
 CSRF_TRUSTED_ORIGINS = ['http://*', 'https://arios-eva.up.railway.app']    
 
