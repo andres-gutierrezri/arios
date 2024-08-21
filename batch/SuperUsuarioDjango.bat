@@ -5,7 +5,7 @@ echo Super Usuario Django
 echo --------------------
 
 :: Ingresar al Directorio del Proyecto
-cd ..\..
+cd ..
 
 :: Activar Entorno Virtual de Python
 call .\.venv\Scripts\activate.bat
