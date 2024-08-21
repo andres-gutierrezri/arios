@@ -5,7 +5,7 @@ echo Migraciones y Ejecucion del Proyecto
 echo ------------------------------------
 
 :: Ingresar al Directorio del Proyecto
-cd ..
+cd ..\..
 
 :: Activar Entorno Virtual de Python
 call .\.venv\Scripts\activate.bat

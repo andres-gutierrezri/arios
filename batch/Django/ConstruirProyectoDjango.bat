@@ -26,7 +26,7 @@ echo Crear Entorno Virtual
 echo ---------------------
 
 :: Ingresar al Directorio del Proyecto
-cd ..
+cd ..\..
 
 :: Crear Entorno Virtual
 python -m venv .venv
