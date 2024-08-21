@@ -39,7 +39,7 @@ DEBUG = not IS_DEPLOYED
 
 ALLOWED_HOSTS = ['localhost', 'arios-eva.up.railway.app']
 
-# CSRF_TRUSTED_ORIGINS = ['http://*', 'https://arios-eva.up.railway.app/']    
+CSRF_TRUSTED_ORIGINS = ['http://*', 'https://arios-eva.up.railway.app']    
 
 # Application definition
 
@@ -99,6 +99,7 @@ WSGI_APPLICATION = 'EVA.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
+
 
 DATABASES = {
     'default': DATABASE_DICT
