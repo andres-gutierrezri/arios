@@ -14,11 +14,11 @@ echo psql -U postgres
 .\runpsql.bat
 :comment
 
-REM Establecer la contraseña de PostgreSQL en la variable de entorno PG_PASSWORD
-set PG_PASSWORD=postgresql
+REM Establecer la contraseña de PostgreSQL en la variable de entorno PGPASSWORD
+set PGPASSWORD=postgresql
 
 REM Conectar a la base de datos PostgreSQL utilizando psql
 psql -h localhost -U postgres -p 5432 -d postgres
 
-REM Limpiar la variable de entorno PG_PASSWORD por seguridad
-set PG_PASSWORD=
+REM Limpiar la variable de entorno PGPASSWORD por seguridad
+set PGPASSWORD=
