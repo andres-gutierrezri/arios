@@ -78,7 +78,7 @@ cover/
 # Django stuff:
 *.log
 *.pyc
-# /media/
+/media/
 /staticfiles/
 local_settings.py
 
