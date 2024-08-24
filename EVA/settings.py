@@ -15,6 +15,7 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 from EVA.local_settings import IS_DEPLOYED, DATABASE_DICT
 from EVA.logging_settings import *
+from EVA.cloud_settings import *
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
@@ -52,6 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'whitenoise.runserver_nostatic',
+    'storages',
     'Administracion.apps.AdministracionConfig',
     'Proyectos.apps.ProyectosConfig',
     'TalentoHumano.apps.TalentohumanoConfig',
@@ -159,8 +161,10 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'GestionDocumental', 'static', 'GestionDocumental'),
 )
 
+# Configuración para almacenar archivos multimedia 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = '/media/'
+
+MEDIA_URL = MEDIA_URL if IS_DEPLOYED else '/media/'
 
 # Son 10800 segundos equivalentes a 3 horas.
 SESSION_COOKIE_AGE = 10800
