@@ -6,7 +6,7 @@ from django.db import models
 
 class TipoNotificacion(models.Model):
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
-    descripcion = models.TextField(max_length=300, verbose_name='Descripción', null=False, blank=False)
+    descripcion = models.CharField(max_length=255, verbose_name='Descripción', null=False, blank=False)
     fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False,
                                           blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
@@ -27,8 +27,8 @@ class TipoNotificacion(models.Model):
 
 class EventoDesencadenador(models.Model):
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
-    descripcion = models.TextField(max_length=300, verbose_name='Descripción', null=False, blank=False)
-    ruta = models.TextField(max_length=300, verbose_name='Ruta', null=False, blank=False)
+    descripcion = models.CharField(max_length=255, verbose_name='Descripción', null=False, blank=False)
+    ruta = models.CharField(max_length=255, verbose_name='Ruta', null=False, blank=False)
     fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False,
                                           blank=False)
     modal = models.BooleanField(verbose_name='Modal', null=False, blank=False, default=False)
@@ -62,7 +62,7 @@ class EventoDesencadenador(models.Model):
 
 class Notificacion(models.Model):
     titulo = models.CharField(max_length=100, verbose_name='Título', null=False, blank=False)
-    mensaje = models.TextField(max_length=300, verbose_name='Mensaje', null=False, blank=False)
+    mensaje = models.CharField(max_length=255, verbose_name='Mensaje', null=False, blank=False)
     fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False,
                                           blank=False, )
     tipo_notificacion = models.ForeignKey(TipoNotificacion, on_delete=models.DO_NOTHING,
@@ -114,7 +114,7 @@ class SeleccionDeNotificacionARecibir(models.Model):
 
 class TextoNotificacionDelSistema(models.Model):
     titulo = models.CharField(max_length=100, verbose_name='Título', null=False, blank=False)
-    mensaje = models.TextField(max_length=300, verbose_name='Mensaje', null=False, blank=False)
+    mensaje = models.CharField(max_length=255, verbose_name='Mensaje', null=False, blank=False)
     fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación', null=False,
                                           blank=False)
     fecha_modificacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Modificación', null=False,

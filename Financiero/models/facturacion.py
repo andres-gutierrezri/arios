@@ -105,7 +105,7 @@ class FacturaEncabezado(models.Model, ModelDjangoExtensiones):
     forma_pago = models.SmallIntegerField(verbose_name='Forma de pago', null=False, blank=False, default=2)
     medio_pago = models.SmallIntegerField(verbose_name='Medio de pago', null=False, blank=False, default=1)
 
-    observaciones = models.TextField(verbose_name='Observaciones', max_length=1000, null=True, blank=True)
+    observaciones = models.CharField(max_length=255, verbose_name='Observaciones', null=True, blank=True)
     fecha_anulacion = models.DateField(verbose_name='Fecha de Anulación', null=True, blank=True)
 
     nombre_archivo_nc = models.CharField(verbose_name='Nombre del archivo de la nota crédito', max_length=50,
@@ -114,9 +114,9 @@ class FacturaEncabezado(models.Model, ModelDjangoExtensiones):
                                              null=True, blank=True)
     nombre_archivo_ad_nc = models.CharField(verbose_name='Nombre del archivo Attached Documen NCt', max_length=50,
                                             null=True, blank=True)
-    motivo_anulacion = models.TextField(verbose_name='Motivo anulación', max_length=1000, null=True, blank=True)
+    motivo_anulacion = models.CharField(max_length=255, verbose_name='Motivo anulación', null=True, blank=True)
     cude = models.CharField(verbose_name='CUFE', max_length=96, null=True, blank=True)
-    observaciones_anulacion = models.TextField(verbose_name='Observaciones Anulacion', max_length=1000, null=True,
+    observaciones_anulacion = models.CharField(max_length=255, verbose_name='Observaciones Anulacion', null=True,
                                                blank=True)
 
     def __str__(self):
@@ -170,8 +170,8 @@ class FacturaEncabezado(models.Model, ModelDjangoExtensiones):
 class FacturaDetalle(models.Model):
     factura_encabezado = models.ForeignKey(FacturaEncabezado, on_delete=models.CASCADE,
                                            verbose_name='Encabezado Factura', null=False, blank=False)
-    titulo = models.TextField(verbose_name='Título', max_length=250, null=True, blank=True)
-    descripcion = models.TextField(verbose_name='Descripción', max_length=500, null=False, blank=True, default='')
+    titulo = models.CharField(verbose_name='Título', max_length=255, null=True, blank=True)
+    descripcion = models.CharField(verbose_name='Descripción', max_length=255, null=False, blank=True, default='')
     cantidad = models.PositiveIntegerField(verbose_name='Cantidad', null=False, blank=False)
     valor_unitario = models.DecimalField(verbose_name='Valor Unitario', max_digits=12, decimal_places=2, null=False,
                                          blank=False)

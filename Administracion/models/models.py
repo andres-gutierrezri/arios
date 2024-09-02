@@ -14,7 +14,7 @@ from EVA.General.modelmanagers import ManagerGeneral
 class Empresa(models.Model, ModelDjangoExtensiones):
     objects = ManagerGeneral()
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
-    nit = models.TextField(max_length=20, verbose_name='NIT', null=False, blank=False, unique=True)
+    nit = models.CharField(max_length=20, verbose_name='NIT', null=False, blank=False, unique=True)
     digito_verificacion = models.SmallIntegerField(verbose_name='Digito de Verificación', null=True, blank=True)
     logo = models.ImageField(upload_to=f'{settings.EVA_PUBLIC_MEDIA}/logos-empresas', verbose_name='Logo', null=False,
                              blank=False)
@@ -128,7 +128,7 @@ class Rango(models.Model):
     objects = ManagerGeneral()
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
-    descripcion = models.TextField(max_length=300, verbose_name='Descripción', null=False, blank=False)
+    descripcion = models.CharField(max_length=300, verbose_name='Descripción', null=False, blank=False)
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, verbose_name='Empresa',
                                 null=True, blank=False)
 
@@ -156,7 +156,7 @@ class TipoIdentificacion(models.Model):
     objects = TipoIdentificacionManager()
     
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
-    sigla = models.TextField(max_length=5, verbose_name='Sigla', null=False, blank=False, unique=True)
+    sigla = models.CharField(max_length=5, verbose_name='Sigla', null=False, blank=False, unique=True)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
 
     def __str__(self):
@@ -178,7 +178,7 @@ class TipoContratoManager(ManagerGeneral):
 class TipoContrato(models.Model):
     objects = TipoContratoManager()
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
-    descripcion = models.TextField(max_length=300, verbose_name='Descripción', null=False, blank=False)
+    descripcion = models.CharField(max_length=255, verbose_name='Descripción', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
     laboral = models.BooleanField(verbose_name='Estado', null=False, blank=False)
     sigla = models.CharField(max_length=5, verbose_name='Sigla', null=False, blank=False, default='')

@@ -19,7 +19,7 @@ class TipoTercero(models.Model):
     objects = ManagerGeneral()
 
     nombre = models.CharField(max_length=100, verbose_name='Nombre', null=False, blank=False)
-    descripcion = models.TextField(max_length=300, verbose_name='Descripción', null=False, blank=False)
+    descripcion = models.CharField(max_length=300, verbose_name='Descripción', null=False, blank=False)
     estado = models.BooleanField(verbose_name='Estado', null=False, blank=False)
 
     def __str__(self):
@@ -111,8 +111,8 @@ class Tercero(models.Model, ModelDjangoExtensiones):
     usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Usuario', null=True, blank=True)
     estado_proveedor = models.SmallIntegerField(choices=EstadosProveedor.choices, verbose_name='Estado del Proveedor',
                                                 null=True, blank=True)
-    modificaciones = models.TextField(verbose_name='Modificaciones', null=True, blank=True)
-    bienes_servicios = models.TextField(verbose_name='Bienes y Servicios que Ofrece', null=True, blank=True)
+    modificaciones = models.CharField(max_length=255, verbose_name='Modificaciones', null=True, blank=True)
+    bienes_servicios = models.CharField(max_length=255, verbose_name='Bienes y Servicios que Ofrece', null=True, blank=True)
     es_vigente = models.BooleanField(verbose_name='Es Vigente', null=False, blank=False)
     consecutivo_cliente = models.IntegerField(verbose_name='Consecutivo Cliente', null=True, blank=True)
     extranjero = models.IntegerField(verbose_name='Extranjero', null=True, blank=True, default=False)

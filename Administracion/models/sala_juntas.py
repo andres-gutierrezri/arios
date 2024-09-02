@@ -22,8 +22,8 @@ class ReservaSalaJuntas(models.Model, ModelDjangoExtensiones):
     fecha_modificacion = models.DateTimeField(auto_now=True, verbose_name='Fecha de Modificación', null=True,
                                               blank=False)
     tema = models.CharField(max_length=100, verbose_name='Tema', null=False, blank=False)
-    descripcion = models.CharField(max_length=300, verbose_name='Descripción', null=True, blank=True)
-    motivo = models.TextField(max_length=100, verbose_name='Motivo', blank=False, null=False)
+    descripcion = models.CharField(max_length=255, verbose_name='Descripción', null=True, blank=True)
+    motivo = models.CharField(max_length=100, verbose_name='Motivo', blank=False, null=False)
     estado = models.BooleanField(verbose_name='Estado', blank=False, null=False, default=True)
     color = models.CharField(max_length=7, verbose_name='Color', null=False, blank=False, default='#20B8A9')
     finalizacion = models.BooleanField(verbose_name='Finalización', blank=False, null=False, default=False)

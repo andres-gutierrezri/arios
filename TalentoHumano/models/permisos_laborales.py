@@ -44,12 +44,12 @@ class PermisoLaboral(ModeloBase, ModelDjangoExtensiones):
     fecha_fin = models.DateTimeField(verbose_name='Fecha Fin', null=False, blank=False)
     tipo_permiso = models.ForeignKey(TipoPermiso, on_delete=models.DO_NOTHING, verbose_name='Tipo de Permiso',
                                      null=False, blank=False)
-    tipo_permiso_otro = models.TextField(max_length=60, verbose_name='Tipo de Permiso Otro', null=True, blank=True,
+    tipo_permiso_otro = models.CharField(max_length=100, verbose_name='Tipo de Permiso Otro', null=True, blank=True,
                                          default='')
     jefe_inmediato = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Jefe Inmediato', null=True,
                                        blank=True)
-    motivo_permiso = models.CharField(max_length=300, verbose_name='Motivo Permiso', null=False, blank=False)
-    motivo_editar = models.TextField(max_length=100, verbose_name='Motivo Editar', null=False, blank=False)
+    motivo_permiso = models.CharField(max_length=255, verbose_name='Motivo Permiso', null=False, blank=False)
+    motivo_editar = models.CharField(max_length=255, verbose_name='Motivo Editar', null=False, blank=False)
     soporte = models.FileField(upload_to=custom_upload_to, verbose_name='Documento Soporte', null=True, blank=True,
                                max_length=250, default='')
     estado_empleado = models.BooleanField(verbose_name='Estado Empleado', blank=False, null=False, default=True)
