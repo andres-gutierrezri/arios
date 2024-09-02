@@ -193,3 +193,7 @@ cython_debug/
 
 # Ignore Visual Studio Code Settings (.vscode)
 .vscode/
+
+# Ignore password files
+admin_django.txt
+db_password.txt

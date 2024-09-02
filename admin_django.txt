@@ -1,10 +1,18 @@
---------------------
-Super Usuario Django
---------------------
-
+===============================
+Super Usuario Django PostgreSQL
+===============================
 Username: admin
 Email address: admin@gmail.com
 Password: admin-django
+===============================
+
+===========================================
+Super Usuario Django MySQL
+===========================================
+Username: andres_gutierrez
+Email address: felipe.gutierrezri@gmail.com
+Password: Admin-Django_EVA
+===========================================
 
 Abrir en el Navegador
 http://localhost:8000/admin
