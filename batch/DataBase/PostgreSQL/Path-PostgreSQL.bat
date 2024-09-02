@@ -1,8 +1,8 @@
 @echo off
 
-echo ---------------------------------------------
-echo Script para Agregar Python al PATH de Windows
-echo ---------------------------------------------
+echo --------------------------------------------------------
+echo Script para agregar psql (PostgreSQL) al PATH de Windows
+echo --------------------------------------------------------
 
 REM Ingresar al Directorio del Proyecto
 REM Regresar a la carpeta raíz del proyecto subiendo en los directorios
@@ -64,30 +64,30 @@ if not exist %ENV_FILE% (
 
 REM Establecer la variable de entorno para el Path de MySQL
 for /f "tokens=1,2 delims==" %%a in (%ENV_FILE%) do (
-    if "%%a"=="PYTHON_PATH" (
+    if "%%a"=="POSTGRESQL_PATH" (
         REM Guardar el valor de la variable
-        set "PYTHON_PATH=%%b"
+        set "POSTGRESQL_PATH=%%b"
 
         REM Eliminar comillas dobles si existen
-        set "PYTHON_PATH=!PYTHON_PATH:"=!"
+        set "POSTGRESQL_PATH=!POSTGRESQL_PATH:"=!"
         
         REM Eliminar comillas simples si existen
-        set "PYTHON_PATH=!PYTHON_PATH:'=!"
+        set "POSTGRESQL_PATH=!POSTGRESQL_PATH:'=!"
 
         REM Asignar la variable sin comillas
-        set %%a=!PYTHON_PATH!
+        set %%a=!POSTGRESQL_PATH!
     )
 )
 
-REM Verifica si la ruta ya está en el PATH
+REM Verificar si la ruta ya está en el PATH
 
-echo %PATH% | find /I "%PYTHON_PATH%" >nul
+echo %PATH% | find /I "%POSTGRESQL_PATH%" >nul
 if %ERRORLEVEL%==0 (
-    echo La ruta de Python ya esta en el PATH del sistema.
+    echo La ruta de psql ya esta en el PATH del sistema.
 ) else (
     REM Agregar la ruta al PATH
-    setx /M PATH "%PATH%;%PYTHON_PATH%;%PYTHON_PATH%\Scripts"
-    echo La ruta de Python ha sido agregada al PATH del sistema.
+    setx /M PATH "%PATH%;%POSTGRESQL_PATH%"
+    echo La ruta de psql ha sido agregada al PATH del sistema.
 )
 
 echo.

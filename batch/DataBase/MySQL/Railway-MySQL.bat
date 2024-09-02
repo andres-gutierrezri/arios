@@ -1,8 +1,10 @@
 @echo off
 
-echo ---------------------------------------------
-echo Script para Agregar Python al PATH de Windows
-echo ---------------------------------------------
+echo -----------------------------
+echo Base de Datos MySQL - Railway
+echo -----------------------------
+
+echo Ingresar a la Consola de MySQL - Railway
 
 REM Ingresar al Directorio del Proyecto
 REM Regresar a la carpeta raíz del proyecto subiendo en los directorios
@@ -62,35 +64,32 @@ if not exist %ENV_FILE% (
     exit /b 1
 )
 
-REM Establecer la variable de entorno para el Path de MySQL
-for /f "tokens=1,2 delims==" %%a in (%ENV_FILE%) do (
-    if "%%a"=="PYTHON_PATH" (
-        REM Guardar el valor de la variable
-        set "PYTHON_PATH=%%b"
+REM Leer cada línea del archivo .env y establecer las variables de entorno
+for /f "tokens=1,* delims==" %%a in (%ENV_FILE%) do (
+    REM Guardar el valor de la variable
+    set "var=%%b"
+    
+    REM Eliminar comillas dobles si existen
+    set "var=!var:"=!"
+    
+    REM Eliminar comillas simples si existen
+    set "var=!var:'=!"
 
-        REM Eliminar comillas dobles si existen
-        set "PYTHON_PATH=!PYTHON_PATH:"=!"
-        
-        REM Eliminar comillas simples si existen
-        set "PYTHON_PATH=!PYTHON_PATH:'=!"
-
-        REM Asignar la variable sin comillas
-        set %%a=!PYTHON_PATH!
-    )
+    REM Asignar la variable sin comillas
+    set %%a=!var!
 )
 
-REM Verifica si la ruta ya está en el PATH
+REM Establecer las variable de entorno para MySQL Database Hosting
+set MYSQL_NAME=%MYSQL_HOSTING_DB_NAME%
+set MYSQL_USER=%MYSQL_HOSTING_DB_USER%
+set MYSQL_HOST=%MYSQL_HOSTING_DB_HOST%
+set MYSQL_PORT=%MYSQL_HOSTING_DB_PORT%
 
-echo %PATH% | find /I "%PYTHON_PATH%" >nul
-if %ERRORLEVEL%==0 (
-    echo La ruta de Python ya esta en el PATH del sistema.
-) else (
-    REM Agregar la ruta al PATH
-    setx /M PATH "%PATH%;%PYTHON_PATH%;%PYTHON_PATH%\Scripts"
-    echo La ruta de Python ha sido agregada al PATH del sistema.
-)
+REM Establecer la contraseña de MySQL Database Hosting
+set MYSQL_PASSWORD=%MYSQL_HOSTING_DB_PASSWORD%
 
-echo.
-echo PARA SALIR PRESIONA UNA TECLA.
-pause > nul
-exit
+REM Conectar a la base de datos MySQL utilizando mysql
+mysql -u%MYSQL_USER% -p%MYSQL_PASSWORD% -h%MYSQL_HOST% -P%MYSQL_PORT% -D%MYSQL_NAME%
+
+REM Limpiar la variable de entorno MYSQL_PASSWORD por seguridad
+set MYSQL_PASSWORD=

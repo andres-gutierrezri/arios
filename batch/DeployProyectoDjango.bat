@@ -23,10 +23,10 @@ echo.
 
 echo Abrir el Proyecto en el Navegador
 start http://localhost:8000/
-start https://arios-eva.up.railway.app/
+:: start https://arios-eva.up.railway.app/
 
 :: Correr la Interfaz de Pasarela del Servidor Web, o Web Server Gateway
-gunicorn EVA.wsgi:application --workers 3 --log-file -
+:: gunicorn EVA.wsgi:application --workers 3 --log-file -
 
 echo Iniciar Servidor
 python manage.py runserver
