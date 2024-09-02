@@ -195,5 +195,5 @@ cython_debug/
 .vscode/
 
 # Ignore password files
-admin_django.txt
-db_password.txt
+admin_password.txt
+database_password.txt
