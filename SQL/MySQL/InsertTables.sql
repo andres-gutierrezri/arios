@@ -2,7 +2,7 @@
 
 -- SELECCIONAR BASE DE DATOS
 USE railway;
-SET NAMES utf8;
+SET NAMES utf8mb4;
 
 -- INSERTAR VALORES
 INSERT INTO Administracion_pais (
