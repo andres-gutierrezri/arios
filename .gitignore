@@ -195,5 +195,5 @@ cython_debug/
 .vscode/
 
 # Ignore password files
-admin_password.txt
-database_password.txt
+users.txt
+database.txt
