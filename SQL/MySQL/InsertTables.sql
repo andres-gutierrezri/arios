@@ -9166,9 +9166,9 @@ INSERT INTO Administracion_tipocontrato (
 	('17', 'Arrendamiento Automotor', 'Contrato para vehículos', true, false, 'CAA', true, false),
 	('18', 'Arrendamiento de Oficinas', 'Contrato para el arrendamiento de oficinas y bodegas.', true, false, 'CAO', true, false),
 	('20', 'Consultoría', 'Contrato de consultoría', true, false, 'CCO', true, false),
-	('21', 'Ingeniería, adquisición y construcción', 'El contrato "llave en mano" o EPC es aquel en que el contratista se obliga frente al cliente o contratante, a cambio de un precio generalmente fijo, a diseñar, construir y poner en funcionamiento una instalación determinada que él mismo previamente ha proyectado.', true, false, 'EPC', true, false),
+	('21', 'Ingeniería, adquisición y construcción', 'El contrato "llave en mano" o EPC es aquel en que el contratista se obliga frente al cliente o contratante, a cambio de un precio generalmente fijo, a diseñar, construir y poner en funcionamiento una instalación que previamente se ha proyectado.', true, false, 'EPC', true, false),
 	('22', 'Alquiler de equipos', 'Contrato para prestar el servicio de alquiler de un equipos a un cliente.', true, false, 'AE', true, false),
-	('23', 'Pasantía', 'Contrato de pasantía', 'true', true, 'CP', true, false);
+	('23', 'Pasantía', 'Contrato de pasantía', true, true, 'CP', true, false);
 
 INSERT INTO TalentoHumano_tipoentidadescafe (
 	id, nombre, estado) 
@@ -9228,8 +9228,8 @@ INSERT INTO Administracion_tipodocumentotercero (
     ('2', 'Certificado de Existencia de Representación Legal', false, true, true),
     ('3', 'Certificado Registro Mercantil', false, true, true),
     ('4', 'Registro Único de Proponentes', false, true, false),
-    ('5', 'Portafolio de Servicios', 'true', true, false),
-	('6', 'Tarjeta Profesional', 'true', false, false),
+    ('5', 'Portafolio de Servicios', true, true, false),
+	('6', 'Tarjeta Profesional', true, false, false),
 	('7', 'Registro Único Tributario', true, true, true),
 	('8', 'Documento de Identidad RL', false, true, true),
 	('9', 'Manual de SST', false, true, false),
@@ -9283,20 +9283,20 @@ INSERT INTO SGI_estadoarchivo (
 INSERT INTO Notificaciones_eventodesencadenador (
 	id, nombre, descripcion, ruta, fecha_creacion, modal, permiso, estado) 
 	VALUES
-	('9', 'Solicitudes de Aprobación', 'Solicitudes de Aprobación', '/sgi/solicitudes_aprobacion/detalle', '2020-04-10 21:47:00-05', true, '', true),
-	('1', 'Bienvenido a EVA', 'Bienvenido a EVA', '/', '2020-04-04 16:38:38.599618-05', false, '', true),
-	('8', 'Cadenas de Aprobación', 'Cadenas de Aprobación', '/sgi/aprobacion_documentos', '2020-04-10 21:47:00-05', false, '', true),
-	('2', 'Creación de Contratos', 'Creación de Contratos', '/proyectos/contratos', '2020-04-04 16:38:38.600615-05', false, 'Proyectos.view_contrato', true),
-	('3', 'Creación de Tercero', 'Creación de Tercero', '/administracion/terceros', '2020-04-04 16:38:38.600615-05', false, 'Administracion.view_tercero', true),
-	('4', 'Creación de Empresas', 'Creación de Empresas', '/administracion/empresas', '2020-04-04 16:38:38.601613-05', false, 'Administracion.view_empresa', true),
-	('5', 'Creación Entidades CAFE', 'Creación Entidades CAFE', '/talento-humano/entidades-cafe/0/index', '2020-04-04 16:38:38.601613-05', false, 'TalentoHumano.view_entidadcafe', true),
-	('7', 'Creación de SubEmpresa', 'Creación de SubEmpresa', '/administracion/sub-empresas', '2020-04-10 21:47:00-05', false, 'Administracion.view_empresa', true),
-	('6', 'Creación de Colaboradores', 'Creación de Colaboradores', '/talento-humano/colaboradores/contratos/0', '2020-04-04 16:38:38.601613-05', false, 'TalentoHumano.view_colaborador', true),
-	('10', 'Aprobación Directa de Documentos', 'Aprobación Directa de Documentos', '/sgi/solicitudes_aprobacion', '2020-04-10 21:47:00-05', false, '', true),
-	('11', 'Documento Nuevo o Actualizado en SGI', 'Documento Nuevo o Actualizado en SGI', '/sgi/documentos/buscar?texto_busqueda=°', '2020-09-12 02:09:58.004533-05', false, 'SGI.add_archivo', true),
-	('12', 'Solicitud de Aprobación de Proveedor', 'Notificación para avisar que se ha generado una solicitud de aprobación para un proveedor.', '/administracion/proveedor/solicitudes/', '2020-12-11 19:00:00-05', false, 'Administracion.view_proveedor', true),
-	('13', 'Respuesta de solicitudes de aprobación', 'Notificación que le avisa al proveedor que su solicitud ha recibido respuesta', '/administracion/proveedor/perfil', '2020-12-11 19:00:00-05', false, '', true),
-	('14', 'Cierre Reserva Sala de Juntas', 'Notificación del NO cierre de la reserva de la sala de juntas', '/administracion/reservas-sala-juntas/', '2021-07-08 16:00:00-05', false, 'Administracion.view_reserva_sala_juntas', true);
+	('9', 'Solicitudes de Aprobación', 'Solicitudes de Aprobación', '/sgi/solicitudes_aprobacion/detalle', '2020-04-10 21:47:00', true, '', true),
+	('1', 'Bienvenido a EVA', 'Bienvenido a EVA', '/', '2020-04-04 16:38:38', false, '', true),
+	('8', 'Cadenas de Aprobación', 'Cadenas de Aprobación', '/sgi/aprobacion_documentos', '2020-04-10 21:47:00', false, '', true),
+	('2', 'Creación de Contratos', 'Creación de Contratos', '/proyectos/contratos', '2020-04-04 16:38:38.600615', false, 'Proyectos.view_contrato', true),
+	('3', 'Creación de Tercero', 'Creación de Tercero', '/administracion/terceros', '2020-04-04 16:38:38.600615', false, 'Administracion.view_tercero', true),
+	('4', 'Creación de Empresas', 'Creación de Empresas', '/administracion/empresas', '2020-04-04 16:38:38.601613', false, 'Administracion.view_empresa', true),
+	('5', 'Creación Entidades CAFE', 'Creación Entidades CAFE', '/talento-humano/entidades-cafe/0/index', '2020-04-04 16:38:38.601613', false, 'TalentoHumano.view_entidadcafe', true),
+	('7', 'Creación de SubEmpresa', 'Creación de SubEmpresa', '/administracion/sub-empresas', '2020-04-10 21:47:00', false, 'Administracion.view_empresa', true),
+	('6', 'Creación de Colaboradores', 'Creación de Colaboradores', '/talento-humano/colaboradores/contratos/0', '2020-04-04 16:38:38.601613', false, 'TalentoHumano.view_colaborador', true),
+	('10', 'Aprobación Directa de Documentos', 'Aprobación Directa de Documentos', '/sgi/solicitudes_aprobacion', '2020-04-10 21:47:00', false, '', true),
+	('11', 'Documento Nuevo o Actualizado en SGI', 'Documento Nuevo o Actualizado en SGI', '/sgi/documentos/buscar?texto_busqueda=°', '2020-09-12 02:09:58.004533', false, 'SGI.add_archivo', true),
+	('12', 'Solicitud de Aprobación de Proveedor', 'Notificación para avisar que se ha generado una solicitud de aprobación para un proveedor.', '/administracion/proveedor/solicitudes/', '2020-12-11 19:00:00', false, 'Administracion.view_proveedor', true),
+	('13', 'Respuesta de solicitudes de aprobación', 'Notificación que le avisa al proveedor que su solicitud ha recibido respuesta', '/administracion/proveedor/perfil', '2020-12-11 19:00:00', false, '', true),
+	('14', 'Cierre Reserva Sala de Juntas', 'Notificación del NO cierre de la reserva de la sala de juntas', '/administracion/reservas-sala-juntas/', '2021-07-08 16:00:00', false, 'Administracion.view_reserva_sala_juntas', true);
 	
 INSERT INTO Notificaciones_selecciondenotificacionarecibir (
 	id, envio_x_email, estado, evento_desencadenador_id, usuario_id) 
@@ -9306,62 +9306,62 @@ INSERT INTO Notificaciones_selecciondenotificacionarecibir (
 INSERT INTO Notificaciones_textonotificaciondelsistema (
 	id, titulo, mensaje, fecha_creacion, fecha_modificacion, evento_desencadenador_id) 
 	VALUES
-	('1', '¡Bienvenido a EVA!', 'Hola {0}, te damos la bienvenida a EVA, una aplicación desarrollada por Arios Ingeniería S.A.S.', '2020-04-04 16:38:38.60261-05', '2020-04-04 16:38:38.60261-05', '1'),
-	('2', '¡Hay un Contrato nuevo!', 'Se ha creado el contrato {0}, haz clic aquí para verlo.', '2020-04-04 16:38:38.604605-05', '2020-04-04 16:38:38.604605-05', '2'),
-	('3', '¡Hay un Tercero nuevo', 'Se ha creado el tercero {0}, haz clic aquí para verlo.', '2020-04-04 16:38:38.604605-05', '2020-04-04 16:38:38.604605-05', '3'),
-	('4', '¡Hay una Empresa nueva!', 'Se ha creado la empresa {0}, haz clic aquí para verla.', '2020-04-04 16:38:38.604605-05', '2020-04-04 16:38:38.604605-05', '4'),
-	('5', '¡Hay una Entidad CAFE nueva!', 'Se ha creado la entidad CAFE {0}, haz clic aquí para verla.', '2020-04-04 16:38:38.605602-05', '2020-04-04 16:38:38.605602-05', '5'),
-	('6', '¡Hay un Colaborador nuevo!', 'Se ha creado el colaborador {0}, haz clic aquí para verlo.', '2020-04-04 16:38:38.605602-05', '2020-04-04 16:38:38.605602-05', '6'),
-	('7', '¡Hay una Subempresa nueva!', 'Se ha creado la subempresa {0}, haz clic aquí para verla.', '2020-04-04 16:38:38.604605-05', '2020-04-04 16:38:38.604605-05', '7'),
-	('8', 'Solicitud de Proveedor', 'Hay una nueva solicitud de proveedor', '2020-12-11 19:00:00-05', '2020-12-11 19:00:00-05', '12');
+	('1', '¡Bienvenido a EVA!', 'Hola {0}, te damos la bienvenida a EVA, una aplicación desarrollada por Arios Ingeniería S.A.S.', '2020-04-04 16:38:38.60261', '2020-04-04 16:38:38.60261', '1'),
+	('2', '¡Hay un Contrato nuevo!', 'Se ha creado el contrato {0}, haz clic aquí para verlo.', '2020-04-04 16:38:38.604605', '2020-04-04 16:38:38.604605', '2'),
+	('3', '¡Hay un Tercero nuevo', 'Se ha creado el tercero {0}, haz clic aquí para verlo.', '2020-04-04 16:38:38.604605', '2020-04-04 16:38:38.604605', '3'),
+	('4', '¡Hay una Empresa nueva!', 'Se ha creado la empresa {0}, haz clic aquí para verla.', '2020-04-04 16:38:38.604605', '2020-04-04 16:38:38.604605', '4'),
+	('5', '¡Hay una Entidad CAFE nueva!', 'Se ha creado la entidad CAFE {0}, haz clic aquí para verla.', '2020-04-04 16:38:38.605602', '2020-04-04 16:38:38.605602', '5'),
+	('6', '¡Hay un Colaborador nuevo!', 'Se ha creado el colaborador {0}, haz clic aquí para verlo.', '2020-04-04 16:38:38.605602', '2020-04-04 16:38:38.605602', '6'),
+	('7', '¡Hay una Subempresa nueva!', 'Se ha creado la subempresa {0}, haz clic aquí para verla.', '2020-04-04 16:38:38.604605', '2020-04-04 16:38:38.604605', '7'),
+	('8', 'Solicitud de Proveedor', 'Hay una nueva solicitud de proveedor', '2020-12-11 19:00:00', '2020-12-11 19:00:00', '12');
 	
 INSERT INTO Administracion_cargo (
 	id, nombre, estado, empresa_id) 
 	VALUES
-	('1', 'Gerente', 'true', '1'),
-	('2', 'Asesor de Sistemas', 'true', '1'),
-	('3', 'Profesional de Proyectos Eléctricos', 'true', '1'),
-	('4', 'Analista de Datos e Inversiones', 'true', '1'),
-	('5', 'Directora Comercial', 'true', '1'),
-	('6', 'Director de Compras', 'true', '1'),
-	('7', 'Asesor de Calidad', 'true', '1'),
-	('8', 'Profesional Contable', 'true', '1'),
-	('9', 'Director de Diseño', 'true', '1'),
-	('10', 'Directora de Construcción', 'true', '1'),
-	('11', 'Director OPM', 'true', '1'),
-	('13', 'Director Actualización y Desarrollo', 'true', '1'),
-	('15', 'Coordinador SST Y RRHH', 'true', '1'),
-	('17', 'Directora Jurídica', 'true', '1'),
-	('18', 'Subgerente', 'true', '1'),
-	('19', 'Profesional de Sistemas e Informática', 'true', '1'),
-	('21', 'Inspector SST', 'true', '1'),
-	('22', 'Auxiliar de Compras', 'true', '1'),
-	('23', 'Auxiliar Administrativo', 'true', '1'),
-	('24', 'Auxiliar Logístico', 'true', '1'),
-	('25', 'Almacenista', 'true', '1'),
-	('26', 'Auxiliar de Servicios Generales', 'true', '1'),
-	('27', 'Auxiliar de Ingeniería', 'true', '1'),
-	('28', 'Auxiliar Contable', 'true', '1'),
-	('29', 'Auxiliar de Archivo', 'true', '1'),
-	('30', 'Pasante', 'true', '1'),
-	('31', 'Conductor', 'true', '1'),
-	('32', 'Auxiliar de Almacén', 'true', '1'),
-	('33', 'Ayudante', 'true', '1'),
-	('34', 'Núcleo Fortul', 'true', '1'),
-	('35', 'Técnico Electricísta', 'true', '1'),
-	('36', 'Auxiliar de Mantenimiento', 'true', '1'),
-	('37', 'Liniero', 'true', '1'),
-	('38', 'Maestro de Obra', 'true', '1'),
-	('39', 'Oficial de Obra', 'true', '1'),
-	('40', 'Abogado', 'true', '1'),
-	('41', 'Conductor Operario', 'true', '1'),
-	('42', 'Profesional Ambiental', 'true', '1'),
-	('43', 'Profesional de Proyectos Civiles', 'true', '1'),
-	('44', 'Auxiliar de RRHH - Inspector SST', 'true', '1'),
-	('45', 'Director de Mantenimiento', 'true', '1'),
-	('46', 'Técnico de Sistemas e Informática', 'true', '1'),
-	('47', 'Profesional de Actualización y Desarrollo', 'true', '1'),
-	('48', 'Profesional de Arquitectura', 'true', '1');
+	('1', 'Gerente', true, '1'),
+	('2', 'Asesor de Sistemas', true, '1'),
+	('3', 'Profesional de Proyectos Eléctricos', true, '1'),
+	('4', 'Analista de Datos e Inversiones', true, '1'),
+	('5', 'Directora Comercial', true, '1'),
+	('6', 'Director de Compras', true, '1'),
+	('7', 'Asesor de Calidad', true, '1'),
+	('8', 'Profesional Contable', true, '1'),
+	('9', 'Director de Diseño', true, '1'),
+	('10', 'Directora de Construcción', true, '1'),
+	('11', 'Director OPM', true, '1'),
+	('13', 'Director Actualización y Desarrollo', true, '1'),
+	('15', 'Coordinador SST Y RRHH', true, '1'),
+	('17', 'Directora Jurídica', true, '1'),
+	('18', 'Subgerente', true, '1'),
+	('19', 'Profesional de Sistemas e Informática', true, '1'),
+	('21', 'Inspector SST', true, '1'),
+	('22', 'Auxiliar de Compras', true, '1'),
+	('23', 'Auxiliar Administrativo', true, '1'),
+	('24', 'Auxiliar Logístico', true, '1'),
+	('25', 'Almacenista', true, '1'),
+	('26', 'Auxiliar de Servicios Generales', true, '1'),
+	('27', 'Auxiliar de Ingeniería', true, '1'),
+	('28', 'Auxiliar Contable', true, '1'),
+	('29', 'Auxiliar de Archivo', true, '1'),
+	('30', 'Pasante', true, '1'),
+	('31', 'Conductor', true, '1'),
+	('32', 'Auxiliar de Almacén', true, '1'),
+	('33', 'Ayudante', true, '1'),
+	('34', 'Núcleo Fortul', true, '1'),
+	('35', 'Técnico Electricísta', true, '1'),
+	('36', 'Auxiliar de Mantenimiento', true, '1'),
+	('37', 'Liniero', true, '1'),
+	('38', 'Maestro de Obra', true, '1'),
+	('39', 'Oficial de Obra', true, '1'),
+	('40', 'Abogado', true, '1'),
+	('41', 'Conductor Operario', true, '1'),
+	('42', 'Profesional Ambiental', true, '1'),
+	('43', 'Profesional de Proyectos Civiles', true, '1'),
+	('44', 'Auxiliar de RRHH - Inspector SST', true, '1'),
+	('45', 'Director de Mantenimiento', true, '1'),
+	('46', 'Técnico de Sistemas e Informática', true, '1'),
+	('47', 'Profesional de Actualización y Desarrollo', true, '1'),
+	('48', 'Profesional de Arquitectura', true, '1');
 	
 INSERT INTO Administracion_proceso (
 	id, nombre, sigla, objeto, empresa_id) 
@@ -10327,9 +10327,9 @@ INSERT INTO Financiero_subtipomovimiento (
 INSERT INTO Notificaciones_tiponotificacion (
 	id, nombre, descripcion, fecha_creacion, estado) 
 	VALUES
-	('1', 'Evento del Sistema', 'Tipo de notificación que se genera con eventos del sistema', '2020-04-04 16:38:38.606599-05', true),
-	('2', 'Obligatoria', 'Tipo de notificación que crea el administrador y que la establece de tipo obligatoria', '2020-04-04 16:38:38.607597-05', true),
-	('3', 'Informativa', 'Tipo de notificación informativa', '2020-04-04 16:38:38.607597-05', true);
+	('1', 'Evento del Sistema', 'Tipo de notificación que se genera con eventos del sistema', '2020-04-04 16:38:38.606599', true),
+	('2', 'Obligatoria', 'Tipo de notificación que crea el administrador y que la establece de tipo obligatoria', '2020-04-04 16:38:38.607597', true),
+	('3', 'Informativa', 'Tipo de notificación informativa', '2020-04-04 16:38:38.607597', true);
 	
 INSERT INTO Proyectos_tipogarantia (
 	id, nombre, descripcion, aplica_valor_smmlv, aplica_amparos) 
@@ -10542,4 +10542,4 @@ INSERT INTO TalentoHumano_tipopermiso (
 INSERT INTO TalentoHumano_colaborador (
 	id, identificacion, fecha_expedicion, fecha_nacimiento, telefono, fecha_creacion, fecha_modificacion, genero, direccion, talla_camisa, talla_pantalon, talla_zapatos, fecha_ingreso, fecha_examen, salario, estado, foto_perfil, grupo_sanguineo, nombre_contacto, parentesco, telefono_contacto, afp_id, arl_id, arl_nivel_id, caja_compensacion_id, cargo_id, cesantias_id, empresa_id, empresa_sesion_id, eps_id, jefe_inmediato_id, lugar_nacimiento_id, proceso_id, rango_id, tipo_contrato_id, tipo_identificacion_id, usuario_id, usuario_actualiza_id, usuario_crea_id) 
 	VALUES 
-	('1', '1000000000', '2018-01-01 00:00:00-05', '2000-01-01 00:00:00-05', '3100000000', '2022-02-10 00:00:00-05', '2022-02-10 00:00:00-05', 'M', 'KR 10 # 10-20', 'M', '32', '39', '2022-02-01', '2022-02-05', '3000000', true, 'publico/foto_perfil/Login.png', 'O+', 'Colaborador', 'Trabajo', '3110000000', '17', '5', '1', '3', '19', '5', '1', '1', '1', null, '11001000', '1', '1', '4', '1', '1', '1', '1');
+	('1', '1000000000', '2018-01-01 00:00:00', '2000-01-01 00:00:00', '3100000000', '2022-02-10 00:00:00', '2022-02-10 00:00:00', 'M', 'KR 10 # 10-20', 'M', '32', '39', '2022-02-01', '2022-02-05', '3000000', true, 'publico/foto_perfil/Login.png', 'O+', 'Colaborador', 'Trabajo', '3110000000', '17', '5', '1', '3', '19', '5', '1', '1', '1', null, '11001000', '1', '1', '4', '1', '1', '1', '1');
