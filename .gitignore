@@ -80,7 +80,6 @@ cover/
 *.pyc
 /media/
 /staticfiles/
-local_settings.py
 
 # If you are using SQLite
 *.sqlite3
