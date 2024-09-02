@@ -17,7 +17,10 @@ IS_DEPLOYED = os.getenv("IS_DEPLOYED", "False") == "True"
 DATABASE_SELECTOR = os.getenv("DATABASE_SELECTOR", "postgresql")
 
 # Si DATABASE_SELECTOR no es 'postgresql' o 'mysql', se establece en 'postgresql'
-DATABASE_SELECTOR != "postgresql" and DATABASE_SELECTOR != "mysql" = "postgresql"
+if DATABASE_SELECTOR != "postgresql" and DATABASE_SELECTOR != "mysql":
+    DATABASE_SELECTOR = "postgresql"
+else:
+    pass # No hacer nada si DATABASE_SELECTOR es 'postgresql' o 'mysql'
 
 # Configuración de la base de datos
 if DATABASE_SELECTOR == "postgresql":
@@ -43,7 +46,7 @@ elif DATABASE_SELECTOR == "mysql":
         DATABASE_DICT = dj_database_url.config(default=os.getenv("MYSQL_DATABASE_URL"))
     else:
         DATABASE_DICT = {
-            "ENGINE": "django.db.backends.mysql_pymysql",
+            "ENGINE": "django.db.backends.mysql",
             "NAME": os.getenv("MYSQL_DB_NAME", "mysql"),
             "USER": os.getenv("MYSQL_DB_USER", "root"),
             "PASSWORD": os.getenv("MYSQL_DB_PASSWORD", ""),
