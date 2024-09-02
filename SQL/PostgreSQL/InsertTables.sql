@@ -9206,7 +9206,7 @@ INSERT INTO public."Administracion_tipotercero" (
 INSERT INTO public."Administracion_empresa" (
     id, nombre, nit, digito_verificacion, logo, estado, subempresa, tipo_persona, codigo_postal, direccion, empresa_ppal_id, municipio_id, regimen_fiscal) 
     VALUES 
-    (1, 'ARIOS Ingeniería S.A.S', '900411640', 2, 'https://media-storage.s3.amazonaws.com/media/publico/logos-empresas/LogoArios10.png', true, false, 1, '810001', 'Edificio Arauaca Centro', null, 81001, 48);
+    (1, 'ARIOS Ingeniería S.A.S', '900411640', 2, 'publico/logos-empresas/LogoArios10.png', true, false, 1, '810001', 'Edificio Arauaca Centro', null, 81001, 48);
 
 INSERT INTO public."Administracion_tercero" (
     nombre, identificacion, estado, fecha_creacion, fecha_modificacion, direccion, telefono, fax, centro_poblado_id, empresa_id, tipo_identificacion_id, tipo_tercero_id, tipo_persona, es_vigente) 
@@ -9290,7 +9290,7 @@ INSERT INTO public."Notificaciones_eventodesencadenador" (
 	id, nombre, descripcion, ruta, fecha_creacion, modal, permiso, estado) 
 	VALUES
 	('9', 'Solicitudes de Aprobación', 'Solicitudes de Aprobación', '/sgi/solicitudes_aprobacion/detalle', '2020-04-10 21:47:00-05', true, '', true),
-	('1', 'Bienvenido a Eva', 'Bienvenido a Eva', '/', '2020-04-04 16:38:38.599618-05', false, '', true),
+	('1', 'Bienvenido a EVA', 'Bienvenido a EVA', '/', '2020-04-04 16:38:38.599618-05', false, '', true),
 	('8', 'Cadenas de Aprobación', 'Cadenas de Aprobación', '/sgi/aprobacion_documentos', '2020-04-10 21:47:00-05', false, '', true),
 	('2', 'Creación de Contratos', 'Creación de Contratos', '/proyectos/contratos', '2020-04-04 16:38:38.600615-05', false, 'Proyectos.view_contrato', true),
 	('3', 'Creación de Tercero', 'Creación de Tercero', '/administracion/terceros', '2020-04-04 16:38:38.600615-05', false, 'Administracion.view_tercero', true),
@@ -10548,4 +10548,4 @@ INSERT INTO public."TalentoHumano_tipopermiso" (
 INSERT INTO public."TalentoHumano_colaborador" (
 	id, identificacion, fecha_expedicion, fecha_nacimiento, telefono, fecha_creacion, fecha_modificacion, genero, direccion, talla_camisa, talla_pantalon, talla_zapatos, fecha_ingreso, fecha_examen, salario, estado, foto_perfil, grupo_sanguineo, nombre_contacto, parentesco, telefono_contacto, afp_id, arl_id, arl_nivel_id, caja_compensacion_id, cargo_id, cesantias_id, empresa_id, empresa_sesion_id, eps_id, jefe_inmediato_id, lugar_nacimiento_id, proceso_id, rango_id, tipo_contrato_id, tipo_identificacion_id, usuario_id, usuario_actualiza_id, usuario_crea_id) 
 	VALUES 
-	('1', '1000000000', '2018-01-01 00:00:00-05', '2000-01-01 00:00:00-05', '3100000000', '2022-02-10 00:00:00-05', '2022-02-10 00:00:00-05', 'M', 'KR 10 # 10-20', 'M', '32', '39', '2022-02-01', '2022-02-05', '3000000', true, 'https://media-storage.s3.amazonaws.com/media/publico/foto_perfil/Login.png', 'O+', 'Colaborador', 'Trabajo', '3110000000', '17', '5', '1', '3', '19', '5', '1', '1', '1', null, '11001000', '1', '1', '4', '1', '1', '1', '1');
+	('1', '1000000000', '2018-01-01 00:00:00-05', '2000-01-01 00:00:00-05', '3100000000', '2022-02-10 00:00:00-05', '2022-02-10 00:00:00-05', 'M', 'KR 10 # 10-20', 'M', '32', '39', '2022-02-01', '2022-02-05', '3000000', true, 'publico/foto_perfil/Login.png', 'O+', 'Colaborador', 'Trabajo', '3110000000', '17', '5', '1', '3', '19', '5', '1', '1', '1', null, '11001000', '1', '1', '4', '1', '1', '1', '1');

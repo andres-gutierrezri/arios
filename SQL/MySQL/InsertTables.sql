@@ -1,21 +1,16 @@
 -- INSERTAR DATOS EN LAS TABLAS
 
 -- SELECCIONAR BASE DE DATOS
-\! cls
-\! SET PGCLIENTENCODING=utf-8;
-\! chcp 65001
-\connect "EVA"
-SHOW server_encoding;
-SET client_encoding TO 'UTF8';
-SHOW client_encoding;
+USE railway;
+SET NAMES utf8;
 
 -- INSERTAR VALORES
-INSERT INTO public."Administracion_pais" (
+INSERT INTO Administracion_pais (
 	id, nombre, codigo_letras)
     VALUES 
     (57, 'Colombia', 'CO');
 
-INSERT INTO public."Administracion_departamento" (
+INSERT INTO Administracion_departamento (
 	id, nombre, codigo_letras, pais_id)
     VALUES 
     (05,'ANTIOQUIA',NULL,57),
@@ -52,7 +47,7 @@ INSERT INTO public."Administracion_departamento" (
     (97,'VAUPÉS',NULL,57),
     (99,'VICHADA',NULL,57);
 
-INSERT INTO public."Administracion_municipio" (
+INSERT INTO Administracion_municipio (
 	id, nombre, codigo_letras, departamento_id)
 	VALUES 
     (05001,'MEDELLÍN',NULL,05),
@@ -1178,7 +1173,7 @@ INSERT INTO public."Administracion_municipio" (
     (99624,'SANTA ROSALÍA',NULL,99),
     (99773,'CUMARIBO',NULL,99);
 
-INSERT INTO public."Administracion_centropoblado" (
+INSERT INTO Administracion_centropoblado (
     id, nombre, codigo_letras, municipio_id) 
     VALUES 
     (05001000,'MEDELLÍN',NULL,05001),
@@ -9153,7 +9148,7 @@ INSERT INTO public."Administracion_centropoblado" (
     (99773026,'MATSULDANI',NULL,99773),
     (99773027,'REMANSO',NULL,99773);
 
-INSERT INTO public."Administracion_tipocontrato" (
+INSERT INTO Administracion_tipocontrato (
 	id, nombre, descripcion, estado, laboral, sigla, tiene_fecha_fin, porcentaje_aiu) 
     VALUES 
     ('1', 'Obra', 'Contrato de obra', true, false, 'CO', true, true),
@@ -9175,16 +9170,16 @@ INSERT INTO public."Administracion_tipocontrato" (
 	('22', 'Alquiler de equipos', 'Contrato para prestar el servicio de alquiler de un equipos a un cliente.', true, false, 'AE', true, false),
 	('23', 'Pasantía', 'Contrato de pasantía', 'true', true, 'CP', true, false);
 
-INSERT INTO public."TalentoHumano_tipoentidadescafe" (
+INSERT INTO TalentoHumano_tipoentidadescafe (
 	id, nombre, estado) 
 	VALUES
 	('1', 'ARL', true),
 	('2', 'EPS', true),
 	('3', 'CCF', true),
 	('4', 'AFP', true),
-    ('5', 'AFC', true);
+	('5', 'AFC', true);
 
-INSERT INTO public."Administracion_tipoidentificacion" (
+INSERT INTO Administracion_tipoidentificacion (
 	id, nombre, sigla, estado) 
 	VALUES
 	('1', 'Cédula de Ciudadania', 'CC', true),
@@ -9194,7 +9189,7 @@ INSERT INTO public."Administracion_tipoidentificacion" (
 	('5', 'Permiso Especial de Permanencia', 'PEP', true),
 	('7', 'DNI', 'DNI', true);
 
-INSERT INTO public."Administracion_tipotercero" (
+INSERT INTO Administracion_tipotercero (
 	id, nombre, descripcion, estado) 
 	VALUES
 	('1', 'Cliente', 'Cliente', true),
@@ -9203,17 +9198,16 @@ INSERT INTO public."Administracion_tipotercero" (
 	('4', 'Supervisor', 'Supervisor de obras', true),
 	('8', 'Interventor', 'Interventor de obras', true);
 
-INSERT INTO public."Administracion_empresa" (
+INSERT INTO Administracion_empresa (
     id, nombre, nit, digito_verificacion, logo, estado, subempresa, tipo_persona, codigo_postal, direccion, empresa_ppal_id, municipio_id, regimen_fiscal) 
     VALUES 
     (1, 'ARIOS Ingeniería S.A.S', '900411640', 2, 'publico/logos-empresas/LogoArios10.png', true, false, 1, '810001', 'Edificio Arauaca Centro', null, 81001, 48);
 
-INSERT INTO public."Administracion_tercero" (
-    nombre, identificacion, estado, fecha_creacion, fecha_modificacion, direccion, telefono, fax, centro_poblado_id, empresa_id, tipo_identificacion_id, tipo_tercero_id, tipo_persona, es_vigente) 
+INSERT INTO Administracion_tercero (nombre, identificacion, estado, fecha_creacion, fecha_modificacion, direccion, telefono, fax, centro_poblado_id, empresa_id, tipo_identificacion_id, tipo_tercero_id, tipo_persona, es_vigente) 
     VALUES 
     ('ARIOS Ingeniería S.A.S', '900411640-2', true, '2020-04-04', '2020-04-04', 'Calle 16 No 20 - 56 Edificio Arauca Centro - Oficina 305', '8852933', '8852933', 81001000, 1, 3, 1, 1, true);
 
-INSERT INTO public."Administracion_tipodocumento" (
+INSERT INTO Administracion_tipodocumento (
     id, nombre, descripcion, estado) 
     VALUES
 	('1', 'Factura', 'Facturas de venta', true),
@@ -9227,7 +9221,7 @@ INSERT INTO public."Administracion_tipodocumento" (
 	('9', 'Consecutivo de Clientes', 'Consecutivo de Clientes', true),
 	('10', 'Consecutivo de Reuniones', 'Consecutivos de Actas de Reuniones', true);
 
-INSERT INTO public."Administracion_tipodocumentotercero" (
+INSERT INTO Administracion_tipodocumentotercero (
 	id, nombre, aplica_natural, aplica_juridica, obligatorio) 
 	VALUES
 	('1', 'Documento de Identidad', true, false, true),
@@ -9242,16 +9236,16 @@ INSERT INTO public."Administracion_tipodocumentotercero" (
 	('10', 'Constancia de Certificación de ARL con el % de Avance del SGSST - Resolución 312-2019', false, true, true),
 	('11', 'Certificado Registro Mercantil', true, false, false),
 	('12', 'Hoja de Vida', true, false, false);
-
-INSERT INTO public."Administracion_unidadmedida" (
+	
+INSERT INTO Administracion_unidadmedida (
 	id, nombre, sigla, estado, admite_decimales) 
 	VALUES
 	('94', 'Unidad', 'und', true, false),
 	('HUR', 'Hora', 'hora', true, true),
 	('MTQ', 'Metro cúbico', 'm3', true, true),
 	('PR', 'Par', 'par', true, false);
-
-INSERT INTO public."TalentoHumano_entidadescafe" (
+	
+INSERT INTO TalentoHumano_entidadescafe (
 	id, nombre, direccion, nombre_contacto, telefono_contacto, correo, direccion_web, tipo_entidad_id) 
 	VALUES
 	('1', 'EPS Sanitas', '', '', '0', '', 'https://www.epssanitas.com/', '2'),
@@ -9278,19 +9272,19 @@ INSERT INTO public."TalentoHumano_entidadescafe" (
 	('22', 'Comfama', 'Medellin', 'Comfama', '01 8000 415 455', 'notificacionesjudiciales@comfama.com.co', 'https://www.comfama.com/', '3'),
 	('23', 'No Aplica', '', '', '0', '', '', '4');
 
-INSERT INTO public."SGI_estadoarchivo" (
+INSERT INTO SGI_estadoarchivo (
 	id, nombre, descripcion) 
 	VALUES
 	('1', 'PENDIENTE', 'Archivo que se encuentra en proceso de aprobación'),
 	('2', 'APROBADO', 'Archivo que está disponible para ser visto, y solo puede haber uno en este estado por documento'),
 	('3', 'OBSOLETO', 'Archivo que ya no está disponible para ser visto  porque es una versión desactualizada del documento'),
 	('4', 'RECHAZADO', 'Archivo que fue rechazado por un usuario en la cadena de aprobación');
-
-INSERT INTO public."Notificaciones_eventodesencadenador" (
+	
+INSERT INTO Notificaciones_eventodesencadenador (
 	id, nombre, descripcion, ruta, fecha_creacion, modal, permiso, estado) 
 	VALUES
 	('9', 'Solicitudes de Aprobación', 'Solicitudes de Aprobación', '/sgi/solicitudes_aprobacion/detalle', '2020-04-10 21:47:00-05', true, '', true),
-	('1', 'Bienvenido a Eva', 'Bienvenido a Eva', '/', '2020-04-04 16:38:38.599618-05', false, '', true),
+	('1', 'Bienvenido a EVA', 'Bienvenido a EVA', '/', '2020-04-04 16:38:38.599618-05', false, '', true),
 	('8', 'Cadenas de Aprobación', 'Cadenas de Aprobación', '/sgi/aprobacion_documentos', '2020-04-10 21:47:00-05', false, '', true),
 	('2', 'Creación de Contratos', 'Creación de Contratos', '/proyectos/contratos', '2020-04-04 16:38:38.600615-05', false, 'Proyectos.view_contrato', true),
 	('3', 'Creación de Tercero', 'Creación de Tercero', '/administracion/terceros', '2020-04-04 16:38:38.600615-05', false, 'Administracion.view_tercero', true),
@@ -9302,14 +9296,14 @@ INSERT INTO public."Notificaciones_eventodesencadenador" (
 	('11', 'Documento Nuevo o Actualizado en SGI', 'Documento Nuevo o Actualizado en SGI', '/sgi/documentos/buscar?texto_busqueda=°', '2020-09-12 02:09:58.004533-05', false, 'SGI.add_archivo', true),
 	('12', 'Solicitud de Aprobación de Proveedor', 'Notificación para avisar que se ha generado una solicitud de aprobación para un proveedor.', '/administracion/proveedor/solicitudes/', '2020-12-11 19:00:00-05', false, 'Administracion.view_proveedor', true),
 	('13', 'Respuesta de solicitudes de aprobación', 'Notificación que le avisa al proveedor que su solicitud ha recibido respuesta', '/administracion/proveedor/perfil', '2020-12-11 19:00:00-05', false, '', true),
-    ('14', 'Cierre Reserva Sala de Juntas', 'Notificación del NO cierre de la reserva de la sala de juntas', '/administracion/reservas-sala-juntas/', '2021-07-08 16:00:00-05', false, 'Administracion.view_reserva_sala_juntas', true);
-
-INSERT INTO public."Notificaciones_selecciondenotificacionarecibir" (
+	('14', 'Cierre Reserva Sala de Juntas', 'Notificación del NO cierre de la reserva de la sala de juntas', '/administracion/reservas-sala-juntas/', '2021-07-08 16:00:00-05', false, 'Administracion.view_reserva_sala_juntas', true);
+	
+INSERT INTO Notificaciones_selecciondenotificacionarecibir (
 	id, envio_x_email, estado, evento_desencadenador_id, usuario_id) 
 	VALUES 
 	('1', true, true, '14', '1');
 
-INSERT INTO public."Notificaciones_textonotificaciondelsistema" (
+INSERT INTO Notificaciones_textonotificaciondelsistema (
 	id, titulo, mensaje, fecha_creacion, fecha_modificacion, evento_desencadenador_id) 
 	VALUES
 	('1', '¡Bienvenido a EVA!', 'Hola {0}, te damos la bienvenida a EVA, una aplicación desarrollada por Arios Ingeniería S.A.S.', '2020-04-04 16:38:38.60261-05', '2020-04-04 16:38:38.60261-05', '1'),
@@ -9320,8 +9314,8 @@ INSERT INTO public."Notificaciones_textonotificaciondelsistema" (
 	('6', '¡Hay un Colaborador nuevo!', 'Se ha creado el colaborador {0}, haz clic aquí para verlo.', '2020-04-04 16:38:38.605602-05', '2020-04-04 16:38:38.605602-05', '6'),
 	('7', '¡Hay una Subempresa nueva!', 'Se ha creado la subempresa {0}, haz clic aquí para verla.', '2020-04-04 16:38:38.604605-05', '2020-04-04 16:38:38.604605-05', '7'),
 	('8', 'Solicitud de Proveedor', 'Hay una nueva solicitud de proveedor', '2020-12-11 19:00:00-05', '2020-12-11 19:00:00-05', '12');
-
-INSERT INTO public."Administracion_cargo" (
+	
+INSERT INTO Administracion_cargo (
 	id, nombre, estado, empresa_id) 
 	VALUES
 	('1', 'Gerente', 'true', '1'),
@@ -9368,8 +9362,8 @@ INSERT INTO public."Administracion_cargo" (
 	('46', 'Técnico de Sistemas e Informática', 'true', '1'),
 	('47', 'Profesional de Actualización y Desarrollo', 'true', '1'),
 	('48', 'Profesional de Arquitectura', 'true', '1');
-
-INSERT INTO public."Administracion_proceso" (
+	
+INSERT INTO Administracion_proceso (
 	id, nombre, sigla, objeto, empresa_id) 
 	VALUES
 	('1', 'Actualización y Desarrollo', 'AYD', 'Objeto de actualización y desarrollo', '1'),
@@ -9386,8 +9380,8 @@ INSERT INTO public."Administracion_proceso" (
 	('12', 'Recursos Humanos', 'RRHH', 'Recursos Humanos', '1'),
 	('13', 'Gerencia', 'GER', 'Gerencia', '1'),
 	('14', 'Jurídica', 'JUR', 'Jurídica', '1');
-
-INSERT INTO public."Administracion_productoservicio" (
+	
+INSERT INTO Administracion_productoservicio (
 	id, nombre, descripcion, es_servicio) 
 	VALUES
 	('1', 'Materiales Eléctricos', 'Materiales Eléctricos', false),
@@ -9430,15 +9424,15 @@ INSERT INTO public."Administracion_productoservicio" (
 	('38', 'Suministro de agua y hielo', 'Suministro de agua y hielo', true),
 	('39', 'Estaciones de Servicio', 'Estaciones de Servicio', true),
 	('40', 'Administración', 'Administración', true);
-
-INSERT INTO public."Administracion_rango" (
+	
+INSERT INTO Administracion_rango (
 	id, nombre, estado, descripcion, empresa_id) 
 	VALUES
 	('1', 'I', true, 'Rango 1', '1'),
 	('2', 'II', true, 'Rango 2', '1'),
 	('3', 'III', true, 'Rango 2', '1');
-
-INSERT INTO public."Administracion_subproductosubservicio" (
+	
+INSERT INTO Administracion_subproductosubservicio (
 	id, nombre, descripcion, producto_servicio_id) 
 	VALUES
 	('1', 'Materiales Eléctricos Varios', 'Materiales Eléctricos Varios', '1'),
@@ -9568,8 +9562,8 @@ INSERT INTO public."Administracion_subproductosubservicio" (
 	('126', 'Varios', 'Varios', '38'),
 	('127', 'Combustible', 'Combustible', '39'),
 	('128', 'Auxiliar Administrativo', 'Auxiliar Administrativo', '40');
-
-INSERT INTO public."Financiero_actividadeconomica" (
+	
+INSERT INTO Financiero_actividadeconomica (
 	id, nombre, codigo_ciiu) 
 	VALUES
 	('10', 'Asalariados', '0010'),
@@ -10073,8 +10067,8 @@ INSERT INTO public."Financiero_actividadeconomica" (
 	('9810', 'Actividades no diferenciadas de los hogares individuales como productores de bienes para uso propio', '9810'),
 	('9820', 'Actividades no diferenciadas de los hogares individuales como productores de servicios para uso propio', '9820'),
 	('9900', 'Actividades de organizaciones y entidades extraterritoriales', '9900');
-
-INSERT INTO public."Financiero_categoriamovimiento" (
+	
+INSERT INTO Financiero_categoriamovimiento (
 	id, nombre, descripcion, estado) 
 	VALUES
 	('2', 'Personal Administrativo', 'Personal Administrativo', true),
@@ -10099,8 +10093,8 @@ INSERT INTO public."Financiero_categoriamovimiento" (
 	('22', 'Gastos Publicitarios', 'Gastos Publicitarios', true),
 	('23', 'Elementos Covid-19', 'Elementos Covid-19', true),
 	('24', 'Incentivos a Empleados', 'Incentivos a Empleados', true);
-
-INSERT INTO public."Financiero_entidadbancaria" (
+	
+INSERT INTO Financiero_entidadbancaria (
 	id, nombre, codigo_banco) 
 	VALUES
 	('1', 'BANCO DE BOGOTA', '1001'),
@@ -10143,8 +10137,8 @@ INSERT INTO public."Financiero_entidadbancaria" (
 	('38', 'DAVIPLATA', '1551'),
 	('39', 'BANCO CREDIFINANCIERA SA.', '1558'),
 	('40', 'BBVA ESPAÑA', 'ES1013');
-
-INSERT INTO public."Financiero_estadofcdetalle" (
+	
+INSERT INTO Financiero_estadofcdetalle (
 	id, nombre, descripcion) 
 	VALUES
 	('1', 'Vigente', 'Vigente'),
@@ -10152,21 +10146,21 @@ INSERT INTO public."Financiero_estadofcdetalle" (
 	('3', 'Obsoleto', 'Obsoleto'),
 	('4', 'Eliminado', 'Eliminado'),
 	('5', 'Aplicado', 'Aplicado');
-
-INSERT INTO public."Financiero_estadoflujocaja" (
+	
+INSERT INTO Financiero_estadoflujocaja (
 	id, nombre, descripcion) 
 	VALUES
 	('1', 'Alimentación', 'Alimentación'),
 	('2', 'Ejecución', 'Ejecución');
-
-INSERT INTO public."Financiero_tipomovimiento" (
+	
+INSERT INTO Financiero_tipomovimiento (
 	id, nombre, descripcion) 
 	VALUES
 	('1', 'Costos', 'Salida de dinero que se utiliza en aspectos directamente vinculados con la producción de bienes o servicios.'),
 	('2', 'Gastos', 'Salida de dinero que se utiliza es aspectos operativos de la empresa que no tienen vínculo directo con la producción de bienes o servicios.'),
 	('3', 'Ingresos', 'Anticipos, actas parciales u otros.');
-
-INSERT INTO public."Financiero_subtipomovimiento" (
+	
+INSERT INTO Financiero_subtipomovimiento (
 	id, nombre, descripcion, protegido, estado, solo_contrato, solo_proceso, categoria_movimiento_id, tipo_movimiento_id) 
 	VALUES
 	('21', 'Honorarios Generales', 'Honorarios Generales', false, true, false, false, '4', '2'),
@@ -10329,15 +10323,15 @@ INSERT INTO public."Financiero_subtipomovimiento" (
 	('164', 'Actividades Recreativas', 'Actividades Recreativas', false, true, false, false, '24', '2'),
 	('165', 'Incentivos a Empleados', 'Incentivos a Empleados', false, true, false, false, '24', '2'),
 	('166', 'Fechas Especiales', 'Fechas Especiales', false, true, false, false, '24', '2');
-
-INSERT INTO public."Notificaciones_tiponotificacion" (
+	
+INSERT INTO Notificaciones_tiponotificacion (
 	id, nombre, descripcion, fecha_creacion, estado) 
 	VALUES
 	('1', 'Evento del Sistema', 'Tipo de notificación que se genera con eventos del sistema', '2020-04-04 16:38:38.606599-05', true),
 	('2', 'Obligatoria', 'Tipo de notificación que crea el administrador y que la establece de tipo obligatoria', '2020-04-04 16:38:38.607597-05', true),
 	('3', 'Informativa', 'Tipo de notificación informativa', '2020-04-04 16:38:38.607597-05', true);
-
-INSERT INTO public."Proyectos_tipogarantia" (
+	
+INSERT INTO Proyectos_tipogarantia (
 	id, nombre, descripcion, aplica_valor_smmlv, aplica_amparos) 
 	VALUES
 	('1', 'Garantía de cumplimiento', 'Garantía de Cumplimiento', false, false),
@@ -10351,8 +10345,8 @@ INSERT INTO public."Proyectos_tipogarantia" (
 	('9', 'Calidad del servicio', 'Calidad del servicio', false, false),
 	('10', 'Responsabilidad civil extracontractual (Amparo)', 'Responsabilidad civil extracontractual', true, true),
 	('11', 'Responsabilidad civil extracontractual', 'Responsabilidad civil extracontractual', true, false);
-
-INSERT INTO public."SGI_grupodocumento" (
+	
+INSERT INTO SGI_grupodocumento (
 	id, nombre, descripcion, estado, es_general, empresa_id) 
 	VALUES
 	('1', 'Caracterización', 'Caracterización', true, false, '1'),
@@ -10363,15 +10357,15 @@ INSERT INTO public."SGI_grupodocumento" (
 	('6', 'Guías', 'Guías', true, false, '1'),
 	('7', 'Manuales de Funciones', 'Manuales de Funciones', true, false, '1'),
 	('8', 'Documentos', 'Politicas', true, true, '1');
-
-INSERT INTO public."SGI_gruposdocumentosprocesos" (
+	
+INSERT INTO SGI_gruposdocumentosprocesos (
 	id, grupo_documento_id, proceso_id) 
 	VALUES
 	('2', '7', '12'),
 	('3', '5', '3'),
 	('4', '8', '13');
 
-INSERT INTO public."auth_group" (
+INSERT INTO auth_group (
 	id, name) 
 	VALUES
 	('1', 'SGI Completo'),
@@ -10383,8 +10377,8 @@ INSERT INTO public."auth_group" (
 	('10', 'Usuario Especial para Flujos de Caja'),
 	('11', 'Ver Proveedores'),
 	('12', 'Gestión de Proveedores');
-
-INSERT INTO public."auth_group_permissions" (
+	
+INSERT INTO auth_group_permissions (
 	id, group_id, permission_id) 
 	VALUES
 	('1', '1', '130'),
@@ -10494,8 +10488,8 @@ INSERT INTO public."auth_group_permissions" (
 	('132', '12', '293'),
 	('133', '12', '105'),
 	('134', '5', '109');
-
-INSERT INTO public."Administracion_permisosfuncionalidad" (
+	
+INSERT INTO Administracion_permisosfuncionalidad (
 	id, nombre, descripcion, estado, solo_admin, content_type_id, grupo_id) 
 	VALUES
 	('1', 'Terceros', 'Para la gestión de clientes y proveedrores.', true, false, '11', null),
@@ -10520,7 +10514,7 @@ INSERT INTO public."Administracion_permisosfuncionalidad" (
 	('22', 'Gestión de Proveedores', 'Permiso para ver proveedores y gestionar solicitudes de aprobación.', true, false, null, '12'),
 	('23', 'Consecutivos de Reuniones', 'Consecutivos de Actas de Reuniones', true, false, '83', null);
 
-INSERT INTO public."TalentoHumano_nivelriesgoarl" (
+INSERT INTO TalentoHumano_nivelriesgoarl (
 	id, nombre, estado) 
 	VALUES 
 	('1', 'Clase I (Riesgo mínimo)', true),
@@ -10528,13 +10522,13 @@ INSERT INTO public."TalentoHumano_nivelriesgoarl" (
 	('3', 'Clase III (Riesgo medio)', true),
 	('4', 'Clase IV (Riesgo alto)', true),
 	('5', 'Clase V (Riesgo máximo)', true);
-
-INSERT INTO public."Administracion_parametro" (
+	
+INSERT INTO Administracion_parametro (
 	id, nombre, descripcion, tipo, valor, estado, grupo, subgrupo, empresa_id) 
 	VALUES 
 	('1', 'HOLGURA', 'Cuando se finalice una reunión en la sala de juntas, se dispone de un intervalo de tiempo para iniciar la próxima reunión que se encuentre programada', 'NUMERICO', '15', true, 'ADMINISTRACION', 'SALA_JUNTAS', NULL);
-
-INSERT INTO public."TalentoHumano_tipopermiso" (
+	
+INSERT INTO TalentoHumano_tipopermiso (
 	id, nombre, estado) 
 	VALUES 
 	('1', 'Enfermedad', true),
@@ -10545,7 +10539,7 @@ INSERT INTO public."TalentoHumano_tipopermiso" (
 	('6', 'Cita médica', true),
 	('7', 'Otro', true);
 
-INSERT INTO public."TalentoHumano_colaborador" (
+INSERT INTO TalentoHumano_colaborador (
 	id, identificacion, fecha_expedicion, fecha_nacimiento, telefono, fecha_creacion, fecha_modificacion, genero, direccion, talla_camisa, talla_pantalon, talla_zapatos, fecha_ingreso, fecha_examen, salario, estado, foto_perfil, grupo_sanguineo, nombre_contacto, parentesco, telefono_contacto, afp_id, arl_id, arl_nivel_id, caja_compensacion_id, cargo_id, cesantias_id, empresa_id, empresa_sesion_id, eps_id, jefe_inmediato_id, lugar_nacimiento_id, proceso_id, rango_id, tipo_contrato_id, tipo_identificacion_id, usuario_id, usuario_actualiza_id, usuario_crea_id) 
 	VALUES 
 	('1', '1000000000', '2018-01-01 00:00:00-05', '2000-01-01 00:00:00-05', '3100000000', '2022-02-10 00:00:00-05', '2022-02-10 00:00:00-05', 'M', 'KR 10 # 10-20', 'M', '32', '39', '2022-02-01', '2022-02-05', '3000000', true, 'publico/foto_perfil/Login.png', 'O+', 'Colaborador', 'Trabajo', '3110000000', '17', '5', '1', '3', '19', '5', '1', '1', '1', null, '11001000', '1', '1', '4', '1', '1', '1', '1');
