@@ -10,12 +10,17 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
+# Importar os para manejar las variables de entorno
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from dotenv import load_dotenv
 from EVA.local_settings import IS_DEPLOYED, DATABASE_DICT
 from EVA.logging_settings import *
 from EVA.cloud_settings import *
+
+# Carga las variables de entorno del archivo .env
+load_dotenv()
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
@@ -150,6 +155,12 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 STATIC_URL = '/staticfiles/' if IS_DEPLOYED else '/static/'
 
+"""
+# Configuración para almacenar archivos estáticos en S3
+STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'
+"""
+
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'EVA/static'),
     os.path.join(BASE_DIR, 'Administracion', 'static', 'Administracion'),
@@ -161,10 +172,14 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'GestionDocumental', 'static', 'GestionDocumental'),
 )
 
-# Configuración para almacenar archivos multimedia 
+# Configuración para almacenar archivos multimedia en el sistema de archivos (S3)
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-MEDIA_URL = MEDIA_URL if IS_DEPLOYED else '/media/'
+if not IS_DEPLOYED:
+    MEDIA_URL = '/media/'
+else:
+    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
 
 # Son 10800 segundos equivalentes a 3 horas.
 SESSION_COOKIE_AGE = 10800
