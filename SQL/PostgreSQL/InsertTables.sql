@@ -4,7 +4,7 @@
 \! cls
 \! SET PGCLIENTENCODING=utf-8;
 \! chcp 65001
-\connect "railway"
+\connect "EVA"
 SHOW server_encoding;
 SET client_encoding TO 'UTF8';
 SHOW client_encoding;

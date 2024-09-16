@@ -2,7 +2,7 @@
 -- Base de Datos PostgreSQL
 -- ------------------------
 
--- CREAR LA BASE DE DATOS (railway)
+-- CREAR LA BASE DE DATOS (EVA)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -15,11 +15,11 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
-CREATE DATABASE "railway"
+CREATE DATABASE "EVA"
     WITH 
     OWNER = postgres
     ENCODING = 'UTF8'
- -- Deploy (Railway)
+ -- Deploy (EVA)
  -- LOCALE_PROVIDER = icu
  -- ICU_LOCALE = 'es-CO'
  -- Local (PostgreSQL)
@@ -30,5 +30,5 @@ CREATE DATABASE "railway"
     TEMPLATE = template0;
 
 -- SELECCIONAR LA BASE DE DATOS
-\connect "railway"
+\connect "EVA"
 SHOW TIMEZONE;

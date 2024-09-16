@@ -3,7 +3,7 @@
 -- SELECCIONAR BASE DE DATOS
 \! cls
 SET client_encoding = 'UTF8';
-\connect "railway"
+\connect "EVA"
 
 -- BORRAR TABLAS
 DELETE FROM "TalentoHumano_colaborador";
