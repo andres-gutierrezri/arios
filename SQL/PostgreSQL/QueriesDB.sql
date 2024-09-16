@@ -5,30 +5,39 @@
 -- Consultas en la Base de Datos de PostgreSQL
 
 -- Consultar la versión de PostgreSQL
-SELECT version();
+SELECT version() AS "Version PostgreSQL";
 
--- Consultar las bases de datos
-\l -- \list
-SELECT datname FROM pg_database;
+-- Mostrar información sobre la conexión actual
+\conninfo
 
--- Recuperación de información detallada de la base de datos
-SELECT datname AS database_name, 
-       pg_size_pretty(pg_database_size(datname)) AS size,
-       datallowconn AS allow_connections,
-       datconnlimit AS connection_limit,
-       encoding, 
-       datcollate, 
-       datctype 
-FROM pg_catalog.pg_database;
-
--- Listado de roles y permisos
-\du
-
--- Listado de información de espacios de tabla
-\db
+-- Consultar la zona horaria
+SHOW timezone;
 
 -- Consultar las extensiones instaladas
 SELECT * FROM pg_extension;
 
--- Consultar la zona horaria
-SHOW timezone;
+-- Recuperar información detallada de las bases de datos
+SELECT datname AS "Database Name", 
+       pg_size_pretty(pg_database_size(datname)) AS "Size", 
+       datallowconn AS "Allow Connections", 
+       datconnlimit AS "Connection Limit", 
+       encoding AS "Encoding", 
+       datcollate AS "Datcollate", 
+       datctype  AS "Datctype" 
+FROM pg_catalog.pg_database;
+
+-- Consultar las bases de datos (\l o \list)
+-- SELECT datname AS "Database" FROM pg_database;
+
+-- Mostrar todas las tablas públicas de las bases de datos
+-- SELECT * FROM pg_catalog.pg_tables;
+
+-- Mostrar las tablas de la base de datos
+-- \connect "DB_Name"
+-- \dt
+
+-- Listado de roles y permisos
+-- \du
+
+-- Listado de información de espacios de tabla
+-- \db
