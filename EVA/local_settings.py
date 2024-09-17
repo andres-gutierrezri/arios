@@ -38,7 +38,7 @@ if DATABASE_SELECTOR == "postgresql":
                 "client_encoding": "UTF8",
             },
             "TEST": {
-                "NAME": "test_EVA",
+                "NAME": os.getenv("POSTGRESQL_DB_TEST", "test"),
             },
         }
 elif DATABASE_SELECTOR == "mysql":
@@ -58,7 +58,7 @@ elif DATABASE_SELECTOR == "mysql":
                 "init_command": "SET default_storage_engine=INNODB",
             },
             "TEST": {
-                "NAME": "test_EVA",
+                "NAME": os.getenv("MYSQL_DB_TEST", "test"),
             },
         }
 else:
