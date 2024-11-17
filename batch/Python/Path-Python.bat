@@ -1,4 +1,6 @@
 @echo off
+setlocal
+chcp 65001 > nul
 
 echo ---------------------------------------------
 echo Script para Agregar Python al PATH de Windows
@@ -6,9 +8,6 @@ echo ---------------------------------------------
 
 REM Ingresar al Directorio del Proyecto
 REM Regresar a la carpeta raíz del proyecto subiendo en los directorios
-
-REM Asegurarse de que la consola esté usando la página de códigos 1252
-chcp 1252 >nul
 
 REM Definir el nombre del archivo marcador que existe en la raíz del proyecto
 set "marker=.env"
@@ -92,5 +91,6 @@ if %ERRORLEVEL%==0 (
 
 echo.
 echo PARA SALIR PRESIONA UNA TECLA.
+endlocal
 pause > nul
 exit

@@ -1,10 +1,12 @@
 @echo off
+setlocal
+chcp 65001 > nul
 
 echo -----------------------------
-echo Base de Datos MySQL - Railway
+echo Base de Datos MySQL - Hosting
 echo -----------------------------
 
-echo Ingresar a la Consola de MySQL - Railway
+echo Ingresar a la Consola de MySQL - Hosting
 
 REM Ingresar al Directorio del Proyecto
 cd ..
@@ -47,7 +49,10 @@ REM Establecer la contraseña de MySQL Database Hosting
 set MYSQL_PASSWORD=%MYSQL_HOSTING_DB_PASSWORD%
 
 REM Conectar a la base de datos MySQL utilizando mysql
-mysql -u%MYSQL_USER% -p%MYSQL_PASSWORD% -h%MYSQL_HOST% -P%MYSQL_PORT% -D%MYSQL_NAME%
+:: mysql -u%MYSQL_USER% -p%MYSQL_PASSWORD% -h%MYSQL_HOST% -P%MYSQL_PORT% -D%MYSQL_NAME%
+mysql -u%MYSQL_USER% -p%MYSQL_PASSWORD% -h%MYSQL_HOST% -P%MYSQL_PORT% -D mysql
 
 REM Limpiar la variable de entorno MYSQL_PASSWORD por seguridad
 set MYSQL_PASSWORD=
+
+endlocal

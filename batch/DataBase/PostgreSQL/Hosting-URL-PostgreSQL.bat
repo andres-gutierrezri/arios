@@ -2,9 +2,11 @@
 setlocal
 chcp 65001 > nul
 
-echo --------------------------------------------
-echo Script para Agregar MySQL al PATH de Windows
-echo --------------------------------------------
+echo ----------------------------------
+echo Base de Datos PostgreSQL - Railway
+echo ----------------------------------
+
+echo Ingresar a la Consola de PostgreSQL - Railway
 
 REM Ingresar al Directorio del Proyecto
 REM Regresar a la carpeta raíz del proyecto subiendo en los directorios
@@ -61,36 +63,24 @@ if not exist %ENV_FILE% (
     exit /b 1
 )
 
-REM Establecer la variable de entorno para el Path de MySQL
+REM Establecer la variable de entorno para el la base de datos de PostgreSQL
 for /f "tokens=1,2 delims==" %%a in (%ENV_FILE%) do (
-    if "%%a"=="MYSQL_SERVER_PATH" (
+    if "%%a"=="POSTGRESQL_DATABASE_URL" (
         REM Guardar el valor de la variable
-        set "MYSQL_PATH=%%b"
+        set "POSTGRESQL_DATABASE_URL=%%b"
 
         REM Eliminar comillas dobles si existen
-        set "MYSQL_PATH=!MYSQL_PATH:"=!"
+        set "POSTGRESQL_DATABASE_URL=!POSTGRESQL_DATABASE_URL:"=!"
         
         REM Eliminar comillas simples si existen
-        set "MYSQL_PATH=!MYSQL_PATH:'=!"
+        set "POSTGRESQL_DATABASE_URL=!POSTGRESQL_DATABASE_URL:'=!"
 
         REM Asignar la variable sin comillas
-        set %%a=!MYSQL_PATH!
+        set %%a=!POSTGRESQL_DATABASE_URL!
     )
 )
 
-REM Verifica si la ruta ya está en el PATH
+REM Conectar a la base de datos PostgreSQL utilizando psql
+psql %POSTGRESQL_DATABASE_URL%
 
-echo %PATH% | find /I "%MYSQL_PATH%" >nul
-if %ERRORLEVEL%==0 (
-    echo La ruta de MySQL ya esta en el PATH del sistema.
-) else (
-    REM Agregar la ruta al PATH
-    setx /M PATH "%PATH%;%MYSQL_PATH%"
-    echo La ruta de MySQL ha sido agregada al PATH del sistema.
-)
-
-echo.
-echo PARA SALIR PRESIONA UNA TECLA.
 endlocal
-pause > nul
-exit

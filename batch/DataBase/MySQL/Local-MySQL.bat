@@ -2,9 +2,18 @@
 setlocal
 chcp 65001 > nul
 
-echo --------------------------------------------
-echo Script para Agregar MySQL al PATH de Windows
-echo --------------------------------------------
+echo -------------------
+echo Base de Datos MySQL
+echo -------------------
+
+echo Ingresar a la Consola de MySQL - Local
+
+REM Bloque de comentarios
+goto comment
+C:
+cd "C:\Program Files\MySQL\MySQL Server 9.0\bin"
+mysql -u root -p -h localhost -P 3306 -D mysql
+:comment
 
 REM Ingresar al Directorio del Proyecto
 REM Regresar a la carpeta raíz del proyecto subiendo en los directorios
@@ -61,36 +70,33 @@ if not exist %ENV_FILE% (
     exit /b 1
 )
 
-REM Establecer la variable de entorno para el Path de MySQL
-for /f "tokens=1,2 delims==" %%a in (%ENV_FILE%) do (
-    if "%%a"=="MYSQL_SERVER_PATH" (
-        REM Guardar el valor de la variable
-        set "MYSQL_PATH=%%b"
+REM Leer cada línea del archivo .env y establecer las variables de entorno
+for /f "tokens=1,* delims==" %%a in (%ENV_FILE%) do (
+    REM Guardar el valor de la variable
+    set "var=%%b"
+    
+    REM Eliminar comillas dobles si existen
+    set "var=!var:"=!"
+    
+    REM Eliminar comillas simples si existen
+    set "var=!var:'=!"
 
-        REM Eliminar comillas dobles si existen
-        set "MYSQL_PATH=!MYSQL_PATH:"=!"
-        
-        REM Eliminar comillas simples si existen
-        set "MYSQL_PATH=!MYSQL_PATH:'=!"
-
-        REM Asignar la variable sin comillas
-        set %%a=!MYSQL_PATH!
-    )
+    REM Asignar la variable sin comillas
+    set %%a=!var!
 )
 
-REM Verifica si la ruta ya está en el PATH
+REM Establecer las variable de entorno para MySQL
+set MYSQL_USER=%MYSQL_DB_USER%
+set MYSQL_HOST=%MYSQL_DB_HOST%
+set MYSQL_PORT=%MYSQL_DB_PORT%
 
-echo %PATH% | find /I "%MYSQL_PATH%" >nul
-if %ERRORLEVEL%==0 (
-    echo La ruta de MySQL ya esta en el PATH del sistema.
-) else (
-    REM Agregar la ruta al PATH
-    setx /M PATH "%PATH%;%MYSQL_PATH%"
-    echo La ruta de MySQL ha sido agregada al PATH del sistema.
-)
+REM Establecer la contraseña de MySQL
+set MYSQL_PASSWORD=%MYSQL_DB_PASSWORD%
 
-echo.
-echo PARA SALIR PRESIONA UNA TECLA.
+REM Conectar a la base de datos MySQL utilizando mysql
+mysql -u%MYSQL_USER% -p%MYSQL_PASSWORD% -h%MYSQL_HOST% -P%MYSQL_PORT% -D mysql
+
+REM Limpiar la variable de entorno MYSQL_PASSWORD por seguridad
+set MYSQL_PASSWORD=
+
 endlocal
-pause > nul
-exit
