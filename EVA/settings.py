@@ -22,44 +22,65 @@ from EVA.cloud_settings import *
 # Carga las variables de entorno del archivo .env
 load_dotenv()
 
+# Configuración de los correos electrónicos
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'noreply@arios-ing.com'
-EMAIL_HOST_PASSWORD = 'aympwbumzwbibbyh'
-EMAIL_PORT = 587
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'noreply@arios-ing.com')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'aympwbumzwbibbyh')
+EMAIL_PORT = os.getenv('EMAIL_PORT', '587')
 DEFAULT_FROM_EMAIL = f'"EVA" <{EMAIL_HOST_USER}>'
 
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# Construir rutas dentro del proyecto de esta manera: BASE_DIR / 'subdir'.
+# from pathlib import Path
+# BASE_DIR = Path(__file__).resolve().parent.parent
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'a1e+7^&ozbdlfhmkdmg@ic9-%*brp1khg%b_#1v-bksm#=-ehw'
+SECRET_KEY = os.getenv('SECRET_KEY', 'a1e+7^&ozbdlfhmkdmg@ic9-%*brp1khg%b_#1v-bksm#=-ehw')
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# Seguridad: no ejecute con depuración activada en producción!
+# Se recomienda que DEBUG sea False en producción
+# Se recomienda que DEBUG sea True en desarrollo
 DEBUG = not IS_DEPLOYED
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0', 'arios-eva.up.railway.app']
+# Configuración de la dirección IP y el puerto donde se alojará la aplicación
+HOSTING_IP_PORT = os.getenv('HOSTING_IP_PORT', '0.0.0.0:8080')
 
+# Configuración del dominio donde se alojará la aplicación
+HOSTING_DOMAIN = os.getenv('HOSTING_DOMAIN', 'arios-eva.up.railway.app')
+
+# Configuración de la URL de alojamiento de la aplicación
+HOSTING_URL= os.getenv('cHOSTING_URL', 'https://arios-eva.up.railway.app')
+
+# Configuración de los hosts permitidos
+# ALLOWED_HOSTS = ['127.0.0.1', 'localhost', HOSTING_IP_PORT, HOSTING_DOMAIN]
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0:8080', 'arios-eva.up.railway.app']
+
+# Configuración de los hosts de confianza para la protección contra falsificación de solicitudes entre sitios (CSRF)
+# CSRF_TRUSTED_ORIGINS = ['http://*', HOSTING_URL]
 CSRF_TRUSTED_ORIGINS = ['http://*', 'https://arios-eva.up.railway.app']    
 
 # Application definition
+# Definición de aplicaciones
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'django.contrib.humanize',
-    'whitenoise.runserver_nostatic',
-    'storages',
-    'Administracion.apps.AdministracionConfig',
+    'django.contrib.admin', # Administrador de Django
+    'django.contrib.auth', # Autenticación
+    'django.contrib.contenttypes', # Tipos de contenido
+    'django.contrib.sessions', # Sesiones
+    'django.contrib.messages', # Mensajes
+    'django.contrib.staticfiles', # Archivos estáticos
+    'django.contrib.humanize', # Humanizar números
+    'whitenoise.runserver_nostatic', # Whitenoise para archivos estáticos
+    'storages', # Almacenamiento en la nube
+    'Administracion.apps.AdministracionConfig', # Primera Aplicación del Proyecto
     'Proyectos.apps.ProyectosConfig',
     'TalentoHumano.apps.TalentohumanoConfig',
     'Financiero.apps.FinancieroConfig',
@@ -68,31 +89,37 @@ INSTALLED_APPS = [
     'GestionDocumental.apps.GestiondocumentalConfig',
 ]
 
+# Middleware
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    "whitenoise.middleware.WhiteNoiseMiddleware",
+    'django.middleware.security.SecurityMiddleware', # Seguridad
+    'django.contrib.sessions.middleware.SessionMiddleware', # Sesiones
+    'django.middleware.common.CommonMiddleware', # Común (Middleware)
+    'django.middleware.csrf.CsrfViewMiddleware', # Protección contra falsificación de solicitudes entre sitios (CSRF)
+    'django.contrib.auth.middleware.AuthenticationMiddleware', # Autenticación
+    'django.contrib.messages.middleware.MessageMiddleware', # Mensajes
+    'django.middleware.clickjacking.XFrameOptionsMiddleware', # Protección contra ataques de clics en el marco
+    'whitenoise.middleware.WhiteNoiseMiddleware', # Whitenoise para archivos estáticos
 ]
 
+# URL Configuration
+# Configuración de URL
+# https://docs.djangoproject.com/en/2.2/topics/http/urls/
 ROOT_URLCONF = 'EVA.urls'
 
+# Template Configuration
+# Configuración de plantillas
+# https://docs.djangoproject.com/en/2.2/topics/templates/
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'EVA/templates')]
-        ,
-        'APP_DIRS': True,
+        'DIRS': [os.path.join(BASE_DIR, 'EVA/templates')], # Directorios de plantillas
+        'APP_DIRS': True, # Aplicaciones de plantillas
         'OPTIONS': {
             'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.debug', # Depuración
+                'django.template.context_processors.request', # Solicitudes
+                'django.contrib.auth.context_processors.auth', # Autenticación
+                'django.contrib.messages.context_processors.messages', # Mensajes
             ],
             'libraries': {
                 'eva_tags': 'EVA.templatetags.etiquetas_generales',
@@ -101,15 +128,18 @@ TEMPLATES = [
     },
 ]
 
+# WSGI Configuration
+# Configuración de WSGI
 WSGI_APPLICATION = 'EVA.wsgi.application'
 
 
 # Database
+# Configuración de la base de datos
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 
 DATABASES = {
-    'default': DATABASE_DICT
+    'default': DATABASE_DICT # Base de datos por defecto
 }
 
 
@@ -118,35 +148,38 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator', # Validador de similitud de atributos de usuario
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator', # Validador de longitud mínima de contraseña
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator', # Validador de contraseña común
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator', # Validador de contraseña numérica
     },
 ]
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
-LANGUAGE_CODE = 'es-co'
+LANGUAGE_CODE = 'es-co' # Código de idioma
 
-TIME_ZONE = 'America/Bogota'
+TIME_ZONE = 'America/Bogota' # Zona horaria
 # TIME_ZONE = 'UTC'
 
-USE_I18N = True
+USE_I18N = True # Usar internacionalización
 
-USE_L10N = True
+USE_L10N = True # Usar localización
 
-USE_TZ = True
+USE_TZ = True # Usar zona horaria
 
 
 # Static files (CSS, JavaScript, Images)
+# Archivos estáticos (CSS, JavaScript, imágenes)
+# Configura la ruta de los archivos estáticos
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
@@ -184,21 +217,23 @@ else:
 # Son 10800 segundos equivalentes a 3 horas.
 SESSION_COOKIE_AGE = 10800
 
+# Se define el nombre de la carpeta de archivos públicos y privados
 EVA_PUBLIC_MEDIA = 'publico'
 EVA_PRIVATE_MEDIA = 'privado'
 
 # Por defecto se dejan las ip para el entorno de desarrollo.
-EVA_ACCESO_EXTERNO = os.environ.get('eva_acceso_externo', '127.0.0.1:8000')
-EVA_ACCESO_INTERNO = os.environ.get('eva_acceso_interno', '127.0.0.1:8000')
+EVA_ACCESO_EXTERNO = os.getenv('EVA_ACCESO_EXTERNO', '127.0.0.1:8000')
+EVA_ACCESO_INTERNO = os.getenv('EVA_ACCESO_INTERNO', '127.0.0.1:8000')
 
-EVA_RUTA_ARCHIVOS_FACTURA = os.environ.get('eva_ruta_archivos_factura', 'C:/AJAR/facelec/')
-EVA_URL_BASE_FACELEC = os.environ.get('eva_url_base_facelec', 'http://localhost:8080/api/facturacion/')
+# Configuración de las variables de entorno del archivo .env para el Proyecto EVA
+EVA_RUTA_ARCHIVOS_FACTURA = os.getenv('EVA_RUTA_ARCHIVOS_FACTURA', 'C:/AJAR/facelec/')
+EVA_URL_BASE_FACELEC = os.getenv('EVA_URL_BASE_FACELEC', 'http://localhost:8080/api/facturacion/')
 
-JASPERSERVER_URL = os.environ.get('jasperserver_url', 'http://localhost:8081/jasperserver/rest_v2/reports/EVA/')
-JASPERSERVER_USUARIO = os.environ.get('jasperserver_usuario', 'jasperadmin')
-JASPERSERVER_CLAVE = os.environ.get('jasperserver_clave', 'jasperadmin')
+JASPERSERVER_URL = os.getenv('JASPERSERVER_URL', 'http://localhost:8081/jasperserver/rest_v2/reports/EVA/')
+JASPERSERVER_USUARIO = os.getenv('JASPERSERVER_USUARIO', 'jasperadmin')
+JASPERSERVER_CLAVE = os.getenv('JASPERSERVER_CLAVE', 'jasperadmin')
 
-EVA_RECAPTCHA_SITE_KEY = os.environ.get('eva_recaptcha_site_key', '6Ld5nDgaAAAAAEMfhGZpUy48mKaGvowqVJyOulqI')
-EVA_RECAPTCHA_SECRET_KEY = os.environ.get('eva_recaptcha_secret_key', '6Ld5nDgaAAAAAJf0aZ4axs6ocqqk6SXk5bQk7tLH')
+EVA_RECAPTCHA_SITE_KEY = os.getenv('EVA_RECAPTCHA_SITE_KEY', '6Ld5nDgaAAAAAEMfhGZpUy48mKaGvowqVJyOulqI')
+EVA_RECAPTCHA_SECRET_KEY = os.getenv('EVA_RECAPTCHA_SECRET_KEY', '6Ld5nDgaAAAAAJf0aZ4axs6ocqqk6SXk5bQk7tLH')
 
-EVA_RUTA_ARCHIVOS_TEMPORALES = os.environ.get('eva_ruta_archivos_temporales', os.path.join(MEDIA_ROOT, EVA_PRIVATE_MEDIA, 'Temp'))
+EVA_RUTA_ARCHIVOS_TEMPORALES = os.getenv('EVA_RUTA_ARCHIVOS_TEMPORALES', os.path.join(MEDIA_ROOT, EVA_PRIVATE_MEDIA, 'temp'))
