@@ -197,3 +197,11 @@ cython_debug/
 # Ignore password files
 users.txt
 database.txt
+
+# Ignore backup models files MySQL Workbench (.mwb.bak)
+*.mwb.bak
+
+# Ignore backup and others files
+/backup/
+/files/
+/others/
